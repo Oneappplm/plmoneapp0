@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   root 'pages#dashboard'
   get 'client-portal', to: 'pages#client_portal'
   get 'virtual-review-committee', to: 'pages#virtual_review_committee'
+  get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
   get 'provider-source', to: 'pages#provider_source'
   get 'app-tracker', to: 'pages#app_tracker'
   get 'encompass', to: 'pages#encompass'
