@@ -13,4 +13,5 @@ Rails.application.routes.draw do
   get 'ps-office-manager', to: 'pages#ps_office_manager'
   get 'help', to: 'pages#help'
   get 'settings', to: 'pages#settings'
+  get 'show-client-details', to: 'pages#show_client_details'
 end

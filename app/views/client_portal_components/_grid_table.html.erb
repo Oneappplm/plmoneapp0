@@ -1,0 +1,162 @@
+<div class="row my-3 px-3">
+	<div class="col-lg-12">
+		<!-- start of table info like page and limit -->
+		<div class="row">
+		 	<div class="col-lg-12">
+		 		<div class="d-flex justify-content-between align-items-center">
+		 			<div><strong>Search Results: 8 	records</strong></div>
+		 			<div class="d-flex gap-4 align-items-center">
+		 				<div>
+		 					<label>Show limit</label>
+		 					<span class="border px-3">20</span>
+		 				</div>
+		 				<div>
+		 					<label>Page 3 of 32</label>
+		 					<span class="border px-3">3</span>
+		 				</div>
+		 				<div>
+		 					<button class="btn btn-sm btn-primary">
+		 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 16px;height: 16px;">
+								  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+								</svg>
+								<span>Download Documents</span>
+		 					</button>
+		 				</div>
+		 			</div>
+		 		</div>
+		 	</div>
+		</div>
+		<!-- end of table info like page and limit -->
+
+		<div class="row my-3">
+			<% text_statuses = ['Attested', 'No Application', 'Complete Application', 'Incomplete', 'Pending Data Entry', 'In Process', 'PSV', 'Returned']%>
+
+			<% statuses = ['attested', 'no-application', 'complete-application', 'incomplete', 'pending', 'in-process', 'psv', 'returned']%>
+			<% for i  in 1..8 do %>
+			<div class="col-12 col-md-4 col-lg-6 my-3" >
+				<div class="border rounded p-2" >
+					<div class="row">
+						<div class="col-lg-12">
+						<div class="d-flex justify-content-between">
+							<div class="d-flex flex-grow-1 gap-4 align-items-center">
+								<a href="javascript:void(0);"  data-val="<%= i-1 %>" data-max="5" class="btn btn-xs btn-primary <%= statuses[i-1]%> fw-bold btn-submit"><%= text_statuses[i-1]%></a>
+								<label>Scheduled: 4</label>
+								<label>Reports: 5</label>
+								<label>Deadlines: 5</label>
+							</div>
+							<div class="flex-shrink-0">
+								<div class="form-check">
+									<input class="form-check-input user-cbs" type="checkbox" value="" id="flexCheckDefault">
+								</div>
+							</div>
+						</div>
+						</div>
+					</div>
+								<a href="<%= show_client_details_path %>" class="text-black">
+
+					<div class="row my-3">
+						<div class="col-12 col-md-12 col-lg-6">
+							<div class="row my-2">
+								<div class="col-12 col-md-12 col-lg-6">
+									Provider Name:
+								</div>
+								<div class="col-12 col-md-12 col-lg-6">
+									<strong>Provider Name</strong>
+								</div>
+							</div>
+							<div class="row my-2">
+								<div class="col-12 col-md-12 col-lg-6">
+									Birth Date:
+								</div>
+								<div class="col-12 col-md-12 col-lg-6">
+									<strong>Birth Date</strong>
+								</div>
+							</div>
+							<div class="row my-2">
+								<div class="col-12 col-md-12 col-lg-6">
+									Address:
+								</div>
+								<div class="col-12 col-md-12 col-lg-6">
+									<strong>Lorem ipsum dolor sit...</strong>
+								</div>
+							</div>
+							<div class="row my-2">
+								<div class="col-12 col-md-12 col-lg-6">
+									Attested:
+								</div>
+								<div class="col-12 col-md-12 col-lg-6">
+									<strong>April 5, 2017</strong>
+								</div>
+							</div>
+						</div>
+						<div class="col-12 col-md-12 col-lg-6">
+							<div class="row my-2">
+								<div class="col-12 col-md-12 col-lg-6">
+									P. Type:
+								</div>
+								<div class="col-12 col-md-12 col-lg-6">
+									<strong>Facility</strong>
+								</div>
+							</div>
+							<div class="row my-2">
+								<div class="col-12 col-md-12 col-lg-6">
+									Specialty:
+								</div>
+								<div class="col-12 col-md-12 col-lg-6">
+									<strong>Physician Assistant</strong>
+								</div>
+							</div>
+							<div class="row my-2">
+								<div class="col-12 col-md-12 col-lg-6">
+									MedvId:
+								</div>
+								<div class="col-12 col-md-12 col-lg-6">
+									<strong>HHCmed<%= rand(1231..3314)%></strong>
+								</div>
+							</div>
+							<div class="row my-2">
+								<div class="col-12 col-md-12 col-lg-6">
+									Cred Cycle:
+								</div>
+								<div class="col-12 col-md-12 col-lg-6">
+									<strong>Recred</strong>
+								</div>
+							</div>
+						</div>
+					</div>
+				</a>
+				</div>
+			</div>
+			<% end %>
+		</div>
+	</div>
+</div>
+<% content_for :js do %>
+<script>
+var class_statuses = ['attested', 'no-application', 'complete-application', 'incomplete', 'pending', 'in-process'];
+var text_statuses = ['Attested', 'No Application', 'Complete Application', 'Incomplete', 'Pending Data Entry', 'In Process'];
+document.querySelectorAll('.btn-submit').forEach(item => {
+  item.addEventListener('click', event => {
+    // alert(item.getAttribute('data-val'));
+  	var old_status = parseInt(item.getAttribute('data-val'));
+  	if(old_status != 5)
+  	{
+	    var new_status = class_statuses[old_status + 1];
+	    item.setAttribute('data-val', (old_status+1));
+	    item.classList.remove(class_statuses[old_status]);
+	    item.classList.add(new_status);
+	    item.text = text_statuses[old_status+1];
+	}
+	else {
+		var new_status = class_statuses[0];
+	    item.setAttribute('data-val', 0);
+
+	    item.classList.remove(class_statuses[5]);
+	    item.classList.add(new_status);
+	    item.text = text_statuses[0];
+
+	}
+  })
+})
+</script>
+<% end %>
