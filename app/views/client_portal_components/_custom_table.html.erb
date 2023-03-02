@@ -40,17 +40,20 @@
 							</div>
 						</th>
 						<th>
+							<span class="status-indicator-round bg-primary"></span>
+							
+						</th>
+						<th  style="width: 130px;">
 							<div class="d-flex gap-2 align-items-center">
 								
-							<span class="status-indicator-round bg-primary"></span>
 							<span>Provider Name</span>
 							</div>
 
 						</th>
-						<th>
+						<th  style="width: 130px;">
 							Birth Date
 						</th>
-						<th>
+						<th  style="width: 130px;">
 							Address
 						</th>
 						<th>
@@ -73,7 +76,9 @@
 
 					<tbody class="d-block w-100 bg-medium-grey rounded w-100 mb-3">
 						<% statuses = ['attested', 'no-application', 'complete-application', 'incomplete', 'pending', 'in-process', 'psv', 'returned']%>
+						<% names = ['Hospise Home Care', 'Mercy Medical Center', 'Baptist Health', 'Mayo Clinic', 'Cleveland Clinic', 'Standford Health Care', 'UCLA Health', 'University of Michigan' ]%>
 						<% for i in 1..8 do %>
+						<% addresses = ['1501 N. University, 340, Little Rock, AR 72207', '4568 Chestnuut St., Apt 203, Los Angeles', '133 Main St, Suite 101, Boston', '720 Park Avenue, NY 10021', '2807 Market St, San Francisco, CA 94114', '1107 10th Ave., Seattle, WA 98122', '2043 Pine Street, Philadelphia, PA 19103', '3200 Chestnut Ridge Road, Akron, OH 443333'  ]%>
 						<tr class="p-3">
 							<td>
 								<div class="form-check">
@@ -81,26 +86,28 @@
 								</div>
 							</td>
 							<td>
+								<span class="status-indicator-round <%= statuses[i-1]%>"></span>
+							</td>
+							<td style="width: 130px;">
 								<a href="<%= show_client_details_path %>" class="text-black">
 
-								<div class="d-flex gap-2 align-items-center">
-									<span class="status-indicator-round <%= statuses[i-1]%>"></span>
-									<span>Provider Name</span>
+								<div class="d-flex justify-content-between gap-2 align-items-center">
+									<span><%= names[i-1]%></span>
 								</div>
 								</a>
 
 							</td>
-							<td>
+							<td style="width: 130px;">
 								<a href="<%= show_client_details_path %>" class="text-black">
 
 								0<%= rand(1..9) %>/<%= rand(1..31)%>/199<%= rand(0..9) %>
 								</a>
 							</td>
-							<td>
+							<td style="width: 130px;">
 								<a href="<%= show_client_details_path %>" class="text-black">
 
-								<div class="table_address">
-								Lorem ipsum dolor sit amet ...
+								<div class="table_address" style="width: 150px;">
+									<%= addresses[i-1]%>
 								</div>
 								</a>
 							</td>
@@ -125,15 +132,15 @@
 							</a>
 							</td>
 							<td>
-								<a href="<%= show_client_details_path %>" class="text-black">
+								<a  style="width: 120px;" href="<%= show_client_details_path %>" class="text-black">
 
 								MedvId<%= rand(12313.33123)%>
 							</a>
 							</td>
 							<td>
 								<a href="<%= show_client_details_path %>" class="text-black">
-
-								Cred
+								<% cred = rand(1..5)%>
+								<%= cred.odd? ? 'Cred' : 'Recred'%>
 							</a>
 							</td>
 						</tr>
