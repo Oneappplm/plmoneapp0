@@ -29,17 +29,20 @@
 
 			<div class="row">
 				<div class="col-lg-12 px-0">
-					
-   <%= render (params[:grid].present?  ? "client_portal_components/status_bar_with_count" : "client_portal_components/status_bar" )%>
-   <%= render (params[:grid].present? ? "client_portal_components/grid_table" : "client_portal_components/custom_table")%>		
+				   <%= render (params[:grid].present?  ? "client_portal_components/status_bar_with_count" : "client_portal_components/status_bar" )%>
+				   <%= render (params[:grid].present? ? "client_portal_components/grid_table" : "client_portal_components/custom_table")%>
 				</div>
 			</div>
 		</div>
 		<div class="col-lg-3">
-			<%= render "sidebar_profile"%>
+			<%= render "client_portal_components/modified_profile_sidebar"%>
 		</div>
 	</div>
 </div>
-
-
-		             
+<% content_for :js do %>
+<script>
+	if($('body.navbar-vertical-aside-mini-mode').length == 0){
+		setTimeout(function () {$('#navbar-aside-toggler').click();}, 1000);
+	}
+</script>
+<% end %>

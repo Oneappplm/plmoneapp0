@@ -1,3 +1,4 @@
+<% names = ['Lindsay Bennet', 'Bose, Paul', 'Diaz, Fynn', 'Calibre, Reese']%>
 <div class="row mt-3 mb-3">
 	<div class="col-lg-6">
 		<h5>Search Result: 4 records</h5>
@@ -44,7 +45,7 @@
 			</tr>
 		</thead>
 		<tbody class="bg-light">
-			<tr>
+			<tr data-val='0'>
 				<td>
 					<div class="form-check">
 						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
@@ -55,7 +56,7 @@
 						<path fill-rule="evenodd" d="M9 1.5H5.625c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5zm6.61 10.936a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 14.47a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
 						<path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
 				</svg>
-				Bennet, Lindsay</td>
+				<%= names[0]%></td>
 				<td>OR</td>
 				<td>Physician Assistant</td>
 				<td>Credential</td>
@@ -67,7 +68,7 @@
 				<td>3/18/2021</td>
 				<td>Approved</td>
 			</tr>
-			<tr>
+			<tr data-val='1'>
 				<td>
 					<div class="form-check">
 						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
@@ -79,7 +80,7 @@
 						<path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
 				</svg>
 
-					Bennet, Lindsay</td>
+					<%= names[1]%></td>
 				<td>OR</td>
 				<td>Physician Assistant</td>
 				<td>Credential</td>
@@ -91,7 +92,7 @@
 				<td>3/18/2021</td>
 				<td>Approved</td>
 			</tr>
-			<tr>
+			<tr data-val='2'>
 				<td>
 					<div class="form-check">
 						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
@@ -103,7 +104,7 @@
 						<path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
 				</svg>
 
-					Bennet, Lindsay</td>
+					<%= names[2]%></td>
 				<td>OR</td>
 				<td>Physician Assistant</td>
 				<td>Credential</td>
@@ -115,7 +116,7 @@
 				<td>3/18/2021</td>
 				<td>Approved</td>
 			</tr>
-			<tr>
+			<tr data-val="3">
 				<td>
 					<div class="form-check">
 						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
@@ -127,16 +128,16 @@
 						<path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
 				</svg>
 
-					Bennet, Lindsay</td>
+					<%= names[3]%></td>
 				<td>OR</td>
 				<td>Physician Assistant</td>
 				<td>Credential</td>
-				<td>10/13/2022</td>
+				<td><%= rand(1..12)%>/<%= rand(1..28)%>/<%= rand(2011..2022)%></td>
 				<td>Expedited</td>
-				<td>02/12/2024</td>
-				<td>10/13/2019</td>
-				<td>10/20/2019</td>
-				<td>3/18/2021</td>
+				<td><%= rand(1..12)%>/<%= rand(1..28)%>/<%= rand(2020..2024)%></td>
+				<td><%= rand(1..12)%>/<%= rand(1..28)%>/<%= rand(2011..2022)%></td>
+				<td><%= rand(1..12)%>/<%= rand(1..28)%>/<%= rand(2011..2022)%></td>
+				<td><%= rand(1..12)%>/<%= rand(1..28)%>/<%= rand(2011..2022)%></td>
 				<td>Approved</td>
 			</tr>
 		</tbody>
@@ -146,7 +147,9 @@
 <% content_for :js do %>
 <script>
 		$('#vrc-table tbody tr').on('click', function(){
-			location.href = "/show-virtual-review-committee"
+			var selected = $(this).data('val');
+			// alert(selected);
+			location.href = "/show-virtual-review-committee?name="+selected
 		});
 </script>
 <% end %>
