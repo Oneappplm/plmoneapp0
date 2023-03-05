@@ -1,0 +1,62 @@
+<div class="row my-1 px-3">
+	<div class="col-lg-12">
+		<!-- start of table header -->
+		<div class="row mt-5 mb-3">
+			<div class="col-lg-12">
+				<table class="table table--default table-borderless" id="">
+					<thead class="bg-primary">
+						<tr class=" rounded">
+						<th class="text-white">
+							Application Type
+						</th>
+						<th class="text-white">
+							Attested Date
+						</th>
+						<th class="text-white">
+							Signed By
+						</th>
+						<th class="text-white">
+							Download
+						</th>
+						</tr>
+					</thead>
+
+					<tbody class="">
+						<% user_names = ['Dylan Deckert', 'Alan Paige', 'Rosie Thorn', 'Jack Might', 'Julie Tsu']%>
+						<% for i in 0..4 %>
+						<% date = "#{rand(1..12)}/#{rand(1..30)}/#{rand(2019..2022)}"%>
+						<tr class="bg-medium-grey">
+							<td class="fw-bold text-black">SPA</td>
+							<td class="fw-bold text-black"><%= date %></td>
+							<td class="fw-bold text-black"><%= user_names[i]%></td>
+							<td class="fw-bold text-black">
+								<a href="javascript:void(0);">
+									Application-<%=date%>.pdf
+								</a>
+							</td>
+						</tr>
+						<% end %>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<!-- end of table header -->
+</div>
+</div>
+<% content_for :js do %>
+<script>
+ function checkAll() {
+  var checkBox = document.getElementById("checkAllCbs");
+  (checkBox.checked == true) ? updateCbs(true) : updateCbs(false);
+}
+
+function updateCbs(status) {
+	var cbs = document.querySelectorAll('.user-cbs');
+	for (var i = cbs.length - 1; i >= 0; i--) {
+		if(cbs[i].type == "checkbox") {
+			cbs[i].checked = status;
+		}
+	}
+}
+</script>
+<% end %>

@@ -6,4 +6,10 @@ class PagesController < ApplicationController
 			render 'documents'
 		end
 	end
+
+	def provider_source
+		if params[:page].present?
+			render "pages/provider_source/#{params[:page]}"
+		end
+	end
 end
