@@ -14,4 +14,5 @@ Rails.application.routes.draw do
   get 'help', to: 'pages#help'
   get 'settings', to: 'pages#settings'
   get 'show-client-details', to: 'pages#show_client_details'
+  get 'smart-contract', to: 'pages#smart_contract'
 end
