@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   get 'encompass', to: 'pages#encompass'
   get 'microsite', to: 'pages#microsite'
   get 'ps-office-manager', to: 'pages#ps_office_manager'
+  get 'plm-sales-tool', to: 'pages#plm_sales_tool'
   get 'help', to: 'pages#help'
   get 'settings', to: 'pages#settings'
   get 'show-client-details', to: 'pages#show_client_details'

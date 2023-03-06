@@ -12,4 +12,8 @@ class PagesController < ApplicationController
 			render "pages/provider_source/#{params[:page]}"
 		end
 	end
+
+	def plm_sales_tool
+		render layout: 'plm_sales_tool'
+	end
 end
