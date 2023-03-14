@@ -1,23 +1,21 @@
 <% names = ['Lindsay Bennet', 'Bose, Paul', 'Diaz, Fynn', 'Calibre, Reese']%>
 <div class="row mt-3 mb-3">
 	<div class="col-lg-6">
-		<h5>Search Result: 4 records</h5>
+		<!-- <h5>Search Result: <%= @vrcs.size %> records</h5> -->
 	</div>
 	<div class="col-lg-6" style="padding: 0;">
-		<div style="float: right;">
-				<label for="">Show Limit: </label>
-				<input type="text" value="2" style="width: 35px; text-align: center; font-size: 12px; margin-right: 8px;">
-				<label for="">Page 3 of 32 </label>
-				<input type="text" value="1" style="width: 35px; text-align: center; font-size: 12px;" class="">
-				<select name="" id="" class="" style="padding:8px; background-color: #ddd; border: 0px; border-radius: 5px; margin-left: 4px;">
-					<option value="completed">Completed</option>
-				</select>
-				<button class="btn btn-sm btn-primary">
+		<div >
+			<%= form_with url: request.url, method: :get, html: { id: 'vrc-progress-status-form'} do |form| %>
+				<div style="float: right;">
+					<%= form.select :'vrc-progress-status', [["All", "all"], ["Completed", "completed"],["Assigned", "assigned"], ["To Be Assigned", "to_be_assigned"]], { selected: params[:'vrc-progress-status'] }, { style: "padding:8px; background-color: #ddd; border: 0px; border-radius: 5px; margin-left: 4px;",  onchange: 'this.form.submit();'  } %>
+				</div>
+				<% end %>
+				<!-- <button class="btn btn-sm btn-primary">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 18px;">
 							<path d="M12 1.5a.75.75 0 01.75.75V7.5h-1.5V2.25A.75.75 0 0112 1.5zM11.25 7.5v5.69l-1.72-1.72a.75.75 0 00-1.06 1.06l3 3a.75.75 0 001.06 0l3-3a.75.75 0 10-1.06-1.06l-1.72 1.72V7.5h3.75a3 3 0 013 3v9a3 3 0 01-3 3h-9a3 3 0 01-3-3v-9a3 3 0 013-3h3.75z" />
 					</svg>
 					Download Documents
-				</button>
+				</button> -->
 			</div>
 	</div>
 </div>
@@ -45,103 +43,52 @@
 			</tr>
 		</thead>
 		<tbody class="bg-light">
-			<tr data-val='0'>
-				<td>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				</div>
-				</td>
-				<td>
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 18px; color: #00c9a7;">
-						<path fill-rule="evenodd" d="M9 1.5H5.625c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5zm6.61 10.936a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 14.47a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
-						<path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
-				</svg>
-				<%= names[0]%></td>
-				<td>OR</td>
-				<td>Physician Assistant</td>
-				<td>Credential</td>
-				<td>10/13/2022</td>
-				<td>Expedited</td>
-				<td>02/12/2024</td>
-				<td>10/13/2019</td>
-				<td>10/20/2019</td>
-				<td>3/18/2021</td>
-				<td>Approved</td>
-			</tr>
-			<tr data-val='1'>
-				<td>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				</div>
-				</td>
-				<td>
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 18px; color: #00c9a7;">
-						<path fill-rule="evenodd" d="M9 1.5H5.625c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5zm6.61 10.936a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 14.47a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
-						<path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
-				</svg>
-
-					<%= names[1]%></td>
-				<td>OR</td>
-				<td>Physician Assistant</td>
-				<td>Credential</td>
-				<td>10/13/2022</td>
-				<td>Expedited</td>
-				<td>02/12/2024</td>
-				<td>10/13/2019</td>
-				<td>10/20/2019</td>
-				<td>3/18/2021</td>
-				<td>Approved</td>
-			</tr>
-			<tr data-val='2'>
-				<td>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				</div>
-				</td>
-				<td>
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 18px; color: #00c9a7;">
-						<path fill-rule="evenodd" d="M9 1.5H5.625c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5zm6.61 10.936a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 14.47a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
-						<path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
-				</svg>
-
-					<%= names[2]%></td>
-				<td>OR</td>
-				<td>Physician Assistant</td>
-				<td>Credential</td>
-				<td>10/13/2022</td>
-				<td>Expedited</td>
-				<td>02/12/2024</td>
-				<td>10/13/2019</td>
-				<td>10/20/2019</td>
-				<td>3/18/2021</td>
-				<td>Approved</td>
-			</tr>
-			<tr data-val="3">
-				<td>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				</div>
-				</td>
-				<td>
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 18px; color: #00c9a7;">
-						<path fill-rule="evenodd" d="M9 1.5H5.625c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5zm6.61 10.936a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 14.47a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
-						<path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
-				</svg>
-
-					<%= names[3]%></td>
-				<td>OR</td>
-				<td>Physician Assistant</td>
-				<td>Credential</td>
-				<td><%= rand(1..12)%>/<%= rand(1..28)%>/<%= rand(2011..2022)%></td>
-				<td>Expedited</td>
-				<td><%= rand(1..12)%>/<%= rand(1..28)%>/<%= rand(2020..2024)%></td>
-				<td><%= rand(1..12)%>/<%= rand(1..28)%>/<%= rand(2011..2022)%></td>
-				<td><%= rand(1..12)%>/<%= rand(1..28)%>/<%= rand(2011..2022)%></td>
-				<td><%= rand(1..12)%>/<%= rand(1..28)%>/<%= rand(2011..2022)%></td>
-				<td>Approved</td>
-			</tr>
+			<% @vrcs.each_with_index do |vrc, index| %>
+				<tr data-val="<%= index %>">
+					<td>
+						<div class="form-check"><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"></div>
+					</td>
+					<td>
+						<% if vrc.completed? %>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 18px; color: #00c9a7;">
+									<path fill-rule="evenodd" d="M9 1.5H5.625c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5zm6.61 10.936a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 14.47a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+									<path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
+							</svg>
+						<% elsif vrc.assigned? %>
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 18px; color: #377dff;">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+							</svg>
+						<% elsif vrc.to_be_assigned? %>
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 18px; color: red;">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+							</svg>
+					 <% end %>
+					<%= vrc.provider_name%>
+					</td>
+					<td><%= vrc.state %></td>
+					<td><%= vrc.provider_type %></td>
+					<td><%= vrc.cred_cycle %></td>
+					<td><%= vrc.psv_completed_date.strftime("%m/%d/%Y") %></td>
+					<td><%= vrc.review_level %></td>
+					<td><%= vrc.recred_due_date.strftime("%m/%d/%Y") %></td>
+					<td><%= vrc.review_date.strftime("%m/%d/%Y") %></td>
+					<td><%= vrc.committee_date.strftime("%m/%d/%Y") %></td>
+					<td><%= vrc.vote_date.strftime("%m/%d/%Y") %></td>
+					<td><%= vrc.status %></td>
+				</tr>
+			<% end %>
 		</tbody>
 	</table>
+
+	<div class="row">
+		<div class="digg_pagination col-lg-12">
+				<div class="page_info">
+						<%= page_entries_info @vrcs %>
+				</div>
+				<%= will_paginate @vrcs, :container => false %>
+		</div>
+	</div>
+
 </div>
 
 <% content_for :js do %>
