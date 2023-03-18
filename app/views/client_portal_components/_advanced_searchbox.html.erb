@@ -1,6 +1,6 @@
 <div class="card">
 	<div class="card-body bg-medium-grey">
-		<div class="row my-3">	
+		<div class="row my-3">
 	         <div class="col-12">
 	            <div class="d-flex justify-content-center gap-2">
 	               <a href="<%= client_portal_path(simple_search: true)%>" class="btn btn-xs btn-light fw-bold">Simple Search</a>
@@ -8,62 +8,84 @@
 	            </div>
 	         </div>
 		</div>
-		<form class="search_box">
+		<%= form_with url: client_portal_search_path, class: "search_box", method: :get do |f|%>
+		<!-- <form class="search_box"> -->
 			<!-- start of row for fields -->
+			<% if params[:grid].present? %>
+				<%= f.hidden_field :grid, value: 'grid'%>
+			<% end %>
 			<div class="row">
 				<div class="col-lg-6">
 	            	<div class="row mb-3">
 		               <div class="form-group">
 		                  <label class="text-sm text-black">Full Name</label>
-		                  <input type="text" class="form-control py-1" >
+		                  <!-- <input type="text" class="form-control py-1" > -->
+		                  <%= f.text_field :full_name, class: "form-control py-1" %>
 		               </div>
 	            	</div>
 	               <div class="row mb-3">
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">First Name:</label>
-	                     <input type="text" class="form-control py-1" placeholder="">
+	                     <!-- <input type="text" class="form-control py-1" placeholder=""> -->
+		                  <%= f.text_field :first_name, class: "form-control py-1" %>
+
 	                  </div>
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">Last Name:</label>
-	                     <input type="text" class="form-control py-1" placeholder="">
+		                  <%= f.text_field :last_name, class: "form-control py-1" %>
 	                  </div>
 	               </div>
 	               <div class="row mb-3">
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">From Attest Date:</label>
-	                     <input type="text" class="form-control py-1" placeholder="">
+	                     <!-- <input type="text" class="form-control py-1" placeholder=""> -->
+		                  <%= f.date_field :from_attest_date, class: "form-control py-1" %>
+
 	                  </div>
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">To Attest Date:</label>
-	                     <input type="text" class="form-control py-1" placeholder="">
+	                     <!-- <input type="text" class="form-control py-1" placeholder=""> -->
+		                  <%= f.date_field :to_attest_date, class: "form-control py-1" %>
+
 	                  </div>
 	               </div>
 	               <div class="row mb-3">
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">Provider Type:</label>
-	                     <input type="text" class="form-control py-1" placeholder="">
+	                     <!-- <input type="text" class="form-control py-1" placeholder=""> -->
+		                  <%= f.text_field :provider_type, class: "form-control py-1" %>
+
 	                  </div>
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">Specialty:</label>
-	                     <select class="form-select py-1">
-	                        <option>Option 1</option>
-	                        <option>Optionn 2</option>
+	                     <select class="form-select py-1" name="specialty">
+	                     	<option value="">Select option</option>
+	                        <option value="PHYSICIAN ASSISTANT">PHYSICIAN ASSISTANT</option>
+	                        <!-- <option>Optionn 2</option> -->
 	                     </select>
 	                  </div>
 	               </div>
 	               <div class="row mb-3">
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">Cred Status:</label>
-	                     <select class="form-select py-1">
-	                        <option>Option 1</option>
-	                        <option>Optionn 2</option>
+	                     <select class="form-select py-1" name="cred_status">
+	                     	<option value="">Select option</option>
+	                        <option value="attested">Attested</option>
+	                        <option value="in-process">In Process</option>
+	                        <option value="pending">Pending Data Entry</option>
+	                        <option value="incomplete">Incomplete</option>
+	                        <option value="complete-application">Complete Application</option>
+	                        <option value="no-application">No Application</option>
+	                        <option value="psv">PSV</option>
+	                        <option value="returned">Returned</option>
 	                     </select>
 	                  </div>
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">Cred Cycle:</label>
-	                     <select class="form-select py-1">
-	                        <option>Option 1</option>
-	                        <option>Optionn 2</option>
+	                     <select class="form-select py-1" name="cred_cycle">
+	                     	<option value="">Select option</option>
+	                        <option value="Cred">Cred</option>
+	                        <option value="Recred">Recred</option>
 	                     </select>
 	                  </div>
 	               </div>
@@ -71,8 +93,9 @@
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">VRC Status:</label>
 	                     <select class="form-select py-1">
+	                     	<option value="">Select option</option>
 	                        <option>Option 1</option>
-	                        <option>Optionn 2</option>
+	                        <option>Option 2</option>
 	                     </select>
 	                  </div>
 	                  <div class="col-lg-6">
@@ -85,7 +108,9 @@
 	               <div class="row mb-3">
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">Birthday:</label>
-	                     <input type="text" name="" class="form-control py-1">
+	                     <!-- <input type="text" name="" class="form-control py-1"> -->
+		                  <%= f.date_field :birth_date, max: "31-12-2022".to_date , class: "form-control py-1" %>
+
 	                  </div>
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">State:</label>
@@ -102,27 +127,37 @@
 	                  </div>
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">Postal Zipcode:</label>
-	                     <input type="text" name="" class="form-control py-1">
+	                     <!-- <input type="text" name="" class="form-control py-1"> -->
+		                  <%= f.text_field :zipcode, class: "form-control py-1" %>
+
 	                  </div>
 	               </div>
 	               <div class="row mb-3">
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">NPI:</label>
-	                     <input type="text" name="" class="form-control py-1">
+	                     <!-- <input type="text" name="" class="form-control py-1"> -->
+		                  <%= f.text_field :npi, class: "form-control py-1" %>
+
 	                  </div>
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">SSN:</label>
-	                     <input type="text" name="" class="form-control py-1">
+	                     <!-- <input type="text" name="" class="form-control py-1"> -->
+		                  <%= f.text_field :ssn, class: "form-control py-1" %>
+
 	                  </div>
 	               </div>
 	               <div class="row mb-3">
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">TIN #:</label>
-	                     <input type="text" name="" class="form-control py-1">
+	                     <!-- <input type="text" name="" class="form-control py-1"> -->
+		                  <%= f.text_field :tin, class: "form-control py-1" %>
+
 	                  </div>
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">Entity:</label>
-	                     <input type="text" name="" class="form-control py-1">
+	                     <!-- <input type="text" name="" class="form-control py-1"> -->
+		                  <%= f.text_field :entity, class: "form-control py-1" %>
+
 	                  </div>
 	               </div>
 	               <div class="row">
@@ -131,7 +166,8 @@
 	               				<label class="text-sm text-black">Medv ID:</label>
 	               				<a href="javascript:void(0);">Load Multiple IDs</a>
 	               			</div>
-	               			<textarea class="h-full w-full" style="width: 100%;" rows="4"></textarea>
+	               			<%= f.text_area :medv_ids, style: "width: 100%;", rows: 4, class: "form-control" %>
+	               			<!-- <textarea class="h-full w-full" style="width: 100%;" rows="4"></textarea> -->
 	               		</div>
 	               </div>
 					
@@ -151,7 +187,8 @@
              </div>
            </div>
            <!-- end of row for button -->
-		</form>
+		<!-- </form> -->
+		<% end %>
 	</div>
 </div>
 

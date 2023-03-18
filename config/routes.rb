@@ -23,4 +23,5 @@ Rails.application.routes.draw do
   end
 
   devise_for :users
+  get 'client-portal-search', to: 'pages#client_search'
 end

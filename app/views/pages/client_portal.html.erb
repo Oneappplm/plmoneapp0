@@ -2,7 +2,7 @@
 <div class="content container-fluid">
 	<div class="row">
 		<div class="col-lg-8">
-			<%= render "client_portal_components/header_searchbar"%>	
+			<%= render "client_portal_components/header_searchbar"%>
 		</div>
 		<div class="col-lg-4">
 			<%= render "client_portal_components/document_list_buttons"%>
@@ -10,12 +10,11 @@
 	</div>
 	<div class="row mb-5">
 		<div class="col-lg-8">
-			
              <% if params[:reports].present? %>
              	<%= render "client_portal_components/report_searchbox"%>
              	<%= render "client_portal_components/report_table_info"%>
              <% else %>
-               <%= render (params[:simple_search].present? ? "client_portal_components/simple_searchbox" : "client_portal_components/advanced_searchbox") %>
+               <%= render ((params[:simple_search].present? or @simple_search ) ? "client_portal_components/simple_searchbox" : "client_portal_components/advanced_searchbox") %>
             <% end %>
 		</div>
 		<div class="col-lg-4">
@@ -23,8 +22,8 @@
 		</div>
 	</div>
 	   <% if !params[:reports].present? %>
-   <%= render (params[:grid].present?  ? "client_portal_components/status_bar_with_count" : "client_portal_components/status_bar" )%>
-   <%= render (params[:grid].present? ? "client_portal_components/grid_table" : "client_portal_components/custom_table")%>
+   <%= render ((params[:grid].present? or @grid)  ? "client_portal_components/status_bar_with_count" : "client_portal_components/status_bar" )%>
+   <%= render ((params[:grid].present? or @grid) ? "client_portal_components/grid_table" : "client_portal_components/custom_table")%>
    <% end %>
 </div>
 

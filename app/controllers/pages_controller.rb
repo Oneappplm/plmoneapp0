@@ -1,5 +1,7 @@
 class PagesController < ApplicationController
 	before_action :set_global_search, only: [:virtual_review_committee]
+  before_action :set_clients, only: %i[client_portal show_client_details]
+  before_action :search_clients, only: %i[client_search]
 
 	def virtual_review_committee
 		if params[:vrc].present? && params[:vrc] == 'work-tickler'
@@ -33,6 +35,40 @@ class PagesController < ApplicationController
 		@vrcs = @vrcs.paginate(page: params[:page], per_page: 5)
 	end
 
+
+	def client_portal
+		@simple_search = (params[:none].present? && params[:none]['simple_search'])
+		@grid = (params[:grid].present? or (params[:none].present? &&params[:none]['grid'].present?))
+	end
+
+	def show_client_details
+		@client = Client.find(params[:client_id])
+	end
+
+  def client_search
+    @clients = if @global_search_text.present?
+			Client.search(@global_search_text)
+		else
+			Client.all
+		end
+
+		if !params[:from_attest_date].blank? && !
+			params[:to_attest_date].blank?
+			from_date = params[:from_attest_date].to_date
+			to_date = params[:to_attest_date].to_date
+			@clients =  Client.where("attested_date <= ? AND attested_date >= ?", from_date, to_date)
+		end
+
+		if !params[:birth_date].blank?
+			bday = params[:birth_date].to_date
+			@clients = Client.where('EXTRACT(month FROM birth_date) = ? AND EXTRACT(day FROM birth_date) = ?', bday.month, bday.day).order("created_at DESC")
+		end
+
+		@clients = @clients.paginate(per_page: 10, page: params[:page] || 1)
+		render "client_portal"
+  end
+
+
 	protected
 
 	def set_global_search
@@ -46,4 +82,29 @@ class PagesController < ApplicationController
 		end
 		@global_search_text = global_search_data.join(',')
 	end
+
+
+  def set_clients
+    @page = params[:page] || 1
+    @per_page = params[:per_page] || 10
+    if params[:status].present?
+      @clients = Client.where(cred_status: params[:status]).paginate(per_page: @per_page, page: @page)
+    else
+      @clients = Client.all.paginate(per_page: @per_page, page: @page)
+    end
+  end
+
+  def search_clients
+  	global_search_data = []
+  	client_columns = Client.column_names.dup.push('first_name', 'last_name', 'city', 'state', 'zipcode', 'npi', 'ssn', 'medv_id')
+  	# params = params[:search_client]
+
+
+  	client_columns.each do |search_key|
+  		if params[search_key.to_sym].present?
+  			global_search_data << params[search_key.to_sym]
+  		end
+  	end
+  	@global_search_text = global_search_data.uniq.join(',')
+  end
 end

@@ -4,15 +4,27 @@
 		<div class="row">
 		 	<div class="col-lg-12">
 		 		<div class="d-flex justify-content-between align-items-center">
-		 			<div><strong>Search Results: 8 	records</strong></div>
+		 			<div><strong>Search Results: <%= @per_page %>	records</strong></div>
 		 			<div class="d-flex gap-4 align-items-center">
+		 				<%= form_for :none, url: client_portal_path, id: "per_page_selector" ,method: :get do |f| %>
+		 				<%= f.hidden_field :grid, value: true%>
 		 				<div>
 		 					<label>Show limit</label>
-		 					<span class="border px-3">20</span>
+		 					<% per_page_limits = [5,10,15,20,25,30,35,40,45,50]%>
+		 					<select name="per_page" class="border ms-2 px-1 bg-white" onchange="document.getElementById('per_page_selector').submit();">
+		 						<% per_page_limits.each do |per_page| %>
+		 							<% if per_page == @per_page.to_i%>
+		 								<option selected><%= per_page %></option>
+		 							<% else %>
+		 								<option><%= per_page %></option>
+		 							<% end %>
+		 						<% end %>
+		 					</select>
 		 				</div>
+		 				<% end %>
 		 				<div>
-		 					<label>Page 3 of 32</label>
-		 					<span class="border px-3">3</span>
+		 					<label>Page <%= @page %> of <%= @clients.total_pages %></label>
+		 					<span class="border px-3"><%= @page %></span>
 		 				</div>
 		 				<div>
 		 					<button class="btn btn-sm btn-primary">
@@ -29,21 +41,14 @@
 		<!-- end of table info like page and limit -->
 
 		<div class="row my-3">
-			<% text_statuses = ['Attested', 'No Application', 'Complete Application', 'Incomplete', 'Pending Data Entry', 'In Process', 'PSV', 'Returned']%>
-
-			<% statuses = ['attested', 'no-application', 'complete-application', 'incomplete', 'pending', 'in-process', 'psv', 'returned']%>
-
-			<% names = ['Hospise Home Care', 'Mercy Medical Center', 'Baptist Health', 'Mayo Clinic', 'Cleveland Clinic', 'Standford Health Care', 'UCLA Health', 'University of Michigan' ]%>
-			<% addresses = ['1501 N. University, 340, Little Rock, AR 72207', '4568 Chestnuut St., Apt 203, Los Angeles', '133 Main St, Suite 101, Boston', '720 Park Avenue, NY 10021', '2807 Market St, San Francisco, CA 94114', '1107 10th Ave., Seattle, WA 98122', '2043 Pine Street, Philadelphia, PA 19103', '3200 Chestnut Ridge Road, Akron, OH 443333'  ]%>
-			<% months = ['January','February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']%>
-			<% for i  in 1..8 do %>
+			<% @clients.each do |client| %>
 			<div class="col-12 col-md-4 col-lg-6 my-3" >
 				<div class="border rounded p-2" >
 					<div class="row">
 						<div class="col-lg-12">
 						<div class="d-flex justify-content-between">
 							<div class="d-flex flex-grow-1 gap-4 align-items-center">
-								<a href="javascript:void(0);"  data-val="<%= i-1 %>" data-max="5" class="btn btn-xs btn-primary <%= statuses[i-1]%> fw-bold btn-submit"><%= text_statuses[i-1]%></a>
+								<a href="javascript:void(0);"  data-max="5" class="btn btn-xs btn-primary <%= client.cred_status %> fw-bold btn-submit"><%= client.cred_status.titleize%></a>
 								<label>Scheduled: 4</label>
 								<label>Reports: 5</label>
 								<label>Deadlines: 5</label>
@@ -56,7 +61,7 @@
 						</div>
 						</div>
 					</div>
-								<a href="<%= show_client_details_path %>" class="text-black">
+					<a href="<%= show_client_details_path %>" class="text-black">
 
 					<div class="row my-3">
 						<div class="col-12 col-md-12 col-lg-6">
@@ -65,7 +70,7 @@
 									Provider Name:
 								</div>
 								<div class="col-12 col-md-12 col-lg-6">
-									<strong><%= names[i-1]%></strong>
+									<strong><%= client.provider_name %></strong>
 								</div>
 							</div>
 							<div class="row my-2">
@@ -73,7 +78,7 @@
 									Birth Date:
 								</div>
 								<div class="col-12 col-md-12 col-lg-6">
-									<strong><%= months[rand(0..11)]%> <%= rand(1..28)%>, <%= rand(1985..2015)%></strong>
+									<strong><%= client.birth_date.strftime('%M %d %Y')%></strong>
 								</div>
 							</div>
 							<div class="row my-2">
@@ -81,7 +86,7 @@
 									Address:
 								</div>
 								<div class="col-12 col-md-12 col-lg-6">
-									<strong><%= (addresses[i-1]).truncate(20)%></strong>
+									<strong><%= client.address %></strong>
 								</div>
 							</div>
 							<div class="row my-2">
@@ -89,7 +94,7 @@
 									Attested:
 								</div>
 								<div class="col-12 col-md-12 col-lg-6">
-										<strong><%= months[rand(0..11)]%> <%= rand(1..28)%>, <%= rand(1985..2015)%></strong>
+										<strong><%= client.attested_date.strftime('%M %d %Y')%></strong>
 								</div>
 							</div>
 						</div>
@@ -99,7 +104,7 @@
 									P. Type:
 								</div>
 								<div class="col-12 col-md-12 col-lg-6">
-									<strong>Facility</strong>
+									<strong><%= client.provider_type %></strong>
 								</div>
 							</div>
 							<div class="row my-2">
@@ -107,7 +112,7 @@
 									Specialty:
 								</div>
 								<div class="col-12 col-md-12 col-lg-6">
-									<strong>Physician Assistant</strong>
+									<strong><%= client.specialty %></strong>
 								</div>
 							</div>
 							<div class="row my-2">
@@ -115,7 +120,7 @@
 									MedvId:
 								</div>
 								<div class="col-12 col-md-12 col-lg-6">
-									<strong>HHCmed<%= rand(1231..3314)%></strong>
+									<strong><%= client.medv_id%></strong>
 								</div>
 							</div>
 							<div class="row my-2">
@@ -123,7 +128,7 @@
 									Cred Cycle:
 								</div>
 								<div class="col-12 col-md-12 col-lg-6">
-									<strong>Recred</strong>
+									<strong><%= client.cred_cycle %></strong>
 								</div>
 							</div>
 						</div>
@@ -132,6 +137,16 @@
 				</div>
 			</div>
 			<% end %>
+
+			<div class="col-lg-12">
+				<div class="d-flex justify-content-end bg-medium-grey rounded ">
+				<% if params[:per_page ].present? %>
+					<%= will_paginate @clients, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+				<% else %>
+					<%= will_paginate @clients, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+				<% end %>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

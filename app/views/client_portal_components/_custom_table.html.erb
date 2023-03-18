@@ -4,15 +4,28 @@
 		<div class="row">
 		 	<div class="col-lg-12">
 		 		<div class="d-flex justify-content-between align-items-center">
-		 			<div><strong>Search Results: 8 	records</strong></div>
+		 			<div><strong>Search Results: <%= @per_page %> records</strong></div>
+		 					<%= form_for :none, url: client_portal_path, id: "per_page_selector" ,method: :get do |f| %>
+		 			
 		 			<div class="d-flex gap-4 align-items-center">
 		 				<div>
 		 					<label>Show limit</label>
-		 					<span class="border px-3">20</span>
+		 					<% per_page_limits = [5,10,15,20,25,30,35,40,45,50]%>
+		 					<select name="per_page" class="border ms-2 px-1 bg-white" onchange="document.getElementById('per_page_selector').submit();">
+		 						<% per_page_limits.each do |per_page| %>
+		 							<% if per_page == @per_page.to_i%>
+		 								<option selected><%= per_page %></option>
+		 							<% else %>
+		 								<option><%= per_page %></option>
+		 							<% end %>
+		 						<% end %>
+		 					</select>
 		 				</div>
 		 				<div>
-		 					<label>Page 3 of 32</label>
-		 					<span class="border px-3">3</span>
+		 					<% end %>
+
+		 					<label>Page <%= @page %> of <%= @clients.total_pages %></label>
+		 					<span class="border px-3"><%= @page %></span>
 		 				</div>
 		 				<div>
 		 					<button class="btn btn-sm btn-primary">
@@ -75,78 +88,80 @@
 					</thead>
 
 					<tbody class="">
-						<% statuses = ['attested', 'no-application', 'complete-application', 'incomplete', 'pending', 'in-process', 'psv', 'returned']%>
-						<% names = ['Hospise Home Care', 'Mercy Medical Center', 'Baptist Health', 'Mayo Clinic', 'Cleveland Clinic', 'Standford Health Care', 'UCLA Health', 'University of Michigan' ]%>
-						<% for i in 1..8 do %>
-						<% addresses = ['1501 N. University, 340, Little Rock, AR 72207', '4568 Chestnuut St., Apt 203, Los Angeles', '133 Main St, Suite 101, Boston', '720 Park Avenue, NY 10021', '2807 Market St, San Francisco, CA 94114', '1107 10th Ave., Seattle, WA 98122', '2043 Pine Street, Philadelphia, PA 19103', '3200 Chestnut Ridge Road, Akron, OH 443333'  ]%>
-						<tr class="p-3">
+						<% @clients.each do |client|%>
+						<tr class="p-3 <%= (@client.present? && @client.id == client.id) ? '' : 'bg-alt-grey'%>">
 							<td>
 								<div class="form-check">
 									<input class="form-check-input user-cbs" type="checkbox" value="" id="flexCheckDefault">
 								</div>
 							</td>
 							<td>
-								<span class="status-indicator-round <%= statuses[i-1]%>"></span>
+								<span class="status-indicator-round <%= client.cred_status%>"></span>
 							</td>
 							<td>
-								<a href="<%= show_client_details_path(provider: (i-1)) %>" class="text-black">
+								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
 
 								<div class="">
-									<span><%= names[i-1]%></span>
+									<span><%= client.provider_name%></span>
 								</div>
 								</a>
 
 							</td>
 							<td>
-								<a href="<%= show_client_details_path(provider: (i-1)) %>" class="text-black">
-
-								0<%= rand(1..9) %>/<%= rand(1..31)%>/199<%= rand(0..9) %>
+								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
+								<%= client.birth_date %>
 								</a>
 							</td>
 							<td>
-								<a href="<%= show_client_details_path(provider: (i-1)) %>" class="text-black">
+								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
 
 								<div class="table_address" style="width: 150px;">
-									<%= addresses[i-1]%>
+									<%= client.address%>
 								</div>
 								</a>
 							</td>
 							<td>
-								<a href="<%= show_client_details_path(provider: (i-1)) %>" class="text-black">
-
-								0<%= rand(1..9) %>/<%= rand(1..31)%>/200<%= rand(0..9) %>
+								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
+								<%= client.attested_date%>
 							</a>
 							</td>
 							<td>
-								<a href="<%= show_client_details_path(provider: (i-1)) %>" class="text-black">
-
-								FACILITY
+								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
+								<%= client.provider_type%>
 							</a>
 							</td>
 							<td>
-								<a href="<%= show_client_details_path(provider: (i-1)) %>" class="text-black">
+								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
 
 								<div class="table_specialty">
-									PHYSICIAN ASSISTANT
+									<%= client.specialty%>
 								</div>
 							</a>
 							</td>
 							<td>
-								<a  style="width: 120px;" href="<%= show_client_details_path(provider: (i-1)) %>" class="text-black">
-
-								MedvId<%= rand(12313.33123)%>
+								<a  style="width: 120px;" href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
+								<%= client.medv_id%>
 							</a>
 							</td>
 							<td>
-								<a href="<%= show_client_details_path(provider: (i-1)) %>" class="text-black">
-								<% cred = rand(1..5)%>
-								<%= cred.odd? ? 'Cred' : 'Recred'%>
+								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
+								<%= client.cred_cycle%>
 							</a>
 							</td>
 						</tr>
 						<% end %>
 					</tbody>
 				</table>
+
+			</div>
+			<div class="col-lg-12">
+				<div class="d-flex justify-content-end bg-medium-grey rounded ">
+				<% if params[:per_page ].present? %>
+					<%= will_paginate @clients, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+				<% else %>
+					<%= will_paginate @clients, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+				<% end %>
+				</div>
 			</div>
 		</div>
 		<!-- end of table header -->

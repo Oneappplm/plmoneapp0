@@ -8,34 +8,46 @@
             </div>
          </div>
       </div>
-      <form class="search_box">
+      <%= form_with url: client_portal_search_path, class: "search_box", method: :get do |f|%>
+        <% if params[:grid].present? %>
+        <%= f.hidden_field :grid, value: 'grid'%>
+        <% end %>
+        <% if params[:simple_search].present? %>
+        <%= f.hidden_field :simple_search, value: true%>
+        <% end %>
+        
          <!-- start row of fields -->
          <div class="row">
             <div class="col-lg-6">
                <div class="row mb-3">
                   <div class="form-group">
                      <label class="text-sm text-black">Full Name</label>
-                     <input type="text" class="form-control py-1" >
+                     <%= f.text_field :full_name, class: 'form-control py-1'%>
                   </div>
                </div>
                <div class="row mb-3">
                   <div class="col-lg-6">
                      <label class="text-sm text-black" for="">First Name:</label>
-                     <input type="text" class="form-control py-1" placeholder="">
+                     <%= f.text_field :first_name, class: 'form-control py-1'%>
+
                   </div>
                   <div class="col-lg-6">
                      <label class="text-sm text-black" for="">Last Name:</label>
-                     <input type="text" class="form-control py-1" placeholder="">
+                     <%= f.text_field :last_name, class: 'form-control py-1'%>
+
                   </div>
                </div>
                <div class="row mb-3">
                   <div class="col-lg-6">
                      <label class="text-sm text-black" for="">From Attest Date:</label>
-                     <input type="text" class="form-control py-1" placeholder="">
+                     <%= f.date_field :from_attest_date, class: 'form-control py-1'%>
+
                   </div>
                   <div class="col-lg-6">
                      <label class="text-sm text-black" for="">To Attest Date:</label>
-                     <input type="text" class="form-control py-1" placeholder="">
+                     <!-- <input type="text" class="form-control py-1" placeholder=""> -->
+                     <%= f.date_field :to_attest_date, class: 'form-control py-1'%>
+
                   </div>
                </div>
             </div>
@@ -43,33 +55,39 @@
                <div class="row mb-3">
                   <div class="col-lg-6">
                      <label class="text-sm text-black" for="">Provider Type:</label>
-                     <select class="form-select py-1">
-                        <option>Option 1</option>
-                        <option>Optionn 2</option>
-                     </select>
+                     <%= f.text_field :provider_type, class: "form-control py-1" %>
                   </div>
                   <div class="col-lg-6">
                      <label class="text-sm text-black" for="">Specialty:</label>
-                     <select class="form-control py-1">
-                        <option>Option 1</option>
-                        <option>Optionn 2</option>
-                     </select>
+                        <select class="form-select py-1" name="specialty">
+                           <option value="">Select option</option>
+                           <option value="PHYSICIAN ASSISTANT">PHYSICIAN ASSISTANT</option>
+                           <!-- <option>Optionn 2</option> -->
+                        </select>
                   </div>
                </div>
                <div class="row mb-3">
                   <div class="col-lg-6">
                      <label class="text-sm text-black" for="">Cred Status:</label>
-                     <select class="form-select py-1">
-                        <option>Option 1</option>
-                        <option>Optionn 2</option>
-                     </select>
+                        <select class="form-select py-1" name="cred_status">
+                           <option value="">Select option</option>
+                           <option value="attested">Attested</option>
+                           <option value="in-process">In Process</option>
+                           <option value="pending">Pending Data Entry</option>
+                           <option value="incomplete">Incomplete</option>
+                           <option value="complete-application">Complete Application</option>
+                           <option value="no-application">No Application</option>
+                           <option value="psv">PSV</option>
+                           <option value="returned">Returned</option>
+                        </select>
                   </div>
                   <div class="col-lg-6">
                      <label class="text-sm text-black" for="">Cred Cycle:</label>
-                     <select class="form-select py-1">
-                        <option>Option 1</option>
-                        <option>Optionn 2</option>
-                     </select>
+                       <select class="form-select py-1" name="cred_cycle">
+                        <option value="">Select option</option>
+                          <option value="Cred">Cred</option>
+                          <option value="Recred">Recred</option>
+                       </select>
                   </div>
                </div>
                <div class="row mb-3">
@@ -77,7 +95,7 @@
                      <label class="text-sm text-black" for="">VRC Status:</label>
                      <select class="form-select py-1">
                         <option>Option 1</option>
-                        <option>Optionn 2</option>
+                        <option>Option 2</option>
                      </select>
                   </div>
                   <div class="col-lg-6">
@@ -102,7 +120,7 @@
             </div>
          </div>
          <!-- end of row of buttons -->
-      </form>
+      <% end %>
    </div>
 </div>
 
