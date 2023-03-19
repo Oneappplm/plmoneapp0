@@ -56,7 +56,7 @@ class PagesController < ApplicationController
 			params[:to_attest_date].blank?
 			from_date = params[:from_attest_date].to_date
 			to_date = params[:to_attest_date].to_date
-			@clients =  Client.where("attested_date <= ? AND attested_date >= ?", from_date, to_date)
+			@clients =  Client.where('attested_date BETWEEN ? AND ?', from_date, to_date)
 		end
 
 		if !params[:birth_date].blank?
