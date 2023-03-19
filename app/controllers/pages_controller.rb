@@ -68,6 +68,12 @@ class PagesController < ApplicationController
 		render "client_portal"
   end
 
+  def download_clients
+  	@clients = Client.where.not(id: nil)
+  	respond_to do |format|
+  		format.csv { send_data @clients.to_csv, filename: "Clients-#{Time.now.to_date}.csv" }
+  	end
+  end
 
 	protected
 

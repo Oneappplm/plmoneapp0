@@ -51,6 +51,28 @@ class Client < ApplicationRecord
 		end
 	end
 
+	def self.to_csv
+		attributes = ['Full Name', 'Provider Name', 'Birthday', 'Address', 'NPI', 'SSN', 'Provider Type', 'Specialty', 'Cred Status', 'Cred Cycle', 'MedvId']
+		 CSV.generate(headers: true) do |csv|
+       csv << attributes
+       all.each do |client|
+       		csv << {
+       			'Full Name' => client.full_name,
+       			'Provider Name' => client.provider_name,
+       			'Birthday' => client.birth_date.strftime('%B %d, %Y'),
+       			'Address' => client.address,
+       			'NPI' => client.npi,
+       			'SSN' => client.ssn,
+       			'Provider Type' => client.provider_type,
+       			'Specialty' => client.specialty,
+       			'Cred Status' => client.cred_status.titleize.upcase,
+       			'Cred Cycle' => client.cred_cycle,
+       			'MedvId' => client.medv_id
+       		}
+       end
+     end
+	end
+
 	def address
 		"#{self.street_address}, #{self.city}, #{self.state_abbr}, #{self.zipcode}"
 	end
