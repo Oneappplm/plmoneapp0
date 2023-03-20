@@ -3,14 +3,6 @@ class PagesController < ApplicationController
   before_action :set_clients, only: %i[client_portal show_client_details]
   before_action :search_clients, only: %i[client_search]
 
-	def virtual_review_committee
-		if params[:vrc].present? && params[:vrc] == 'work-tickler'
-			render 'work_tickler'
-		elsif params[:vrc].present? && params[:vrc] == 'documents'
-			render 'documents'
-		end
-	end
-
 	def provider_source
 		if params[:page].present?
 			render "pages/provider_source/#{params[:page]}"
@@ -33,6 +25,12 @@ class PagesController < ApplicationController
 		end
 
 		@vrcs = @vrcs.paginate(page: params[:page], per_page: 5)
+
+		if params[:vrc].present? && params[:vrc] == 'work-tickler'
+			render 'work_tickler'
+		elsif params[:vrc].present? && params[:vrc] == 'documents'
+			render 'documents'
+		end
 	end
 
 
