@@ -46,6 +46,7 @@ class PagesController < ApplicationController
 	end
 
   def client_search
+  	@status = params[:cred_status] || nil
     @clients = if @global_search_text.present?
 			Client.search(@global_search_text)
 		else
@@ -93,18 +94,22 @@ class PagesController < ApplicationController
   def set_clients
     @page = params[:page] || 1
     @per_page = params[:per_page] || 10
-    if params[:status].present?
-      @clients = Client.where(cred_status: params[:status]).paginate(per_page: @per_page, page: @page)
+
+    @status = params[:status] || nil
+		if params[:none].present? && params[:none]['status'].present?
+			@status = params[:none]['status'] || nil
+		end
+
+    @clients ||= if @status
+       Client.where(cred_status: @status).paginate(per_page: @per_page, page: @page)
     else
-      @clients = Client.all.paginate(per_page: @per_page, page: @page)
+    	 Client.all.paginate(per_page: @per_page, page: @page)
     end
   end
 
   def search_clients
   	global_search_data = []
-  	client_columns = Client.column_names.dup.push('first_name', 'last_name', 'city', 'state', 'zipcode', 'npi', 'ssn', 'medv_id')
-  	# params = params[:search_client]
-
+  	client_columns = Client.column_names.dup.push('first_name', 'last_name', 'city', 'state', 'zipcode', 'npi', 'ssn', 'medv_id', 'cred_status')
 
   	client_columns.each do |search_key|
   		if params[search_key.to_sym].present?

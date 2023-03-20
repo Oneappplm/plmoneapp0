@@ -7,6 +7,9 @@
 		 			<div><strong>Search Results: <%= @per_page %>	records</strong></div>
 		 			<div class="d-flex gap-4 align-items-center">
 		 				<%= form_for :none, url: client_portal_path, id: "per_page_selector" ,method: :get do |f| %>
+		 				<% if @status %>
+		 					<%= f.hidden_field :status, value: @status %>
+		 				<% end %>
 		 				<%= f.hidden_field :grid, value: true%>
 		 				<div>
 		 					<label>Show limit</label>
@@ -48,7 +51,7 @@
 						<div class="col-lg-12">
 						<div class="d-flex justify-content-between">
 							<div class="d-flex flex-grow-1 gap-4 align-items-center">
-								<a href="javascript:void(0);"  data-max="5" class="btn btn-xs btn-primary <%= client.cred_status %> fw-bold btn-submit"><%= client.cred_status.titleize%></a>
+								<a href="javascript:void(0);"  data-max="5" class="btn btn-xs btn-primary <%= client.cred_status %> fw-bold btn-submit"><%= client.cred_status == 'psv' ? client.cred_status.upcase : client.cred_status.titleize%></a>
 								<label>Scheduled: 4</label>
 								<label>Reports: 5</label>
 								<label>Deadlines: 5</label>
@@ -153,32 +156,3 @@
 		</div>
 	</div>
 </div>
-<% content_for :js do %>
-<script>
-var class_statuses = ['attested', 'no-application', 'complete-application', 'incomplete', 'pending', 'in-process'];
-var text_statuses = ['Attested', 'No Application', 'Complete Application', 'Incomplete', 'Pending Data Entry', 'In Process'];
-document.querySelectorAll('.btn-submit').forEach(item => {
-  item.addEventListener('click', event => {
-    // alert(item.getAttribute('data-val'));
-  	var old_status = parseInt(item.getAttribute('data-val'));
-  	if(old_status != 5)
-  	{
-	    var new_status = class_statuses[old_status + 1];
-	    item.setAttribute('data-val', (old_status+1));
-	    item.classList.remove(class_statuses[old_status]);
-	    item.classList.add(new_status);
-	    item.text = text_statuses[old_status+1];
-	}
-	else {
-		var new_status = class_statuses[0];
-	    item.setAttribute('data-val', 0);
-
-	    item.classList.remove(class_statuses[5]);
-	    item.classList.add(new_status);
-	    item.text = text_statuses[0];
-
-	}
-  })
-})
-</script>
-<% end %>

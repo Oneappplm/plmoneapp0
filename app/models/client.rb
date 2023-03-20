@@ -85,6 +85,10 @@ class Client < ApplicationRecord
 		"@#{self.first_name.slice(0..2)}_#{self.last_name.slice(0..4)}".downcase
 	end
 
+	def self.get_states
+		all.pluck(:state_abbr)
+	end
+
 	private
 
 	def set_full_name
