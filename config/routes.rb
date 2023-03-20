@@ -16,6 +16,8 @@ Rails.application.routes.draw do
   get 'settings', to: 'pages#settings'
   get 'show-client-details', to: 'pages#show_client_details'
   get 'smart-contract', to: 'pages#smart_contract'
+  get 'terms', to: 'pages#terms'
+  get 'privacy-policies', to: 'pages#privacy_policy'
 
   devise_scope :user do
     # Redirests signing out users back to sign-in

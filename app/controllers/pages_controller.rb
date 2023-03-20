@@ -2,6 +2,7 @@ class PagesController < ApplicationController
 	before_action :set_global_search, only: [:virtual_review_committee]
   before_action :set_clients, only: %i[client_portal show_client_details]
   before_action :search_clients, only: %i[client_search]
+  layout "public_application", only: %i[terms privacy_policy]
 
 	def provider_source
 		if params[:page].present?

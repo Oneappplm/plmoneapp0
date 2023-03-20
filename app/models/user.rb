@@ -9,4 +9,6 @@ class User < ApplicationRecord
     client_staff: 'Client Staff',
     client_admin: 'Client Admin'
   }
+  validates :first_name, presence: true
+  validates :last_name, presence: true
 end
