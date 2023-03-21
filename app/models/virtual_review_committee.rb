@@ -11,4 +11,8 @@ class VirtualReviewCommittee < ApplicationRecord
 		assigned: 'Assigned',
 		to_be_assigned: 'To Be Assigned'
 	}
+
+	def social
+		"@#{self.provider_name.parameterize}"
+	end
 end
