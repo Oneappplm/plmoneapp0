@@ -78,6 +78,8 @@ class PagesController < ApplicationController
   def show_virtual_review_committee
   	if params[:client_id].present?
   		@vrc = VirtualReviewCommittee.find(params[:client_id])
+  	else
+  		@vrc = VirtualReviewCommittee.first
   	end
   end
 
