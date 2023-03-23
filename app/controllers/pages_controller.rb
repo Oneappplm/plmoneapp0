@@ -116,7 +116,7 @@ class PagesController < ApplicationController
 
   def search_clients
   	global_search_data = []
-  	client_columns = Client.column_names.dup.push('first_name', 'last_name', 'city', 'state', 'zipcode', 'npi', 'ssn', 'medv_id', 'cred_status')
+  	client_columns = Client.column_names.dup.push('first_name', 'last_name', 'city', 'state', 'zipcode', 'npi', 'ssn', 'medv_id', 'cred_status', 'vrc_status')
 
   	client_columns.each do |search_key|
   		if params[search_key.to_sym].present?

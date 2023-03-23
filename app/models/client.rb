@@ -51,6 +51,14 @@ class Client < ApplicationRecord
 		end
 	end
 
+	def self.add_vrc_statuses
+		vrc_statuses = ['approved', 'pending', 'denied', 'tabled', 'terminated']
+		Client.all.each do |client|
+			client.update_attribute("vrc_status", vrc_statuses[rand(0..4)])
+		end
+	end
+
+
 	def self.to_csv
 		attributes = ['Full Name', 'Provider Name', 'Birthday', 'Address', 'NPI', 'SSN', 'Provider Type', 'Specialty', 'Cred Status', 'Cred Cycle', 'MedvId']
 		 CSV.generate(headers: true) do |csv|
