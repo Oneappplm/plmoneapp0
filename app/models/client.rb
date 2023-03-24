@@ -60,7 +60,7 @@ class Client < ApplicationRecord
 
 
 	def self.to_csv
-		attributes = ['Full Name', 'Provider Name', 'Birthday', 'Address', 'NPI', 'SSN', 'Provider Type', 'Specialty', 'Cred Status', 'Cred Cycle', 'MedvId']
+		attributes = ['Full Name', 'Provider Name', 'Birthday', 'Address', 'NPI', 'SSN', 'Provider Type', 'Specialty', 'Cred Status', 'Cred Cycle', 'VRC Status' , 'Attested Date' , 'MedvId']
 		 CSV.generate(headers: true) do |csv|
        csv << attributes
        all.each do |client|
@@ -75,6 +75,8 @@ class Client < ApplicationRecord
        			'Specialty' => client.specialty,
        			'Cred Status' => client.cred_status.titleize.upcase,
        			'Cred Cycle' => client.cred_cycle,
+       			'VRC Status' => client.vrc_status,
+       			'Attested Date' => client.attested_date.strftime('%B %d, %Y'),
        			'MedvId' => client.medv_id
        		}
        end

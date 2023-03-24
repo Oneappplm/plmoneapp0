@@ -2,6 +2,7 @@ class PagesController < ApplicationController
 	before_action :set_global_search, only: [:virtual_review_committee]
   before_action :set_clients, only: %i[client_portal show_client_details]
   before_action :search_clients, only: %i[client_search]
+  before_action :search_inputs, only: %i[client_search client_portal]
   layout "public_application", only: %i[terms privacy_policy]
 
 	def provider_source
@@ -51,19 +52,23 @@ class PagesController < ApplicationController
 		else
 			Client.all
 		end
-
+		
 		if !params[:from_attest_date].blank? && !
 			params[:to_attest_date].blank?
 			from_date = params[:from_attest_date].to_date
 			to_date = params[:to_attest_date].to_date
-			@clients =  Client.where('attested_date BETWEEN ? AND ?', from_date, to_date)
+			@clients =  @clients.where('attested_date BETWEEN ? AND ?', from_date, to_date)
 		end
 
 		if !params[:birth_date].blank?
 			bday = params[:birth_date].to_date
-			@clients = Client.where('EXTRACT(month FROM birth_date) = ? AND EXTRACT(day FROM birth_date) = ?', bday.month, bday.day).order("created_at DESC")
+			@clients = @clients.where('EXTRACT(month FROM birth_date) = ? AND EXTRACT(day FROM birth_date) = ?', bday.month, bday.day).order("created_at DESC")
 		end
-
+		if !params[:medv_ids].blank?
+			ids = params[:medv_ids].split(',').map{|m| m.downcase.gsub('"','').strip}
+			@clients = @clients.where("lower(medv_id) IN (?)", ids)
+			# render json: ids and return
+		end
 		@clients = @clients.paginate(per_page: 10, page: params[:page] || 1)
 		render "client_portal"
   end
