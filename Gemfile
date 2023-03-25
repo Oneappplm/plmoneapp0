@@ -78,3 +78,4 @@ end
 gem 'pg_search' # https://github.com/Casecommons/pg_search
 gem 'will_paginate', '~> 3.3' # https://github.com/mislav/will_paginate
 gem "devise", "~> 4.8" # https://github.com/heartcombo/devise
+gem "roo", "~> 2.9.0" # https://github.com/roo-rb/roo

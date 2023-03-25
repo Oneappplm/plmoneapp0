@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_20_113152) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_25_100131) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -38,6 +38,49 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_20_113152) do
     t.string "vrc_status"
     t.string "psv_flat"
     t.string "medv_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "provider_types", force: :cascade do |t|
+    t.string "fch"
+    t.string "bcbs"
+    t.string "perform_rx"
+    t.string "dwihn"
+    t.string "met_life"
+    t.string "pharmpix"
+    t.string "broward_health"
+    t.string "ochn"
+    t.string "primary_partner_care"
+    t.string "sdsu_student_health_services"
+    t.string "ucamc"
+    t.string "macomb_country"
+    t.string "nkcph"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "specialties", force: :cascade do |t|
+    t.string "fch"
+    t.string "bcbs"
+    t.string "perform_rx"
+    t.string "dwihn"
+    t.string "met_life"
+    t.string "pharmpix"
+    t.string "broward_health"
+    t.string "ochn"
+    t.string "primary_partner_care"
+    t.string "sdsu_student_health_services"
+    t.string "ucamc"
+    t.string "macomb_country"
+    t.string "nkcph"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "states", force: :cascade do |t|
+    t.string "name"
+    t.string "alpha_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
