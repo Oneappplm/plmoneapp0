@@ -3,7 +3,8 @@
 		<div class="row my-3">
 	         <div class="col-12">
 	            <div class="d-flex justify-content-center gap-2">
-	               <a href="<%= client_portal_path(simple_search: true)%>" class="btn btn-xs btn-light fw-bold">Simple Search</a>
+	            	<% simple_search_url = (params[:grid].present? ? client_portal_path(simple_search: true, grid: true) : client_portal_path(simple_search: true) )%>
+	               <a href="<%= simple_search_url %>" class="btn btn-xs btn-light fw-bold">Simple Search</a>
 	               <a href="javascript:void(0);" class="btn  btn-xs btn-primary fw-bold">Advanced Search</a>
 	            </div>
 	         </div>
@@ -53,15 +54,23 @@
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">Provider Type:</label>
 	                     <!-- <input type="text" class="form-control py-1" placeholder=""> -->
-		                  <%= f.text_field :provider_type, value: "#{@search_inputs['provider_type']}", class: "form-control py-1" %>
+		                  <%#= f.text_field :provider_type, value: "#{@search_inputs['provider_type']}", class: "form-control py-1" %>
+		                  <select name="provider_type" class="form-select py-1">
+		                  	<option value="">Select option</option>
+		                  	<% @provider_types.each do |provider_type|%>
+		                  		<option value=<%= provider_type.fch %> <%= @search_inputs['provider_type'] == provider_type.fch ? 'selected' : '' %>><%= provider_type.fch%></option>
+		                  	<% end %>
+		                  </select>
 
 	                  </div>
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">Specialty:</label>
 	                     <select class="form-select py-1" name="specialty">
 	                     	<option value="">Select option</option>
-	                        <option value="PHYSICIAN ASSISTANT" <%= @search_inputs['specialty'] == 'PHYSICIAN ASSISTANT' ? 'selected' : '' %>>PHYSICIAN ASSISTANT</option>
-	                        <!-- <option>Optionn 2</option> -->
+	                     	<% @specialties.each do |specialty|%>
+	                        <option value="<%= specialty.bcbs%>" <%= @search_inputs['specialty'] == specialty.bcbs ? 'selected' : '' %>><%= specialty.bcbs %></option>
+	                        >
+	                        <% end %>
 	                     </select>
 	                  </div>
 	               </div>
@@ -102,7 +111,13 @@
 	                  </div>
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">PSV Flag:</label>
-	                     <input type="text" name="" class="form-control py-1">
+	                     <% psv_flag_options = ['With PSV', 'Without PSV']%>
+	                     <select class="form-select" name="psv_flag">
+	                     	<option value="">Select option</option>
+	                     	<% psv_flag_options.each do |flg|%>
+	                     		<option value="<%= flg %>" <%= @search_inputs['psv_flag'] == flg ? 'Selected' : ''%>><%= flg %></option>
+	                     	<% end %>
+	                     </select>
 	                  </div>
 	               </div>
 				</div>
@@ -118,8 +133,8 @@
 	                     <label class="text-sm text-black" for="">State:</label>
 	                     <select class="form-select py-1" name="state_abbr">
 	                     	<option value="">Select option</option>
-	                     	<% Client.get_states.each do |abbr|%>
-	                     		<option value="<%= abbr %>" <%= abbr == @search_inputs['state_abbr'] ? 'selected' : '' %>><%= abbr %></option>
+	                     	<% @states.each do |state|%>
+	                     		<option value="<%= state.alpha_code %>" <%= state.alpha_code == @search_inputs['state_abbr'] ? 'selected' : '' %>><%= state.name %></option>
 	                     	<% end %>
 	                     </select>
 	                  </div>
@@ -180,10 +195,11 @@
 			 <div class="row mt-3">
             <div class="col-lg-12  d-flex">
             	<div class="flex-grow-1 justify-content-center align-items-center text-center">
-            		<button class="btn btn-xs btn-primary fw-bold" style="margin-left: 10%;width: 150px;">Submit</button>
+            		<button class="btn btn-md btn-primary fw-bold" style="margin-left: 10%;width: 150px;">Submit</button>
             	</div>
             	<div class="flex-shrink-0">
-               	<a href="<%= client_portal_path %>" class="btn btn-xs btn-danger">Clear</a>
+            		 <% clear_url = (params[:grid].present? ? client_portal_path(grid: true) : client_portal_path)%>
+               	<a href="<%= clear_url %>" class="btn btn-md btn-danger">Clear</a>
             	</div>
              </div>
            </div>

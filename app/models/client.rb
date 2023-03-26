@@ -58,6 +58,21 @@ class Client < ApplicationRecord
 		end
 	end
 
+	def self.update_provider_types
+		provider_types = ProviderType.all.pluck(:fch)
+		limit = provider_types.count
+		Client.all.each do |client|
+			client.update_attribute('provider_type', provider_types[rand(0..limit)])
+		end
+	end
+
+	def self.update_specialties
+		specialties = Specialty.all.pluck(:fch)
+		limit = specialties.count
+		Client.all.each do |client|
+			client.update_attribute('specialty', specialties[rand(0..limit)])
+		end
+	end
 
 	def self.to_csv
 		attributes = ['Full Name', 'Provider Name', 'Birthday', 'Address', 'NPI', 'SSN', 'Provider Type', 'Specialty', 'Cred Status', 'Cred Cycle', 'VRC Status' , 'Attested Date' , 'MedvId']

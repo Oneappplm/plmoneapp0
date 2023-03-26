@@ -3,6 +3,10 @@ class PagesController < ApplicationController
   before_action :set_clients, only: %i[client_portal show_client_details]
   before_action :search_clients, only: %i[client_search]
   before_action :search_inputs, only: %i[client_search client_portal]
+  before_action :get_states, only: %i[client_search client_portal virtual_review_committee]
+  before_action :get_provider_types, only: %i[client_search client_portal virtual_review_committee]
+  before_action :get_specialties, only: %i[client_search client_portal virtual_review_committee]
+
   layout "public_application", only: %i[terms privacy_policy]
 
 	def provider_source
@@ -92,14 +96,14 @@ class PagesController < ApplicationController
 
 	def set_global_search
 		global_search_data = []
-		vrc_columns = VirtualReviewCommittee.column_names.dup.push('first_name', 'last_name')
+		vrc_columns = VirtualReviewCommittee.column_names.dup.push('first_name', 'last_name', 'cred_cycle', 'provider_type', 'review_level', 'state')
 
 		vrc_columns.each do |search_key|
 			if params[search_key.to_sym].present?
 				global_search_data << params[search_key.to_sym]
 			end
 		end
-		@global_search_text = global_search_data.join(',')
+		@global_search_text = global_search_data.uniq.join(',')
 	end
 
 
@@ -129,5 +133,17 @@ class PagesController < ApplicationController
   		end
   	end
   	@global_search_text = global_search_data.uniq.join(',')
+  end
+
+  def get_states
+  	@states = State.all
+  end
+
+  def get_provider_types
+  	@provider_types = ProviderType.all
+  end
+
+  def get_specialties
+  	@specialties = Specialty.all
   end
 end
