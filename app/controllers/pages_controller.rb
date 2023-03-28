@@ -3,8 +3,8 @@ class PagesController < ApplicationController
   before_action :set_clients, only: %i[client_portal show_client_details]
   before_action :search_clients, only: %i[client_search]
   before_action :search_inputs, only: %i[client_search client_portal]
-  before_action :get_states, only: %i[client_search client_portal virtual_review_committee]
-  before_action :get_provider_types, only: %i[client_search client_portal virtual_review_committee]
+  before_action :get_states, only: %i[client_search client_portal virtual_review_committee provider_source]
+  before_action :get_provider_types, only: %i[client_search client_portal virtual_review_committee provider_source]
   before_action :get_specialties, only: %i[client_search client_portal virtual_review_committee]
 
   layout "public_application", only: %i[terms privacy_policy]

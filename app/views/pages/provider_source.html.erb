@@ -26,11 +26,11 @@
 							<div class="d-flex align-items-center">
 								<div class="d-block progress-bar">
 									<!-- percentage can be placd here as an inline css but if there's another way it's better. -->
-									<div class="bg-primary" style="width: 70%;"></div>
+									<div class="bg-primary" style="width: 50%;"></div>
 								</div>
 							</div>
 						</div>
-						<span><small>70%</small></span>
+						<span><small>50%</small></span>
 					</div>
 				</div>
 				<!-- end of progress bar -->
@@ -80,27 +80,40 @@
 
 						<div class="row my-3">
 							<div class="col-lg-12">
-								<select class="" id="multi-select" placeholder="State(s) or Practice *" multiple>
-									<option>California</option>
-									<option>Florida</option>
-									<option>Texas</option>
+								<select class="multi-select" id="multi-select" placeholder="State(s) or Practice *" multiple>
+									<option value="">Select option</option>
+									<% @states.each do |state|%>
+									<option value="<%= state.alpha_code %>"><%= state.name %></option>
+									<% end %>
 								</select>
 							</div>
 						</div>
 
 						<div class="row my-3">
 							<div class="col-lg-12">
-								<select class="form-select" placeholder="Primary Practitioner Type *">
+								<select class="form-select py-3" placeholder="Primary Practitioner Type *">
 									<option>Primary Practitioner Type *</option>
-									<option></option>
-									<option></option>
+									<% @provider_types.each do |provider_type|%>
+									<option value="<%= provider_type.fch %>"><%= provider_type.fch %></option>
+									<% end %>
 								</select>
 							</div>
 						</div>
 
 						<div class="row my-3">
 							<div class="col-lg-12">
-								<input type="text" name="" class="form-control" placeholder="Other Names">
+								<div class="d-flex align-items-center gap-2 my-3">
+									<p class="my-0">Have you ever used another name?</p>
+									<label>
+										<input type="radio" name="other_name" value="yes" class="other_name_rbtn">
+										Yes
+									</label>
+									<label>
+										<input type="radio" name="other_name" value="no" class="other_name_rbtn">
+										No
+									</label>
+								</div>
+								<input type="text" name="" class="form-control d-none" placeholder="Other Names" id="other_name_field">
 							</div>
 						</div>
 
@@ -231,9 +244,18 @@
 	<script>
 
 		VirtualSelect.init({
-		  ele: '#multi-select'
+		  ele: '.multi-select'
 		  // options: myOptions
 		});
 
 	</script>
 <% end %>
+
+<script>
+	$('.form-select').select2();
+
+	$('.other_name_rbtn').on('change',function(){
+		// console.log($(this).val());
+		($(this).val() == 'yes') ?	$('#other_name_field').removeClass('d-none') : $('#other_name_field').addClass('d-none');
+	})
+</script>

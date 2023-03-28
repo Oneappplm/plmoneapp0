@@ -4,8 +4,8 @@
 	         <div class="col-12">
 	            <div class="d-flex justify-content-center gap-2">
 	            	<% simple_search_url = (params[:grid].present? ? client_portal_path(simple_search: true, grid: true) : client_portal_path(simple_search: true) )%>
-	               <a href="<%= simple_search_url %>" class="btn btn-xs btn-light fw-bold">Simple Search</a>
-	               <a href="javascript:void(0);" class="btn  btn-xs btn-primary fw-bold">Advanced Search</a>
+	               <a href="<%= simple_search_url %>" class="btn btn-sm btn-light fw-bold">Simple Search</a>
+	               <a href="javascript:void(0);" class="btn  btn-sm btn-primary fw-bold">Advanced Search</a>
 	            </div>
 	         </div>
 		</div>
@@ -55,7 +55,7 @@
 	                     <label class="text-sm text-black" for="">Provider Type:</label>
 	                     <!-- <input type="text" class="form-control py-1" placeholder=""> -->
 		                  <%#= f.text_field :provider_type, value: "#{@search_inputs['provider_type']}", class: "form-control py-1" %>
-		                  <select name="provider_type" class="form-select py-1">
+		                  <select name="provider_type" class="form-select">
 		                  	<option value="">Select option</option>
 		                  	<% @provider_types.each do |provider_type|%>
 		                  		<option value=<%= provider_type.fch %> <%= @search_inputs['provider_type'] == provider_type.fch ? 'selected' : '' %>><%= provider_type.fch%></option>
@@ -65,7 +65,7 @@
 	                  </div>
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">Specialty:</label>
-	                     <select class="form-select py-1" name="specialty">
+	                     <select class="form-select" name="specialty">
 	                     	<option value="">Select option</option>
 	                     	<% @specialties.each do |specialty|%>
 	                        <option value="<%= specialty.bcbs%>" <%= @search_inputs['specialty'] == specialty.bcbs ? 'selected' : '' %>><%= specialty.bcbs %></option>
@@ -77,7 +77,7 @@
 	               <div class="row mb-3">
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">Cred Status:</label>
-	                     <select class="form-select py-1" name="cred_status">
+	                     <select class="form-select" name="cred_status">
 	                     	<% cred_statuses = ['attested', 'in-process', 'pending', 'incomplete', 'complete-application', 'no-application', 'psv', 'returned']%>
 	                     	<option value="">Select option</option>
 	                     	<% cred_statuses.each do |stat|%>
@@ -91,7 +91,7 @@
 	                  </div>
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">Cred Cycle:</label>
-	                     <select class="form-select py-1" name="cred_cycle">
+	                     <select class="form-select" name="cred_cycle">
 	                     	<option value="">Select option</option>
 	                        <option value="Cred" <%= @search_inputs['cred_cycle'] == 'Cred' ? 'Selected' : ''%>>Cred</option>
 	                        <option value="Recred" <%= @search_inputs['cred_cycle'] == 'Recred' ? 'Selected' : ''%>>Recred</option>
@@ -101,7 +101,7 @@
 	               <div class="row mb-3">
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">VRC Status:</label>
-	                     <select class="form-select py-1" name="vrc_status">
+	                     <select class="form-select" name="vrc_status">
 	                     	<% vrc_statuses = ['approved', 'denied', 'pending', 'tabled', 'terminated']%>
 	                     		<option value="">Select option</option>
 	                     	<% vrc_statuses.each do |stat|%>
@@ -131,10 +131,10 @@
 	                  </div>
 	                  <div class="col-lg-6">
 	                     <label class="text-sm text-black" for="">State:</label>
-	                     <select class="form-select py-1" name="state_abbr">
+	                     <select class="form-select" name="state_abbr">
 	                     	<option value="">Select option</option>
 	                     	<% @states.each do |state|%>
-	                     		<option value="<%= state.alpha_code %>" <%= state.alpha_code == @search_inputs['state_abbr'] ? 'selected' : '' %>><%= state.name %></option>
+	                     		<option value="<%= state.alpha_code %>" <%= state.alpha_code == @search_inputs['state_abbr'] ? 'selected' : '' %>><%= state.name %> - <%= state.alpha_code %></option>
 	                     	<% end %>
 	                     </select>
 	                  </div>
@@ -184,7 +184,7 @@
 	               			<div class="d-flex justify-content-between">
 	               				<label class="text-sm text-black">Medv ID:</label>
 	               			</div>
-	               			<%= f.text_area :medv_ids, value:  "#{@search_inputs['medv_ids']}", style: "width: 100%;", rows: 4, class: "form-control" %>
+	               			<%= f.text_area :medv_ids, value:  "#{@search_inputs['medv_ids']}", style: "width: 100%;", rows: 4, class: "form-control py-1" %>
 	               			<!-- <textarea class="h-full w-full" style="width: 100%;" rows="4"></textarea> -->
 	               		</div>
 	               </div>
@@ -195,11 +195,11 @@
 			 <div class="row mt-3">
             <div class="col-lg-12  d-flex">
             	<div class="flex-grow-1 justify-content-center align-items-center text-center">
-            		<button class="btn btn-md btn-primary fw-bold" style="margin-left: 10%;width: 150px;">Submit</button>
+            		<button class="btn btn-sm btn-primary fw-bold" style="margin-left: 10%;width: 150px;">Submit</button>
             	</div>
             	<div class="flex-shrink-0">
             		 <% clear_url = (params[:grid].present? ? client_portal_path(grid: true) : client_portal_path)%>
-               	<a href="<%= clear_url %>" class="btn btn-md btn-danger">Clear</a>
+               	<a href="<%= clear_url %>" class="btn btn-sm btn-danger">Clear</a>
             	</div>
              </div>
            </div>
