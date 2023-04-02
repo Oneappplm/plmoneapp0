@@ -5,8 +5,8 @@ class PagesController < ApplicationController
   before_action :search_inputs, only: %i[client_search client_portal]
   before_action :get_states, only: %i[client_search client_portal virtual_review_committee provider_source]
   before_action :get_provider_types, only: %i[client_search client_portal virtual_review_committee provider_source]
-  before_action :get_specialties, only: %i[client_search client_portal virtual_review_committee]
-
+  before_action :get_specialties, only: %i[client_search client_portal virtual_review_committee provider_source]
+  before_action :get_languages, only: %i[provider_source]
   layout "public_application", only: %i[terms privacy_policy]
 
 	def provider_source
@@ -145,5 +145,9 @@ class PagesController < ApplicationController
 
   def get_specialties
   	@specialties = Specialty.all
+  end
+
+  def get_languages
+  	@languages = Language.all
   end
 end

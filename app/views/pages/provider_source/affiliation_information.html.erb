@@ -1,0 +1,67 @@
+<div class="content container-fluid ps-0">
+	<%= render "provider_source_components/top_buttons"%>
+	<div class="row">
+		<div class="col-lg-3">
+			<%= render "provider_source_components/sub_navbar"%>
+		</div>
+		<div class="col-lg-9">
+			<div class="row border border-4 p-3">
+				<!-- start of form header -->
+				<div class="col-lg-12 mb">
+					<div class="d-flex gap-2">
+				 		<span class="bg-medium-grey circle d-flex justify-content-center align-items-center" style="width: 40px;height: 40px;">
+				 			<i class="bi bi-mortarboard-fill text-white" style="font-size: 25px;"></i>
+				 		</span>
+				 		<div class="d-flex flex-column">
+				 			<label>Healthcare Facility Affiliations</label>
+				 			<small>Please fill out 	all required fields</small>
+				 		</div>
+					</div>
+				</div>
+				<%= render partial: "provider_source_components/progress_bar", locals: {percent: 0}%>
+				<% steps = [['AFFILIATION INFORMATION','active', provider_source_path(page: 'affiliation_information')]]%>
+				<%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
+				<div class="col-lg-12 card py-3 my-3">
+					<h4 class="fw-semibold text-secondary mb-3">Affiliation Information</h4>
+
+				 <div class="row">
+				 	<div class="col-lg-12">
+		                  <div class="d-flex align-items-center my-3">
+		                        <button type="button" class="btn btn-xs btn-toggle has-to-show" data-toshow="hospital_privileges" data-toggle="button" aria-pressed="false" autocomplete="off">
+		                           <div class="handle"></div>
+		                        </button>
+		                        <small class="ms-2">Do/Did you have hospital privileges?*</small>
+		                  </div>
+		                <div class="d-none" id="hospital_privileges">
+		               		<%= render "provider_source_components/hospital_privileges"%>                	
+		                </div>
+				 	</div>
+				 </div>
+				 <div class="row">
+				 	<div class="col-lg-12">
+	                  <div class="d-flex align-items-center my-3">
+	                        <button type="button" class="btn btn-xs btn-toggle has-to-show" data-toshow="admitting_arrangements" data-toggle="button" aria-pressed="false" autocomplete="off">
+	                           <div class="handle"></div>
+	                        </button>
+	                        <small class="ms-2">Do you have an admitting arrangement?*</small>
+	                  </div>
+
+		                <div class="d-none" id="admitting_arrangements">
+		               		<%= render "provider_source_components/admitting_arrangements"%>                	
+		                </div>
+              		</div>
+				 </div>
+
+                  <div class="row mb-3">
+                  	<div class="col-lg-12">
+                  		<!-- <label class="form-label">Please explain why you do not have an admitting arrangement.</label> -->
+                  		<textarea class="form-control" placeholder="Please explain why you do not have an admitting arrangement." rows="8"></textarea>
+                  	</div>
+                  </div>
+				</div>
+			</div>
+
+
+		</div>
+	</div>
+</div>

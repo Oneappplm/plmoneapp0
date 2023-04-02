@@ -18,28 +18,9 @@
 				 		</div>
 					</div>
 				</div>
-				<!-- end of form header -->
-				<!-- start of progress bar -->
-				<div class="col-lg-12 my-3">
-					<div class="d-flex justify-content-between align-items-center gap-3">
-						<div class="flex-grow-1">
-							<div class="d-flex align-items-center">
-								<div class="d-block progress-bar">
-									<!-- percentage can be placd here as an inline css but if there's another way it's better. -->
-									<div class="bg-primary" style="width: 50%;"></div>
-								</div>
-							</div>
-						</div>
-						<span><small>50%</small></span>
-					</div>
-				</div>
-				<!-- end of progress bar -->
-				<!-- start of steps -->
-				<!-- <div class="col-lg-12">
-					steps here
-				</div> -->
-				<!-- end of steps -->
-				<!-- start of form fields -->
+				<%= render partial: "provider_source_components/progress_bar", locals: {percent: 50}%>
+				<% steps = [['NAME AND HOME ADDRESS','active', provider_source_path], ['PERSONAL INFORMATION', 'inactive', provider_source_path(page: 'personal_info')]]%>
+				<%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
 				<div class="col-lg-12 my-3">
 					<form>
 						<div class="row">
@@ -91,7 +72,7 @@
 
 						<div class="row my-3">
 							<div class="col-lg-12">
-								<select class="form-select py-3" placeholder="Primary Practitioner Type *">
+								<select class="form-select select-search py-3" placeholder="Primary Practitioner Type *">
 									<option>Primary Practitioner Type *</option>
 									<% @provider_types.each do |provider_type|%>
 									<option value="<%= provider_type.fch %>"><%= provider_type.fch %></option>
@@ -184,7 +165,13 @@
 
 						<div class="row my-3">
 							<div class="col-lg-6">
-								<input type="text" class="form-control" name="" placeholder="State">
+								<select class="form-select ">
+									<option value="">Select option</option>
+									<% @states.each do |state|%>
+									<option value="<%= state.alpha_code %>"><%= state.name %></option>
+									<% end %>
+								</select>
+								<!-- <input type="text" class="form-control" name="" placeholder="State"> -->
 							</div>
 							<div class="col-lg-6">
 								<input type="text" class="form-control" name="" placeholder="Zip Code">
@@ -252,7 +239,7 @@
 <% end %>
 
 <script>
-	$('.form-select').select2();
+	$('.select-search').select2();
 
 	$('.other_name_rbtn').on('change',function(){
 		// console.log($(this).val());

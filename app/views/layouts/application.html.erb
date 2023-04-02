@@ -461,5 +461,19 @@
     
   <!-- End Style Switcher JS -->
   <%= yield :js %>
+
+
+<script type="text/javascript">
+  $('.btn-toggle').on('click',function(e){
+    $(this).hasClass('active') ? $(this).removeClass('active') : $(this).addClass('active');
+    if($(this).hasClass('has-to-show')){
+      $(this).hasClass('active') ? toShow($(this).data('toshow'),true) : toShow($(this).data('toshow'),false);
+    }
+  });
+
+  function toShow(to_show,show) {
+    show ? $('#'+to_show).removeClass('d-none') : $('#'+to_show).addClass('d-none');
+  }
+</script>
 </body>
 </html>

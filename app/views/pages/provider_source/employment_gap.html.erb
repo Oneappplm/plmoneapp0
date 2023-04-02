@@ -1,0 +1,48 @@
+<div class="content container-fluid ps-0">
+	<%= render "provider_source_components/top_buttons"%>
+	<div class="row">
+		<div class="col-lg-3">
+			<%= render "provider_source_components/sub_navbar"%>
+		</div>
+		<div class="col-lg-9">
+			<div class="row border border-4 p-3">
+				<!-- start of form header -->
+				<div class="col-lg-12 mb">
+					<div class="d-flex gap-2">
+				 		<span class="bg-medium-grey circle d-flex justify-content-center align-items-center" style="width: 40px;height: 40px;">
+				 			<!-- <i class="bi "></i> -->
+				 			<i class="bi bi-arrow-counterclockwise text-white" style="font-size: 25px;"></i>
+				 		</span>
+				 		<div class="d-flex flex-column">
+				 			<label>Employment Gap</label>
+				 			<small>Please fill out 	all required fields</small>
+				 		</div>
+					</div>
+				</div>
+				<%= render partial: "provider_source_components/progress_bar", locals: {percent: 0}%>
+				<% steps = [['Military History','finished', provider_source_path(page: 'work_history')],
+							['Employment','finished', provider_source_path(page: 'employment')],
+							['Employment Gap','active', provider_source_path(page: 'employment_gap')],
+							['Professional References','inactive', provider_source_path(page: 'prof_references')],
+							['Professional Organization','inactive', provider_source_path(page: 'prof_organization')],
+				]%>
+				<%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
+				<div class="col-lg-12 my-3">
+				<div class="row">
+					<div class="col-lg-12">
+		                  <div class="d-flex align-items-center my-3">
+		                        <button type="button" class="btn btn-xs btn-toggle has-to-show" data-toshow="gap_form" data-toggle="button" aria-pressed="false" autocomplete="off">
+		                           <div class="handle"></div>
+		                        </button>
+		                        <small class="ms-2">Do you have any time periods or gaps in training or work history that have occurred since graduation from professional school?*</small>
+		                  </div>
+					</div>
+				</div>
+				</div>
+				<div id="gap_form" class="d-none">
+				<%= render "provider_source_components/employment_gap_form" %>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

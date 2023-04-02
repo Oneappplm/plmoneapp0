@@ -1,0 +1,62 @@
+<div class="content container-fluid ps-0">
+	<%= render "provider_source_components/top_buttons"%>
+	<div class="row">
+		<div class="col-lg-3">
+			<%= render "provider_source_components/sub_navbar"%>
+		</div>
+		<div class="col-lg-9">
+			<div class="row border border-4 p-3">
+				<!-- start of form header -->
+				<div class="col-lg-12 mb">
+					<div class="d-flex gap-2">
+				 		<span class="bg-medium-grey circle d-flex justify-content-center align-items-center" style="width: 40px;height: 40px;">
+				 			<!-- <i class="bi "></i> -->
+				 			<i class="bi bi-arrow-counterclockwise text-white" style="font-size: 25px;"></i>
+				 		</span>
+				 		<div class="d-flex flex-column">
+				 			<label>Practice Information</label>
+				 			<small>Please fill out 	all required fields</small>
+				 		</div>
+					</div>
+				</div>
+				<%= render partial: "provider_source_components/progress_bar", locals: {percent: 0}%>
+				<% steps = [['Credentialing Contact','finished', provider_source_path(page: 'practical_information')],
+							# ['Practice Location','inactive', provider_source_path(page: 'practice_location')],
+							# ['Employment Gap','active', provider_source_path(page: 'employment_gap')],
+							['Covering Colleagues','active', provider_source_path(page: 'covering_colleagues')],
+							['Unique Circumstances','inactive', provider_source_path(page: 'unique_circumstances')],
+				]%>
+				<%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
+				<div class="col-lg-12 my-3">
+					<div class="d-flex justify-content-between my-3">
+			         <label class="form-label">Do you have any covering colleagues who are not partners or associates at any of your practice locations?*</label>
+			         <div class="d-flex me-4 gap-2">
+			            <span>
+			            <input type="radio" value="yes" name="covering_colleague">
+			            <span>YES</span>
+			            </span>
+			            <span>
+			            <input type="radio" value="no" name="covering_colleague">
+			            <span>NO</span>
+			            </span>
+			            <span>
+			            <input type="radio" value="n/a" name="covering_colleague">
+			            <span>N/A</span>
+			            </span>
+			         </div>
+			      </div>
+				</div>
+				<div id="covering_colleague" class="d-none">
+					<h4 class="text-secondary fw-semibold mb-3">Colleague</h4>
+					<%= render "provider_source_components/covering_colleague_form"%>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$('input[name=covering_colleague]').on('change',function(){
+		($(this).val() == 'yes') ? $('#covering_colleague').removeClass('d-none') : $('#covering_colleague').addClass('d-none'); 
+	});
+</script>

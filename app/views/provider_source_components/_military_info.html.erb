@@ -1,0 +1,143 @@
+<div class="row mb-3">
+	<div class="col-lg-6">
+		<select class="form-select">
+			<option selected="selected" value="">Branch of Service</option>
+			<option value="Air Force">Air Force</option>
+			<option value="Army">Army</option>
+			<option value="Coast Guard">Coast Guard</option>
+			<option value="Marine Corps">Marine Corps</option>
+			<option value="Navy">Navy</option>
+			<option value="US Public Health Service">US Public Health Service</option>
+		</select>
+	</div>
+	<div class="col-lg-6">
+		<input type="text" class="form-control" name="" placeholder="Military Rank at Time of Discharge/Current">
+	</div>
+</div>
+<div class="row mb-3">
+	<div class="col-lg-6">
+		<input type="date" name="" placeholder="Enlist Date" class="form-control" title="Enlist Date">
+	</div>
+	<div class="col-lg-6">
+		<input type="date" name="" placeholder="Discharge Date" class="form-control"  title="Discharge Date">
+		<span class="d-flex">
+			<input type="checkbox" name="">
+			<small class="font-medium ms-2">Current</small>
+		</span>
+	</div>
+</div>
+<div class="row mb-3">
+	<div class="col-lg-6">
+		<input type="" class="form-control" name="" placeholder="Name of Primary Base">
+	</div>
+	<div class="col-lg-6">
+		<input type="" class="form-control" name="" placeholder="Division">
+	</div>
+</div>
+<div class="row mb-3">
+	<div class="col-lg-12">
+	<select class="form-select" id="multi-select" >
+		<option value="">Primary Base Location</option>
+		<option value="Other Non-USA">Other Non-USA</option>
+		<% @states.each do |state|%>
+		<option value="<%= state.alpha_code %>"><%= state.name %></option>
+		<% end %>
+	</select>
+	</div>
+</div>
+<div class="row mb-3">
+	<div class="col-lg-6">
+		<input type="" class="form-control" name="" placeholder="Address Line 1">
+	</div>
+	<div class="col-lg-6">
+		<input type="" class="form-control" name="" placeholder="Address Line 2">
+	</div>
+</div>
+<div class="row mb-3">
+	<div class="col-lg-6">
+		<div class="row">
+			<div class="col-lg-8">
+				<input type="" class="form-control" name="" placeholder="Telephone Number">
+			</div>
+			<div class="col-lg-4">
+				<input type="" class="form-control" name="" placeholder="Ext">
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-6">
+		<input type="" class="form-control" name="" placeholder="Fax Number">
+	</div>
+</div>
+<div class="row mb-3">
+	<div class="col-lg-6">
+		<input type="" class="form-control" name="" placeholder="Status">
+	</div>
+	<div class="col-lg-6">
+		<input type="date" class="form-control" name="" placeholder="" title="Appointment Date">
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-12">
+      <div class="d-flex justify-content-between my-3">
+         <label class="form-label">Were you honorably discharged?</label>
+         <div class="d-flex me-4 gap-2">
+            <span>
+            <input type="radio" value="yes" name="honorably_discharge">
+            <span>YES</span>
+            </span>
+            <span>
+            <input type="radio" value="no" name="honorably_discharge">
+            <span>NO</span>
+            </span>
+         </div>
+      </div>
+      </div>
+      <div class="col-lg-12 d-none" id="discharge_textarea">
+      	<textarea class="form-control" rows="4"></textarea>
+      </div>
+</div>
+<div class="row ">
+	<div class="col-lg-12">
+      <div class="d-flex justify-content-between my-3">
+         <label class="form-label">Have you ever been court-martialed?</label>
+         <div class="d-flex me-4 gap-2">
+            <span>
+            <input type="radio" value="yes" name="">
+            <span>YES</span>
+            </span>
+            <span>
+            <input type="radio" value="no" name="">
+            <span>NO</span>
+            </span>
+         </div>
+      </div>
+      </div>
+</div>
+<div class="row">
+	<div class="col-lg-12">
+      <div class="d-flex justify-content-between my-3">
+         <label class="form-label">Are you currently in the Reserves or National Guard?</label>
+         <div class="d-flex me-4 gap-2">
+            <span>
+            <input type="radio" value="yes" name="">
+            <span>YES</span>
+            </span>
+            <span>
+            <input type="radio" value="no" name="">
+            <span>NO</span>
+            </span>
+         </div>
+      </div>
+      </div>
+</div>
+<div class="row">
+	<div class="col-lg-12 mb-3 d-flex justify-content-end">
+		  	<button class="btn btn-primary">Save This Record</button>
+	</div>
+</div>
+
+<script>
+	$('input[name="honorably_discharge"]').on('change',function(){
+		($(this).val() == 'no') ? $('#honorably_discharge').removeClass('d-none') : $('#honorably_discharge').addClass('d-none');
+	})
+</script>

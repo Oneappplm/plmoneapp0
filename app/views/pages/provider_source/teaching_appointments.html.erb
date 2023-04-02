@@ -1,0 +1,35 @@
+<div class="content container-fluid ps-0">
+   <%= render "provider_source_components/top_buttons"%>
+   <div  class="row">
+      <div class="col-lg-3">
+         <%= render "provider_source_components/sub_navbar"%>
+      </div>
+      <div class="col-lg-9">
+         <div class="row border border-4 p-3">
+            <div class="col-lg-12">
+               <%= render partial: "provider_source_components/header_title", locals: {title: "Teaching Appointments", icon: 'bi-mortarboard-fill'}%>
+               <%= render partial: "provider_source_components/progress_bar", locals: {percent: 0}%><% steps = [['Education','finished', provider_source_path(page: 'education_training')],
+                     # ['Practice Location','inactive', provider_source_path(page: 'practice_location')],
+                     # ['Employment Gap','active', provider_source_path(page: 'employment_gap')],
+                     ['Training','finished', provider_source_path(page: 'training')],
+                     ['Teaching Appointments','active', provider_source_path(page: 'teaching_appointments')],
+            ]%>
+            <%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
+            </div>
+
+            <div class="col-lg-12 card py-3 my-3">
+               <h4 class="fw-semibold text-secondary">Teaching Appointments</h4>
+               <div class="d-flex align-items-center my-3">
+                        <button type="button" class="btn btn-xs btn-toggle has-to-show" data-toshow="teaching_app" data-toggle="button" aria-pressed="false" autocomplete="off">
+                           <div class="handle"></div>
+                        </button>
+                        <small class="ms-2">Are/Were you an instructor for a teaching program?</small>
+                  </div>
+               <div class="d-none" id="teaching_app">
+                  <%= render "provider_source_components/teaching_app_form"%>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
