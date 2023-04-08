@@ -30,7 +30,7 @@ class PagesController < ApplicationController
 			@vrcs = @vrcs.send(params[:'vrc-progress-status'])
 		end
 
-		@vrcs = @vrcs.paginate(page: params[:page], per_page: 5)
+		@vrcs = @vrcs.paginate(page: params[:page], per_page: 50)
 
 		if params[:vrc].present? && params[:vrc] == 'work-tickler'
 			render 'work_tickler'
@@ -56,7 +56,7 @@ class PagesController < ApplicationController
 		else
 			Client.all
 		end
-		
+
 		if !params[:from_attest_date].blank? && !
 			params[:to_attest_date].blank?
 			from_date = params[:from_attest_date].to_date
@@ -73,7 +73,7 @@ class PagesController < ApplicationController
 			@clients = @clients.where("lower(medv_id) IN (?)", ids)
 			# render json: ids and return
 		end
-		@clients = @clients.paginate(per_page: 10, page: params[:page] || 1)
+		@clients = @clients.paginate(per_page: 100, page: params[:page] || 1)
 		render "client_portal"
   end
 
@@ -109,7 +109,7 @@ class PagesController < ApplicationController
 
   def set_clients
     @page = params[:page] || 1
-    @per_page = params[:per_page] || 10
+    @per_page = params[:per_page] || 100
 
     @status = params[:status] || nil
 		if params[:none].present? && params[:none]['status'].present?

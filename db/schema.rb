@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_01_172637) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_05_073923) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,6 +40,35 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_01_172637) do
     t.string "medv_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "title"
+    t.string "prefix"
+    t.string "suffix"
+    t.string "gender"
+    t.string "prac_type"
+    t.string "specialty_name"
+    t.string "address1"
+    t.string "address2"
+    t.string "state_or_province"
+    t.string "country"
+    t.string "postal_code"
+    t.string "primary_phone"
+    t.string "primary_email"
+    t.string "client_specified_id"
+    t.string "practitioner_guid"
+    t.string "client_guid"
+    t.string "file_path"
+    t.string "signature_date"
+    t.string "file_status"
+    t.string "app_receive_date"
+    t.string "app_receive_complete_date"
+    t.string "app_complete_date"
+    t.string "approval_date"
+    t.string "cred_or_recred"
+    t.string "org_type"
+    t.string "caqhid"
+    t.string "import_exid"
+    t.string "client_id"
+    t.string "external_id"
   end
 
   create_table "languages", force: :cascade do |t|
@@ -121,6 +150,21 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_01_172637) do
     t.string "progress_status", default: "completed"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "client_id"
+    t.integer "provider_id"
+    t.string "provider_cycle_id"
+    t.integer "medv_id"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "cred_or_recred"
+    t.string "app_complete_data"
+    t.string "voted_by"
+    t.string "specialty"
+    t.string "region"
+    t.string "committee_approval_date"
+    t.string "assignment_indicator"
+    t.string "orig_synch_date"
+    t.string "review_details"
   end
 
 end
