@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_05_073923) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_08_235604) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -73,6 +73,22 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_05_073923) do
 
   create_table "languages", force: :cascade do |t|
     t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "provider_source_data", force: :cascade do |t|
+    t.bigint "provider_source_id", null: false
+    t.string "data_key"
+    t.string "data_value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_source_id"], name: "index_provider_source_data_on_provider_source_id"
+  end
+
+  create_table "provider_sources", force: :cascade do |t|
+    t.string "status", default: "draft"
+    t.boolean "current_provider_source", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -167,4 +183,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_05_073923) do
     t.string "review_details"
   end
 
+  add_foreign_key "provider_source_data", "provider_sources"
 end

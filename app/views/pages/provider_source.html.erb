@@ -27,17 +27,17 @@
 							<div class="col-lg-6">
 								<div class="row">
 									<div class="col-lg-7">
-										<input type="text" name="" placeholder="First Name *" class="form-control">
+										<input type="text" name="first_name" placeholder="First Name *" class="form-control">
 									</div>
 									<div class="col-lg-5">
-										 <input type="text" name="" placeholder="Middle Name" class="form-control">
+										 <input type="text" name="middle_name" placeholder="Middle Name" class="form-control">
 									</div>
 								</div>
 							</div>
 							<div class="col-lg-6">
 								<div class="row">
 									<div class="col-lg-7">
-										<input type="text" name="" placeholder="Last Name *" class="form-control">
+										<input type="text" name="last_name" placeholder="Last Name *" class="form-control">
 									</div>
 									<div class="col-lg-5">
 										<select class="form-select" placeholder="Suffix">
@@ -54,14 +54,14 @@
 
 						<div class="row my-3">
 							<div class="col-lg-6">
-								<input type="text" name="" placeholder="Degree Titles *" class="form-control">
+								<input type="text" name="degree_titles" placeholder="Degree Titles *" class="form-control">
 							</div>
 							<div class="col-lg-6"></div>
 						</div>
 
 						<div class="row my-3">
 							<div class="col-lg-12">
-								<select class="multi-select" id="multi-select" placeholder="State(s) or Practice *" multiple>
+								<select class="multi-select" name="state_or_practice" id="multi-select" placeholder="State(s) or Practice *" multiple>
 									<option value="">Select option</option>
 									<% @states.each do |state|%>
 									<option value="<%= state.alpha_code %>"><%= state.name %></option>
@@ -94,7 +94,7 @@
 										No
 									</label>
 								</div>
-								<input type="text" name="" class="form-control d-none" placeholder="Other Names" id="other_name_field">
+								<input type="text" name="other_names" class="form-control d-none" placeholder="Other Names" id="other_name_field">
 							</div>
 						</div>
 
@@ -138,28 +138,28 @@
 						</div>
 
 						<!--  -->
-						<div class="row my-3">
+						<!-- <div class="row my-3">
 							<div class="col-lg-6">
-								<input type="text" class="form-control" placeholder="Country" name="">
+								<input type="text" class="form-control" placeholder="Country" name="country">
 							</div>
 							<div class="col-lg-6"></div>
+						</div> -->
+
+						<div class="row my-3">
+							<div class="col-lg-6">
+								<input type="text" class="form-control" name="address_line_1" placeholder="Adress Line 1 *">
+							</div>
+							<div class="col-lg-6">
+								<input type="text" class="form-control" name="address_line_2" placeholder="Adress Line 2">
+							</div>
 						</div>
 
 						<div class="row my-3">
 							<div class="col-lg-6">
-								<input type="text" class="form-control" name="" placeholder="Adress Line 1 *">
+								<input type="text" class="form-control" name="city" placeholder="City">
 							</div>
 							<div class="col-lg-6">
-								<input type="text" class="form-control" name="" placeholder="Adress Line 2">
-							</div>
-						</div>
-
-						<div class="row my-3">
-							<div class="col-lg-6">
-								<input type="text" class="form-control" name="" placeholder="City">
-							</div>
-							<div class="col-lg-6">
-								<input type="text" class="form-control" name="" placeholder="County">
+								<input type="text" class="form-control" name="country" placeholder="Country">
 							</div>
 						</div>
 
@@ -174,17 +174,17 @@
 								<!-- <input type="text" class="form-control" name="" placeholder="State"> -->
 							</div>
 							<div class="col-lg-6">
-								<input type="text" class="form-control" name="" placeholder="Zip Code">
+								<input type="text" class="form-control" name="zipcode" placeholder="Zip Code">
 							</div>
 						</div>
 
 
 						<div class="row my-3">
 							<div class="col-lg-6">
-								<input type="text" class="form-control" name="" placeholder="Telephone *">
+								<input type="text" class="form-control" name="telephone" placeholder="Telephone *">
 							</div>
 							<div class="col-lg-6">
-								<input type="text" class="form-control" name="" placeholder="Fax Number">
+								<input type="text" class="form-control" name="fax_number" placeholder="Fax Number">
 							</div>
 						</div>
 
@@ -201,15 +201,15 @@
 
 						<div class="row my-3">
 							<div class="col-lg-6">
-								<input type="text" class="form-control" name="" placeholder="Mobile Number">
+								<input type="text" class="form-control" name="mobile_number" placeholder="Mobile Number">
 							</div>
 							<div class="col-lg-6">
 								<div class="row">
 									<div class="col-lg-6">
-										<input type="text" name="" class="form-control" placeholder="Page Number">
+										<input type="text" name="page_number" class="form-control" placeholder="Page Number">
 									</div>
 									<div class="col-lg-6">
-										<input type="text" name="" class="form-control" placeholder="Ext">
+										<input type="text" name="ext" class="form-control" placeholder="Ext">
 									</div>
 								</div>
 							</div>
@@ -229,7 +229,6 @@
 
 <% content_for :js do %>
 	<script>
-
 		VirtualSelect.init({
 		  ele: '.multi-select'
 		  // options: myOptions
@@ -239,10 +238,58 @@
 <% end %>
 
 <script>
+	var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
 	$('.select-search').select2();
 
 	$('.other_name_rbtn').on('change',function(){
 		// console.log($(this).val());
 		($(this).val() == 'yes') ?	$('#other_name_field').removeClass('d-none') : $('#other_name_field').addClass('d-none');
 	})
+
+	$('input,textarea').on('change', function() {
+				var input = $(this);
+				var url = '/provider_sources/autosave'; // Replace with the URL for your autosave endpoint
+				var fieldName = input.attr('name');
+				var value = input.val();
+
+				$.ajax({
+						url: url,
+						method: 'POST',
+						dataType: 'json',
+						data: { authenticity_token: csrfToken, field_name: fieldName, value: value },
+						success: function(data) {
+								console.log('Autosaved successfully!');
+						},
+						error: function() {
+								console.log('Autosave failed!');
+						}
+				});
+		});
+
+		$('input,textarea').each(function() {
+  var inputName = $(this).attr('name');
+  var inputValue = $(this).val();
+		var tagName = $(this).prop('tagName').toLowerCase();
+		var inputType = $(this).attr('type');
+
+  // Make an AJAX request to retrieve the value for the input field
+  $.ajax({
+    url: '/provider_sources/fetch',
+    type: 'GET',
+    data: { authenticity_token: csrfToken, field_name: inputName },
+    dataType: 'json',
+    success: function(data) {
+      // Set the value of the input field to the value retrieved from the server
+						if (inputType == 'radio' || inputType == 'checkbox') {
+							// not tested on checkbox yet but should work
+								var radioInput = $(tagName + '[name="' + inputName + '"][value="' + data.value + '"]');
+								radioInput.prop("checked", true);
+						} else {
+								$(tagName + '[name="' + inputName + '"]').val(data.value);
+						}
+    }
+  });
+});
+
 </script>

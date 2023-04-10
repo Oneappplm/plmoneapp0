@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
 	before_action :authenticate_user!, except: %i[terms privacy_policy]
 	before_action :configure_permitted_parameters, if: :devise_controller?
+	include ApplicationHelper
 
 	protected
 	 def configure_permitted_parameters
@@ -14,7 +15,7 @@ class ApplicationController < ActionController::Base
   			  npi ssn medv_id cred_status vrc_status full_name
   			  cred_cycle medv_ids entity tin from_attest_date
   			  to_attest_date birth_date provider_type specialty]
-  			  
+
 	@search_inputs = keys.map { |k| [k, params[k.to_sym]] }.to_h
   end
 end

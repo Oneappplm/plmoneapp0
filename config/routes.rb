@@ -19,6 +19,13 @@ Rails.application.routes.draw do
   get 'terms', to: 'pages#terms'
   get 'privacy-policies', to: 'pages#privacy_policy'
 
+  resources :provider_sources do
+    collection do
+      post :autosave
+      get :fetch
+    end
+  end
+
   devise_scope :user do
     # Redirests signing out users back to sign-in
     get "users", to: "devise/sessions#new"
