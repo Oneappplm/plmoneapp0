@@ -1,6 +1,6 @@
 module ApplicationHelper
 	def active_menu cname, aname
-		cname.split(',').include?(controller_name) && aname.split(',').include?(action_name) ? 'ph-active' : ''
+		cname.split(',').include?(controller_name) && aname.split(',').include?(action_name) ? 'ph-active fw-semibold' : ''
 	end
 
 	def current_provider_source
@@ -20,7 +20,10 @@ module ApplicationHelper
 	end
 
 	def active_submenu_link cname, aname
-		cname == controller_name && aname.split(',').include?(action_name) ? 'link_active' : ''
+		cname == controller_name && aname.split(',').include?(action_name) ? 'link_active fw-semibold' : ''
 	end
 
+	def enrollment_nav_active aname
+		aname.split(',').include?(action_name) ? 'btn-primary fw-semibold' : 'btn-secondary text-black bg-alt-grey'
+	end
 end

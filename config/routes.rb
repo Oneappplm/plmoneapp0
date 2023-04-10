@@ -25,7 +25,7 @@ Rails.application.routes.draw do
   get 'clients', to: 'pages#all_clients'
   get 'provider-clients', to: 'pages#provider_clients'
   get 'new-dco', to: 'pages#new_dco'
-  get 'enroll-new-user', to: 'pages#enroll_new_user' #made this route to not conflict with active state of sidebar navigation
+  get 'enroll-new-user', to: 'pages#enroll_new_user'
 
   resources :provider_sources do
     collection do
