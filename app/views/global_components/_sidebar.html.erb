@@ -1,155 +1,135 @@
-  <aside class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-bordered bg-white  ">
-    <div class="navbar-vertical-container">
+<aside class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-bordered bg-white  ">
+   <div class="navbar-vertical-container">
       <div class="navbar-vertical-footer-offset">
-        <!-- Logo -->
+         <a class="navbar-brand" href="javascript:void(0);" aria-label="">
+            <!-- <img class="navbar-brand-logo" src="./dist/assets/img/plm-logos/logo-blue.jpg" alt="Logo" data-hs-theme-appearance="default"> -->
+            <img class="navbar-brand-logo-mini" src="./logos/plm-logo-square.png" alt="Logo" data-hs-theme-appearance="default" style="width: 27px;height: 27px;"  data-hs-theme-appearance="default">
+            <img class="navbar-brand-logo" src="./logos/plm-logo-rectangle.png" alt="Logo" data-hs-theme-appearance="default" data-hs-theme-appearance="default" style="height: 27px !important;">
+         </a>
+         <button type="button" class="js-navbar-vertical-aside-toggle-invoker navbar-aside-toggler" id="navbar-aside-toggler">
+         <i class="bi-arrow-bar-left navbar-toggler-short-align" data-bs-template='<div class="tooltip d-none d-md-block" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>' data-bs-toggle="tooltip" data-bs-placement="right" title="Collapse"></i>
+         <i class="bi-arrow-bar-right navbar-toggler-full-align" data-bs-template='<div class="tooltip d-none d-md-block" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>' data-bs-toggle="tooltip" data-bs-placement="right" title="Expand"></i>
+         </button>
+         <div class="navbar-vertical-content">
+            <div id="navbarVerticalMenu" class="nav nav-pills nav-vertical card-navbar-nav px-0">
+               <!-- Collapse -->
+               <div class="nav-item mb-2 nav-item-active">
+                  <!-- ph-active -->
+                  <a class="nav-link <%= active_menu('pages', 'dashboard') %>" href="<%= root_path %>">
+                  <i class="bi bi-box nav-icon"></i>
+                  <span class="nav-link-title">Overview</span>
+                  </a>
+               </div>
+               <div class="nav-item mb-2">
+                  <div class="d-flex with-submenu align-items-center justify-content-between pe-3 <%= active_menu('pages,users', 'client_portal,virtual_review_committee,data_access,all_users,new') %>">
+                      <a class="nav-link has-submenu" href="javascript:void(0);" data-placement="left" data-submenu="client_submenu">
+                      <i class="bi bi-person-video2 nav-icon"></i>
+                      <span class="nav-link-title ml-4">Client Portal</span>
+                      </a>
+                      <svg xmlns="http://www.w3.org/2000/svg" id="client_submenu_chevron" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="open_submenu <%= chevron_active('pages,users', 'client_portal,virtual_review_committee,data_access,organization_profile') %>" data-toopen="client_submenu" style="width: 20px;height: auto;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                      </svg>
+                  </div>
 
-        <a class="navbar-brand" href="javascript:void(0);" aria-label="">
-          <!-- <img class="navbar-brand-logo" src="./dist/assets/img/plm-logos/logo-blue.jpg" alt="Logo" data-hs-theme-appearance="default"> -->
-          <img class="navbar-brand-logo-mini" src="./logos/plm-logo-square.png" alt="Logo" data-hs-theme-appearance="default" style="width: 27px;height: 27px;"  data-hs-theme-appearance="default">
-          <img class="navbar-brand-logo" src="./logos/plm-logo-rectangle.png" alt="Logo" data-hs-theme-appearance="default" data-hs-theme-appearance="default" style="height: 27px !important;">
-        </a>
 
-        <!-- End Logo -->
+                  <div id="client_submenu" class="sub_menu <%= active_submenu('pages,users', 'client_portal,virtual_review_committee,data_access,organization_profile,new')%> mt-3">
+                      <ul>
+                        <li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'data_access')%>"><span></span><a href="#">Data Access</a>
+                        </li>
+                        
+                        <li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'virtual_review_committee')%>"><span></span><a href="<%= virtual_review_committee_path %>">VRC</a>
+                        </li>
+                        
+                        <li class="d-flex gap-2 align-items-center <%= active_submenu_link('users', 'all_users,edit,new,show,organization_profile')%>"><span></span><a href="<%= organization_profile_path %>">Users</a>
+                        </li>
+                        
+                        <li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'client_portal')%>"><span></span><a href="<%= client_portal_path %>">Clients</a>
+                        </li>
+                        
+                        <li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'systems')%>"><span></span><a href="#">Systems</a>
+                        </li>
+                        
+                        <li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'reports')%>"><span></span><a href="#">Reports</a>
+                        </li>
 
-        <!-- Navbar Vertical Toggle -->
-        <button type="button" class="js-navbar-vertical-aside-toggle-invoker navbar-aside-toggler" id="navbar-aside-toggler">
-          <i class="bi-arrow-bar-left navbar-toggler-short-align" data-bs-template='<div class="tooltip d-none d-md-block" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>' data-bs-toggle="tooltip" data-bs-placement="right" title="Collapse"></i>
-          <i class="bi-arrow-bar-right navbar-toggler-full-align" data-bs-template='<div class="tooltip d-none d-md-block" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>' data-bs-toggle="tooltip" data-bs-placement="right" title="Expand"></i>
-        </button>
-
-        <!-- End Navbar Vertical Toggle -->
-
-        <!-- Content -->
-        <div class="navbar-vertical-content">
-          <div id="navbarVerticalMenu" class="nav nav-pills nav-vertical card-navbar-nav px-0">
-            <!-- Collapse -->
-            <div class="nav-item mb-2 nav-item-active">
-              <!-- ph-active -->
-              <a class="nav-link <%= active_menu('pages', 'dashboard') %>" href="<%= root_path %>">
-                <i class="bi bi-box nav-icon"></i>
-                <!-- <img src="./icons/overview.png" class="nav-icon"> -->
-                <span class="nav-link-title">Overview</span>
-              </a>
+                        <li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'service')%>"><span></span><a href="#">Service</a>
+                        </li>
+                        
+                        <li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'screening')%>"><span></span><a href="#">Screening</a>
+                        </li>
+                        <li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'support')%>"><span></span><a href="#">Support</a>
+                        </li>
+                      </ul>
+                  </div>
+               </div>
+             <!--   <div class="nav-item mb-2">
+                  <a class="nav-link <%#= active_menu('pages', 'virtual_review_committee,show_virtual_review_committee') %>" href="<%#= virtual_review_committee_path %>" data-placement="left">
+                  <i class="bi bi-file-bar-graph nav-icon"></i>
+                  <span class="nav-link-title">Virtual Review Committee</span>
+                  </a>
+               </div> -->
+               <div class="nav-item mb-2">
+                  <a class="nav-link <%= active_menu('pages', 'provider_source') %>" href="https://medversant-client.vercel.app/login" data-placement="left">
+                     <!-- <i class="bi-receipt nav-icon"></i> -->
+                     <i class="bi bi-people nav-icon"></i>
+                     <span class="nav-link-title">Provider App</span>
+                  </a>
+               </div>
+               <div class="nav-item mb-2">
+                  <a class="nav-link <%= active_menu('pages', 'provider_source') %>" href="javascript:void(0);" data-placement="left">
+                     <!-- <i class="bi-receipt nav-icon"></i> -->
+                     <i class="bi bi-person-rolodex nav-icon"></i>
+                     <span class="nav-link-title">Office Manager</span>
+                  </a>
+               </div>
+               <div class="nav-item mb-2">
+                  <a class="nav-link <%= active_menu('pages', 'provider_source,providers,enrollments,new_enrollment,all_clients,provider_clients,new_dco,enroll_new_user') %>" href="<%= providers_path %>" data-placement="left">
+                     <!-- <i class="bi-receipt nav-icon"></i> -->
+                     <i class="bi bi-person nav-icon"></i>
+                     <span class="nav-link-title">Enrollment Tracking</span>
+                  </a>
+               </div>
+               <div class="nav-item mb-2">
+                  <a class="nav-link <%= active_menu('pages', 'plm_sales_tool') %> text-muted" href="javascript:void(0);" data-placement="left">
+                     <!-- <i class="bi-layers nav-icon"></i> -->
+                     <i class="bi bi-currency-dollar nav-icon"></i>
+                     <span class="nav-link-title">PLM Sales Tool <small class="fw-semibold">Coming soon</small></span>
+                  </a>
+               </div>
+               <div class="nav-item mb-2">
+                  <a class="nav-link <%= active_menu('pages', 'smart_contract') %> text-muted" href="javascript:void(0);" data-placement="left">
+                     <!-- <i class="bi-layers nav-icon"></i> -->
+                     <i class="bi bi-file-earmark-lock nav-icon"></i>
+                     <span class="nav-link-title">
+                     Smart Contract <small class="fw-semibold">Coming soon</small>
+                     </span>
+                  </a>
+               </div>
+               <div class="nav-item mb-2">
+                  <a class="nav-link <%= active_menu('pages', 'help') %>" href="<%= help_path %>" data-placement="left">
+                  <i class="bi bi-question-circle nav-icon"></i>
+                  <span class="nav-link-title">Help</span>
+                  </a>
+               </div>
+               <div class="nav-item mb-2">
+                  <a class="nav-link <%= active_menu('pages', 'settings') %>" href="<%= settings_path %>" data-placement="left">
+                  <i class="bi bi-gear nav-icon"></i>
+                  <span class="nav-link-title">Settings</span>
+                  </a>
+               </div>
+               <div class="nav-item mb-2">
+                  <%= button_to 'Logout',
+                     destroy_user_session_path,
+                     method: :delete,
+                     class: 'nav-link'
+                     %>
+               </div>
             </div>
-            <!-- <small class="bi-three-dots nav-subtitle-replacer"></small> -->
-
-            <div class="nav-item mb-2">
-              <a class="nav-link <%= active_menu('pages', 'client_portal') %>" href="<%= client_portal_path %>" data-placement="left" >
-                <!-- <i class="bi-kanban nav-icon"></i> -->
-                <!-- <img src="./icons/client_portal_inactive.png" style="width: 16px;height: 16px;margin-right: 1rem;"> -->
-                <i class="bi bi-person-video2 nav-icon"></i>
-                <span class="nav-link-title ml-4">Client Portal</span>
-              </a>
-            </div>
-
-            <div class="nav-item mb-2">
-              <a class="nav-link <%= active_menu('pages', 'virtual_review_committee,show_virtual_review_committee') %>" href="<%= virtual_review_committee_path %>" data-placement="left">
-                <!-- <i class="bi-calendar-week nav-icon"></i> -->
-                <i class="bi bi-file-bar-graph nav-icon"></i>
-                <span class="nav-link-title">Virtual Review Committee</span>
-              </a>
-            </div>
-
-            <div class="nav-item mb-2">
-              <!-- https://medversant-client.vercel.app/login -->
-              <a class="nav-link <%= active_menu('page', 'provider_source') %>" href="<%= provider_source_path %>" data-placement="left">
-                <!-- <i class="bi-receipt nav-icon"></i> -->
-                <i class="bi bi-people nav-icon"></i>
-                <span class="nav-link-title">Provider App</span>
-              </a>
-            </div>
-
-       <!--      <div class="nav-item mb-2">
-              <a class="nav-link <%#= active_menu('pages', 'app_tracker') %>" href="<%#= app_tracker_path %>" data-placement="left"> -->
-                <!-- <i class="bi-folder2-open nav-icon"></i> -->
-                <!-- <i class="bi bi-stopwatch nav-icon"></i>
-                <span class="nav-link-title">App Tracker</span>
-              </a>
-            </div> -->
-
-            <!-- <div class="nav-item mb-2">
-              <a class="nav-link <%#= active_menu('pages', 'encompass') %>" href="<%#= encompass_path %>" data-placement="left"> -->
-                <!-- <i class="bi-grid-1x2 nav-icon"></i> -->
-                <!-- <img src="./icons/encompass.png" style="width: 17px; height: 16px;margin-right: 1rem;"> -->
-             <!--    <i class="bi bi-folder nav-icon"></i>
-                <span class="nav-link-title">Encompass</span>
-              </a>
-            </div> -->
-
-            <!-- <div class="nav-item mb-2">
-              <a class="nav-link <%#= active_menu('pages', 'microsite') %>" href="<%#= microsite_path %>" data-placement="left"> -->
-                <!-- <i class="bi-book nav-icon"></i> -->
-              <!--   <i class="bi bi-grid nav-icon"></i>
-                <span class="nav-link-title">Microsite</span>
-              </a>
-            </div> -->
-
-            <!-- <div class="nav-item mb-2">
-              <a class="nav-link <%#= active_menu('pages', 'ps_office_manager') %>" href="<%#= ps_office_manager_path %>" data-placement="left"> -->
-                <!-- <i class="bi-layers nav-icon"></i> -->
-               <!--  <i class="bi bi-people nav-icon"></i>
-                <span class="nav-link-title">PS Office Manager</span>
-              </a>
-            </div> -->
-
-            <div class="nav-item mb-2">
-              <a class="nav-link <%= active_menu('pages', 'plm_sales_tool') %> text-muted" href="javascript:void(0);" data-placement="left">
-                <!-- <i class="bi-layers nav-icon"></i> -->
-                <i class="bi bi-currency-dollar nav-icon"></i>
-                <span class="nav-link-title">PLM Sales Tool <small class="fw-semibold">Coming soon</small></span>
-              </a>
-            </div>
-
-            <div class="nav-item mb-2">
-              <a class="nav-link <%= active_menu('pages', 'smart_contract') %> text-muted" href="javascript:void(0);" data-placement="left">
-                <!-- <i class="bi-layers nav-icon"></i> -->
-                <i class="bi bi-file-earmark-lock nav-icon"></i>
-                <span class="nav-link-title">
-                  Smart Contract <small class="fw-semibold">Coming soon</small>
-                </span>
-              </a>
-            </div>
-
-
-
-
-
-            <div class="nav-item mb-2">
-              <a class="nav-link <%= active_menu('pages', 'help') %>" href="<%= help_path %>" data-placement="left">
-                <i class="bi bi-question-circle nav-icon"></i>
-                <span class="nav-link-title">Help</span>
-              </a>
-            </div>
-
-
-            <div class="nav-item mb-2">
-              <a class="nav-link <%= active_menu('pages', 'settings') %>" href="<%= settings_path %>" data-placement="left">
-                <i class="bi bi-gear nav-icon"></i>
-                <span class="nav-link-title">Settings</span>
-              </a>
-            </div>
-
-            <div class="nav-item mb-2">
-
-              <%= button_to 'Logout',
-                destroy_user_session_path,
-                method: :delete,
-                class: 'nav-link'
-                %>
-
-
-            </div>
-
-
-
-          </div>
-
-        </div>
-        <!-- End Content -->
-
-        <!-- Footer -->
-        <div class="navbar-vertical-footer px-1">
-           <div class="d-flex bd-highlight">
+         </div>
+         <!-- End Content -->
+         <!-- Footer -->
+         <div class="navbar-vertical-footer px-1">
+            <div class="d-flex bd-highlight">
                <div class="p-2 flex-shrink-1 bd-highlight">
                   <span style="width: 35px;height: 35px;" class="bg-secondary rounded d-flex justify-content-center align-items-center">FW</span>
                </div>
@@ -158,15 +138,15 @@
                   <small>itsweeks@gmail.com</small>
                </div>
                <div class="px-2">
-                 <a href="javascript:void(0);" style="color: #666">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="" style="width: 25px;">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-                </svg>
-                </a>
+                  <a href="javascript:void(0);" style="color: #666">
+                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="" style="width: 25px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                     </svg>
+                  </a>
                </div>
             </div>
-        </div>
-        <!-- End Footer -->
+         </div>
+         <!-- End Footer -->
       </div>
-    </div>
-  </aside>
+   </div>
+</aside>

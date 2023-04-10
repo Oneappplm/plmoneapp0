@@ -3,10 +3,11 @@ class PagesController < ApplicationController
   before_action :set_clients, only: %i[client_portal show_client_details]
   before_action :search_clients, only: %i[client_search]
   before_action :search_inputs, only: %i[client_search client_portal]
-  before_action :get_states, only: %i[client_search client_portal virtual_review_committee provider_source]
-  before_action :get_provider_types, only: %i[client_search client_portal virtual_review_committee provider_source]
-  before_action :get_specialties, only: %i[client_search client_portal virtual_review_committee provider_source]
+  before_action :get_states, only: %i[client_search client_portal virtual_review_committee provider_source all_clients new_dco]
+  before_action :get_provider_types, only: %i[client_search client_portal virtual_review_committee provider_source provider_enrollment]
+  before_action :get_specialties, only: %i[client_search client_portal virtual_review_committee provider_source provider_enrollment]
   before_action :get_languages, only: %i[provider_source]
+  before_action :get_health_plans, only: %i[provider_source]
   layout "public_application", only: %i[terms privacy_policy]
 
 	def provider_source
@@ -36,6 +37,10 @@ class PagesController < ApplicationController
 			render 'work_tickler'
 		elsif params[:vrc].present? && params[:vrc] == 'documents'
 			render 'documents'
+		elsif params[:vrc].present? && params[:vrc] == 'reports'
+			render 'reports'
+		elsif params[:vrc].present? && params[:vrc] == 'issue'
+			render 'issue'
 		end
 	end
 
@@ -90,6 +95,24 @@ class PagesController < ApplicationController
   	else
   		@vrc = VirtualReviewCommittee.first
   	end
+  end
+
+  def providers;end
+
+  def provider_enrollment;end
+
+  def enrollments;end
+
+  def new_enrollment;end
+
+  def all_clients;end
+
+  def provider_clients;end
+
+  def new_dco;end
+
+  def enroll_new_user
+  	# render ""
   end
 
 	protected
@@ -149,5 +172,11 @@ class PagesController < ApplicationController
 
   def get_languages
   	@languages = Language.all
+  end
+
+  def get_health_plans
+  	@health_plans = HealthPlan.all
+  	@hospitals = Hospital.all
+  	@directories = Directory.all
   end
 end

@@ -1,0 +1,153 @@
+<div class="content container-fluid">
+	<form>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<select class="form-select" name="client_profile">
+				<option value="Medservant LLC">Medservant LLC</option>
+			</select>
+		</div>
+		<div class="col-lg-3"></div>
+		<div class="col-lg-3 text-right d-flex justify-content-end">
+			<a href="<%= new_user_path %>" class="btn btn-primary btn-md">
+				<i class="bi bi-arrow-left"></i>
+				<span class="ms-2">Add New Client</span>
+			</a>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<h2>Medservant LLC Profile</h2>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>Client Name</label>
+			<input type="text" name="client_name" class="form-control">
+		</div>
+		<div class="col-lg-6">
+			<label>DBA Name</label>
+			<input type="text" name="client_dba_name" class="form-control">
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>Tax ID</label>
+			<input type="text" name="client_tax_id" class="form-control">
+		</div>
+		<div class="col-lg-6">
+			<label>Client Code</label>
+			<input type="text" name="client_code" class="form-control">
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>Address</label>
+			<input type="text" name="client_address" class="form-control">
+		</div>
+		<div class="col-lg-6">
+			<label>City</label>
+			<input type="text" name="client_city" class="form-control">
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>State</label>
+			<select class="form-select" name="client_state">
+				<% @states.each do |state|%>
+					<option value="<%= state.name  %>"><%= state.name %></option>
+				<% end %>
+			</select>
+		</div>
+		<div class="col-lg-6">
+			<label>Zip Code</label>
+			<input type="text" name="client_zipcode" class="form-control">
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-4">
+			<label>Phone Number</label>
+			<input type="text" name="client_phone_number" class="form-control">
+		</div>
+		<div class="col-lg-4">
+			<label>Fax Number</label>
+			<input type="text" name="client_fax_number" class="form-control">
+		</div>
+		<div class="col-lg-4">
+			<label>Email Address</label>
+			<input type="email" name="client_email" class="form-control">
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>Status</label>
+			<% vrc_statuses = ['approved', 'denied', 'pending', 'tabled', 'terminated']%>
+			<select class="form-select" name="client_status">
+				<% vrc_statuses.each do |stat|%>
+				<option value="<%= stat%>"><%= stat.titleize %></option>
+				<% end %>
+			</select>
+		</div>
+	</div>
+	<div class="row mb-3 py-3">
+		<div class="col-lg-12">
+			<h3>Primary Contact</h3>
+		</div>
+		<div class="col-lg-4">
+			<label>First Name</label>
+			<input type="text" name="client_first_name" class="form-control">
+		</div>
+		<div class="col-lg-2">
+			<label>Middle Name</label>
+			<input type="text" name="client_middle_name" class="form-control">
+		</div>
+		<div class="col-lg-4">
+			<label>Last Name</label>
+			<input type="text" name="client_last_name" class="form-control">
+		</div>
+		<div class="col-lg-2">
+			<label>Suffix</label>
+			<select class="form-select" placeholder="Suffix" name="client_suffix">
+				<option>Suffix</option>
+				<option>Jr.</option>
+				<option>Sr.</option>
+				<option>III.</option>
+				<option>IV.</option>
+			</select>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>Job Title</label>
+			<input type="text" name="client_job_title" class="form-control">
+		</div>
+	</div>
+
+	<div class="row mb-3">
+		<div class="col-lg-12">
+			<h3>Billing Address</h3>
+		</div>
+		<div class="col-lg-12 d-flex gap-2">
+			<input type="checkbox" name="client_same_contact_address">
+			<label>Check if billing address is same as contact address.</label>
+		</div>
+		<div class="col-lg-6 mb-3">
+			<label>Address</label>
+			<input type="text" name="client_billing_address" class="form-control">
+		</div>
+		<div class="col-lg-6 mb-3">
+			<label>City</label>
+			<input type="text" name="client_billing_city" class="form-control">
+		</div>
+		<div class="col-lg-6">
+			<label>State</label>
+			<select class="form-select" name="client_billing_state">
+				<% @states.each do |state|%>
+					<option value="<%= state.name  %>"><%= state.name %></option>
+				<% end %>
+			</select>
+		</div>
+		<div class="col-lg-6">
+			<label>Zip Code</label>
+			<input type="text" name="client_billing_zipcode" class="form-control">
+		</div>
+	</div>
+	</form>
+</div>

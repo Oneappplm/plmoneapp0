@@ -18,6 +18,14 @@ Rails.application.routes.draw do
   get 'smart-contract', to: 'pages#smart_contract'
   get 'terms', to: 'pages#terms'
   get 'privacy-policies', to: 'pages#privacy_policy'
+  get 'providers', to: 'pages#providers'
+  get 'provider-enrollment', to: 'pages#provider_enrollment'
+  get 'enrollments', to: 'pages#enrollments'
+  get 'new-enrollment', to: 'pages#new_enrollment'
+  get 'clients', to: 'pages#all_clients'
+  get 'provider-clients', to: 'pages#provider_clients'
+  get 'new-dco', to: 'pages#new_dco'
+  get 'enroll-new-user', to: 'pages#enroll_new_user' #made this route to not conflict with active state of sidebar navigation
 
   resources :provider_sources do
     collection do
@@ -32,6 +40,9 @@ Rails.application.routes.draw do
   end
 
   devise_for :users
+  get 'organization-profile', to: 'users#organization_profile'
+  get 'new-user', to: 'users#new'
+  get 'organization-users', to: 'users#organization_users'
   get 'client-portal-search', to: 'pages#client_search'
   get 'download-clients', to: 'pages#download_clients'
 end

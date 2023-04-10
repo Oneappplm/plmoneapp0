@@ -1,0 +1,111 @@
+<%= form_with url: request.url, method: :get, html: { id: 'vrc-search-form'} do |form| %>
+<div class="card">
+   <div class="card-body bg-light">
+      <div class="row">
+         <div class="col-lg-6">
+            <div class="form-group mb-3">
+               <label for="">Provider Type</label>
+               <select name="provider_type" class="form-select py-1">
+                  <option value="">Select option</option>
+                  <% @provider_types.each do |provider_type|%>
+                  <option value=<%= provider_type.fch %> <%= params['provider_type'] == provider_type.fch ? 'selected' : '' %>><%= provider_type.fch%></option>
+                  <% end %>
+               </select>
+            </div>
+            <div class="form-group mb-3">
+               <label for="">Specialty</label>
+               <select class="form-select py-1" name="specialty">
+                  <option value="">Select option</option>
+                  <% @specialties.each do |specialty|%>
+                  <option value="<%= specialty.bcbs%>" <%= params['specialty'] == specialty.bcbs ? 'selected' : '' %>><%= specialty.bcbs %></option>
+                  >
+                  <% end %>
+               </select>
+            </div>
+            <div class="row mb-3">
+               <div class="col-lg-6">
+                  <label for="">First Name</label>
+                  <input type="text" class="form-control  py-1" name="first_name" value="<%= params[:first_name] %>" placeholder="First Name">
+               </div>
+               <div class="col-lg-6">
+                  <label for="">Last Name</label>
+                  <input type="text" class="form-control  py-1" name="last_name" value="<%= params[:last_name] %>" placeholder="Last Name">
+               </div>
+            </div>
+            <div class="form-group mb-3">
+               <label for="">Review Level</label>
+               <select name="review_level" class="form-select py-1">
+                  <option value="">Select option</option>
+                  <option value="Expedited" <%= params['review_level'] == 'Expedited' ? 'selected' : '' %>>
+                     Expedited
+                  </option>
+               </select>
+            </div>
+            <div class="form-group mb-3">
+               <label for="">Credential Cycle</label>
+               <select class="form-select py-1" name="cred_cycle">
+                  <option value="">Select option</option>
+                  <option value="Credential" <%= params['cred_cycle'] == 'Credential' ? 'Selected' : ''%>>Credential</option>
+                  <option value="Recredential" <%= params['cred_cycle'] == 'Recredential' ? 'Selected' : ''%>>Recredential</option>
+               </select>
+            </div>
+         </div>
+         <div class="col-lg-6">
+            <div class="row mb-3">
+               <label for="">PSV Completed</label>
+               <div class="col-lg-6">
+                  <input type="date" class="form-control  py-1" placeholder="from">
+               </div>
+               <div class="col-lg-6">
+                  <input type="date" class="form-control  py-1" placeholder="to">
+               </div>
+            </div>
+            <div class="row mb-3">
+               <label for="">Committee Date</label>
+               <div class="col-lg-6">
+                  <input type="date" class="form-control  py-1" placeholder="from">
+               </div>
+               <div class="col-lg-6">
+                  <input type="date" class="form-control  py-1" placeholder="to">
+               </div>
+            </div>
+            <div class="row mb-3">
+               <label for="">Review Date</label>
+               <div class="col-lg-6">
+                  <input type="date" class="form-control  py-1" placeholder="from">
+               </div>
+               <div class="col-lg-6">
+                  <input type="date" class="form-control  py-1" placeholder="to">
+               </div>
+            </div>
+            <div class="row mb-8">
+               <label for="">State</label>
+               <div class="col-lg-12 mb-3">
+                  <select class="form-select py-1" name="state">
+                     <option value="">Select option</option>
+                     <% @states.each do |state|%>
+                     <option value="<%= state.alpha_code %>" <%= state.alpha_code == params['state'] ? 'selected' : '' %>><%= state.name %> - <%= state.alpha_code %></option>
+                     <% end %>
+                  </select>
+               </div>
+               <div class="col-lg-12">
+                  <div class="form-group mb-3">
+                     <label for="">ID Type</label>
+                     <input type="text" class="form-control  py-1">
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="col-lg-12">
+            <div class="row">
+         <div class="col-lg-12 text-center">
+            <button type="submit" class="btn btn-primary btn-block  btn-sm" style="">Submit</button>
+            <a href="<%= virtual_review_committee_path %>"  id="btn-reset" class="btn btn-danger btn-block  btn-sm bt-danger">Clear</a>
+         </div>
+      </div>
+         </div>
+      </div>
+      
+   </div>
+</div>
+<% end %>
