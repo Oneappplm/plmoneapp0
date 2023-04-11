@@ -3,8 +3,8 @@ class PagesController < ApplicationController
   before_action :set_clients, only: %i[client_portal show_client_details]
   before_action :search_clients, only: %i[client_search]
   before_action :search_inputs, only: %i[client_search client_portal]
-  before_action :get_states, only: %i[client_search client_portal virtual_review_committee provider_source all_clients new_dco]
-  before_action :get_provider_types, only: %i[client_search client_portal virtual_review_committee provider_source provider_enrollment]
+  before_action :get_states, only: %i[client_search client_portal virtual_review_committee provider_source all_clients new_dco new_group]
+  before_action :get_provider_types, only: %i[client_search client_portal virtual_review_committee provider_source provider_enrollment new_group]
   before_action :get_specialties, only: %i[client_search client_portal virtual_review_committee provider_source provider_enrollment]
   before_action :get_languages, only: %i[provider_source]
   before_action :get_health_plans, only: %i[provider_source]
@@ -114,6 +114,10 @@ class PagesController < ApplicationController
   def enroll_new_user
   	# render ""
   end
+
+  def new_group;end
+
+  def new_group_enrollment;end
 
 	protected
 

@@ -26,6 +26,8 @@ Rails.application.routes.draw do
   get 'provider-clients', to: 'pages#provider_clients'
   get 'new-dco', to: 'pages#new_dco'
   get 'enroll-new-user', to: 'pages#enroll_new_user'
+  get 'new-group', to: 'pages#new_group'
+  get 'new-group-enrollment', to: 'pages#new_group_enrollment'
 
   resources :provider_sources do
     collection do
