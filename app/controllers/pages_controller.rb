@@ -1,14 +1,14 @@
 class PagesController < ApplicationController
 	before_action :set_global_search, only: [:virtual_review_committee]
-  before_action :set_clients, only: %i[client_portal show_client_details]
-  before_action :search_clients, only: %i[client_search]
-  before_action :search_inputs, only: %i[client_search client_portal]
-  before_action :get_states, only: %i[client_search client_portal virtual_review_committee provider_source all_clients new_dco new_group]
-  before_action :get_provider_types, only: %i[client_search client_portal virtual_review_committee provider_source provider_enrollment new_group]
-  before_action :get_specialties, only: %i[client_search client_portal virtual_review_committee provider_source provider_enrollment]
-  before_action :get_languages, only: %i[provider_source]
-  before_action :get_health_plans, only: %i[provider_source]
-  layout "public_application", only: %i[terms privacy_policy]
+  before_action :set_clients, only: %i[client_portal show_client_details data_access]
+  before_action :search_clients, only: %i[client_search data_access]
+  before_action :search_inputs, only: %i[client_search client_portal data_access]
+  before_action :get_states, only: %i[client_search client_portal virtual_review_committee provider_source all_clients new_dco new_group data_access]
+  before_action :get_provider_types, only: %i[client_search client_portal virtual_review_committee provider_source provider_enrollment new_group data_access]
+  before_action :get_specialties, only: %i[client_search client_portal virtual_review_committee provider_source provider_enrollment data_access]
+  before_action :get_languages, only: %i[provider_source data_access]
+  before_action :get_health_plans, only: %i[provider_source data_access]
+  layout "public_application", only: %i[terms privacy_policy data_access]
 
 	def provider_source
 		if params[:page].present?
@@ -118,6 +118,10 @@ class PagesController < ApplicationController
   def new_group;end
 
   def new_group_enrollment;end
+
+  def data_access
+  	render "client_portal"
+  end
 
 	protected
 
