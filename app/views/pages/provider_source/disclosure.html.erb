@@ -21,74 +21,42 @@
 				<%= render partial: "provider_source_components/progress_bar", locals: {percent: 100}%>
 				<% steps = [['Disclosure Questions','active', custom_provider_source_path(page: 'disclosure')]]%>
 				<%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
+				<% @disclosures.each do |disclosure|%>
 				<div class="col-lg-12 card py-3 my-3">
-					<h4 class="fw-semibold text-secondary mb-3">Licensure</h4>
-
-					<p>
-						1. Has your license, registration or certification to practice in your profession ever been voluntarily or involuntarily relinquished, denied, suspended, revoked, restricted, or have you ever been subject to a fine, reprimand, consent order, probation or any conditions or limitations by any state or professional licensing, registration or certification board?
-					</p>
-					<p>2. Has there been any challenge to your licensure, registration or certification?</p>
-
+					<h4 class="fw-semibold text-secondary mb-3"><%= disclosure.title %></h4>
+					<%= disclosure.note.nil? ? '' : "<div class='#{disclosure.alert_type}'>#{disclosure.note}</div>".html_safe %>
+					<% disclosure.questions.each do |question|%>
+							<table>
+							   <tbody>
+							      <td width="10%" class="text-center">
+							         <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="<%= question.slug %>" data-toggle="button" aria-pressed="false" autocomplete="off">
+							            <div class="handle"></div>
+							         </button>
+							         <input type="hidden" name="<%= question.slug %>" value="no">
+							      </td>
+							      <td width="90%">
+							         <p>
+							            <p><%= question.slug[1..-1]%>. <%= question.question %>
+													</p>
+										<%= question.note.nil? ? '' : "<div class='#{question.alert_type}'>#{question.note}</div>".html_safe %>
+							         </p>
+							      </td>
+							   </tbody>
+							</table>
+					<% end %>
 				</div>
-				<div class="col-lg-12 card py-3 my-3">
-					<h4 class="fw-semibold text-secondary mb-3">Hospital Privileges and Other Affiliations</h4>
-					<p>3. Have your clinical privileges or medical staff membership at any hospital or healthcare institution, voluntarily or involuntarily, ever been denied, suspended, revoked, restricted, denied renewal or subject to probationary or to other disciplinary conditions (for reasons other than non-completion of medical record when quality of care was not adversely affected) or have proceedings toward any of those ends been instituted or recommended by any hospital or healthcare institution, medical staff or committee, or governing board?</p>
-					<p>4.Have you voluntarily or involuntarily surrendered, limited your privileges or not reapplied for privileges while under investigation?</p>
-					<p>5. Have you ever been terminated for cause or not renewed for cause from participation, or been subject to any disciplinary action, by any managed care organizations (including HMOs, PPOs, or provider organizations such as IPAs, PHOs)?</p>
-				</div>
-				<div class="col-lg-12 card py-3 my-3">
-					<h4 class="fw-semibold text-secondary mb-3">Education, Training and Board Certification</h4>
-					<p>6. Were you ever placed on probation, disciplined, formally reprimanded, suspended or asked to resign during an internship, residency, fellowship, preceptorship or other clinical education program? If you are currently in a training program, have you been placed on probation, disciplined, formally reprimanded, suspended or asked to resign?</p>
-					<p>7. Have you ever, while under investigation or to avoid an investigation, voluntarily withdrawn or prematurely terminated your status as a student or employee in any internship, residency, fellowship, preceptorship, or other clinical education program?</p>
-					<p>8. Have any of your board certifications or eligibility ever been revoked?</p>
-					<p>9. Have you ever chosen not to re-certify or voluntarily surrendered your board certification(s) while under investigation?</p>
-				</div>
-				<div class="col-lg-12 card py-3 my-3">
-					<h4 class="fw-semibold text-secondary mb-3">DEA or CDS</h4>
-					<p>10. Have your Federal DEA and/or State Controlled Dangerous Substances (CDS) certificate(s) or authorization(s) ever been challenged, denied, suspended, revoked, restricted, denied renewal, or voluntarily or involuntarily relinquished?</p>
-				</div>
-				<div class="col-lg-12 card py-3 my-3">
-					<h4 class="fw-semibold text-secondary mb-3">Medicare, Medicaid or Other Governmental Program Participation</h4>
-					<p>11. Have you ever been disciplined, excluded from, debarred, suspended, reprimanded, sanctioned, censured, disqualified or otherwise restricted in regard to participation in the Medicare or Medicaid program, or in regard to other federal or state governmental health care plans or programs?</p>
-				</div>
-				<div class="col-lg-12 card py-3 my-3">
-					<h4 class="fw-semibold text-secondary mb-3">Other Sanctions or Investigations</h4>
-					<p>12. Are you currently the subject of an investigation by any hospital, licensing authority, DEA or CDS authorizing entities, education or training program, Medicare or Medicaid program, or any other private, federal or state health program or a defendant in any civil action that is reasonably related to your qualifications, competence, functions, or duties as a medical professional for alleged fraud, an act of violence, child abuse or a sexual offense or sexual misconduct?</p>
-					<p>13. To your knowledge, has information pertaining to you ever been reported to the National Practitioner Data Bank or Healthcare Integrity and Protection Data Bank?</p>
-					<p>14. Have you ever received sanctions from or are you currently the subject of investigation by any regulatory agencies (e.g., CLIA, OSHA, etc.)?</p>
-					<p>15. Have you ever been convicted of, pled guilty to, pled nolo contendere to, sanctioned, reprimanded, restricted, disciplined or resigned in exchange for no investigation or adverse action within the last ten years for sexual harassment or other illegal misconduct?</p>
-					<p>16. Are you currently being investigated or have you ever been sanctioned, reprimanded, or cautioned by a military hospital, facility, or agency, or voluntarily terminated or resigned while under investigation or in exchange for no investigation by a hospital or healthcare facility of any military agency?</p>
-				</div>
-				<div class="col-lg-12 card py-3 my-3">
-					<h4 class="fw-semibold text-secondary mb-3">Professional Liability Insurance Information and Claims History</h4>
-					<p>17. Has your professional liability coverage ever been cancelled, restricted, declined or not renewed by the carrier based on your individual liability history?</p>
-					<p>18. Have you ever been assessed a surcharge, or rated in a high-risk class for your specialty, by your professional liability insurance carrier, based on your individual liability history?</p>
-				</div>
-				<div class="col-lg-12 card py-3 my-3">
-					<h4 class="fw-semibold text-secondary mb-3">Malpractice Claims History</h4>
-					<div class="alert alert-warning">
-						If Yes, please complete the claim information fields on the Professional Liability Coverage and Claims History form for each professional liability action.
-					</div>
-					<p>19. Have you ever had any professional liability actions (pending, settled, arbitrated, mediated or litigated) within the past 10 years? If yes, provide information for each case under Professional Liability Claims History.</p>
-				</div>
-				<div class="col-lg-12 card py-3 my-3">
-					<h4 class="fw-semibold text-secondary mb-3">Criminal/Civil History*</h4>
-					<p>20. Have you ever been convicted of, pled guilty to, or pled nolo contendere to any felony?</p>
-					<p>22. Have you ever been court-martialed for actions related to your duties as a medical professional?</p>
-
-					<div class="alert alert-warning">
-						Note: A criminal record will not necessarily be a bar to acceptance. Decisions will be made by each health plan or credentialing organization based upon all the relevant circumstances, including the nature of the crime.
-					</div>
-					<p>21. In the past ten years have you been convicted of, pled guilty to, or pled nolo contendere to any misdemeanor (excluding minor traffic violations) or been found liable or responsible for any civil offense that is reasonably related to your qualifications, competence, functions, or duties as a medical professional, or for fraud, an act of violence, child abuse or a sexual offense or sexual misconduct?</p>
-				</div>
-				<div class="col-lg-12 card py-3 my-3">
-					<h4 class="fw-semibold text-secondary mb-3">Ability To Perform Job</h4>
-					<p>23. Are you currently engaged in the illegal use of drugs? ('Currently' means sufficiently recent to justify a reasonable belief that the use of drugs may have an ongoing impact on one's ability to practice medicine. It is not limited to the day of, or within a matter of days or weeks before the date of application, rather that it has occurred recently enough to indicate the individual is actively engaged in such conduct. "Illegal use of drugs" refers to drugs whose possession or distribution is unlawful under the Controlled Substances Act, 21 U.S.C. 812.22. It "does not include the use of a drug taken under supervision by a licensed health care professional, or other uses authorized by the controlled Substances Act or other provision of Federal law." The term does include, however, the unlawful use of prescription controlled substances.)</p>
-					<p>24. Do you use any chemical substances that would in any way impair or limit your ability to practice medicine and perform the functions of your job with reasonable skill and safety?</p>
-					<p>25. Do you have any reason to believe that you would pose a risk to the safety or well being of your patients?</p>
-					<p>26. Are you unable to perform the essential functions of a practitioner in your area of practice even with reasonable accommodation?</p>
-				</div>
+				<% end %>
 			</div>
 		</div>
 	</div>
 </div>
+
+
+<script>
+	$('.btn-toggle').on('click',function(e){
+    if($(this).hasClass('to-change-value')) {
+      var to_change = $(this).data('tochange');
+      !$(this).hasClass('active') ? $('input[name='+to_change+']').val('yes') : $('input[name='+to_change+']').val('no');
+    }
+  });
+</script>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_08_235604) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_13_072508) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -75,6 +75,25 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_08_235604) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "disclosure_categories", force: :cascade do |t|
+    t.string "title"
+    t.string "note"
+    t.string "alert_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "disclosure_questions", force: :cascade do |t|
+    t.bigint "disclosure_category_id"
+    t.text "question"
+    t.string "slug"
+    t.string "note"
+    t.string "alert_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["disclosure_category_id"], name: "index_disclosure_questions_on_disclosure_category_id"
   end
 
   create_table "health_plans", force: :cascade do |t|

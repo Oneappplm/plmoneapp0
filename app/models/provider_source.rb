@@ -10,6 +10,10 @@ class ProviderSource < ApplicationRecord
 	 "#{fetch('first_name')} #{fetch('last_name')}"
 	end
 
+	def states
+		"#{fetch('states')}"
+	end
+
 	def current_provider_source?
 	 current_provider_source ? 'Yes' : 'No'
 	end

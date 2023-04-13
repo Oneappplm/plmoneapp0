@@ -25,9 +25,10 @@
   <link rel="stylesheet" href="./dist/assets/vendor/tom-select/dist/css/tom-select.bootstrap5.css">
 
   <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+  <script src="jquery.samask-masker.js"></script>
+
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 
   <link rel="preload" href="./dist/assets/css/theme.min.css" data-hs-appearance="default" as="style">
   <link rel="preload" href="./dist/assets/css/theme-dark.min.css" data-hs-appearance="dark" as="style">
@@ -465,6 +466,7 @@
 
 <script type="text/javascript">
   $('.btn-toggle').on('click',function(e){
+    console.log('hah');
     $(this).hasClass('active') ? $(this).removeClass('active') : $(this).addClass('active');
     if($(this).hasClass('has-to-show')){
       $(this).hasClass('active') ? toShow($(this).data('toshow'),true) : toShow($(this).data('toshow'),false);
@@ -480,41 +482,33 @@
     }
   });
 
-  $('.open_submenu').on('click',function(){
-    var to_open = $(this).data('toopen');
-    // $('#'+to_open).removeClass('d-none');
 
-    if($(this).hasClass('rotate-chev')){
-      $(this).removeClass('rotate-chev');
-      showSubMenu(to_open,false);
-    }
-    else{
-      $(this).addClass('rotate-chev');
-      showSubMenu(to_open,true);
-    }
-  })
+  $(document).ready(function() {
+  $('.tax-id').on('input', function() {
+    var input = $(this).val();
+    input = input.replace(/[^0-9]/g, ''); // remove all non-numeric characters
+    input = input.slice(0, 9); // limit input to 9 digits
+    var formattedInput = input.replace(/(\d{3})(\d{3})(\d{3})/, '$1-$2-$3'); // format the input
+    $(this).val(formattedInput); // set the input value to the formatted input
+  });
+});
 
-  $('.has-submenu').on('click',function(){
-    var to_open = $(this).data('submenu');
-    var chevron = $('#client_submenu_chevron');
 
-    if(chevron.hasClass('rotate-chev')) {
-      chevron.removeClass('rotate-chev');
-      showSubMenu(to_open,false);
-    }
-    else {
-      chevron.addClass('rotate-chev');
-      showSubMenu(to_open,true);
+</script>
+<!-- other format for tax -->
+<!-- <script>
+    $('.tax-id').on('input', function() {
+    var inputValue = $(this).val();
+    var regex = /^(\d{2})?-?(\d{0,7})$/;
+    var matches = inputValue.match(regex);
+    if (matches) {
+      var formattedValue = matches[1] ? matches[1] + '-' : '';
+      formattedValue += matches[2];
+      $(this).val(formattedValue);
+    } else {
+      $(this).val('');
     }
   });
-
-  function showSubMenu(submenu, show) {
-    show ? $('#'+submenu).removeClass('d-none') : $('#'+submenu).addClass('d-none');
-  }
-
-  function toShow(to_show,show) {
-    show ? $('#'+to_show).removeClass('d-none') : $('#'+to_show).addClass('d-none');
-  }
-</script>
+</script> -->
 </body>
 </html>

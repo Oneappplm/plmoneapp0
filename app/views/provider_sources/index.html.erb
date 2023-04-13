@@ -1,39 +1,46 @@
 <!-- Path: plmhealthone-app/app/views/provider_sources/index.html.erb -->
 <div class="content container-fluid">
-			<div class="row">
-						<div class="col-lg-8">
-									<div class="card">
-												<div class="card-header">
-															<h4 class="card-title">Provider Source Lists</h4>
-												</div>
-												<div class="card-body">
-															<div class="table-responsive">
-																		<table class="table table-striped mb-0">
-																					<thead>
-																								<tr>
-																											<th>Name</th>
-																											<th>Current Provider Source?</th>
-																											<th>Action</th>
-																								</tr>
-																					</thead>
-																					<tbody>
-																								<% @provider_sources.each do |provider_source| %>
-																											<tr>
-																														<td><%= provider_source&.full_name %></td>
-																														<td><%= provider_source&.current_provider_source? %></td>
-																														<td>
-																																<div class="d-flex gap-2">
-																																	<%= link_to 'Edit & Set As Current Provider Source', edit_provider_source_path(provider_source), class: 'btn btn-sm btn-primary' %>
-																																	<%= button_to 'Delete', custom_provider_source_path(provider_source), method: :delete, class: 'btn btn-sm btn-danger' if !provider_source.current_provider_source %>
-																																</div>
-																														</td>
-																											</tr>
-																								<% end %>
-																					</tbody>
-																		</table>
-															</div>
-												</div>
-									</div>
-						</div>
-			</div>
+   <div class="row">
+      <div class="col-lg-12">
+         <%= render "provider_source_components/top_buttons"%>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-lg-12">
+         <div class="card">
+            <div class="card-header">
+               <h4 class="card-title">Provider Source Lists</h4>
+            </div>
+            <div class="card-body">
+               <div class="table-responsive">
+                  <table class="table table-striped mb-0">
+                     <thead>
+                        <tr>
+                           <th>Name</th>
+                           <th>Current Provider Source?</th>
+                           <th>States</th>
+                           <th>Action</th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                        <% @provider_sources.each do |provider_source| %>
+                        <tr>
+                           <td><%= provider_source&.full_name %></td>
+                           <td><%= provider_source&.current_provider_source? %></td>
+                           <td><%= provider_source&.states %></td>
+                           <td>
+                              <div class="d-flex gap-2">
+                                 <%= link_to 'Edit & Set As Current Provider Source', edit_provider_source_path(provider_source), class: 'btn btn-sm btn-primary' %>
+                                 <%= button_to 'Delete', custom_provider_source_path(provider_source), method: :delete, class: 'btn btn-sm btn-danger' if !provider_source.current_provider_source %>
+                              </div>
+                           </td>
+                        </tr>
+                        <% end %>
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
 </div>

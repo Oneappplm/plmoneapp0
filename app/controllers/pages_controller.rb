@@ -8,6 +8,7 @@ class PagesController < ApplicationController
   before_action :get_specialties, only: %i[client_search client_portal virtual_review_committee provider_source provider_enrollment data_access]
   before_action :get_languages, only: %i[provider_source data_access]
   before_action :get_health_plans, only: %i[provider_source data_access]
+  before_action :get_disclosures, only: %i[provider_source]
   layout "public_application", only: %i[terms privacy_policy data_access]
 
 	def provider_source
@@ -186,5 +187,9 @@ class PagesController < ApplicationController
   	@health_plans = HealthPlan.all
   	@hospitals = Hospital.all
   	@directories = Directory.all
+  end
+
+  def get_disclosures
+  	@disclosures = DisclosureCategory.all
   end
 end

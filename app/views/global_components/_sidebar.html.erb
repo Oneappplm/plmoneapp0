@@ -150,3 +150,43 @@
       </div>
    </div>
 </aside>
+
+
+<script>
+   
+  $('.open_submenu').on('click',function(){
+    var to_open = $(this).data('toopen');
+    // $('#'+to_open).removeClass('d-none');
+
+    if($(this).hasClass('rotate-chev')){
+      $(this).removeClass('rotate-chev');
+      showSubMenu(to_open,false);
+    }
+    else{
+      $(this).addClass('rotate-chev');
+      showSubMenu(to_open,true);
+    }
+  })
+
+  $('.has-submenu').on('click',function(){
+    var to_open = $(this).data('submenu');
+    var chevron = $('#client_submenu_chevron');
+
+    if(chevron.hasClass('rotate-chev')) {
+      chevron.removeClass('rotate-chev');
+      showSubMenu(to_open,false);
+    }
+    else {
+      chevron.addClass('rotate-chev');
+      showSubMenu(to_open,true);
+    }
+  });
+
+  function showSubMenu(submenu, show) {
+    show ? $('#'+submenu).removeClass('d-none') : $('#'+submenu).addClass('d-none');
+  }
+
+  function toShow(to_show,show) {
+    show ? $('#'+to_show).removeClass('d-none') : $('#'+to_show).addClass('d-none');
+  }
+</script>
