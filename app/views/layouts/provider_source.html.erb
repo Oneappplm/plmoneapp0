@@ -469,15 +469,54 @@
     if($(this).hasClass('has-to-show')){
       $(this).hasClass('active') ? toShow($(this).data('toshow'),true) : toShow($(this).data('toshow'),false);
     }
+
+    if($(this).hasClass('to-change-value')) {
+      var to_change = $(this).data('tochange');
+      $(this).hasClass('active') ? $('input[name='+to_change+']').val('yes') : $('input[name='+to_change+']').val('no');
+    
+      saveData($('input[name='+to_change+']'));
+    }
+
+
+
   });
 
   function toShow(to_show,show) {
     show ? $('#'+to_show).removeClass('d-none') : $('#'+to_show).addClass('d-none');
   }
+
+  function saveData(input) {
+      var input = input;
+      var url = '/provider_sources/autosave'; // Replace with the URL for your autosave endpoint
+      var fieldName = input.attr('name');
+      var value = input.val();
+
+      console.log(fieldName)
+        if(fieldName == 'hp-unrestricted-privileges'){
+          console.log(value);
+        }
+
+      $.ajax({
+          url: url,
+          method: 'POST',
+          dataType: 'json',
+          data: { authenticity_token: csrfToken, field_name: fieldName, value: value },
+          success: function(data) {
+              console.log('Autosaved successfully!');
+          },
+          error: function() {
+              console.log('Autosave failed!');
+          }
+      });
+
+  }
 </script>
 
 <script>
-		var csrfToken = $('meta[name="csrf-token"]').attr('content');
+var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+
+
 
 $('input,textarea').on('change', function() {
 			var input = $(this);
