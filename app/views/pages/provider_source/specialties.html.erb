@@ -32,12 +32,24 @@
                <div class="row mb-3">
                   <div class="col-lg-6">
                      <div class="form-group">
-                        <input type="" name="ranking" class="form-control" placeholder="Ranking*">
+                        <!-- <input type="" name="ranking" class="form-control" placeholder="Ranking*"> -->
+                        <select name="ranking" class="form-select">
+                           <option value="">Ranking*</option>
+                           <option value="Primary">Primary</option>
+                           <option value="Secondary">Secondary</option>
+                        </select>
                      </div>
                   </div>
                   <div class="col-lg-6">
                      <div class="form-group">
-                        <input type="" name="specialty" class="form-control" placeholder="Specialty*">
+                        <!-- <input type="" name="specialty" class="form-control" placeholder="Specialty*"> -->
+                        <select class="form-select" name="specialty">
+                           <option value="">Specialty*</option>
+                           <% @specialties.each do |specialty|%>
+                           <option value="<%= specialty.bcbs%>"><%= specialty.bcbs %></option>
+                           <% end %>
+                        </select>
+
                      </div>
                   </div>
                </div>
@@ -56,7 +68,7 @@
                <div class="row mb-2">
                   <div class="col-lg-6">
                      <div class="d-flex align-items-center my-3">
-                        <button type="button" class="btn btn-xs btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">
+                        <button type="button" class="btn btn-xs btn-toggle to-change-value" data-tochange="to_be_listed_in_provider_directory" data-toggle="button" aria-pressed="false" autocomplete="off">
                            <div class="handle"></div>
                         </button>
                         <small class="ms-2">Do you wish to be listed in the Provider Directory under this specialty?</small>
@@ -64,7 +76,7 @@
                   </div>
                   <div class="col-lg-6">
                      <div class="d-flex align-items-center my-3">
-                        <button type="button" class="btn btn-xs btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">
+                        <button type="button" class="btn btn-xs btn-toggle to-change-value" data-tochange="to_be_listed_in_hmo_directory" data-toggle="button" aria-pressed="false" autocomplete="off">
                            <div class="handle"></div>
                         </button>
                         <small class="ms-2">Do you wisth to be listed in the HMO Directory under this specialty?</small>
@@ -74,15 +86,15 @@
                <div class="row mb-2">
                   <div class="col-lg-6">
                      <div class="d-flex align-items-center my-3">
-                        <button type="button" class="btn btn-xs btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">
+                        <button type="button" class="btn btn-xs btn-toggle to-change-value" data-tochange="certified_by_board" data-toggle="button" aria-pressed="false" autocomplete="off">
                            <div class="handle"></div>
                         </button>
-                        <small class="ms-2">Are/Were you certified by nay board in this specialty?</small>
+                        <small class="ms-2">Are/Were you certified by any board in this specialty?</small>
                      </div>
                   </div>
                   <div class="col-lg-6">
                      <div class="d-flex align-items-center my-3">
-                        <button type="button" class="btn btn-xs btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">
+                        <button type="button" class="btn btn-xs btn-toggle to-change-value" data-tochange="eligible_to_be_certified" data-toggle="button" aria-pressed="false" autocomplete="off">
                            <div class="handle"></div>
                         </button>
                         <small class="ms-2">Are you eligible to be certified in this specialty?</small>
@@ -93,11 +105,13 @@
             <div class="col-lg-12 card py-3 mb-3">
                <h4 class="fw-semibold text-secondary mb-3">Failed Exams</h4>
                <div class="d-flex align-items-center my-3">
-                  <button type="button" class="btn btn-xs btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">
+                  <button type="button" class="btn btn-xs btn-toggle to-change-value has-to-show" data-toshow="failed_exam_board" data-tochange="failed_to_passed_specialty_board" data-toggle="button" aria-pressed="false" autocomplete="off">
                      <div class="handle"></div>
                   </button>
-                  <small class="ms-2">Do you wish to be listed in the Provider Directory under this specialty?</small>
+                  <small class="ms-2">*Have you ever failed to pass a specialty board examination?</small>
                </div>
+
+               <%= render "provider_source_components/failed_exam_form"%>
             </div>
             <div class="col-lg-12 card py-3 mb-3">
                <h4 class="fw-semibold text-secondary mb-3">Populations Served</h4>
@@ -117,3 +131,8 @@
       </div>
    </div>
 </div>
+<input type="text" name="to_be_listed_in_provider_directory" value="no" class="invisible-input">
+<input type="text" name="certified_by_board" value="no" class="invisible-input">
+<input type="text" name="to_be_listed_in_hmo_directory" value="no" class="invisible-input">
+<input type="text" name="eligible_to_be_certified" value="no" class="invisible-input">
+<input type="text" name="failed_to_passed_specialty_board" value="no" class="invisible-input">

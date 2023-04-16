@@ -49,18 +49,18 @@
 	</div>
 	<div class="row mb-3">
 		<div class="col-lg-6">
-			<input type="text" name="dco_service_location_phone" required class="form-control" placeholder="Service Location Phone Number *">
+			<input type="text" name="dco_service_location_phone" class="form-control" placeholder="Service Location Phone Number *">
 		</div>
 		<div class="col-lg-6">
-			<input type="text" name="dco_service_location_fax" required class="form-control" placeholder="Service Location Fax Number *">
+			<input type="text" name="dco_service_location_fax" class="form-control" placeholder="Service Location Fax Number *">
 		</div>
 	</div>
 	<div class="row mb-3">
 		<div class="col-lg-6">
-			<input type="text" name="dco_panel_status" required class="form-control" placeholder="Panel Status to New Patients">
+			<input type="text" name="dco_panel_status" class="form-control" placeholder="Panel Status to New Patients">
 		</div>
 		<div class="col-lg-6">
-			<input type="text" name="dco_panel_age_limit" required class="form-control" placeholder="Panel Age Limit">
+			<input type="text" name="dco_panel_age_limit" class="form-control" placeholder="Panel Age Limit">
 		</div>
 	</div>
 	<div class="row mb-3">
@@ -87,78 +87,54 @@
 		</div>
 		<div class="row mb-3">
 			<div class="col-lg-6">
-				<input type="text" name="dco_provider_outreach_phone" class="form-control" placeholder="Phone Number *" required>
+				<input type="text" name="dco_provider_outreach_phone" class="form-control" placeholder="Phone Number *">
 			</div>
 			<div class="col-lg-6">
-				<input type="text" name="dco_provider_outreach_fax" class="form-control" placeholder="Fax Number *" required>
+				<input type="text" name="dco_provider_outreach_fax" class="form-control" placeholder="Fax Number *">
 			</div>
 		</div>
 		<div class="row mb-3">
 			<div class="col-lg-6">
-				<input type="text" name="dco_provider_outreach_position" class="form-control" placeholder="Position *" required>
+				<input type="text" name="dco_provider_outreach_position" class="form-control" placeholder="Position *">
 			</div>
 		</div>
 	</div>
 
-	<div class="row mt-5">
+	<div class="row mt-5" id="schedules">
 		<div class="col-lg-12">
 			<h5>Schedule</h5>
 		</div>
 		<div class="row">
 			<!-- to jayson still need to convert to checkbox that accepts multiple values -->
 			<div class="col-lg-8 mb-3">
+				<% days = ['S', 'M', 'T', 'W', 'TH', 'F', 'S']%>
 				<div class="d-flex gap-3">
-					<label class="day_sched d-flex justify-content-center align-items-center border">
+					<% days.each do |day|%>
+					<div class="position-relative">
+
+					<label for="sched_day0_<%= day%>" class="day_sched d-flex justify-content-center align-items-center border">
 						<span>
-							S
+							<%= day %>
 						</span>
+
 					</label>
-					<label class="day_sched d-flex justify-content-center align-items-center border">
-						<span>
-							M
-						</span>
-					</label>
-					<label class="day_sched d-flex justify-content-center align-items-center border">
-						<span>
-							T
-						</span>
-					</label>
-					<label class="day_sched d-flex justify-content-center align-items-center border">
-						<span>
-							W
-						</span>
-					</label>
-					<label class="day_sched d-flex justify-content-center align-items-center border">
-						<span>
-							TH
-						</span>
-					</label>
-					<label class="day_sched d-flex justify-content-center align-items-center border">
-						<span>
-							F
-						</span>
-					</label>
-					<label class="day_sched d-flex justify-content-center align-items-center border">
-						<span>
-							S
-						</span>
-					</label>
+					<input type="checkbox" name="sched[]" id="sched_day0_<%= day %>" class="position-absolute center-invisible" value="0">
+					</div>
+					<% end %>
 				</div>
 			</div>
-			<div class="col-lg-4">
-				<a href="javascript:void(0);">
+			<div class="col-lg-4 text-right">
+				<a href="javascript:void(0);" id="add_another_sched">
 					<i class="bi bi-plus-lg"></i>
 					<span class="ms-2">Add another schedule</span>
 				</a>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-lg-6">
-				<input type="text" name="dco_start_time" class="form-control" placeholder="Start Time">
-			</div>
-			<div class="col-lg-6">
-				<input type="text" name="dco_start_time" class="form-control" placeholder="End Time">
-			</div>
+		<div class="col-lg-6">
+			<input type="text" name="dco_start_time_day_0" class="form-control" placeholder="Start Time" onfocus="(this.type = 'time')">
+		</div>
+		<div class="col-lg-6">
+			<input type="text" name="dco_end_time_day_0" class="form-control" placeholder="End Time" onfocus="(this.type = 'time')">
 		</div>
 	</div>
 	<div class="row mt-3">
@@ -168,3 +144,55 @@
 	</div>
 	</form>
 </div>
+
+<script>
+		var day_count = 1;
+
+	$(document).on('click','.day_sched',function(){
+		$(this).hasClass('active') ? $(this).removeClass('active') : $(this).addClass('active');
+	});
+
+	$('#add_another_sched').on('click',function() {
+		$('#schedules').append(createDays(day_count.toString()));
+		day_count++;
+
+	})
+
+	function createDays(day_count) {
+		var days = ['S', 'M', 'T', 'W', 'TH', 'F', 'S'];
+		var $row = $('<div class="row mt-3"></div>');
+		var $col8 = $('<div class="col-lg-8 mb-3"></div>');
+		var $d_flex = $('<div class="d-flex gap-3"></div>');
+		for (var i = 0; i < days.length; i++) {
+			$d_flex.append(createLabelCb(days[i],day_count))
+		}
+
+		var divBtn = '<div class="col-lg-4"><a href="javascript:void(0);" class="remove_schedule"><i class="bi bi-dash-circle"></i><span class="ms-2">Remove schedule</span></a></div>';
+
+		$col8.append($d_flex);
+		$row.append($col8);
+		$row.append(divBtn);
+		$row.append(createTimeInputs(day_count));
+		return $row;
+	}
+
+	$(document).on('click','.remove_schedule',function(){
+		$(this).parent().parent().remove();
+	});
+
+	function createLabelCb(day,day_count) {
+		var $div = $('<div class="position-relative"></div>');
+		var label = '<label for="sched_day'+day_count+'_'+day+'" class="day_sched d-flex justify-content-center align-items-center border"><span>'+day+'</span></label>';
+
+		var cb = '<input type="checkbox" name="sched[]" id="sched_day'+day_count+'_'+day+'" class="position-absolute center-invisible" value="0"></div>';
+
+		$div.append(label,cb);
+		return $div;
+	}
+
+	function createTimeInputs(day_count) {
+		var inputs = '<div class="col-lg-6"><input type="time" name="dco_start_time_day_'+day_count+'" class="form-control" placeholder="Start Time"></div><div class="col-lg-6"><input type="time" name="dco_end_time_day_'+day_count+'" class="form-control" placeholder="End Time"></div>';
+
+		return inputs;
+	}
+</script>
