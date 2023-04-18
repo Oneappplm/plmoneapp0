@@ -18,7 +18,7 @@ Rails.application.routes.draw do
   get 'smart-contract', to: 'pages#smart_contract'
   get 'terms', to: 'pages#terms'
   get 'privacy-policies', to: 'pages#privacy_policy'
-  get 'providers', to: 'pages#providers'
+  # get 'providers', to: 'pages#providers'
   get 'provider-enrollment', to: 'pages#provider_enrollment'
   get 'enrollments', to: 'pages#enrollments'
   get 'new-enrollment', to: 'pages#new_enrollment'
@@ -37,7 +37,9 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :systems 
+  resources :providers
+
+  resources :systems
 
   devise_scope :user do
     # Redirests signing out users back to sign-in

@@ -1,6 +1,10 @@
 module ApplicationHelper
-	def active_menu cname, aname
-		cname.split(',').include?(controller_name) && aname.split(',').include?(action_name) ? 'ph-active fw-semibold' : ''
+	def active_menu cname, aname = nil
+		if aname.present?
+			cname.split(',').include?(controller_name) && aname.split(',').include?(action_name) ? 'ph-active fw-semibold' : ''
+		else
+			cname.split(',').include?(controller_name) ? 'ph-active fw-semibold' : ''
+		end
 	end
 
 	def current_provider_source

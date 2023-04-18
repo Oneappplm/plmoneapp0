@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_13_072508) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_17_013843) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -114,6 +114,36 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_13_072508) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "provider_licenses", force: :cascade do |t|
+    t.bigint "provider_id", null: false
+    t.string "license_number"
+    t.date "license_effective_date"
+    t.date "license_expiration_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_licenses_on_provider_id"
+  end
+
+  create_table "provider_np_licenses", force: :cascade do |t|
+    t.bigint "provider_id", null: false
+    t.string "np_license_number"
+    t.date "np_license_effective_date"
+    t.date "np_license_expiration_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_np_licenses_on_provider_id"
+  end
+
+  create_table "provider_rn_licenses", force: :cascade do |t|
+    t.bigint "provider_id", null: false
+    t.string "rn_license_number"
+    t.date "rn_license_effective_date"
+    t.date "rn_license_expiration_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_rn_licenses_on_provider_id"
+  end
+
   create_table "provider_source_data", force: :cascade do |t|
     t.bigint "provider_source_id", null: false
     t.string "data_key"
@@ -130,6 +160,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_13_072508) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "provider_taxonomies", force: :cascade do |t|
+    t.bigint "provider_id", null: false
+    t.string "taxonomy_code"
+    t.string "specialty"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_taxonomies_on_provider_id"
+  end
+
   create_table "provider_types", force: :cascade do |t|
     t.string "fch"
     t.string "bcbs"
@@ -144,6 +183,32 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_13_072508) do
     t.string "ucamc"
     t.string "macomb_country"
     t.string "nkcph"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "providers", force: :cascade do |t|
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "last_name"
+    t.string "suffix"
+    t.string "gender"
+    t.date "birth_date"
+    t.string "practitioner_type"
+    t.string "ssn"
+    t.string "npi"
+    t.string "caqhid"
+    t.date "caqh_attestation_date"
+    t.string "caqh_pdf"
+    t.date "caqh_pdf_date_received"
+    t.string "nccpa_number"
+    t.string "dea_number"
+    t.date "dea_license_effective_date"
+    t.date "dea_license_expiration_date"
+    t.string "dco"
+    t.string "dco_file"
+    t.date "pa_license_effective_date"
+    t.date "pa_license_expiration_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -220,5 +285,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_13_072508) do
     t.string "review_details"
   end
 
+  add_foreign_key "provider_licenses", "providers"
+  add_foreign_key "provider_np_licenses", "providers"
+  add_foreign_key "provider_rn_licenses", "providers"
   add_foreign_key "provider_source_data", "provider_sources"
+  add_foreign_key "provider_taxonomies", "providers"
 end

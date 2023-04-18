@@ -16,7 +16,7 @@ class ApplicationController < ActionController::Base
   			  cred_cycle medv_ids entity tin from_attest_date
   			  to_attest_date birth_date provider_type specialty]
 
-	@search_inputs = keys.map { |k| [k, params[k.to_sym]] }.to_h
+	  @search_inputs = keys.map { |k| [k, params[k.to_sym]] }.to_h
   end
 end
 
