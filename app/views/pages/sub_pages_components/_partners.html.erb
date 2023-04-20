@@ -1,0 +1,95 @@
+<form>
+<div class="row my-3">
+   <div class="col-lg-6">
+      <div class="d-flex align-items-center">
+         <span class="ms-2">Do you have any partners/associates at this location? *</span>
+      </div>
+   </div>
+   <div class="col-lg-6 d-flex justify-content-end">
+     <div class="d-flex gap-2">
+           <label>
+             <input type="radio" value="yes" name="practice_partners" required class="radio-toshow" data-toshow="practice_partners">
+             Yes
+           </label>
+           <label>
+             <input type="radio" value="no" name="practice_partners" required class="radio-toshow" data-toshow="practice_partners">
+             No
+           </label>
+           <label>
+             <input type="radio" value="n/a" name="practice_partners" required class="radio-toshow" data-toshow="practice_partners">
+             N/A
+           </label>
+        </div>
+   </div>
+</div>
+
+<div id="practice_partners">
+  <div class="row mb-3">
+     <div class="col-lg-4">
+      <label>First Name *</label>
+        <input type="text" class="form-control" required name="practice_partners_first_name">
+      </div>
+     <div class="col-lg-2">
+      <label>Middle Name</label>
+        <input type="text" class="form-control" name="practice_partners_middle_name">
+      </div>
+     <div class="col-lg-6">
+      <label>Last Name *</label>
+        <input type="text" class="form-control" required name="practice_partners_last_name">
+      </div>
+  </div>
+  <div class="row mb-3">
+     <div class="col-lg-6">
+      <label>Practitioner Degree  *</label>
+        <input type="text" class="form-control" required name="practice_partners_degree">
+      </div>
+     <div class="col-lg-6">
+      <label>NPI Number </label>
+        <input type="text" class="form-control" name="practice_partners_npi_number">
+      </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-lg-6">
+      <label>Specialty *</label>
+      <select class="form-select" name="practice_partners_specialty" required>
+        <% @specialties.each do |specialty|%>
+          <option value="<%= specialty.bcbs%>"><%= specialty.bcbs %></option>
+        <% end %>
+      </select>
+    </div>
+    <div class="col-lg-6">
+      <label>Primary License State *</label>
+      <select class="form-select" name="practice_partners_state" required>
+          <% @states.each do |state| %>
+            <option value="<%= state.name %>"><%= state.name %></option>
+          <% end %>
+      </select>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-lg-12">
+      <label>Primary License Number</label>
+      <input type="text" class="form-control" name="practice_partners_license_number">
+    </div>
+  </div>
+<div class="row mb-3">
+   <div class="col-lg-12 mb-3">
+      <div class="d-flex align-items-center my-3">
+         <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="practice_partner_cover" data-toshow="interpreter_languages" data-toggle="button" aria-pressed="false" autocomplete="off">
+            <div class="handle"></div>
+         </button>
+         <span class="ms-2">Does this partner/associate cover for you?</span>
+      </div>
+      <input type="hidden" value="no" name="practice_partner_cover">
+   </div>
+</div>
+
+<div class="row mb-3">
+   <div class="col-lg-12 d-flex justify-content-end">
+      <button class="btn btn-primary btn-md">Save & Next</button>
+   </div>
+</div>
+</div>
+</form>

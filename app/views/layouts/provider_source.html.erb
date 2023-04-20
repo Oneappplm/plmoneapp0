@@ -566,6 +566,51 @@ $('input,textarea').each(function(element) {
 			}
 	});
 });
+
+
+// some text input where they can type and it will be added to a readonly text input
+ $('.add-text-readonly').on('click',function(){
+    var take_id = $(this).data('takefrom')
+    var text = $('#'+take_id).val();
+    var putin_id = $(this).data('putin')
+
+    var status = $('#'+putin_id).val();
+
+    if(status != "")
+    {
+      status = status + "," + text;
+    }
+    else {
+      status = text;
+    }
+
+    $('#'+putin_id).val(status);
+
+  });
+
+   $('.remove-text-from-readonly').on('click',function(){
+    var putin_id = $(this).data('removefrom')
+    var status = $('#'+putin_id).val();
+    var arr = status.split(',');
+
+    if(arr.length) {
+      status = "";
+      for (var i = 0; i < (arr.length - 1); i++) {
+        if(i != 0)
+          status = status + "," + arr[i];
+        else
+          status = arr[i]
+      }
+    }
+    $('#'+putin_id).val(status);
+
+  });
+
+   $('.radio-toshow').on('change',function() {
+      var to_show = $(this).data('toshow');
+      ($(this).val() == 'yes') ? $('#'+to_show).removeClass('d-none') : $('#'+to_show).addClass('d-none') ;
+   });
+
 </script>
 </body>
 </html>

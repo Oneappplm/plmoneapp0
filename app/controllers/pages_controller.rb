@@ -9,6 +9,9 @@ class PagesController < ApplicationController
   before_action :get_languages, only: %i[provider_source data_access]
   before_action :get_health_plans, only: %i[provider_source data_access]
   before_action :get_disclosures, only: %i[provider_source]
+  before_action :get_practice_types, only: %i[provider_source]
+  before_action :get_practitioner_profiles, only: %i[provider_source]
+  before_action :get_services, only: %i[provider_source]
   layout "public_application", only: %i[terms privacy_policy data_access]
 
 	def provider_source
@@ -191,5 +194,17 @@ class PagesController < ApplicationController
 
   def get_disclosures
   	@disclosures = DisclosureCategory.all
+  end
+
+  def get_practice_types
+    @practice_types = PracticeType.all
+  end
+
+  def get_practitioner_profiles
+    @profiles = PractitionerProfile.all
+  end
+
+  def get_services
+    @services = Service.all
   end
 end

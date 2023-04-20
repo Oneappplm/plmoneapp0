@@ -1,0 +1,111 @@
+<form>
+<div class="row my-3">
+   <div class="col-lg-12">
+      <div class="d-flex align-items-center">
+         <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="practice_laboratory_services" data-toshow="group_npi_fields" data-toggle="button" aria-pressed="false" autocomplete="off">
+            <div class="handle"></div>
+         </button>
+         <span class="ms-2">Do you provide laboratory services at this location? *</span>
+      </div>
+      <input type="hidden" value="no" name="practice_laboratory_services">
+   </div>
+</div>
+<div class="row mb-3">
+   <div class="col-lg-12">
+      <div class="d-flex align-items-center">
+         <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="practive_clia_waiver" data-toshow="group_npi_fields" data-toggle="button" aria-pressed="false" autocomplete="off">
+            <div class="handle"></div>
+         </button>
+         <span class="ms-2">Does this location have a CLIA Waiver?</span>
+      </div>
+      <input type="hidden" value="no" name="practive_clia_waiver">
+   </div>
+</div>
+<div class="row mb-3">
+   <div class="col-lg-12">
+      <div class="d-flex align-items-center">
+         <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="practive_clia_certificate" data-toshow="group_npi_fields" data-toggle="button" aria-pressed="false" autocomplete="off">
+            <div class="handle"></div>
+         </button>
+         <span class="ms-2">Does this location have a CLIA Certificate?</span>
+      </div>
+      <input type="hidden" value="no" name="practive_clia_certificate">
+   </div>
+</div>
+<div class="row mb-3">
+   <div class="col-lg-12 mb-3">
+      <div class="d-flex align-items-center">
+         <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="practive_clia_certificate" data-toshow="group_npi_fields" data-toggle="button" aria-pressed="false" autocomplete="off">
+            <div class="handle"></div>
+         </button>
+         <span class="ms-2">Do you provide radiology services at this location?</span>
+      </div>
+      <input type="hidden" value="no" name="practive_clia_certificate">
+   </div>
+</div>
+
+
+<div class="row mb-3">
+   <div class="col-lg-12 mb-3">
+    <label>FDA/Radiology (Mammography) Certification Number for this location: </label>
+    <input type="text" name="practice_fda_radiology" class="form-control">
+    </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-lg-12 px-0 mb-3">
+    <label>Please select all services offered at this location</label>
+  </div>
+  <% @services.each do |service|%>
+    <div class="col-lg-4 p-1">
+      <label>
+        <input type="checkbox" name="services[]" value="<%= service.id %>">
+        <%= service.name %>
+      </label>
+    </div>
+  <% end %>
+</div>
+
+<div class="row mb-3">
+   <div class="col-lg-12 mb-3">
+      <div class="d-flex align-items-center my-3">
+         <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="practice_administered_anesthesia" data-toshow="anesthesia_fields" data-toggle="button" aria-pressed="false" autocomplete="off">
+            <div class="handle"></div>
+         </button>
+         <span class="ms-2">Is anesthesia administered at this location?</span>
+      </div>
+      <input type="hidden" value="no" name="practice_administered_anesthesia">
+   </div>
+</div>
+
+<div class="row mb-3 d-none" id="anesthesia_fields">
+   <div class="col-lg-12 mb-3">
+      <label>Class/Category</label>
+      <div class="d-flex gap-2">
+         <input type="text" name="" class="form-control" id="practice_anesthesia_class">
+         <a href="javascript:void(0);" class="btn btn-md btn-primary add-text-readonly" style="width: 200px;" id="add_foreign_language_interprets" data-takefrom="practice_anesthesia_class" data-putin="add_practice_anesthesia_class">Add</a>
+      </div>
+   </div>
+   <div class="col-lg-12 mb-3">
+      <div class="d-flex gap-2">
+         <input type="text" name="practice_staff_foreign_laguages" id="add_practice_anesthesia_class" class="form-control" readonly>
+         <a href="javascript:void(0);" class="btn btn-md btn-danger remove-text-from-readonly" style="width: 200px;" id="remove_last_foreign_language_interprets" data-removefrom="add_practice_anesthesia_class">Remove</a>
+      </div>
+   </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-lg-12">
+    <label>Please list any additional procedures provided at this location (including surgical procedures)</label>
+    <textarea class="form-control" name="practice_additional_procedures">
+      
+    </textarea>
+  </div>
+</div>
+
+<div class="row mb-3">
+   <div class="col-lg-12 d-flex justify-content-end">
+      <button class="btn btn-primary btn-md">Save & Next</button>
+   </div>
+</div>
+</form>

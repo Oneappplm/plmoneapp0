@@ -1,0 +1,114 @@
+<div class="content container-fluid ps-0">
+	<%= render "provider_source_components/top_buttons"%>
+	<div class="row">
+		<div class="col-lg-3">
+			<%= render "provider_source_components/sub_navbar"%>
+		</div>
+		<div class="col-lg-9">
+			<div class="row border border-4 p-3">
+				<!-- start of form header -->
+				<div class="col-lg-12 mb">
+					<div class="d-flex gap-2">
+				 		<span class="bg-medium-grey circle d-flex justify-content-center align-items-center" style="width: 40px;height: 40px;">
+				 			<!-- <i class="bi "></i> -->
+				 			<i class="bi bi-arrow-counterclockwise text-white" style="font-size: 25px;"></i>
+				 		</span>
+				 		<div class="d-flex flex-column">
+				 			<label>Practice Information</label>
+				 			<small>Please fill out 	all required fields</small>
+				 		</div>
+					</div>
+				</div>
+				<%= render partial: "provider_source_components/progress_bar", locals: {percent: 0}%>
+				<% steps = [['Credentialing Contact','finished', custom_provider_source_path(page: 'practical_information')],
+							['Practice Location','active', custom_provider_source_path(page: 'practice_location')],
+							# ['Employment Gap','active', custom_provider_source_path(page: 'employment_gap')],
+							['Covering Colleagues','inactive', custom_provider_source_path(page: 'covering_colleagues')],
+							['Unique Circumstances','inactive', custom_provider_source_path(page: 'unique_circumstances')],
+				]%>
+				<%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
+				<div class="col-lg-12 my-3">
+					<div class="alert alert-warning">
+						Please click "Make Primary" to indicate the required primary location.
+					</div>
+
+					<div class="row">
+					 	<div class="col-lg-12">
+			                  <div class="d-flex align-items-center my-3">
+			                        <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="all_practice_location" data-toshow="hospital_privileges" data-toggle="button" aria-pressed="false" autocomplete="off">
+			                           <div class="handle"></div>
+			                        </button>
+			                        <span class="ms-2">Has your Office/ Credentialing Manager added all your practice locations? *</span>
+			                  </div>
+					 	</div>
+					</div>
+
+					<div class="alert alert-warning">
+						Completing all required information in the General Information tab will activate other tabs (e.g., Contacts, etc.). You must complete all required information on all 9 tabs to save a complete Practice Location record. 
+					</div>
+
+					<div class="row">
+						<div class="col-lg-12 d-flex justify-content-end my-3">
+							<a href="<%= custom_provider_source_path(page: 'practice_location', component: 'general_info')%>" class="btn btn-md btn-primary">Add Practice Location</a>
+						</div>
+						<div class="col-lg-12">
+							<table class="table">
+								  <thead>
+								    <tr>
+								      <th scope="col" class="bg-primary text-white">Name</th>
+								      <th scope="col" class="bg-primary text-white">Address</th>
+								      <th scope="col" class="bg-primary text-white">Joined</th>
+								      <th scope="col" class="bg-primary text-white">Location?</th>
+								      <th scope="col" class="bg-primary text-white">Is Completed?</th>
+								      <th scope="col" class="bg-primary text-white"></th>
+								    </tr>
+								  </thead>
+								  <tbody></tbody>
+							</table>
+						</div>
+					</div>
+
+
+          <% if params[:component].present? %>
+					<div class="row" id="practice_location_navs">
+						<div class="col-lg-12">
+							<ul class="nav nav-tabs">
+							  <li class="nav-item">
+							    <a class="nav-link <%= params['component'] == 'general_info' ? 'active' : '' %>" aria-current="page" href="<%= custom_provider_source_path(page: 'practice_location', component: 'general_info', new_contact: true)%>"><small>General Information</small></a>
+							  </li>
+							  <li class="nav-item">
+							    <a class="nav-link <%= params['component'] == 'contacts' ? 'active' : '' %>" href="<%= custom_provider_source_path(page: 'practice_location', component: 'contacts')%>"><small>Contacts</small></a>
+							  </li>
+							  <li class="nav-item">
+							    <a class="nav-link <%= params['component'] == 'practice_hours' ? 'active' : '' %>" href="<%= custom_provider_source_path(page: 'practice_location', component: 'practice_hours')%>"><small>Practice Hours</small></a>
+							  </li>
+							  <li class="nav-item">
+							    <a class="nav-link <%= params['component'] == 'patient_acceptance' ? 'active' : '' %>" href="<%= custom_provider_source_path(page: 'practice_location', component: 'patient_acceptance')%>"><small>Patient Acceptance</small></a>
+							  </li>
+							  <li class="nav-item">
+							    <a class="nav-link <%= params['component'] == 'foreign_languages' ? 'active' : '' %>" href="<%= custom_provider_source_path(page: 'practice_location', component: 'foreign_languages')%>"><small>Foreign Language</small></a>
+							  </li>
+							  <li class="nav-item">
+							    <a class="nav-link <%= params['component'] == 'practice_access' ? 'active' : '' %>" href="<%= custom_provider_source_path(page: 'practice_location', component: 'practice_access')%>"><small>Practice Access</small></a>
+							  </li>
+							  <li class="nav-item">
+							    <a class="nav-link <%= params['component'] == 'services' ? 'active' : '' %>" href="<%= custom_provider_source_path(page: 'practice_location', component: 'services')%>"><small>Services</small></a>
+							  </li>
+							  <li class="nav-item">
+							    <a class="nav-link <%= params['component'] == 'midlevel_practitioners' ? 'active' : '' %>" href="<%= custom_provider_source_path(page: 'practice_location', component: 'midlevel_practitioners')%>"><small>Mid-level Practitioners</small></a>
+							  </li>
+							  <li class="nav-item">
+							    <a class="nav-link <%= params['component'] == 'partners' ? 'active' : '' %>" href="<%= custom_provider_source_path(page: 'practice_location', component: 'partners')%>"><small>Partners</small></a>
+							  </li>
+							</ul>
+						</div>
+						<%= render "pages/sub_pages_components/#{params[:component]}"%>
+           
+					</div>
+          <% end %>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<input type="hidden" name="all_practice_location" value="no">

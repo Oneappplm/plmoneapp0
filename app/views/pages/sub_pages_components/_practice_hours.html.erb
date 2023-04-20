@@ -1,0 +1,100 @@
+<form>
+<div class="row my-3">
+   <div class="col-lg-12">
+      <div class="row mb-3">
+         <div class="col-lg-12">
+            <div class="alert alert-info">
+               Please select your start and end time for each day. If your office closes part of the day (e.g., closed for lunch), please select Split Day and enter the hours your practice is closed in the row marked Closed.
+            </div>
+         </div>
+      </div>
+      <div class="row mb-3">
+         <% days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']%>
+         <div class="col-lg-12">
+            <% days.each do |day|%>
+            <div class="row mb-3 d-flex align-items-center">
+               <div class="col-lg-3">
+                  <%= day %>
+               </div>
+               <div class="col-lg-5">
+                  <div class="d-flex align-items-center gap">
+                     <input type="time" name="practice_hours_from" class="form-control">
+                     <label class="mx-2">to</label>
+                     <input type="time" name="practice_hours_to" class="form-control">
+                  </div>
+               </div>
+               <div class="col-lg-2">
+                  <label>
+                  <input type="checkbox" name="practice_hours_split_day_<%= day %>">
+                  Split Day
+                  </label>
+               </div>
+               <div class="col-lg-2">
+                  <label>
+                  <input type="checkbox" name="practice_hours_closed_<%= day %>">
+                  Closed
+                  </label>
+               </div>
+            </div>
+            <% end %>
+         </div>
+      </div>
+      <div class="row mb-3">
+         <div class="col-lg-12">
+            <label>Comments</label>
+            <textarea class="form-control" rows="8">
+            </textarea>
+         </div>
+      </div>
+      <div class="row mb-3">
+         <div class="col-lg-12 mb-2">
+            <label>Patient Appointment Telephone Number (if different than listed practice telephone number)</label>
+         </div>
+         <div class="col-lg-4">
+            <label>Phone</label>
+            <input type="text" name="practice_patient_phone" class="form-control">
+         </div>
+         <div class="col-lg-2">
+            <label>Ext</label>
+            <input type="text" name="practice_patient_phone_ext" class="form-control">
+         </div>
+      </div>
+      <div class="row mb-3">
+         <div class="col-lg-12 mb-3">
+            <div class="d-flex align-items-center my-3">
+               <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="practice_phone_coverage" data-toshow="phone_coverage_fields" data-toggle="button" aria-pressed="false" autocomplete="off">
+                  <div class="handle"></div>
+               </button>
+               <span class="ms-2"> Does this location have 24 hours/7 days per week telephone coverage? *</span>
+            </div>
+            <input type="hidden" value="no" name="practice_phone_coverage">
+         </div>
+      </div>
+
+      <div class="row mb-3 d-none" id="phone_coverage_fields">
+        <div class="col-lg-6">
+          <label>Telephone Coverage Type</label>
+          <select class="form-select" name="practice_phone_coverage_type">
+              <option selected="selected" value=""></option>
+              <option value="Answering Service">Answering Service</option>
+              <option value="Voice Mail to Answering Service">Voice Mail to Answering Service</option>
+              <option value="Voice Mail Other">Voice Mail Other</option>
+          </select>
+        </div>
+        <div class="col-lg-4">
+          <label>After Hours Telephone Number</label>
+          <input type="text" name="practice_after_hour_phone_number" class="form-control">
+        </div>
+        <div class="col-lg-2">
+          <label>Ext</label>
+          <input type="text" name="practice_after_hour_phone_number_ext" class="form-control">
+        </div>
+      </div>
+      <div class="row">
+         <div class="col-lg-12 d-flex justify-content-end">
+            <button class="btn btn-primary btn-md">Save & Next</button>
+         </div>
+      </div>
+   </div>
+</div>
+</form>

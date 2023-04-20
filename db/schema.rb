@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_17_013843) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_20_034133) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -114,6 +114,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_17_013843) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "practice_types", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "practitioner_profiles", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "provider_licenses", force: :cascade do |t|
     t.bigint "provider_id", null: false
     t.string "license_number"
@@ -209,6 +221,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_17_013843) do
     t.string "dco_file"
     t.date "pa_license_effective_date"
     t.date "pa_license_expiration_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "services", force: :cascade do |t|
+    t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
