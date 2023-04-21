@@ -9,8 +9,8 @@ class Provider < ApplicationRecord
   accepts_nested_attributes_for :np_licenses, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :rn_licenses, allow_destroy: true, reject_if: :all_blank
 
-  validates_presence_of :first_name, :middle_name, :last_name, :gender, :birth_date, :practitioner_type,
-    :ssn, :npi, :caqhid
+  validates_presence_of :first_name, :last_name, :birth_date, :practitioner_type,
+    :ssn, :npi
 
   def provider_name = "#{first_name} #{middle_name} #{last_name}"
   def provider_degree = nil

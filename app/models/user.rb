@@ -16,23 +16,29 @@ class User < ApplicationRecord
     client_admin: 'Client Admin',
     vrc_scheduler_staff: 'VRC Scheduler Staff',
     vrc_scheduler_director: 'VRC Scheduler Director',
-    docsynch: 'DocSynch',
-    medversant_admin: 'Medversant Admin',
-    ncqagroup: 'NCQA Group',
-    npdgroup: 'NPD Group',
-    superuser: 'Superuser',
+    # docsynch: 'DocSynch',
+    # medversant_admin: 'Medversant Admin',
+    # ncqagroup: 'NCQA Group',
+    # npdgroup: 'NPD Group',
+    # superuser: 'Superuser',
   }
 
-  # validates :first_name, presence: true
-  # validates :last_name, presence: true
+  enum user_roles: {
+    administrator: 'Administrator',
+    encoder: 'Encoder',
+    calls_agent: 'Calls Agent'
+  }
 
-  # with_options :on => :create, if: :from_source_enrollment? do |user|
-  #   user.validates_presence_of :middle_name
-  #   user.validates_presence_of :status
-  #   user.validates_presence_of :password_confirmation
-  #   user.validates_length_of :password, within: 6..40
-  #   # user.validates_confirmation_of :password
-  # end
+
+  validates :first_name, presence: true
+  validates :last_name, presence: true
+
+  with_options :on => :create, if: :from_source_enrollment? do |user|
+    user.validates_presence_of :status
+    user.validates_presence_of :password_confirmation
+    user.validates_length_of :password, within: 6..40
+    # user.validates_confirmation_of :password
+  end
 
   def from_source_enrollment?
     from_source.present? && from_source == 'enrollment'
@@ -55,6 +61,6 @@ class User < ApplicationRecord
   end
 
   def role
-    User.user_types[user_type]
+    User.user_roles[user_type]
   end
 end
