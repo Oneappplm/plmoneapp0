@@ -38,6 +38,18 @@ Rails.application.routes.draw do
   end
 
   resources :providers
+  resources :enrollments do
+    collection do
+      get :new_user, path: 'new-user'
+      post :new_user, path: 'new-user'
+
+    end
+    member do
+      get :delete_user
+      get :edit_user, path: 'edit-user'
+      patch :edit_user, path: 'edit-user'
+    end
+  end
 
   resources :systems
 
@@ -47,6 +59,7 @@ Rails.application.routes.draw do
   end
 
   devise_for :users
+
   get 'organization-profile', to: 'users#organization_profile'
   get 'new-user', to: 'users#new'
   get 'organization-users', to: 'users#organization_users'
