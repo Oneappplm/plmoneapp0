@@ -61,6 +61,6 @@ class User < ApplicationRecord
   end
 
   def role
-    User.user_roles[user_type]
+    User.user_roles[user_role]
   end
 end
