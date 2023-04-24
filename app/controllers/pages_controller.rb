@@ -17,6 +17,8 @@ class PagesController < ApplicationController
 	def provider_source
 		if params[:page].present?
 			render "pages/provider_source/#{params[:page]}", layout: 'provider_source'
+		else
+			render layout: 'provider_source'
 		end
 	end
 

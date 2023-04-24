@@ -473,7 +473,7 @@
     if($(this).hasClass('to-change-value')) {
       var to_change = $(this).data('tochange');
       $(this).hasClass('active') ? $('input[name='+to_change+']').val('yes') : $('input[name='+to_change+']').val('no');
-    
+
       saveData($('input[name='+to_change+']'));
     }
 
@@ -515,16 +515,11 @@
 
 <script>
 var csrfToken = $('meta[name="csrf-token"]').attr('content');
-
-
-
-
 $('input,textarea').on('change', function() {
 			var input = $(this);
 			var url = '/provider_sources/autosave'; // Replace with the URL for your autosave endpoint
 			var fieldName = input.attr('name');
-			var value = input.attr('value');
-      console.log(fieldName)
+			var value = input.val();
 				if(fieldName == 'hp-unrestricted-privileges'){
 					console.log(value);
 				}
