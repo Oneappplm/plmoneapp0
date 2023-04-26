@@ -121,7 +121,7 @@ class PagesController < ApplicationController
   	# render ""
   end
 
-  def new_group;end
+  def new_group; end
 
   def new_group_enrollment;end
 

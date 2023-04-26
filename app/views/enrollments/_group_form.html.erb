@@ -1,0 +1,187 @@
+	<%= form_for @enrollment_group, :url => {action: action_name} , html: { multipart: true } do |f| %>
+	<% if @enrollment_group.errors.any? %>
+    <div id="error_explanation" class="row mb-3">
+					<div class="col-lg-12">
+							<h2><%= pluralize(@enrollment_group.errors.count, "error") %> prohibited this enrollment user from being saved:</h2>
+
+							<ul>
+									<% @enrollment_group.errors.full_messages.each do |message| %>
+											<li><%= message %></li>
+									<% end %>
+							</ul>
+					</div>
+    </div>
+  <% end %>
+		<div class="row mb-3">
+			<div class="col-lg-6">
+				<%= f.text_field :group_name, class: 'form-control', placeholder: 'Group Name *' %>
+			</div>
+			<div class="col-lg-6">
+				<%= f.text_field :group_code, class: 'form-control', placeholder: 'Group Code *' %>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-6">
+				<%= f.text_field :office_address, class: 'form-control', placeholder: 'Office Address *' %>
+			</div>
+			<div class="col-lg-6">
+				<%= f.text_field :city, class: 'form-control', placeholder: 'City *' %>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-6">
+				<%= f.collection_select :state, @states, :name, :name, { prompt: 'State *' }, { class: 'form-control' } %>
+			</div>
+			<div class="col-lg-6">
+				<%= f.text_field :zip_code, class: 'form-control', placeholder: 'Zipcode *' %>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-4">
+				<%= f.text_field :phone_number, class: 'form-control', placeholder: 'Telephone Number *' %>
+			</div>
+			<div class="col-lg-2">
+				<%= f.text_field :ext, class: 'form-control', placeholder: 'Ext' %>
+			</div>
+			<div class="col-lg-6">
+				<%= f.text_field :fax_number, class: 'form-control', placeholder: 'Fax Number *' %>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-12">
+							<%= HtmlUtils.radio_toggle name: 'enrollment_group[business_group]',
+								label: 'Are you an established business group? If yes, enter your legal business name as reported to IRS.',
+								toshow: 'established_business_group'
+							%>
+							<%= f.hidden_field :business_group %>
+			</div>
+		    <div class="d-none" id="established_business_group">
+							<%= f.text_field :legal_business_name, class: 'form-control', placeholder: 'Legal Business Name' %>
+		    </div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-12">
+				<%= HtmlUtils.radio_toggle name: 'enrollment_group[another_business_name]',
+					label: 'Do you have another name?',
+					toshow: 'other_name'
+				%>
+				<%= f.hidden_field :another_business_name %>
+			</div>
+			<div class="row mb-3">
+				<div class="col-lg-6" id="other_name">
+					<%= f.text_field :other_business_name, class: 'form-control', placeholder: '' %>
+				</div>
+				<div class="col-lg-6">
+					<%= f.select :other_business_type, options_for_select(['Former Business Name', 'DBA', 'Other'], f.object.other_business_type), { prompt: 'Type' }, { class: 'form-select' } %>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<div class="col-lg-6">
+					<select class="form-select" required name="group_specific_type">
+						<option>Specify type of Group</option>
+					</select>
+				</div>
+			<div class="row mb-3">
+				<div class="col-lg-6">
+					<%= HtmlUtils.radio_toggle name: 'enrollment_group[shared_tin]',
+						label: 'Is this a shared TIN?'
+					%>
+					<%= f.hidden_field :shared_tin %>
+				</div>
+				<div class="col-lg-6">
+					<input type="text" name="group_cp575" placeholder="Upload CP575 or Proof of TIN" class="form-control" onfocus="(this.type = 'file')" >
+				</div>
+			</div>
+			<div class="row mb-3">
+				<div class="col-lg-6">
+					<select class="form-select" required name="group_specific_type">
+						<option>Specify type of Group</option>
+					</select>
+				</div>
+				<div class="col-lg-6">
+					<input type="text" name="group_type_file" placeholder="Upload File" class="form-control" onfocus="(this.type = 'file')" >
+				</div>
+			</div>
+			<div class="row mb-3">
+				<div class="col-lg-6">
+					<%= f.text_field :npi_digit_type, class: 'form-control', placeholder: '10 Digit Type II NPI (XXXXXXXXXX)' %>
+				</div>
+				<div class="col-lg-6">
+					<select class="form-select" required name="group_group">
+						<option>Group*</option>
+					</select>
+				</div>
+			</div>
+			<div class="row mb-5">
+				<div class="col-lg-6">
+					<label>Which of the following provider types do you employ?</label>
+					<%= f.collection_select :provider_type, @provider_types, :fch, :fch, { prompt: 'Provider Type *' }, { class: 'form-control' } %>
+				</div>
+			</div>
+			<div class="row mb-5">
+				<div class="col-lg-12 mb-1">
+					<label>Pay To/Billing Address (where checks are mailed)</label>
+				</div>
+				<div class="col-lg-6">
+					<%= f.text_field :po_box, class: 'form-control', placeholder: 'Address or PO Box' %>
+				</div>
+				<div class="col-lg-6">
+					<%= f.text_field :po_box_city, class: 'form-control', placeholder: 'City' %>
+				</div>
+				<div class="col-lg-6 mt-1">
+					<%= f.collection_select :po_box_state, @states, :name, :name, { prompt: 'Select option' }, { class: 'form-control' } %>
+				</div>
+				<div class="col-lg-6 mt-1">
+					<%= f.text_field :po_box_zip_code, class: 'form-control', placeholder: 'Zip code' %>
+				</div>
+			</div>
+			<div class="row mb-5">
+				<div class="col-lg-12 mb-1">
+					<label>Correspondence Address (if different from biling address)</label>
+				</div>
+				<div class="col-lg-6">
+					<%= f.text_field :ca_po_box_address, class: 'form-control', placeholder: 'Address or PO Box' %>
+				</div>
+				<div class="col-lg-6">
+					<%= f.text_field :ca_po_box_city, class: 'form-control', placeholder: 'City' %>
+				</div>
+				<div class="col-lg-6 mt-1">
+					<%= f.collection_select :ca_po_box_state, @states, :name, :name, { prompt: 'Select option' }, { class: 'form-control' } %>
+				</div>
+				<div class="col-lg-6 mt-1">
+					<%= f.text_field :ca_po_box_zip_code, class: 'form-control', placeholder: 'Zip code' %>
+				</div>
+			</div>
+			<div class="row mb-5">
+				<div class="col-lg-12 mb-1">
+					<label>Upload a list for each individual with ownership interest and or managing control in the group to include the following information:</label>
+				</div>
+				<div class="col-lg-12">
+					<input type="file" name="group_ownership_files" class="form-control">
+				</div>
+			</div>
+			<div class="row">
+			<div class="col-lg-12 d-flex justify-content-end">
+				<button type="submit"  class="btn btn-primary btn-md">
+					<%= action_name == 'edit_group' ? 'Update Group' : 'Add Group' %>
+				</button>
+			</div>
+		</div>
+
+
+		</div>
+	</form>
+</div>
+
+<script>
+	$('#group_type_picker').on('change',function(){
+		$(this).val() == 'other' ? changeToInput() : '';
+	})
+
+	function changeToInput() {
+		$('#group_type_picker').addClass('d-none');
+		$('#other_type').removeClass('d-none');
+
+	}
+</script>
+<% end %>

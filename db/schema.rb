@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_21_085811) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_24_084639) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -94,6 +94,41 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_21_085811) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["disclosure_category_id"], name: "index_disclosure_questions_on_disclosure_category_id"
+  end
+
+  create_table "enrollment_groups", force: :cascade do |t|
+    t.string "group_name"
+    t.string "group_code"
+    t.string "office_address"
+    t.string "city"
+    t.string "state"
+    t.string "zip_code"
+    t.string "phone_number"
+    t.string "ext"
+    t.string "fax_number"
+    t.string "business_group", default: "no"
+    t.string "legal_business_name"
+    t.string "another_business_name", default: "no"
+    t.string "other_business_name"
+    t.string "other_business_type"
+    t.string "specify_type_of_group"
+    t.string "shared_tin", default: "no"
+    t.string "tin_file"
+    t.string "specify_type_of_group_file"
+    t.string "npi_digit_type"
+    t.string "npi_digit_type_group"
+    t.string "provider_type"
+    t.string "po_box"
+    t.string "po_box_city"
+    t.string "po_box_state"
+    t.string "po_box_zip_code"
+    t.string "ca_po_box_address"
+    t.string "ca_po_box_city"
+    t.string "ca_po_box_state"
+    t.string "ca_po_box_zip_code"
+    t.string "individual_ownership"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "health_plans", force: :cascade do |t|

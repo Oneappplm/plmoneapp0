@@ -42,12 +42,17 @@ Rails.application.routes.draw do
     collection do
       get :new_user, path: 'new-user'
       post :new_user, path: 'new-user'
-
+      get :groups
+      get :new_group, path: 'new-group'
+      post :new_group, path: 'new-group'
     end
     member do
       get :delete_user
       get :edit_user, path: 'edit-user'
       patch :edit_user, path: 'edit-user'
+      post :delete_group
+      get :edit_group, path: 'edit-group'
+      patch :edit_group, path: 'edit-group'
     end
   end
 
