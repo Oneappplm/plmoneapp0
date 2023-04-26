@@ -1,7 +1,7 @@
 class ProvidersController < ApplicationController
 	before_action :set_provider, only: [:show, :edit, :update, :destroy]
 	before_action :initialize_collections_data, only: [:new, :edit, :create, :update]
-
+	 before_action :get_states, only: [:new, :edit]
 	def index
 			@providers = Provider.all
 	end
@@ -87,5 +87,9 @@ end
 					np_licenses_attributes: [:id, :np_license_number, :np_license_effective_date, :np_license_expiration_date, :_destroy],
 					rn_licenses_attributes: [:id, :rn_license_number, :rn_license_effective_date, :rn_license_expiration_date, :_destroy]
 			)
+	end
+
+	def get_states
+		@states = State.all
 	end
 end

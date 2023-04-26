@@ -42,12 +42,141 @@
 		</div>
 		<div class="row mb-3">
 			<div class="col-lg-6">
+				<!-- new field -->
+				<%= text_field_tag :address_line_1, "" ,placeholder: 'Address Line 1 *', required: true , class: 'form-control' %>
+			</div>
+			<div class="col-lg-6">
+				<!-- new field -->
+				<%= text_field_tag :address_line_2, "" , placeholder: 'Address Line 2', class: 'form-control' %>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-6">
+				<!-- new field -->
+				<%= text_field_tag :city, "" ,placeholder: 'City *', required: true , class: 'form-control' %>
+			</div>
+			<div class="col-lg-6">
+				<!-- new field -->
+	                <%= select_tag(:state, options_for_select(@states.pluck(:name, :id).unshift(['State *', ''])), {:class => 'form-select'})  %>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-4">
+				<!-- new field -->
+				<%= text_field_tag :telephone_number, "" ,placeholder: 'Telephone Number *', required: true , class: 'form-control' %>
+			</div>
+			<div class="col-lg-2">
+				<!-- new field -->
+				<%= text_field_tag :ext, "" ,placeholder: 'Ext' , class: 'form-control' %>
+			</div>
+			<div class="col-lg-6">
+				<!-- new field -->
+				<%= text_field_tag :email_address, "" , placeholder: 'Email Address *', required: true, class: 'form-control' %>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-6">
 				<%= f.text_field :ssn, placeholder: 'SSN *', class: 'form-control' %>
 			</div>
 			<div class="col-lg-6">
 				<%= f.text_field :npi, placeholder: 'NPI *', class: 'form-control' %>
 			</div>
 		</div>
+		<div class="row mb-3">
+			<div class="col-lg-6">
+				<%= f.text_field :dea_number, placeholder: 'DEA Number *', class: 'form-control' %>
+			</div>
+			<div class="col-lg-6">
+				<!-- new field -->
+	            <%= select_tag(:dea_registration_date, options_for_select(@states.pluck(:name, :id).unshift(['DEA Registration State', ''])), {:class => 'form-select'})  %>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-6">
+				<%= f.text_field :dea_license_effective_date, placeholder: 'DEA License Effective Date *', class: 'form-control', onfocus: "(this.type = 'date')" %>
+			</div>
+			<div class="col-lg-6">
+				<%= f.text_field :dea_license_expiration_date, placeholder: 'DEA License Expiration Date *', class: 'form-control', onfocus: "(this.type = 'date')" %>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-6">
+				<!-- new field -->
+				<%= text_field_tag :provider_hire_date_seeing_patient, "", placeholder: 'Hire date of provider seeing patients *', required: true, class: 'form-control', onfocus: "(this.type = 'date')" %>
+			</div>
+			<div class="col-lg-6">
+				<!-- new field -->
+				<%= text_field_tag :effective_date_seeing_patient, '', placeholder: 'Effective date of provider seeing patients *', class: 'form-control', onfocus: "(this.type = 'date')" %>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-4">
+				<!-- new field -->
+				<%= text_field_tag :medicare_provider_number, "", placeholder: 'Medicare Provider Number *', required: true, class: 'form-control' %>
+			</div>
+			<div class="col-lg-4">
+				<!-- new field -->
+				<%= text_field_tag :medicaid_provider_number, '', placeholder: 'Medicaid Provider Number *', required: true, class: 'form-control'%>
+			</div>
+			<div class="col-lg-4">
+				<!-- new field -->
+				<%= text_field_tag :tricare_provider_number, '', placeholder: 'TRICARE Provider Number*', required: true, class: 'form-control' %>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-6">
+				<!-- new field -->
+				<label>Admitting Privileges</label>
+				<!-- will still need to get options from Rave -->
+	            <%= select_tag(:admitting_privileges, options_for_select([]), {:class => 'form-select'})  %>
+			</div>
+			<div class="col-lg-6">
+				<!-- new field -->
+				<label>Have you gone recently through revalidation with any payor?</label>
+	            <%= select_tag(:revalidation, options_for_select([['Yes','yes'],['No','no']]), {:class => 'form-select'})  %>
+			</div>
+		</div>
+		<div class="row mb-5">
+			<div class="col-lg-6">
+				<!-- new field -->
+				<label>Are you employed by other groups or facilities?</label>
+	            <%= select_tag(:employed_by_other, options_for_select([['Yes','yes'],['No','no']]), {:class => 'form-select'})  %>
+			</div>
+			<div class="col-lg-6">
+				<!-- new field -->
+				<label>Does the provider require to work under a supervising licensed psychologist?</label>
+	            <%= select_tag(:supervised_by_psychologist, options_for_select([['Yes','yes'],['No','no']]), {:class => 'form-select'})  %>
+			</div>
+		</div>
+
+		<div class="row-mb-5">
+			<div class="col-lg-12 mb-2">
+				<strong>Medical School</strong>
+			</div>
+			<div class="col-lg-12">
+				<div class="row mb-3">
+					<div class="col-lg-6">
+						<!-- new field -->
+						<%= text_field_tag :medical_school_name, '', placeholder: 'Medical School Name',class: 'form-control'%>
+					</div>
+					<div class="col-lg-6">
+						<!-- new field -->
+						<%= text_field_tag :medical_school_address, '', placeholder: 'Medical School Address', class: 'form-control'%>
+					</div>
+				</div>
+				<div class="row mb-3">
+					<div class="col-lg-6">
+						<!-- new field -->
+						<%= text_field_tag :graduation_date, '', placeholder: 'Graduation Date *', class: 'form-control', onfocus: "(this.type = 'date')" %>
+					</div>
+					<div class="col-lg-6">
+						<!-- new field -->
+						<%= text_field_tag :school_certificate, '', placeholder: 'Copy of Certificate',  class: 'form-control',onfocus: "(this.type = 'file')", title: 'Copy of Certificate'%>
+					</div>
+				</div>
+			</div>
+		</div>
+		<hr>
 		<div class="row mb-3">
 			<div class="col-lg-6">
 				<%= f.text_field :caqhid, placeholder: 'CAQH ID *', class: 'form-control' %>
@@ -66,18 +195,29 @@
 		</div>
 		<div class="row mb-3">
 			<div class="col-lg-6">
-				<%= f.text_field :nccpa_number, placeholder: 'NCCPA Number *', class: 'form-control' %>
+				<!-- new field -->
+				<%= text_field_tag :caqh_username, '', placeholder: 'CAQH Username', class: 'form-control' %>
 			</div>
 			<div class="col-lg-6">
-				<%= f.text_field :dea_number, placeholder: 'DEA Number *', class: 'form-control' %>
+				<!-- new field -->
+				<%= password_field_tag :caqh_password, '' ,  placeholder: 'CAQH Password', class: 'form-control' %>
 			</div>
 		</div>
 		<div class="row mb-3">
 			<div class="col-lg-6">
-				<%= f.text_field :dea_license_effective_date, placeholder: 'DEA License Effective Date *', class: 'form-control', onfocus: "(this.type = 'date')" %>
+				<!-- new field -->
+	            <%= select_tag(:caqh_state, options_for_select(@states.pluck(:name, :id).unshift(['CAQH State', ''])), {:class => 'form-select'})  %>
 			</div>
 			<div class="col-lg-6">
-				<%= f.text_field :dea_license_expiration_date, placeholder: 'DEA License Expiration Date *', class: 'form-control', onfocus: "(this.type = 'date')" %>
+				<!-- new field -->
+				<%= text_field_tag :caqh_app, '', placeholder: 'CAQH App', class: 'form-control' %>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-6">
+				<!-- new field -->
+				<!-- will need to get options from rave -->
+	            <%= select_tag(:caqh_payor, options_for_select(['CAQH Payor', '']), {:class => 'form-select'})  %>
 			</div>
 		</div>
 		<div class="row mb-3 mt-2">
@@ -91,7 +231,7 @@
 						<% end %>
 				 </div>
 					<div class="links mt-2">
-						<button type="button" class="add_association btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> 	Add Taxonomy </button
+						<button type="button" class="add_association btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> 	Add Taxonomy </button>
 					</div>
 			</div>
 		</div>
@@ -106,7 +246,7 @@
 						<% end %>
 				 </div>
 					<div class="links mt-2">
-						<button type="button" class="add_association btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> 	Add License </button
+						<button type="button" class="add_association btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> 	Add License </button>
 					</div>
 			</div>
 		</div>
@@ -114,10 +254,14 @@
 			<div class="col-lg-12 mt-3">
 				<h3>PA License</h3>
 			</div>
-			<div class="col-lg-6">
+			<div class="col-lg-4">
+				<!-- only change placement -->
+				<%= f.text_field :nccpa_number, placeholder: 'NCCPA Number *', class: 'form-control' %>
+			</div>
+			<div class="col-lg-4">
 				<%= f.text_field :pa_license_effective_date, placeholder: 'PA License Effective Date *', class: 'form-control', onfocus: "(this.type = 'date')" %>
 			</div>
-			<div class="col-lg-6">
+			<div class="col-lg-4">
 				<%= f.text_field :pa_license_expiration_date, placeholder: 'PA License Expiration Date *', class: 'form-control', onfocus: "(this.type = 'date')" %>
 			</div>
 		</div>
@@ -132,11 +276,11 @@
 						<% end %>
 					</div>
 					<div class="links mt-2">
-						<button type="button" class="add_association btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> 	Add NP License </button
+						<button type="button" class="add_association btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> 	Add NP License </button>
 					</div>
 			</div>
 		</div>
-		<div class="row mb-3 mt-2">
+		<div class="row mb-5 mt-2">
 			<div class="col-lg-12 mt-3">
 				<h3>RN License</h3>
 			</div>
@@ -147,13 +291,27 @@
 						<% end %>
 					</div>
 					<div class="links mt-2">
-						<button type="button" class="add_association btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> 	Add RN License </button
+						<button type="button" class="add_association btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> 	Add RN License </button>
 					</div>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-6">
+				<label>Telehealth</label>
+				<!-- new field -->
+				<%= text_field_tag :telehealth_license_number, '', placeholder: 'Telehealth License Number', class: 'form-control' %>
+			</div>
+			<div class="col-lg-6">
+				<label>Board Certification</label>
+				<!-- new field -->
+				<%= text_field_tag :board_certification_number, '', placeholder: 'Board Certification Number', class: 'form-control' %>
 			</div>
 		</div>
 		<div class="row mb-3 mt-5">
 			<div class="col-lg-6">
-				<%= f.text_field :dco, placeholder: 'DCO *', class: 'form-control' %>
+				<!-- new field -->
+	             <%= select_tag(:state, options_for_select(@states.pluck(:name, :id).unshift(['Practice Location', ''])), {:class => 'form-select'})  %>
+				<%#= f.text_field :dco, placeholder: 'DCO *', class: 'form-control' %>
 			</div>
 			<div class="col-lg-6">
 				<%= f.file_field :dco_file, placeholder: 'DCO *', class: 'form-control' %>
