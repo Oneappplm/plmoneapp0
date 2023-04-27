@@ -1,48 +1,48 @@
 <div class="row mb-3">
-	<div class="col-lg-12">
-		<label>Licensure State</label>
-		<select class="form-select" name="licensure_state" required>
-			<% @states.each do |state|%>
-				<option value="<%= state.name %>"><%= state.name %></option>
-			<% end %>
-		</select>
-	</div>
+   <div class="col-lg-12">
+      <label>Licensure State</label>
+      <select class="form-select" name="licensure_state" required>
+         <% @states.each do |state|%>
+         <option value="<%= state.name %>"><%= state.name %></option>
+         <% end %>
+      </select>
+   </div>
 </div>
 <div class="row mb-3">
-	<div class="col-lg-12">
-		<label>License Type *</label>
-		<input type="text" name="license_type" required class="form-control
-		">
-	</div>
+   <div class="col-lg-12">
+      <label>License Type *</label>
+      <input type="text" name="license_type" required class="form-control
+         ">
+   </div>
 </div>
 <div class="row mb-3">
-	<div class="col-lg-6">
-		<label>License Number *</label>
-		<input type="text" name="license_number" required class="form-control
-		">
-	</div>
-	<div class="col-lg-6">
-		<label>License Status *</label>
-		<input type="text" name="license_status" required class="form-control
-		">
-	</div>
+   <div class="col-lg-6">
+      <label>License Number *</label>
+      <input type="text" name="license_number" required class="form-control
+         ">
+   </div>
+   <div class="col-lg-6">
+      <label>License Status *</label>
+      <input type="text" name="license_status" required class="form-control
+         ">
+   </div>
 </div>
 <div class="row mb-3">
-	<div class="col-lg-6">
-		<label>Issue Date</label>
-		<input type="date" name="licensure_issue_date" class="form-control">
-	</div>
-	<div class="col-lg-6">
-		<label>Expiration Date *</label>
-		<input type="date" name="licensure_expiration_date" class="form-control">
-		<span class="d-flex gap-2">
-			<input type="checkbox" name="licensure_not_expire">
-			<small>Does not expire</small>
-		</span>
-	</div>
+   <div class="col-lg-6">
+      <label>Issue Date</label>
+      <input type="date" name="licensure_issue_date" class="form-control">
+   </div>
+   <div class="col-lg-6">
+      <label>Expiration Date *</label>
+      <input type="date" name="licensure_expiration_date" class="form-control">
+      <span class="d-flex gap-2">
+      <input type="checkbox" name="licensure_not_expire">
+      <small>Does not expire</small>
+      </span>
+   </div>
 </div>
 <div class="row mb-3">
-	<div class="col-lg-12">
+   <div class="col-lg-12">
       <div class="d-flex justify-content-between my-3">
          <label class="form-label">Are you currently practicing in this state? *</label>
          <div class="d-flex me-4 gap-2">
@@ -56,10 +56,10 @@
             </span>
          </div>
       </div>
-	</div>
-</div>	
+   </div>
+</div>
 <div class="row mb-3">
-	<div class="col-lg-12">
+   <div class="col-lg-12">
       <div class="d-flex justify-content-between my-3">
          <label class="form-label">Is this your primary license? *</label>
          <div class="d-flex me-4 gap-2">
@@ -73,10 +73,10 @@
             </span>
          </div>
       </div>
-	</div>
+   </div>
 </div>
 <div class="row mb-3">
-	<div class="col-lg-12">
+   <div class="col-lg-12">
       <div class="d-flex justify-content-between my-3">
          <label class="form-label">Does this license require supervision? *</label>
          <div class="d-flex me-4 gap-2">
@@ -90,5 +90,41 @@
             </span>
          </div>
       </div>
-	</div>
-</div>	
+   </div>
+</div>
+<div class="row mt-3 d-none" id="supervised_fields">
+   <div class="col-lg-12">
+      <h5>Name of Sponsor</h5>
+   </div>
+   <div class="col-lg-4">
+      <label>First Name</label>
+      <input type="text" name="licensure_sponsor_fname" class="form-control">
+   </div>
+   <div class="col-lg-2">
+      <label>Middle Name</label>
+      <input type="text" name="licensure_sponsor_mname" class="form-control">
+   </div>
+   <div class="col-lg-4">
+      <label>Last Name</label>
+      <input type="text" name="licensure_sponsor_lname" class="form-control">
+   </div>
+   <div class="col-lg-2">
+      <label>Suffix</label>
+      <select class="form-select" placeholder="Suffix" name="licensure_sponsor_suffix">
+         <option>Suffix</option>
+         <option>Jr.</option>
+         <option>Sr.</option>
+         <option>III.</option>
+         <option>IV.</option>
+      </select>
+   </div>
+   <div class="col-lg-12 mt-3">
+      <label>Degree</label>
+      <input type="text" name="licensure_sponsor_degree" class="form-control">
+   </div>
+</div>
+<script>
+	$('input[name=licensure_require_supervision]').on('change',function(){
+		$(this).val() == 'yes' ? $('#supervised_fields').removeClass('d-none') : $('#supervised_fields').addClass('d-none');
+	})
+</script>

@@ -38,4 +38,31 @@
          </div>
       </div>
 	</div>
+
+					<div id="dea_tarea" class="">
+
+						<div class="col-lg-12">
+							<label>Please explain schedule limitations</label>
+							<textarea name="dea_no" class="form-control" rows="8"></textarea>
+						</div>
+						<div class="col-lg-12 mt-3">
+							<% scheds = ['2', '2N', '3', '3N', '4', '5']%>
+							<h5>Select Schedule(s) Held</h5>
+							<div class="d-flex gap-2">
+								<% scheds.each do |sched|%>
+								<label>
+									<input type="checkbox" name="scheds[]" value="<%= sched %>">
+									<strong><%= sched %></strong>
+								</label>
+								<% end %>
+							</div>
+						</div>
+					</div>
 </div>
+
+<script>
+	$('input[name=dea_full_schedule]').on('change',function(e)
+	{
+		$(this).val() == 'no' ? $("#dea_tarea").removeClass('d-none') : $("#dea_tarea").addClass('d-none'); 
+	})
+</script>
