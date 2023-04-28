@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_24_084639) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_27_155226) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -129,6 +129,30 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_24_084639) do
     t.string "individual_ownership"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "group_dcos", force: :cascade do |t|
+    t.bigint "enrollment_group_id", null: false
+    t.string "client"
+    t.string "dco_name"
+    t.string "dco_address"
+    t.string "dco_city"
+    t.string "state"
+    t.string "dco_zipcode"
+    t.string "country"
+    t.string "service_location_phone_number"
+    t.string "service_location_fax_number"
+    t.string "panel_status_to_new_patients"
+    t.string "panel_age_limit"
+    t.string "include_in_directory"
+    t.string "dco_provider_name"
+    t.string "dco_provider_email"
+    t.string "dco_provider_phone_number"
+    t.string "dco_provider_fax_number"
+    t.string "dco_provider_position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enrollment_group_id"], name: "index_group_dcos_on_enrollment_group_id"
   end
 
   create_table "health_plans", force: :cascade do |t|
@@ -344,6 +368,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_24_084639) do
     t.string "review_details"
   end
 
+  add_foreign_key "group_dcos", "enrollment_groups"
   add_foreign_key "provider_licenses", "providers"
   add_foreign_key "provider_np_licenses", "providers"
   add_foreign_key "provider_rn_licenses", "providers"

@@ -39,12 +39,16 @@ Rails.application.routes.draw do
 
   resources :providers
   resources :enrollments do
+
     collection do
       get :new_user, path: 'new-user'
       post :new_user, path: 'new-user'
       get :groups
       get :new_group, path: 'new-group'
       post :new_group, path: 'new-group'
+      resources :groups do
+        resources :dcos
+      end
     end
     member do
       get :delete_user
