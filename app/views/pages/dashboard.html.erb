@@ -1,7 +1,1214 @@
+<style>
+   details {
+   border: 1px solid #d4d4d4;    
+   padding: .75em .75em 0;
+   margin-top: 10px;
+   box-shadow:0 0 20px #d4d4d4;
+   }
+   summary {	
+   font-weight: bold;
+   margin: -.75em -.75em 0;
+   padding: .75em;
+   background-color: #5f75a4;
+   color: #fff;
+   }
+   details[open] {
+   padding: .75em;
+   border-bottom: 1px solid #d4d4d4;
+   }
+   details[open] summary {
+   border-bottom: 1px solid #d4d4d4;
+   margin-bottom: 10px;
+   }
+</style>
+<style media="screen">
+   @import url(http://fonts.googleapis.com/css?family=Roboto:400,700,300);
+   .circle-wrap {
+   margin: 20px 20px 20px 0px;
+   width: 150px;
+   height: 150px;
+   background: #fefcff;
+   border-radius: 50%;
+   border: 1px solid #cdcbd0;
+   }
+   .circle-wrap .circle .mask,
+   .circle-wrap .circle .fill {
+   width: 150px;
+   height: 150px;
+   position: absolute;
+   border-radius: 50%;
+   }
+   .circle-wrap .circle .mask {
+   clip: rect(0px, 150px, 150px, 75px);
+   }
+   .circle-wrap .inside-circle {
+   width: 122px;
+   height: 122px;
+   border-radius: 50%;
+   background: #d2eaf1;
+   line-height: 120px;
+   text-align: center;
+   margin-top: 14px;
+   margin-left: 14px;
+   color: #1e51dc;
+   position: absolute;
+   z-index: 100;
+   font-weight: 700;
+   font-size: 2em;
+   }
+   /* color animation */
+   /* 3rd progress bar */
+   .mask .fill {
+   clip: rect(0px, 75px, 150px, 0px);
+   background-color: #227ded;
+   }
+   .mask.full,
+   .circle .fill {
+   animation: fill ease-in-out 3s;
+   transform: rotate(135deg);
+   }
+   @keyframes fill{
+   0% {
+   transform: rotate(0deg);
+   }
+   100% {
+   transform: rotate(135deg);
+   }
+   }
+</style>
+<style>
+   .progress{
+   width: 100px;
+   height: 100px;
+   line-height: 100px;
+   background: none;
+   margin: 0 auto;
+   box-shadow: none;
+   position: relative;
+   }
+   .progress:after{
+   content: "";
+   width: 100%;
+   height: 100%;
+   border-radius: 50%;
+   border: 12px solid #fff;
+   position: absolute;
+   top: 0;
+   left: 0;
+   }
+   .progress > span{
+   width: 50%;
+   height: 100%;
+   overflow: hidden;
+   position: absolute;
+   top: 0;
+   z-index: 1;
+   }
+   .progress .progress-left{
+   left: 0;
+   }
+   .progress .progress-bar{
+   width: 100%;
+   height: 100%;
+   background: none;
+   border-width: 12px;
+   border-style: solid;
+   position: absolute;
+   top: 0;
+   }
+   .progress .progress-left .progress-bar{
+   left: 100%;
+   border-top-right-radius: 80px;
+   border-bottom-right-radius: 80px;
+   border-left: 0;
+   -webkit-transform-origin: center left;
+   transform-origin: center left;
+   }
+   .progress .progress-right{
+   right: 0;
+   }
+   .progress .progress-right .progress-bar{
+   left: -100%;
+   border-top-left-radius: 80px;
+   border-bottom-left-radius: 80px;
+   border-right: 0;
+   -webkit-transform-origin: center right;
+   transform-origin: center right;
+   animation: loading-1 1.8s linear forwards;
+   }
+   .progress .progress-value{
+   width: 100%;
+   height: 100%;
+   border-radius: 50%;
+   font-size: 20px;
+   color: #fff;
+   text-align: center;
+   }
+   .progress.blue 
+   .progress-bar{
+   border-color: #006A4C;
+   }
+   .progress.blue1 .progress-bar{
+   border-color: #6A0000;
+   }
+   .progress.blue2 .progress-bar{
+   border-color: #00516A;
+   }
+   .progress.blue3 .progress-bar{
+   border-color: #6A0060;
+   }
+   .progress.blue .progress-left .progress-bar{
+   animation: loading-2 1.5s linear forwards 1.8s;
+   }
+   .progress-left .progress-bar{
+   animation: loading-3 1s linear forwards 1.8s;
+   }
+   .progress-left .progress-bar{
+   animation: loading-4 0.4s linear forwards 1.8s;
+   }
+   .progress-left .progress-bar{
+   animation: loading-5 1.2s linear forwards 1.8s;
+   }
+   @keyframes loading-1{
+   0%{
+   -webkit-transform: rotate(0deg);
+   transform: rotate(0deg);
+   }
+   100%{
+   -webkit-transform: rotate(180deg);
+   transform: rotate(180deg);
+   }
+   }
+   @keyframes loading-2{
+   0%{
+   -webkit-transform: rotate(0deg);
+   transform: rotate(0deg);
+   }
+   100%{
+   -webkit-transform: rotate(180deg);
+   transform: rotate(180deg);
+   }
+   }
+   @keyframes loading-3{
+   0%{
+   -webkit-transform: rotate(0deg);
+   transform: rotate(0deg);
+   }
+   100%{
+   -webkit-transform: rotate(90deg);
+   transform: rotate(90deg);
+   }
+   }
+   @keyframes loading-4{
+   0%{
+   -webkit-transform: rotate(0deg);
+   transform: rotate(0deg);
+   }
+   100%{
+   -webkit-transform: rotate(180deg);
+   transform: rotate(180deg);
+   }
+   }
+   @media only screen and (max-width: 990px){
+   .progress{ margin-bottom: 20px; }
+   }
+</style>
 <div class="content container-fluid">
-	<div class="row align-items-center">
-		<div class="col">
-			<h1 class="page-header-title">Overview</h1>
-		</div>
-	</div>
+   <div class="row align-items-center">
+      <div class="wrapper" >
+         <div class="" style="background:#ffffff;">
+                  <div class="row">
+                     <div class="col-md-12">
+                        <div class="container-fluid">
+                           <div class="row">
+                              <div class="col-md-8">
+                                 <div class="" >
+                                    <div class="container">
+                                       <div class="row">
+                                          <div class="col-md-3" >
+                                             <div class="card" style="
+                                                background: #5ACB74;
+                                                border-radius: 5px;">
+                                                <br>
+                                                <p style="text-align:center; color:#ffffff;">Health Plans</p>
+                                                <div class="progress blue">
+                                                   <span class="progress-left">
+                                                   <span class="progress-bar"></span>
+                                                   </span>
+                                                   <span class="progress-right">
+                                                   <span class="progress-bar"></span>
+                                                   </span>
+                                                   <div class="progress-value">100%</div>
+                                                </div>
+                                                <br>
+                                                <div class="container" >
+                                                   <div class="row" style="background: #006A4C;
+                                                      width: 150px;
+                                                      height: 29px;
+                                                      border-radius:5px;
+                                                      ">
+                                                      <div class="col" >
+                                                         <span style="color:#ffffff;">↑1.700</span>
+                                                      </div>
+                                                      <div class="col-md">
+                                                         <span style="color:#ffffff;">↓1.700 </span>
+                                                      </div>
+                                                   </div>
+                                                </div>
+                                             </div>
+                                          </div>
+                                          <div class="col-md-3" >
+                                             <div class="card" style="
+                                                background: #E35C5C;
+                                                border-radius: 5px;">
+                                                <br>
+                                                <p style="text-align:center; color:#ffffff;">Public Sector</p>
+                                                <div class="progress blue1">
+                                                   <span class="progress-left">
+                                                   <span class="progress-bar"></span>
+                                                   </span>
+                                                   <span class="progress-right">
+                                                   <span class="progress-bar"></span>
+                                                   </span>
+                                                   <div class="progress-value">50%</div>
+                                                </div>
+                                                <br>
+                                                <div class="container" >
+                                                   <div class="row" style="background: #6A0000;;
+                                                      height: 29px;
+                                                      border-radius:5px;
+                                                      ">
+                                                      <div class="col" >
+                                                         <span style="color:#ffffff;">↑1.700</span>
+                                                      </div>
+                                                      <div class="col-md">
+                                                         <span style="color:#ffffff;">↓1.700 </span>
+                                                      </div>
+                                                   </div>
+                                                </div>
+                                             </div>
+                                          </div>
+                                          <div class="col-md-3" >
+                                             <div class="card" style="
+                                                background: #5AB0CB;
+                                                border-radius: 5px;">
+                                                <br>
+                                                <p style="text-align:center; color:#ffffff;">Pharmacy & BPMS</p>
+                                                <div class="progress blue2">
+                                                   <span class="progress-left">
+                                                   <span class="progress-bar"></span>
+                                                   </span>
+                                                   <span class="progress-right">
+                                                   <span class="progress-bar"></span>
+                                                   </span>
+                                                   <div class="progress-value">50%</div>
+                                                </div>
+                                                <br>
+                                                <div class="container" >
+                                                   <div class="row" style="background: #00516A;
+                                                      width: 150px;
+                                                      height: 29px;
+                                                      border-radius:5px;
+                                                      ">
+                                                      <div class="col" >
+                                                         <span style="color:#ffffff;">↑1.700</span>
+                                                      </div>
+                                                      <div class="col-md">
+                                                         <span style="color:#ffffff;">↓1.700 </span>
+                                                      </div>
+                                                   </div>
+                                                </div>
+                                             </div>
+                                          </div>
+                                          <div class="col-md-3" >
+                                             <div class="card" style="
+                                                background: #C95ACB;
+                                                border-radius: 5px;">
+                                                <br>
+                                                <p style="text-align:center; color:#ffffff;">Providers</p>
+                                                <div class="progress blue3">
+                                                   <span class="progress-left">
+                                                   <span class="progress-bar"></span>
+                                                   </span>
+                                                   <span class="progress-right">
+                                                   <span class="progress-bar"></span>
+                                                   </span>
+                                                   <div class="progress-value">50%</div>
+                                                </div>
+                                                <br>
+                                                <div class="container" >
+                                                   <div class="row" style="background: #6A0060;
+                                                      width: 150px;
+                                                      height: 29px;
+                                                      border-radius:5px;
+                                                      ">
+                                                      <div class="col" >
+                                                         <span style="color:#ffffff;">↑1.700</span>
+                                                      </div>
+                                                      <div class="col-md">
+                                                         <span style="color:#ffffff;">↓1.700 </span>
+                                                      </div>
+                                                   </div>
+                                                </div>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <br>
+                                 <div class="card flex-fill w-100 mb-3"style="background: #FFFFFF;
+                                    box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
+                                    border-radius: 9.03012px;">
+                                    <div class="container-fluid">
+                                       <div class="row">
+                                          <div class="col-md-6">
+                                             <div class="card-header">
+                                                <h5 class="card-title" style="color:#000000;">Providers</h5>
+                                             </div>
+                                          </div>
+                                          <div class="col-md-6">
+                                             <div class="container-fluid">
+                                                <div class="row">
+                                                   <div class="col-md-6">
+                                                      <div class="card-header">
+                                                         <h5 class="card-title" style="color:#43E794;"><span>-</span>Active</h5>
+                                                      </div>
+                                                   </div>
+                                                   <div class="col-md-6">
+                                                      <div class="card-header">
+                                                         <h5 class="card-title" style="color:#FF5274;"><span width="80px;">-</span>Terminated</h5>
+                                                      </div>
+                                                   </div>
+                                                </div>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                    <div class="card-body">
+                                       <div class="chart">
+                                          <canvas id="chartjs-line"></canvas>
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <div class="col-12 mb-3" style="background: #FFFFFF;
+                                    box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
+                                    border-radius: 9.03012px;">
+                                    <div class="card">
+                                       <div class="card-header">
+                                          <h5 class="card-title" style="color:#000000;">Selective Reverence Chart</h5>
+                                       </div>
+                                       <div class="card-body">
+                                          <div class="row">
+                                             <div class="col-md-6">
+                                                <div class="chart chart-sm">
+                                                   <canvas id="chartjs-doughnut"></canvas>
+                                                </div>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <div class="col-12">
+                                                   <table style="background: #C7C7C7;
+                                                      border-radius: 15px;
+                                                      width:100%;
+                                                      padding:5px 5px 5px 5px;
+                                                      height: 40.59px;">
+                                                      <thead >
+                                                         <tr>
+                                                            <th>
+                                                               &nbsp; &nbsp; Daily
+                                                            </th>
+                                                            <th>
+                                                               Weekly
+                                                            </th>
+                                                            <th>
+                                                               Monthly
+                                                            </th>
+                                                            <th> Yearly</th>
+                                                         </tr>
+                                                      </thead>
+                                                   </table>
+                                                </div>
+                                                <br>
+                                                <div class="col-12 mb-3" style="background: rgba(0, 162, 255, 0.3);
+                                                   padding: 2px 10px;
+                                                   ">
+                                                   <span style="font-size: 15px;
+                                                      color: #464A53;">Attested</span><br>
+                                                   <span style="font-size: 11px;
+                                                      color: #7F63F4;">By B.S.Druid Wensleydale</span><br>
+                                                   <span style="font-size: 10px;
+                                                      color: #464A53;
+                                                      ">Just the way you are starter..</span>
+                                                </div>
+                                                <div class="col-12 mb-3" style="
+                                                   background: rgba(143, 0, 255, 0.3);
+                                                   padding: 2px 10px;
+                                                   ">
+                                                   <span style="font-size: 15px;
+                                                      color: #464A53;">No Application</span><br>
+                                                   <span style="font-size: 11px;
+                                                      color: #7F63F4;">By B.S.Druid Wensleydale</span><br>
+                                                   <span style="font-size: 10px;
+                                                      color: #464A53;
+                                                      ">Just the way you are starter..</span>
+                                                </div>
+                                                <div class="col-12 mb-3" style="
+                                                   background: rgba(255, 82, 116, 0.3);
+                                                   padding: 2px 10px;
+                                                   ">
+                                                   <span style="font-size: 15px;
+                                                      color: #464A53;">Incomplete Application</span><br>
+                                                   <span style="font-size: 11px;
+                                                      color: #7F63F4;">By B.S.Druid Wensleydale</span><br>
+                                                   <span style="font-size: 10px;
+                                                      color: #464A53;
+                                                      ">Just the way you are starter..</span>
+                                                </div>
+                                                <div class="col-12 mb-3" style="background: rgba(123, 179, 26, 0.3);
+                                                   padding: 2px 10px;
+                                                   ">
+                                                   <span style="font-size: 15px;
+                                                      color: #464A53;">Complete Application</span><br>
+                                                   <span style="font-size: 11px;
+                                                      color: #7F63F4;">By B.S.Druid Wensleydale</span><br>
+                                                   <span style="font-size: 10px;
+                                                      color: #464A53;
+                                                      ">Just the way you are starter..</span>
+                                                </div>
+                                             </div>
+                                          </div>
+                                          <table>
+                                             <thead >
+                                                <tr>
+                                                   <th >
+                                                      <span style="font-size:50px; color:#00A2FF">.</span><span style="font-size: 10px;
+                                                         ">Attested</span>
+                                                   </th>
+                                                   <th >
+                                                      <span style="font-size:50px; color:#8F00FF">.</span> <span style="font-size: 10px;
+                                                         ">NoApplication</span>
+                                                   </th>
+                                                   <th >
+                                                      <span style="font-size:50px; color:#FF5274">.</span> <span style="font-size: 10px;
+                                                         ">IncompleteApplication</span>
+                                                   </th>
+                                                   <th >
+                                                      <span style="font-size:50px; color:#7BB31A">.</span> <span style="font-size: 10px;
+                                                         ">CompleteApplication</span>
+                                                   </th>
+                                                   <th >
+                                                      <span style="font-size:50px; color:#FFC107">.</span> <span style="font-size: 10px;
+                                                         ">PendingDataEntry</span>
+                                                   </th>
+                                                   <th >
+                                                      <span style="font-size:50px; color:#FF9800">.</span> <span style="font-size: 10px;
+                                                         ">PInProcess</span>
+                                                   </th>
+                                                </tr>
+                                             </thead>
+                                          </table>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="col-md-4">
+                                 <div class="card mb-3" style="background: #FFFFFF;
+                                    box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
+                                    border-radius: 9.03012px;">
+                                    <div class="card-header">
+                                       <h5 class="card-title" style="color:#000000;">Progress</h5>
+                                    </div>
+                                    <div class="card-body">
+                                       <div class="chart chart-sm">
+                                          <canvas id="chartjs-dashboard-line"></canvas>
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <div class="card mb-3" style="text-align:center; padding:20px 5px 5px 5px; background: #FFFFFF;
+                                    box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
+                                    border-radius: 9.03012px;">
+                                    <div class="row">
+                                       <h5 class="card-title" 
+                                          style="color:#000000; ">Votes</h5>
+                                    </div>
+                                    <h1 style="color:#3171BE; ">100</h1>
+                                    <span class="text-danger">
+                                    <button class="btn btn-secondary" style="font-size:15px;">View</button>
+                                    <br><br>
+                                 </div>
+                                 <div class="card mb-3" style="background: #FFFFFF;
+                                    box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
+                                    border-radius: 9.03012px;">
+                                    <div class="card-header">
+                                       <h5 class="card-title" style="color:#000000; font-size:15px;">PSV Completed</h5>
+                                    </div>
+                                    <div class="card-body">
+                                       <div class="chart">
+                                          <canvas id="chartjs-bar"></canvas>
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <br>
+                                 <div class="" style="background: #FFFFFF;
+                                    box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
+                                    border-radius: 9.03012px;">
+                                    <br>
+                                    <div class="row">
+                                       <h5 class="card-title" 
+                                          style="color:#000000; font-size:12px; text-align:center;">Terminated Providers</h5>
+                                    </div>
+                                    <center>
+                                    <h5>
+                                    Month of January
+                                    <h5/>
+                                    <center>
+                                    <div class="circle-wrap" >
+                                       <div class="circle">
+                                          <div class="mask full">
+                                             <div class="fill"></div>
+                                          </div>
+                                          <div class="mask half">
+                                             <div class="fill"></div>
+                                          </div>
+                                          <div class="inside-circle"> 75%<span style="font-size:10px;">Terminated</span>
+                                          </div>
+                                       </div>
+                                    </div>
+                                    <br>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="container-fluid">
+                           <div class="row">
+                              <div class="col-md-12">
+                                 <table class="table table-bordered" style="
+                                    color:#ffffff; 
+                                    background: linear-gradient(180deg, #9279FC 27.52%, rgba(146, 121, 252, 0) 134.88%);">
+                                    <h5>Statistics</h5>
+                                    <thead>
+                                       <tr>
+                                          <th scope="col">Attested</th>
+                                          <th scope="col">No Application</th>
+                                          <th scope="col">Incomplete Application</th>
+                                          <th scope="col">Complete Application</th>
+                                          <th scope="col">Pending Data Entry</th>
+                                          <th scope="col">In Process</th>
+                                       </tr>
+                                    </thead>
+                                    <tbody>
+                                       <tr>
+                                          <th scope="row">824</th>
+                                          <td>682</td>
+                                          <td>146</td>
+                                          <td>482</td>
+                                          <td>22h:32m:29s</td>
+                                          <td>01m:46s</td>
+                                       </tr>
+                                    </tbody>
+                                 </table>
+                                 <div class="card flex-fill">
+                                    <div class="card-header">
+                                       <h5 class="card-title mb-0"style="color:#000000">List of Providers</h5>
+                                    </div>
+                                    <table class="table table-hover my-0">
+                                       <thead>
+                                          <tr>
+                                             <th></th>
+                                             <th>Completed</th>
+                                             <th>Incomplete</th>
+                                             <th>Attested</th>
+                                             <th>Returned</th>
+                                             <th>Pending Data Entry</th>
+                                          </tr>
+                                       </thead>
+                                       <tbody>
+                                          <tr>
+                                             <td>Hermann P. Schnitzel</td>
+                                             <td>42</td>
+                                             <td>23</td>
+                                             <td>11</td>
+                                             <td>4</td>
+                                             <td>20</td>
+                                          </tr>
+                                          <tr>
+                                             <td>Mercy Medical Center</td>
+                                             <td>42</td>
+                                             <td>22</td>
+                                             <td>6</td>
+                                             <td>41</td>
+                                             <td>33</td>
+                                          </tr>
+                                          <tr>
+                                             <td>Baptist Health</td>
+                                             <td>28</td>
+                                             <td>22</td>
+                                             <td>12</td>
+                                             <td>11</td>
+                                             <td>2</td>
+                                          </tr>
+                                          <tr>
+                                             <td>Mayo Clinic</td>
+                                             <td>42</td>
+                                             <td>33</td>
+                                             <td>21</td>
+                                             <td>55</td>
+                                             <td>11</td>
+                                          </tr>
+                                          <tr>
+                                             <td>HStanford Health Care</td>
+                                             <td>6</td>
+                                             <td>12</td>
+                                             <td>34</td>
+                                             <td>32</td>
+                                             <td>55</td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <!----------profile----
+                        <div class="col-md-4">
+                        
+                        
+                        <div class="card">
+                        					<div class="card-header">
+                        						<h5 class="card-title mb-0" style="color:#000000;">Clients Name</h5>
+                        					</div>
+                        					<div class="card-body text-center">
+                        						<img src="img/avatars/avatar-4.jpg" alt="Christina Mason" class="img-fluid rounded-circle mb-2" width="128" height="128" />
+                        						<h5 class="card-title mb-0"  style="color:#000000;">Frederick Weeks</h5>
+                        						<div class="text-muted mb-2">@itsweeks</div>
+                        
+                        					</div>
+                        					<hr class="my-0" />
+                        					<div class="card-body">
+                        						<table class="table">
+                        <thead>
+                         <tr>
+                           <th scope="col" style="font-size:10px;">Provider ID</th>
+                           <th scope="col" style="font-size:10px;">Average Act.</th>
+                           <th scope="col" style="font-size:10px;">Status</th>
+                         </tr>
+                        </thead>
+                        <tbody>
+                         <tr>
+                           <th scope="row" style="font-size:10px;">1</th>
+                              <th scope="row" style="font-size:10px;">3.6 Hours</th>
+                           <th scope="row" style="font-size:10px;">Active</th>
+                        
+                         </tr>
+                         
+                        </tbody>
+                        </table>
+                        						
+                        					</div>
+                        </div>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        					<hr class="my-0" />
+                        					
+                        					
+                        					
+                        					<div class="card flex-fill">
+                        					<div class="card-header">
+                        
+                        						<h5 class="card-title mb-0" style="color:#000000;">June 18, 2022</h5>
+                        					</div>
+                        					<div class="card-body d-flex">
+                        						<div class="align-self-center w-100">
+                        							<div class="chart">
+                        								<div id="datetimepicker-dashboard"></div>
+                        							</div>
+                        						</div>
+                        					</div>
+                        				</div>
+                        				
+                        				
+                        				
+                        												<hr class="my-0" />
+                        
+                        
+                        <details>
+                        <summary>Scheduled (4)</summary>
+                        
+                        
+                        
+                        <table class="table">
+                        
+                        <tbody>
+                         <tr>
+                           <th scope="row">										
+                        <i class="align-middle me-2" data-feather="check-circle"></i>
+                        </th>
+                           <td> <p style="font-size:12px;">Meeting the client</p>
+                        <p style="font-size:9px;">June 19, 2022 At 03:00 PM
+                        
+                        </p>
+                        
+                        </td>
+                           <td>
+                        <i class="align-middle me-2" data-feather="delete"></i> 
+                        <i class="align-middle me-2" data-feather="edit"></i>
+                        
+                        
+                        
+                        </td>
+                         </tr>
+                         
+                        </tbody>
+                        </table>
+                        
+                        
+                        
+                        
+                        </details>
+                        <details>
+                        <summary>Reports to be submitted (5)</summary>
+                        <table class="table">
+                        
+                        <tbody>
+                         <tr>
+                           <th scope="row">										
+                        <i class="align-middle me-2" data-feather="check-circle"></i>
+                        </th>
+                           <td> <p style="font-size:12px;">Meeting the client</p>
+                        <p style="font-size:9px;">June 19, 2022 At 03:00 PM
+                        
+                        </p>
+                        
+                        </td>
+                           <td>
+                        <i class="align-middle me-2" data-feather="delete"></i> 
+                        <i class="align-middle me-2" data-feather="edit"></i>
+                        
+                        
+                        
+                        </td>
+                         </tr>
+                         
+                        </tbody>
+                        </table>
+                        </details>
+                        <details>
+                        <summary>Upcoming deadlines (5)</summary>
+                        <table class="table">
+                        
+                        <tbody>
+                         <tr>
+                           <th scope="row">										
+                        <i class="align-middle me-2" data-feather="check-circle"></i>
+                        </th>
+                           <td> <p style="font-size:12px;">Meeting the client</p>
+                        <p style="font-size:9px;">June 19, 2022 At 03:00 PM
+                        
+                        </p>
+                        
+                        </td>
+                           <td>
+                        <i class="align-middle me-2" data-feather="delete"></i> 
+                        <i class="align-middle me-2" data-feather="edit"></i>
+                        
+                        
+                        
+                        </td>
+                         </tr>
+                         
+                        </tbody>
+                        </table>
+                        </details>
+                        
+                        
+                        
+                        
+                        
+                        </div>  -->
+                  </div>
+               
+            </main>
+         </div>
+      </div>
+      <script src="js/app.js"></script>
+      <script>
+         document.addEventListener("DOMContentLoaded", function() {
+         	// Line chart
+         	new Chart(document.getElementById("chartjs-line"), {
+         		type: "line",
+         		data: {
+         			labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12","13","14","15"],
+         			datasets: [{
+         				label: "Sales ($)",
+         				fill: true,
+         				backgroundColor: "transparent",
+         				borderColor: "#43E794",
+         				data: [40, 60, 70, 20, 40, 40, 60, 20, 60, 60, 50, 40,40,60,60]
+         			}, {
+         				label: "Orders",
+         				fill: true,
+         				backgroundColor: "transparent",
+         				borderColor: "#FF5274",
+         				data: [20, 40, 10, 60, 10, 60, 60, 50, 50, 20, 60, 60,60,60,60]
+         			}]
+         		},
+         		options: {
+         			maintainAspectRatio: false,
+         			legend: {
+         				display: false
+         			},
+         			tooltips: {
+         				intersect: false
+         			},
+         			hover: {
+         				intersect: true
+         			},
+         			plugins: {
+         				filler: {
+         					propagate: false
+         				}
+         			},
+         			scales: {
+         				xAxes: [{
+         					reverse: true,
+         					gridLines: {
+         						color: "rgba(0,0,0,0.05)"
+         					}
+         				}],
+         				yAxes: [{
+         					ticks: {
+         						stepSize: 15
+         					},
+         					display: true,
+         					borderDash: [5, 5],
+         					gridLines: {
+         						color: "rgba(0,0,0,0)",
+         						fontColor: "#fff"
+         					}
+         				}]
+         			}
+         		}
+         	});
+         });
+      </script>
+      <script>
+         document.addEventListener("DOMContentLoaded", function() {
+         	var ctx = document.getElementById("chartjs-dashboard-line").getContext("2d");
+         	var gradient = ctx.createLinearGradient(0, 0, 0, 225);
+         	gradient.addColorStop(0, "#408ACF");
+         	gradient.addColorStop(1, "#408ACF");
+         	// Line chart
+         	new Chart(document.getElementById("chartjs-dashboard-line"), {
+         		type: "line",
+         		data: {
+         			labels: ["1", "2", "3", "4", "5"],
+         			datasets: [{
+         				label: "Sales ($)",
+         				fill: true,
+         				backgroundColor: "#408ACF",
+         				borderColor:"#408ACF",
+         				data: [
+         				450,
+         				350,
+         				300,
+         				150,
+         					100,
+         					
+         				]
+         			}]
+         		},
+         		options: {
+         			maintainAspectRatio: false,
+         			legend: {
+         				display: false
+         			},
+         			tooltips: {
+         				intersect: false
+         			},
+         			hover: {
+         				intersect: true
+         			},
+         			plugins: {
+         				filler: {
+         					propagate: false
+         				}
+         			},
+         			scales: {
+         				xAxes: [{
+         					reverse: true,
+         					gridLines: {
+         						color: "rgba(255,0,0,0.0)"
+         					}
+         				}],
+         				yAxes: [{
+         					ticks: {
+         						stepSize: 250
+         					},
+         					display: true,
+         					borderDash: [3, 3],
+         					gridLines: {
+         						color: "rgba(255,0,0,0.0)	"
+         					}
+         				}]
+         			}
+         		}
+         	});
+         });
+      </script>
+      <script>
+         document.addEventListener("DOMContentLoaded", function() {
+         	// Pie chart
+         	new Chart(document.getElementById("chartjs-dashboard-pie"), {
+         		type: "pie",
+         		data: {
+         			labels: ["Chrome", "Firefox", "IE"],
+         			datasets: [{
+         				data: [4306, 3801, 1689],
+         				backgroundColor: [
+         					window.theme.primary,
+         					window.theme.warning,
+         					window.theme.danger
+         				],
+         				borderWidth: 5
+         			}]
+         		},
+         		options: {
+         			responsive: !window.MSInputMethodContext,
+         			maintainAspectRatio: false,
+         			legend: {
+         				display: false
+         			},
+         			cutoutPercentage: 75
+         		}
+         	});
+         });
+      </script>
+      <script>
+         document.addEventListener("DOMContentLoaded", function() {
+         	// Bar chart
+         	new Chart(document.getElementById("chartjs-dashboard-bar"), {
+         		type: "bar",
+         		data: {
+         			labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+         			datasets: [{
+         				label: "This year",
+         				backgroundColor: window.theme.primary,
+         				borderColor: window.theme.primary,
+         				hoverBackgroundColor: window.theme.primary,
+         				hoverBorderColor: window.theme.primary,
+         				data: [54, 67, 41, 55, 62, 45, 55, 73, 60, 76, 48, 79],
+         				barPercentage: .75,
+         				categoryPercentage: .5
+         			}]
+         		},
+         		options: {
+         			maintainAspectRatio: false,
+         			legend: {
+         				display: false
+         			},
+         			scales: {
+         				yAxes: [{
+         					gridLines: {
+         						display: false
+         					},
+         					stacked: false,
+         					ticks: {
+         						stepSize: 20
+         					}
+         				}],
+         				xAxes: [{
+         					stacked: false,
+         					gridLines: {
+         						color: "transparent"
+         					}
+         				}]
+         			}
+         		}
+         	});
+         });
+      </script>
+      <script>
+         document.addEventListener("DOMContentLoaded", function() {
+         	var markers = [{
+         			coords: [31.230391, 121.473701],
+         			name: "Shanghai"
+         		},
+         		{
+         			coords: [28.704060, 77.102493],
+         			name: "Delhi"
+         		},
+         		{
+         			coords: [6.524379, 3.379206],
+         			name: "Lagos"
+         		},
+         		{
+         			coords: [35.689487, 139.691711],
+         			name: "Tokyo"
+         		},
+         		{
+         			coords: [23.129110, 113.264381],
+         			name: "Guangzhou"
+         		},
+         		{
+         			coords: [40.7127837, -74.0059413],
+         			name: "New York"
+         		},
+         		{
+         			coords: [34.052235, -118.243683],
+         			name: "Los Angeles"
+         		},
+         		{
+         			coords: [41.878113, -87.629799],
+         			name: "Chicago"
+         		},
+         		{
+         			coords: [51.507351, -0.127758],
+         			name: "London"
+         		},
+         		{
+         			coords: [40.416775, -3.703790],
+         			name: "Madrid "
+         		}
+         	];
+         	var map = new jsVectorMap({
+         		map: "world",
+         		selector: "#world_map",
+         		zoomButtons: true,
+         		markers: markers,
+         		markerStyle: {
+         			initial: {
+         				r: 9,
+         				strokeWidth: 7,
+         				stokeOpacity: .4,
+         				fill: window.theme.primary
+         			},
+         			hover: {
+         				fill: window.theme.primary,
+         				stroke: window.theme.primary
+         			}
+         		},
+         		zoomOnScroll: false
+         	});
+         	window.addEventListener("resize", () => {
+         		map.updateSize();
+         	});
+         });
+      </script>
+      <script>
+         document.addEventListener("DOMContentLoaded", function() {
+         	var date = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
+         	var defaultDate = date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate();
+         	document.getElementById("datetimepicker-dashboard").flatpickr({
+         		inline: true,
+         		prevArrow: "<span title=\"Previous month\">&laquo;</span>",
+         		nextArrow: "<span title=\"Next month\">&raquo;</span>",
+         		defaultDate: defaultDate
+         	});
+         });
+      </script>
+      <script>
+         document.addEventListener("DOMContentLoaded", function() {
+         	var date = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
+         	var defaultDate = date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate();
+         	document.getElementById("datetimepicker-dashboard1").flatpickr({
+         		inline: true,
+         		prevArrow: "<span title=\"Previous month\">&laquo;</span>",
+         		nextArrow: "<span title=\"Next month\">&raquo;</span>",
+         		defaultDate: defaultDate
+         	});
+         });
+      </script>
+      <script>
+         document.addEventListener("DOMContentLoaded", function() {
+         	// Bar chart
+         	new Chart(document.getElementById("chartjs-bar"), {
+         		type: "bar",
+         		data: {
+         			labels: ["2020", "2021", "2022"],
+         			datasets: [{
+         				label: "Last year",
+         				backgroundColor: window.theme.primary,
+         				borderColor: window.theme.primary,
+         				hoverBackgroundColor: window.theme.primary,
+         				hoverBorderColor: window.theme.primary,
+         				data: [54, 67, 41, 55, 62, 45, 55, 73, 60, 76, 48, 79],
+         				barPercentage: .75,
+         				categoryPercentage: .9
+         			}, {
+         				label: "This year",
+         				backgroundColor: "#E31432",
+         				borderColor: "#E31432",
+         				hoverBackgroundColor: "#E31432",
+         				hoverBorderColor: "#E31432",
+         				data: [69, 66, 24, 48, 52, 51, 44, 53, 62, 79, 51, 68],
+         				barPercentage: .75,
+         				categoryPercentage: .9
+         			}]
+         		},
+         		options: {
+         			maintainAspectRatio: false,
+         			legend: {
+         				display: false
+         			},
+         			scales: {
+         				yAxes: [{
+         					gridLines: {
+         						display: false
+         					},
+         					stacked: false,
+         					ticks: {
+         						stepSize: 20
+         					}
+         				}],
+         				xAxes: [{
+         					stacked: false,
+         					gridLines: {
+         						color: "transparent"
+         					}
+         				}]
+         			}
+         		}
+         	});
+         });
+      </script>
+      <script>
+         document.addEventListener("DOMContentLoaded", function() {
+         	// Doughnut chart
+         	new Chart(document.getElementById("chartjs-doughnut"), {
+         		type: "doughnut",
+         		data: {
+         			labels: ["Attested", "No Application", "Incomplete Application", "Complete Application","Pending Data Entry","In Process"],
+         			datasets: [{
+         				data: [260, 125, 54, 146,100,80],
+         				backgroundColor: [
+         					window.theme.primary,
+         					window.theme.success,
+         					window.theme.warning,
+         				    window.theme.warning,
+         
+         					"#FF9800",
+         					"#7BB31A",
+         					"#FFC107"
+         				],
+         				borderColor: "transparent"
+         			}]
+         		},
+         		options: {
+         			maintainAspectRatio: false,
+         			cutoutPercentage: 30,
+         			legend: {
+         				display: false
+         			}
+         		}
+         	});
+         });
+      </script>
+   </div>
 </div>
