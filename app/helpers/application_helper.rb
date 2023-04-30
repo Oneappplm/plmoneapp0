@@ -28,7 +28,7 @@ module ApplicationHelper
 	end
 
 	def enrollment_nav_active aname
-		aname.split(',').include?(action_name) ? 'btn-primary fw-semibold' : 'btn-secondary text-black bg-alt-grey'
+		aname.split(',').include?(action_name) || aname.split(',').include?(controller_name) ? 'btn-primary fw-semibold' : 'btn-secondary text-black bg-alt-grey'
 	end
 
 	def current_setting
