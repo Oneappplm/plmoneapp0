@@ -30,4 +30,18 @@ module ApplicationHelper
 	def enrollment_nav_active aname
 		aname.split(',').include?(action_name) ? 'btn-primary fw-semibold' : 'btn-secondary text-black bg-alt-grey'
 	end
+
+	def current_setting
+		@current_setting ||= Setting.take || Setting.new
+	end
+
+	def dark_mode
+		if current_setting.dark_mode.downcase == 'yes'
+			'bg-dark'
+		else
+			current_setting.theme_color.present? ? 'bg-theme-color' : 'bg-white'
+		end
+	rescue
+		'bg-white'
+	end
 end

@@ -129,6 +129,10 @@ class PagesController < ApplicationController
   	render "client_portal"
   end
 
+		def settings
+			@setting = Setting.take || Setting.new
+		end
+
 	protected
 
 	def set_global_search

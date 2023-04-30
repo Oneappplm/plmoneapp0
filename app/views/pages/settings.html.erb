@@ -1,10 +1,39 @@
-<div class="content container-fluid">
+<div class="content container-fluid ">
 	<!-- Page Header -->
 	<!-- <div class="page-header"> -->
-			<div class="row align-items-center">
+			<div class="row align-items-center bg-gray-900">
 					<div class="col">
-							<h1 class="page-header-title"><%= action_name.titleize %></h1>
+							<h1 class="page-header-title">PLM Sales Tool </h1>
 					</div>
-					<!-- End Col -->
+					<%= form_for @setting, html: { multipart: true, style: 'background: #eee; padding: 1rem;' } do |f| %>
+							<% if @setting.errors.any? %>
+									<div id="error_explanation" class="row mb-3">
+										<div class="col-lg-12">
+												<h2><%= pluralize(@setting.errors.count, "error") %> prohibited this setting from being saved:</h2>
+
+												<ul>
+														<% @setting.errors.full_messages.each do |message| %>
+																<li><%= message %></li>
+														<% end %>
+												</ul>
+										</div>
+									</div>
+							<% end %>
+							<div class="row mb-3 mt-4">
+								<div class="col-lg-6">
+									<%= f.label :theme_color %>
+									<%= f.color_field :theme_color, class: 'form-control', placeholder: 'Theme Color' %>
+								</div>
+								<div class="col-lg-6">
+									<%= f.label :dark_mode %>
+									<%= f.select :dark_mode, options_for_select(['YES', 'NO'], (f.object.dark_mode || 'NO')), { prompt: 'Dark Mode?' }, { class: 'form-select' } %>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-lg-12 d-flex justify-content-end">
+									<button type="submit" class="btn btn-primary btn-md">Update Settings</button>
+								</div>
+							</div>
+					<% end %>
 			</div>
 </div>

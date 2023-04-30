@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   get 'ps-office-manager', to: 'pages#ps_office_manager'
   get 'plm-sales-tool', to: 'pages#plm_sales_tool'
   get 'help', to: 'pages#help'
-  get 'settings', to: 'pages#settings'
+  # get 'settings', to: 'pages#settings'
   get 'show-client-details', to: 'pages#show_client_details'
   get 'smart-contract', to: 'pages#smart_contract'
   get 'terms', to: 'pages#terms'
@@ -61,6 +61,7 @@ Rails.application.routes.draw do
   end
 
   resources :systems
+  resources :settings
 
   devise_scope :user do
     # Redirests signing out users back to sign-in
