@@ -13,6 +13,7 @@ class PagesController < ApplicationController
   before_action :get_practitioner_profiles, only: %i[provider_source]
   before_action :get_services, only: %i[provider_source]
   layout "public_application", only: %i[terms privacy_policy data_access]
+		layout "overview", only: %i[dashboard]
 
 	def provider_source
 		if params[:page].present?
