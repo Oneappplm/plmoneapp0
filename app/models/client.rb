@@ -80,19 +80,19 @@ class Client < ApplicationRecord
        csv << attributes
        all.each do |client|
        		csv << {
-       			'Full Name' => client.full_name,
-       			'Provider Name' => client.provider_name,
-       			'Birthday' => client.birth_date.strftime('%B %d, %Y'),
-       			'Address' => client.address,
-       			'NPI' => client.npi,
-       			'SSN' => client.ssn,
+       			'Full Name' => client&.full_name,
+       			'Provider Name' => client&.provider_name,
+       			'Birthday' => client&.birth_date&.strftime('%B %d, %Y'),
+       			'Address' => client&.address,
+       			'NPI' => client&.npi,
+       			'SSN' => client&.ssn,
        			'Provider Type' => client.provider_type,
-       			'Specialty' => client.specialty,
-       			'Cred Status' => client.cred_status.titleize.upcase,
-       			'Cred Cycle' => client.cred_cycle,
-       			'VRC Status' => client.vrc_status,
-       			'Attested Date' => client.attested_date.strftime('%B %d, %Y'),
-       			'MedvId' => client.medv_id
+       			'Specialty' => client&.specialty,
+       			'Cred Status' => client&.cred_status&.titleize&.upcase,
+       			'Cred Cycle' => client&.cred_cycle,
+       			'VRC Status' => client&.vrc_status,
+       			'Attested Date' => client&.attested_date&.strftime('%B %d, %Y'),
+       			'MedvId' => client&.medv_id
        		}
        end
      end
