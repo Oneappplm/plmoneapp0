@@ -1,7 +1,7 @@
 class DcosController < ApplicationController
 	before_action :set_group
 	before_action :set_dco, only: [:edit, :update, :destroy]
-	before_action :set_states, only: [:new, :edit, :create]
+	before_action :set_states, only: [:new, :edit, :create, :update]
 
 	def index
 		@dcos = if params[:dco_search].present?
@@ -13,9 +13,12 @@ class DcosController < ApplicationController
 
 	def new
 		@dco = @enrollment_group.dcos.new
+		@dco.schedules.build
 	end
 
-	def edit; end
+	def edit
+		@dco.schedules.build
+	end
 
 	def create
 		@dco = @enrollment_group.dcos.new(dco_params)
@@ -44,7 +47,10 @@ class DcosController < ApplicationController
 
 	protected
 	def dco_params
-		params.require(:group_dco).permit(:client, :dco_name, :dco_address, :dco_city, :state, :dco_zipcode, :country, :service_location_phone_number, :service_location_fax_number, :panel_status_to_new_patients, :panel_age_limit, :include_in_directory, :dco_provider_name, :dco_provider_email, :dco_provider_phone_number, :dco_provider_fax_number, :dco_provider_position)
+		params.require(:group_dco).permit(
+			:client, :dco_name, :dco_address, :dco_city, :state, :dco_zipcode, :country, :service_location_phone_number, :service_location_fax_number, :panel_status_to_new_patients, :panel_age_limit, :include_in_directory, :dco_provider_name, :dco_provider_email, :dco_provider_phone_number, :dco_provider_fax_number, :dco_provider_position,
+			schedules_attributes: [:id, :day, :start_time, :end_time, :_destroy]
+		)
 	end
 
 	def set_dco

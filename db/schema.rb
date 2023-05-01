@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_29_151313) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_30_220821) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -129,6 +129,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_29_151313) do
     t.string "individual_ownership"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "group_dco_schedules", force: :cascade do |t|
+    t.bigint "group_dco_id"
+    t.string "day"
+    t.string "start_time"
+    t.string "end_time"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_dco_id"], name: "index_group_dco_schedules_on_group_dco_id"
   end
 
   create_table "group_dcos", force: :cascade do |t|

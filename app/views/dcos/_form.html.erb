@@ -1,0 +1,139 @@
+<%
+	form_path = if is_edit_mode?
+			group_dco_path(@enrollment_group, @dco)
+		else
+			group_dcos_path(@enrollment_group, @dco)
+		end
+%>
+<%= form_for @dco, :url => form_path, html: { multipart: true } do |f| %>
+	<% if @dco.errors.any? %>
+    <div id="error_explanation" class="row mb-3">
+					<div class="col-lg-12">
+							<h2><%= pluralize(@dco.errors.count, "error") %> prohibited this enrollment user from being saved:</h2>
+
+							<ul>
+									<% @dco.errors.full_messages.each do |message| %>
+											<li><%= message %></li>
+									<% end %>
+							</ul>
+					</div>
+    </div>
+  <% end %>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<%= f.text_field :dco_name, class: 'form-control', placeholder: 'DCO Name *', required: true %>
+		</div>
+		<div class="col-lg-6">
+			<select class="form-select" name="dco_client" required>
+				<option>Client *</option>
+			</select>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-12">
+			<%= f.text_field :dco_address, class: 'form-control', placeholder: 'DCO Address *', required: true %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<%= f.text_field :dco_city, class: 'form-control', placeholder: 'DCO City *', required: true %>
+		</div>
+		<div class="col-lg-6">
+			<%= f.collection_select :state, @states, :name, :name, { prompt: 'State *' }, { class: 'form-control' } %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<%= f.text_field :dco_zipcode, class: 'form-control', placeholder: 'Zipcode *', required: true %>
+		</div>
+		<div class="col-lg-6">
+			<%= f.text_field :country, class: 'form-control', placeholder: 'Country *', required: true %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<%= f.text_field :service_location_phone_number, class: 'form-control', placeholder: 'Service Location Phone Number *', required: true %>
+		</div>
+		<div class="col-lg-6">
+			<%= f.text_field :service_location_fax_number, class: 'form-control', placeholder: 'Service Location Fax Number *', required: true %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<%= f.text_field :panel_status_to_new_patients, class: 'form-control', placeholder: 'Panel Status to New Patients'%>
+		</div>
+		<div class="col-lg-6">
+			<%= f.text_field :panel_age_limit, class: 'form-control', placeholder: 'Panel Age Limit'%>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<%= f.select :include_in_directory, options_for_select(['YES', 'NO'], f.object.include_in_directory), { prompt: 'Include in Directory?' }, { class: 'form-select' } %>
+		</div>
+	</div>
+
+	<div class="row mt-5">
+		<div class="col-lg-12">
+			<h5>DCO Provider Outreach Info</h5>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-6">
+				<%= f.text_field :dco_provider_name, class: 'form-control', placeholder: 'Name *', required: true %>
+			</div>
+			<div class="col-lg-6">
+				<%= f.email_field :dco_provider_email, class: 'form-control', placeholder: 'Email *', required: true %>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-6">
+				<%= f.text_field :dco_provider_phone_number, class: 'form-control', placeholder: 'Phone Number *', required: true %>
+			</div>
+			<div class="col-lg-6">
+				<%= f.text_field :dco_provider_fax_number, class: 'form-control', placeholder: 'Fax Number *', required: true %>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-6">
+				<%= f.text_field :dco_provider_position, class: 'form-control', placeholder: 'Position *', required: true %>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="row mt-5">
+		<div class="col-lg-12 mt-3">
+			<h3>Schedules</h3>
+		</div>
+		<div id="schedules">
+				<div class="fields">
+					<%= f.fields_for :schedules do |schedule_fields| %>
+						<%= render 'schedule_fields', f: schedule_fields %>
+					<% end %>
+				</div>
+				<div class="links mt-2">
+					<button type="button" class="add_association btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> 	Add Schedule </button>
+				</div>
+		</div>
+	</div>
+
+
+	<div class="row mt-3">
+		<div class="col-lg-12 d-flex justify-content-end pe-5">
+			<button type="submit" class="btn btn-primary btn-md"><%= is_edit_mode? ? 'Update' : 'Add' %> DCO</button>
+		</div>
+	</div>
+<% end %>
+<% content_for :js do %>
+<script>
+	$(document).ready(function(){
+			// schedules
+			$("#schedules").on("click", ".add_association", function() {
+					var schedulesFields = $("#schedules .field");
+					var newSchedule = schedulesFields.last().clone();
+					var newId = new Date().getTime();
+					newSchedule.html(newSchedule.html().replace(/schedules_attributes\]\[\d+\]/g, "schedules_attributes][" + newId + "]"));
+					$("#schedules .fields").append(newSchedule);
+			});
+	});
+</script>
+<% end %>

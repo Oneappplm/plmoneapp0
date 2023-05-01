@@ -7,4 +7,6 @@ class GroupDco < ApplicationRecord
           }
 
 	belongs_to :enrollment_group
+  has_many :schedules, class_name: 'GroupDcoSchedule', dependent: :destroy
+  accepts_nested_attributes_for :schedules, allow_destroy: true, reject_if: :all_blank
 end

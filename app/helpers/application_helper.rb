@@ -27,8 +27,20 @@ module ApplicationHelper
 		cname == controller_name && aname.split(',').include?(action_name) ? 'link_active fw-semibold' : ''
 	end
 
-	def enrollment_nav_active aname
-		aname.split(',').include?(action_name) || aname.split(',').include?(controller_name) ? 'btn-primary fw-semibold' : 'btn-secondary text-black bg-alt-grey'
+	def enrollment_nav_active cname, aname = nil
+		if aname.present?
+			(cname.split(',').include?(controller_name) && aname.split(',').include?(action_name)) ? 'btn-primary fw-semibold' : 'btn-secondary text-black bg-alt-grey'
+		else
+			cname.split(',').include?(controller_name) ? 'btn-primary fw-semibold' : 'btn-secondary text-black bg-alt-grey'
+		end
+	end
+
+	def enrollment_nav_active_old aname, cname = nil
+		if cname.present?
+			(cname.split(',').include?(controller_name) && aname.split(',').include?(action_name)) ? 'btn-primary fw-semibold' : 'btn-secondary text-black bg-alt-grey'
+		else
+			aname.split(',').include?(action_name) ? 'btn-primary fw-semibold' : 'btn-secondary text-black bg-alt-grey'
+		end
 	end
 
 	def current_setting
@@ -43,5 +55,9 @@ module ApplicationHelper
 		end
 	rescue
 		'bg-white'
+	end
+
+	def is_edit_mode?
+	['edit', 'update'].include?(action_name)
 	end
 end
