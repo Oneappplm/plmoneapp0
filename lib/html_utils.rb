@@ -94,4 +94,33 @@ module HtmlUtils
     footer.html_safe
   end
 
+  def two_column_with_yes **options
+    columns = <<-HTML
+    <div class="row g-0 border-bottom border-dark">
+      <div class="col-lg-11">
+        <div class="row g-0">
+          <div class="col-lg-12 border-bottom border-dark #{options[:height].present? ? options[:height] : ''}">
+            <span>#{options[:text1]}</span>
+          </div>
+          <div class="col-lg-12 h-50px">
+            <span>#{options[:text2].present? ? options[:text2] : 'Please provide explanation below:'}</span>
+            <p class="text-center">
+              <strong>
+                #{options[:explanation]}
+              </strong>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-1 border-start border-dark d-flex justify-content-center align-items-center">
+        <span>
+          <!-- answer is from the disclosures from provider app they meta_key as q1 to q26 -->
+          #{options[:answer]}
+        </span>
+      </div>
+    </div>
+    HTML
+    columns.html_safe
+  end
+
 end

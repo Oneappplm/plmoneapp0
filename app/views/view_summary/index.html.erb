@@ -42,160 +42,89 @@
 				<h3>2.1 General Information - Name and Home Address</h3>
 			</div>
 		</div>
-		<div class="row g-0 border-bottom border-dark">
-			<div class="col-lg-4 border-end border-dark h-50px">
-				<span>Last Name:</span>
-				<!-- to Jayson value place should be inside a <p> and <strong> tag like below same with others -->
-				<!-- <p class="text-center">
-					<strong>Value here</strong>
-				</p> -->
-			</div>
-			<div class="col-lg-2 border-end border-dark h-50px" >
-				<span>Suffix:</span>
-			</div>
-			<div class="col-lg-3 border-end border-dark h-50px" >
-				<span>First Name:</span>
-			</div>
-			<div class="col-lg-3 h-50px" >
-				<span>Middle Name:</span>
-			</div>
-		</div>
-		<div class="row g-0">
-			<div class="col-lg-12 border-bottom border-dark h-75px">
-			<span>List any other name(s) under which you have been known by reference, licensing and or educational institutions, including the date of name change(s) if known (mm/dd/yy):</span>
-			</div>
-		</div>
-
-		<div class="row g-0  border-bottom border-dark">
-			<div class="col-lg-5 border-end border-dark h-50px">
-				<span>Degree Title:</span>
-			</div>
-			<div class="col-lg-5 h-50px">
-				<span>State(s) of Practice:</span>
-			</div>
-		</div>
-
-		<div class="row g-0  border-bottom border-dark">
-			<div class="col-lg-12 h-50px">
-				<span>Primary Practitioner Type:</span>
-			</div>
-		</div>
 
 
 		<div class="row g-0 border-bottom border-dark">
-			<div class="col-lg-6 border-end border-dark h-50px">
-				<span>Country:</span>
-			</div>
-			<div class="col-lg-6 h-50px">
-				<span>Home Mailing Address:</span>
-			</div>
+			<% titles = [['Last Name:', '4'], ['Suffix:', '2'], ['First Name:', '3'], ['Middle Name:', '3']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+			<% end %>
+		</div>
+
+		<%= HtmlUtils.single_column title: 'List any other name(s) under which you have been known by reference, licensing and or educational institutions, including the date of name change(s) if known (mm/dd/yy):', height: 'h-50px'%>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Degree Title:', 'State(s) of Practice:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<%= HtmlUtils.single_column title: 'Primary Practitioner Type:', height: 'h-50px'%>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Country:', 'Home Mailing Address:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<!-- some partials were added late but some of them are repeating -->
+		<%= render "view_summary/components/city_state_zipcode"%>
+
+
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Home Telephone Number:', 'Mobile Phone Number:', 'Fax Number:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
 		</div>
 
 		<div class="row g-0 border-bottom border-dark">
-			<div class="col-lg-4 border-end border-dark h-50px">
-				<span>City:</span>
-			</div>
-			<div class="col-lg-4 border-end border-dark h-50px">
-				<span>State:</span>
-			</div>
-			<div class="col-lg-4 border-end border-dark h-50px">
-				<span>Zip Code:</span>
-			</div>
+			<% titles = ['Page Number:', 'Ext:', 'Email Address:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+
+		<%= HtmlUtils.table_section_header title: '2.2 General Information - Personal Information' %>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Gender:', 'Date of Birth:', 'Citizenship:', 'Country of Birth:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '3' %>
+			<% end %>
 		</div>
 
 		<div class="row g-0 border-bottom border-dark">
-			<div class="col-lg-4 border-end border-dark h-50px">
-				<span>Home Telephone Number:</span>
-			</div>
-			<div class="col-lg-4 border-end border-dark h-50px">
-				<span>Mobile Phone Number:</span>
-			</div>
-			<div class="col-lg-4 h-50px">
-				<span>Fax Number:</span>
-			</div>
+			<% titles = ['Social Security Number:', 'Ethnicity:', 'Marital Status:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
 		</div>
 
 		<div class="row g-0 border-bottom border-dark">
-			<div class="col-lg-4 border-end border-dark h-50px">
-				<span>Page Number:</span>
-			</div>
-			<div class="col-lg-4 border-end border-dark h-50px">
-				<span>Ext:</span>
-			</div>
-			<div class="col-lg-4 h-50px">
-				<span>Email Address:</span>
-			</div>
-		</div>
-		<div class="row g-0 border-bottom border-dark">
-			<div class="col-lg-12">
-				<h3>2.2 General Information - Personal Information</h3>
-			</div>
+			<% titles = ['Languages that you speak:', 'Languages that you write:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-75px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
 		</div>
 
-		<div class="row g-0 border-bottom border-dark">
-			<div class="col-lg-3 border-end border-dark h-50px">
-				<span>Gender:</span>
-			</div>
-			<div class="col-lg-3 border-end border-dark h-50px">
-				<span>Date of Birth:</span>
-			</div>
-			<div class="col-lg-3 h-50px border-end border-dark">
-				<span>Citizenship:</span>
-			</div>
-			<div class="col-lg-3 h-50px">
-				<span>Country of Birth:</span>
-			</div>
-		</div>
 
-		<div class="row g-0 border-bottom border-dark">
-			<div class="col-lg-4 border-end border-dark h-50px">
-				<span>Social Security Number:</span>
-			</div>
-			<div class="col-lg-4 border-end border-dark h-50px">
-				<span>Ethnicity:</span>
-			</div>
-			<div class="col-lg-4 h-50px">
-				<span>Marital Status:</span>
-			</div>
-		</div>
+		<%= HtmlUtils.table_sub_section_header title: 'Emergency Contact Person' %>
 
-		<div class="row g-0 border-bottom border-dark">
-			<div class="col-lg-6 border-end border-dark h-75px">
-				<span>Languages that you speak:</span>
-			</div>
-			<div class="col-lg-6 h-75px">
-				<span>Languages that you write:</span>
-			</div>
-		</div>
+		<%= render 'view_summary/components/firstname_lastname_middlename'%>
 
-		<div class="row g-0 border-bottom border-dark">
-			<div class="col-lg-12">
-				<h3>Emergency Contact Person</h3>
-			</div>
-		</div>
 
-		<div class="row g-0 border-bottom border-dark">
-			<div class="col-lg-4 border-end border-dark h-50px">
-				<span>Last Name:</span>
-			</div>
-			<div class="col-lg-4 border-end border-dark h-50px">
-				<span>First Name:</span>
-			</div>
-			<div class="col-lg-4 h-50px">
-				<span>Middle Name:</span>
-			</div>
-		</div>
+		<%= HtmlUtils.single_column title: 'Mobile Number:', height: 'h-50px'%>
 
-		<div class="row g-0">
-			<div class="col-lg-12 h-50px">
-				<span>Mobile Number:</span>
-			</div>
-		</div>
 	</div>
 
 </div>
 <div class="row">
-	<div class="col-lg-12 d-flex justify-content-end px-5">
+	<div class="col-lg-12 d-flex justify-content-end px-5 gap-3">
 		<a href="<%= view_summary_index_path(page: 2)%>" class="btn btn-primary btn-md">Next Page</a>
 	</div>
 </div>
