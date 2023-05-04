@@ -170,14 +170,36 @@
 							</div>
 						</div>
 						<div class="row mb-3">
-							<div class="col-lg-12">
-								<select class="form-select" name="enrollment_status">
-									<option>Status of Enrollment</option>
-									<option value="Submitted">Submitted</option>
-									<option value="Not Submitted">Not Submitted</option>
-									<option value="Approved">Approved</option>
-									<option value="Rejected">Rejected</option>
+							<div class="col-lg-12 mb-3">
+								<select class="form-select" name="enrollment_status" id="enrollment_status">
+									<option value="">Status of Enrollment</option>
+									<option value="submitted">Submitted</option>
+									<option value="not_submitted">Not Submitted</option>
+									<option value="approved">Approved</option>
+									<option value="rejected">Rejected</option>
 								</select>
+							</div>
+							<div class="col-lg-12 d-none enrollment_status_hidden_fields" id="enrollment_submited">
+								<input type="text" name="enrollment_application_id" class="form-control" placeholder="Application ID/Submitted ID/Tracking ID" required>
+							</div>
+							<div class="col-lg-12 d-none enrollment_status_hidden_fields" id="enrollment_not_submitted">
+								<input type="text" name="enrollment_not_submitted_note" class="form-control" placeholder="Note*" required>
+							</div>
+							<div class="col-lg-12 d-none enrollment_status_hidden_fields" id="enrollment_rejected">
+								<input type="text" name="enrollment_not_submitted_note" class="form-control" placeholder="Reason for rejection*" required>
+							</div>
+							<div class="col-lg-12 d-none enrollment_status_hidden_fields" id="enrollment_approved">
+								<div class="row">
+									<div class="col-lg-6">
+										<input type="date" name="enrollment_approved_date" class="form-control" required>
+									</div>
+									<div class="col-lg-6">
+										<input type="text" name="enrollment_approved_confirmation" class="form-control" placeholder="Enrollment Confirmation" required>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-12 d-none enrollment_status_hidden_fields" id="enrollment_submitted">
+								<input type="text" name="enrollment_application_id" class="form-control" placeholder="Application ID/Submitted ID/Tracking ID" required>
 							</div>
 						</div>
 					</div>
@@ -217,3 +239,13 @@
 			</div>
 	</div>
 </div>
+
+<script>
+	$('#enrollment_status').on('change',function(){
+		if($(this).val() != ""){
+			$('.enrollment_status_hidden_fields').addClass('d-none');
+			var id = "#enrollment_"+$(this).val();
+			$(id).removeClass('d-none');
+		}
+	})
+</script>
