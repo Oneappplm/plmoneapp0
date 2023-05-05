@@ -1,0 +1,140 @@
+<div class="content container-fluid">
+	<%= render "enrollment_tracking_components/enrollment_nav"%>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<form class="form_search_with_icon">
+			<div class="">
+				<input type="" name="user_search" class="form-control">
+				<i class="bi bi-search"></i>
+			</div>
+			</form>
+		</div>
+		<div class="col-lg-6 d-flex justify-content-end">
+			<%= link_to	"Add New Provider", new_provider_url, class: "d-flex btn btn-primary btn-md" %>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-8">
+			<table class="table">
+			  <thead>
+			    <tr>
+			      <th scope="col" class="bg-primary text-white">Provider Name</th>
+			      <th scope="col" class="bg-primary text-white">Practitioner Type</th>
+			      <th scope="col" class="bg-primary text-white">SSN</th>
+			      <th scope="col" class="bg-primary text-white">NPI</th>
+			      <th scope="col" class="bg-primary text-white">CAQH</th>
+			      <th scope="col" class="bg-primary text-white">Action</th>
+			    </tr>
+			  </thead>
+			  <tbody>
+						<%= render @providers %>
+			  </tbody>
+			</table>
+		</div>
+		<div class="col-lg-4">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card rounded p-1 shadow-lg px-3 mb-3">
+						<p class="mb-0"><strong>Data Encoder:</strong></p>
+						<p class="mb-3"><strong>Encoded: </strong></p>
+						<p class="mb-0"><strong>Updated by:</strong></p>
+						<p class="mb-0"><strong>Last updated: </strong></p>
+					</div>
+
+					<div class="card rounded shadow-lg p-1 px-3 mb-3">
+						<div class="avatar-circle mt-3" style="text-align: center">
+							<img class="avatar-img" src="../dist/assets/img/400x400/img1.jpg" alt="Image Description" style="width: 100px;">
+						</div>
+						<h3 class="font-bold mb-0 text-center my-3"><%= @provider.provider_name %></h3>
+						<div class="text-left">
+							<p class="mb-1"><strong>Gender:</strong> <%= @provider.gender %></p>
+							<p class="mb-1"><strong>Date of Birth:</strong> <%= @provider.birth_date %></p>
+							<p class="mb-1"><strong>Practitioner Type:</strong> <%= @provider.practitioner_type %></p>
+							<p class="mb-1"><strong>Address:</strong> <%= @provider&.address1 %></p>
+							<p class="mb-1"><strong>City:</strong> <%= @provider&.city %></p>
+							<p class="mb-1"><strong>State:</strong> <%= @provider&.state %></p>
+							<p class="mb-1"><strong>Telephone:</strong> <%= @provider&.telephone %></p>
+							<p class="mb-1"><strong>Email:</strong> <%= @provider&.email %></p>
+							<p class="mb-1"><strong>Hire date of provider seeing patients:</strong> <%= @provider&.effective_date %></p>
+							<p class="mb-1"><strong>Effective date of provider seeing patients:</strong> <%= @provider&.hire_date %></p>
+							<p class="mb-1"><strong>Admitting Privileges:</strong> <%= @provider&.admitting_privileges %></p>
+							<p class="mb-1"><strong>Have you recently gone through revalidation with any payor:</strong> <%= @provider&.revalidation %></p>
+							<p class="mb-1"><strong>Are you employed by other groups or facilities:</strong> <%= @provider&.employed_by_other %></p>
+							<p class="mb-1"><strong>Does the provider require to work under supervising licensed psychologist:</strong> <%= @provider&.employed_by_other %></p>
+							<p class="mb-1"><strong>Medical School Name:</strong> <%= @provider&.school_name %></p>
+							<p class="mb-1"><strong>Medical School Date:</strong> <%= @provider&.school_address %></p>
+							<p class="mb-1"><strong>Graducation Date:</strong> <%= @provider&.graduation_date %></p>
+						</div>
+					</div>
+					<div class="card rounded shadow-lg p-1 px-3 mb-3">
+						<h3 class="text-center my-3">Licenses and Numbers</h3>
+						<p class="mb-1"><strong>SSN:</strong> <%= @provider.ssn%></p>
+						<p class="mb-1"><strong>NPI:</strong> <%= @provider.npi%></p>
+						<p class="mb-1"><strong>DEA Number:</strong> <%= @provider.dea_number%></p>
+						<p class="mb-1"><strong>DEA Registration State:</strong> <%= @provider.dea_state %></p>
+						<p class="mb-1"><strong>DEA License Effective Date:</strong> <%= @provider.dea_license_effective_date%></p>
+						<p class="mb-1"><strong>DEA License Expiration Date:</strong> <%= @provider.dea_license_expiration_date%></p>
+						<p class="mb-1"><strong>Medicare Number:</strong> <%= @provider.medicare_number%></p>
+						<p class="mb-1"><strong>Medicaid Number:</strong> <%= @provider.medicaid_number%></p>
+						<p class="mb-1"><strong>TRICARE Number:</strong> <%= @provider.tricare_number %></p>
+						<p class="mb-1"><strong>Telehealth Number:</strong> <%= @provider.telehealth_number %></p>
+						<p class="mb-1"><strong>Board Certification Number:</strong> <%= @provider.board_certificate_number %></p>
+
+						<h3 class="text-center my-3">CAQH</h3>
+
+						<p class="mb-1"><strong>CAQH ID:</strong> <%= @provider.caqhid %></p>
+						<p class="mb-1"><strong>CAQH Attestation Date:</strong> <%= @provider.caqh_attestation_date %></p>
+						<p class="mb-1"><strong>CAQH PDF:</strong> <%= @provider&.caqh_pdf&.blank? ? 'None' : 'Yes' %></p>
+						<p class="mb-1"><strong>CAQH Username:</strong> <%= @provider.caqh_username %></p>
+						<p class="mb-1"><strong>CAQH Password:</strong> <%= @provider.caqh_password %></p>
+						<p class="mb-1"><strong>CAQH State:</strong> <%= @provider.caqh_state %></p>
+
+						<p class="mb-1"><strong>CAQH App:</strong> <%= @provider.caqh_app %></p>
+						<p class="mb-1"><strong>CAQH App:</strong> <%= @provider.caqh_payor %></p>
+
+						<h3 class="text-center my-3">Taxonomies</h3>
+						<% @provider&.taxonomies.each_with_index do |taxonomy,idx|%>
+						<p class="mb-1"><strong>Taxonomy Code <%= idx + 1 %>:</strong> <%= taxonomy.taxonomy_code %></p>
+						<p class="mb-1"><strong>Taxonomy Code :</strong> <%= taxonomy.taxonomy_code %></p>
+						<p class="mb-1"><strong>Taxonomy specialty :</strong> <%= taxonomy.specialty %></p>
+
+						<% end %>
+						<h3 class="text-center my-3">PA Licenses</h3>
+
+						<% @provider&.licenses.each_with_index do |license,idx|%>
+							<p class="mb-1"><strong>NCCPA Number:</strong> <%= license.license_number %></p>
+							<p class="mb-1"><strong>PA Effective Date:</strong> <%= license.license_effective_date %></p>
+							<p class="mb-1"><strong>PA Expiration Date:</strong> <%= license.license_expiration_date %></p>
+						<% end %>
+
+						<h3 class="text-center my-3">NP Licenses</h3>
+						<% @provider&.np_licenses.each_with_index do |license,idx|%>
+							<p class="mb-1"><strong>NP License:</strong> <%= license.np_license_number %></p>
+							<p class="mb-1"><strong>NP Effective Date:</strong> <%= license.np_license_effective_date %></p>
+							<p class="mb-1"><strong>NP Expiration Date:</strong> <%= license.np_license_expiration_date %></p>
+						<% end %>
+
+						<h3 class="text-center my-3">RN Licenses</h3>
+						<% @provider&.rn_licenses.each_with_index do |license,idx|%>
+							<p class="mb-1"><strong>RN License:</strong> <%= license.rn_license_number %></p>
+							<p class="mb-1"><strong>RN Effective Date:</strong> <%= license.rn_license_effective_date %></p>
+							<p class="mb-1"><strong>RN Expiration Date:</strong> <%= license.rn_license_expiration_date %></p>
+						<% end %>
+
+
+					</div>
+				</div>
+			</div>
+</div>
+
+		</div>
+	</div>
+
+
+<% content_for :js do %>
+<script>
+	if($('body.navbar-vertical-aside-mini-mode').length == 0){
+		setTimeout(function () {$('#navbar-aside-toggler').click();}, 1000);
+	}
+</script>
+<% end %>

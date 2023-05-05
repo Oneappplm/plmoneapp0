@@ -1,7 +1,7 @@
 class ProvidersController < ApplicationController
 	before_action :set_provider, only: [:show, :edit, :update, :destroy]
 	before_action :initialize_collections_data, only: [:new, :edit, :create, :update]
-	 before_action :get_states, only: [:new, :edit]
+	before_action :get_states, only: [:new, :edit, :index, :create]
 	def index
 			@providers = Provider.all
 	end
@@ -42,6 +42,11 @@ end
 				redirect_to providers_path, alert: 'Something went wrong'
 			end
 	end
+
+  def show
+      @providers = Provider.all
+      @provider = Provider.find(params[:id])
+  end
 
 	private
 

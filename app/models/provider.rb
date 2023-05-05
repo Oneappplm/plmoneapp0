@@ -1,4 +1,23 @@
 class Provider < ApplicationRecord
+  # note to jayson only added telephone here to not cause error on show page
+  # telephone should be a combination of ext (xx) telephone_number xxx-xxxx e.g. (08) 992-2312
+  # revalidation can be boolean or string as long as the display can be YES or NO
+  # employed_by_other can also be boolean as long as the display can be shown as YES or NO
+  # supervised can also be boolean as long as the display can be shown as YES or NO
+  
+  attr_accessor :address1, :city, :state, :telephone,
+                :email, :hire_date, :effective_date,
+                :admitting_privileges, :revalidation,
+                :employed_by_other, :supervised, :school_name,
+                :school_address, :graduation_date, :medicare_number,
+                :medicaid_number, :tricare_number, :telehealth_number,
+                :board_certificate_number, :dea_state, :caqh_username,
+                :caqh_username, :caqh_password, :caqh_state, :caqh_app,
+                :caqh_payor
+
+
+
+
   has_many :taxonomies, class_name: 'ProviderTaxonomy', dependent: :destroy
   has_many :licenses , class_name: 'ProviderLicense', dependent: :destroy
   has_many :np_licenses , class_name: 'ProviderNpLicense', dependent: :destroy
