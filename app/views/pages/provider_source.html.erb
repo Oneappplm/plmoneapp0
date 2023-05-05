@@ -40,7 +40,7 @@
 										<input type="text" name="last_name" placeholder="Last Name *" class="form-control">
 									</div>
 									<div class="col-lg-5">
-										<select class="form-select" placeholder="Suffix">
+										<select name="suffix" class="form-select" placeholder="Suffix">
 											<option>Suffix</option>
 											<option>Jr.</option>
 											<option>Sr.</option>
@@ -61,7 +61,8 @@
 
 						<div class="row my-3">
 							<div class="col-lg-12">
-								<select class="multi-select" name="state_or_practice" id="multi-select" placeholder="State(s) or Practice *" multiple>
+								<!-- multi-select | this is for frontend devs - you should be responsible for preparing the data value to be submitted and handle the data back to the element when retrieving -->
+								<select class="form-control" name="state_or_practice" id="multi-select" placeholder="State(s) or Practice *" multiple style="height:200px;">
 									<option value="">Select option</option>
 									<% @states.each do |state|%>
 									<option value="<%= state.alpha_code %>"><%= state.name %></option>
@@ -72,7 +73,8 @@
 
 						<div class="row my-3">
 							<div class="col-lg-12">
-								<select class="form-select select-search py-3" placeholder="Primary Practitioner Type *">
+								<!-- select-search | this is for frontend devs - you should be responsible for preparing the data value to be submitted and handle the data -->
+								<select name="primary-practioner-type" class="form-select  py-3" placeholder="Primary Practitioner Type *">
 									<option>Primary Practitioner Type *</option>
 									<% @provider_types.each do |provider_type|%>
 									<option value="<%= provider_type.fch %>"><%= provider_type.fch %></option>
@@ -165,7 +167,7 @@
 
 						<div class="row my-3">
 							<div class="col-lg-6">
-								<select class="form-select ">
+								<select name="ps-state" class="form-select ">
 									<option value="">Select option</option>
 									<% @states.each do |state|%>
 									<option value="<%= state.alpha_code %>"><%= state.name %></option>
@@ -191,7 +193,7 @@
 						<div class="row my-3">
 							<div class="col-lg-12">
 								<div class="form-check">
-									  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+									  <input class="form-check-input" name="unlisted-number" type="checkbox"  id="flexCheckDefault">
 									  <label class="form-check-label" for="flexCheckDefault">
 									    Unlisted Number
 									  </label>

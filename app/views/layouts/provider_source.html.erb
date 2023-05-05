@@ -491,14 +491,14 @@
 
   function saveData(input) {
       var input = input;
-      console.log(input.val());
+      // console.log(input.val());
       var url = '/provider_sources/autosave'; // Replace with the URL for your autosave endpoint
       var fieldName = input.attr('name');
       var value = input.val();
 
       console.log(fieldName)
         if(fieldName == 'hp-unrestricted-privileges'){
-          console.log(value);
+          // console.log(value);
         }
 
       $.ajax({
@@ -519,14 +519,16 @@
 
 <script>
 var csrfToken = $('meta[name="csrf-token"]').attr('content');
-$('input,textarea').on('change', function() {
+$('input,textarea,select').on('change', function() {
 			var input = $(this);
 			var url = '/provider_sources/autosave'; // Replace with the URL for your autosave endpoint
 			var fieldName = input.attr('name');
 			var value = input.val();
-				if(fieldName == 'hp-unrestricted-privileges'){
-					console.log(value);
-				}
+      var fieldType = input.attr('type');
+
+      if(fieldType == 'checkbox'){
+        value = input.is(':checked') ? 'yes' : 'no';
+      }
 
 			$.ajax({
 					url: url,
@@ -542,7 +544,7 @@ $('input,textarea').on('change', function() {
 			});
 	});
 
-$('input,textarea').each(function(element) {
+$('input,textarea,select').each(function(element) {
 	var inputName = $(this).attr('name');
 	var inputValue = $(this).val();
   var tagName = $(this).prop('tagName').toLowerCase();
@@ -555,17 +557,88 @@ $('input,textarea').each(function(element) {
 			data: { authenticity_token: csrfToken, field_name: inputName },
 			dataType: 'json',
 			success: function(data) {
+
           if (inputType == 'radio' || inputType == 'checkbox') {
-            // not tested on checkbox yet but should work
             var radioInput = $(tagName + '[name="' + inputName + '"][value="' + data.value + '"]');
-            radioInput.prop("checked", true);
+
+            if (data.value == 'yes' || data.value == 'on'){
+              if(inputType == 'radio'){
+                radioInput.prop("checked", true);
+              }else if(inputType == 'checkbox'){
+                $(tagName + '[name="' + inputName + '"]').prop("checked", true);
+              }
+            }else{
+              // console.log(tagName + '[name="' + inputName + '"]')
+              if(inputType == 'radio'){
+                radioInput.prop("checked", true);
+              }else if(inputType == 'checkbox'){
+                $(tagName + '[name="' + inputName + '"]').prop("checked", false);
+              }
+            }
+
+            if (inputName == 'other_name'){
+              if (data.value == 'yes'){
+                $('#other_name_field').removeClass('d-none');
+              }else{
+                $('#other_name_field').addClass('d-none');
+              }
+            }
+
+            if (inputName == 'ssn'){
+              if (data.value == 'yes'){
+                $('#ssn_field').removeClass('d-none');
+              }else{
+                $('#ssn_field').addClass('d-none');
+              }
+            }
+
+            if(inputName == 'licensure_require_supervision'){
+              if (data.value == 'yes'){
+                $('#supervised_fields').removeClass('d-none');
+              }else{
+                $('#supervised_fields').addClass('d-none');
+              }
+            }
+
+          } else if(tagName == 'select'){
+            displayFieldsFromSelectElement(data, inputName, tagName);
           } else {
-            $(tagName + '[name="' + inputName + '"]').val(data.value);
+            displayFieldsFromInputElement(data, inputName, tagName, inputType)
           }
 			}
-	});
+	  });
 });
 
+
+function displayFieldsFromSelectElement(data, inputName, tagName){
+  if ($.inArray(inputName, ['state_or_practice', 'health_plans', 'hospitals', 'directories']) != '1'){  // check if data.value is an array or not to avoid always registering inputName here
+    var values = eval(data.value);
+    for (let index = 0; index <values.length; index++) {
+      const element = values[index];
+      $(tagName + '[name="' + inputName + '"] option[value="'+element+'"]').attr('selected', 'selected');
+    }
+  }else{
+    $(tagName + '[name="' + inputName + '"] option[value="'+data.value+'"]').attr('selected', 'selected');;
+  }
+}
+
+function displayFieldsFromInputElement(data, inputName, tagName, inputType){
+  if(inputType == 'hidden'){
+    if(data.value == 'yes'){
+      $('input[name="'+inputName+'"]').parent().find('button.btn-toggle').click();
+    }
+  }
+
+  $(tagName + '[name="' + inputName + '"]').val(data.value);
+}
+
+function displayFieldsFromCheckboxElement(data, inputName, tagName){
+ // put the refactor here for checkbox
+}
+
+function displayFieldsFromSelectRadioElement(data, inputName, tagName){
+ // put the refactor here for radio
+}
 
 // some text input where they can type and it will be added to a readonly text input
  $('.add-text-readonly').on('click',function(){

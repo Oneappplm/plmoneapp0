@@ -29,6 +29,32 @@ module HtmlUtils
 		toggle.html_safe
 	end
 
+  def radio_options **options
+
+    options[:label_class] ||= 'form-label'
+		options[:container_class] ||= 'd-flex me-4 gap-2'
+    options[:name] ||= ''
+		options[:label] ||= ''
+    options[:value_on] ||= 'yes'
+    options[:value_off] ||= 'no'
+
+    option = <<-HTML
+      <label class="#{ options[:label_class] }"> #{ options[:label] } </label>
+      <div class="#{ options[:container_class] }">
+          <span>
+          <input type="radio" value="#{ options[:value_on] }" name="#{ options[:name] }" required>
+          <span>#{ options[:value_on].upcase }</span>
+          </span>
+          <span>
+          <input type="radio" value="#{ options[:value_off] }" name="#{ options[:name] }" required>
+          <span>#{ options[:value_off].upcase }</span>
+          </span>
+        </div>
+    HTML
+
+    option.html_safe
+  end
+
 
   # View Summary Elements
 
