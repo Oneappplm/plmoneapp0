@@ -37,6 +37,10 @@ Rails.application.routes.draw do
     end
   end
 
+  # added these two resources just to make it different to pages_controller for now it doesn't have any model
+  resources :verification_platform
+  resources :office_manager
+
   resources :providers
   resources :enrollments do
 
