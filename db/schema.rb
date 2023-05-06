@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_30_220821) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_06_093128) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -234,6 +234,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_30_220821) do
     t.index ["provider_source_id"], name: "index_provider_source_data_on_provider_source_id"
   end
 
+  create_table "provider_source_documents", force: :cascade do |t|
+    t.bigint "provider_source_id", null: false
+    t.string "file_name"
+    t.string "file_path"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_source_id"], name: "index_provider_source_documents_on_provider_source_id"
+  end
+
   create_table "provider_sources", force: :cascade do |t|
     t.string "status", default: "draft"
     t.boolean "current_provider_source", default: false
@@ -392,5 +401,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_30_220821) do
   add_foreign_key "provider_np_licenses", "providers"
   add_foreign_key "provider_rn_licenses", "providers"
   add_foreign_key "provider_source_data", "provider_sources"
+  add_foreign_key "provider_source_documents", "provider_sources"
   add_foreign_key "provider_taxonomies", "providers"
 end
