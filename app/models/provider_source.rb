@@ -18,4 +18,13 @@ class ProviderSource < ApplicationRecord
 	def current_provider_source?
 	 current_provider_source ? 'Yes' : 'No'
 	end
+
+	def self.test_document_upload
+		provider_source = ProviderSource.current
+		document = provider_source.documents.new
+		document.file_path = File.open(File.join(Rails.root, 'lib', 'data', 'languages.csv'))
+		document.file_name = 'languages.csv'
+		document.save
+		document.file_path.url
+	end
 end
