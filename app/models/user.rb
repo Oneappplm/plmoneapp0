@@ -1,15 +1,15 @@
 class User < ApplicationRecord
-  include PgSearch::Model
+  # include PgSearch::Model
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  pg_search_scope :search,
-          against: self.column_names,
-          using: {
-            tsearch: {any_word: true}
-          }
+  # pg_search_scope :search,
+  #         against: self.column_names,
+  #         using: {
+  #           tsearch: {any_word: true}
+  #         }
 
   enum user_type: {
     client_staff: 'Client Staff',
