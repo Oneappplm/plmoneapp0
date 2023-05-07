@@ -513,36 +513,41 @@
               console.log('Autosave failed!');
           }
       });
-
+      getProgress();
   }
 </script>
 
 <script>
 var csrfToken = $('meta[name="csrf-token"]').attr('content');
 $('input,textarea,select').on('change', function() {
-			var input = $(this);
-			var url = '/provider_sources/autosave'; // Replace with the URL for your autosave endpoint
-			var fieldName = input.attr('name');
-			var value = input.val();
+		  saveInput($(this));
+      getProgress();
+});
+
+function saveInput(input) {
+    var url = '/provider_sources/autosave'; // Replace with the URL for your autosave endpoint
+      var fieldName = input.attr('name');
+      var value = input.val();
       var fieldType = input.attr('type');
 
       if(fieldType == 'checkbox'){
         value = input.is(':checked') ? 'yes' : 'no';
       }
 
-			$.ajax({
-					url: url,
-					method: 'POST',
-					dataType: 'json',
-					data: { authenticity_token: csrfToken, field_name: fieldName, value: value },
-					success: function(data) {
-							console.log('Autosaved successfully!');
-					},
-					error: function() {
-							console.log('Autosave failed!');
-					}
-			});
-	});
+      $.ajax({
+          url: url,
+          method: 'POST',
+          dataType: 'json',
+          data: { authenticity_token: csrfToken, field_name: fieldName, value: value },
+          success: function(data) {
+              console.log('Autosaved successfully!');
+          },
+          error: function() {
+              console.log('Autosave failed!');
+          }
+      });
+}
+
 
 $('input,textarea,select').each(function(element) {
 	var inputName = $(this).attr('name');
@@ -608,7 +613,6 @@ $('input,textarea,select').each(function(element) {
 			}
 	  });
 });
-
 
 function displayFieldsFromSelectElement(data, inputName, tagName){
   if ($.inArray(inputName, ['state_or_practice', 'health_plans', 'hospitals', 'directories']) != '1'){  // check if data.value is an array or not to avoid always registering inputName here
@@ -682,6 +686,28 @@ function displayFieldsFromSelectRadioElement(data, inputName, tagName){
       var to_show = $(this).data('toshow');
       ($(this).val() == 'yes') ? $('#'+to_show).removeClass('d-none') : $('#'+to_show).addClass('d-none') ;
    });
+var page_group = '';
+$(document).on('ready',getProgress());
+  function getProgress() {
+   page_group = '<%= page_data_group action_name, params[:page]%>';
+    var url = '/provider_sources/get_progress'; // Replace with the URL for your
+    $.ajax({
+      url: url,
+      method: 'POST',
+      dataType: 'json',
+      data: {authenticity_token: csrfToken, data_group: page_group},
+      success: function(data) {
+        var progress = data['progress'];
+        $('#progress_bar_width').css('width',(progress.toString()+'%'))
+        $('#progress_bar_text').html(progress.toString() + '%');
+        console.log(data['progress']);
+      },
+      error: function() {
+          console.log('Failed to fetch progress');
+
+      }
+    });
+  }
 
 </script>
 </body>

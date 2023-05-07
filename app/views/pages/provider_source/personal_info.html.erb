@@ -1,560 +1,303 @@
 <div class="content container-fluid ps-0">
-	<%= render "provider_source_components/top_buttons"%>
-	<div class="row">
-		<div class="col-lg-3">
-			<%= render "provider_source_components/sub_navbar"%>
-		</div>
-		<div class="col-lg-9">
-			<div class="row border border-4 p-3">
-				<!-- start of form header -->
-				<div class="col-lg-12">
-					<div class="d-flex gap-2">
-				 		<span class="bg-medium-grey circle d-flex justify-content-center align-items-center" style="width: 40px;height: 40px;">
-				 			<i class="bi bi-person-plus-fill text-white" style="font-size: 25px;"></i>
-				 		</span>
-				 		<div class="d-flex flex-column">
-				 			<label>General Information	</label>
-				 			<small>Please fill out 	all required fields</small>
-				 		</div>
-					</div>
-				</div>
-				<%= render partial: "provider_source_components/progress_bar", locals: {percent: 50}%>
-				<% steps = [['NAME AND HOME ADDRESS','finished', custom_provider_source_path], ['PERSONAL INFORMATION', 'active', custom_provider_source_path(page: 'personal_info')]]%>
-				<%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
-				<div class="col-lg-12 my-3">
-					<form>
-						<div class="row mb-3">
-							<div class="col-lg-6">
-								<label class="form-label">Gender*</label>
-								<select name="ps-gender" class="form-select">
-									<option>Male</option>
-									<option>Female</option>
-									<option>Non-binary</option>
-									<option>X</option>
-								</select>
-							</div>
-							<div class="col-lg-6">
-								<label class="form-label">Date for Birth*</label>
-								<input name="ps-dob" type="date" class="form-control" name="">
-							</div>
-						</div>
-						<div class="row mb-3">
-							<div class="col-lg-6">
-								<label class="form-label">Citizenship*</label>
-								<select name="ps-citizenship" class="form-select"></select>
-							</div>
-							<div class="col-lg-6">
-								<label class="form-label">Country of Birth</label>
-								<select name="ps-cob" class="form-select"></select>
-							</div>
-						</div>
-						<div class="row mb-3">
-							<div class="d-flex justify-content-between ">
-								<label class="form-label">Do you have a Social Security Number?</label>
-								<div class="d-flex me-4 gap-2">
-									<span>
-										<input type="radio" value="yes" name="ssn">
-										<span>YES</span>
-									</span>
-									<span>
-										<input type="radio" value="no" name="ssn">
-										<span>NO</span>
-									</span>
-								</div>
-							</div>
-							<div class="col-lg-12 d-none" id="ssn_field">
-								<label class="form-label">Social Security Number*</label>
-								<input type="text" name="social-security-number" id="social-security-number" class="form-control">
-							</div>
-						</div>
-						<hr>
-						<div class="row mb-3">
-							<div class="d-flex justify-content-between ">
-								<label class="form-label">Do you have a legal right to reside in the United States?*</label>
-								<div class="d-flex me-4 gap-2">
-									<span>
-										<input type="radio" value="yes" name="reside-on-us">
-										<span>YES</span>
-									</span>
-									<span>
-										<input type="radio" value="no" name="reside-on-us">
-										<span>NO</span>
-									</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="row mb-3">
-							<div class="d-flex justify-content-between ">
-								<label class="form-label">Do you have a legal right to work in the United States*</label>
-								<div class="d-flex me-4 gap-2">
-									<span>
-										<input type="radio" value="yes" name="work-on-us">
-										<span>YES</span>
-									</span>
-									<span>
-										<input type="radio" value="no" name="work-on-us">
-										<span>NO</span>
-									</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="row mb-3">
-							<div class="d-flex justify-content-between ">
-								<label class="form-label">Do you hold a permanent work permit?*</label>
-								<div class="d-flex me-4 gap-2">
-									<span>
-										<input type="radio" value="yes" name="permanent-work-permit">
-										<span>YES</span>
-									</span>
-									<span>
-										<input type="radio" value="no" name="permanent-work-permit">
-										<span>NO</span>
-									</span>
-								</div>
-							</div>
-						</div>
-						<div class="row mb-3">
-							<div class="col-lg-6">
-								<label class="form-label">Foreign National Identification Number</label>
-								<input type="text" name="foreign-national-identification-number" class="form-control" name="">
-							</div>
-							<div class="col-lg-6">
-								<label class="form-label">FNIN Country of Issue</label>
-								<select name="fnin-country-of-issue" class="form-select">
-									<option selected="selected" value=""></option>
-									<option value="United States">United States</option>
-									<option value="Åland Islands">Åland Islands</option>
-									<option value="Afghanistan">Afghanistan</option>
-									<option value="Albania">Albania</option>
-									<option value="Algeria">Algeria</option>
-									<option value="American Samoa">American Samoa</option>
-									<option value="Andorra">Andorra</option>
-									<option value="Angola">Angola</option>
-									<option value="Anguilla">Anguilla</option>
-									<option value="Antarctica">Antarctica</option>
-									<option value="Antigua and Barbuda">Antigua and Barbuda</option>
-									<option value="Argentina">Argentina</option>
-									<option value="Armenia">Armenia</option>
-									<option value="Aruba">Aruba</option>
-									<option value="Australia">Australia</option>
-									<option value="Austria">Austria</option>
-									<option value="Azerbaijan">Azerbaijan</option>
-									<option value="Bahamas">Bahamas</option>
-									<option value="Bahrain">Bahrain</option>
-									<option value="Bangladesh">Bangladesh</option>
-									<option value="Barbados">Barbados</option>
-									<option value="Belarus">Belarus</option>
-									<option value="Belgium">Belgium</option>
-									<option value="Belize">Belize</option>
-									<option value="Benin">Benin</option>
-									<option value="Bermuda">Bermuda</option>
-									<option value="Bhutan">Bhutan</option>
-									<option value="Bolivia">Bolivia</option>
-									<option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
-									<option value="Botswana">Botswana</option>
-									<option value="Bouvet Island">Bouvet Island</option>
-									<option value="Brazil">Brazil</option>
-									<option value="British Indian Ocean Territory">British Indian Ocean Territory</option>
-									<option value="Brunei Darussalam">Brunei Darussalam</option>
-									<option value="Bulgaria">Bulgaria</option>
-									<option value="Burkina Faso">Burkina Faso</option>
-									<option value="Burundi">Burundi</option>
-									<option value="Cambodia">Cambodia</option>
-									<option value="Cameroon">Cameroon</option>
-									<option value="Canada">Canada</option>
-									<option value="Cape Verde">Cape Verde</option>
-									<option value="Cayman Islands">Cayman Islands</option>
-									<option value="Central African Republic">Central African Republic</option>
-									<option value="Chad">Chad</option>
-									<option value="Chile">Chile</option>
-									<option value="China">China</option>
-									<option value="Christmas Island">Christmas Island</option>
-									<option value="Cocos (Keeling) Islands">Cocos (Keeling) Islands</option>
-									<option value="Colombia">Colombia</option>
-									<option value="Comoros">Comoros</option>
-									<option value="Congo">Congo</option>
-									<option value="Congo, The Democratic Republic Of The">Congo, The Democratic Republic Of The</option>
-									<option value="Cook Islands">Cook Islands</option>
-									<option value="Costa Rica">Costa Rica</option>
-									<option value="Croatia">Croatia</option>
-									<option value="Cuba">Cuba</option>
-									<option value="Cyprus">Cyprus</option>
-									<option value="Czech Republic">Czech Republic</option>
-									<option value="Côte D'Ivoire">Côte D'Ivoire</option>
-									<option value="Denmark">Denmark</option>
-									<option value="Djibouti">Djibouti</option>
-									<option value="Dominica">Dominica</option>
-									<option value="Dominican Republic">Dominican Republic</option>
-									<option value="Ecuador">Ecuador</option>
-									<option value="Egypt">Egypt</option>
-									<option value="El Salvador">El Salvador</option>
-									<option value="Equatorial Guinea">Equatorial Guinea</option>
-									<option value="Eritrea">Eritrea</option>
-									<option value="Estonia">Estonia</option>
-									<option value="Ethiopia">Ethiopia</option>
-									<option value="Falkland Islands (Malvinas)">Falkland Islands (Malvinas)</option>
-									<option value="Faroe Islands">Faroe Islands</option>
-									<option value="Fiji">Fiji</option>
-									<option value="Finland">Finland</option>
-									<option value="France">France</option>
-									<option value="French Guiana">French Guiana</option>
-									<option value="French Polynesia">French Polynesia</option>
-									<option value="French Southern Territories">French Southern Territories</option>
-									<option value="Gabon">Gabon</option>
-									<option value="Gambia">Gambia</option>
-									<option value="Georgia">Georgia</option>
-									<option value="Germany">Germany</option>
-									<option value="Ghana">Ghana</option>
-									<option value="Gibraltar">Gibraltar</option>
-									<option value="Greece">Greece</option>
-									<option value="Greenland">Greenland</option>
-									<option value="Grenada">Grenada</option>
-									<option value="Guadeloupe">Guadeloupe</option>
-									<option value="Guam">Guam</option>
-									<option value="Guatemala">Guatemala</option>
-									<option value="Guernsey">Guernsey</option>
-									<option value="Guinea">Guinea</option>
-									<option value="Guinea-Bissau">Guinea-Bissau</option>
-									<option value="Guyana">Guyana</option>
-									<option value="Haiti">Haiti</option>
-									<option value="Heard and McDonald Islands">Heard and McDonald Islands</option>
-									<option value="Holy See (Vatican City State)">Holy See (Vatican City State)</option>
-									<option value="Honduras">Honduras</option>
-									<option value="Hong Kong">Hong Kong</option>
-									<option value="Hungary">Hungary</option>
-									<option value="Iceland">Iceland</option>
-									<option value="India">India</option>
-									<option value="Indonesia">Indonesia</option>
-									<option value="Iran, Islamic Republic Of">Iran, Islamic Republic Of</option>
-									<option value="Iraq">Iraq</option>
-									<option value="Ireland">Ireland</option>
-									<option value="Isle of Man">Isle of Man</option>
-									<option value="Israel">Israel</option>
-									<option value="Italy">Italy</option>
-									<option value="Jamaica">Jamaica</option>
-									<option value="Japan">Japan</option>
-									<option value="Jersey">Jersey</option>
-									<option value="Jordan">Jordan</option>
-									<option value="Kazakhstan">Kazakhstan</option>
-									<option value="Kenya">Kenya</option>
-									<option value="Kiribati">Kiribati</option>
-									<option value="Korea, Democratic People's Republic Of">Korea, Democratic People's Republic Of</option>
-									<option value="Korea, Republic of">Korea, Republic of</option>
-									<option value="Kuwait">Kuwait</option>
-									<option value="Kyrgyzstan">Kyrgyzstan</option>
-									<option value="Lao People's Democratic Republic">Lao People's Democratic Republic</option>
-									<option value="Latvia">Latvia</option>
-									<option value="Lebanon">Lebanon</option>
-									<option value="Lesotho">Lesotho</option>
-									<option value="Liberia">Liberia</option>
-									<option value="Libyan Arab Jamahiriya">Libyan Arab Jamahiriya</option>
-									<option value="Liechtenstein">Liechtenstein</option>
-									<option value="Lithuania">Lithuania</option>
-									<option value="Luxembourg">Luxembourg</option>
-									<option value="Macao">Macao</option>
-									<option value="Macedonia, the Former Yugoslav Republic Of">Macedonia, the Former Yugoslav Republic Of</option>
-									<option value="Madagascar">Madagascar</option>
-									<option value="Malawi">Malawi</option>
-									<option value="Malaysia">Malaysia</option>
-									<option value="Maldives">Maldives</option>
-									<option value="Mali">Mali</option>
-									<option value="Malta">Malta</option>
-									<option value="Marshall Islands">Marshall Islands</option>
-									<option value="Martinique">Martinique</option>
-									<option value="Mauritania">Mauritania</option>
-									<option value="Mauritius">Mauritius</option>
-									<option value="Mayotte">Mayotte</option>
-									<option value="Mexico">Mexico</option>
-									<option value="Micronesia, Federated States Of">Micronesia, Federated States Of</option>
-									<option value="Moldova, Republic of">Moldova, Republic of</option>
-									<option value="Monaco">Monaco</option>
-									<option value="Mongolia">Mongolia</option>
-									<option value="Montenegro">Montenegro</option>
-									<option value="Montserrat">Montserrat</option>
-									<option value="Morocco">Morocco</option>
-									<option value="Mozambique">Mozambique</option>
-									<option value="Myanmar">Myanmar</option>
-									<option value="Namibia">Namibia</option>
-									<option value="Nauru">Nauru</option>
-									<option value="Nepal">Nepal</option>
-									<option value="Netherlands">Netherlands</option>
-									<option value="Netherlands Antilles">Netherlands Antilles</option>
-									<option value="New Caledonia">New Caledonia</option>
-									<option value="New Zealand">New Zealand</option>
-									<option value="Nicaragua">Nicaragua</option>
-									<option value="Niger">Niger</option>
-									<option value="Nigeria">Nigeria</option>
-									<option value="Niue">Niue</option>
-									<option value="Norfolk Island">Norfolk Island</option>
-									<option value="Northern Mariana Islands">Northern Mariana Islands</option>
-									<option value="Norway">Norway</option>
-									<option value="Oman">Oman</option>
-									<option value="Pakistan">Pakistan</option>
-									<option value="Palau">Palau</option>
-									<option value="Palestinian Territory, Occupied">Palestinian Territory, Occupied</option>
-									<option value="Panama">Panama</option>
-									<option value="Papua New Guinea">Papua New Guinea</option>
-									<option value="Paraguay">Paraguay</option>
-									<option value="Peru">Peru</option>
-									<option value="Philippines">Philippines</option>
-									<option value="Pitcairn">Pitcairn</option>
-									<option value="Poland">Poland</option>
-									<option value="Portugal">Portugal</option>
-									<option value="Puerto Rico">Puerto Rico</option>
-									<option value="Qatar">Qatar</option>
-									<option value="Romania">Romania</option>
-									<option value="Russian Federation">Russian Federation</option>
-									<option value="Rwanda">Rwanda</option>
-									<option value="Réunion">Réunion</option>
-									<option value="Saint Barthélemy">Saint Barthélemy</option>
-									<option value="Saint Helena">Saint Helena</option>
-									<option value="Saint Kitts And Nevis">Saint Kitts And Nevis</option>
-									<option value="Saint Lucia">Saint Lucia</option>
-									<option value="Saint Martin">Saint Martin</option>
-									<option value="Saint Pierre And Miquelon">Saint Pierre And Miquelon</option>
-									<option value="Saint Vincent And The Grenedines">Saint Vincent And The Grenedines</option>
-									<option value="Samoa">Samoa</option>
-									<option value="San Marino">San Marino</option>
-									<option value="Sao Tome and Principe">Sao Tome and Principe</option>
-									<option value="Saudi Arabia">Saudi Arabia</option>
-									<option value="Senegal">Senegal</option>
-									<option value="Serbia">Serbia</option>
-									<option value="Seychelles">Seychelles</option>
-									<option value="Sierra Leone">Sierra Leone</option>
-									<option value="Singapore">Singapore</option>
-									<option value="Slovakia">Slovakia</option>
-									<option value="Slovenia">Slovenia</option>
-									<option value="Solomon Islands">Solomon Islands</option>
-									<option value="Somalia">Somalia</option>
-									<option value="South Africa">South Africa</option>
-									<option value="South Georgia and the South Sandwich Islands">South Georgia and the South Sandwich Islands</option>
-									<option value="Spain">Spain</option>
-									<option value="Sri Lanka">Sri Lanka</option>
-									<option value="Sudan">Sudan</option>
-									<option value="Suriname">Suriname</option>
-									<option value="Svalbard And Jan Mayen">Svalbard And Jan Mayen</option>
-									<option value="Swaziland">Swaziland</option>
-									<option value="Sweden">Sweden</option>
-									<option value="Switzerland">Switzerland</option>
-									<option value="Syrian Arab Republic">Syrian Arab Republic</option>
-									<option value="Taiwan, Province Of China">Taiwan, Province Of China</option>
-									<option value="Tajikistan">Tajikistan</option>
-									<option value="Tanzania, United Republic of">Tanzania, United Republic of</option>
-									<option value="Thailand">Thailand</option>
-									<option value="Timor-Leste">Timor-Leste</option>
-									<option value="Togo">Togo</option>
-									<option value="Tokelau">Tokelau</option>
-									<option value="Tonga">Tonga</option>
-									<option value="Trinidad and Tobago">Trinidad and Tobago</option>
-									<option value="Tunisia">Tunisia</option>
-									<option value="Turkey">Turkey</option>
-									<option value="Turkmenistan">Turkmenistan</option>
-									<option value="Turks and Caicos Islands">Turks and Caicos Islands</option>
-									<option value="Tuvalu">Tuvalu</option>
-									<option value="Uganda">Uganda</option>
-									<option value="Ukraine">Ukraine</option>
-									<option value="United Arab Emirates">United Arab Emirates</option>
-									<option value="United Kingdom">United Kingdom</option>
-									<option value="United States Minor Outlying Islands">United States Minor Outlying Islands</option>
-									<option value="Uruguay">Uruguay</option>
-									<option value="Uzbekistan">Uzbekistan</option>
-									<option value="Vanuatu">Vanuatu</option>
-									<option value="Venezuela, Bolivarian Republic of">Venezuela, Bolivarian Republic of</option>
-									<option value="Viet Nam">Viet Nam</option>
-									<option value="Virgin Islands, British">Virgin Islands, British</option>
-									<option value="Virgin Islands, U.S.">Virgin Islands, U.S.</option>
-									<option value="Wallis and Futuna">Wallis and Futuna</option>
-									<option value="West Indies">West Indies</option>
-									<option value="Western Sahara">Western Sahara</option>
-									<option value="Yemen">Yemen</option>
-									<option value="Zambia">Zambia</option>
-									<option value="Zimbabwe">Zimbabwe</option>
-
-								</select>
-							</div>
-						</div>
-						<div class="row mb-3">
-							<div class="col-lg-6">
-								<label class="form-label">Visa Number</label>
-								<input type="text" name="visa-number" class="form-control" name="">
-							</div>
-							<div class="col-lg-6">
-								<label class="form-label">Visa Type</label>
-								<select name="visa-type" class="form-select">
-									<option selected="selected" value=""></option>
-										<option value="A-1">A-1</option>
-										<option value="A-2">A-2</option>
-										<option value="A-3">A-3</option>
-										<option value="B-1">B-1</option>
-										<option value="B-2">B-2</option>
-										<option value="C-1">C-1</option>
-										<option value="C-2">C-2</option>
-										<option value="C-3">C-3</option>
-										<option value="C-4">C-4</option>
-										<option value="D-1">D-1</option>
-										<option value="D-2">D-2</option>
-										<option value="E-1">E-1</option>
-										<option value="E-2">E-2</option>
-										<option value="E-3">E-3</option>
-										<option value="F-1">F-1</option>
-										<option value="F-2">F-2</option>
-										<option value="G-1">G-1</option>
-										<option value="G-2">G-2</option>
-										<option value="G-3">G-3</option>
-										<option value="G-4">G-4</option>
-										<option value="G-5">G-5</option>
-										<option value="H-1B">H-1B</option>
-										<option value="H-1B1">H-1B1</option>
-										<option value="H-1C">H-1C</option>
-										<option value="H-2A">H-2A</option>
-										<option value="H-2B">H-2B</option>
-										<option value="H-3">H-3</option>
-										<option value="H-4">H-4</option>
-										<option value="I">I</option>
-										<option value="J-1">J-1</option>
-										<option value="J-2">J-2</option>
-										<option value="L-1">L-1</option>
-										<option value="L-2">L-2</option>
-										<option value="M-1">M-1</option>
-										<option value="M-2">M-2</option>
-										<option value="NATO 1-7">NATO 1-7</option>
-										<option value="O-1">O-1</option>
-										<option value="O-2">O-2</option>
-										<option value="O-3">O-3</option>
-										<option value="P-1">P-1</option>
-										<option value="P-2">P-2</option>
-										<option value="P-3">P-3</option>
-										<option value="P-4">P-4</option>
-										<option value="Q-1">Q-1</option>
-										<option value="Q-2">Q-2</option>
-										<option value="Q-3">Q-3</option>
-										<option value="R-1">R-1</option>
-										<option value="R-2">R-2</option>
-										<option value="TD">TD</option>
-										<option value="TN-1">TN-1</option>
-										<option value="WB">WB</option>
-										<option value="WT">WT</option>
-								</select>
-							</div>
-						</div>
-						<div class="row mb-3">
-							<div class="col-lg-6">
-								<label class="form-label">Visa Status</label>
-								<select name="visa-status" class="form-select">
-									<option selected="selected" value=""></option>
-									<option value="In Status">In Status</option>
-									<option value="Out of Status">Out of Status</option>
-								</select>
-							</div>
-						</div>
-
-						<div class="row my-3">
-							<div class="col-lg-12">
-								<label class="form-label">Please select all the languages you speak</label>
-								<!-- multi-select -->
-								<select name="languages-you-speak" class="form-control" id="multi-select" multiple style="height: 150px;">
-									<option value="">Select option</option>
-									<% @languages.each do |language|%>
-									<option value="<%= language.name %>"><%= language.name %></option>
-									<% end %>
-								</select>
-							</div>
-						</div>
-
-						<div class="row my-3">
-							<div class="col-lg-12">
-								<label class="form-label">Please select all the languages you write</label>
-								<select name="languages-you-write" class="form-control" id="multi-select" multiple style="height: 150px;">
-									<!-- multi-select -->
-									<option value="">Select option</option>
-									<% @languages.each do |language|%>
-									<option value="<%= language.name %>"><%= language.name %></option>
-									<% end %>
-								</select>
-							</div>
-						</div>
-
-						<div class="row mb-3">
-							<div class="col-lg-6">
-								<label class="form-label">Ethnicity*</label>
-								<select class="form-control">
-									<option value=""></option>
-									<option value="American Indian/Alaska Native American">American Indian/Alaska Native American</option>
-									<option selected="selected" value="Asian/Pacific Islander">Asian/Pacific Islander</option>
-									<option value="Black/African American">Black/African American</option>
-									<option value="Caucasian">Caucasian</option>
-									<option value="Hispanic/Latino">Hispanic/Latino</option>
-									<option value="Not Listed">Not Listed</option>
-								</select>
-							</div>
-							<div class="col-lg-6">
-								<label class="form-label">Marital Status</label>
-								<select class="form-control">
-									<option selected="selected" value=""></option>
-									<option value="Domestic Partner">Domestic Partner</option>
-									<option value="Divorced">Divorced</option>
-									<option value="Married">Married</option>
-									<option value="Single">Single</option>
-									<option value="Widowed">Widowed</option>
-								</select>
-							</div>
-						</div>
-
-						<div class="row card mb-3 p-3">
-
-							<div class="col-lg-12">
-								<h4 class="fw-semibold text-secondary mb-3">Emergency Contact</h4>
-
-								<div class="row mb-3">
-									<div class="col-lg-4">
-										<label class="form-label">First Name</label>
-										<input type="text" name="emergency-first-name" class="form-control">
-									</div>
-									<div class="col-lg-4">
-										<label class="form-label">Middle Name</label>
-										<input type="text" name="emergency-middle-name" class="form-control">
-									</div>
-									<div class="col-lg-4">
-										<label class="form-label">Last Name</label>
-										<input type="text" name="emergency-last-name" class="form-control">
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-lg-12">
-										<label class="form-label">Emergency Contact Phone Number</label>
-										<input type="text" name="emergency-contact-phone-number" class="form-control">
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="row">
-
-							<div class="col-lg-12 mb-3 d-flex justify-content-end px-0">
-					            <button class="btn btn-primary">Save Changes</button>
-					        </div>
-
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
+   <%= render "provider_source_components/top_buttons"%>
+   <div class="row">
+      <div class="col-lg-3">
+         <%= render "provider_source_components/sub_navbar"%>
+      </div>
+      <div class="col-lg-9">
+         <div class="row border border-4 p-3">
+            <!-- start of form header -->
+            <div class="col-lg-12">
+               <div class="d-flex gap-2">
+                  <span class="bg-medium-grey circle d-flex justify-content-center align-items-center" style="width: 40px;height: 40px;">
+                  <i class="bi bi-person-plus-fill text-white" style="font-size: 25px;"></i>
+                  </span>
+                  <div class="d-flex flex-column">
+                     <label>General Information	</label>
+                     <small>Please fill out 	all required fields</small>
+                  </div>
+               </div>
+            </div>
+            <%= render partial: "provider_source_components/progress_bar", locals: {percent: (@provider.general_information_progress)}%>
+            <% steps = [['NAME AND HOME ADDRESS','finished', custom_provider_source_path], ['PERSONAL INFORMATION', 'active', custom_provider_source_path(page: 'personal_info')]]%>
+            <%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
+            <div class="col-lg-12 my-3">
+               <form>
+                  <div class="row mb-3">
+                     <div class="col-lg-6">
+                        <label class="form-label">Gender*</label>
+                        <select name="ps-gender" class="form-select">
+                           <option value="male">Male</option>
+                           <option value="female">Female</option>
+                           <option value="non-binary">Non-binary</option>
+                           <option value="x">X</option>
+                        </select>
+                     </div>
+                     <div class="col-lg-6">
+                        <label class="form-label">Date for Birth*</label>
+                        <input name="ps-dob" type="date" class="form-control" name="">
+                     </div>
+                  </div>
+                  <div class="row mb-3">
+                     <div class="col-lg-6">
+                        <label class="form-label">Citizenship*</label>
+                        <select name="ps-citizenship" class="form-select">
+                           <% @countries.each do |country|%>
+                           <option value="<%= country%>"><%= country%></option>
+                           <% end %>
+                        </select>
+                     </div>
+                     <div class="col-lg-6">
+                        <label class="form-label">Country of Birth</label>
+                        <select name="ps-cob" class="form-select"></select>
+                     </div>
+                  </div>
+                  <div class="row mb-3">
+                     <div class="d-flex justify-content-between ">
+                        <label class="form-label">Do you have a Social Security Number?</label>
+                        <div class="d-flex me-4 gap-2">
+                           <span>
+                           <input type="radio" value="yes" name="ps-ssn">
+                           <span>YES</span>
+                           </span>
+                           <span>
+                           <input type="radio" value="no" name="ps-ssn">
+                           <span>NO</span>
+                           </span>
+                        </div>
+                     </div>
+                     <div class="col-lg-12 d-none" id="ssn_field">
+                        <label class="form-label">Social Security Number*</label>
+                        <input type="text" name="social-security-number" id="social-security-number" class="form-control">
+                     </div>
+                  </div>
+                  <hr>
+                  <div class="row mb-3">
+                     <div class="d-flex justify-content-between ">
+                        <label class="form-label">Do you have a legal right to reside in the United States?*</label>
+                        <div class="d-flex me-4 gap-2">
+                           <span>
+                           <input type="radio" value="yes" name="reside-on-us">
+                           <span>YES</span>
+                           </span>
+                           <span>
+                           <input type="radio" value="no" name="reside-on-us">
+                           <span>NO</span>
+                           </span>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="row mb-3">
+                     <div class="d-flex justify-content-between ">
+                        <label class="form-label">Do you have a legal right to work in the United States*</label>
+                        <div class="d-flex me-4 gap-2">
+                           <span>
+                           <input type="radio" value="yes" name="work-on-us">
+                           <span>YES</span>
+                           </span>
+                           <span>
+                           <input type="radio" value="no" name="work-on-us">
+                           <span>NO</span>
+                           </span>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="row mb-3">
+                     <div class="d-flex justify-content-between ">
+                        <label class="form-label">Do you hold a permanent work permit?*</label>
+                        <div class="d-flex me-4 gap-2">
+                           <span>
+                           <input type="radio" value="yes" name="permanent-work-permit">
+                           <span>YES</span>
+                           </span>
+                           <span>
+                           <input type="radio" value="no" name="permanent-work-permit">
+                           <span>NO</span>
+                           </span>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="row mb-3">
+                     <div class="col-lg-6">
+                        <label class="form-label">Foreign National Identification Number</label>
+                        <input type="text" name="foreign-national-identification-number" class="form-control" name="">
+                     </div>
+                     <div class="col-lg-6">
+                        <label class="form-label">FNIN Country of Issue</label>
+                        <select name="fnin-country-of-issue" class="form-select">
+                           <% @countries.each do |country|%>
+                           <option value="<%= country %>"><%= country %></option>
+                           <% end %>
+                        </select>
+                     </div>
+                  </div>
+                  <div class="row mb-3">
+                     <div class="col-lg-6">
+                        <label class="form-label">Visa Number</label>
+                        <input type="text" name="visa-number" class="form-control" name="">
+                     </div>
+                     <div class="col-lg-6">
+                        <label class="form-label">Visa Type</label>
+                        <select name="visa-type" class="form-select">
+                           <option selected="selected" value=""></option>
+                           <option value="A-1">A-1</option>
+                           <option value="A-2">A-2</option>
+                           <option value="A-3">A-3</option>
+                           <option value="B-1">B-1</option>
+                           <option value="B-2">B-2</option>
+                           <option value="C-1">C-1</option>
+                           <option value="C-2">C-2</option>
+                           <option value="C-3">C-3</option>
+                           <option value="C-4">C-4</option>
+                           <option value="D-1">D-1</option>
+                           <option value="D-2">D-2</option>
+                           <option value="E-1">E-1</option>
+                           <option value="E-2">E-2</option>
+                           <option value="E-3">E-3</option>
+                           <option value="F-1">F-1</option>
+                           <option value="F-2">F-2</option>
+                           <option value="G-1">G-1</option>
+                           <option value="G-2">G-2</option>
+                           <option value="G-3">G-3</option>
+                           <option value="G-4">G-4</option>
+                           <option value="G-5">G-5</option>
+                           <option value="H-1B">H-1B</option>
+                           <option value="H-1B1">H-1B1</option>
+                           <option value="H-1C">H-1C</option>
+                           <option value="H-2A">H-2A</option>
+                           <option value="H-2B">H-2B</option>
+                           <option value="H-3">H-3</option>
+                           <option value="H-4">H-4</option>
+                           <option value="I">I</option>
+                           <option value="J-1">J-1</option>
+                           <option value="J-2">J-2</option>
+                           <option value="L-1">L-1</option>
+                           <option value="L-2">L-2</option>
+                           <option value="M-1">M-1</option>
+                           <option value="M-2">M-2</option>
+                           <option value="NATO 1-7">NATO 1-7</option>
+                           <option value="O-1">O-1</option>
+                           <option value="O-2">O-2</option>
+                           <option value="O-3">O-3</option>
+                           <option value="P-1">P-1</option>
+                           <option value="P-2">P-2</option>
+                           <option value="P-3">P-3</option>
+                           <option value="P-4">P-4</option>
+                           <option value="Q-1">Q-1</option>
+                           <option value="Q-2">Q-2</option>
+                           <option value="Q-3">Q-3</option>
+                           <option value="R-1">R-1</option>
+                           <option value="R-2">R-2</option>
+                           <option value="TD">TD</option>
+                           <option value="TN-1">TN-1</option>
+                           <option value="WB">WB</option>
+                           <option value="WT">WT</option>
+                        </select>
+                     </div>
+                  </div>
+                  <div class="row mb-3">
+                     <div class="col-lg-6">
+                        <label class="form-label">Visa Status</label>
+                        <select name="visa-status" class="form-select">
+                           <option selected="selected" value=""></option>
+                           <option value="In Status">In Status</option>
+                           <option value="Out of Status">Out of Status</option>
+                        </select>
+                     </div>
+                  </div>
+                  <div class="row my-3">
+                     <div class="col-lg-12">
+                        <label class="form-label">Please select all the languages you speak *</label>
+                        <!-- multi-select -->
+                        <select name="languages-you-speak" required class="form-control" id="multi-select" multiple style="height: 150px;">
+                           <option value="">Select option</option>
+                           <% @languages.each do |language|%>
+                           <option value="<%= language.name %>"><%= language.name %></option>
+                           <% end %>
+                        </select>
+                     </div>
+                  </div>
+                  <div class="row my-3">
+                     <div class="col-lg-12">
+                        <label class="form-label">Please select all the languages you write *</label>
+                        <select name="languages-you-write" class="form-control" id="multi-select" multiple style="height: 150px;">
+                           <!-- multi-select -->
+                           <option value="">Select option</option>
+                           <% @languages.each do |language|%>
+                           <option value="<%= language.name %>"><%= language.name %></option>
+                           <% end %>
+                        </select>
+                     </div>
+                  </div>
+                  <div class="row mb-3">
+                     <div class="col-lg-6">
+                        <label class="form-label">Ethnicity*</label>
+                        <select class="form-control" required name="ethnicity">
+                           <option value=""></option>
+                           <option value="American Indian/Alaska Native American">American Indian/Alaska Native American</option>
+                           <option selected="selected" value="Asian/Pacific Islander">Asian/Pacific Islander</option>
+                           <option value="Black/African American">Black/African American</option>
+                           <option value="Caucasian">Caucasian</option>
+                           <option value="Hispanic/Latino">Hispanic/Latino</option>
+                           <option value="Not Listed">Not Listed</option>
+                        </select>
+                     </div>
+                     <div class="col-lg-6">
+                        <label class="form-label">Marital Status</label>
+                        <select class="form-control">
+                           <option selected="selected" value=""></option>
+                           <option value="Domestic Partner">Domestic Partner</option>
+                           <option value="Divorced">Divorced</option>
+                           <option value="Married">Married</option>
+                           <option value="Single">Single</option>
+                           <option value="Widowed">Widowed</option>
+                        </select>
+                     </div>
+                  </div>
+                  <div class="row card mb-3 p-3">
+                     <div class="col-lg-12">
+                        <h4 class="fw-semibold text-secondary mb-3">Emergency Contact</h4>
+                        <div class="row mb-3">
+                           <div class="col-lg-4">
+                              <label class="form-label">First Name</label>
+                              <input type="text" name="emergency-first-name" class="form-control">
+                           </div>
+                           <div class="col-lg-4">
+                              <label class="form-label">Middle Name</label>
+                              <input type="text" name="emergency-middle-name" class="form-control">
+                           </div>
+                           <div class="col-lg-4">
+                              <label class="form-label">Last Name</label>
+                              <input type="text" name="emergency-last-name" class="form-control">
+                           </div>
+                        </div>
+                        <div class="row">
+                           <div class="col-lg-12">
+                              <label class="form-label">Emergency Contact Phone Number</label>
+                              <input type="text" name="emergency-contact-phone-number" class="form-control">
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="col-lg-12 mb-3 d-flex justify-content-end px-0">
+                        <button class="btn btn-primary">Save Changes</button>
+                     </div>
+                  </div>
+               </form>
+            </div>
+         </div>
+      </div>
+   </div>
 </div>
-
-
 <% content_for :js do %>
-	<script>
+<script>
+   VirtualSelect.init({
+   	 ele: '.multi-select'
+   });
 
-		VirtualSelect.init({
-		  ele: '.multi-select'
-		});
-
-
-	$('input[name="ssn"]').on('change',function(){
-		$(this).val() == 'yes' ? $('#ssn_field').removeClass('d-none') : $('#ssn_field').addClass('d-none');
-	});
-
+   $('input[name="ps-ssn"]').on('change',function(){
+   	$(this).val() == 'yes' ? $('#ssn_field').removeClass('d-none') : $('#ssn_field').addClass('d-none');
+   });
 </script>
 <% end %>

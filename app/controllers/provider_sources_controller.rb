@@ -30,6 +30,16 @@ class ProviderSourcesController < ApplicationController
 		end
 	end
 
+  def get_progress
+    data_group = params[:data_group]
+    @provider = ProviderSource.current
+    progress = @provider.send(data_group)
+
+    respond_to do |format|
+      format.json  { render json: { progress: progress } }
+    end
+  end
+
 	def fetch
 		return unless params[:field_name].present?
 

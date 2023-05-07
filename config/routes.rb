@@ -34,6 +34,7 @@ Rails.application.routes.draw do
     collection do
       post :autosave
       get :fetch
+      post :get_progress
     end
   end
 

@@ -29,14 +29,14 @@
 							<table>
 							   <tbody>
 							      <td width="10%" class="text-center">
-							         <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="<%= question.slug %>" data-toggle="button" aria-pressed="false" autocomplete="off">
+							         <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value <%= @provider.is_answer_yes?(question.slug) ? 'active' : ''%> " data-tochange="<%= question.slug %>" data-toggle="button" aria-pressed="false" autocomplete="off">
 							            <div class="handle"></div>
 							         </button>
 							         <input type="text" name="<%= question.slug %>" value="no" class='invisible-input'>
 							      </td>
 							      <td width="90%">
 							         <p class="text-black">
-							            <p class="text-black"><%= question.slug[1..-1]%>. <%= question.question %>
+							            <p class="text-black"><span class="text-danger">*</span><%= question.slug[1..-1]%>. <%= question.question %>
 													</p>
 										<%= question.note.nil? ? '' : "<div class='#{question.alert_type}'>#{question.note}</div>".html_safe %>
 							         </p>
@@ -50,7 +50,6 @@
 		</div>
 	</div>
 </div>
-
 
 <script>
 	$('.btn-toggle').on('click',function(e){
