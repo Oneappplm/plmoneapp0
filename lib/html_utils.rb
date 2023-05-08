@@ -22,7 +22,7 @@ module HtmlUtils
 								<div class="handle"></div>
 					</button>
 
-					<small class="ms-2">#{ options[:label] }</small>
+					<small class="ms-2 fw-semibold text-dark-grey">#{ options[:label] }</small>
 			</div>
 		HTML
 

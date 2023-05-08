@@ -14,37 +14,46 @@
   <% end %>
 		<div class="row mb-3">
 			<div class="col-lg-6">
-				<%= f.text_field :group_name, class: 'form-control', placeholder: 'Group Name *' %>
+        <label class="text-dark-grey">Group Name *</label>
+				<%= f.text_field :group_name, class: 'form-control border border-dark', required: true, placeholder: 'Group Name *' %>
 			</div>
 			<div class="col-lg-6">
-				<%= f.text_field :group_code, class: 'form-control', placeholder: 'Group Code *' %>
-			</div>
-		</div>
-		<div class="row mb-3">
-			<div class="col-lg-6">
-				<%= f.text_field :office_address, class: 'form-control', placeholder: 'Office Address *' %>
-			</div>
-			<div class="col-lg-6">
-				<%= f.text_field :city, class: 'form-control', placeholder: 'City *' %>
+        <label class="text-dark-grey">Group Code *</label>
+				<%= f.text_field :group_code, class: 'form-control border border-dark', required: true, placeholder: 'Group Code *' %>
 			</div>
 		</div>
 		<div class="row mb-3">
 			<div class="col-lg-6">
-				<%= f.collection_select :state, @states, :name, :name, { prompt: 'State *' }, { class: 'form-control' } %>
+        <label class="text-dark-grey">Office Address *</label>
+				<%= f.text_field :office_address, class: 'form-control border border-dark', required:  true,  placeholder: 'Office Address *' %>
 			</div>
 			<div class="col-lg-6">
-				<%= f.text_field :zip_code, class: 'form-control', placeholder: 'Zipcode *' %>
+        <label class="text-dark-grey">City *</label>
+				<%= f.text_field :city, class: 'form-control border border-dark', required: true, placeholder: 'City *' %>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-6">
+        <label class="text-dark-grey">State *</label>
+				<%= f.collection_select :state, @states, :name, :name, { prompt: 'State *' }, { class: 'form-control border border-dark', required: true } %>
+			</div>
+			<div class="col-lg-6">
+        <label class="text-dark-grey">Zip Code *</label>
+				<%= f.text_field :zip_code, class: 'form-control border border-dark', required: true, placeholder: 'Zipcode *' %>
 			</div>
 		</div>
 		<div class="row mb-3">
 			<div class="col-lg-4">
-				<%= f.text_field :phone_number, class: 'form-control', placeholder: 'Telephone Number *' %>
+        <label class="text-dark-grey">Telephone Number *</label>
+				<%= f.text_field :phone_number, class: 'form-control border border-dark', placeholder: 'Telephone Number *' %>
 			</div>
 			<div class="col-lg-2">
-				<%= f.text_field :ext, class: 'form-control', placeholder: 'Ext' %>
+        <label class="text-dark-grey">Ext</label>
+				<%= f.text_field :ext, class: 'form-control border border-dark', placeholder: 'Ext' %>
 			</div>
 			<div class="col-lg-6">
-				<%= f.text_field :fax_number, class: 'form-control', placeholder: 'Fax Number *' %>
+        <label class="text-dark-grey">Fax Number *</label>
+				<%= f.text_field :fax_number, class: 'form-control border border-dark', required:  true ,placeholder: 'Fax Number *' %>
 			</div>
 		</div>
 		<div class="row mb-3">
@@ -53,10 +62,11 @@
 								label: 'Are you an established business group? If yes, enter your legal business name as reported to IRS.',
 								toshow: 'established_business_group'
 							%>
-							<%= f.hidden_field :business_group %>
+					<%= f.hidden_field :business_group %>
 			</div>
 		    <div class="d-none" id="established_business_group">
-							<%= f.text_field :legal_business_name, class: 'form-control', placeholder: 'Legal Business Name' %>
+            <label class="text-dark-grey">Legal Business Name</label>
+							<%= f.text_field :legal_business_name, class: 'form-control border border-dark', placeholder: 'Legal Business Name' %>
 		    </div>
 		</div>
 		<div class="row mb-3">
@@ -69,15 +79,18 @@
 			</div>
 			<div class="row mb-3">
 				<div class="col-lg-6" id="other_name">
-					<%= f.text_field :other_business_name, class: 'form-control', placeholder: '' %>
+          <label class="text-dark-grey">Other Business Name</label>
+					<%= f.text_field :other_business_name, class: 'form-control border border-dark', placeholder: '' %>
 				</div>
 				<div class="col-lg-6">
-					<%= f.select :other_business_type, options_for_select(['Former Business Name', 'DBA', 'Other'], f.object.other_business_type), { prompt: 'Type' }, { class: 'form-select' } %>
+          <label class="text-dark-grey">Business Type</label>
+					<%= f.select :other_business_type, options_for_select(['Former Business Name', 'DBA', 'Other'], f.object.other_business_type), { prompt: 'Type' }, { class: 'form-select border border-dark' } %>
 				</div>
 			</div>
 			<div class="row mb-3">
 				<div class="col-lg-6">
-					<select class="form-select" required name="group_specific_type">
+          <label class="text-dark-grey">Specify type of Group</label>
+					<select class="form-select border border-dark" required name="group_specific_type">
 						<option>Specify type of Group</option>
 					</select>
 				</div>
@@ -89,75 +102,88 @@
 					<%= f.hidden_field :shared_tin %>
 				</div>
 				<div class="col-lg-6">
-					<input type="text" name="group_cp575" placeholder="Upload CP575 or Proof of TIN" class="form-control" onfocus="(this.type = 'file')" >
+          <label class="text-dark-grey">Upload CP575 or Proof of TIN</label>
+					<input type="text" name="group_cp575" placeholder="Upload CP575 or Proof of TIN" class="form-control border border-dark" onfocus="(this.type = 'file')" >
 				</div>
 			</div>
 			<div class="row mb-3">
 				<div class="col-lg-6">
-					<select class="form-select" required name="group_specific_type">
+          <label class="text-dark-grey">Specify type of Group</label>
+					<select class="form-select border border-dark" required name="group_specific_type">
 						<option>Specify type of Group</option>
 					</select>
 				</div>
 				<div class="col-lg-6">
-					<input type="text" name="group_type_file" placeholder="Upload File" class="form-control" onfocus="(this.type = 'file')" >
+          <label class="text-dark-grey">Upload File</label>
+					<input type="text" name="group_type_file" placeholder="Upload File" class="form-control border border-dark" onfocus="(this.type = 'file')" >
 				</div>
 			</div>
 			<div class="row mb-3">
 				<div class="col-lg-6">
-					<%= f.text_field :npi_digit_type, class: 'form-control', placeholder: '10 Digit Type II NPI (XXXXXXXXXX)' %>
+          <label class="text-dark-grey">10 Digit Type II NPI (XXXXXXXXXX)</label>
+					<%= f.text_field :npi_digit_type, class: 'form-control border border-dark', placeholder: '10 Digit Type II NPI (XXXXXXXXXX)' %>
 				</div>
 				<div class="col-lg-6">
-					<select class="form-select" required name="group_group">
+          <label class="text-dark-grey">Group</label>
+					<select class="form-select border border-dark" required name="group_group">
 						<option>Group*</option>
 					</select>
 				</div>
 			</div>
 			<div class="row mb-5">
 				<div class="col-lg-6">
-					<label>Which of the following provider types do you employ?</label>
-					<%= f.collection_select :provider_type, @provider_types, :fch, :fch, { prompt: 'Provider Type *' }, { class: 'form-control' } %>
+					<label class="text-dark-grey">Which of the following provider types do you employ?</label>
+					<%= f.collection_select :provider_type, @provider_types, :fch, :fch, { prompt: 'Provider Type *' }, { class: 'form-control border border-dark' } %>
 				</div>
 			</div>
 			<div class="row mb-5">
 				<div class="col-lg-12 mb-1">
-					<label>Pay To/Billing Address (where checks are mailed)</label>
+					<label class="text-dark-grey">Pay To/Billing Address (where checks are mailed)</label>
 				</div>
 				<div class="col-lg-6">
-					<%= f.text_field :po_box, class: 'form-control', placeholder: 'Address or PO Box' %>
+          <label class="text-dark-grey">P.O. Box</label>
+					<%= f.text_field :po_box, class: 'form-control border border-dark', placeholder: 'Address or PO Box' %>
 				</div>
 				<div class="col-lg-6">
-					<%= f.text_field :po_box_city, class: 'form-control', placeholder: 'City' %>
+          <label class="text-dark-grey">City</label>
+					<%= f.text_field :po_box_city, class: 'form-control border border-dark', placeholder: 'City' %>
 				</div>
 				<div class="col-lg-6 mt-1">
-					<%= f.collection_select :po_box_state, @states, :name, :name, { prompt: 'Select option' }, { class: 'form-control' } %>
+          <label class="text-dark-grey">State</label>
+					<%= f.collection_select :po_box_state, @states, :name, :name, { prompt: 'Select option' }, { class: 'form-control border border-dark' } %>
 				</div>
 				<div class="col-lg-6 mt-1">
-					<%= f.text_field :po_box_zip_code, class: 'form-control', placeholder: 'Zip code' %>
+          <label class="text-dark-grey">Zip Code</label>
+					<%= f.text_field :po_box_zip_code, class: 'form-control border border-dark', placeholder: 'Zip code' %>
 				</div>
 			</div>
 			<div class="row mb-5">
 				<div class="col-lg-12 mb-1">
-					<label>Correspondence Address (if different from biling address)</label>
+					<label class="text-dark-grey">Correspondence Address (if different from biling address)</label>
 				</div>
 				<div class="col-lg-6">
-					<%= f.text_field :ca_po_box_address, class: 'form-control', placeholder: 'Address or PO Box' %>
+          <label class="text-dark-grey">Address or PO Box</label>
+					<%= f.text_field :ca_po_box_address, class: 'form-control border border-dark', placeholder: 'Address or PO Box' %>
 				</div>
 				<div class="col-lg-6">
-					<%= f.text_field :ca_po_box_city, class: 'form-control', placeholder: 'City' %>
+          <label class="text-dark-grey">City</label>
+					<%= f.text_field :ca_po_box_city, class: 'form-control border border-dark', placeholder: 'City' %>
 				</div>
 				<div class="col-lg-6 mt-1">
-					<%= f.collection_select :ca_po_box_state, @states, :name, :name, { prompt: 'Select option' }, { class: 'form-control' } %>
+          <label class="text-dark-grey">State</label>
+					<%= f.collection_select :ca_po_box_state, @states, :name, :name, { prompt: 'Select option' }, { class: 'form-control border border-dark' } %>
 				</div>
 				<div class="col-lg-6 mt-1">
-					<%= f.text_field :ca_po_box_zip_code, class: 'form-control', placeholder: 'Zip code' %>
+          <label class="text-dark-grey">Zip Code</label>
+					<%= f.text_field :ca_po_box_zip_code, class: 'form-control border border-dark', placeholder: 'Zip code' %>
 				</div>
 			</div>
 			<div class="row mb-5">
 				<div class="col-lg-12 mb-1">
-					<label>Upload a list for each individual with ownership interest and or managing control in the group to include the following information:</label>
+					<label class="text-dark-grey">Upload a list for each individual with ownership interest and or managing control in the group to include the following information:</label>
 				</div>
 				<div class="col-lg-12">
-					<input type="file" name="group_ownership_files" class="form-control">
+					<input type="file" name="group_ownership_files" class="form-control border border-dark">
 				</div>
 			</div>
 			<div class="row">
