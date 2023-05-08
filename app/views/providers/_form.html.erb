@@ -43,35 +43,35 @@
 		<div class="row mb-3">
 			<div class="col-lg-6">
 				<!-- new field -->
-				<%= text_field_tag :address_line_1, "" ,placeholder: 'Address Line 1 *', required: true , class: 'form-control' %>
+				<%= f.text_field :address_line_1, placeholder: 'Address Line 1 *', required: true , class: 'form-control' %>
 			</div>
 			<div class="col-lg-6">
 				<!-- new field -->
-				<%= text_field_tag :address_line_2, "" , placeholder: 'Address Line 2', class: 'form-control' %>
+				<%= f.text_field :address_line_2,  placeholder: 'Address Line 2', class: 'form-control' %>
 			</div>
 		</div>
 		<div class="row mb-3">
 			<div class="col-lg-6">
 				<!-- new field -->
-				<%= text_field_tag :city, "" ,placeholder: 'City *', required: true , class: 'form-control' %>
+				<%= f.text_field :city, placeholder: 'City *', required: true , class: 'form-control' %>
 			</div>
 			<div class="col-lg-6">
 				<!-- new field -->
-	                <%= select_tag(:state, options_for_select(@states.pluck(:name, :id).unshift(['State *', ''])), {:class => 'form-select'})  %>
+				<%= f.select :state, options_for_select(@states.pluck(:name, :id), @provider.state), {prompt: 'State *'}, {class: 'form-select'}  %>
 			</div>
 		</div>
 		<div class="row mb-3">
 			<div class="col-lg-4">
 				<!-- new field -->
-				<%= text_field_tag :telephone_number, "" ,placeholder: 'Telephone Number *', required: true , class: 'form-control' %>
+				<%= f.telephone_field :telephone_number, placeholder: 'Telephone Number *', required: true , class: 'form-control' %>
 			</div>
 			<div class="col-lg-2">
 				<!-- new field -->
-				<%= text_field_tag :ext, "" ,placeholder: 'Ext' , class: 'form-control' %>
+				<%= f.text_field :ext, placeholder: 'Ext' , class: 'form-control' %>
 			</div>
 			<div class="col-lg-6">
 				<!-- new field -->
-				<%= text_field_tag :email_address, "" , placeholder: 'Email Address *', required: true, class: 'form-control' %>
+				<%= f.text_field :email_address,  placeholder: 'Email Address *', required: true, class: 'form-control' %>
 			</div>
 		</div>
 		<div class="row mb-3">
@@ -88,7 +88,7 @@
 			</div>
 			<div class="col-lg-6">
 				<!-- new field -->
-	            <%= select_tag(:dea_registration_date, options_for_select(@states.pluck(:name, :id).unshift(['DEA Registration State', ''])), {:class => 'form-select'})  %>
+					<%= f.select :dea_registration_date, options_for_select(@states.pluck(:name, :id), @provider.dea_registration_date),  {prompt: 'DEA Registration State'}, {:class => 'form-select'}  %>
 			</div>
 		</div>
 		<div class="row mb-3">
@@ -102,25 +102,25 @@
 		<div class="row mb-3">
 			<div class="col-lg-6">
 				<!-- new field -->
-				<%= text_field_tag :provider_hire_date_seeing_patient, "", placeholder: 'Hire date of provider seeing patients *', required: true, class: 'form-control', onfocus: "(this.type = 'date')" %>
+				<%= f.text_field :provider_hire_date_seeing_patient,  placeholder: 'Hire date of provider seeing patients *', required: true, class: 'form-control', onfocus: "(this.type = 'date')" %>
 			</div>
 			<div class="col-lg-6">
 				<!-- new field -->
-				<%= text_field_tag :effective_date_seeing_patient, '', placeholder: 'Effective date of provider seeing patients *', class: 'form-control', onfocus: "(this.type = 'date')" %>
+				<%= f.text_field :effective_date_seeing_patient,  placeholder: 'Effective date of provider seeing patients *', class: 'form-control', onfocus: "(this.type = 'date')" %>
 			</div>
 		</div>
 		<div class="row mb-3">
 			<div class="col-lg-4">
 				<!-- new field -->
-				<%= text_field_tag :medicare_provider_number, "", placeholder: 'Medicare Provider Number *', required: true, class: 'form-control' %>
+				<%= f.text_field :medicare_provider_number,  placeholder: 'Medicare Provider Number *', required: true, class: 'form-control' %>
 			</div>
 			<div class="col-lg-4">
 				<!-- new field -->
-				<%= text_field_tag :medicaid_provider_number, '', placeholder: 'Medicaid Provider Number *', required: true, class: 'form-control'%>
+				<%= f.text_field :medicaid_provider_number,  placeholder: 'Medicaid Provider Number *', required: true, class: 'form-control'%>
 			</div>
 			<div class="col-lg-4">
 				<!-- new field -->
-				<%= text_field_tag :tricare_provider_number, '', placeholder: 'TRICARE Provider Number*', required: true, class: 'form-control' %>
+				<%= f.text_field :tricare_provider_number,  placeholder: 'TRICARE Provider Number*', required: true, class: 'form-control' %>
 			</div>
 		</div>
 		<div class="row mb-3">
@@ -128,24 +128,25 @@
 				<!-- new field -->
 				<label>Admitting Privileges</label>
 				<!-- will still need to get options from Rave -->
-	            <%= select_tag(:admitting_privileges, options_for_select([]), {:class => 'form-select'})  %>
+	   <%= f.select :admitting_privileges, options_for_select([]), { prompt: '' }, {:class => 'form-select'}  %>
 			</div>
 			<div class="col-lg-6">
 				<!-- new field -->
 				<label>Have you gone recently through revalidation with any payor?</label>
-	            <%= select_tag(:revalidation, options_for_select([['Yes','yes'],['No','no']]), {:class => 'form-select'})  %>
+	    <%= f.select :revalidation, options_for_select([['Yes','yes'],['No','no']], @provider.revalidation), { prompt: '' }, {:class => 'form-select'}  %>
 			</div>
 		</div>
 		<div class="row mb-5">
 			<div class="col-lg-6">
 				<!-- new field -->
 				<label>Are you employed by other groups or facilities?</label>
-	            <%= select_tag(:employed_by_other, options_for_select([['Yes','yes'],['No','no']]), {:class => 'form-select'})  %>
+	            <%= f.select :employed_by_other, options_for_select([['Yes','yes'],['No','no']], @provider.employed_by_other), { prompt: '' }, {:class => 'form-select'}  %>
+
 			</div>
 			<div class="col-lg-6">
 				<!-- new field -->
 				<label>Does the provider require to work under a supervising licensed psychologist?</label>
-	            <%= select_tag(:supervised_by_psychologist, options_for_select([['Yes','yes'],['No','no']]), {:class => 'form-select'})  %>
+	            <%= f.select :supervised_by_psychologist, options_for_select([['Yes','yes'],['No','no']], @provider.supervised_by_psychologist), { prompt: '' }, {:class => 'form-select'}  %>
 			</div>
 		</div>
 
@@ -157,21 +158,24 @@
 				<div class="row mb-3">
 					<div class="col-lg-6">
 						<!-- new field -->
-						<%= text_field_tag :medical_school_name, '', placeholder: 'Medical School Name',class: 'form-control'%>
+						<%= f.text_field :medical_school_name,  placeholder: 'Medical School Name',class: 'form-control'%>
 					</div>
 					<div class="col-lg-6">
 						<!-- new field -->
-						<%= text_field_tag :medical_school_address, '', placeholder: 'Medical School Address', class: 'form-control'%>
+						<%= f.text_field :medical_school_address,  placeholder: 'Medical School Address', class: 'form-control'%>
 					</div>
 				</div>
 				<div class="row mb-3">
 					<div class="col-lg-6">
 						<!-- new field -->
-						<%= text_field_tag :graduation_date, '', placeholder: 'Graduation Date *', class: 'form-control', onfocus: "(this.type = 'date')" %>
+						<%= f.text_field :graduation_date,  placeholder: 'Graduation Date *', class: 'form-control', onfocus: "(this.type = 'date')" %>
 					</div>
 					<div class="col-lg-6">
 						<!-- new field -->
-						<%= text_field_tag :school_certificate, '', placeholder: 'Copy of Certificate',  class: 'form-control',onfocus: "(this.type = 'file')", title: 'Copy of Certificate'%>
+						<%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: 'form-control', title: 'Copy of Certificate'%>
+						<% if @provider.school_certificate.url.present? %>
+						<a href="<%= f.object.school_certificate.url %>" target="_blank">View School Certificate</a>
+					<% end %>
 					</div>
 				</div>
 			</div>
@@ -187,7 +191,10 @@
 		</div>
 		<div class="row mb-3">
 			<div class="col-lg-6">
-				<%= f.text_field :caqh_pdf, class: 'form-control', placeholder: 'CAQH PDF' %>
+				<%= f.file_field :caqh_pdf,  placeholder: 'CAQH PDF',  class: 'form-control', title: 'CAQH PDF'%>
+				<% if @provider.caqh_pdf.url.present? %>
+					<a href="<%= f.object.caqh_pdf.url %>" target="_blank">View CAQH PDF</a>
+				<% end %>
 			</div>
 			<div class="col-lg-6">
 				<%= f.text_field :caqh_pdf_date_received, placeholder: 'CAQH PDF Date Received *', class: 'form-control', onfocus: "(this.type = 'date')" %>
@@ -196,28 +203,28 @@
 		<div class="row mb-3">
 			<div class="col-lg-6">
 				<!-- new field -->
-				<%= text_field_tag :caqh_username, '', placeholder: 'CAQH Username', class: 'form-control' %>
+				<%= f.text_field :caqh_username,  placeholder: 'CAQH Username', class: 'form-control' %>
 			</div>
 			<div class="col-lg-6">
 				<!-- new field -->
-				<%= password_field_tag :caqh_password, '' ,  placeholder: 'CAQH Password', class: 'form-control' %>
+				<%= f.password_field :caqh_password,  placeholder: 'CAQH Password', class: 'form-control' %>
 			</div>
 		</div>
 		<div class="row mb-3">
 			<div class="col-lg-6">
 				<!-- new field -->
-	            <%= select_tag(:caqh_state, options_for_select(@states.pluck(:name, :id).unshift(['CAQH State', ''])), {:class => 'form-select'})  %>
+	   <%= f.select :caqh_state, options_for_select(@states.pluck(:name, :id), @provider.caqh_state), {prompt: 'CAQH State'}, {:class => 'form-select'}  %>
 			</div>
 			<div class="col-lg-6">
 				<!-- new field -->
-				<%= text_field_tag :caqh_app, '', placeholder: 'CAQH App', class: 'form-control' %>
+				<%= f.text_field :caqh_app,  placeholder: 'CAQH App', class: 'form-control' %>
 			</div>
 		</div>
 		<div class="row mb-3">
 			<div class="col-lg-6">
 				<!-- new field -->
 				<!-- will need to get options from rave -->
-	            <%= select_tag(:caqh_payor, options_for_select(['CAQH Payor', '']), {:class => 'form-select'})  %>
+	   <%= f.select :caqh_payor, options_for_select([]), {prompt: 'CAQH Payor'}, {:class => 'form-select'}  %>
 			</div>
 		</div>
 		<div class="row mb-3 mt-2">
@@ -299,22 +306,24 @@
 			<div class="col-lg-6">
 				<label>Telehealth</label>
 				<!-- new field -->
-				<%= text_field_tag :telehealth_license_number, '', placeholder: 'Telehealth License Number', class: 'form-control' %>
+				<%= f.text_field :telehealth_license_number,  placeholder: 'Telehealth License Number', class: 'form-control' %>
 			</div>
 			<div class="col-lg-6">
 				<label>Board Certification</label>
 				<!-- new field -->
-				<%= text_field_tag :board_certification_number, '', placeholder: 'Board Certification Number', class: 'form-control' %>
+				<%= f.text_field :board_certification_number,  placeholder: 'Board Certification Number', class: 'form-control' %>
 			</div>
 		</div>
 		<div class="row mb-3 mt-5">
 			<div class="col-lg-6">
 				<!-- new field -->
-	             <%= select_tag(:state, options_for_select(@states.pluck(:name, :id).unshift(['Practice Location', ''])), {:class => 'form-select'})  %>
-				<%#= f.text_field :dco, placeholder: 'DCO *', class: 'form-control' %>
+	    <%= f.select :dco, options_for_select(@states.pluck(:name, :id), @provider.dco), {prompt: 'Practice Location'}, {:class => 'form-select'}  %>
 			</div>
 			<div class="col-lg-6">
 				<%= f.file_field :dco_file, placeholder: 'DCO *', class: 'form-control' %>
+				<% if @provider.dco_file.url.present? %>
+					<a href="<%= f.object.dco_file.url %>" target="_blank">View DCO</a>
+				<% end %>
 			</div>
 		</div>
 		<div class="row">

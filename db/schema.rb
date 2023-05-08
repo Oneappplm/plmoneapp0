@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_06_093128) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_08_030830) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -301,6 +301,34 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_06_093128) do
     t.date "pa_license_expiration_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "address_line_1"
+    t.string "address_line_2"
+    t.string "city"
+    t.string "state"
+    t.string "telephone_number"
+    t.string "ext"
+    t.string "email_address"
+    t.string "dea_registration_date"
+    t.date "provider_hire_date_seeing_patient"
+    t.date "effective_date_seeing_patient"
+    t.string "medicare_provider_number"
+    t.string "medicaid_provider_number"
+    t.string "tricare_provider_number"
+    t.string "admitting_privileges"
+    t.string "revalidation"
+    t.string "employed_by_other"
+    t.string "supervised_by_psychologist"
+    t.string "medical_school_name"
+    t.string "medical_school_address"
+    t.date "graduation_date"
+    t.string "school_certificate"
+    t.string "caqh_username"
+    t.string "caqh_password"
+    t.string "caqh_state"
+    t.string "caqh_app"
+    t.string "caqh_payor"
+    t.string "telehealth_license_number"
+    t.string "board_certification_number"
   end
 
   create_table "services", force: :cascade do |t|
