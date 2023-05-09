@@ -20,8 +20,8 @@ Rails.application.routes.draw do
   get 'privacy-policies', to: 'pages#privacy_policy'
   # get 'providers', to: 'pages#providers'
   get 'provider-enrollment', to: 'pages#provider_enrollment'
-  get 'enrollments', to: 'pages#enrollments'
-  get 'new-enrollment', to: 'pages#new_enrollment'
+  # get 'enrollments', to: 'pages#enrollments'
+  # get 'new-enrollment', to: 'pages#new_enrollment'
   get 'clients', to: 'pages#all_clients'
   get 'provider-clients', to: 'pages#provider_clients'
   get 'new-dco', to: 'pages#new_dco'
@@ -44,7 +44,6 @@ Rails.application.routes.draw do
 
   resources :providers
   resources :enrollments do
-
     collection do
       get :new_user, path: 'new-user'
       post :new_user, path: 'new-user'
@@ -64,6 +63,7 @@ Rails.application.routes.draw do
       patch :edit_group, path: 'edit-group'
     end
   end
+  resources :enrollment_providers, path: 'enrollment-providers'
 
   resources :systems
   resources :settings

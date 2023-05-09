@@ -1,0 +1,241 @@
+<%= form_for @enrollment_provider, html: { multipart: true } do |f| %>
+
+<% if @enrollment_provider.errors.any? %>
+			<div id="error_explanation" class="row mb-3">
+				<div class="col-lg-12">
+						<h2><%= pluralize(@enrollment_provider.errors.count, "error") %> prohibited this enrollment provider from being saved:</h2>
+
+						<ul>
+								<% @enrollment_provider.errors.full_messages.each do |message| %>
+										<li><%= message %></li>
+								<% end %>
+						</ul>
+				</div>
+			</div>
+	<% end %>
+
+	<div class="row mb-3">
+		<div class="col-lg-12 pe-5">
+			<%= f.text_field :name, placeholder: 'Provider name', class: 'form-control' %>
+		</div>
+	</div>
+<div class="row mb-3">
+	<div class="col-lg-12">
+		<h3>Enrollment Details</h3>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<%= f.text_field :start_date, placeholder: 'Start Date *', class: 'form-control', onfocus: "(this.type = 'date')" %>
+		</div>
+		<div class="col-lg-6">
+			<%= f.text_field :due_date, placeholder: 'Due Date *', class: 'form-control', onfocus: "(this.type = 'date')" %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-12">
+			<select class="form-select" required name="enrollment_payer">
+				<option>Enrollment Payer</option>
+			</select>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<%= f.text_field :revalidation_date, placeholder: 'Payer Revalidation Date (for Medicare/Medicaid) *', class: 'form-control', onfocus: "(this.type = 'date')" %>
+		</div>
+		<div class="col-lg-6">
+			<select class="form-select" required name="enrollment_type">
+				<option>Enrollment Type</option>
+			</select>
+		</div>
+	</div>
+</div>
+
+<div class="row mb-3">
+	<div class="col-lg-12">
+		<h3>Documents</h3>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>State Medical License</label>
+			<%= f.text_field :state_license_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+		</div>
+		<div class="col-lg-6">
+			<label class="text-white">File upload</label>
+			<%= f.file_field :state_license_file, class: 'form-control' %>
+			<%= HtmlUtils.generate_view_link file_url: @enrollment_provider.state_license_file.url %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>DEA</label>
+			<%= f.text_field :dea_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+		</div>
+		<div class="col-lg-6">
+			<label class="text-white">File upload</label>
+			<%= f.file_field :dea_file, class: 'form-control' %>
+			<%= HtmlUtils.generate_view_link file_url: @enrollment_provider.dea_file.url %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>IRS Letter</label>
+			<%= f.text_field :irs_letter_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+		</div>
+		<div class="col-lg-6">
+			<label class="text-white">File upload</label>
+			<%= f.file_field :irs_letter_file, class: 'form-control' %>
+			<%= HtmlUtils.generate_view_link file_url: @enrollment_provider.irs_letter_file.url %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>W9</label>
+			<%= f.text_field :w9_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+		</div>
+		<div class="col-lg-6">
+			<label class="text-white">File upload</label>
+			<%= f.file_field :w9_file, class: 'form-control' %>
+			<%= HtmlUtils.generate_view_link file_url: @enrollment_provider.w9_file.url %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>Voided Check</label>
+			<%= f.text_field :voided_check_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+		</div>
+		<div class="col-lg-6">
+			<label class="text-white">File upload</label>
+			<%= f.file_field :voided_check_file, class: 'form-control' %>
+			<%= HtmlUtils.generate_view_link file_url: @enrollment_provider.voided_check_file.url %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>Curriculum Vitae</label>
+			<%= f.text_field :curriculum_vitae_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+		</div>
+		<div class="col-lg-6">
+			<label class="text-white">File upload</label>
+			<%= f.file_field :curriculum_vitae_file, class: 'form-control' %>
+			<%= HtmlUtils.generate_view_link file_url: @enrollment_provider.curriculum_vitae_file.url %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>CMS 460</label>
+			<%= f.text_field :cms_460_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+		</div>
+		<div class="col-lg-6">
+			<label class="text-white">File upload</label>
+			<%= f.file_field :cms_460_file, class: 'form-control' %>
+			<%= HtmlUtils.generate_view_link file_url: @enrollment_provider.cms_460_file.url %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>Electronic File Transfer (EFT)</label>
+			<%= f.text_field :eft_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+		</div>
+		<div class="col-lg-6">
+			<label class="text-white">File upload</label>
+			<%= f.file_field :eft_file, class: 'form-control' %>
+			<%= HtmlUtils.generate_view_link file_url: @enrollment_provider.eft_file.url %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>Certificate of Insurance</label>
+			<%= f.text_field :cert_insurance_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+		</div>
+		<div class="col-lg-6">
+			<label class="text-white">File upload</label>
+			<%= f.file_field :cert_insurance_file, class: 'form-control' %>
+			<%= HtmlUtils.generate_view_link file_url: @enrollment_provider.irs_letter_file.url %>cert_insurance_file
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>Driver's License</label>
+			<%= f.text_field :driver_license_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+		</div>
+		<div class="col-lg-6">
+			<label class="text-white">File upload</label>
+			<%= f.file_field :driver_license_file, class: 'form-control' %>
+			<%= HtmlUtils.generate_view_link file_url: @enrollment_provider.driver_license_file.url %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<label>Board Certification</label>
+			<%= f.text_field :board_certification_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+		</div>
+		<div class="col-lg-6">
+			<label class="text-white">File upload</label>
+			<%= f.file_field :board_certification_file, class: 'form-control' %>
+			<%= HtmlUtils.generate_view_link file_url: @enrollment_provider.board_certification_file.url %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-12 mb-3">
+			<%= f.select :status, options_for_select([
+					['Submitted','submitted'],
+					['Not Submitted','not_submitted'],
+					['Approved','approved'],
+					['Rejected','rejected']
+				], @enrollment_provider.status), { prompt: 'Status of Enrollment' }, {:class => 'form-select'}  %>
+		</div>
+		<div class="col-lg-12 d-none enrollment_status_hidden_fields" id="enrollment_submited">
+			<%= f.text_field :application_id, placeholder: 'Application ID/Submitted ID/Tracking ID', class: 'form-control' %>
+			<!-- <input type="text" name="enrollment_application_id" class="form-control" placeholder="Application ID/Submitted ID/Tracking ID" required> -->
+		</div>
+		<div class="col-lg-12 d-none enrollment_status_hidden_fields" id="enrollment_not_submitted">
+			<%= f.text_field :not_submitted_note, placeholder: 'Note*', class: 'form-control' %>
+			<!-- <input type="text" name="enrollment_not_submitted_note" class="form-control" placeholder="Note*" required> -->
+		</div>
+		<div class="col-lg-12 d-none enrollment_status_hidden_fields" id="enrollment_rejected">
+			<%= f.text_field :not_submitted_note_rejected, placeholder: 'Reason for rejection*', class: 'form-control' %>
+			<!-- <input type="text" name="enrollment_not_submitted_note" class="form-control" placeholder="Reason for rejection*" required> -->
+		</div>
+		<div class="col-lg-12 d-none enrollment_status_hidden_fields" id="enrollment_approved">
+			<div class="row">
+				<div class="col-lg-6">
+					<%= f.text_field :approved_date, placeholder: 'Approved Date *', class: 'form-control', onfocus: "(this.type = 'date')" %>
+					<!-- <input type="date" name="enrollment_approved_date" class="form-control" required> -->
+				</div>
+				<div class="col-lg-6">
+					<%= f.text_field :approved_confirmation, placeholder: 'Enrollment Confirmation', class: 'form-control', onfocus: "(this.type = 'date')" %>
+					<!-- <input type="text" name="enrollment_approved_confirmation" class="form-control" placeholder="Enrollment Confirmation" required> -->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-12 d-flex justify-content-end pe-5">
+		<button class="btn btn-primary btn-md">Submit</button>
+	</div>
+</div>
+</form>
+</div>
+<div class="col-lg-4">
+<div class="row mb-3">
+<div class="col-lg-12">
+	<div class="card border border-2 p-3">
+		<h5 class="mb-3">Data Encoded Agent</h5>
+		<label>Username: th_admin</label>
+		<label>Email: enrollmentadmin@gmail.com</label>
+	</div>
+</div>
+</div>
+<div class="row">
+<div class="col-lg-12">
+	<div class="card border border-2 p-3">
+		<form>
+		<h5 class="mb-3">Assign Call Agent</h5>
+		<select class="form-select mb-3"  required name="assigned_call_agent">
+			<option>Agent Name *</option>
+		</select>
+		<select class="form-select"  required name="assigned_call_agent">
+			<option>Type of Outreach *</option>
+		</select>
+	<% end %>

@@ -55,6 +55,23 @@ module HtmlUtils
     option.html_safe
   end
 
+  def generate_view_link **options
+
+   options[:file_url] ||= nil
+
+   html = if options[:file_url].present?
+      <<-HTML
+        <a href="#{ options[:file_url] }" target="_blank">View File</a>
+      HTML
+   else
+      <<-HTML
+        <span class="text-muted">No File Uploaded</span>
+      HTML
+   end
+
+   html.html_safe
+  end
+
 
   # View Summary Elements
 

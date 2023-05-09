@@ -1,0 +1,38 @@
+<div class="content container-fluid">
+	<%= render "enrollment_tracking_components/enrollment_nav"%>
+	<div class="row mb-3">
+		<div class="col-lg-12 mb-3">
+			<h2>
+				<a href="<%= enrollment_providers_path %>" class="d-flex gap-2 text-secondary">
+				<i class="bi bi-arrow-left"></i>
+				<span>Add New Enrollment Provider</span>
+				</a>
+			</h2>
+		</div>
+		<div class="col-lg-12">
+			<a href="<%= new_enrollment_provider_path %>" class="btn <%= enrollment_nav_active('new_enrollment') %> btn-md">New Enrollment Provider</a>
+			<!-- new_group_enrollment_path -->
+			<a href="javascript:void(0)" class="btn <%= enrollment_nav_active('new_group_enrollment')%> btn-md">Group</a>
+		</div>
+	</div>
+	<div class="row mb-3">
+				<div class="col-lg-8">
+					<%= render 'form' %>
+				</div>
+	</div>
+
+				</div>
+			</div>
+	</div>
+</div>
+
+<script>
+	$('#enrollment_provider_status').on('change',function(){
+		if($(this).val() != ""){
+			$('.enrollment_status_hidden_fields').addClass('d-none');
+			var id = "#enrollment_"+$(this).val();
+			console.log(id)
+			$(id).removeClass('d-none');
+		}
+	})
+</script>
