@@ -64,6 +64,7 @@ Rails.application.routes.draw do
     end
   end
   resources :enrollment_providers, path: 'enrollment-providers'
+  resources :enroll_groups, path: 'enrollment-groups'
 
   resources :systems
   resources :settings

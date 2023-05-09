@@ -65,4 +65,27 @@ module ApplicationHelper
 		providers = Provider.all + ProviderSource.all
 		providers.map{|p| ["#{p.provider_name} from #{p.from_provider_title}", p.id]}
 	end
+
+	# memoization for states and provider_types
+	def states
+		@states ||= State.all
+	end
+
+	def provider_types
+		@provider_types ||= ProviderType.all
+	end
+
+	def yes_or_no_options
+		[
+			['Yes', 'yes'],
+			['No', 'no']
+		]
+	end
+
+	def active_or_inactive_options
+		[
+			['Active', 'active'],
+			['Inactive', 'inactive']
+		]
+	end
 end

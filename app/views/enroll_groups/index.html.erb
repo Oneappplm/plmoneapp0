@@ -4,18 +4,18 @@
 		<div class="col-lg-6">
 			<%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
 			<div class="">
-				<input type="text" name="enrollment_provider_search" value="<%= params[:enrollment_provider_search] %>" class="form-control">
+				<input type="text" name="enroll_group_search" value="<%= params[:enroll_group_search] %>" class="form-control">
 				<i class="bi bi-search"></i>
 			</div>
 			<% end %>
 		</div>
 		<div class="col-lg-6 d-flex justify-content-end gap-2">
-			<a href="<%= enroll_groups_path %>" class="btn btn-secondary text-black bg-alt-grey btn-md">
-				<span class="mx-1">Enrollment Groups List</span>
+			<a href="<%= enrollment_providers_path %>" class="btn btn-secondary text-black bg-alt-grey btn-md">
+				<span class="mx-1">Enrollment Providers List</span>
 			</a>
-			<a href="<%= new_enrollment_provider_path %>" class="d-flex btn btn-primary btn-md">
+			<a href="<%= new_enroll_group_path %>" class="d-flex btn btn-primary btn-md">
 				<i class="bi bi-plus-lg"></i>
-				<span class="mx-1">New Enrollment Provider</span>
+				<span class="mx-1">New Enrollment Group</span>
 			</a>
 		</div>
 	</div>
@@ -26,27 +26,26 @@
 			  <thead>
 			    <tr>
 			      <th scope="col" class="bg-primary text-white">ID Number</th>
-			      <th scope="col" class="bg-primary text-white">Provider Name</th>
-			      <th scope="col" class="bg-primary text-white">NPI</th>
-			      <th scope="col" class="bg-primary text-white">Start Date</th>
-			      <th scope="col" class="bg-primary text-white">Due Date</th>
+			      <th scope="col" class="bg-primary text-white">Group Name</th>
+			      <th scope="col" class="bg-primary text-white">Name</th>
+			      <th scope="col" class="bg-primary text-white">Status</th>
 			      <th scope="col" class="bg-primary text-white"></th>
 			    </tr>
 			  </thead>
 			  <tbody>
-						<%= render @enrollment_providers %>
+						<%= render @enroll_groups %>
 			  </tbody>
 			</table>
-			<% if @enrollment_providers %>
+			<% if @enroll_groups %>
 			<div class="col-lg-12">
 					<div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
 					<div class="page_info ms-3 text-black">
-									<%= page_entries_info @enrollment_providers %>
+									<%= page_entries_info @enroll_groups %>
 					</div>
 					<% if params[:per_page ].present? %>
-							<%= will_paginate @enrollment_providers, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+							<%= will_paginate @enroll_groups, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
 					<% else %>
-							<%= will_paginate @enrollment_providers, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+							<%= will_paginate @enroll_groups, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
 					<% end %>
 					</div>
 			</div>

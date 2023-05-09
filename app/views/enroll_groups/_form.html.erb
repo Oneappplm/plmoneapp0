@@ -1,0 +1,183 @@
+<%= form_for @enroll_group, html: { multipart: true } do |f| %>
+
+<% if @enroll_group.errors.any? %>
+			<div id="error_explanation" class="row mb-3">
+				<div class="col-lg-12">
+						<h2><%= pluralize(@enroll_group.errors.count, "error") %> prohibited this enrollment provider from being saved:</h2>
+
+						<ul>
+								<% @enroll_group.errors.full_messages.each do |message| %>
+										<li><%= message %></li>
+								<% end %>
+						</ul>
+				</div>
+			</div>
+	<% end %>
+
+					<div class="row mb-3">
+						<div class="col-lg-12">
+							<%= f.select :group_id, options_for_select(EnrollmentGroup.pluck(:group_name, :id), @enroll_group.group_id), {prompt: 'Group Name'}, {:class => 'form-select border border-dark'}  %>
+						</div>
+					</div>
+
+					<div class="row mb-1">
+						<div class="col-lg-12">
+							<label class="text-dark-grey">Name of person who can answer questions related to enrollment for the group.</label>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-6">
+								<label class="text-dark-grey">First Name *</label>
+								<%= f.text_field :first_name, placeholder: 'First Name *', class: 'form-control border border-dark' %>
+						</div>
+						<div class="col-lg-6">
+								<label class="text-dark-grey">Middle Name</label>
+								<%= f.text_field :middle_name, placeholder: 'Middle Name *', class: 'form-control border border-dark' %>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-6">
+							<label class="text-dark-grey">Last Name *</label>
+							<%= f.text_field :last_name, placeholder: 'Last Name *', class: 'form-control border border-dark' %>
+						</div>
+						<div class="col-lg-6">
+								<label class="text-dark-grey">Suffix</label>
+								<%= f.select :suffix, options_for_select(['Jr.', 'Sr.', 'II', 'III', 'IV', 'V'], f.object.suffix), { prompt: 'Suffix' }, { class: 'form-select border border-dark' } %>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-6">
+							<label class="text-dark-grey">Telephone Number *</label>
+							<%= f.telephone_field :telephone_number, placeholder: 'Telephone Number *', class: 'form-control border border-dark' %>
+						</div>
+						<div class="col-lg-6">
+								<label class="text-dark-grey">Email Address *</label>
+								<%= f.text_field :email,  placeholder: 'Email Address *', class: 'form-control border border-dark' %>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-6">
+								<label class="text-dark-grey">Medicare PTAN</label>
+								<%= f.text_field :medicare_ptan, placeholder: 'Medicare PTAN', class: 'form-control border border-dark' %>
+						</div>
+						<div class="col-lg-6">
+								<label class="text-dark-grey">Medicaid Group Number</label>
+								<%= f.text_field :medicaid_group_number, placeholder: 'Medicaid Group Number', class: 'form-control border border-dark' %>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-6">
+       <label class="text-dark-grey">BCBS Number</label>
+							<%= f.text_field :bcbs_number, placeholder: 'BCBS Number', class: 'form-control border border-dark' %>
+						</div>
+						<div class="col-lg-6">
+							<label class="text-dark-grey">Are you enrolled in Tricare (Military)?</label>
+							<%= f.select :tricate_military, options_for_select(yes_or_no_options, @enroll_group.tricate_military), { prompt: 'Are you enrolled in Tricare (Military)?' }, {:class => 'form-select border border-dark'}  %>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-12 mb-1">
+							<label class="text-dark-grey">Commercial</label>
+						</div>
+						<div class="col-lg-6">
+							<label class="text-dark-grey">Name</label>
+							<%= f.text_field :commercial_name, placeholder: 'Name', class: 'form-control border border-dark' %>
+						</div>
+						<div class="col-lg-6">
+							<label class="text-dark-grey">Contracted</label>
+							<%= f.select :contracted, options_for_select(yes_or_no_options, @enroll_group.contracted), { prompt: 'Contracted?' }, {:class => 'form-select border border-dark'}  %>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-6">
+							<label class="text-dark-grey">Has the group recently been revalidated with any payor?</label>
+							<%= f.select :revalidated, options_for_select(yes_or_no_options, @enroll_group.revalidated), { prompt: '' }, {:class => 'form-select border border-dark'}  %>
+						</div>
+						<div class="col-lg-6">
+								<p class="text-white mb-0">buffer</p>
+								<label class="text-dark-grey">Name</label>
+								<%= f.text_field :revalidated_payer_name, placeholder: 'Name', class: 'form-control border border-dark' %>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-6">
+								<label class="text-dark-grey">Are there currently any group applications or contracts in process at a payer?</label>
+								<%= f.select :application_contracts, options_for_select(yes_or_no_options, @enroll_group.application_contracts), { prompt: '' }, {:class => 'form-select border border-dark'}  %>
+						</div>
+						<div class="col-lg-6">
+								<p class="text-white mb-0">buffer</p>
+								<label class="text-dark-grey">Name</label>
+								<%= f.text_field :application_payer_name, placeholder: 'Name', class: 'form-control border border-dark' %>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-12 mb-1">
+							<label class="text-dark-grey">Is the group participating with Medicare?</label>
+						</div>
+						<div class="col-lg-6">
+							<%= f.select :with_medicare, options_for_select(yes_or_no_options, @enroll_group.with_medicare), { prompt: '' }, {:class => 'form-select border border-dark'}  %>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-12 mb-1">
+							<label class="text-dark-grey">Do you currently have EFT (Electronic Fund Transfer) established?</label>
+						</div>
+						<div class="col-lg-6">
+							<%= f.select :with_eft, options_for_select(yes_or_no_options, @enroll_group.with_eft), { prompt: '' }, {:class => 'form-select border border-dark'}  %>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-12 mb-1">
+							<label class="text-dark-grey">EDI (Electronic Data Interchange) Do you want us to indicate Yes on application?</label>
+						</div>
+						<div class="col-lg-6">
+							<%= f.select :with_edi, options_for_select(yes_or_no_options, @enroll_group.with_edi), { prompt: '' }, {:class => 'form-select border border-dark'}  %>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-12">
+							<h3>Enrollment Details</h3>
+						</div>
+						<div class="row mb-3">
+							<div class="col-lg-6">
+										<label class="text-dark-grey">Start Date *</label>
+										<%= f.text_field :start_date, placeholder: 'Start Date *', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+							</div>
+							<div class="col-lg-6">
+										<label class="text-dark-grey">Due Date *</label>
+										<%= f.text_field :due_date, placeholder: 'Due Date *', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+							</div>
+						</div>
+						<div class="row mb-3">
+							<div class="col-lg-12">
+                <label class="text-dark-grey">Enrollment Payer</label>
+								<select class="form-select border-dark border border-dark" required name="enrollment_payer">
+									<option>Enrollment Payer</option>
+								</select>
+							</div>
+						</div>
+						<div class="row mb-3">
+							<div class="col-lg-6">
+										<label class="text-dark-grey">Payer Revalidation Date (for Medicare/Medicaid) *</label>
+										<%= f.text_field :revalidation_date, placeholder: 'Payer Revalidation Date (for Medicare/Medicaid) *', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+							</div>
+							<div class="col-lg-6">
+                <label class="text-dark-grey">Enrollment Type</label>
+								<select class="form-select border-dark border border-dark" required name="enrollment_type">
+									<option>Enrollment Type</option>
+								</select>
+							</div>
+						</div>
+						<div class="row mb-3">
+							<div class="col-lg-12">
+								<label class="text-dark-grey">Enrollment Status</label>
+								<%= f.select :status, options_for_select(active_or_inactive_options, @enroll_group.status), { prompt: '' }, {:class => 'form-select border border-dark'}  %>
+							</div>
+						</div>
+						<div class="row mb-3">
+							<div class="col-lg-12 d-flex justify-content-end">
+								<button class="btn btn-primary btn-md">Submit</button>
+							</div>
+						</div>
+					</div>
+				<% end %>
