@@ -80,7 +80,8 @@ class EnrollmentProvidersController < ApplicationController
 			:not_submitted_note,
 			:not_submitted_note_rejected,
 			:approved_date,
-			:approved_confirmation
+			:approved_confirmation,
+			:provider_id
 		)
 	end
 end

@@ -60,4 +60,9 @@ module ApplicationHelper
 	def is_edit_mode?
 	['edit', 'update'].include?(action_name)
 	end
+
+	def mixed_providers_options
+		providers = Provider.all + ProviderSource.all
+		providers.map{|p| ["#{p.provider_name} from #{p.from_provider_title}", p.id]}
+	end
 end

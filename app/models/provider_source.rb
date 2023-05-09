@@ -3,6 +3,10 @@ class ProviderSource < ApplicationRecord
 	has_many	:documents, class_name: 'ProviderSourceDocument', inverse_of: :provider_source, dependent: :destroy
 	scope :current, ->{ find_by(current_provider_source: true) }
 	default_scope {	order(current_provider_source: :desc) }
+
+  def provider_name = "#{full_name}"
+  def from_provider_title = "Provider App"
+
 	def fetch(key = nil)
 		data.find_by(data_key: key)&.data_value
 	end

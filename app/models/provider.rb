@@ -20,5 +20,5 @@ class Provider < ApplicationRecord
     :ssn, :npi
 
   def provider_name = "#{first_name} #{middle_name} #{last_name}"
-  def provider_degree = nil
+  def from_provider_title = "Local Provider"
 end

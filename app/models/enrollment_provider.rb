@@ -17,4 +17,14 @@ class EnrollmentProvider < ApplicationRecord
 	mount_uploader :cert_insurance_file, DocumentUploader
 	mount_uploader :driver_license_file, DocumentUploader
 	mount_uploader :board_certification_file, DocumentUploader
+
+	def provider_name
+		provider =	if Provider.exists?(id: self.provider_id)
+			Provider.find(self.provider_id)&.provider_name
+		elsif ProviderSource.exists?(id: self.provider_id)
+			ProviderSource.find(self.provider_id)&.provider_name
+		else
+			"N/A"
+		end
+	end
 end

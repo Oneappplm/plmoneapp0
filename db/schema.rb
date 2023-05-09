@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_08_074210) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_09_032748) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -96,6 +96,37 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_074210) do
     t.index ["disclosure_category_id"], name: "index_disclosure_questions_on_disclosure_category_id"
   end
 
+  create_table "enroll_groups", force: :cascade do |t|
+    t.string "name"
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "last_name"
+    t.string "suffix"
+    t.string "email"
+    t.string "telephone_number"
+    t.string "medicare_ptan"
+    t.string "medicaid_group_number"
+    t.string "bcbs_number"
+    t.string "tricate_military"
+    t.string "commercial_name"
+    t.string "contracted"
+    t.string "revalidated"
+    t.string "revalidated_payer_name"
+    t.string "application_contracts"
+    t.string "application_payer_name"
+    t.string "with_medicare"
+    t.string "with_eft"
+    t.string "with_edi"
+    t.datetime "start_date"
+    t.datetime "due_date"
+    t.string "payer"
+    t.datetime "revalidation_date"
+    t.string "enrollment_type"
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "enrollment_groups", force: :cascade do |t|
     t.string "group_name"
     t.string "group_code"
@@ -168,6 +199,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_074210) do
     t.string "approved_confirmation"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "provider_id"
   end
 
   create_table "group_dco_schedules", force: :cascade do |t|
