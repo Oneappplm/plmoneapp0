@@ -33,9 +33,15 @@
 	</div>
 	<div class="row mb-3">
 		<div class="col-lg-12">
-			<select class="form-select" required name="enrollment_payer">
-				<option>Enrollment Payer</option>
-			</select>
+			<%= f.select :enrollment_payer, options_for_select([
+					['Medicaid','medicaid'],
+					['Medicare','medicare'],
+					['Molina','molina'],
+					['Mclaren','mclaren'],
+					['Meridian','meridian'],
+					['Aetna','aetna'],
+					['Priority Health','priority_health']
+				], @enrollment_provider.enrollment_payer), { prompt: 'Enrollment Payer' }, {:class => 'form-select'}  %>
 		</div>
 	</div>
 	<div class="row mb-3">
@@ -43,9 +49,11 @@
 			<%= f.text_field :revalidation_date, placeholder: 'Payer Revalidation Date (for Medicare/Medicaid) *', class: 'form-control', onfocus: "(this.type = 'date')" %>
 		</div>
 		<div class="col-lg-6">
-			<select class="form-select" required name="enrollment_type">
-				<option>Enrollment Type</option>
-			</select>
+			<%= f.select :enrollment_type, options_for_select([
+					['855A','855A'],
+					['855I','855I'],
+					['855R','855R']
+				], @enrollment_provider.enrollment_type), { prompt: 'Enrollment Type' }, {:class => 'form-select'}  %>
 		</div>
 	</div>
 </div>
@@ -184,7 +192,7 @@
 					['Rejected','rejected']
 				], @enrollment_provider.status), { prompt: 'Status of Enrollment' }, {:class => 'form-select'}  %>
 		</div>
-		<div class="col-lg-12 d-none enrollment_status_hidden_fields" id="enrollment_submited">
+		<div class="col-lg-12 d-none enrollment_status_hidden_fields" id="enrollment_submitted">
 			<%= f.text_field :application_id, placeholder: 'Application ID/Submitted ID/Tracking ID', class: 'form-control' %>
 			<!-- <input type="text" name="enrollment_application_id" class="form-control" placeholder="Application ID/Submitted ID/Tracking ID" required> -->
 		</div>

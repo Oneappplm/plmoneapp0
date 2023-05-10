@@ -18,6 +18,8 @@ class EnrollmentProvider < ApplicationRecord
 	mount_uploader :driver_license_file, DocumentUploader
 	mount_uploader :board_certification_file, DocumentUploader
 
+	default_scope { order(:id) }
+
 	def provider_name
 		provider =	if Provider.exists?(id: self.provider_id)
 			Provider.find(self.provider_id)&.provider_name
