@@ -73,7 +73,9 @@ class EnrollGroupsController < ApplicationController
 					:revalidation_date,
 					:enrollment_type,
 					:status,
-					:group_id
+					:group_id,
+					:user_id,
+					:outreach_type
 	)
 	end
 end

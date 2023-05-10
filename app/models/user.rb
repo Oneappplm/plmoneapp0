@@ -40,6 +40,9 @@ class User < ApplicationRecord
     # user.validates_confirmation_of :password
   end
 
+  scope :from_enrollment, -> { where(from_source: 'enrollment')}
+  # Ex:- scope :active, -> {where(:active => true)}
+
   def from_source_enrollment?
     from_source.present? && from_source == 'enrollment'
   end

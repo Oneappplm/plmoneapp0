@@ -81,7 +81,9 @@ class EnrollmentProvidersController < ApplicationController
 			:not_submitted_note_rejected,
 			:approved_date,
 			:approved_confirmation,
-			:provider_id
+			:provider_id,
+			:user_id,
+			:outreach_type,
 		)
 	end
 end

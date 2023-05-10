@@ -223,27 +223,32 @@
 		<button class="btn btn-primary btn-md">Submit</button>
 	</div>
 </div>
-</form>
+
 </div>
+
 <div class="col-lg-4">
 <div class="row mb-3">
 <div class="col-lg-12">
 	<div class="card border border-2 p-3">
 		<h5 class="mb-3">Data Encoded Agent</h5>
-		<label>Username: th_admin</label>
-		<label>Email: enrollmentadmin@gmail.com</label>
+		<label>Name: <%= current_user.full_name %> </label>
+		<label>Email: <%= current_user.email %></label>
 	</div>
 </div>
 </div>
+
 <div class="row">
 <div class="col-lg-12">
 	<div class="card border border-2 p-3">
-		<form>
+
 		<h5 class="mb-3">Assign Call Agent</h5>
-		<select class="form-select mb-3"  required name="assigned_call_agent">
-			<option>Agent Name *</option>
-		</select>
-		<select class="form-select"  required name="assigned_call_agent">
-			<option>Type of Outreach *</option>
-		</select>
-	<% end %>
+		<%= f.select :user_id, options_for_select(User.from_enrollment.map{ |user| [user.full_name, user.id] }, @enrollment_provider&.user_id), {prompt: 'Agent Name *'}, {:class => 'form-select border border-dark mb-2'}  %>
+		<%= f.select :outreach_type, options_for_select([
+					['Email','email'],
+					['Call','call']
+				], @enrollment_provider.outreach_type), { prompt: 'Type of Outreach *' }, {:class => 'form-select border border-dark'}  %>
+	</div>
+</div>
+</div>
+
+<% end %>
