@@ -19,11 +19,10 @@ module HtmlUtils
 
 		toggle = <<-HTML
 			<div class="#{ options[:container_class] }">
-					<button type="button" class="#{ options[:button_class] }" data-tochange="#{ options[:name] }" data-toshow="#{ options[:toshow] }" data-toggle="button" aria-pressed="false" autocomplete="off" data-tohide="#{options[:tohide]}">
-								<div class="handle"></div>
-					</button>
-
-					<small class="ms-2 fw-semibold text-dark-grey">#{ options[:label] }</small>
+        <button type="button" class="#{ options[:button_class] }" data-tochange="#{ options[:name] }" data-toshow="#{ options[:toshow] }" data-toggle="button" aria-pressed="false" autocomplete="off" data-tohide="#{options[:tohide]}">
+          <div class="handle"></div>
+        </button>
+        <small class="ms-2 fw-semibold text-dark-grey">#{ options[:label] }</small>
 			</div>
 		HTML
 

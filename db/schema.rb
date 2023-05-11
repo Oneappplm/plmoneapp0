@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_10_073640) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_11_090907) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -163,6 +163,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_10_073640) do
     t.string "individual_ownership"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "tin_digit"
+    t.string "tin_digit_irs"
+    t.string "w9_file"
+    t.string "cp575_file"
+    t.string "specific_type_file"
+    t.string "ownership_file"
   end
 
   create_table "enrollment_providers", force: :cascade do |t|
@@ -225,7 +231,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_10_073640) do
     t.string "dco_city"
     t.string "state"
     t.string "dco_zipcode"
-    t.string "country"
+    t.string "county"
     t.string "service_location_phone_number"
     t.string "service_location_fax_number"
     t.string "panel_status_to_new_patients"
@@ -238,6 +244,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_10_073640) do
     t.string "dco_provider_position"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "inpatient_facility"
+    t.string "is_clinic"
+    t.string "telehealth_provider"
     t.index ["enrollment_group_id"], name: "index_group_dcos_on_enrollment_group_id"
   end
 

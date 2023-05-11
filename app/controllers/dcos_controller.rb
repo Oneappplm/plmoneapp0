@@ -48,7 +48,12 @@ class DcosController < ApplicationController
 	protected
 	def dco_params
 		params.require(:group_dco).permit(
-			:client, :dco_name, :dco_address, :dco_city, :state, :dco_zipcode, :country, :service_location_phone_number, :service_location_fax_number, :panel_status_to_new_patients, :panel_age_limit, :include_in_directory, :dco_provider_name, :dco_provider_email, :dco_provider_phone_number, :dco_provider_fax_number, :dco_provider_position,
+			:client, :dco_name, :dco_address,
+			:dco_city, :state, :dco_zipcode, :county,
+			:service_location_phone_number, :service_location_fax_number,
+			:panel_status_to_new_patients, :panel_age_limit, :include_in_directory,
+			:dco_provider_name, :dco_provider_email, :dco_provider_phone_number,
+			:dco_provider_fax_number, :dco_provider_position, :inpatient_facility, :is_clinic, :telehealth_provider,
 			schedules_attributes: [:id, :day, :start_time, :end_time, :_destroy]
 		)
 	end

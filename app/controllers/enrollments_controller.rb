@@ -67,6 +67,7 @@ class EnrollmentsController < ApplicationController
 
 	def edit_group
 		@enrollment_group = EnrollmentGroup.find params[:id]
+
 		if	request.patch?
 			if @enrollment_group.update(group_params)
 				redirect_to groups_enrollments_path, notice: "#{@enrollment_group.group_name} has been successfully updated." and return
@@ -135,7 +136,14 @@ class EnrollmentsController < ApplicationController
 				 :ca_po_box_city,
 				 :ca_po_box_state,
 				 :ca_po_box_zip_code,
-				 :individual_ownership
+				 :individual_ownership,
+					:tin_digit,
+					:tin_digit_irs,
+					:w9_file,
+					:cp575_file,
+					:specific_type_file,
+					:ownership_file,
+					:npi_digit_type_group,
 			)
 		end
 

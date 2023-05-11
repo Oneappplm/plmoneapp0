@@ -1,6 +1,8 @@
 class EnrollmentGroup < ApplicationRecord
-  # to jayson new field
-  attr_accessor :tin_digit
+  mount_uploader :w9_file, DocumentUploader
+  mount_uploader :cp575_file, DocumentUploader
+  mount_uploader :specific_type_file, DocumentUploader
+  mount_uploader :ownership_file, DocumentUploader
 
   has_many :dcos, class_name: 'GroupDco', dependent: :destroy
 
