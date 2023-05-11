@@ -88,4 +88,13 @@ module ApplicationHelper
 			['Inactive', 'inactive']
 		]
 	end
+
+  def enrollment_status_options
+    [
+      ['Submitted','submitted'],
+      ['Not Submitted','not_submitted'],
+      ['Approved','approved'],
+      ['Rejected','rejected']
+    ]
+  end
 end

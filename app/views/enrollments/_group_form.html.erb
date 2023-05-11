@@ -77,8 +77,8 @@
 				%>
 				<%= f.hidden_field :another_business_name %>
 			</div>
-			<div class="row mb-3">
-				<div class="col-lg-6" id="other_name">
+			<div class="row mb-3" id="other_name">
+				<div class="col-lg-6">
           <label class="text-dark-grey">Other Business Name</label>
 					<%= f.text_field :other_business_name, class: 'form-control border border-dark', placeholder: '' %>
 				</div>
@@ -87,17 +87,24 @@
 					<%= f.select :other_business_type, options_for_select(['Former Business Name', 'DBA', 'Other'], f.object.other_business_type), { prompt: 'Type' }, { class: 'form-select border border-dark' } %>
 				</div>
 			</div>
-			<div class="row mb-3">
-				<div class="col-lg-6">
-          <label class="text-dark-grey">Specify type of Group</label>
-					<select class="form-select border border-dark" required name="group_specific_type">
-						<option>Specify type of Group</option>
-					</select>
-				</div>
+      <div class="row mb-3">
+        <div class="col-lg-6">
+          <label class="text-dark-grey">9-digit TIN (XX-XXXXXXX)</label>
+          <%= f.text_field :tin_digit, class: 'form-control border border-dark'%>
+        </div>
+
+        <div class="col-lg-6">
+          <label class="text-dark-grey d-none" id='more_details'>Type in additional details</label>
+          <label class="text-dark-grey" id="obtained_from_irs">Have you obtained your 9-digit TIN from IRS?</label>
+          <%= f.text_field :tin_digit, class: 'form-control border border-dark'%>
+        </div>
+      </div>
 			<div class="row mb-3">
 				<div class="col-lg-6">
 					<%= HtmlUtils.radio_toggle name: 'enrollment_group[shared_tin]',
-						label: 'Is this a shared TIN?'
+						label: 'Is this a shared TIN?',
+            toshow: 'more_details',
+            tohide: 'obtained_from_irs'
 					%>
 					<%= f.hidden_field :shared_tin %>
 				</div>
@@ -109,12 +116,15 @@
 			<div class="row mb-3">
 				<div class="col-lg-6">
           <label class="text-dark-grey">Specify type of Group</label>
-					<select class="form-select border border-dark" required name="group_specific_type">
-						<option>Specify type of Group</option>
+					<select class="form-select border border-dark" id="group_type_select" required name="group_specific_type">
+            <option value="LLC">LLC</option>
+            <option value="Partnership">Partnership</option>
+            <option value="Incorporated">Incorporated</option>
+            <option value="Other">Other(Specify)</option>
 					</select>
 				</div>
 				<div class="col-lg-6">
-          <label class="text-dark-grey">Upload File</label>
+          <label class="text-dark-grey" id="group_specific_label">Upload File</label>
 					<input type="text" name="group_type_file" placeholder="Upload File" class="form-control border border-dark" onfocus="(this.type = 'file')" >
 				</div>
 			</div>
@@ -124,9 +134,10 @@
 					<%= f.text_field :npi_digit_type, class: 'form-control border border-dark', placeholder: '10 Digit Type II NPI (XXXXXXXXXX)' %>
 				</div>
 				<div class="col-lg-6">
-          <label class="text-dark-grey">Group</label>
+          <label class="text-dark-grey">Group *</label>
 					<select class="form-select border border-dark" required name="group_group">
-						<option>Group*</option>
+						<option value="Single">Single</option>
+            <option value="Multi Specialty">Multi Specialty</option>
 					</select>
 				</div>
 			</div>
@@ -157,7 +168,7 @@
 					<%= f.text_field :po_box_zip_code, class: 'form-control border border-dark', placeholder: 'Zip code' %>
 				</div>
 			</div>
-			<div class="row mb-5">
+			<div class="row mb-2">
 				<div class="col-lg-12 mb-1">
 					<label class="text-dark-grey">Correspondence Address (if different from biling address)</label>
 				</div>
@@ -178,6 +189,12 @@
 					<%= f.text_field :ca_po_box_zip_code, class: 'form-control border border-dark', placeholder: 'Zip code' %>
 				</div>
 			</div>
+
+      <div class="row mt-3 mb-5">
+        <div class="col-lg-12">
+          <a href="https://www.irs.gov/pub/irs-pdf/fw9.pdf" class="btn bg-alt-grey fw-bold text-primary" target="_blank">Complete W9</a>
+        </div>
+      </div>
 			<div class="row mb-5">
 				<div class="col-lg-12 mb-1">
 					<label class="text-dark-grey">Upload a list for each individual with ownership interest and or managing control in the group to include the following information:</label>
@@ -195,7 +212,6 @@
 		</div>
 
 
-		</div>
 	</form>
 </div>
 

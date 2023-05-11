@@ -11,14 +11,15 @@ module HtmlUtils
 	def radio_toggle **options
 
 		options[:container_class] ||= 'd-flex align-items-center my-3'
-		options[:button_class] ||= 'btn btn-xs btn-toggle has-to-show to-change-value'
+		options[:button_class] ||= 'btn btn-xs btn-toggle has-to-show to-change-value has-to-hide'
 		options[:name] ||= ''
 		options[:label] ||= ''
 		options[:toshow] ||= ''
+    options[:tohide] ||= ''
 
 		toggle = <<-HTML
 			<div class="#{ options[:container_class] }">
-					<button type="button" class="#{ options[:button_class] }" data-tochange="#{ options[:name] }" data-toshow="#{ options[:toshow] }" data-toggle="button" aria-pressed="false" autocomplete="off">
+					<button type="button" class="#{ options[:button_class] }" data-tochange="#{ options[:name] }" data-toshow="#{ options[:toshow] }" data-toggle="button" aria-pressed="false" autocomplete="off" data-tohide="#{options[:tohide]}">
 								<div class="handle"></div>
 					</button>
 
