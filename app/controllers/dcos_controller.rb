@@ -1,14 +1,10 @@
 class DcosController < ApplicationController
 	before_action :set_group
-	before_action :set_dco, only: [:edit, :update, :destroy]
+	before_action :set_dco, only: [:edit, :update, :destroy, :show]
 	before_action :set_states, only: [:new, :edit, :create, :update]
+  before_action :set_dcos, only: [:index, :show]
 
 	def index
-		@dcos = if params[:dco_search].present?
-			@enrollment_group.dcos.search(params[:dco_search]).paginate(per_page: 10, page: params[:page] || 1)
-		else
-			@enrollment_group.dcos.paginate(per_page: 10, page: params[:page] || 1)
-		end
 	end
 
 	def new
@@ -69,4 +65,12 @@ class DcosController < ApplicationController
 	def set_states
 		@states = State.all
 	end
+
+  def set_dcos
+    @dcos = if params[:dco_search].present?
+      @enrollment_group.dcos.search(params[:dco_search]).paginate(per_page: 10, page: params[:page] || 1)
+    else
+      @enrollment_group.dcos.paginate(per_page: 10, page: params[:page] || 1)
+    end
+  end
 end

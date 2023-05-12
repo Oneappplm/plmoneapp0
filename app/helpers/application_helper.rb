@@ -101,4 +101,16 @@ module ApplicationHelper
       ['Rejected','rejected']
     ]
   end
+
+  def days_options
+    [
+      ['Sunday','S'],
+      ['Monday', 'M'],
+      ['Tuesday', 'T'],
+      ['Wednesday', 'W'],
+      ['Thursday', 'Th'],
+      ['Friday', 'F'],
+      ['Saturday', 'S']
+    ]
+  end
 end
