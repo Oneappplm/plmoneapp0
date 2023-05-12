@@ -2,6 +2,7 @@ class ProvidersController < ApplicationController
 	before_action :set_provider, only: [:show, :edit, :update, :destroy]
 	before_action :initialize_collections_data, only: [:new, :edit, :create, :update]
 	before_action :get_states, only: [:new, :edit, :index, :create, :update]
+  before_action :get_health_plans, only: [:new, :edit, :index, :create, :update]
 	def index
 			@providers = Provider.all
 	end
@@ -101,4 +102,9 @@ end
 	def get_states
 		@states = State.all
 	end
+
+  def get_health_plans
+    # this will be used for CAQH Payor dropdown as per rave
+    @health_plans = HealthPlan.all
+  end
 end

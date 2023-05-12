@@ -3,6 +3,9 @@ class Provider < ApplicationRecord
   mount_uploader :school_certificate, DocumentUploader
   mount_uploader :caqh_pdf, DocumentUploader
 
+
+  attr_accessor :dea_registration_state, :name_admitting_physician
+
   validates_format_of :telephone_number, with: /\A\d{3}-\d{4}\z/, message: "should be in the format xxx-xxxx"
   # validates_format_of :ext, with: /\A\d{2}\z/, message: "should be in the format xx"
 

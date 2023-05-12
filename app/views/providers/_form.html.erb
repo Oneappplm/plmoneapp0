@@ -105,8 +105,8 @@
 			</div>
 			<div class="col-lg-6">
 				<!-- new field -->
-        <label class="text-dark-grey">DEA Registration Date</label>
-					<%= f.select :dea_registration_date, options_for_select(@states.pluck(:name, :id), @provider.dea_registration_date),  {prompt: 'DEA Registration Date'}, {:class => 'form-select border border-dark'}  %>
+        <label class="text-dark-grey">DEA Registration State</label>
+					<%= f.select :dea_registration_state, options_for_select(@states.pluck(:name, :id), @provider.dea_registration_state),  {prompt: 'DEA Registration State'}, {:class => 'form-select border border-dark'}  %>
 			</div>
 		</div>
 		<div class="row mb-3">
@@ -150,12 +150,11 @@
 			</div>
 		</div>
 		<div class="row mb-3">
-			<div class="col-lg-6">
-				<!-- new field -->
-				<label class="text-dark-grey">Admitting Privileges</label>
-				<!-- will still need to get options from Rave -->
-	   <%= f.select :admitting_privileges, options_for_select([]), { prompt: '' }, {:class => 'form-select border border-dark'}  %>
-			</div>
+        <div class="col-lg-6">
+        <!-- new field -->
+        <label class="text-dark-grey">Are you employed by other groups or facilities?</label>
+              <%= f.select :employed_by_other, options_for_select([['Yes','yes'],['No','no']], @provider.employed_by_other), { prompt: '' }, {:class => 'form-select border border-dark'}  %>
+      </div>
 			<div class="col-lg-6">
 				<!-- new field -->
 				<label class="text-dark-grey">Have you gone recently through revalidation with any payor?</label>
@@ -165,16 +164,26 @@
 		<div class="row mb-5">
 			<div class="col-lg-6">
 				<!-- new field -->
-				<label class="text-dark-grey">Are you employed by other groups or facilities?</label>
-	            <%= f.select :employed_by_other, options_for_select([['Yes','yes'],['No','no']], @provider.employed_by_other), { prompt: '' }, {:class => 'form-select border border-dark'}  %>
-
-			</div>
-			<div class="col-lg-6">
-				<!-- new field -->
 				<label class="text-dark-grey">Does the provider require to work under a supervising licensed psychologist?</label>
 	            <%= f.select :supervised_by_psychologist, options_for_select([['Yes','yes'],['No','no']], @provider.supervised_by_psychologist), { prompt: '' }, {:class => 'form-select border border-dark'}  %>
 			</div>
 		</div>
+
+    <div class="row mb-5">
+      
+      <div class="col-lg-6">
+        <!-- new field -->
+        <%= HtmlUtils.radio_toggle name: 'provider[admitting_privileges]',
+                label: 'Admitting Privileges',
+                margin_y: 'my-1'
+              %>
+      <%= f.hidden_field :admitting_privileges %>
+      </div>
+      <div class="col-lg-12 mt-1">
+        <label class="text-dark-grey">Name of Admitting Physician/Practice/Clinic/Group:</label>
+        <%= f.text_field :name_admitting_physician, class: 'form-control border-dark' %>
+      </div>
+    </div>
 
 		<div class="row-mb-5">
 			<div class="col-lg-12 mb-2">
@@ -260,7 +269,7 @@
 				<!-- new field -->
 				<!-- will need to get options from rave -->
         <label class="text-dark-grey">CAQH Payor</label>
-	   <%= f.select :caqh_payor, options_for_select([]), {prompt: 'CAQH Payor'}, {:class => 'form-select border border-dark'}  %>
+	   <%= f.select :caqh_payor, options_for_select(@health_plans.pluck(:name,:id)), {prompt: 'CAQH Payor'}, {:class => 'form-select border border-dark'}  %>
 			</div>
 		</div>
 		<div class="row mb-3 mt-2">
@@ -356,9 +365,11 @@
 		<div class="row mb-3 mt-5">
 			<div class="col-lg-6">
 				<!-- new field -->
+      <label class="text-dark-grey">Practice Location</label>
 	    <%= f.select :dco, options_for_select(@states.pluck(:name, :id), @provider.dco), {prompt: 'Practice Location'}, {:class => 'form-select border border-dark'}  %>
 			</div>
 			<div class="col-lg-6">
+        <label class="text-white">spacer</label>
 				<%= f.file_field :dco_file, placeholder: 'DCO *', class: 'form-control border border-dark' %>
 				<%= HtmlUtils.generate_view_link file_url: @provider.dco_file.url %>
 			</div>
