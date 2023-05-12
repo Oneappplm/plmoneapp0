@@ -6,6 +6,8 @@ class EnrollmentProvider < ApplicationRecord
             tsearch: {any_word: true}
           }
 
+  attr_accessor :npi
+
 	mount_uploader :state_license_file, DocumentUploader
 	mount_uploader :dea_file, DocumentUploader
 	mount_uploader :irs_letter_file, DocumentUploader
@@ -29,4 +31,15 @@ class EnrollmentProvider < ApplicationRecord
 			"N/A"
 		end
 	end
+
+  def doc_submitted(doc)
+    # auto check if file is not nil
+    doc = self.send(doc)
+    (doc && doc&.url&.nil?) ? false : true
+  end
+
+  def doc_url(doc)
+    doc = self.send(doc)
+    (doc && doc&.url.present?) ? doc&.url : nil
+  end
 end

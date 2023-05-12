@@ -1,13 +1,8 @@
 class EnrollmentProvidersController < ApplicationController
-	before_action :set_enrollment_provider, only: [:edit, :update, :destroy]
+	before_action :set_enrollment_provider, only: [:edit, :update, :destroy, :show]
+  before_action :set_enrollment_providers, only: [:index, :show]
 
-	def index
-		@enrollment_providers = if params[:enrollment_provider_search].present?
-			EnrollmentProvider.search(params[:enrollment_provider_search]).paginate(per_page: 10, page: params[:page] || 1)
-		else
-			EnrollmentProvider.all.paginate(per_page: 10, page: params[:page] || 1)
-		end
-	end
+  def index;end
 
 	def new
 		@enrollment_provider = EnrollmentProvider.new
@@ -86,4 +81,12 @@ class EnrollmentProvidersController < ApplicationController
 			:outreach_type,
 		)
 	end
+
+  def set_enrollment_providers
+    @enrollment_providers = if params[:enrollment_provider_search].present?
+      EnrollmentProvider.search(params[:enrollment_provider_search]).paginate(per_page: 10, page: params[:page] || 1)
+    else
+      EnrollmentProvider.all.paginate(per_page: 10, page: params[:page] || 1)
+    end
+  end
 end
