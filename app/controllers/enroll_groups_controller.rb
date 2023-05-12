@@ -75,7 +75,8 @@ class EnrollGroupsController < ApplicationController
 					:status,
 					:group_id,
 					:user_id,
-					:outreach_type
+					:outreach_type,
+					:enrollment_payer
 	)
 	end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_11_090907) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_12_060929) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -128,6 +128,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_11_090907) do
     t.integer "group_id"
     t.integer "user_id"
     t.string "outreach_type"
+    t.string "enrollment_payer"
   end
 
   create_table "enrollment_groups", force: :cascade do |t|
