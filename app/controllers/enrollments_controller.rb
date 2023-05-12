@@ -12,6 +12,8 @@ class EnrollmentsController < ApplicationController
 		if request.post?
 			@enrollment_user = User.new(user_params)
 			@enrollment_user.from_source = 'enrollment'
+			@enrollment_user.temporary_password = user_params[:password]
+			@enrollment_user.temporary_password_confirmation = user_params[:password_confirmation]
 			if @enrollment_user.save
 				redirect_to new_user_enrollments_path, notice: "#{@enrollment_user.full_name} has been successfully created." and return
 			end
@@ -29,8 +31,10 @@ class EnrollmentsController < ApplicationController
 	def edit_user
 		@enrollment_user = User.find params[:id]
 		if	request.patch?
-			if @enrollment_user.update(user_params)
+			@enrollment_user.temporary_password = user_params[:password]
+			@enrollment_user.temporary_password_confirmation = user_params[:password_confirmation]
 
+			if @enrollment_user.update(user_params)
 				redirect_to new_user_enrollments_path, notice: "#{@enrollment_user.full_name} has been successfully updated." and return
 			end
 		end
@@ -102,7 +106,8 @@ class EnrollmentsController < ApplicationController
 			params.require(:user).permit(
 				:first_name, :middle_name, :last_name, :suffix,
 				:email, :password, :password_confirmation,
-				:following_request, :user_type, :status, :user_role
+				:following_request, :user_type, :status, :user_role,
+				:temporary_password, :temporary_password_confirmation
 			)
 		end
 

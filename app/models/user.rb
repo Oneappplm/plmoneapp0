@@ -45,7 +45,7 @@ class User < ApplicationRecord
   # Ex:- scope :active, -> {where(:active => true)}
 
   def password_match
-    errors.add(:password_confirmation, "must match the password") unless password == password_confirmation
+    errors.add(:password_confirmation, "must match the password") unless temporary_password == password_confirmation
   end
 
   def from_source_enrollment?
