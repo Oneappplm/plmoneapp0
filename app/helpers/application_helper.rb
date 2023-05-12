@@ -66,13 +66,17 @@ module ApplicationHelper
 		providers.map{|p| ["#{p.provider_name} from #{p.from_provider_title}", p.id]}
 	end
 
-	# memoization for states and provider_types
+	# memoization
 	def states
 		@states ||= State.all
 	end
 
 	def provider_types
 		@provider_types ||= ProviderType.all
+	end
+
+	def health_plans
+		@health_plans ||= HealthPlan.all
 	end
 
 	def yes_or_no_options

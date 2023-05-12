@@ -102,7 +102,7 @@ class EnrollmentsController < ApplicationController
 			params.require(:user).permit(
 				:first_name, :middle_name, :last_name, :suffix,
 				:email, :password, :password_confirmation,
-				:following_request, :user_type, :status
+				:following_request, :user_type, :status, :user_role
 			)
 		end
 

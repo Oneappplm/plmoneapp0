@@ -150,11 +150,15 @@
 			</div>
 		</div>
 		<div class="row mb-3">
-        <div class="col-lg-6">
-        <!-- new field -->
-        <label class="text-dark-grey">Are you employed by other groups or facilities?</label>
-              <%= f.select :employed_by_other, options_for_select([['Yes','yes'],['No','no']], @provider.employed_by_other), { prompt: '' }, {:class => 'form-select border border-dark'}  %>
-      </div>
+			<div class="col-lg-6">
+					<!-- new field -->
+					<label class="text-dark-grey">Are you employed by other groups or facilities?</label>
+											<%= f.select :employed_by_other, options_for_select([['Yes','yes'],['No','no']], @provider.employed_by_other), { prompt: '' }, {:class => 'form-select border border-dark'}  %>
+			</div>
+			<div class="col-lg-6">
+				<%= HtmlUtils.radio_toggle name: 'provider[admitting_privileges]', label: 'Admitting Privileges' %>
+				<%= f.hidden_field :admitting_privileges %>
+			</div>
 			<div class="col-lg-6">
 				<!-- new field -->
 				<label class="text-dark-grey">Have you gone recently through revalidation with any payor?</label>
@@ -170,7 +174,7 @@
 		</div>
 
     <div class="row mb-5">
-      
+
       <div class="col-lg-6">
         <!-- new field -->
         <%= HtmlUtils.radio_toggle name: 'provider[admitting_privileges]',
@@ -266,10 +270,8 @@
 		</div>
 		<div class="row mb-3">
 			<div class="col-lg-6">
-				<!-- new field -->
-				<!-- will need to get options from rave -->
-        <label class="text-dark-grey">CAQH Payor</label>
-	   <%= f.select :caqh_payor, options_for_select(@health_plans.pluck(:name,:id)), {prompt: 'CAQH Payor'}, {:class => 'form-select border border-dark'}  %>
+    <label class="text-dark-grey">CAQH Payor</label>
+				<%= f.select :caqh_payor, options_for_select(health_plans.pluck(:name, :id), @provider.caqh_payor),  {prompt: 'CAQH Payor'}, {:class => 'form-select border border-dark'}  %>
 			</div>
 		</div>
 		<div class="row mb-3 mt-2">
@@ -365,7 +367,7 @@
 		<div class="row mb-3 mt-5">
 			<div class="col-lg-6">
 				<!-- new field -->
-      <label class="text-dark-grey">Practice Location</label>
+				<label class="text-dark-grey">Practice Location</label>
 	    <%= f.select :dco, options_for_select(@states.pluck(:name, :id), @provider.dco), {prompt: 'Practice Location'}, {:class => 'form-select border border-dark'}  %>
 			</div>
 			<div class="col-lg-6">

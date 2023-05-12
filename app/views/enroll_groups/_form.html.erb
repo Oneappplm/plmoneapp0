@@ -17,6 +17,7 @@
 
 					<div class="row mb-3">
 						<div class="col-lg-12">
+							<label for="">Group Name</label>
 							<%= f.select :group_id, options_for_select(EnrollmentGroup.pluck(:group_name, :id), @enroll_group.group_id), {prompt: 'Group Name'}, {:class => 'form-select border border-dark'}  %>
 						</div>
 					</div>
@@ -151,10 +152,16 @@
 						</div>
 						<div class="row mb-3">
 							<div class="col-lg-12">
-                <label class="text-dark-grey">Enrollment Payer</label>
-								<select class="form-select border-dark border border-dark" required name="enrollment_payer">
-									<option>Enrollment Payer</option>
-								</select>
+          <label class="text-dark-grey">Enrollment Payer</label>
+										<%= f.select :enrollment_payer, options_for_select([
+										['Medicaid','medicaid'],
+										['Medicare','medicare'],
+										['Molina','molina'],
+										['Mclaren','mclaren'],
+										['Meridian','meridian'],
+										['Aetna','aetna'],
+										['Priority Health','priority_health']
+									], @enroll_group.enrollment_payer), { prompt: 'Enrollment Payer' }, {:class => 'form-select'}  %>
 							</div>
 						</div>
 						<div class="row mb-3">
@@ -163,10 +170,12 @@
 										<%= f.text_field :revalidation_date, placeholder: 'Payer Revalidation Date (for Medicare/Medicaid) *', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
 							</div>
 							<div class="col-lg-6">
-                <label class="text-dark-grey">Enrollment Type</label>
-								<select class="form-select border-dark border border-dark" required name="enrollment_type">
-									<option>Enrollment Type</option>
-								</select>
+										<label class="text-dark-grey">Enrollment Type</label>
+										<%= f.select :enrollment_type, options_for_select([
+										['855A','855A'],
+										['855I','855I'],
+										['855R','855R']
+									], @enroll_group.enrollment_type), { prompt: 'Enrollment Type' }, {:class => 'form-select'}  %>
 							</div>
 						</div>
 						<div class="row mb-3">

@@ -8,7 +8,7 @@ class UsersController < ApplicationController
 
 	def edit;end
 
-	def update;end
+	def update; end
 
 	def organization_profile;end
 

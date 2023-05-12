@@ -32,6 +32,7 @@ class User < ApplicationRecord
 
   validates :first_name, presence: true
   validates :last_name, presence: true
+  validate :password_match
 
   with_options :on => :create, if: :from_source_enrollment? do |user|
     user.validates_presence_of :status
@@ -42,6 +43,10 @@ class User < ApplicationRecord
 
   scope :from_enrollment, -> { where(from_source: 'enrollment')}
   # Ex:- scope :active, -> {where(:active => true)}
+
+  def password_match
+    errors.add(:password_confirmation, "must match the password") unless password == password_confirmation
+  end
 
   def from_source_enrollment?
     from_source.present? && from_source == 'enrollment'
