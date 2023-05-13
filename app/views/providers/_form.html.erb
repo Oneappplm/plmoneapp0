@@ -1,4 +1,4 @@
-<%= form_for @provider, html: { multipart: true } do |f| %>
+<%= form_for @provider, html: { multipart: true, id: 'provider-form' } do |f| %>
 	<% if @provider.errors.any? %>
     <div id="error_explanation" class="row mb-3">
 					<div class="col-lg-12">
@@ -384,6 +384,9 @@
 		<% end %>
 
 		<% content_for :js do %>
+		<%= HtmlUtils.form_add_required_attribute form_id: 'provider-form',
+						required_fields: 'provider_first_name,provider_last_name,provider_birth_date,provider_practitioner_type,provider_ssn,provider_npi'
+		%>
 		<script>
 			$(document).ready(function() {
 					// taxonomies

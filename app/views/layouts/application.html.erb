@@ -720,6 +720,24 @@ function toggleOn(id){
 		}, 500);
 	}
 }
+
+function addRequiredAttribute(formId, elementIds) {
+  // reset all elements to required = false
+  $('#' + formId).find('*').not('.optional').prop('required', false);
+
+  if (elementIds) {
+    var ids = elementIds.split(',');
+
+    $('#' + formId).find('*').not('.optional').each(function() {
+      var elementId = $(this).attr('id');
+      if (ids.includes(elementId)) {
+        $(this).prop('required', true);
+      }
+    });
+  } else {
+    $('#' + formId).find('*').not('.optional').prop('required', true);
+  }
+}
 </script>
 </body>
 </html>

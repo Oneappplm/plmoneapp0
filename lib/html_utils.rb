@@ -73,6 +73,21 @@ module HtmlUtils
    html.html_safe
   end
 
+  def form_add_required_attribute **options
+    options[:form_id] ||= ''
+    options[:required_fields] ||= ''
+
+    script = <<-HTML
+    <script>
+      $(document).ready(function(){
+        addRequiredAttribute('#{ options[:form_id] }', '#{ options[:required_fields] }')
+      });
+    </script>
+    HTML
+
+    script.html_safe
+  end
+
 
   # View Summary Elements
 
