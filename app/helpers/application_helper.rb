@@ -79,6 +79,11 @@ module ApplicationHelper
 		@health_plans ||= HealthPlan.all
 	end
 
+	def specialties
+	 @specialties	||= Specialty.all
+	end
+	# memoization
+
 	def yes_or_no_options
 		[
 			['Yes', 'yes'],

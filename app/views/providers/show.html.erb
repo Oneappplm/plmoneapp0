@@ -38,10 +38,10 @@
 			<div class="row">
 				<div class="col-lg-12">
 					<div class="card rounded p-1 shadow-lg px-3 mb-3">
-						<p class="mb-0"><strong>Data Encoder:</strong></p>
-						<p class="mb-3"><strong>Encoded: </strong></p>
-						<p class="mb-0"><strong>Updated by:</strong></p>
-						<p class="mb-0"><strong>Last updated: </strong></p>
+						<p class="mb-0"><strong>Data Encoder: <%= @provider.encoded_by %></strong></p>
+						<p class="mb-3"><strong>Encoded: <%= @provider.created_at%></strong></p>
+						<p class="mb-0"><strong>Updated by: <%= @provider.updated_by %></strong></p>
+						<p class="mb-0"><strong>Last updated: <%= @provider.updated_at%></strong></p>
 					</div>
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
@@ -53,19 +53,20 @@
 							<p class="mb-1"><strong>Gender:</strong> <%= @provider.gender %></p>
 							<p class="mb-1"><strong>Date of Birth:</strong> <%= @provider.birth_date %></p>
 							<p class="mb-1"><strong>Practitioner Type:</strong> <%= @provider.practitioner_type %></p>
-							<p class="mb-1"><strong>Address:</strong> <%= @provider&.address_line_1 %></p>
+							<p class="mb-1"><strong>Address 1:</strong> <%= @provider&.address_line_1 %></p>
+							<p class="mb-1"><strong>Address 2:</strong> <%= @provider&.address_line_2 %></p>
 							<p class="mb-1"><strong>City:</strong> <%= @provider&.city %></p>
 							<p class="mb-1"><strong>State:</strong> <%= @provider&.state %></p>
 							<p class="mb-1"><strong>Telephone:</strong> <%= @provider&.telephone_number %></p>
 							<p class="mb-1"><strong>Email:</strong> <%= @provider&.email_address %></p>
-							<p class="mb-1"><strong>Hire date of provider seeing patients:</strong> </p>
-							<p class="mb-1"><strong>Effective date of provider seeing patients:</strong> </p>
+							<p class="mb-1"><strong>Hire date of provider seeing patients:</strong> <%= @provider.provider_hire_date_seeing_patient %> </p>
+							<p class="mb-1"><strong>Effective date of provider seeing patients:</strong> <%= @provider.effective_date_seeing_patient %> </p>
 							<p class="mb-1"><strong>Admitting Privileges:</strong> <%= @provider&.admitting_privileges %></p>
 							<p class="mb-1"><strong>Have you recently gone through revalidation with any payor:</strong> <%= @provider&.revalidation %></p>
 							<p class="mb-1"><strong>Are you employed by other groups or facilities:</strong> <%= @provider&.employed_by_other %></p>
 							<p class="mb-1"><strong>Does the provider require to work under supervising licensed psychologist:</strong> <%= @provider&.employed_by_other %></p>
-							<p class="mb-1"><strong>Medical School Name:</strong> </p>
-							<p class="mb-1"><strong>Medical School Date:</strong> </p>
+							<p class="mb-1"><strong>Medical School Name:</strong> <%= @provider.medical_school_name %> </p>
+							<p class="mb-1"><strong>Medical School Date:</strong> <%= @provider.medical_school_address %> </p>
 							<p class="mb-1"><strong>Graducation Date:</strong> <%= @provider&.graduation_date %></p>
 						</div>
 					</div>
@@ -74,14 +75,14 @@
 						<p class="mb-1"><strong>SSN:</strong> <%= @provider.ssn%></p>
 						<p class="mb-1"><strong>NPI:</strong> <%= @provider.npi%></p>
 						<p class="mb-1"><strong>DEA Number:</strong> <%= @provider.dea_number%></p>
-						<p class="mb-1"><strong>DEA Registration State:</strong></p>
+						<p class="mb-1"><strong>DEA Registration State:</strong> <%= State.find_by(id: @provider.dea_registration_state)&.name %></p>
 						<p class="mb-1"><strong>DEA License Effective Date:</strong> <%= @provider.dea_license_effective_date%></p>
 						<p class="mb-1"><strong>DEA License Expiration Date:</strong> <%= @provider.dea_license_expiration_date%></p>
-						<p class="mb-1"><strong>Medicare Number:</strong> </p>
-						<p class="mb-1"><strong>Medicaid Number:</strong></p>
-						<p class="mb-1"><strong>TRICARE Number:</strong> </p>
-						<p class="mb-1"><strong>Telehealth Number:</strong> </p>
-						<p class="mb-1"><strong>Board Certification Number:</strong> </p>
+						<p class="mb-1"><strong>Medicare Number:</strong> <%= @provider.medicare_provider_number %> </p>
+						<p class="mb-1"><strong>Medicaid Number:</strong> <%= @provider.medicaid_provider_number %></p>
+						<p class="mb-1"><strong>TRICARE Number:</strong> <%= @provider.tricare_provider_number %> </p>
+						<p class="mb-1"><strong>Telehealth Number:</strong> <%= @provider.telehealth_license_number %> </p>
+						<p class="mb-1"><strong>Board Certification Number:</strong> <%= @provider.board_certification_number %></p>
 
 						<h3 class="text-center my-3">CAQH</h3>
 
@@ -104,11 +105,11 @@
 						<% end %>
 						<h3 class="text-center my-3">PA Licenses</h3>
 
-						<% @provider&.licenses.each_with_index do |license,idx|%>
-							<p class="mb-1"><strong>NCCPA Number:</strong> <%= license.license_number %></p>
-							<p class="mb-1"><strong>PA Effective Date:</strong> <%= license.license_effective_date %></p>
-							<p class="mb-1"><strong>PA Expiration Date:</strong> <%= license.license_expiration_date %></p>
-						<% end %>
+
+							<p class="mb-1"><strong>NCCPA Number:</strong> <%= @provider.nccpa_number %></p>
+							<p class="mb-1"><strong>PA Effective Date:</strong> <%= @provider.pa_license_effective_date %></p>
+							<p class="mb-1"><strong>PA Expiration Date:</strong> <%= @provider.pa_license_expiration_date %></p>
+
 
 						<h3 class="text-center my-3">NP Licenses</h3>
 						<% @provider&.np_licenses.each_with_index do |license,idx|%>
@@ -127,16 +128,26 @@
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
 						<h3 class="text-center my-3">Practice Location</h3>
-
+						<p class="mb-1"> <%= State.find_by(id: @provider.dco)&.name %></p>
 					</div>
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
 						<h3 class="text-center my-3">Documents</h3>
-
+						<p>
+							<label for="">School Certificate</label>
+							<%= HtmlUtils.generate_view_link file_url: @provider.school_certificate.url %>
+						</p>
+						<p>
+							<label for="">Practice Location</label>
+							<%= HtmlUtils.generate_view_link file_url: @provider.dco_file.url %>
+						</p>
 					</div>
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
 						<h3 class="text-center my-3">Enrollments</h3>
+						<% @provider.enrollments.each do |enrollment| %>
+						<p><%= enrollment.enrollment_payer %></p>
+						<% end %>
 					</div>
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3  pb-5">

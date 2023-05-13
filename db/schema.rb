@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_12_064019) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_13_081013) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -394,7 +394,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_12_064019) do
     t.string "telephone_number"
     t.string "ext"
     t.string "email_address"
-    t.string "dea_registration_date"
     t.date "provider_hire_date_seeing_patient"
     t.date "effective_date_seeing_patient"
     t.string "medicare_provider_number"
@@ -415,6 +414,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_12_064019) do
     t.string "caqh_payor"
     t.string "telehealth_license_number"
     t.string "board_certification_number"
+    t.string "dea_registration_state"
+    t.string "name_admitting_physician"
+    t.string "encoded_by"
+    t.string "updated_by"
+    t.string "facility_location"
+    t.string "facility_name"
+    t.string "admitting_facility_address_line1"
+    t.string "admitting_facility_address_line2"
+    t.string "admitting_facility_city"
+    t.string "admitting_facility_zip_code"
+    t.string "admitting_facility_arrangments"
   end
 
   create_table "services", force: :cascade do |t|
