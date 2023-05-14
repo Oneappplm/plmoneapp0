@@ -81,6 +81,7 @@ end
 					:dea_license_expiration_date,
 					:dco,
 					:dco_file,
+          :enrollment_group_id,
 					:address_line_1, :address_line_2, :city, :state, :telephone_number, :ext, :email_address, :provider_hire_date_seeing_patient, :effective_date_seeing_patient,
 					:medicare_provider_number, :medicaid_provider_number, :tricare_provider_number, :admitting_privileges, :revalidation, :employed_by_other, :supervised_by_psychologist,
 					:medical_school_name, :medical_school_address, :graduation_date, :school_certificate, :caqh_username, :caqh_password, :caqh_state, :caqh_app, :caqh_payor,

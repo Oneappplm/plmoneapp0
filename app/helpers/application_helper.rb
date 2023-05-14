@@ -82,7 +82,14 @@ module ApplicationHelper
 	def specialties
 	 @specialties	||= Specialty.all
 	end
+
+  def groups
+    @groups ||= EnrollmentGroup.all
+  end
+
 	# memoization
+
+
 
 	def yes_or_no_options
 		[

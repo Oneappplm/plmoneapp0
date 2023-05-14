@@ -107,7 +107,7 @@ class EnrollmentsController < ApplicationController
 				:first_name, :middle_name, :last_name, :suffix,
 				:email, :password, :password_confirmation,
 				:following_request, :user_type, :status, :user_role,
-				:temporary_password, :temporary_password_confirmation
+				:temporary_password, :temporary_password_confirmation, :title
 			)
 		end
 
