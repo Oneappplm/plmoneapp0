@@ -744,6 +744,28 @@ function addRequiredAttribute(formId, elementIds) {
     $('#' + formId).find('*').not('.optional').prop('required', true);
   }
 }
+var csrfToken = $('meta[name="csrf-token"]').attr('content');
+$('#provider_enrollment_group_id').on('change',function(){
+        var id = $(this).val();
+        var url = '/enrollments/groups/'+id+'/get_dcos';
+        if(id != '') {
+          $.ajax({
+            url: url,
+            type: 'POST',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              var practice_locations = data['practice_locations'];
+              if(practice_locations.length != 0) {
+                $('#provider_dco').empty();
+                for (var i = 0; i < practice_locations.length ; i++) {
+                  $('#provider_dco').append('<option value='+practice_locations[i][0]+'>'+practice_locations[i][1]+'</option>');
+                }
+              }
+            }
+          })
+        }
+});
+
 </script>
 </body>
 </html>

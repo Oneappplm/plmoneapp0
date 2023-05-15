@@ -51,6 +51,7 @@ Rails.application.routes.draw do
       get :new_group, path: 'new-group'
       post :new_group, path: 'new-group'
       resources :groups do
+        post :get_dcos
         resources :dcos
       end
     end

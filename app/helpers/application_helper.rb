@@ -86,7 +86,6 @@ module ApplicationHelper
   def groups
     @groups ||= EnrollmentGroup.all
   end
-
 	# memoization
 
 
