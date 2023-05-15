@@ -416,7 +416,7 @@
       <label class="text-dark-grey">Group</label>
       <%= f.select :enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Group'}, {:class => 'form-select border border-dark select-with-show', data: {show: 'provider_dco_div'}}  %>
       </div>
-      <div class="col-lg-6 d-none" id="provider_dco_div">
+      <div class="col-lg-6 <%= @provider.no_group? ? 'd-none' : '' %>" id="provider_dco_div">
       <!-- new field -->
       <label class="text-dark-grey">Practice Location</label>
       <%= f.select :dco, options_for_select([], @provider.dco), {prompt: 'Practice Location'}, {:class => 'form-select border border-dark'}  %>
@@ -471,7 +471,14 @@
 							$("#rn_licenses .fields").append(newRnLicense);
 					});
 
+          var dco = "<%= @provider.dco %>";
+
+
+          if(dco != ''){
+            $('#provider_dco').append('<option value='+dco+'>'+dco+'</option>');
+          }
 			});
+
 
     
 		</script>

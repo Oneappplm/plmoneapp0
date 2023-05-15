@@ -24,4 +24,8 @@ class Provider < ApplicationRecord
   def enrollments
     EnrollmentProvider.where(provider_id: self.id)
   end
+
+  def no_group?
+    self.enrollment_group_id.nil? && self.dco.nil?
+  end
 end
