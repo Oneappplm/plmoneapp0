@@ -32,14 +32,18 @@ class EnrollmentProvider < ApplicationRecord
 		end
 	end
 
-  def doc_submitted(doc)
-    # auto check if file is not nil
-    doc = self.send(doc)
-    (doc && doc&.url&.nil?) ? false : true
-  end
+	def doc_submitted(doc)
+			# auto check if file is not nil
+			doc = self.send(doc)
+			(doc && doc&.url&.nil?) ? false : true
+	end
 
-  def doc_url(doc)
-    doc = self.send(doc)
-    (doc && doc&.url.present?) ? doc&.url : nil
-  end
+	def doc_url(doc)
+			doc = self.send(doc)
+			(doc && doc&.url.present?) ? doc&.url : nil
+	end
+
+	def assigned_agent
+		User.from_enrollment.find_by(id: self.user_id)
+	end
 end

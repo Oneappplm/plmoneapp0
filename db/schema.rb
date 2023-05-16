@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_14_225033) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_16_020324) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -212,6 +212,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_14_225033) do
     t.integer "provider_id"
     t.integer "user_id"
     t.string "outreach_type"
+    t.string "enrolled_by"
   end
 
   create_table "group_dco_schedules", force: :cascade do |t|
