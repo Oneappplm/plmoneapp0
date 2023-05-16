@@ -124,4 +124,17 @@ module ApplicationHelper
       ['Saturday', 'S']
     ]
   end
+
+  def titles
+    [
+      ["Dr.", "Dr."],
+      ["Madam", "Madam"],
+      ["Maj.","Maj."],
+      ["Miss", "Miss"],
+      ["Mr.", "Mr."],
+      ["Mrs.","Mrs."],
+      ["Ms.","Ms."],
+      ["Sir","Sir"]
+    ]
+  end
 end
