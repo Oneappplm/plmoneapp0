@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_16_020324) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_16_035114) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -213,6 +213,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_16_020324) do
     t.integer "user_id"
     t.string "outreach_type"
     t.string "enrolled_by"
+  end
+
+  create_table "group_dco_provider_outreach_informations", force: :cascade do |t|
+    t.bigint "group_dco_id"
+    t.string "name"
+    t.string "email"
+    t.string "phone"
+    t.string "fax"
+    t.string "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_dco_id"], name: "index_group_dco_provider_outreach_informations_on_group_dco_id"
   end
 
   create_table "group_dco_schedules", force: :cascade do |t|

@@ -10,10 +10,12 @@ class DcosController < ApplicationController
 	def new
 		@dco = @enrollment_group.dcos.new
 		@dco.schedules.build
+		@dco.provider_outreach_info.build
 	end
 
 	def edit
 		@dco.schedules.build
+		@dco.provider_outreach_info.build
 	end
 
 	def create
@@ -50,7 +52,8 @@ class DcosController < ApplicationController
 			:panel_status_to_new_patients, :panel_age_limit, :include_in_directory,
 			:dco_provider_name, :dco_provider_email, :dco_provider_phone_number,
 			:dco_provider_fax_number, :dco_provider_position, :inpatient_facility, :is_clinic, :telehealth_provider,
-			schedules_attributes: [:id, :day, :start_time, :end_time, :_destroy]
+			schedules_attributes: [:id, :day, :start_time, :end_time, :_destroy],
+			provider_outreach_info_attributes: [:id, :name, :email, :phone, :fax, :position, :_destroy]
 		)
 	end
 
