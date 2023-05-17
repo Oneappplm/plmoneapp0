@@ -419,7 +419,6 @@
       <div class="col-lg-6 <%= @provider.no_group? ? 'd-none' : '' %>" id="provider_dco_div">
       <!-- new field -->
       <label class="text-dark-grey">Practice Location</label>
-						<%= @provider.dco %>
       <%= f.select :dco, options_for_select([], @provider.dco), {prompt: 'Practice Location'}, {:class => 'form-select border border-dark'}  %>
       </div>
     </div>
@@ -437,10 +436,11 @@
 		<script>
 			$(document).ready(function() {
 
+			 setTimeout(function() { $('#provider_enrollment_group_id').trigger('change'); }, 500);
 				setTimeout(function() {
 					var dco = "<%= @provider.dco %>";
 					if(dco != ''){
-							$('#provider_dco').append('<option value='+dco+'>'+dco+'</option>');
+							$('#provider_dco').val(dco);
 					}
 				}, 800);
 
