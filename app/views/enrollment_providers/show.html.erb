@@ -56,32 +56,24 @@
     <div class="col-lg-4" style="background-color: #eee;">
       <div class="row my-3 mb-2">
         <div class="col-lg-12">
-          <div class="card rounded shadow-lg p-1 px-3 mb-3">
-            <p class="text-dark-grey fw-semibold">Enrolled by: <%= @enrollment_provider&.enrolled_by %> </p>
-            <p class="text-dark-grey fw-semibold">Enrolled: <%= @enrollment_provider&.created_at&.strftime('%m/%d/%Y') %> </p>
+          <div class="card rounded shadow-lg p-2">
+            <p class="text-dark-grey fw-semibold mb-1">Enrolled by: <%= @enrollment_provider&.enrolled_by %> </p>
+            <p class="text-dark-grey fw-semibold mb-1">Enrolled: <%= @enrollment_provider&.created_at&.strftime('%m/%d/%Y') %> </p>
+            <p class="text-dark-grey fw-semibold mb-1">Assigned Agent: <%= @enrollment_provider.assigned_agent&.full_name %> </p>
+            <p class="text-dark-grey fw-semibold mb-1">Type of outreach: <%= @enrollment_provider&.outreach_type&.titleize  %> </p>
           </div>
         </div>
     </div>
-
     <div class="row mb-3">
-        <div class="col-lg-12">
-          <div class="card rounded shadow-lg p-1 px-3 mb-3">
-            <p class="text-dark-grey fw-semibold">Assigned Agent: <%= @enrollment_provider.assigned_agent&.full_name %> </p>
-            <p class="text-dark-grey fw-semibold">Type of outreach: <%= @enrollment_provider&.outreach_type&.titleize  %> </p>
-          </div>
-        </div>
-    </div>
-
-    <div class="row mb-3 g-0">
       <div class="col-lg-6">
-        <button class="btn bg-white btn-lg btn-outline-primary">
+        <button class="btn bg-white btn-lg btn-outline-primary w-100">
           <span class="text-dark-grey">
            Mark as Complete
           </span>
         </button>
       </div>
       <div class="col-lg-6">
-        <button class="btn bg-white btn-lg btn-outline-primary">
+        <button class="btn bg-white btn-lg btn-outline-primary w-100">
           <span class="text-dark-grey">
             Schedule for Callback
           </span>
@@ -114,11 +106,17 @@
       <div class="col-lg-12">
         <% if @enrollment_provider.status == 'submitted' %>
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
-              <h5 class="mt-2">Application ID/Submitted ID/Tracking ID: <%= @enrollment_provider&.application_id %> </h5>
+              <h5 class="mt-2">Application ID/Submitted ID/Tracking ID:</h5>
+              <p class="p-5 text-center">
+                <%= @enrollment_provider&.application_id %>
+              </p>
           </div>
         <% elsif @enrollment_provider.status == 'not_submitted' %>
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
-              <h5 class="mt-2">Note: <%= @enrollment_provider&.not_submitted_note %> </h5>
+              <h5 class="mt-2">Note:  </h5>
+              <p class="p-5 text-center">
+                <%= @enrollment_provider&.not_submitted_note %>
+              </p>
           </div>
         <% elsif @enrollment_provider.status == 'approved' %>
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
@@ -127,7 +125,10 @@
           </div>
         <% elsif @enrollment_provider.status == 'rejected' %>
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
-              <h5 class="mt-2">Reason for Rejection: <%= @enrollment_provider&.not_submitted_note_rejected %> </h5>
+              <h5 class="mt-2">Reason for Rejection:</h5>
+              <p class="p-5 text-center">
+                <%= @enrollment_provider&.not_submitted_note_rejected %>
+              </p>
           </div>
         <% end %>
       </div>
@@ -135,7 +136,7 @@
 
     <div class="row mb-3">
         <div class="col-lg-12">
-          <div class="card rounded shadow-lg p-1 px-3 mb-3">
+          <div class="card rounded shadow-lg p-2 px-3 mb-3">
             <% docs = [['State Medical License', 'state_license_file'], ['DEA','dea_file'], ['IRS Letter','irs_letter_file'], ['W9', 'w9_file'], ['Voided Check', 'voided_check_file'], ['Curriculum Vitae', 'curriculum_vitae_file'], ['CMS 460', 'cms_460_file'], ['Electronic File Transfer', 'eft_file'], ['Certificate of Insurance', 'cert_insurance_file'], ['Driver\'s License', 'driver_license_file'], ['Board Certification', 'board_certification_file']] %>
               <h5 class="mt-2 text-center">Uploaded Documents</h5>
               <div class="text-left text-dark-grey d-flex flex-column">
