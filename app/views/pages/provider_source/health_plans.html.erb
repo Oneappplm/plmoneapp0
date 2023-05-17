@@ -23,13 +23,12 @@
 					<div class="row mb-2">
 						<div class="col-lg-12 mb-2">
 							<div class="form-group  w-100">
-								<label class="text-dark-grey">Health Plans *</label>
+								<label class="text-dark-grey">Health Plans</label>
 								<!-- multi-select | this is for frontend devs - you should be responsible for preparing the data value to be submitted and handle the data back to the element when retrieving -->
-								<select class="form-control border-dark w-100" required name="health_plans"  placeholder="" multiple style="height:200px;">
-									<% health_plans.each do |plan|%>
-										<option value="<%= plan.name %>"><%= plan.name %></option>
-									<% end %>
-								</select>
+								<div class="row my-3">
+							<div class="col-lg-12">
+								<!-- select-search | this is for frontend devs - you should be responsible for preparing the data value to be submitted and handle the data -->
+								<%= select_tag :health_plan, options_for_select([['Health Plan *', nil]] + @health_plans.map { |plan| [plan.name, plan.name] }), required: true, class: 'form-select border-dark py-3', placeholder: 'Health Plan' %>
 								<!-- <input type="text" name="" placeholder="Health Plans*" class="form-control border-dark"> -->
 							</div>
 						</div>
@@ -37,22 +36,14 @@
 							<div class="form-group">
 								<label class="text-dark-grey">Hospitals</label>
 								<!-- multi-select | this is for frontend devs - you should be responsible for preparing the data value to be submitted and handle the data back to the element when retrieving -->
-								<select class="form-control border-dark w-100" name="hospitals"  placeholder="" multiple style="height:200px;">
-									<% @hospitals.each do |hospital|%>
-										<option value="<%= hospital.name %>"><%= hospital.name %></option>
-									<% end%>
-								</select>
+								<%= select_tag :hospitals, options_for_select([['Hospital *', nil]] + @hospitals.map { |hospital| [hospital.name, hospital.name] }), required: true, class: 'form-select border-dark py-3', placeholder: 'Hospitals' %>
 							</div>
 						</div>
 						<div class="col-lg-12 mb-2">
 							<div class="form-group">
 								<label class="text-dark-grey">Directories</label>
 								<!-- multi-select | this is for frontend devs - you should be responsible for preparing the data value to be submitted and handle the data back to the element when retrieving -->
-								<select class="form-control border-dark w-100" name="directories"  placeholder="" multiple style="height:200px;">
-									<% @directories.each do |directory|%>
-										<option value="<%= directory.name %>"><%= directory.name %></option>
-									<% end%>
-								</select>
+								<%= select_tag :directories, options_for_select([['Directory *', nil]] + @directories.map { |directory| [directory.name, directory.name] }), required: true, class: 'form-select border-dark py-3', placeholder: 'Directories' %>
 							</div>
 						</div>
 					</div>
