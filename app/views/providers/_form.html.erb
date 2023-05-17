@@ -419,6 +419,7 @@
       <div class="col-lg-6 <%= @provider.no_group? ? 'd-none' : '' %>" id="provider_dco_div">
       <!-- new field -->
       <label class="text-dark-grey">Practice Location</label>
+						<%= @provider.dco %>
       <%= f.select :dco, options_for_select([], @provider.dco), {prompt: 'Practice Location'}, {:class => 'form-select border border-dark'}  %>
       </div>
     </div>
@@ -435,6 +436,13 @@
 		%>
 		<script>
 			$(document).ready(function() {
+
+				setTimeout(function() {
+					var dco = "<%= @provider.dco %>";
+					if(dco != ''){
+							$('#provider_dco').append('<option value='+dco+'>'+dco+'</option>');
+					}
+				}, 800);
 
 					// taxonomies
 					$("#taxonomies").on("click", ".add_association", function() {
@@ -471,12 +479,6 @@
 							newRnLicense.html(newRnLicense.html().replace(/rn_licenses_attributes\]\[\d+\]/g, "rn_licenses_attributes][" + newId + "]"));
 							$("#rn_licenses .fields").append(newRnLicense);
 					});
-
-					var dco = "<%= @provider.dco %>";
-
-					if(dco != ''){
-							$('#provider_dco').append('<option value='+dco+'>'+dco+'</option>');
-					}
 			});
 		</script>
 		<% end %>
