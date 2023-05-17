@@ -35,7 +35,7 @@ class User < ApplicationRecord
   validate :password_match
 
   with_options :on => :create, if: :from_source_enrollment? do |user|
-    user.validates_presence_of :status
+    # user.validates_presence_of :status
     user.validates_presence_of :password_confirmation
     user.validates_length_of :password, within: 6..40
     # user.validates_confirmation_of :password
