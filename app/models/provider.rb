@@ -5,6 +5,10 @@ class Provider < ApplicationRecord
   # validates_format_of :telephone_number, with: /\A\d{3}-\d{4}\z/, message: "should be in the format xxx-xxxx"
   # validates_format_of :ext, with: /\A\d{2}\z/, message: "should be in the format xx"
 
+
+  belongs_to :group, class_name: 'EnrollmentGroup', foreign_key: 'enrollment_group_id', optional: true
+  belongs_to :group_dco, class_name: 'GroupDco', foreign_key: 'dco', optional: true
+
   has_many :taxonomies, class_name: 'ProviderTaxonomy', dependent: :destroy
   has_many :licenses , class_name: 'ProviderLicense', dependent: :destroy
   has_many :np_licenses , class_name: 'ProviderNpLicense', dependent: :destroy

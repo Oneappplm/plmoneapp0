@@ -98,10 +98,8 @@
 
 						<h3 class="text-center my-3">Taxonomies</h3>
 						<% @provider&.taxonomies.each_with_index do |taxonomy,idx|%>
-						<p class="mb-1"><strong>Taxonomy Code <%= idx + 1 %>:</strong> <%= taxonomy.taxonomy_code %></p>
-						<p class="mb-1"><strong>Taxonomy Code :</strong> <%= taxonomy.taxonomy_code %></p>
-						<p class="mb-1"><strong>Taxonomy specialty :</strong> <%= taxonomy.specialty %></p>
-
+							<p class="mb-1"><strong>Taxonomy Code :</strong> <%= taxonomy.taxonomy_code %></p>
+							<p class="mb-1"><strong>Taxonomy specialty :</strong> <%= taxonomy.specialty %></p>
 						<% end %>
 						<h3 class="text-center my-3">PA Licenses</h3>
 
@@ -127,8 +125,33 @@
 					</div>
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
+						<h3 class="text-center my-3">Group</h3>
+						<p class="mb-1"><strong>Group Name:</strong> <%= @provider.group&.group_name %></p>
+						<p class="mb-1"><strong>Group Code:</strong> <%= @provider.group&.group_code %></p>
+						<p class="mb-1"><strong>Office Address:</strong> <%= @provider.group&.office_address %></p>
+						<p class="mb-1"><strong>City:</strong> <%= @provider.group&.city %></p>
+						<p class="mb-1"><strong>State:</strong> <%= @provider.group&.state %></p>
+						<p class="mb-1"><strong>Zip Code:</strong> <%= @provider.group&.zip_code %></p>
+						<p class="mb-1"><strong>Telephone Number:</strong> <%= @provider.group&.phone_number %></p>
+						<p class="mb-1"><strong>Ext:</strong> <%= @provider.group&.ext %></p>
+						<p class="mb-1"><strong>Fax Number:</strong> <%= @provider.group&.fax_number %></p>
+					</div>
+
+					<div class="card rounded shadow-lg p-1 px-3 mb-3">
 						<h3 class="text-center my-3">Practice Location</h3>
-						<p class="mb-1"> <%= State.find_by(id: @provider.dco)&.name %></p>
+						<p class="mb-1"><strong>PL Name:</strong> <%= @provider.group_dco.dco_name %></p>
+						<p class="mb-1"><strong>PL Address:</strong> <%= @provider.group_dco.dco_address %></p>
+						<p class="mb-1"><strong>City:</strong> <%= @provider.group_dco.dco_city %></p>
+						<p class="mb-1"><strong>State:</strong> <%= @provider.group_dco.state %></p>
+						<p class="mb-1"><strong>Zip Code:</strong> <%= @provider.group_dco.dco_zipcode %></p>
+						<p class="mb-1"><strong>Service Location Phone:</strong> <%= @provider.group_dco&.service_location_phone_number %></p>
+						<p class="mb-1"><strong>Service Location Fax:</strong> <%= @provider.group_dco&.service_location_fax_number %></p>
+						<p class="mb-1"><strong>Panel Status to New Patients:</strong> <%= @provider.group_dco&.panel_status_to_new_patients %></p>
+						<p class="mb-1"><strong>Panel Age Limits:</strong> <%= @provider.group_dco&.panel_age_limit %></p>
+						<p class="mb-1"><strong>Include in Directory?</strong> <%= @provider.group_dco&.include_in_directory&.titleize %></p>
+						<p class="mb-1"><strong>Is this location an inpatient facility?</strong> <%= @provider.group_dco&.inpatient_facility&.titleize %></p>
+						<p class="mb-1"><strong>Is this location a clinic?:</strong> <%= @provider.group_dco&.is_clinic&.titleize %></p>
+						<p class="mb-1"><strong>Are you a Telehealth services provider?</strong> <%= @provider.group_dco&.telehealth_provider&.titleize %></p>
 					</div>
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
