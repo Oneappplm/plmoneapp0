@@ -78,7 +78,7 @@ class ProviderSource < ApplicationRecord
   end
 
   def health_plans
-    infos = ['health_plans', 'directories', 'hospitals']
+    infos = ['health_plans', 'hospitals', 'directories']
   end
 
   def personal_info
