@@ -6,6 +6,7 @@ class EnrollmentProvidersController < ApplicationController
 
 	def new
 		@enrollment_provider = EnrollmentProvider.new
+    @enrollment_provider.details.build
 	end
 
 	def edit; end
@@ -44,11 +45,6 @@ class EnrollmentProvidersController < ApplicationController
 	def enrollment_provider_params
 		params.require(:enrollment_provider).permit(
 			:name,
-			:start_date,
-			:due_date,
-			:enrollment_payer,
-			:revalidation_date,
-			:enrollment_type,
 			:state_license_submitted,
 			:state_license_file,
 			:dea_submitted,
@@ -80,6 +76,8 @@ class EnrollmentProvidersController < ApplicationController
 			:provider_id,
 			:user_id,
 			:outreach_type,
+      details_attributes: [:id, :start_date, :due_date, :enrollment_payer, :enrollment_type, :enrollment_status, :approved_date, :revalidation_date, :revalidation_due_date, :comment, :ptan_number ,:_destroy],
+
 		)
 	end
 

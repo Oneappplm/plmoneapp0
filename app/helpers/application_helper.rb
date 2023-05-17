@@ -113,6 +113,17 @@ module ApplicationHelper
     ]
   end
 
+  # not sure why but for some reason this has different options
+  def enrollment_status
+    [
+      ['Application Submitted','application-submitted'],
+      ['Processing','processing'],
+      ['Approved','approved'],
+      ['Denied','denied'],
+      ['Terminated','terminated']
+    ]
+  end
+
   def days_options
     [
       ['Sunday','S'],

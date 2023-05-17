@@ -22,6 +22,11 @@ class EnrollmentProvider < ApplicationRecord
 
 	default_scope { order(:id) }
 
+  has_many :details, class_name: 'EnrollmentProvidersDetail'
+
+  accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank
+
+
 	def provider_name
 		provider =	if Provider.exists?(id: self.provider_id)
 			Provider.find(self.provider_id)&.provider_name
