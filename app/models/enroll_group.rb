@@ -11,5 +11,10 @@ class EnrollGroup < ApplicationRecord
 
 	default_scope { order(:id) }
 
+  has_many :details, class_name: 'EnrollGroupsDetail'
+
+  accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank
+
+
 	def full_name = "#{first_name}	#{middle_name} #{last_name}"
 end

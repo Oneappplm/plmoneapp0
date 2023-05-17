@@ -11,9 +11,15 @@ class EnrollGroupsController < ApplicationController
 
 	def new
 		@enroll_group = EnrollGroup.new
+    @enroll_group.details.build
 	end
 
-	def edit; end
+	def edit
+    # had to add this condition to prvent details fields from duplicating
+    if @enroll_group.details.blank?
+     @enroll_group.details.build
+   end
+  end
 
 	def create
 		@enroll_group = EnrollGroup.new(enroll_group_params)
@@ -67,16 +73,12 @@ class EnrollGroupsController < ApplicationController
 					:with_medicare,
 					:with_eft,
 					:with_edi,
-					:start_date,
-					:due_date,
 					:payer,
-					:revalidation_date,
-					:enrollment_type,
 					:status,
 					:group_id,
 					:user_id,
 					:outreach_type,
-					:enrollment_payer
+          details_attributes: [:id, :start_date, :due_date, :enrollment_payer, :enrollment_type, :enrollment_status, :approved_date, :revalidation_date, :revalidation_due_date, :comment, :ptan_number ,:_destroy],
 	)
 	end
 end

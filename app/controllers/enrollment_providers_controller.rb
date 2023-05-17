@@ -10,7 +10,10 @@ class EnrollmentProvidersController < ApplicationController
 	end
 
 	def edit
-    @enrollment_provider.details.build
+    # had to add this condition to prvent details fields from duplicating
+    if @enrollment_provider.details.blank?
+      @enrollment_provider.details.build
+    end
   end
 
 	def create
