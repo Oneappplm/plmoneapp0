@@ -91,18 +91,21 @@
     <div class="row mb-3">
         <div class="col-lg-12">
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
-            <span class="fw-semibold mt-2 text-white rounded px-1" style="background: #3bc539; width: 70%;">ID: <%= @enrollment_provider.id %> <%= "Enrollment #{@enrollment_provider.status.titleize}"%></span>
+            <span class="fw-semibold mt-2 text-white rounded px-1" style="background: #3bc539; width: 70%;">ID: <%= @enrollment_provider.id %> <%= "Enrollment #{@enrollment_provider&.status&.titleize}"%></span>
             <div class="avatar-circle mt-3" style="text-align: center">
               <img class="avatar-img" src="../dist/assets/img/400x400/img1.jpg" alt="Image Description" style="width: 100px;">
             </div>
             <h3 class="font-bold mb-0 text-center my-3"><%= @enrollment_provider.provider_name %></h3>
+
+            <% @enrollment_provider.details.each do |detail|%>
             <div class="text-left mt-3">
-              <p class="mb-1"><strong>Start Date:</strong> <%= @enrollment_provider&.start_date&.strftime('%m/%d/%Y') %></p>
-              <p class="mb-1"><strong>End Date:</strong> <%= @enrollment_provider&.due_date&.strftime('%m/%d/%Y') %></p>
-              <p class="mb-1"><strong>Enrollment Payer:</strong> <%= @enrollment_provider&.enrollment_payer %></p>
-              <p class="mb-1"><strong>Type of Enrollment:</strong> <%= @enrollment_provider&.enrollment_type %></p>
-              <p class="mb-1"><strong>Status of Enrollment:</strong> <%= @enrollment_provider&.status&.titleize %></p>
+              <p class="mb-1"><strong>Start Date:</strong> <%= detail&.start_date&.strftime('%m/%d/%Y') %></p>
+              <p class="mb-1"><strong>End Date:</strong> <%= detail&.due_date&.strftime('%m/%d/%Y') %></p>
+              <p class="mb-1"><strong>Enrollment Payer:</strong> <%= detail&.enrollment_payer %></p>
+              <p class="mb-1"><strong>Type of Enrollment:</strong> <%= detail.enrollment_type %></p>
+              <p class="mb-1"><strong>Status of Enrollment:</strong> <%= detail&.enrollment_status&.titleize %></p>
             </div>
+            <% end %>
           </div>
         </div>
     </div>

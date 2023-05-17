@@ -9,7 +9,9 @@ class EnrollmentProvidersController < ApplicationController
     @enrollment_provider.details.build
 	end
 
-	def edit; end
+	def edit
+    @enrollment_provider.details.build
+  end
 
 	def create
 		@enrollment_provider = EnrollmentProvider.new(enrollment_provider_params)

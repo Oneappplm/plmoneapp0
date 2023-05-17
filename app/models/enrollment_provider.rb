@@ -40,7 +40,7 @@ class EnrollmentProvider < ApplicationRecord
 	def doc_submitted(doc)
 			# auto check if file is not nil
 			doc = self.send(doc)
-			(doc && doc&.url&.nil?) ? false : true
+			(doc && doc&.url.nil?) ? false : true
 	end
 
 	def doc_url(doc)
