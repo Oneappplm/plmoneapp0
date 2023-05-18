@@ -1,11 +1,7 @@
 class ProvidersController < ApplicationController
 	before_action :set_provider, only: [:show, :edit, :update, :destroy]
 	def index
-   if params[:page]
-      render params[:page]
-   else
-      @providers = Provider.all
-   end
+    @providers = Provider.all
 	end
 
 	def new
@@ -16,6 +12,9 @@ class ProvidersController < ApplicationController
 	def edit
 		build_associations
 	end
+
+  def overview
+  end
 
 	def create
 			@provider = Provider.new(provider_params)

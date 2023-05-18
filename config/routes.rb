@@ -44,7 +44,11 @@ Rails.application.routes.draw do
   resources :verification_platform
   resources :office_manager
 
-  resources :providers
+  resources :providers do
+    collection do
+      get "overview"
+    end
+  end
   resources :enrollments do
     collection do
       get :new_user, path: 'new-user'
