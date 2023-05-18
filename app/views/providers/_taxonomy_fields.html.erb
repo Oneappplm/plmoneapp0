@@ -7,8 +7,12 @@
     <label class="text-dark-grey">Specialty</label>
 		<%= f.collection_select :specialty, specialties, :bcbs, :bcbs, { prompt: 'Specialty' }, { class: 'form-control border border-dark' } %>
 	</div>
-	<div class="col-lg-2 d-flex justify-content-center align-items-center">
-		<%= f.check_box :_destroy %>
-		<%= f.label :_destroy, "Remove", class: 'mx-2 text-dark-grey' %>
+	<div class="col-lg-2">
+      <label class="text-white">spacer</label>
+      <% if f.object.id %>
+        <a href="javascript:void(0);" class="btn btn-danger delete-record w-100" data-model="taxonomies" data-id="<%= f.object.id %>">Remove</a>
+      <% else %>
+        <a href="javascript:void(0);" class="btn btn-danger remove-dynamic-fields w-100">Remove</a>
+      <% end %>
 	</div>
 </div>

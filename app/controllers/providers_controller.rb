@@ -58,10 +58,11 @@ end
 	end
 
 	def build_associations
-		@provider.taxonomies.build
-		@provider.licenses.build
-		@provider.np_licenses.build
-		@provider.rn_licenses.build
+    # to jayson added if condition here to prevent extra build of attr fields on edit
+		@provider.taxonomies.build if @provider.taxonomies.blank?
+		@provider.licenses.build if @provider.licenses.blank?
+		@provider.np_licenses.build if @provider.np_licenses.blank?
+		@provider.rn_licenses.build if @provider.rn_licenses.blank?
 	end
 
 	def provider_params
