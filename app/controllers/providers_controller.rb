@@ -1,7 +1,11 @@
 class ProvidersController < ApplicationController
 	before_action :set_provider, only: [:show, :edit, :update, :destroy]
 	def index
-			@providers = Provider.all
+   if params[:page]
+      render params[:page]
+   else
+      @providers = Provider.all
+   end
 	end
 
 	def new
