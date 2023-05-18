@@ -21,10 +21,16 @@ class EnrollmentProvider < ApplicationRecord
 	mount_uploader :board_certification_file, DocumentUploader
 
 	default_scope { order(:id) }
+	scope :submitted, -> { where(status: 'submitted') }
+	scope :not_submitted, -> { where(status: 'not_submitted') }
+	scope :approved, -> { where(status: 'approved') }
+	scope :completed, -> { where(status: 'completed') }
+	scope :pending, -> { where(status: 'pending') }
+	scope :rejected, -> { where(status: 'rejected') }
 
-  has_many :details, class_name: 'EnrollmentProvidersDetail'
+	has_many :details, class_name: 'EnrollmentProvidersDetail'
 
-  accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank
+	accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank
 
 
 	def provider_name
