@@ -767,6 +767,32 @@ $('#provider_enrollment_group_id').on('change',function(){
             }
           })
         }
+
+
+
+        // part to remove/delete dynamic multiple attrs
+
+
+      $(document).on('click','.remove-dynamic-fields',function(){
+        $(this).parent().parent().remove();
+      })
+
+      $('.delete-record').on('click',function (){
+        var id = $(this).data('id');
+        var model = $(this).data('model');
+        deleteDynamicAttr(id,model,$(this));
+      })
+
+      function deleteDynamicAttr(id,model,button) {
+        $.ajax({
+          url: '<%= delete_record_path %>',
+          method: 'POST',
+          data: { authenticity_token: csrfToken, id: id, model: model },
+          success: function(data) {
+            button.parent().parent().remove();
+          }
+        })
+      }
 });
 
 </script>
