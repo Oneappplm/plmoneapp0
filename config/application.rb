@@ -19,10 +19,20 @@ module PlmhealthoneApp
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
-    config.action_dispatch.default_headers['X-Frame-Options'] = 'ALLOWALL'
-    config.content_security_policy do |policy|
-      policy.frame_ancestors '*'
+    config.action_dispatch.default_headers = {
+      'X-Frame-Options' => 'ALLOW-FROM https://bcbs.webcvo.net',
+      'X-XSS-Protection' => '1; mode=block',
+      'X-Content-Type-Options' => 'nosniff',
+      'SameSite' => 'None'
+     }
+
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins '*'
+        resource '*', headers: :any, methods: [:get, :post, :put, :delete, :options]
+      end
     end
+
     config.eager_load_paths << Rails.root.join('lib')
   end
 end
