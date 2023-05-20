@@ -148,4 +148,12 @@ module ApplicationHelper
       ["Sir","Sir"]
     ]
   end
+
+  def enrollment_group_options
+    EnrollmentGroup.all.pluck(:group_name, :id)
+  end
+
+  def enrollment_provider_options
+    EnrollmentProvider.all.pluck(:name, :id)
+  end
 end

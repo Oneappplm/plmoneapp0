@@ -8,7 +8,7 @@
             <div class="col-lg-4 mb-3">
                <div class="card p-2">
                   <%= link_to providers_url do %>
-                  <h3>Providers</h3>
+                  <h3 class="text-primary">Providers</h3>
                   <% end %>
                   <h5 class="text-white">spacer</h5>
                   <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
@@ -23,7 +23,7 @@
             <div class="col-lg-4 mb-3">
                <div class="card p-2">
                   <%= link_to groups_enrollments_path do %>
-                  <h3>Groups</h3>
+                  <h3 class="text-primary">Groups</h3>
                   <% end %>
                   <h5 class="text-white">spacer</h5>
                   <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
@@ -37,37 +37,66 @@
             </div>
             <div class="col-lg-4 mb-3">
                <div class="card p-2">
+                <div class="d-flex justify-content-between">
                   <%= link_to groups_enrollments_path do %>
-                  <h3>Pending Enrollments</h3>
+                  <h3 class="text-primary">Group's DCO</h3>
+                  <% end %>
+                  <select class="dco-select">
+                    <option value="all">All</option>
+                    <% enrollment_group_options.each do |group|%>
+                      <option value="<%= group[1]%>"><%= group[0]%></option>
+                    <% end %>
+                  </select>
+                </div>
+                  <h5 class="text-white">spacer</h5>
+                  <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
+                     <%= link_to groups_enrollments_path do %>
+                     <h1 style="font-size: 40px;" id="group_dco_counter">
+                        <%= GroupDco.count %>
+                     </h1>
+                     <% end %>
+                  </div>
+               </div>
+            </div>
+            <div class="col-lg-4 mb-3">
+               <div class="card p-2">
+                  <%= link_to groups_enrollments_path do %>
+                  <h3 class="text-primary">Pending Enrollments</h3>
                   <% end %>
                   <div class="d-flex gap-2">
                      <a href="<%= groups_enrollments_path%>"><h5>Providers</h5></a>
                      <a href="<%= enroll_groups_path %>"><h5>Groups</h5></a>
                   </div>
-                  <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
+                  <div class="w-100 d-flex justify-content-center align-items-center flex-column" style="height: 100px;">
                      <%= link_to groups_enrollments_path do %>
                      <h1 style="font-size: 40px;">
                         <%= EnrollmentProvider.pending.count %>
                      </h1>
                      <% end %>
+                      <p>
+                       <a class="text-white" href="javascript:void(0);">See more</a>
+                     </p>
                   </div>
                </div>
             </div>
             <div class="col-lg-4">
                <div class="card p-2">
                   <%= link_to groups_enrollments_path do %>
-                  <h3>Completed Enrollments</h3>
+                  <h3 class="text-primary">Completed Enrollments</h3>
                   <% end %>
                   <div class="d-flex gap-2">
                      <a href="<%= groups_enrollments_path%>"><h5>Providers</h5></a>
                      <a href="<%= enroll_groups_path %>"><h5>Groups</h5></a>
                   </div>
-                  <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
+                  <div class="w-100 d-flex justify-content-center align-items-center flex-column" style="height: 100px;">
                      <%= link_to groups_enrollments_path do %>
                      <h1 style="font-size: 40px;">
                         <%= EnrollmentProvider.completed.count %>
                      </h1>
                      <% end %>
+                     <p>
+                       <a href="<%= groups_enrollments_path %>">See more</a>
+                     </p>
                   </div>
                </div>
             </div>
@@ -75,15 +104,18 @@
                <div class="card p-2">
                 <!-- dont know where this leads -->
                   <%= link_to providers_url do %>
-                  <h3>Scheduled Callbacks</h3>
+                  <h3 class="text-primary">Scheduled Callbacks</h3>
                   <% end %>
                   <h5 class="text-white">spacer</h5>
-                  <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
+                  <div class="w-100 d-flex justify-content-center align-items-center flex-column" style="height: 100px;">
                      <%= link_to providers_url do %>
                      <h1 style="font-size: 40px;">
                         0
                      </h1>
                      <% end %>
+                     <p>
+                       <a href="<%= providers_url %>">See more</a>
+                     </p>
                   </div>
                </div>
             </div>
@@ -94,70 +126,89 @@
              <h2>Enrollment Payer</h2>
            </div>
            <div class="col-lg-4 mb-3">
-             <select class="form-select border-dark">
-               <option></option>
+             <select class="form-select border-dark" id="payer_selector">
+               <option value="">Select Option</option>
+               <% enrollment_provider_options.each do |provider|%>
+                <option value="<%= provider[1]%>"><%= provider[0]%></option>
+               <% end %>
              </select>
            </div>
            <div class="col-lg-12">
-             <div class="row">
+             <div class="row gap-1">
 
-            <div class="col-lg-3 mb-3">
+            <div class="col-lg-2 mb-3">
                <div class="card p-2">
                   <%= link_to providers_url do %>
-                  <h6>Submitted Enrollments</h6>
+                  <h6 class="text-primary">Submitted</h6>
                   <% end %>
                   <h5 class="text-white">spacer</h5>
                   <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
                      <%= link_to providers_url do %>
-                     <h1 style="font-size: 40px;">
-                        <%= EnrollmentProvider.submitted.count %>
+                     <h1 style="font-size: 40px;" id="payer_submitted">
+                        <%= EnrollmentProvidersDetail.submitted.count %>
                      </h1>
                      <% end %>
                   </div>
                </div>
             </div>
 
-            <div class="col-lg-3 mb-3">
+
+            <div class="col-lg-2 mb-3">
                <div class="card p-2">
                   <%= link_to providers_url do %>
-                  <h6>Approved Enrollments</h6>
+                  <h6 class="text-primary">Processing</h6>
                   <% end %>
                   <h5 class="text-white">spacer</h5>
                   <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
                      <%= link_to providers_url do %>
-                     <h1 style="font-size: 40px;">
-                        <%= EnrollmentProvider.approved.count %>
+                     <h1 style="font-size: 40px;" id="payer_processing">
+                        <%= EnrollmentProvidersDetail.processing.count %>
+                     </h1>
+                     <% end %>
+                  </div>
+               </div>
+            </div>
+            <div class="col-lg-2 mb-3">
+               <div class="card p-2">
+                  <%= link_to providers_url do %>
+                  <h6 class="text-primary">Approved</h6>
+                  <% end %>
+                  <h5 class="text-white">spacer</h5>
+                  <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
+                     <%= link_to providers_url do %>
+                     <h1 style="font-size: 40px;" id="payer_approved">
+                        <%= EnrollmentProvidersDetail.approved.count %>
                      </h1>
                      <% end %>
                   </div>
                </div>
             </div>
 
-            <div class="col-lg-3 mb-3">
+            <div class="col-lg-2 mb-3">
                <div class="card p-2 px-1">
                   <%= link_to providers_url do %>
-                  <h6 style="white-space: nowrap;">Not Submitted Enrollments</h6>
+                  <h6 class="text-primary">Denied</h6>
                   <% end %>
                   <h5 class="text-white">spacer</h5>
                   <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
                      <%= link_to providers_url do %>
-                     <h1 style="font-size: 40px;">
-                        <%= EnrollmentProvider.not_submitted.count %>
+                     <h1 style="font-size: 40px;" id="payer_denied">
+                        <%= EnrollmentProvidersDetail.denied.count %>
                      </h1>
                      <% end %>
                   </div>
                </div>
             </div>
-            <div class="col-lg-3 mb-3">
+            <div class="col-lg-2 mb-3">
                <div class="card p-2">
                   <%= link_to providers_url do %>
-                  <h6>Rejected Enrollments</h6>
+                  <h6 class="text-primary">Terminated</h6>
                   <% end %>
                   <h5 class="text-white">spacer</h5>
                   <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
                      <%= link_to providers_url do %>
-                     <h1 style="font-size: 40px;">
-                        <%= EnrollmentProvider.rejected.count %>
+                     <h1 style="font-size: 40px;" id="payer_terminated">
+                        <%= EnrollmentProvidersDetail.terminated.count %>
                      </h1>
                      <% end %>
                   </div>
@@ -181,7 +232,7 @@
             <div class="bg-medium-grey rounded d-flex justify-content-between px-2 py-2 align-items-center">
               <div>
                 <h4>John Bard</h4>
-                <h6>Administrator</h6>
+                <h6 class="text-primary">Administrator</h6>
               </div>
               <span>
                 Offline/Online
@@ -192,3 +243,39 @@
       </div>
    </div>
 </div>
+<script>
+var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+  $('.dco-select').on('change',function() {
+    var group_id = $(this).val();
+
+    $.ajax({
+      url: '<%= get_group_dcos_path %>',
+      method: 'POST',
+      data: { authenticity_token: csrfToken, group_id: group_id },
+      success: function(data) {
+        var group_dco = data['group_dco'];
+        $('#group_dco_counter').html(group_dco);
+      }
+    })
+  })
+
+  $('#payer_selector').on('change',function() {
+    var provider_id = $(this).val();
+    // alert(provider_id)
+    if(provider_id != '') {
+      $.ajax({
+        url: '<%= get_provider_payers_path %>',
+        method: 'POST',
+        data: { authenticity_token: csrfToken, provider_id: provider_id },
+        success: function(data) {
+          $('#payer_submitted').html(data['submitted']);
+          $('#payer_processing').html(data['processing']);
+          $('#payer_approved').html(data['approved']);
+          $('#payer_denied').html(data['denied']);
+          $('#payer_terminated').html(data['terminated']);
+        }
+      })
+    }
+  })
+</script>

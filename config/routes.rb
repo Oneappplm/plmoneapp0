@@ -31,6 +31,8 @@ Rails.application.routes.draw do
   get 'data-access', to: 'pages#data_access' #made this to not conflict with active state of client portal but for now same view
 
   post 'delete-record', to: 'ajax#delete_record'
+  post 'get-group-dcos', to: 'ajax#get_group_dcos'
+  post 'get-provider-payers', to: 'ajax#get_provider_payers'
 
   resources :provider_sources do
     collection do
