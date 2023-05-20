@@ -10,8 +10,11 @@ class EnrollGroup < ApplicationRecord
   validates_presence_of :first_name, :middle_name, :last_name, :telephone_number
 
 	default_scope { order(:id) }
+  scope :completed, -> { where(status: 'completed') }
+  scope :pending, -> { where(status: 'pending') }
 
   has_many :details, class_name: 'EnrollGroupsDetail'
+  has_many :comments, class_name: 'EnrollmentComment'
   accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank
 
 

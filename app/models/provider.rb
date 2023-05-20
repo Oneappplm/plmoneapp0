@@ -13,7 +13,8 @@ class Provider < ApplicationRecord
   has_many :licenses , class_name: 'ProviderLicense', dependent: :destroy
   has_many :np_licenses , class_name: 'ProviderNpLicense', dependent: :destroy
   has_many :rn_licenses , class_name: 'ProviderRnLicense', dependent: :destroy
-
+  has_many :comments, class_name: 'EnrollmentComment'
+  
   accepts_nested_attributes_for :taxonomies, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :licenses, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :np_licenses, allow_destroy: true, reject_if: :all_blank

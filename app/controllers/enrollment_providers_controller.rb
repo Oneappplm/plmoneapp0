@@ -42,6 +42,12 @@ class EnrollmentProvidersController < ApplicationController
 		end
 	end
 
+  def show
+    @comment = EnrollmentComment.new
+    @comment.enrollment_provider = @enrollment_provider
+    @comment.user = current_user
+  end
+
 	protected
 	def set_enrollment_provider
 		@enrollment_provider = EnrollmentProvider.find(params[:id])

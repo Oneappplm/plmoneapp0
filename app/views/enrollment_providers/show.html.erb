@@ -66,24 +66,24 @@
     </div>
     <div class="row mb-3">
       <div class="col-lg-6">
-        <button class="btn bg-white btn-lg btn-outline-primary w-100">
+        <a href="javascript:void(0);" data-model="enrollment_providers" data-status="completed" class="btn bg-white btn-lg btn-outline-primary w-100 <%= @enrollment_provider.status != 'completed' ? 'enrollment-update-status' : ' unavailable disabled'%>">
           <span class="text-dark-grey">
            Mark as Complete
           </span>
-        </button>
+        </a>
       </div>
       <div class="col-lg-6">
-        <button class="btn bg-white btn-lg btn-outline-primary w-100">
+        <a href="javascript:void(0);" data-model="enrollment_providers" data-status="callback" class="btn bg-white btn-lg btn-outline-primary w-100 <%= @enrollment_provider.status != 'callback' ? 'enrollment-update-status' : ' unavailable disabled'%>">
           <span class="text-dark-grey">
             Schedule for Callback
           </span>
-        </button>
+        </a>
       </div>
     </div>
     <div class="row mb-3">
         <div class="col-lg-12">
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
-            <span class="fw-semibold mt-2 text-white rounded px-1" style="background: #3bc539; width: 70%;">ID: <%= @enrollment_provider.id %> <%= "Enrollment #{@enrollment_provider&.status&.titleize}"%></span>
+            <span class="fw-semibold mt-2 text-white rounded px-1" style="background: #3bc539; width: 70%;" id="status_identified">ID: <%= @enrollment_provider.id %> <%= "Enrollment #{@enrollment_provider&.status&.titleize}"%></span>
             <div class="avatar-circle mt-3" style="text-align: center">
               <img class="avatar-img" src="../dist/assets/img/400x400/img1.jpg" alt="Image Description" style="width: 100px;">
             </div>
@@ -177,39 +177,45 @@
     <div class="row-mb-3">
           <div class="card rounded shadow-lg p-1 px-3 mb-3  pb-5">
             <h3 class="text-center my-3">Comments</h3>
-            <div class="row bg-alt-grey g-0 rounded py-2">
-              <div class="col-1 col-lg-2">
-                <div class="avatar-circle" style="text-align: center">
-                <img class="avatar-img" src="../dist/assets/img/400x400/img1.jpg" alt="Image Description" style="width: 30px;">
-                </div>
-
-              </div>
-              <div class="col-1 col-lg-10">
-                <div class="row">
-                  <div class="col-lg-12 mb-2">
-                    <p class="mb-0 text-black"><strong>Name of encoder</strong>, encoder</p>
-                    <label class="text-black">February 24, 2023</label>
-                  </div>
-                  <div class="col-lg-12">
-                    <p class="text-black">Comment here</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row mt-3 g-0">
-              <div class="col-lg-12 px-2 position-relative">
-                <div>
-                  <input type="text" class="form-control
-                  py-1" name="" style="border: solid 1px black;">
-
-                <button class="btn btn-sm text-black position-absolute" style="top: -10%;right:0;">
-                  <i class="bi bi-cursor-fill"></i>
-                </button>
-                </div>
-              </div>
-            </div>
+            <% @enrollment_provider.comments.each do |comment|%>
+              <%= render partial: 'comments/comment', locals: {comment: comment}%>
+            <% end %>
+            <%= render partial: 'comments/form', comment: @comment %>
           </div>
     </div>
 
   </div>
 </div>
+
+<script>
+  var csrfToken = $('meta[name="csrf-token"]').attr('content');
+  var id = '<%= @enrollment_provider.id %>';
+  $(document).on('click', '.enrollment-update-status',function() {
+    var model = $(this).data('model');
+    var status = $(this).data('status');
+    var btn = $(this);
+    $.ajax({
+      url: '<%= change_enrollment_status_path %>',
+      method: 'POST',
+      data: { authenticity_token: csrfToken, model: model, status: status, id: id },
+      success: function(data) {
+        changeStatusOtherButton(btn);
+        changeBtnToDisable(btn);
+        $('#status_identified').html('ID: ' + data['id'] + ' Enrollment ' + data['status']);
+      }
+    })
+
+  });
+
+  function changeBtnToDisable(btn) {
+    btn.removeClass('enrollment-update-status');
+    btn.addClass('disabled');
+    btn.addClass('unavailable');
+  }
+
+  function changeStatusOtherButton(btn) {
+    btn.parent().parent().find('div').find('a').removeClass('unavailable');
+    btn.parent().parent().find('div').find('a').removeClass('disabled');
+    btn.parent().parent().find('div').find('a').addClass('enrollment-update-status');
+  }
+</script>

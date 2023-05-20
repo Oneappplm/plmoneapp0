@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_17_083003) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_20_053526) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -122,7 +122,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_17_083003) do
     t.string "payer"
     t.datetime "revalidation_date"
     t.string "enrollment_type"
-    t.string "status"
+    t.string "status", default: "pending"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "group_id"
@@ -146,6 +146,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_17_083003) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["enroll_group_id"], name: "index_enroll_groups_details_on_enroll_group_id"
+  end
+
+  create_table "enrollment_comments", force: :cascade do |t|
+    t.bigint "enrollment_provider_id"
+    t.bigint "enroll_group_id"
+    t.bigint "provider_id"
+    t.bigint "user_id"
+    t.string "body"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enroll_group_id"], name: "index_enrollment_comments_on_enroll_group_id"
+    t.index ["enrollment_provider_id"], name: "index_enrollment_comments_on_enrollment_provider_id"
+    t.index ["provider_id"], name: "index_enrollment_comments_on_provider_id"
+    t.index ["user_id"], name: "index_enrollment_comments_on_user_id"
   end
 
   create_table "enrollment_groups", force: :cascade do |t|
@@ -218,7 +232,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_17_083003) do
     t.string "driver_license_file"
     t.datetime "board_certification_submitted"
     t.string "board_certification_file"
-    t.string "status"
+    t.string "status", default: "pending"
     t.string "application_id"
     t.string "not_submitted_note"
     t.string "not_submitted_note_rejected"

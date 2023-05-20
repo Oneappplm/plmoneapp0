@@ -46,8 +46,11 @@ end
 	end
 
   def show
-      @providers = Provider.all
-      @provider = Provider.find(params[:id])
+    @providers = Provider.all
+    @provider = Provider.find(params[:id])
+    @comment = EnrollmentComment.new
+    @comment.provider = @provider
+    @comment.user = current_user
   end
 
 	private

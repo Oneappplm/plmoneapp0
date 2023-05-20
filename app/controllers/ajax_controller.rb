@@ -40,6 +40,36 @@ class AjaxController < ApplicationController
       'denied' => provider.details.denied.count,
       'terminated' => provider.details.terminated.count
     }
+  end
 
+  def get_enrollment_status_count
+    model = params[:model]
+    status = params[:status]
+    count = if model == 'enrollment_providers'
+      EnrollmentProvider.send(status).count
+    elsif model == 'enroll_groups'
+      EnrollGroup.send(status).count
+    else
+      0
+    end
+    render json: {
+      'count' => count
+    }
+  end
+
+  def change_enrollment_status
+    id = params[:id]
+    model = params[:model]
+    status = params[:status]
+    enrollment_type = if model == 'enrollment_providers'
+        EnrollmentProvider.find_by(id: id)
+    end
+
+    enrollment_type.update_attribute('status', status) if enrollment_type
+
+    render json: {
+      'status' => enrollment_type.status.titleize,
+      'id' => enrollment_type.id
+    }
   end
 end

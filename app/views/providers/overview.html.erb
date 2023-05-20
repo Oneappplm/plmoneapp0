@@ -64,12 +64,12 @@
                   <h3 class="text-primary">Pending Enrollments</h3>
                   <% end %>
                   <div class="d-flex gap-2">
-                     <a href="<%= groups_enrollments_path%>"><h5>Providers</h5></a>
-                     <a href="<%= enroll_groups_path %>"><h5>Groups</h5></a>
+                     <a href="javascript:void(0);" class="enrollment-by-status" data-model="enrollment_providers" data-status="pending"><h5 class="text-primary">Providers</h5></a>
+                     <a href="javascript:void(0);" class="enrollment-by-status" data-model="enroll_groups" data-status="pending"><h5>Groups</h5></a>
                   </div>
                   <div class="w-100 d-flex justify-content-center align-items-center flex-column" style="height: 100px;">
                      <%= link_to groups_enrollments_path do %>
-                     <h1 style="font-size: 40px;">
+                     <h1 style="font-size: 40px;" id="pending_enrollment_ctr">
                         <%= EnrollmentProvider.pending.count %>
                      </h1>
                      <% end %>
@@ -85,12 +85,12 @@
                   <h3 class="text-primary">Completed Enrollments</h3>
                   <% end %>
                   <div class="d-flex gap-2">
-                     <a href="<%= groups_enrollments_path%>"><h5>Providers</h5></a>
-                     <a href="<%= enroll_groups_path %>"><h5>Groups</h5></a>
+                     <a href="javascript:void(0);"  class="enrollment-by-status" data-model="enrollment_providers" data-status="completed"><h5 class="text-primary">Providers</h5></a>
+                     <a href="javascript:void(0);"  class="enrollment-by-status" data-model="enrollment_group" data-status="completed"><h5>Groups</h5></a>
                   </div>
                   <div class="w-100 d-flex justify-content-center align-items-center flex-column" style="height: 100px;">
                      <%= link_to groups_enrollments_path do %>
-                     <h1 style="font-size: 40px;">
+                     <h1 style="font-size: 40px;"  id="completed_enrollment_ctr">
                         <%= EnrollmentProvider.completed.count %>
                      </h1>
                      <% end %>
@@ -110,7 +110,7 @@
                   <div class="w-100 d-flex justify-content-center align-items-center flex-column" style="height: 100px;">
                      <%= link_to providers_url do %>
                      <h1 style="font-size: 40px;">
-                        0
+                        <%= EnrollmentProvider.callback.count %>
                      </h1>
                      <% end %>
                      <p>
@@ -278,4 +278,23 @@ var csrfToken = $('meta[name="csrf-token"]').attr('content');
       })
     }
   })
+
+  $('.enrollment-by-status').on('click',function() {
+    var model = $(this).data('model');
+    var status = $(this).data('status');
+    $.ajax({
+      url: '<%= get_enrollment_status_count_path %>',
+      method: 'POST',
+      data: { authenticity_token: csrfToken, model: model, status: status },
+      success: function(data) {
+        $('#'+status+'_enrollment_ctr').html(data['count']);
+      }
+    })
+    changeTextColorEnrollmentStatus($(this));
+  })
+
+  function changeTextColorEnrollmentStatus(link) {
+    link.parent().find('a').find('h5').removeClass('text-primary');
+    link.find('h5').addClass('text-primary');
+  }
 </script>

@@ -33,6 +33,8 @@ Rails.application.routes.draw do
   post 'delete-record', to: 'ajax#delete_record'
   post 'get-group-dcos', to: 'ajax#get_group_dcos'
   post 'get-provider-payers', to: 'ajax#get_provider_payers'
+  post 'get-enrollment-status-count', to: 'ajax#get_enrollment_status_count'
+  post 'change-enrollment-status', to: 'ajax#change_enrollment_status'
 
   resources :provider_sources do
     collection do
@@ -45,6 +47,7 @@ Rails.application.routes.draw do
   # added these two resources just to make it different to pages_controller for now it doesn't have any model
   resources :verification_platform
   resources :office_manager
+  resources :comments
 
   resources :providers do
     collection do
