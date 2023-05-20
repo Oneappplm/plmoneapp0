@@ -20,7 +20,7 @@ class AjaxController < ApplicationController
   def get_group_dcos
     id = params[:group_id]
     group = EnrollmentGroup.find_by(id: id) if params[:group_id] != 'all'
-    group_dco =  ( params[:group_id] != 'all' ? group.dcos.count : EnrollmentGroup.count )
+    group_dco =  ( params[:group_id] != 'all' ? group.dcos.count : GroupDco.count )
 
     render json: {
       'group_dco' => group_dco
