@@ -19,6 +19,10 @@ module PlmhealthoneApp
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    config.action_dispatch.default_headers['X-Frame-Options'] = 'ALLOWALL'
+    config.content_security_policy do |policy|
+      policy.frame_ancestors '*'
+    end
     config.eager_load_paths << Rails.root.join('lib')
   end
 end
