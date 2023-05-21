@@ -35,6 +35,8 @@ Rails.application.routes.draw do
   post 'get-provider-payers', to: 'ajax#get_provider_payers'
   post 'get-enrollment-status-count', to: 'ajax#get_enrollment_status_count'
   post 'change-enrollment-status', to: 'ajax#change_enrollment_status'
+  get 'get-provider-types', to: 'ajax#get_provider_types'
+  post 'get-selected-provider-types', to: 'ajax#get_selected_provider_types'
 
   resources :provider_sources do
     collection do

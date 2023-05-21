@@ -13,6 +13,6 @@ class EnrollmentGroup < ApplicationRecord
   end
 
   def selected_provider_types
-     self.provider_type ? self.provider_type.split(',').map{|m| m.to_i} : nil
+     self.provider_type ? self.provider_type.split(',') : nil
   end
 end

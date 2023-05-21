@@ -72,4 +72,20 @@ class AjaxController < ApplicationController
       'id' => enrollment_type.id
     }
   end
+
+  def get_provider_types
+    provider_types = ProviderType.all.map{|m| { label: m.fch, value: m.fch} }
+    # render json: provider_types and return
+    render json: {
+      'provider_types' => provider_types
+    }
+  end
+
+  def get_selected_provider_types
+    enrollment_group = EnrollmentGroup.find(params[:group_id])
+    selected_provider_types = (enrollment_group.selected_provider_types || [])
+    render json: {
+      'selected_provider_types' => selected_provider_types
+    }
+  end
 end
