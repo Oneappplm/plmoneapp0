@@ -135,14 +135,14 @@
 				<div class="col-lg-6">
 						<label class="text-dark-grey">Group *</label>
 						<%= f.select :npi_digit_type_group, options_for_select([
-						'Single', 'Multi Specialty'
+						'Multi-Specialty Group- 193200000X', 'Single Specialty Group-193400000X'
 						], f.object.npi_digit_type_group), { prompt: 'Specific Type' }, { class: 'form-select border border-dark', id: 'group_type_select' } %>
 				</div>
 			</div>
 			<div class="row mb-5">
 				<div class="col-lg-6">
 					<label class="text-dark-grey">Which of the following provider types do you employ?</label>
-					<%= f.collection_select :provider_type, @provider_types, :fch, :fch, { prompt: 'Provider Type *' }, { class: 'form-control border border-dark' } %>
+            <%= f.select :provider_type, options_for_select(@provider_types.pluck(:fch ,:fch)), { prompt: 'Include in Directory?' }, { class: 'form-select multi-select', required: true } %>
 				</div>
 			</div>
 			<div class="row mb-5">
@@ -217,15 +217,48 @@
 
 	</form>
 </div>
+<% end %>
 
 <script>
-	$('#group_type_picker').on('change',function(){
-		$(this).val() == 'other' ? changeToInput() : '';
-	})
+  $('#group_type_picker').on('change',function(){
+    $(this).val() == 'other' ? changeToInput() : '';
+  })
 
-	function changeToInput() {
-		$('#group_type_picker').addClass('d-none');
-		$('#other_type').removeClass('d-none');
-	}
+  function changeToInput() {
+    $('#group_type_picker').addClass('d-none');
+    $('#other_type').removeClass('d-none');
+  }
+
+  $(document).ready(function() {
+    // this part not yet working this should've preselected the selected provider types by user
+     <% if @enrollment_group.provider_type %>
+        VirtualSelect.init({
+            ele: '.multi-select',
+            multiple: true,
+            showSelectedOptionsFirst: true,
+            selectedValue: <%= @enrollment_group.selected_provider_types %>
+        });
+      <% else %>
+        VirtualSelect.init({
+            ele: '.multi-select',
+            multiple: true
+        });
+      <% end %>
+
+      function removeQuote(input) {
+       const replaceWith = '"' // e.g. replace &quot; by "
+       const result = input.replace(/&quot;/g, replaceWith)
+       return result;
+    }
+  })
+ 
+
+
 </script>
-<% end %>
+
+<style>
+  .multi-select {
+    padding: 0;
+  }
+</style>
+

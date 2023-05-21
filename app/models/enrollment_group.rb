@@ -11,4 +11,8 @@ class EnrollmentGroup < ApplicationRecord
   def dco_count_display
     "#{dcos.size} #{group_code} clients"
   end
+
+  def selected_provider_types
+     self.provider_type ? self.provider_type.split(',').map{|m| m.to_i} : nil
+  end
 end
