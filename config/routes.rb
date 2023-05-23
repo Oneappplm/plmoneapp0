@@ -105,5 +105,10 @@ Rails.application.routes.draw do
         get :crawl
       end
     end
+    resources :california_states, only: [:index], path: 'state-california' do
+      collection do
+        get :crawl
+      end
+    end
   end
 end

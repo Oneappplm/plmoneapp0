@@ -3,9 +3,9 @@
 		<%= render partial: 'webscrapers/links' %>
 		<div class="col-lg-12">
 			<h2>
-				State of Alaska
+				State of California
 			</h2>
-			<p>Source: <code>https://www.commerce.alaska.gov/cbp/main/Search/Professional</code></p>
+			<p>Source: <code>https://search.dca.ca.gov</code></p>
 		</div>
 	</div>
 	<div class="row mb-3">
@@ -17,9 +17,9 @@
 			</div>
 			<% end %>
 		</div>
-		<% if @alaska_states.count <= 0 %>
+		<% if @california_states.count <= 0 %>
 		<div class="col-lg-6 d-flex justify-content-end">
-			<a href="<%= crawl_webscrapers_alaska_states_path %>" class="d-flex btn btn-primary btn-md">
+			<a href="<%= crawl_webscrapers_california_states_path %>" class="d-flex btn btn-primary btn-md">
 				<span>Crawl</span>
 			</a>
 		</div>
@@ -31,29 +31,33 @@
 			<table class="table">
 					<thead>
 								<tr>
-												<th scope="col" class="bg-primary text-white">Program</th>
+												<th scope="col" class="bg-primary text-white">Name</th>
 												<th scope="col" class="bg-primary text-white">License Number</th>
-												<th scope="col" class="bg-primary text-white">DBA</th>
-												<th scope="col" class="bg-primary text-white">Owners</th>
-												<th scope="col" class="bg-primary text-white">Status</th>
+												<th scope="col" class="bg-primary text-white">License Type</th>
+												<th scope="col" class="bg-primary text-white">License Status</th>
 												<th scope="col" class="bg-primary text-white">License Expiration</th>
+												<th scope="col" class="bg-primary text-white">Secondary Status</th>
+												<th scope="col" class="bg-primary text-white">City</th>
+												<th scope="col" class="bg-primary text-white">State</th>
+												<th scope="col" class="bg-primary text-white">County</th>
+												<th scope="col" class="bg-primary text-white">Zip</th>
 								</tr>
 				</thead>
 				<tbody>
-					<%= render partial: 'alaska_state', collection: @alaska_states, as: :item %>
+					<%= render partial: 'california_state', collection: @california_states, as: :item %>
 				</tbody>
 			</table>
 
-			<% if @alaska_states %>
+			<% if @california_states %>
 			<div class="col-lg-12">
 							<div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
 							<div class="page_info ms-3 text-black">
-															<%= page_entries_info @alaska_states %>
+															<%= page_entries_info @california_states %>
 							</div>
 							<% if params[:per_page ].present? %>
-											<%= will_paginate @alaska_states, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+											<%= will_paginate @california_states, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
 							<% else %>
-											<%= will_paginate @alaska_states, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+											<%= will_paginate @california_states, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
 							<% end %>
 							</div>
 			</div>

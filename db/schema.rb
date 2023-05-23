@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_23_031258) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_23_101231) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -592,6 +592,21 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_23_031258) do
     t.string "owners"
     t.string "status"
     t.string "license_expiration"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "webscraper_california_states", force: :cascade do |t|
+    t.string "name"
+    t.string "license_number"
+    t.string "license_type"
+    t.string "license_status"
+    t.string "license_expiration"
+    t.string "secondary_status"
+    t.string "city"
+    t.string "state"
+    t.string "county"
+    t.string "zip"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
