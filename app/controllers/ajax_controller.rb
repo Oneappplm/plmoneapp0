@@ -88,4 +88,15 @@ class AjaxController < ApplicationController
       'selected_provider_types' => selected_provider_types
     }
   end
+
+  def get_dougnut_data
+    clients = [Client.attested.count,Client.no_application.count,
+                Client.incomplete.count,Client.complete.count,
+                Client.pending_data.count, Client.in_process.count
+            ]
+
+    render json: {
+      "clients" => clients
+    }
+  end
 end

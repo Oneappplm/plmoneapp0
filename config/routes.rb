@@ -37,6 +37,7 @@ Rails.application.routes.draw do
   post 'change-enrollment-status', to: 'ajax#change_enrollment_status'
   get 'get-provider-types', to: 'ajax#get_provider_types'
   post 'get-selected-provider-types', to: 'ajax#get_selected_provider_types'
+  get 'doughnut-data', to: 'ajax#get_dougnut_data'
 
   resources :provider_sources do
     collection do

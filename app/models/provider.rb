@@ -33,4 +33,24 @@ class Provider < ApplicationRecord
   def no_group?
     self.enrollment_group_id.nil? && self.dco.nil?
   end
+
+  def attested
+    Client.attested.where(provider_name: provider_name).count
+  end
+
+  def completed
+    Client.complete.where(provider_name: provider_name).count
+  end
+
+  def incomplete
+    Client.incomplete.where(provider_name: provider_name).count
+  end
+
+  def returned
+    Client.returned.where(provider_name: provider_name).count
+  end
+
+  def pending
+    Client.pending_data.where(provider_name: provider_name).count
+  end
 end

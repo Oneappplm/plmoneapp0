@@ -501,7 +501,7 @@
                                                    </th>
                                                    <th >
                                                       <span style="font-size:50px; color:#FF9800">.</span> <span style="font-size: 10px;
-                                                         ">PInProcess</span>
+                                                         ">InProcess</span>
                                                    </th>
                                                 </tr>
                                              </thead>
@@ -587,22 +587,22 @@
                                     <h5>Statistics</h5>
                                     <thead>
                                        <tr>
-                                          <th scope="col">Attested</th>
-                                          <th scope="col">No Application</th>
-                                          <th scope="col">Incomplete Application</th>
-                                          <th scope="col">Complete Application</th>
-                                          <th scope="col">Pending Data Entry</th>
-                                          <th scope="col">In Process</th>
+                                          <th scope="col" class="text-white">Attested</th>
+                                          <th scope="col" class="text-white">No Application</th>
+                                          <th scope="col" class="text-white">Incomplete Application</th>
+                                          <th scope="col" class="text-white">Complete Application</th>
+                                          <th scope="col" class="text-white">Pending Data Entry</th>
+                                          <th scope="col" class="text-white">In Process</th>
                                        </tr>
                                     </thead>
                                     <tbody>
                                        <tr>
-                                          <th scope="row">824</th>
-                                          <td>682</td>
-                                          <td>146</td>
-                                          <td>482</td>
-                                          <td>22h:32m:29s</td>
-                                          <td>01m:46s</td>
+                                          <th scope="row"><%= Client.attested.count%></th>
+                                          <td><%= Client.no_application.count%></td>
+                                          <td><%= Client.incomplete.count %></td>
+                                          <td><%= Client.complete.count %></td>
+                                          <td><%= Client.pending_data.count %></td>
+                                          <td><%= Client.in_process.count %></td>
                                        </tr>
                                     </tbody>
                                  </table>
@@ -613,55 +613,25 @@
                                     <table class="table table-hover my-0">
                                        <thead>
                                           <tr>
-                                             <th></th>
-                                             <th>Completed</th>
-                                             <th>Incomplete</th>
-                                             <th>Attested</th>
-                                             <th>Returned</th>
-                                             <th>Pending Data Entry</th>
+                                             <th class="text-white fw-semibold"></th>
+                                             <th class="text-white fw-semibold">Completed</th>
+                                             <th class="text-white fw-semibold">Incomplete</th>
+                                             <th class="text-white fw-semibold">Attested</th>
+                                             <th class="text-white fw-semibold">Returned</th>
+                                             <th class="text-white fw-semibold">Pending Data Entry</th>
                                           </tr>
                                        </thead>
                                        <tbody>
+                                        <% Provider.all.each do |provider|%>
                                           <tr>
-                                             <td>Hermann P. Schnitzel</td>
-                                             <td>42</td>
-                                             <td>23</td>
-                                             <td>11</td>
-                                             <td>4</td>
-                                             <td>20</td>
+                                             <td><%= provider.provider_name %></td>
+                                             <td><%= provider.completed %></td>
+                                             <td><%= provider.incomplete %></td>
+                                             <td><%= provider.attested %></td>
+                                             <td><%= provider.returned %></td>
+                                             <td><%= provider.pending %></td>
                                           </tr>
-                                          <tr>
-                                             <td>Mercy Medical Center</td>
-                                             <td>42</td>
-                                             <td>22</td>
-                                             <td>6</td>
-                                             <td>41</td>
-                                             <td>33</td>
-                                          </tr>
-                                          <tr>
-                                             <td>Baptist Health</td>
-                                             <td>28</td>
-                                             <td>22</td>
-                                             <td>12</td>
-                                             <td>11</td>
-                                             <td>2</td>
-                                          </tr>
-                                          <tr>
-                                             <td>Mayo Clinic</td>
-                                             <td>42</td>
-                                             <td>33</td>
-                                             <td>21</td>
-                                             <td>55</td>
-                                             <td>11</td>
-                                          </tr>
-                                          <tr>
-                                             <td>HStanford Health Care</td>
-                                             <td>6</td>
-                                             <td>12</td>
-                                             <td>34</td>
-                                             <td>32</td>
-                                             <td>55</td>
-                                          </tr>
+                                          <% end %>
                                        </tbody>
                                     </table>
                                  </div>
@@ -1181,12 +1151,13 @@
       <script>
          document.addEventListener("DOMContentLoaded", function() {
          	// Doughnut chart
+          var doughnutData = [];
          	new Chart(document.getElementById("chartjs-doughnut"), {
          		type: "doughnut",
          		data: {
          			labels: ["Attested", "No Application", "Incomplete Application", "Complete Application","Pending Data Entry","In Process"],
          			datasets: [{
-         				data: [260, 125, 54, 146,100,80],
+         				data: doughnutData,
          				backgroundColor: [
          					window.theme.primary,
          					window.theme.success,
@@ -1209,6 +1180,19 @@
          		}
          	});
          });
+          
+         var csrfToken = $('meta[name="csrf-token"]').attr('content');
+         function getClientDataForDoughnutGraph()
+         {
+            $.ajax({
+              url: "<%= doughnut_data_path %>",
+              method: "GET",
+              data: { authenticity_token: csrfToken },
+              success: function(data) {
+                doughnutData = data['clients'];
+              }
+            })
+         }
       </script>
    </div>
 </div>
