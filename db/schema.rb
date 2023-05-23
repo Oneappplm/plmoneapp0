@@ -96,6 +96,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_23_101231) do
     t.index ["disclosure_category_id"], name: "index_disclosure_questions_on_disclosure_category_id"
   end
 
+  create_table "education_types", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "enroll_groups", force: :cascade do |t|
     t.string "name"
     t.string "first_name"
@@ -525,6 +531,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_23_101231) do
   create_table "states", force: :cascade do |t|
     t.string "name"
     t.string "alpha_code"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "training_types", force: :cascade do |t|
+    t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

@@ -14,4 +14,10 @@ class Webscrapers::AlaskaStatesController < ApplicationController
 	rescue
 	 redirect_to webscrapers_alaska_states_path, notice: 'Crawling has been successfully completed.'
 	end
+
+	def clear
+		WebscraperAlaskaState.delete_all
+
+		redirect_to webscrapers_alaska_states_path, notice: 'All records has been successfully deleted.'
+	end
 end

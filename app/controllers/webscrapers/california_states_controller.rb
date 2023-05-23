@@ -14,4 +14,10 @@ class Webscrapers::CaliforniaStatesController < ApplicationController
 	rescue
 	 redirect_to webscrapers_california_states_path, notice: 'Crawling has been successfully completed.'
 	end
+
+	def clear
+		WebscraperCaliforniaState.delete_all
+
+		redirect_to webscrapers_california_states_path, notice: 'All records has been successfully deleted.'
+	end
 end
