@@ -83,6 +83,7 @@ Rails.application.routes.draw do
 
   resources :systems
   resources :settings
+  resources :pals_verifications, only: [:index], path: 'pals-verification'
 
   resources :view_summary
 
