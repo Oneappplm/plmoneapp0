@@ -6,43 +6,46 @@
       </div>
       <div class="col-lg-9">
          <div class="row border border-4 p-3">
-            <div class="col-lg-12">
-               <%= render partial: "provider_source_components/header_title", locals: {title: "Education and Training", icon: 'bi-mortarboard-fill'}%>
-               <%= render partial: "provider_source_components/progress_bar", locals: {percent: 0}%>
-               <% steps = [['Education','active', custom_provider_source_path(page: 'education_training')],
-                     # ['Practice Location','inactive', custom_provider_source_path(page: 'practice_location')],
-                     # ['Employment Gap','active', custom_provider_source_path(page: 'employment_gap')],
-                     ['Training','inactive', custom_provider_source_path(page: 'training')],
-                     ['Teaching Appointments','inactive', custom_provider_source_path(page: 'teaching_appointments')],
-            ]%>
-            <%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
-            </div>
+                <div class="col-lg-12">
+                <%= render partial: "provider_source_components/header_title", locals: {title: "Education and Training", icon: 'bi-mortarboard-fill'}%>
+                <%= render partial: "provider_source_components/progress_bar", locals: {percent: 0}%>
+                <% steps = [['Education','active', custom_provider_source_path(page: 'education_training')],
+                        # ['Practice Location','inactive', custom_provider_source_path(page: 'practice_location')],
+                        # ['Employment Gap','active', custom_provider_source_path(page: 'employment_gap')],
+                        ['Training','inactive', custom_provider_source_path(page: 'training')],
+                        ['Teaching Appointments','inactive', custom_provider_source_path(page: 'teaching_appointments')],
+                ]%>
+                <%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
+                </div>
 
-           <div class="col-lg-12 card py-3 my-3">
-               <h4 class="fw-semibold text-secondary">Undergraduate School</h4>
-                  <div class="d-flex align-items-center my-3">
-                        <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="undergrad_school" data-toshow="undergrad_info" data-toggle="button" aria-pressed="false" autocomplete="off">
-                           <div class="handle"></div>
-                        </button>
-                        <small class="ms-2 fw-semibold text-dark-grey">Did you attend an Undergraduate school?</small>
-                  </div>
-                  <div id="undergrad_info" class="d-none">
-                  <%= render "provider_source_components/undergrad_school_details"%>
-                  </div>
-            </div>
+                <div class="col-lg-12 card py-3 my-3">
+                    <h4 class="fw-semibold text-secondary">Undergraduate School</h4>
+                    <div class="d-flex align-items-center my-3">
+                        <%= HtmlUtils.radio_toggle name: 'undergraduate_school',
+                        label: 'Did you attend an Undergraduate school? *',
+                        toshow: 'undergrad_school_details'
+                        %>
+                        <input type="hidden" id="undergraduate_school" name="undergraduate_school" value="no">
+                    </div>
+                        <div id="undergrad_school_details" class="d-none">
+                            <%= render partial: 'provider_source_components/undergrad_school_details'%>
+                        </div>
+                </div>
 
-            <div class="col-lg-12 card py-3 mb-3">
-               <h4 class="fw-semibold text-secondary">Graduate/Professional School</h4>
-                  <div class="d-flex align-items-center my-3">
-                        <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="professional_school" data-toshow="prof_info" data-toggle="button" aria-pressed="false" autocomplete="off">
-                           <div class="handle"></div>
-                        </button>
-                        <small class="ms-2 fw-semibold text-dark-grey">Did you complete your professional education at this school?</small>
-                  </div>
-                  <div class="d-none" id="prof_info">
-                     <%= render "provider_source_components/prof_school_details"%>
-                  </div>
-            </div>
+                <div class="col-lg-12 card py-3 my-3">
+                    <h4 class="fw-semibold text-secondary">Graduate/Professional School</h4>
+                    <div class="d-flex align-items-center my-3">
+                        <%= HtmlUtils.radio_toggle name: 'professional_school',
+                        label: 'Did you complete your professional education at this school? *',
+                        toshow: 'prof_school_details'
+                        %>
+                        <input type="hidden" id="professional_school" name="professional_school" value="no">
+                    </div>
+                        <div id="prof_school_details" class="d-none">
+                            <%= render partial: 'provider_source_components/prof_school_details'%>
+                        </div>
+                </div>
+
          </div>
       </div>
    </div>

@@ -90,18 +90,18 @@
 	</div>
 </div>
 
-
-<div class="row mb-3">
-			<div class="d-flex align-items-center my-3">
-        <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="" data-toshow="prof_reason_info" data-toggle="button" aria-pressed="false" autocomplete="off">
-          <div class="handle"></div>
-        </button>
-          <small class="ms-2 fw-semibold text-dark-grey">Did you not complete your undergraduate education at this school?</small>
-      </div>     
-						<div class="d-none" id="prof_reason_info">
-              <%= render "provider_source_components/prof_school_reason"%>
-            </div>
-  </div>
+ <div class="row mb-3">
+    <div class="d-flex align-items-center my-3">
+      <%= HtmlUtils.radio_toggle name: 'incomplete_prof',
+    		label: 'Did you not complete your undergraduate education at this school? *',
+        toshow: 'prof_school_reason'
+      %>
+      <input type="hidden" id="incomplete_prof" name="incomplete_prof" value="no">
+    </div>
+      <div id="prof_school_reason" class="d-none">
+        <%= render partial: 'provider_source_components/prof_school_reason'%>
+      </div>
+	</div>
 
 <div class="row mb-3">
 	<div class="col-lg-6">

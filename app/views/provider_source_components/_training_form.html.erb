@@ -105,17 +105,19 @@
 		<input type="date" class="form-control border-dark" name="tf-end-date">
 	</div>
 </div>
-	<div class="row mb-3">
-			<div class="d-flex align-items-center my-3">
-        <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="" data-toshow="train_reason_info" data-toggle="button" aria-pressed="false" autocomplete="off">
-          <div class="handle"></div>
-        </button>
-          <small class="ms-2 fw-semibold text-dark-grey">Did you not complete your training at this institution?</small>
-      </div>     
-						<div class="d-none" id="train_reason_info">
-              <%= render "provider_source_components/training_reason_form"%>
-            </div>
-  </div>
+
+	 <div class="row mb-3">
+    <div class="d-flex align-items-center my-3">
+      <%= HtmlUtils.radio_toggle name: 'incomplete_training',
+    		label: 'Did you not complete your training at this institution? *',
+        toshow: 'training_reason_form'
+      %>
+      <input type="hidden" id="incomplete_training" name="incomplete_training" value="no">
+    </div>
+      <div id="training_reason_form" class="d-none">
+        <%= render partial: 'provider_source_components/training_reason_form'%>
+      </div>
+	</div>
 
   
 <div class="row mb-3">

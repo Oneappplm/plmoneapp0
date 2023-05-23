@@ -177,6 +177,7 @@ class ProviderSource < ApplicationRecord
           ['undergrad_school', 'complete_undergrad', 'yes'],
           ['undergrad_school', 'usd_date_graduation', 'yes'],
           ['undergrad_school', 'usd_school_location', 'yes'],
+          ['incomplete_undergrad', '', 'yes'],
           ['professional_school', '', 'yes'],
           ['professional_school', '', 'yes'],
           ['professional_school', '', 'yes'],
@@ -187,7 +188,25 @@ class ProviderSource < ApplicationRecord
           ['professional_school', '', 'yes'],
           ['professional_school', '', 'yes'],
           ['professional_school', '', 'yes'],
-          ['professional_school', '', 'yes']
+          ['professional_school', '', 'yes'],
+          ['incomplete_prof', '', 'yes'],
+          ['has_training_program', '', 'yes'],
+          ['has_training_program', '', 'yes'],
+          ['has_training_program', '', 'yes'],
+          ['has_training_program', '', 'yes'],
+          ['has_training_program', '', 'yes'],
+          ['has_training_program', '', 'yes'],
+          ['has_training_program', '', 'yes'],
+          ['has_training_program', '', 'yes'],
+          ['incomplete_training', '', 'yes'],
+          ['an_instructor', '', 'yes'],
+          ['an_instructor', '', 'yes'],
+          ['an_instructor', '', 'yes'],
+          ['an_instructor', '', 'yes'],
+          ['an_instructor', '', 'yes'],
+          ['an_instructor', '', 'yes'],
+          ['an_instructor', '', 'yes'],
+          ['an_instructor', '', 'yes']
     ]
     prerequisite_checker(infos)
   end
