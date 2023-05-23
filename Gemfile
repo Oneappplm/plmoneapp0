@@ -82,3 +82,5 @@ gem "roo", "~> 2.9.0" # https://github.com/roo-rb/roo
 gem 'carrierwave', '>= 3.0.0.beta', '< 4.0' # https://github.com/carrierwaveuploader/carrierwave
 gem "fog-aws" # https://github.com/fog/fog-aws
 gem 'rack-cors'
+gem 'nokogiri'
+gem 'mechanize', '~> 2.7', '>= 2.7.6'

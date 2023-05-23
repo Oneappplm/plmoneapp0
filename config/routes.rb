@@ -97,4 +97,12 @@ Rails.application.routes.draw do
   get 'organization-users', to: 'users#organization_users'
   get 'client-portal-search', to: 'pages#client_search'
   get 'download-clients', to: 'pages#download_clients'
+
+  namespace :webscrapers do
+    resources :alaska_states, only: [:index], path: 'state-alaska' do
+      collection do
+        get :crawl
+      end
+    end
+  end
 end
