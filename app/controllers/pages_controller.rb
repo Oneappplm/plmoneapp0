@@ -12,12 +12,15 @@ class PagesController < ApplicationController
   before_action :get_practice_types, only: %i[provider_source]
   before_action :get_practitioner_profiles, only: %i[provider_source]
   before_action :get_services, only: %i[provider_source]
+	before_action :get_training_types, only: %i[provider_source]
+	before_action :get_education_types, only: %i[provider_source]
   before_action :set_provider
-  before_action :get_countries
   layout "public_application", only: %i[terms privacy_policy data_access]
 		layout "overview", only: %i[dashboard]
 
 	def provider_source
+		@provider_sources = ProviderSource.all
+		@provider_source = ProviderSource.new
 		if params[:page].present?
 			render "pages/provider_source/#{params[:page]}", layout: 'provider_source'
 		else
@@ -217,11 +220,16 @@ class PagesController < ApplicationController
     @services = Service.all
   end
 
+	def get_training_types
+    @training_types = TrainingType.all
+  end
+
+	def get_education_types
+    @education_types = EducationType.all
+  end
+
   def set_provider
     @provider = ProviderSource.current
   end
 
-  def get_countries
-    @countries = Country.all_translated
-  end
 end

@@ -1,15 +1,11 @@
 <div class="row mb-3">
 	<div class="col-lg-6">
 		<label class="form-label">Education Type*</label>
-		<select class="form-select border-dark">
-			<option>Graduate School</option>
-			<option>Professional School</option>
-			<option>Other</option>
-		</select>
+  	<%= select_tag :education_types, options_for_select([['Select Option']] + @education_types.map { |education| [education.name, education.name] }), required: true, class: 'form-select border-dark', placeholder: 'Education Type', id:'train-education-type' %>
 	</div>
 	<div class="col-lg-6">
 		<label class="form-label">Graduate/Professional School Location*</label>
-		<select class="form-select border-dark"></select>
+		<%= select_tag :states, options_for_select([['Select Option', nil]] + @states.map { |state| [state.name, state.name] }), required: true, class: 'form-select border-dark', placeholder: 'Undergraduate School Location', id:'train-school-location' %>
 	</div>
 </div>
 <div class="row mb-3">
@@ -70,11 +66,11 @@
 	<div class="col-lg-12">
 		<label class="form-label">Type of Training*</label>
 	<small>If your training program was rotating or transitional, please create a separate training record for each rotation including the specialty or department and the time associated with each. </small>
-	<select class="form-select border-dark"></select>
+	<%= select_tag :training_types, options_for_select([['Select Option']] + @training_types.map { |training| [training.name, training.name] }), required: true, class: 'form-select border-dark', placeholder: 'Education Type', id: 'training-type' %>
 	</div>
 	<div class="col-lg-12">
 		<label class="form-label">Specialty</label>
-		<select class="form-select border-dark"></select>
+		<%= select_tag :specialties, options_for_select([['Select Option']] + @specialties.map { |specialty| [specialty.fch, specialty.fch] }), required: true, class: 'form-select border-dark', placeholder: 'Specialty', id: 'specialty' %>
 	</div>
 </div>
 <div class="row mb-3">
@@ -109,25 +105,23 @@
 		<input type="date" class="form-control border-dark" name="tf-end-date">
 	</div>
 </div>
-<div class="row mb-3">
-	<div class="d-flex justify-content-between ">
-		<label class="form-label">Did you complete your training at this institution?</label>
-		<div class="d-flex me-4 gap-2">
-			<span>
-				<input type="radio" name="complete_undergrad">
-				<span>YES</span>
-			</span>
-			<span>
-				<input type="radio" name="complete_undergrad">
-				<span>NO</span>
-			</span>
-		</div>
-	</div>
-</div>
+	<div class="row mb-3">
+			<div class="d-flex align-items-center my-3">
+        <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="" data-toshow="train_reason_info" data-toggle="button" aria-pressed="false" autocomplete="off">
+          <div class="handle"></div>
+        </button>
+          <small class="ms-2 fw-semibold text-dark-grey">Did you not complete your training at this institution?</small>
+      </div>     
+						<div class="d-none" id="train_reason_info">
+              <%= render "provider_source_components/training_reason_form"%>
+            </div>
+  </div>
+
+  
 <div class="row mb-3">
 	<div class="col-lg-12">
 		<label class="form-label">University Affiliated Program Location</label>
-		<select class="form-select border-dark"></select>
+		<%= select_tag :states, options_for_select([['Select Option', nil]] + @states.map { |state| [state.name, state.name] }), required: true, class: 'form-select border-dark', placeholder: 'University Affiliate School Location', id:'train-affiliate-location' %>
 	</div>
 </div>
 <div class="row mb-3">
@@ -170,8 +164,93 @@
 		<input type="text" class="form-control border-dark" name="tf-fax-number">
 	</div>
 </div>
-<!-- <div class="row">
+<%# <!-- <div class="row">
 	<div class="col-lg-12 mb-3 d-flex justify-content-end">
 		  	<button class="btn btn-primary">Save This Record</button>
 	</div>
-</div> -->
+</div> --> %>
+
+<script>
+$(document).ready(function() {
+  // Retrieve the saved value from Local Storage, if it exists
+  var savedValue = localStorage.getItem('trainEducationType');
+  if (savedValue) {
+    $('#train-education-type').val(savedValue); // Set the dropdown value
+  }
+
+  // Store the selected value in Local Storage when the dropdown value changes
+  $('#train-education-type').on('change', function() {
+    var selectedValue = $(this).val();
+    localStorage.setItem('trainEducationType', selectedValue);
+  });
+});
+
+</script>
+
+<script>
+$(document).ready(function() {
+  // Retrieve the saved value from Local Storage, if it exists
+  var savedValue = localStorage.getItem('trainLocation');
+  if (savedValue) {
+    $('#train-school-location').val(savedValue); // Set the dropdown value
+  }
+
+  // Store the selected value in Local Storage when the dropdown value changes
+  $('#train-school-location').on('change', function() {
+    var selectedValue = $(this).val();
+    localStorage.setItem('trainLocation', selectedValue);
+  });
+});
+
+</script>
+
+<script>
+$(document).ready(function() {
+  // Retrieve the saved value from Local Storage, if it exists
+  var savedValue = localStorage.getItem('trainType');
+  if (savedValue) {
+    $('#training-type').val(savedValue); // Set the dropdown value
+  }
+
+  // Store the selected value in Local Storage when the dropdown value changes
+  $('#training-type').on('change', function() {
+    var selectedValue = $(this).val();
+    localStorage.setItem('trainType', selectedValue);
+  });
+});
+
+</script>
+
+<script>
+$(document).ready(function() {
+  // Retrieve the saved value from Local Storage, if it exists
+  var savedValue = localStorage.getItem('trainSpecialty');
+  if (savedValue) {
+    $('#specialty').val(savedValue); // Set the dropdown value
+  }
+
+  // Store the selected value in Local Storage when the dropdown value changes
+  $('#specialty').on('change', function() {
+    var selectedValue = $(this).val();
+    localStorage.setItem('trainSpecialty', selectedValue);
+  });
+});
+
+</script>
+
+<script>
+$(document).ready(function() {
+  // Retrieve the saved value from Local Storage, if it exists
+  var savedValue = localStorage.getItem('trainAffiliateLocation');
+  if (savedValue) {
+    $('#train-affiliate-location').val(savedValue); // Set the dropdown value
+  }
+
+  // Store the selected value in Local Storage when the dropdown value changes
+  $('#train-affiliate-location').on('change', function() {
+    var selectedValue = $(this).val();
+    localStorage.setItem('trainAffiliateLocation', selectedValue);
+  });
+});
+
+</script>

@@ -1,15 +1,11 @@
 <div class="row mb-3">
 	<div class="col-lg-6">
 		<label class="form-label">Education Type*</label>
-		<select class="form-select border-dark">
-			<option>Graduate School</option>
-			<option>Professional School</option>
-			<option>Other</option>
-		</select>
+  	<%= select_tag :education_types, options_for_select([['Select Option']] + @education_types.map { |education| [education.name, education.name] }), required: true, class: 'form-select border-dark', placeholder: 'Education Type', id:'teaching-education-type' %>
 	</div>
 	<div class="col-lg-6">
 		<label class="form-label">Graduate/Professional School Location*</label>
-		<select class="form-select border-dark"></select>
+		<%= select_tag :states, options_for_select([['Select Option', nil]] + @states.map { |state| [state.name, state.name] }), required: true, class: 'form-select border-dark', placeholder: 'Undergraduate School Location', id:'teaching-school-location' %>
 	</div>
 </div>
 <div class="row mb-3">
@@ -62,7 +58,7 @@
 <div class="row mb-3">
 	<div class="col-lg-5">
 		<label class="form-label">Email</label>
-		<input type="email"  class="form-control border-dark" name="">
+		<input type="email"  class="form-control border-dark" name="taf-email">
 	</div>
 </div>
 <div class="row mb-3">
@@ -106,3 +102,38 @@
 		  	<button class="btn btn-primary">Save This Record</button>
 	</div>
 </div> -->
+
+<script>
+$(document).ready(function() {
+  // Retrieve the saved value from Local Storage, if it exists
+  var savedValue = localStorage.getItem('teachingEducationType');
+  if (savedValue) {
+    $('#teaching-education-type').val(savedValue); // Set the dropdown value
+  }
+
+  // Store the selected value in Local Storage when the dropdown value changes
+  $('#teaching-education-type').on('change', function() {
+    var selectedValue = $(this).val();
+    localStorage.setItem('teachingEducationType', selectedValue);
+  });
+});
+
+</script>
+
+
+<script>
+$(document).ready(function() {
+  // Retrieve the saved value from Local Storage, if it exists
+  var savedValue = localStorage.getItem('teachingSchoolLocation');
+  if (savedValue) {
+    $('#teaching-school-location').val(savedValue); // Set the dropdown value
+  }
+
+  // Store the selected value in Local Storage when the dropdown value changes
+  $('#teaching-school-location').on('change', function() {
+    var selectedValue = $(this).val();
+    localStorage.setItem('teachingSchoolLocation', selectedValue);
+  });
+});
+
+</script>

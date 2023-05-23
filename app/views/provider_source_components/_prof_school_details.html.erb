@@ -1,15 +1,11 @@
 <div class="row mb-3">
 	<div class="col-lg-6">
 		<label class="form-label">Education Type*</label>
-		<select class="form-select border-dark">
-			<option>Graduate School</option>
-			<option>Professional School</option>
-			<option>Other</option>
-		</select>
+  <%= select_tag :education_types, options_for_select([['Select Option']] + @education_types.map { |education| [education.name, education.name] }), required: true, class: 'form-select border-dark', placeholder: 'Education Type', id: 'grad-education-type' %>
 	</div>
 	<div class="col-lg-6">
 		<label class="form-label">Graduate/Professional School Location*</label>
-		<select class="form-select border-dark"></select>
+		<%= select_tag :states, options_for_select([['Select Option', nil]] + @states.map { |state| [state.name, state.name] }), required: true, class: 'form-select border-dark', placeholder: 'Graduate/Professional School Location', id: 'grad-school-location' %>
 	</div>
 </div>
 <div class="row mb-3">
@@ -73,7 +69,7 @@
 </div>
 <div class="row mb-3">
 	<div class="col-lg-12">
-		<label class="form-label">Deegree Awarded*</label>
+		<label class="form-label">Degree Awarded*</label>
 		<input type="text" class="form-control border-dark" name="psd-degree-awarded">
 	</div>
 </div>
@@ -93,21 +89,20 @@
 		<input type="text" name="psd-director-degree" class="form-control border-dark">
 	</div>
 </div>
+
+
 <div class="row mb-3">
-	<div class="d-flex justify-content-between ">
-		<label class="form-label">Did you complete your undergraduate education at this school?*</label>
-		<div class="d-flex me-4 gap-2">
-			<span>
-				<input type="radio" name="complete_undergrad">
-				<span>YES</span>
-			</span>
-			<span>
-				<input type="radio" name="complete_undergrad">
-				<span>NO</span>
-			</span>
-		</div>
-	</div>
-</div>
+			<div class="d-flex align-items-center my-3">
+        <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="" data-toshow="prof_reason_info" data-toggle="button" aria-pressed="false" autocomplete="off">
+          <div class="handle"></div>
+        </button>
+          <small class="ms-2 fw-semibold text-dark-grey">Did you not complete your undergraduate education at this school?</small>
+      </div>     
+						<div class="d-none" id="prof_reason_info">
+              <%= render "provider_source_components/prof_school_reason"%>
+            </div>
+  </div>
+
 <div class="row mb-3">
 	<div class="col-lg-6">
 		<label class="form-label">Start Date</label>
@@ -123,3 +118,37 @@
 		  	<button class="btn btn-primary">Save This Record</button>
 	</div>
 </div>
+
+<script>
+$(document).ready(function() {
+  // Retrieve the saved value from Local Storage, if it exists
+  var savedValue = localStorage.getItem('gradEducationType');
+  if (savedValue) {
+    $('#grad-education-type').val(savedValue); // Set the dropdown value
+  }
+
+  // Store the selected value in Local Storage when the dropdown value changes
+  $('#grad-education-type').on('change', function() {
+    var selectedValue = $(this).val();
+    localStorage.setItem('gradEducationType', selectedValue);
+  });
+});
+
+</script>
+
+<script>
+$(document).ready(function() {
+  // Retrieve the saved value from Local Storage, if it exists
+  var savedValue = localStorage.getItem('gradSchoolLocation');
+  if (savedValue) {
+    $('#grad-school-location').val(savedValue); // Set the dropdown value
+  }
+
+  // Store the selected value in Local Storage when the dropdown value changes
+  $('#grad-school-location').on('change', function() {
+    var selectedValue = $(this).val();
+    localStorage.setItem('gradSchoolLocation', selectedValue);
+  });
+});
+
+</script>

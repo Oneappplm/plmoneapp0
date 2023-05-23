@@ -13,6 +13,7 @@ class ProviderSourcesController < ApplicationController
 
 	def index
 		@provider_sources = ProviderSource.all
+		@provider_source = ProviderSource.new
 	end
 
 	def autosave
