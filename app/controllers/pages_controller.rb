@@ -28,6 +28,10 @@ class PagesController < ApplicationController
 		end
 	end
 
+  # def dashboard
+  #   render "dashboard_old"
+  # end
+
 	def plm_sales_tool
 		render layout: 'plm_sales_tool'
 	end
