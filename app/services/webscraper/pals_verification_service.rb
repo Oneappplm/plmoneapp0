@@ -7,11 +7,14 @@ require 'json'
 class Webscraper::PalsVerificationService < ApplicationService
 	attr_reader :license_number
 
-	def initialize(license_number	= nil)
+	def initialize(license_number	= 'MD063880L')
 		@license_number = license_number
 	end
 
 	def call
+		# MD063880L
+		# Bhavank V. Doshi MD
+
 
 		agent = Mechanize.new{ |a|
 				a.user_agent_alias = 'Mac Safari'

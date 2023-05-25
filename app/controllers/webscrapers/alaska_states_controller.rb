@@ -1,23 +1,9 @@
 class Webscrapers::AlaskaStatesController < ApplicationController
 	def index
-		@alaska_states = if params[:search].present?
-				WebscraperAlaskaState.search(params[:search]).paginate(per_page: 10, page: params[:page] || 1)
-			else
-				WebscraperAlaskaState.paginate(per_page: 10, page: params[:page] || 1)
-			end
-	end
-
-	def crawl
-		Webscraper::StateAlaskaService.call
-
-		redirect_to webscrapers_alaska_states_path, notice: 'Crawling has been successfully completed.'
-	rescue
-	 redirect_to webscrapers_alaska_states_path, notice: 'Crawling has been successfully completed.'
-	end
-
-	def clear
-		WebscraperAlaskaState.delete_all
-
-		redirect_to webscrapers_alaska_states_path, notice: 'All records has been successfully deleted.'
+		@alaska_states = if params[:license_number].present?
+			Webscraper::StateAlaskaService.call(params[:license_number], params[:program], params[:license_type])
+		else
+			[]
+		end
 	end
 end
