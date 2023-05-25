@@ -28,6 +28,15 @@ class EnrollmentProvider < ApplicationRecord
 	scope :pending, -> { where(status: 'pending') }
 	scope :rejected, -> { where(status: 'rejected') }
   scope :callback, -> { where(status: 'callback') }
+  scope :assigned, -> { where(status: 'assigned') }
+  scope :terminated, -> { where(status: 'terminated') }
+  scope :unassigned, -> { where(status: 'unassigned') }
+
+
+  scope :this_month, -> { where(created_at: DateTime.now.beginning_of_month..DateTime.now.end_of_month) }
+  scope :today, -> { where(created_at: DateTime.now) }
+  scope :this_week, -> { where(created_at: DateTime.now.beginning_of_week..DateTime.now.end_of_month) }
+
 
 	has_many :details, class_name: 'EnrollmentProvidersDetail'
   has_many :comments, class_name: 'EnrollmentComment'

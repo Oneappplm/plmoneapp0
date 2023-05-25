@@ -8,7 +8,7 @@
       <div class="col-lg-7">
          <div class="row g-1 mb-3" >
             <div class="col-lg-3">
-               <div class="card p-2 attested" style="min-height: 185px;">
+               <div class="card p-2 rounded-15 attested" style="min-height: 185px;">
                   <h5 class="text-white text-center">Attested</h5>
                   <h5 class="text-transparent">spacer</h5>
                   <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
@@ -19,7 +19,7 @@
                </div>
             </div>
             <div class="col-lg-3">
-               <div class="card p-2 no-application" style="min-height: 185px;">
+               <div class="card p-2 rounded-15 no-application" style="min-height: 185px;">
                   <h5 class="text-white text-center">No Application</h5>
                   <h5 class="text-transparent">spacer</h5>
                   <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
@@ -30,7 +30,7 @@
                </div>
             </div>
             <div class="col-lg-3">
-               <div class="card p-2 complete-application" style="min-height: 185px;">
+               <div class="card p-2 rounded-15 complete-application" style="min-height: 185px;">
                   <h5 class="text-white text-center">Complete Application</h5>
                   <h5 class="text-transparent">spacer</h5>
                   <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
@@ -41,7 +41,7 @@
                </div>
             </div>
             <div class="col-lg-3">
-               <div class="card p-2 incomplete" style="min-height: 185px;">
+               <div class="card p-2 rounded-15 incomplete" style="min-height: 185px;">
                   <h5 class="text-white text-center">Incomplete</h5>
                   <h5 class="text-transparent">spacer</h5>
                   <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
@@ -54,7 +54,7 @@
          </div>
          <div class="row g-1 mb-3" >
             <div class="col-lg-3">
-               <div class="card p-2 pending" style="min-height: 185px;">
+               <div class="card p-2 rounded-15 pending" style="min-height: 185px;">
                   <h5 class="text-white text-center">Pending Data Entry</h5>
                   <h5 class="text-transparent">spacer</h5>
                   <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
@@ -65,7 +65,7 @@
                </div>
             </div>
             <div class="col-lg-3">
-               <div class="card p-2 in-process" style="min-height: 185px;">
+               <div class="card p-2 rounded-15 in-process" style="min-height: 185px;">
                   <h5 class="text-white text-center">In Process</h5>
                   <h5 class="text-transparent">spacer</h5>
                   <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
@@ -76,7 +76,7 @@
                </div>
             </div>
             <div class="col-lg-3">
-               <div class="card p-2 psv" style="min-height: 185px;">
+               <div class="card p-2 rounded-15 psv" style="min-height: 185px;">
                   <h5 class="text-white text-center">PSV</h5>
                   <h5 class="text-transparent">spacer</h5>
                   <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
@@ -87,7 +87,7 @@
                </div>
             </div>
             <div class="col-lg-3">
-               <div class="card p-2 returned" style="min-height: 185px;">
+               <div class="card p-2 rounded-15 returned" style="min-height: 185px;">
                   <h5 class="text-white text-center">Returned</h5>
                   <h5 class="text-transparent">spacer</h5>
                   <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100px;">
@@ -98,11 +98,63 @@
                </div>
             </div>
          </div>
+
+       <div class="row">
+         <div class="col-lg-12 mb-3">
+           <select class="form-select rounded-15 provider-range-selector" style="width: 150px;">
+             <option value="this_month">Monthly</option>
+             <option value="this_week">Weekly</option>
+             <option value="today">Today</option>
+           </select>
+         </div>
+         <div class="col-lg-12">
+           <div class="row mb-3">
+             <div class="col-lg-4">
+               <div class="card p-3 pale-green rounded-15" >
+                  <h4>New Providers</h4>
+                  <h1 id="new_providers"><%= EnrollmentProvider.this_month.count %></h1>
+               </div>
+             </div>
+             <div class="col-lg-4">
+               <div class="card p-3 pale-blue rounded-15" >
+                  <h4>Assigned Providers</h4>
+                  <h1 id="assigned_providers"><%= EnrollmentProvider.this_month.assigned.count %></h1>
+               </div>
+             </div>
+             <div class="col-lg-4">
+               <div class="card p-3 pale-blue rounded-15" >
+                  <h4>Completed Providers</h4>
+                  <h1 id="completed_providers"><%= EnrollmentProvider.this_month.completed.count %></h1>
+               </div>
+             </div>
+           </div>
+           <div class="row">
+             <div class="col-lg-4">
+               <div class="card p-3 pale-green rounded-15" >
+                  <h4>Votes</h4>
+                  <h1>0</h1>
+               </div>
+             </div>
+             <div class="col-lg-4">
+               <div class="card p-3 pale-blue rounded-15" >
+                  <h4>Terminated</h4>
+                  <h1 id="terminated_providers"><%= EnrollmentProvider.this_month.terminated.count %></h1>
+               </div>
+             </div>
+             <div class="col-lg-4">
+               <div class="card p-3 pale-blue rounded-15" >
+                  <h4>Unassigned Providers</h4>
+                  <h1 id="unassigned_providers"><%= EnrollmentProvider.this_month.unassigned.count %></h1>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
       </div>
       <div class="col-lg-5">
          <div class="row mb-3">
             <div class="col-lg-12">
-               <div class="card mb-3" style="background: #eaf4ff;
+               <div class="card mb-3 rounded-15" style="background: #eaf4ff;
                   box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
                   border-radius: 9.03012px;">
                   <div class="card-header">
@@ -118,7 +170,7 @@
          </div>
          <div class="row">
             <div class="col-lg-12">
-               <div class="card" style="background-color: #eaf4ff;">
+               <div class="card rounded-15" style="background-color: #eaf4ff;">
                   <div class="card-header">
                      <h5 class="card-title" style="color:#000000;">Status</h5>
                   </div>
@@ -315,27 +367,48 @@
        }
     });
    }
-         var csrfToken = $('meta[name="csrf-token"]').attr('content');
-         function getClientDataForDoughnutGraph()
-         {
-            $.ajax({
-              url: "<%= doughnut_data_path %>",
-              method: "GET",
-              data: { authenticity_token: csrfToken },
-              success: function(data) {
-                clientData = data['clients'];
-                clientPercentage = data['percentages'];
-                createBarGraph();
-                createDoughnutGraph();
 
-                var order_of_status = ["attested", "no-application", "complete-application", "incomplete-application","pending-data-entry","in-process", "psv", "returned"]
+  $('.provider-range-selector').on('change',function() {
+    // alert('hah')
+    getProviderCount($(this).val());
+  })
+  var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
-                for (var i = 0; i < clientPercentage.length; i++) {
-                  $('.col-'+order_of_status[i]).html(clientPercentage[i]+'%');
-                  $('.col-'+order_of_status[i]).addClass('text-center');
-                }
-              }
-            })
-         }
+  function getProviderCount(range) {
+    $.ajax({
+      url: '<%= get_dashboard_providers_path %>',
+      method: 'POST',
+      data: { authenticity_token: csrfToken, range: range },
+      success: function(data) {       
+        var providers = data['providers'];
+        var order_of_providers = ["new","assigned","completed","terminated","unassigned"];
+        for (var i = 0; i < providers.length; i++) {
+          $('#'+order_of_providers[i]+"_providers").html(providers[i]);
+        }
+      }
+    })
+  }
+
+  function getClientDataForDoughnutGraph()
+    {
+      $.ajax({
+        url: "<%= doughnut_data_path %>",
+        method: "GET",
+        data: { authenticity_token: csrfToken },
+        success: function(data) {
+          clientData = data['clients'];
+          clientPercentage = data['percentages'];
+          createBarGraph();
+          createDoughnutGraph();
+
+          var order_of_status = ["attested", "no-application", "complete-application", "incomplete-application","pending-data-entry","in-process", "psv", "returned"]
+
+          for (var i = 0; i < clientPercentage.length; i++) {
+            $('.col-'+order_of_status[i]).html(clientPercentage[i]+'%');
+            $('.col-'+order_of_status[i]).addClass('text-center');
+          }
+        }
+      })
+  }
 });
  </script>

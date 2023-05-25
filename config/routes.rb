@@ -38,6 +38,7 @@ Rails.application.routes.draw do
   get 'get-provider-types', to: 'ajax#get_provider_types'
   post 'get-selected-provider-types', to: 'ajax#get_selected_provider_types'
   get 'doughnut-data', to: 'ajax#get_dougnut_data'
+  post 'get-dashboard-providers', to: 'ajax#get_dashboard_providers'
 
   resources :provider_sources do
     collection do

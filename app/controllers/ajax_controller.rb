@@ -104,4 +104,17 @@ class AjaxController < ApplicationController
       "percentages" => percentages
     }
   end
+
+  def get_dashboard_providers
+    range = params[:range]
+    providers = EnrollmentProvider.send(range)
+    enrolled_providers = [ providers.count, providers.assigned.count,
+                           providers.completed.count, providers.terminated.count,
+                           providers.unassigned.count
+                         ]
+    render json: {
+      "providers" => enrolled_providers
+    }
+
+  end
 end
