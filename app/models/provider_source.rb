@@ -26,6 +26,12 @@ class ProviderSource < ApplicationRecord
     fetch(question_slug) == 'yes'
   end
 
+  def disclosure_explanation(question_slug)
+    fetch("#{question_slug}_explanation")
+  rescue
+    ''
+  end
+
 	def current_provider_source?
 	 current_provider_source ? 'Yes' : 'No'
 	end
