@@ -6,6 +6,8 @@ class EnrollGroup < ApplicationRecord
             tsearch: {any_word: true}
           }
 
+  attr_accessor :enrolled_by
+
 	belongs_to :group,	class_name: "EnrollmentGroup", foreign_key: "group_id", optional: true
   validates_presence_of :first_name, :middle_name, :last_name, :telephone_number
 
@@ -19,4 +21,8 @@ class EnrollGroup < ApplicationRecord
 
 
 	def full_name = "#{first_name}	#{middle_name} #{last_name}"
+
+  def assigned_agent
+    User.from_enrollment.find_by(id: self.user_id)
+  end
 end

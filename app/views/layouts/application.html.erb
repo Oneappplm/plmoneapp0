@@ -800,5 +800,38 @@ $('#provider_enrollment_group_id').on('change',function(){
 
 
 </script>
+<!-- updating status from sidebar on show pages for enroll_group and enrollment_provider -->
+<script>
+  var csrfToken = $('meta[name="csrf-token"]').attr('content');
+  var id = $('#enrollment_model_id').val();
+  $(document).on('click', '.enrollment-update-status',function() {
+    var model = $(this).data('model');
+    var status = $(this).data('status');
+    var btn = $(this);
+    $.ajax({
+      url: '<%= change_enrollment_status_path %>',
+      method: 'POST',
+      data: { authenticity_token: csrfToken, model: model, status: status, id: id },
+      success: function(data) {
+        changeStatusOtherButton(btn);
+        changeBtnToDisable(btn);
+        $('#status_identified').html('ID: ' + data['id'] + ' Enrollment ' + data['status']);
+      }
+    })
+
+  });
+
+  function changeBtnToDisable(btn) {
+    btn.removeClass('enrollment-update-status');
+    btn.addClass('disabled');
+    btn.addClass('unavailable');
+  }
+
+  function changeStatusOtherButton(btn) {
+    btn.parent().parent().find('div').find('a').removeClass('unavailable');
+    btn.parent().parent().find('div').find('a').removeClass('disabled');
+    btn.parent().parent().find('div').find('a').addClass('enrollment-update-status');
+  }
+</script>
 </body>
 </html>

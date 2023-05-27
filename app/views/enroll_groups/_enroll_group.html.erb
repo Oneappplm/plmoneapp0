@@ -1,8 +1,9 @@
+<% url = (action_name == 'show' ?  enroll_groups_path : enroll_group_path(enroll_group))%>
 <tr>
-	<td scope="row"><%= enroll_group.id %></td>
-	<td scope="row"><%= enroll_group.group&.group_name %></td>
-	<td><%= enroll_group.full_name %></td>
-	<td><%= enroll_group.status %></td>
+	<td scope="row"><%= link_to enroll_group.id, url, class: 'text-dark-grey' %></td>
+	<td scope="row"><%= link_to enroll_group.group&.group_name, url, class: 'text-dark-grey' %></td>
+	<td><%= link_to enroll_group.full_name, url, class: 'text-dark-grey' %></td>
+	<td><%= link_to enroll_group.status&.upcase, url, class: 'text-dark-grey' %></td>
 	<td scope="row">
 			<div class="d-flex gap-2">
 				<%= link_to edit_enroll_group_path(enroll_group), class: 'btn btn-xs btn-primary' do %>

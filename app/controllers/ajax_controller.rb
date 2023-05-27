@@ -63,12 +63,14 @@ class AjaxController < ApplicationController
     status = params[:status]
     enrollment_type = if model == 'enrollment_providers'
         EnrollmentProvider.find_by(id: id)
+      elsif model == 'enroll_groups'
+        EnrollGroup.find_by(id: id)
     end
 
     enrollment_type.update_attribute('status', status) if enrollment_type
 
     render json: {
-      'status' => enrollment_type.status.titleize,
+      'status' => enrollment_type&.status&.titleize,
       'id' => enrollment_type.id
     }
   end

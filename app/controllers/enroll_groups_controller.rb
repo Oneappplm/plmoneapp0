@@ -1,12 +1,7 @@
 class EnrollGroupsController < ApplicationController
-	before_action :set_enroll_group, only: [:edit, :update, :destroy]
-
+	before_action :set_enroll_group, only: [:edit, :update, :destroy, :show]
+  before_action :set_enroll_groups, only: [:index, :show]
 	def index
-		@enroll_groups = if params[:enroll_group_search].present?
-			EnrollGroup.search(params[:enroll_group_search]).paginate(per_page: 10, page: params[:page] || 1)
-		else
-			EnrollGroup.all.paginate(per_page: 10, page: params[:page] || 1)
-		end
 	end
 
 	def new
@@ -46,6 +41,12 @@ class EnrollGroupsController < ApplicationController
 		end
 	end
 
+  def show
+    @comment = EnrollmentComment.new
+    @comment.enroll_group = @enroll_group
+    @comment.user = current_user
+  end
+
 	protected
 	def set_enroll_group
 		@enroll_group = EnrollGroup.find(params[:id])
@@ -81,4 +82,12 @@ class EnrollGroupsController < ApplicationController
           details_attributes: [:id, :start_date, :due_date, :enrollment_payer, :enrollment_type, :enrollment_status, :approved_date, :revalidation_date, :revalidation_due_date, :comment, :ptan_number ,:_destroy],
 	)
 	end
+
+  def set_enroll_groups
+    @enroll_groups = if params[:enroll_group_search].present?
+      EnrollGroup.search(params[:enroll_group_search]).paginate(per_page: 10, page: params[:page] || 1)
+    else
+      EnrollGroup.all.paginate(per_page: 10, page: params[:page] || 1)
+    end
+  end
 end
