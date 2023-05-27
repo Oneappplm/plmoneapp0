@@ -39,6 +39,7 @@ Rails.application.routes.draw do
   post 'get-selected-provider-types', to: 'ajax#get_selected_provider_types'
   get 'doughnut-data', to: 'ajax#get_dougnut_data'
   post 'get-dashboard-providers', to: 'ajax#get_dashboard_providers'
+  post 'update-collapse', to: 'ajax#update_collapse'
 
   resources :provider_sources do
     collection do

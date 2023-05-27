@@ -71,7 +71,9 @@
 						</div>
 					</div>
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
-						<h3 class="text-center my-3">Licenses and Numbers</h3>
+
+          <%= render partial: "global_components/collapsible_sidebar_header", locals: { title: 'Licenses and Numbers', collapse_name: 'licenses'}%>
+          <div class="collapsible" style="<%= current_user.is_card_open?('licenses') ? '' : 'display: none;' %>">
 						<p class="mb-1"><strong>SSN:</strong> <%= @provider.ssn%></p>
 						<p class="mb-1"><strong>NPI:</strong> <%= @provider.npi%></p>
 						<p class="mb-1"><strong>DEA Number:</strong> <%= @provider.dea_number%></p>
@@ -122,10 +124,12 @@
 							<p class="mb-1"><strong>RN Effective Date:</strong> <%= license.rn_license_effective_date %></p>
 							<p class="mb-1"><strong>RN Expiration Date:</strong> <%= license.rn_license_expiration_date %></p>
 						<% end %>
+            </div>
 					</div>
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
-						<h3 class="text-center my-3">Group</h3>
+          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Group', collapse_name: 'group'}%>
+          <div class="collapsible" style="<%= current_user.is_card_open?('group') ? '' : 'display: none;' %>">
 						<p class="mb-1"><strong>Group Name:</strong> <%= @provider.group&.group_name %></p>
 						<p class="mb-1"><strong>Group Code:</strong> <%= @provider.group&.group_code %></p>
 						<p class="mb-1"><strong>Office Address:</strong> <%= @provider.group&.office_address %></p>
@@ -136,9 +140,11 @@
 						<p class="mb-1"><strong>Ext:</strong> <%= @provider.group&.ext %></p>
 						<p class="mb-1"><strong>Fax Number:</strong> <%= @provider.group&.fax_number %></p>
 					</div>
+          </div>
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
-						<h3 class="text-center my-3">Practice Location</h3>
+          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Practice Location', collapse_name: 'practice_location'}%>
+          <div class="collapsible" style="<%= current_user.is_card_open?('practice_location') ? '' : 'display: none;' %>">
 						<p class="mb-1"><strong>PL Name:</strong> <%= @provider.group_dco.dco_name %></p>
 						<p class="mb-1"><strong>PL Address:</strong> <%= @provider.group_dco.dco_address %></p>
 						<p class="mb-1"><strong>City:</strong> <%= @provider.group_dco.dco_city %></p>
@@ -153,9 +159,10 @@
 						<p class="mb-1"><strong>Is this location a clinic?:</strong> <%= @provider.group_dco&.is_clinic&.titleize %></p>
 						<p class="mb-1"><strong>Are you a Telehealth services provider?</strong> <%= @provider.group_dco&.telehealth_provider&.titleize %></p>
 					</div>
-
+          </div>
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
-						<h3 class="text-center my-3">Documents</h3>
+          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Documents', collapse_name: 'documents'}%>
+          <div class="collapsible" style="<%= current_user.is_card_open?('documents') ? '' : 'display: none;' %>">
 						<p>
 							<label for="">School Certificate</label>
 							<%= HtmlUtils.generate_view_link file_url: @provider.school_certificate.url %>
@@ -164,13 +171,16 @@
 							<label for="">Practice Location</label>
 							<%= HtmlUtils.generate_view_link file_url: @provider.dco_file.url %>
 						</p>
+            </div>
 					</div>
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
-						<h3 class="text-center my-3">Enrollments</h3>
+          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Enrollments', collapse_name: 'enrollments'}%>
+          <div class="collapsible" style="<%= current_user.is_card_open?('enrollments') ? '' : 'display: none;' %>">
 						<% @provider.enrollments.each do |enrollment| %>
 						<p><%= enrollment.enrollment_payer %></p>
 						<% end %>
+            </div>
 					</div>
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3  pb-5">

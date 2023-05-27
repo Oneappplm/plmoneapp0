@@ -832,6 +832,24 @@ $('#provider_enrollment_group_id').on('change',function(){
     btn.parent().parent().find('div').find('a').removeClass('disabled');
     btn.parent().parent().find('div').find('a').addClass('enrollment-update-status');
   }
+
+  $('.collapsible-trigger').on('click',function(){
+    var collapse_name = $(this).data('collapse');
+    $(this).hasClass('rotate-collapse') ? $(this).removeClass('rotate-collapse') : $(this).addClass('rotate-collapse');
+    $(this).parent().parent().find('.collapsible').slideToggle("1000");
+    updateCollapseState(collapse_name);
+  })
+
+  function updateCollapseState(collapse_name) {
+    $.ajax({
+      url: '<%= update_collapse_path %>',
+      method: 'post',
+      data: { authenticity_token: csrfToken, collapse_name: collapse_name },
+      success: function(data) {
+
+      }
+    })
+  }
 </script>
 </body>
 </html>

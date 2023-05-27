@@ -41,8 +41,21 @@ class User < ApplicationRecord
     # user.validates_confirmation_of :password
   end
 
+  after_create :set_sidebar_preferences
+
   scope :from_enrollment, -> { where(from_source: 'enrollment')}
   # Ex:- scope :active, -> {where(:active => true)}
+
+  has_many :sidebar_preferences, class_name: "UserSidebarPreference"
+
+  def self.set_user_sidebar_preferences
+    User.all.each do |user|
+      sidebar_cards = ['enrollment_details', 'licenses', 'documents','group', 'practice_location', 'enrollments', 'enrollment_payer', 'dco_outreach' ,'schedules']
+      sidebar_cards.each  do |card|
+         UserSidebarPreference.find_or_create_by(user_id: user.id, collapse_name: card)
+      end
+    end
+  end
 
   def password_match
     errors.add(:password_confirmation, "must match the password") unless temporary_password == password_confirmation
@@ -70,5 +83,21 @@ class User < ApplicationRecord
 
   def role
     User.user_roles[user_role]
+  end
+
+  def is_card_open?(collapse_name)
+    self.sidebar_preferences.find_by(collapse_name: collapse_name).is_open
+    rescue
+      true
+  end
+
+  private
+
+  def set_sidebar_preferences
+    sidebar_cards = ['enrollment_details', 'licenses', 'documents','group', 'practice_location', 'enrollments', 'enrollment_payer', 'dco_outreach' ,'schedules']
+
+    sidebar_cards.each do |card|
+      UserSidebarPreference.find_or_create_by(user_id: self.id, collapse_name: card)
+    end
   end
 end
