@@ -52,40 +52,59 @@
 				<table class="table table--default table-borderless" id="">
 					<thead class="bg-primary">
 						<tr class=" rounded">
-						<th class="text-white">
+						<th class="text-white" style="border-left: 1px solid gray; border-right: 1px solid gray;">
 							<div class="form-check">
 								<input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
 							</div>
 						</th>
-						<th class="text-white">
+						<th class="text-white" style="border-right: 1px solid gray;">
 							<span class="status-indicator-round bg-primary"></span>
 						</th>
-						<th class="text-white">
+						<th class="text-white" style="border-right: 1px solid gray;">
+ 			 				<div class="d-flex gap-2 align-items-center">
+    					<span>First Name</span>
+  						</div>
+						</th>
+						<th class="text-white" style="border-right: 1px solid gray;">
 							<div class="d-flex gap-2 align-items-center">
-							<span>Provider Name</span>
+								<span>Middle Name</span>
 							</div>
+						</th>
 
+						<th class="text-white" style="border-right: 1px solid gray;">
+ 			 				<div class="d-flex gap-2 align-items-center">
+    					<span>Last Name</span>
+  						</div>
 						</th>
-						<th class="text-white">
-							Birth Date
+						<th class="text-white" style="border-right: 1px solid gray;">
+							<div class="d-flex gap-2 align-items-center">
+								<span>Suffix</span>
+							</div>
 						</th>
-						<th class="text-white">
-							Address
+						<th class="text-white" style="border-right: 1px solid gray;">
+ 			 				<div class="d-flex gap-2 align-items-center">
+    					<span>SSN</span>
+  						</div>
 						</th>
-						<th class="text-white">
-							Attested
+						<th class="text-white" style="border-right: 1px solid gray;">
+ 			 				<div class="d-flex gap-2 align-items-center">
+    					<span>Practice Type</span>
+  						</div>
 						</th>
-						<th class="text-white">
-							P. Type
+						<th class="text-white" style="border-right: 1px solid gray;">
+							<div class="d-flex gap-2 align-items-center">
+								<span>Specialty</span>
+							</div>
 						</th>
-						<th class="text-white">
-							Specialty
+						<th class="text-white" style="border-right: 1px solid gray;">
+ 			 				<div class="d-flex gap-2 align-items-center">
+    					<span>Cred Cycle</span>
+  						</div>
 						</th>
-						<th class="text-white">
-							<span style="text-transform: none;">MedvId</span>
-						</th>
-						<th class="text-white">
-							Cred Cycle
+						<th class="text-white" style="border-right: 1px solid gray;">
+							<div class="d-flex gap-2 align-items-center">
+								<span>MedvID</span>
+							</div>
 						</th>
 						</tr>
 					</thead>
@@ -93,64 +112,85 @@
 					<tbody class="">
 						<% @clients.each do |client|%>
 						<tr class="p-3 <%= (@client.present? && @client.id == client.id) ? '' : 'bg-alt-grey'%>">
-							<td>
+							<td style="border-left: 1px solid gray; border-right: 1px solid gray; border-bottom: 1px solid gray;">
 								<div class="form-check">
 									<input class="form-check-input user-cbs" type="checkbox" value="" id="flexCheckDefault">
 								</div>
 							</td>
-							<td>
+							<td style="border-right: 1px solid gray; border-bottom: 1px solid gray;">
 								<span class="status-indicator-round <%= client.cred_status%>"></span>
 							</td>
-							<td>
-								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
 
+							<td style="border-right: 1px solid gray; border-bottom: 1px solid gray;">
+								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
 								<div class="">
-									<span><%= client.provider_name%></span>
-								</div>
-								</a>
-
-							</td>
-							<td>
-								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
-								<%= client&.birth_date&.strftime('%m/%d/%Y') %>
-								</a>
-							</td>
-							<td>
-								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
-
-								<div class="table_address" style="width: 150px;">
-									<%= client.address%>
+									<span><%= client.first_name%></span>
 								</div>
 								</a>
 							</td>
-							<td>
-								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
-								<%= client&.attested_date&.strftime('%m/%d/%Y')%>
-							</a>
-							</td>
-							<td>
-								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
-								<%= client.provider_type%>
-							</a>
-							</td>
-							<td>
-								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
 
-								<div class="table_specialty">
-									<%= client.specialty_name%>
+							<td style="border-right: 1px solid gray; border-bottom: 1px solid gray;">
+								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
+								<div class="">
+									<span><%= client.middle_name%></span>
+								</div>
+								</a>
+							</td>
+
+							<td style="border-right: 1px solid gray; border-bottom: 1px solid gray;">
+								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
+								<div class="">
+									<span><%= client.last_name%></span>
+								</div>
+								</a>
+							</td>
+
+							<td style="border-right: 1px solid gray; border-bottom: 1px solid gray;">
+								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
+								<div class="">
+									<span><%= client.suffix%></span>
 								</div>
 							</a>
 							</td>
-							<td>
-								<a  style="width: 120px;" href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
-								<%= client.medv_id%>
+
+						<td style="border-right: 1px solid gray; border-bottom: 1px solid gray;">
+								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
+								<div class="">
+									<span><%= client.ssn%></span>
+								</div>
 							</a>
 							</td>
-							<td>
+
+							<td style="border-right: 1px solid gray; border-bottom: 1px solid gray;">
+								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
+								<div class="">
+									<span><%= client.prac_type%></span>
+								</div>
+							</a>
+							</td>
+
+							<td style="border-right: 1px solid gray; border-bottom: 1px solid gray;">
+								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
+							<div class="">
+									<span><%= client.specialty_name%></span>
+								</div>
+							</a>
+							</td>
+
+							<td style="border-right: 1px solid gray; border-bottom: 1px solid gray;">
 								<a href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
 								<%= client.cred_or_recred%>
 							</a>
 							</td>
+
+							<td style="border-right: 1px solid gray; border-bottom: 1px solid gray;">
+								<a  style="width: 120px;" href="<%= show_client_details_path(client_id: client.id) %>" class="text-black">
+							<div class="">
+									<span><%= client.medv_id%></span>
+								</div>
+							</a>
+							</td>
+
 						</tr>
 						<% end %>
 					</tbody>
