@@ -1,5 +1,5 @@
 <% names = ['Lindsay Bennet', 'Bose, Paul', 'Diaz, Fynn', 'Calibre, Reese']%>
-<div class="row mt-3 mb-3">
+<div class="row mt-3 mb-3 px-6">
 	<div class="col-lg-6">
 		<!-- <h5>Search Result: <%= @vrcs.size %> records</h5> -->
 	</div>
@@ -19,9 +19,8 @@
 			</div>
 	</div>
 </div>
-
-<div class="row mt-2">
-	<table id="vrc-table" class="border shadow p-3 mb-5 <%= dark_mode %> rounded table table-striped" >
+<div class="row mt-2 px-6">
+	<table id="vrc-table" class="table table-striped table-bordered table-responsive" >
 		<thead style="background-color: #377dff; color: #fff;">
 			<tr>
 				<th>
@@ -29,52 +28,34 @@
 						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
 				</div>
 				</th>
-				<th>Provider Name</th>
+				<th>First Name</th>
+				<th>Last Name</th>
 				<th>State</th>
-				<th>Provider Type</th>
-				<th>Cred Cycle</th>
-				<th>PSC Completed Date</th>
 				<th>Review Level</th>
-				<th>Recred Due Date</th>
-				<th>Review Date</th>
-				<th>Committee Date</th>
-				<th>Vote Date</th>
 				<th>Status</th>
+				<th>Review Date</th>
+				<th>Provider Type</th>
+				<th>Specialty</th>
+				<th>Cred Cycle</th>
+				<th>MedvId</th>
 			</tr>
 		</thead>
-		<tbody class="bg-light">
+		<tbody>
 			<% @vrcs.each_with_index do |vrc, index| %>
 				<tr data-val="<%= vrc.id %>">
 					<td>
 						<div class="form-check"><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"></div>
 					</td>
-					<td>
-						<% if vrc.completed? %>
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 18px; color: #00c9a7;">
-									<path fill-rule="evenodd" d="M9 1.5H5.625c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5zm6.61 10.936a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 14.47a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
-									<path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
-							</svg>
-						<% elsif vrc.assigned? %>
-							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 18px; color: #377dff;">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
-							</svg>
-						<% elsif vrc.to_be_assigned? %>
-							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 18px; color: red;">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-							</svg>
-					 <% end %>
-					<%= vrc.provider_name%>
-					</td>
+					<td><%= vrc&.first_name %></td>
+					<td><%= vrc&.last_name %></td>
 					<td><%= vrc&.state %></td>
-					<td><%= vrc&.provider_type %></td>
-					<td><%= vrc&.cred_cycle %></td>
-					<td><%= vrc&.psv_completed_date&.strftime("%m/%d/%Y") %></td>
 					<td><%= vrc&.review_level %></td>
-					<td><%= vrc&.recred_due_date&.strftime("%m/%d/%Y") %></td>
-					<td><%= vrc&.review_date&.strftime("%m/%d/%Y") %></td>
-					<td><%= vrc&.committee_date&.strftime("%m/%d/%Y") %></td>
-					<td><%= vrc&.vote_date&.strftime("%m/%d/%Y") %></td>
 					<td><%= vrc&.status %></td>
+					<td><%= vrc&.review_date&.strftime("%m/%d/%Y") %></td>
+					<td><%= vrc&.provider_type %></td>
+					<td><%= vrc&.specialty %></td>
+					<td><%= vrc&.cred_or_recred %></td>
+					<td><%= vrc&.medv_id %></td>
 				</tr>
 			<% end %>
 		</tbody>
