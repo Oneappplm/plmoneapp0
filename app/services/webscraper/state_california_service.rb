@@ -5,14 +5,15 @@ require	'open-uri'
 require	'mechanize'
 
 class Webscraper::StateCaliforniaService < ApplicationService
-	attr_reader :url
+	attr_reader :license_number, :url
 
-	def initialize(url	= 'https://search.dca.ca.gov/')
-		@url = url
+	def initialize(license_number)
+		@license_number = license_number
+		@url = 'https://search.dca.ca.gov/'
 	end
 
 	def call
-		return unless url.present?
+		return {} unless license_number.present?
 
 		agent = Mechanize.new{ |a|
 			a.user_agent_alias = 'Mac Safari'
@@ -27,7 +28,7 @@ class Webscraper::StateCaliforniaService < ApplicationService
 		page = form.submit
 
 
-		# Use Nokogiri to parse the HTML
+		# # Use Nokogiri to parse the HTML
 	 doc = Nokogiri::HTML(page.body)
 
 		# Find all <article> elements
@@ -63,11 +64,11 @@ class Webscraper::StateCaliforniaService < ApplicationService
 				}
 
 				# Add the data row to the array
-				# data << data_row
-				WebscraperCaliforniaState.find_or_create_by!(data_row)
+				data << data_row
+				# WebscraperCaliforniaState.find_or_create_by!(data_row)
 		end
 
-		puts 'Done'
-
+		# puts 'Done'
+		data
 	end
 end

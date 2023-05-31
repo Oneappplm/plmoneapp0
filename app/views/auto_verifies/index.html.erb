@@ -1,0 +1,41 @@
+<div class="content container-fluid">
+	<div class="row mb-3">
+		<div class="col-lg-12">
+			<h2>
+				Auto Verification
+			</h2>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+
+			<%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
+
+				<%= form.select :search_state, options_for_select([
+								['PALS','PALS'],
+								['ALASKA','ALASKA'],
+								['CALIFORNIA','CALIFORNIA']
+						], params[:search_state]), { prompt: 'Select State of Practice' }, {:class => 'form-select', required: true}  %>
+						<br>
+						<label for="">Search by License Number</label>
+				<div class="">
+					<input type="text" name="license_number" value="<%= params[:license_number] %>" class="form-control">
+					<i class="bi bi-search"></i>
+		  </div>
+				<input type="submit" value="Search" class="btn btn-primary mt-2">
+			<% end %>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-lg-12">
+			<% if params[:search_state] == 'PALS' %>
+				<%= render 'pals_table' %>
+			<% elsif params[:search_state] == 'ALASKA' %>
+				<%= render 'alaska_table' %>
+			<% elsif params[:search_state] == 'CALIFORNIA' %>
+				<%= render 'california_table' %>
+			<% end %>
+		</div>
+	</div>
+</div>

@@ -116,4 +116,6 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  resources :auto_verifies, only: [:index], path: 'auto-verify'
 end

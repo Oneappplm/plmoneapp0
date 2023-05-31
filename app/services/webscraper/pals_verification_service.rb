@@ -7,11 +7,12 @@ require 'json'
 class Webscraper::PalsVerificationService < ApplicationService
 	attr_reader :license_number
 
-	def initialize(license_number	= 'MD063880L')
+	def initialize(license_number	= nil)
 		@license_number = license_number
 	end
 
 	def call
+		return {}	if license_number.blank?
 		# MD063880L
 		# Bhavank V. Doshi MD
 
