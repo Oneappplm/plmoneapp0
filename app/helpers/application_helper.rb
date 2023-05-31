@@ -156,4 +156,12 @@ module ApplicationHelper
   def enrollment_provider_options
     EnrollmentProvider.all.pluck(:name, :id)
   end
+
+  def encompass_active_classes
+    'active btn-primary fw-bold'
+  end
+
+  def encompass_idle_classes
+    'bg-alt-grey text-black fw-semibold'
+  end
 end

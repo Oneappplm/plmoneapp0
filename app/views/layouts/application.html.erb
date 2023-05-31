@@ -7,7 +7,7 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
 
-  <%= stylesheet_link_tag "application" %>
+  <%= stylesheet_link_tag "application", "custom" %>
   <%= javascript_importmap_tags %>
   <!-- Title -->
   <title>PLM HEALTH ONE APP</title>
@@ -601,94 +601,245 @@ $('#filter-select').on('change', function(){
      }
 });
 
-$("input[name='limitations-input']").on('click', function(){
-
-    if ($(this).val() === 'Yes') {
-        $('.limitation-wrp').css('display', 'block');
+$("input[name$='ExcludedAreaOfPractice']").click(function() {
+    if ($(this).val() === 'yesExcludedAreaOfPractice') {
+        $('div.ListOfExclusions').css('display', 'block');
     } else {
-        $('.limitation-wrp').css('display', 'none');
+        $('div.ListOfExclusions').css('display', 'none');
+    }
+});
+
+$("input[name$='AppliedboardCertificate']").click(function() {
+    if ($(this).val() === 'yesAppliedboardCertificate') {
+        $('div.YesAppliedboardCertificate').css('display', 'block');
+    } else {
+        $('div.YesAppliedboardCertificate').css('display', 'none');
+    }
+});
+
+$("input[name$='Examined']").click(function() {
+    if ($(this).val() === 'yesExamined') {
+        $('div.YesExamined').css('display', 'block');
+    } else {
+        $('div.YesExamined').css('display', 'none');
+    }
+});
+
+$("input[name$='Completed']").click(function() {
+    if ($(this).val() === 'yesCompleted') {
+        $('div.NotCompleted').css('display', 'none');
+    } else {
+        $('div.NotCompleted').css('display', 'block');
+    }
+});
+
+$('#present-switch').on('click', function(){
+    if ($('#present-switch').is(":checked")) {
+        $("#residence-date-to").attr("disabled", true);
+    } else {
+        $("#residence-date-to").attr("disabled", false);
+    }
+});
+
+$('#practice-info-switch').on('click', function(){
+    if ($('#practice-info-switch').is(":checked")) {
+        $(".page-not-applicable").css('display', 'block');
+        $(".page-applicable").hide();
+    } else {
+        $(".page-applicable").show();
+        $(".page-not-applicable").css('display', 'none');
+    }
+});
+
+$('#licensure-disclosure-switch').on('click', function(){
+    if ($('#licensure-disclosure-switch').is(":checked")) {
+        $(".YesDisclosure").show();
+    } else {
+        $(".YesDisclosure").hide();
+    }
+});
+
+$('#FiveYears-disclosure-switch').on('click', function(){
+    if ($('#FiveYears-disclosure-switch').is(":checked")) {
+        $(".YesFiveYears").show();
+    } else {
+        $(".YesFiveYears").hide();
+    }
+});
+
+$('#fac-disclosure-switch').on('click', function(){
+    if ($('#fac-disclosure-switch').is(":checked")) {
+        $(".page-not-applicable").css('display', 'block');
+        $(".page-applicable").hide();
+    } else {
+        $(".page-applicable").show();
+        $(".page-not-applicable").css('display', 'none');
+    }
+});
+
+$('#disclosure-switch').on('click', function(){
+    if ($('#disclosure-switch').is(":checked")) {
+        $(".page-not-applicable").css('display', 'block');
+        $(".page-applicable").hide();
+    } else {
+        $(".page-applicable").show();
+        $(".page-not-applicable").css('display', 'none');
+    }
+});
+
+$('#training-switch').on('click', function(){
+    if ($('#training-switch').is(":checked")) {
+        $(".page-not-applicable").css('display', 'block');
+        $(".page-applicable").hide();
+    } else {
+        $(".page-applicable").show();
+        $(".page-not-applicable").css('display', 'none');
+    }
+});
+
+$('#board-cert-switch').on('click', function(){
+    if ($('#board-cert-switch').is(":checked")) {
+        $(".page-not-applicable").css('display', 'block');
+        $(".page-applicable").hide();
+    } else {
+        $(".page-applicable").show();
+        $(".page-not-applicable").css('display', 'none');
+    }
+});
+$('#licensure-switch').on('click', function(){
+    if ($('#licensure-switch').is(":checked")) {
+        $(".page-not-applicable").css('display', 'block');
+        $(".page-applicable").hide();
+    } else {
+        $(".page-applicable").show();
+        $(".page-not-applicable").css('display', 'none');
+    }
+});
+
+$('#other-cert-switch').on('click', function(){
+    if ($('#other-cert-switch').is(":checked")) {
+        $(".page-not-applicable").css('display', 'block');
+        $(".page-applicable").hide();
+    } else {
+        $(".page-applicable").show();
+        $(".page-not-applicable").css('display', 'none');
+    }
+});
+
+$('#registration-switch').on('click', function(){
+    if ($('#registration-switch').is(":checked")) {
+        $(".page-not-applicable").css('display', 'block');
+        $(".page-applicable").hide();
+    } else {
+        $(".page-applicable").show();
+        $(".page-not-applicable").css('display', 'none');
+    }
+});
+
+$('#app-tracking-switch').on('click', function(){
+    if ($('#app-tracking-switch').is(":checked")) {
+        $(".page-not-applicable").css('display', 'block');
+        $(".page-applicable").hide();
+    } else {
+        $(".page-applicable").show();
+        $(".page-not-applicable").css('display', 'none');
+    }
+});
+
+$("input[name='full-sched-radio']").on('click', function(){
+            
+    if ($(this).val() === 'Yes') {
+        $('.sched-wrp').css('display', 'none');
+    } else {
+        $('.sched-wrp').css('display', 'block');
     }
 
 });
 
-$("input[name='ADA-input']").on('click', function(){
-
+$("input[name='limited-radio']").on('click', function(){
+            
     if ($(this).val() === 'Yes') {
-        $('#ADA-wrp').css('display', 'block');
+        $('.limited-wrp').css('display', 'block');
     } else {
-        $('#ADA-wrp').css('display', 'none');
+        $('.limited-wrp').css('display', 'none');
     }
 
 });
 
-$("input[name='other-services-input']").on('click', function(){
-
+$("input[name='ECFMG-certified-radio']").on('click', function(){
+            
     if ($(this).val() === 'Yes') {
-        $('#other-services-wrp').css('display', 'block');
+        $('.ECFMG-certified-wrp').show();
     } else {
-        $('#other-services-wrp').css('display', 'none');
+        $('.ECFMG-certified-wrp').hide();
     }
 
 });
 
-$("input[name='transportation-input']").on('click', function(){
-
+$("input[name='us-military-radio']").on('click', function(){
+            
     if ($(this).val() === 'Yes') {
-        $('#transportation-wrp').css('display', 'block');
+        $('.us-military-wrp').css('display', 'block');
     } else {
-        $('#transportation-wrp').css('display', 'none');
+        $('.us-military-wrp').css('display', 'none');
     }
 
 });
 
-$("input[name='laboratory-input']").on('click', function(){
-
-    if ($(this).val() === 'Yes') {
-        $('#laboratory-wrp').css('display', 'block');
+$('#practice-info-switch').on('click', function(){
+    if ($('#practice-info-switch').is(":checked")) {
+        $(".page-not-applicable").css('display', 'block');
+        $(".page-applicable").hide();
+        $(".allied-health-card").show();
     } else {
-        $('#laboratory-wrp').css('display', 'none');
+        $(".page-applicable").show();
+        $(".allied-health-card").hide();
+        $(".page-not-applicable").css('display', 'none');
     }
-
 });
 
-$("input[name='CLIA-input']").on('click', function(){
-
-    if ($(this).val() === 'Yes') {
-        $('.CLIA-wrp').css('display', 'block');
+$('#accessible-other-check').on('click', function(){
+    if ($('#accessible-other-check').is(":checked")) {
+        $(".accessible-other-wrp").css('display', 'block');
     } else {
-        $('.CLIA-wrp').css('display', 'none');
+        $(".accessible-other-wrp").css('display', 'none');
     }
-
 });
 
-$("input[name='certificate-input']").on('click', function(){
-
-    if ($(this).val() === 'Yes') {
-        $('.certificate-wrp').css('display', 'block');
+$('#other-cert-participation').on('change', function(){
+    var val = $(this).find(':selected').val();
+   
+    if(val == "Other") {
+       $('#other-cert-participation-txt').css('display', 'block');
+       $('#other-cert-participation').css('display', 'none');
     } else {
-        $('.certificate-wrp').css('display', 'none');
+       $('#other-cert-participation-txt').css('display', 'none');
+       $('#other-cert-participation').css('display', 'block');
     }
-
 });
 
-$("input[name='radiology-input']").on('click', function(){
-
-    if ($(this).val() === 'Yes') {
-        $('.radiology-wrp').css('display', 'block');
-    } else {
-        $('.radiology-wrp').css('display', 'none');
-    }
-
+$('#prac-info-btn-edit').on('click', function(){
+    $("#prac-info-btn-edit").css('display', 'none');
+    $("#prac-info-btn-save").css('display', 'block');
+    $("#prac-info-btn-cancel").css('display', 'block');
 });
 
-$("input[name='anesthesia-input']").on('click', function(){
+$('#prac-info-btn-cancel').on('click', function(){
+    $("#prac-info-btn-edit").css('display', 'block');
+    $("#prac-info-btn-save").css('display', 'none');
+    $("#prac-info-btn-cancel").css('display', 'none');
+});
 
-    if ($(this).val() === 'Yes') {
-        $('.anesthesia-wrp').css('display', 'block');
+$("input[name$='lawsuit-status-radio']").click(function() {
+    if ($(this).val() === 'Lawsuit still ongoing/unresolved') {
+        $('div.amount-wrp').css('display', 'block');
     } else {
-        $('.anesthesia-wrp').css('display', 'none');
+        $('div.amount-wrp').css('display', 'none');
     }
+});
 
+$('.js-example-basic-multiple').select2({
+    placeholder: "Select option"
 });
 
 $('.select-show').on('change',function(){
