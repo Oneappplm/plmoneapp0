@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_27_174300) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_02_095050) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -493,6 +493,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_27_174300) do
     t.string "admitting_facility_zip_code"
     t.string "admitting_facility_arrangments"
     t.integer "enrollment_group_id"
+  end
+
+  create_table "role_based_accesses", force: :cascade do |t|
+    t.string "role"
+    t.string "page"
+    t.boolean "can_create"
+    t.boolean "can_read"
+    t.boolean "can_update"
+    t.boolean "can_delete"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "services", force: :cascade do |t|

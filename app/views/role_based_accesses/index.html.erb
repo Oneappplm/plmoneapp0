@@ -1,0 +1,98 @@
+<div class="content container-fluid">
+	<div class="row mb-3">
+		<div class="col-lg-12">
+			<h2>
+				Role-Based Access
+			</h2>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+			<%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
+				<%= form.select :role_based, options_for_select(User.where.not(user_role: nil).map{|user| [user.user_role.titleize, user.user_role]}.uniq, params[:role_based]), { prompt: 'Select Role' }, {:class => 'form-select', required: true,  onchange: 'this.form.submit();'}  %>
+			<% end %>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-lg-12">
+			<table class="table table table-striped table-bordered table-responsive">
+				<thead>
+					<tr>
+						<th scope="col" class="bg-primary text-white">Page</th>
+						<th scope="col" class="bg-primary text-white">View
+							<%= check_box_tag "role_based_can_read"%>
+						</th>
+						<th scope="col" class="bg-primary text-white">Create
+							<%= check_box_tag "role_based_can_create"%>
+						</th>
+						<th scope="col" class="bg-primary text-white">Update
+							<%= check_box_tag "role_based_can_update"%>
+						</th>
+						<th scope="col" class="bg-primary text-white">Delete
+							<%= check_box_tag "role_based_can_delete"%>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% RoleBasedAccess.where(role: @role_based).each do |role_based| %>
+					<tr>
+						<td><%= role_based.page.titleize %></td>
+						<td>
+							<%= check_box_tag "role_based[#{role_based.id}][can_read]", 1, role_based.can_read, class: 'role-based-access can-read' %>
+						</td>
+						<td>
+							<%= check_box_tag "role_based[#{role_based.id}][can_create]", 1, role_based.can_create, class: 'role-based-access can-create' %>
+						</td>
+						<td>
+							<%= check_box_tag "role_based[#{role_based.id}][can_update]", 1, role_based.can_update, class: 'role-based-access can-update' %>
+						</td>
+						<td>
+							<%= check_box_tag "role_based[#{role_based.id}][can_delete]", 1, role_based.can_delete, class: 'role-based-access can-delete' %>
+						</td>
+					</tr>
+					<% end %>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<% content_for :js do %>
+<script>
+	$(document).on('change', '.role-based-access', function() {
+  var checkbox = $(this);
+  var checkboxValue = checkbox.is(':checked');
+  var roleId = checkbox.attr('name').match(/\[([^[\]]+)\]/)[1];
+  var attributeName = checkbox.attr('name').match(/\]\[([^[\]]+)\]$/)[1];
+		var update_url = "/role-based-access/"+roleId+"/update_access";
+
+		$.post(update_url, {authenticity_token: $('meta[name="csrf-token"]').attr('content'), attribute_name: attributeName, attribute_value: checkboxValue});
+});
+
+$('#role_based_can_read').on('change', function(){
+ var isChecked = $(this).is(':checked');
+ $('.can-read').prop('checked', isChecked);
+	$('.can-read').trigger('change');
+});
+
+$('#role_based_can_create').on('change', function(){
+ var isChecked = $(this).is(':checked');
+ $('.can-create').prop('checked', isChecked);
+	$('.can-create').trigger('change');
+});
+
+$('#role_based_can_update').on('change', function(){
+ var isChecked = $(this).is(':checked');
+ $('.can-update').prop('checked', isChecked);
+	$('.can-update').trigger('change');
+});
+
+$('#role_based_can_delete').on('change', function(){
+ var isChecked = $(this).is(':checked');
+ $('.can-delete').prop('checked', isChecked);
+	$('.can-delete').trigger('change');
+});
+
+</script>
+<% end %>
