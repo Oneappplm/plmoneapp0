@@ -164,4 +164,8 @@ module ApplicationHelper
   def encompass_idle_classes
     'bg-alt-grey text-black fw-semibold'
   end
+
+  def countries
+     Country.all_translated
+  end
 end
