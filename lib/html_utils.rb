@@ -9,8 +9,9 @@ module HtmlUtils
 	end
 
 	def radio_toggle **options
+    options[:active] ||= ''
 		options[:container_class] ||= "d-flex align-items-center"
-		options[:button_class] ||= 'btn btn-xs btn-toggle has-to-show to-change-value has-to-hide'
+		options[:button_class] ||= "btn btn-xs btn-toggle has-to-show to-change-value has-to-hide #{options[:active]}"
 		options[:name] ||= ''
 		options[:label] ||= ''
 		options[:toshow] ||= ''

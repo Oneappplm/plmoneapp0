@@ -11,6 +11,14 @@ module PagesHelper
         'disclosure_progress'
       elsif ['education_training'].include?(page)
         'education_traning_progess'
+      elsif ['specialties'].include?(page)
+        'specialties_progress'
+      elsif ['affiliation_information'].include?(page)
+        'affiliation_progress'
+      elsif ['professional_liability'].include?(page)
+        'professional_liability_progress'
+      elsif ['employment', 'employment_gap', 'prof_references', 'prof_organization', 'work_history'].include?(page)
+        'work_history_progress'
       end
     end
   end

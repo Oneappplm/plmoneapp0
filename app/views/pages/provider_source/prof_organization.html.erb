@@ -19,7 +19,7 @@
 				 		</div>
 					</div>
 				</div>
-				<%= render partial: "provider_source_components/progress_bar", locals: {percent: 0}%>
+				<%= render partial: "provider_source_components/progress_bar", locals: {percent: (@provider.work_history_progress)}%>
 				<% steps = [['Military History','finished', custom_provider_source_path(page: 'work_history')],
 							['Employment','finished', custom_provider_source_path(page: 'employment')],
 							['Employment Gap','finished', custom_provider_source_path(page: 'employment_gap')],
@@ -31,14 +31,16 @@
 				<div class="row">
 					<div class="col-lg-12">
 		                  <div class="d-flex align-items-center my-3">
-		                        <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="belonged_to_prog_org" data-toshow="prof_org_form" data-toggle="button" aria-pressed="false" autocomplete="off">
-		                           <div class="handle"></div>
-		                        </button>
-		                        <small class="ms-2 fw-semibold text-dark-grey">Do/Did you belong to any Professional Organizations or Societies*</small>
+                             <%= HtmlUtils.radio_toggle name: 'belonged_to_prog_org',
+                            label: 'Do/Did you belong to any Professional Organizations or Societies *',
+                            toshow: 'prof_org_form',
+                            tochange: 'belonged_to_prog_org',
+                            active: "#{@provider.is_answer_yes?('belonged_to_prog_org') ? 'active' : ''}"
+                          %>
 		                  </div>
 					</div>
 				</div>
-				<div class="col-lg-12 d-none" id="prof_org_form">
+				<div class="col-lg-12 <%= @provider.is_answer_yes?('belonged_to_prog_org') ? '' : 'd-none'%>" id="prof_org_form">
 					<%= render "provider_source_components/prof_org_form"%>
 				</div>
 			</div>

@@ -8,7 +8,7 @@
 			<div class="row border border-4 p-3">
 				<div class="col-lg-12">
 					<%= render partial: "provider_source_components/header_title", locals: {title: "Professional IDs", icon: 'bi-person-badge-fill'}%>
-					<%= render partial: "provider_source_components/progress_bar", locals: {percent: 10}%>
+					<%= render partial: "provider_source_components/progress_bar", locals: {percent: (@provider.professional_ids_progress)}%>
                <% steps = [['Registration IDs','active', custom_provider_source_path(page: 'professional_ids')],
                      ['Licensure','inactive', custom_provider_source_path(page: 'licensure')],
                      ['Other IDs and Cerfifications','inactive', custom_provider_source_path(page: 'other_ids')],
@@ -29,7 +29,7 @@
 									label: 'Do/Did you have a DEA Registration Number *',
 									toshow: 'dea_form'
 								%>
-									<input type="hidden" id="has_dea_registration_number" name="has_dea_registration_number" value="no">
+									<input type="hidden" id="has_dea_registration_number" name="has_dea_registration_number" value="<%= @provider.fetch('has_dea_registration_number').nil? ? 'no' : @provider.fetch('has_dea_registration_number') %>">
 					</div>
 					<div id="dea_form" class="d-none">
 						<%= render partial: 'provider_source_components/dea_form'%>
@@ -42,10 +42,10 @@
 								label: 'Do/Did you have a CDS Registration Number? *',
 								toshow: 'cds_form'
 							%>
-							<input type="hidden" id="has_cds_registration_number" name="has_cds_registration_number" value="no">
+							<input type="hidden" id="has_cds_registration_number" name="has_cds_registration_number" value="<%= @provider.fetch('has_cds_registration_number').nil? ? 'no' : @provider.fetch('has_cds_registration_number') %>">
 					</div>
 
-				   <div class="d-none" id="cds_form">
+				   <div class="<%= @provider.is_answer_yes?('has_cds_registration_number') ? '' : 'd-none'%>" id="cds_form">
 						<%= render partial: 'provider_source_components/cds_form'%>
 					</div>
 
@@ -95,10 +95,10 @@
 								label: 'Do/Did you have a registration number related to your practicing specialty? *',
 								toshow: 'prof_ids_form'
 							%>
-							<input type="hidden" id="has_registration_number" name="has_registration_number" value="no">
+							<input type="hidden" id="has_registration_number" name="has_registration_number" value="<%= @provider.fetch('has_dea_registration_number').nil? ? 'no' : @provider.fetch('has_registration_number') %>">
 					</div>
 				</div>
-				<div id="prof_ids_form" class="d-none">
+				<div id="prof_ids_form" class="<%= @provider.is_answer_yes?('has_registration_number') ? '' : 'd-none'%>">
 					<%= render partial: 'provider_source_components/prof_registration_form'%>
 				</div>
 			</div>

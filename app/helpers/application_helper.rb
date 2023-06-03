@@ -35,6 +35,14 @@ module ApplicationHelper
 		end
 	end
 
+  def encompass_nav_active cname, aname = nil
+    if aname.present?
+      (cname.split(',').include?(controller_name) && aname.split(',').include?(action_name)) ? 'btn-primary fw-semibold' : 'btn-secondary text-black bg-alt-grey border-0'
+    else
+      cname.split(',').include?(controller_name) ? 'btn-primary fw-semibold' : 'btn-secondary text-black bg-alt-grey border-0'
+    end
+  end
+
 	def enrollment_nav_active_old aname, cname = nil
 		if cname.present?
 			(cname.split(',').include?(controller_name) && aname.split(',').include?(action_name)) ? 'btn-primary fw-semibold' : 'btn-secondary text-black bg-alt-grey'
@@ -158,11 +166,11 @@ module ApplicationHelper
   end
 
   def encompass_active_classes
-    'active btn-primary fw-bold'
+    'active btn-primary  fw-semibold'
   end
 
   def encompass_idle_classes
-    'bg-alt-grey text-black fw-semibold'
+    'bg-alt-grey text-black'
   end
 
   def countries

@@ -4,6 +4,21 @@ class ProviderSource < ApplicationRecord
 	scope :current, ->{ find_by(current_provider_source: true) }
 	default_scope {	order(current_provider_source: :desc) }
 
+  after_create :set_default_disclosure_answer
+
+  def self.set_provider_source_disclosure_answers
+    ProviderSource.all.each do |ps|
+      DisclosureQuestion.all.each do |q|
+        q_data = ps.data.find_key(q.slug)
+        if q_data
+          ProviderSourceData.create(provider_source_id: ps.id, data_key: q.slug, data_value: 'no')
+        else
+          q_data.update_attribute('data_value', 'no')
+        end
+      end
+    end
+  end
+
   def provider_name = "#{full_name}"
   def from_provider_title = "Provider App"
 
@@ -59,6 +74,7 @@ class ProviderSource < ApplicationRecord
    # total_fields_required
   end
 
+  # example of not prerequisites
   def health_plans_progress
     total_fields_required = (health_plans).count
     completed_fields = required_fields_counter(health_plans)
@@ -74,6 +90,32 @@ class ProviderSource < ApplicationRecord
   def education_traning_progess
     total_fields_required = (education_with_prerequisites).count
     completed_fields = required_fields_with_prerequisetes_has_answer(education_with_prerequisites)
+   ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
+  end
+
+  # example of both with not prerequisite and with prerequisite
+  def specialties_progress
+    total_fields_required = (specialties + specialties_with_prerequisites).count
+    completed_fields = required_fields_counter(specialties) + required_fields_with_prerequisetes_has_answer(specialties_with_prerequisites)
+   ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
+  end
+
+  # example of pure fields with required condition to count
+  def affiliation_progress
+    total_fields_required = (affiliation_with_prerequisites).count
+    completed_fields = required_fields_with_prerequisetes_has_answer(affiliation_with_prerequisites)
+   ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
+  end
+
+  def professional_liability_progress
+    total_fields_required = (professional_liability + professional_liability_with_prerequisites).count
+    completed_fields = required_fields_counter(professional_liability) + required_fields_with_prerequisetes_has_answer(professional_liability_with_prerequisites)
+   ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
+  end
+
+  def work_history_progress
+    total_fields_required = (military_info_with_prerequisites + employment_with_prerequisites + employment_gap_with_prerequisites + professional_references + professional_organization_with_prerequisites).count
+    completed_fields = required_fields_counter(professional_references) + required_fields_with_prerequisetes_has_answer(military_info_with_prerequisites) + required_fields_with_prerequisetes_has_answer(employment_with_prerequisites) + required_fields_with_prerequisetes_has_answer(employment_gap_with_prerequisites) + required_fields_with_prerequisetes_has_answer(professional_organization_with_prerequisites)
    ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
   end
 
@@ -106,7 +148,32 @@ class ProviderSource < ApplicationRecord
     infos = DisclosureQuestion.all.pluck(:slug)
   end
 
+  def specialties
+    infos = ['special_ranking', 'specialty', 'sp_ppo_directory', 'sp_pos_directory']
+  end
+
+  def professional_liability
+    infos = ['has_sovereign_immunity', 'has_liability_coverage']
+  end
+
+  def professional_references
+    infos = ['rf-first-name', 'rf-last-name', 'rf-degree',
+              'rf-contact-method', 'rf-address-line1', 'rf-city',
+              'rf-state', 'rf-zipcode' ,'rf-telephone-number', 'rf-fax',
+              'rf-email-address', 'rf-association-start-date',
+              'rf-association-end-date'
+            ]
+  end
+
   # with prerequisites - these fields will show hidden required fields
+
+  def specialties_with_prerequisites
+    infos = [
+      ['sp_board_exam', 'failed_board_reason', 'yes'],
+      ['sp_board_exam', 'failed_exam_certifying_board', 'yes'],
+    ]
+    prerequisite_checker(infos)
+  end
 
   def general_info_with_prerequesites
     # [0] = field to check, [1] = will include in progress base on answer, [2] = expected answer to make [1] included in progress
@@ -199,7 +266,7 @@ class ProviderSource < ApplicationRecord
           ['has_training_program', '', 'yes'],
           ['has_training_program', '', 'yes'],
           ['incomplete_training', '', 'yes'],
-          ['an_instructor', '', 'yes'],
+          ['an_instructor', 'hp-zipcode', 'yes'],
           ['an_instructor', '', 'yes'],
           ['an_instructor', '', 'yes'],
           ['an_instructor', '', 'yes'],
@@ -211,6 +278,82 @@ class ProviderSource < ApplicationRecord
     prerequisite_checker(infos)
   end
 
+
+  def affiliation_with_prerequisites
+    infos = [
+      ['has_hospital_privilege', 'hp-facility-name', 'yes'],
+      ['has_hospital_privilege', 'hp-mso-address-line1', 'yes'],
+      ['has_hospital_privilege', 'hp-city', 'yes'],
+      ['has_hospital_privilege', 'hp-mso-telephone-number', 'yes'],
+      ['has_hospital_privilege', 'hp-zipcode', 'yes'],
+      ['has_hospital_privilege', 'hp-mso-fax-number', 'yes'],
+      ['has_admitting_arrangement','state_abbr','yes'],
+      ['has_admitting_arrangement','facility-name','yes'],
+      ['has_admitting_arrangement','facility-address-line1','yes'],
+      ['has_admitting_arrangement','facility-zipcode','yes'],
+    ]
+    prerequisite_checker(infos)
+  end
+
+  def professional_liability_with_prerequisites
+    infos = [
+      ['is_self_insured', 'lf-carrier-location', 'no'],
+      ['is_self_insured', 'lf-carrier-name', 'no'],
+      ['is_self_insured', 'lf-address-line1', 'no'],
+      ['is_self_insured', 'lf-city', 'no'],
+      ['is_self_insured', 'lf-zipcode', 'no'],
+      ['is_self_insured', 'lf-policy-number', 'no'],
+      ['is_self_insured', 'lf-self-insured-policy-name', 'yes'],
+      ['is_self_insured', 'lf-self-insured-policy-number', 'yes'],
+      ['is_self_insured', 'lf-self-insured-carrier-name', 'yes'],
+      ['is_self_insured', 'lf-self-insured-coverage-amount', 'yes'],
+      ['is_self_insured', 'lf-self-insured-email-aggregate-coverage', 'yes'],
+      ['is_self_insured', 'lf-self-insured-original-effective-date', 'yes'],
+      ['is_self_insured', 'lf-self-insured-original-expiration-date', 'yes']
+    ]
+    prerequisite_checker(infos)
+  end
+
+  def military_info_with_prerequisites
+    infos = [
+      ['served_in_military', 'military_enlist_base_of_service', 'yes']
+    ]
+    prerequisite_checker(infos)
+  end
+
+  def employment_with_prerequisites
+    infos = [
+      ['has_work_history', 'edc-employment-location', 'yes'],
+      ['has_work_history', 'edc-practice-employer-name', 'yes'],
+      ['has_work_history', 'edc-address-line1', 'yes'],
+      ['has_work_history', 'edc-city', 'yes'],
+      ['has_work_history', 'edc-zipcode', 'yes'],
+      ['has_work_history', 'edc-telephone-number', 'yes'],
+      ['has_work_history', 'edc-fax-number', 'yes'],
+      ['has_work_history', 'edc-email', 'yes'],
+      ['has_work_history', 'edc-contact-method', 'yes'],
+      ['has_work_history', 'edc-start-date', 'yes'],
+      ['has_work_history', 'edc-end-date', 'yes'],
+    ]
+    prerequisite_checker(infos)
+  end
+
+  def employment_gap_with_prerequisites
+    infos = [
+      ['has_employment_gap','gap_start_date','yes'],
+      ['has_employment_gap','gap_end_date','yes'],
+      ['has_employment_gap','gap_reason','yes'],
+      ['has_employment_gap','gap_explanation','yes'],
+    ]
+    prerequisite_checker(infos)
+  end
+
+  def professional_organization_with_prerequisites
+    infos = [
+      ['belonged_to_prog_org', 'prof_organization_name','yes']
+    ]
+    prerequisite_checker(infos)
+  end
 
   # array checkers here
 
@@ -243,5 +386,14 @@ class ProviderSource < ApplicationRecord
       arr << (fetch(info).blank?)
     end
     arr.count(false)
+  end
+
+  private
+
+  # will set provider source disclosure answer to no as default is needed to calculate percentage of progress
+  def set_default_disclosure_answer
+    DisclosureQuestion.all.each do |question|
+      ProviderSourceData.find_or_create_by(provider_source_id: self.id, data_key: question.slug, data_value: 'no')
+    end
   end
 end

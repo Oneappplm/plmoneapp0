@@ -33,22 +33,32 @@
 					<div class="row">
 						<div class="col-lg-12">
 							<div class="d-flex align-items-center my-3">
-						      <button type="button" class="btn btn-xs btn-toggle to-change-value" data-tochange="has_sovereign_immunity" data-toggle="button" aria-pressed="false" autocomplete="off">
-						        <div class="handle"></div>
-						      </button>
-						    	<label class="ms-2">Do you have a Sovereign Immunity document?*</label>
+                  <%= HtmlUtils.radio_toggle name: 'has_sovereign_immunity',
+                      label: 'Do you have a Sovereign Immunity document? *',
+                      toshow: '',
+                      tochange: 'has_sovereign_immunity',
+                      active: "#{@provider.is_answer_yes?('has_sovereign_immunity') ? 'active' : ''}"
+                    %>
 							</div>
 						</div>
 						<div class="col-lg-12">
 							<div class="d-flex align-items-center my-3">
-						      <button type="button" class="btn btn-xs btn-toggle to-change-value" data-tochange="has_liability_coverage" data-toggle="button" aria-pressed="false" autocomplete="off">
-						        <div class="handle"></div>
-						      </button>
-						    	<label class="ms-2">Do/Did you have professional liability coverage within the past ten (10) years?</label>
+                  <%= HtmlUtils.radio_toggle name: 'has_liability_coverage',
+                      label: 'Do/Did you have professional liability coverage within the past ten (10) years? *',
+                      toshow: 'self_insurance_fields',
+                      tochange: 'has_liability_coverage',
+                      tohide: 'lack_of_liability_form',
+                      active: "#{@provider.is_answer_yes?('has_liability_coverage') ? 'active' : ''}"
+                    %>
 							</div>
 						</div>
+            <div class="col-lg-12 <%= @provider.fetch('has_liability_coverage') ? 'd-none' : ''%>" id="lack_of_liability_form">
+              <label class="text-dark-grey">Please explain your lack of Professional Liability Coverage.</label>
+              <textarea class="form-control" name="lf-lack-of-liability-coverage" rows="5"></textarea>
+            </div>
 					</div>
-					<div class="row">
+          <div class="<%= @provider.fetch('has_liability_coverage') ? '' : 'd-none' %>" id="self_insurance_fields">
+					<div class="row mt-2" id="">
 						<div class="col-lg-12">
 							<div class="alert alert-info alert-light-blue">
 								<i class="bi bi-info-circle" style="font-size: 20px;"></i>
@@ -72,16 +82,25 @@
 					<div class="row">
 						<div class="col-lg-12">
 							<div class="d-flex align-items-center my-3">
-						      <button type="button" class="btn btn-xs btn-toggle to-change-value" data-tochange="is_self_insured" data-toggle="button" aria-pressed="false" autocomplete="off">
-						        <div class="handle"></div>
-						      </button>
-						    	<label class="ms-2">Are you self-insured?</label>
+                  <%= HtmlUtils.radio_toggle name: 'is_self_insured',
+                      label: 'Are you self-insured? *',
+                      toshow: 'insured_form_fields',
+                      tochange: 'is_self_insured',
+                      tohide: 'not_insured_form_fields',
+                      active: "#{@provider.is_answer_yes?('is_self_insured') ? 'active' : ''}"
+                    %>
 							</div>
 						</div>
 						<div class="col-lg-12">
-							<%= render "provider_source_components/liability_form"%>
+              <div id="not_insured_form_fields" class="<%= @provider.fetch('is_self_insured') == 'no' ? '' : 'd-none' %>">
+							<%= render "provider_source_components/not_insured_form"%>
+              </div>
+              <div id="insured_form_fields" class="<%= @provider.fetch('is_self_insured') == 'yes' ? '' : 'd-none' %>">
+                <%= render "provider_source_components/insured_form"%>
+              </div>
 						</div>
 					</div>
+          </div>
 				</div>
 			</div>
 		</div>

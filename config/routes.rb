@@ -53,6 +53,16 @@ Rails.application.routes.draw do
   resources :verification_platform
   resources :office_manager
   resources :comments
+  resources :query_reports, path: 'query-reports' do
+    collection do
+      get :staff_directory, path: 'staff-directory'
+      get :provider_directory, path: 'provider-directory'
+      get :privilege_reporting_tool, path: 'privilege-reporting-tool'
+      get :meeting_report_by_practitioner, path: 'meeting-report-by-practitioner'
+      get :cme_practitioner_profile, path: 'cme-practitioner-profile'
+      get :customize_reporting_service, path: 'customize-reporting-service'
+    end
+  end
 
   resources :providers do
     collection do
@@ -83,7 +93,15 @@ Rails.application.routes.draw do
   resources :enrollment_providers, path: 'enrollment-providers'
   resources :enroll_groups, path: 'enrollment-groups'
 
-  resources :systems
+  resources :systems do
+    collection do
+      get :sub_features, path: 'sub-features'
+      get :securables
+      get :acl
+      get :data_lookup, path: 'data-lookup'
+      get :data_import, path: 'data-import'
+    end
+  end
   resources :settings
   resources :pals_verifications, only: [:index], path: 'pals-verification'
 

@@ -1,15 +1,19 @@
 <form>
 <div class="row mb-3">
 	<div class="col-lg-4">
-		<input type="text" class="form-control border-dark" name="rf-first-name" required placeholder="First Name*">
+    <label class="text-dark-grey">First Name *</label>
+		<input type="text" class="form-control border-dark" name="rf-first-name" required placeholder="First Name *">
 	</div>
 	<div class="col-lg-2">
-		<input type="text" class="form-control border-dark" name="rf-middle-name" required placeholder="Middle Name*">
+    <label class="text-dark-grey">Middle Name</label>
+		<input type="text" class="form-control border-dark" name="rf-middle-name" placeholder="Middle Name">
 	</div>
 	<div class="col-lg-4">
-		<input type="text" class="form-control border-dark" name="rf-last-name" required placeholder="Last Name*">
+    <label class="text-dark-grey">Last Name *</label>
+		<input type="text" class="form-control border-dark" name="rf-last-name" required placeholder="Last Name *">
 	</div>
 	<div class="col-lg-2">
+    <label class="text-dark-grey">Suffix</label>
 		<select class="form-select border-dark" name="rf-suffix">
 			<option selected="selected" value=""></option>
 			<option value="II">II</option>
@@ -22,11 +26,15 @@
 </div>
 <div class="row mb-3">
 	<div class="col-lg-12">
-		<input type="text" required class="form-control border-dark" placeholder="Degree*" name="rf-degree">
+    <label class="text-dark-grey">Degree *</label>
+
+		<input type="text" required class="form-control border-dark" placeholder="Degree *" name="rf-degree">
 	</div>
 </div>
 <div class="row mb-3">
 	<div class="col-lg-12">
+    <label class="text-dark-grey">Primary Specialty</label>
+
 	<select class="form-select border-dark" name="specialty">
 	 <option value="">Primary Specialty</option>
 	  <% specialties.each do |specialty|%>
@@ -37,7 +45,9 @@
 </div>
 <div class="row mb-3">
 	<div class="col-lg-8">
-		<select class="form-select border-dark">
+    <label class="text-dark-grey">Contact Method *</label>
+
+		<select class="form-select border-dark" name="rf-contact-method">
 		<option value="">Contact Method</option>
 		<option selected="selected" value="Email">Email</option>
 		<option value="Fax">Fax</option>
@@ -48,19 +58,27 @@
 </div>
 <div class="row mb-3">
 	<div class="col-lg-6">
-		<input type="text" class="form-control border-dark" name="rf-address-line1" required placeholder="Address Line 1*">
+    <label class="text-dark-grey">Address Line 1 *</label>
+
+		<input type="text" class="form-control border-dark" name="rf-address-line1" required placeholder="Address Line 1 *">
 	</div>
 	<div class="col-lg-6">
-		<input type="text" class="form-control border-dark" name="rf-address-line2" required placeholder="Address Line 2*">
+    <label class="text-dark-grey">Address Line 2</label>
+
+		<input type="text" class="form-control border-dark" name="rf-address-line2" placeholder="Address Line 2">
 	</div>
 </div>
 <div class="row mb-3">
 	<div class="col-lg-6">
-		<input type="text" class="form-control border-dark" name="rf-city" required placeholder="City*">
+    <label class="text-dark-grey">City *</label>
+
+		<input type="text" class="form-control border-dark" name="rf-city" required placeholder="City *">
 	</div>
 	<div class="col-lg-6">
-	    <select class="form-select border-dark" name="state_abbr">
-	     <option value="">State*</option>
+    <label class="text-dark-grey">State *</label>
+
+	    <select class="form-select border-dark" name="rf-state">
+	     <option value="">State *</option>
 	     <% @states.each do |state|%>
 	      <option value="<%= state.alpha_code %>"><%= state.name %> - <%= state.alpha_code %></option>
 	     <% end %>
@@ -69,39 +87,51 @@
 </div>
 <div class="row mb-3">
 	<div class="col-lg-8">
-		<input type="text" class="form-control border-dark" placeholder="Zip Code*" name="rf-zipcode">
+    <label class="text-dark-grey">Zip Code *</label>
+
+		<input type="text" class="form-control border-dark" placeholder="Zip Code *" name="rf-zipcode">
 	</div>
 </div>
 <div class="row mb-3">
 	<div class="col-lg-6">
 		<div class="row">
 			<div class="col-lg-8">
-				<input type="text" class="form-control border-dark" name="rf-telephone-number" placeholder="Telephone Number*" required>
+    <label class="text-dark-grey">Telephone Number *</label>
+
+				<input type="text" class="form-control border-dark" name="rf-telephone-number" placeholder="Telephone Number *" required>
 			</div>
 			<div class="col-lg-4">
-				<input type="text" class="form-control border-dark" name="rf-ext" placeholder="Ext*" required>
+    <label class="text-dark-grey">Ext</label>
+				<input type="text" class="form-control border-dark" name="rf-ext" placeholder="Ext">
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-6">
-		<input type="text" class="form-control border-dark" name="rf-fax" placeholder="Fax*" required>
+    <label class="text-dark-grey">Fax Number *</label>
+		<input type="text" class="form-control border-dark" name="rf-fax" placeholder="Fax *" required>
+    <span class="d-flex align-items-center">
+      <input type="checkbox" name="rf-does-not-have" >
+      <label class="ms-3">Does not have</label>
+    </span>
 	</div>
 </div>
 <div class="row mb-3">
-	<div class="col-lg-12">
-		<span class="d-flex align-items-center">
-			<input type="checkbox" name="rf-does-not-have" >
-			<label class="ms-3">Does not have</label>
-		</span>
-	</div>
+  <div class="col-lg-6">
+    <label class="text-dark-grey">Mobile Number</label>
+    <input type="date" name="rf-mobile-number" class="form-control border-dark">
+  </div>
+  <div class="col-lg-6">
+    <label class="text-dark-grey">Email Address *</label>
+    <input type="date" name="rf-email-address" class="form-control border-dark">
+  </div>
 </div>
 <div class="row mb-3">
 	<div class="col-lg-6">
-		<label class="text-dark-grey">Association Start Date</label>
+		<label class="text-dark-grey">Association Start Date *</label>
 		<input type="date" name="rf-association-start-date" class="form-control border-dark">
 	</div>
 	<div class="col-lg-6">
-		<label class="text-dark-grey">Association End Date</label>
+		<label class="text-dark-grey">Association End Date *</label>
 		<input type="date" name="rf-association-end-date" class="form-control border-dark">
 		<span class="d-flex align-items-center">
 			<input type="checkbox" name="rf-association-until-present">
@@ -111,6 +141,7 @@
 </div>
 <div class="row mb-3">
 	<div class="col-lg-8">
+    <label class="text-dark-grey">Relationship</label>
 		<input type="text" name="rf-relationship" class="form-control border-dark" placeholder="Relationship">
 	</div>
 </div>
