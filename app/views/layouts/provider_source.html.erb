@@ -614,16 +614,21 @@ $('input,textarea,select').each(function(element) {
 	  });
 });
 
-function displayFieldsFromSelectElement(data, inputName, tagName){
-  if ($.inArray(inputName, ['state_or_practice', 'health_plans', 'hospitals', 'directories']) != '1'){  // check if data.value is an array or not to avoid always registering inputName here
+function displayFieldsFromSelectElement(data, inputName, tagName) {
+  if (['state_or_practice', 'health_plans', 'hospitals', 'directories'].includes(inputName)) {
+    // InputName is in the list, so the values are expected to be an array
     var values = eval(data.value);
-    for (let index = 0; index <values.length; index++) {
+    for (let index = 0; index < values.length; index++) {
       const element = values[index];
-      $(tagName + '[name="' + inputName + '"] option[value="'+element+'"]').attr('selected', 'selected');
+      $(tagName + '[name="' + inputName + '"] option[value="' + element + '"]').prop('selected', true);
     }
-  }else{
-    $(tagName + '[name="' + inputName + '"] option[value="'+data.value+'"]').attr('selected', 'selected');;
+  } else {
+    // InputName is NOT in the list, so a single select dropdown is expected
+    $(tagName + '[name="' + inputName + '"]').val(data.value);
   }
+
+  // Manually trigger the change event for the single select dropdown
+  $(tagName + '[name="' + inputName + '"]').trigger('change.select2');
 }
 
 function displayFieldsFromInputElement(data, inputName, tagName, inputType){
