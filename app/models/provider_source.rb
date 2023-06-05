@@ -92,8 +92,22 @@ class ProviderSource < ApplicationRecord
     completed_fields = required_fields_counter(disclosures)
    ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
    rescue
-      0
+      100
   end
+
+  # will continue this
+  # def disclosure_progress
+  #   total_fields_required = (disclosures_with_prerequisites).count
+  #   completed_fields = required_fields_with_prerequisetes_has_answer(disclosures_with_prerequisites)
+  #   progress = if completed_fields == 0 && total_fields_required == 0
+  #     100
+  #   else
+  #     ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
+  #   end
+  #   progress
+  #  rescue
+  #     100 #by default i made this 100 since the default answer to all disclosure question is NO
+  # end
 
   def education_traning_progess
     total_fields_required = (education_with_prerequisites).count
@@ -135,6 +149,10 @@ class ProviderSource < ApplicationRecord
    ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
    rescue
       0
+  end
+
+  def practice_information_progress
+    0
   end
 
   # no prerequisites - this part contains required fields that don't have a hidden field
@@ -371,6 +389,15 @@ class ProviderSource < ApplicationRecord
       ['belonged_to_prog_org', 'prof_organization_name','yes']
     ]
     prerequisite_checker(infos)
+  end
+
+  def disclosures_with_prerequisites
+    infos = []
+    DisclosureQuestion.all.each do |d|
+      infos << [d.slug, "#{d.slug}_explanation", 'yes']
+    end
+    prerequisite_checker(infos)
+    # infos
   end
 
   # array checkers here

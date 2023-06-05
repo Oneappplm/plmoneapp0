@@ -19,6 +19,8 @@ module PagesHelper
         'professional_liability_progress'
       elsif ['employment', 'employment_gap', 'prof_references', 'prof_organization', 'work_history'].include?(page)
         'work_history_progress'
+      elsif ['practice_information', 'practice_location', 'covering_colleagues', 'unique_circumstances'].include?(page)
+        'practice_information_progress'
       end
     end
   end

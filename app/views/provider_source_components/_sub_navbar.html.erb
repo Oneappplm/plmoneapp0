@@ -55,13 +55,23 @@
             </div>
           </li>
 
-						<li class="list-group-item <%= (['practical_information','practice_location', 'covering_colleagues', 'unique_circumstances'].include?(params[:page])) ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0"><div class="d-flex justify-content-between"><a class="<%= (['practical_information', 'practice_location' ,'covering_colleagues', 'unique_circumstances'].include?(params[:page]))? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path(page: 'practical_information')%>">PRACTICE INFORMATION</a><i class="bi bi-info-circle-fill text-danger"></i></div></li>
+						<li class="list-group-item <%= (['practice_information','practice_location', 'covering_colleagues', 'unique_circumstances'].include?(params[:page])) ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0"><div class="d-flex justify-content-between"><a class="<%= (['practice_information', 'practice_location' ,'covering_colleagues', 'unique_circumstances'].include?(params[:page]))? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path(page: 'practice_information')%>">PRACTICE INFORMATION</a><i class="bi bi-info-circle-fill text-danger"></i></div></li>
 
-						<li class="list-group-item bg-medium-grey border-0"><div class="d-flex justify-content-between"><a class="text-black" href="<%= custom_provider_source_path(page: 'disclosure') %>">DISCLOSURE</a><i class="bi bi-info-circle-fill text-danger"></i></div></li>
+						<li class="list-group-item bg-medium-grey border-0"><div class="d-flex justify-content-between"><a class="text-black" href="<%= custom_provider_source_path(page: 'disclosure') %>">DISCLOSURE</a>
+
+              <% if @provider.disclosure_progress != 100%>
+                <i class="bi bi-info-circle-fill text-danger"></i>
+              <% end %>
+            </div></li>
 
 						<li class="list-group-item <%= (['audit'].include?(params[:page])) ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0"><div class="d-flex justify-content-between"><a class="<%= (['audit'].include?(params[:page]))? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path(page: 'audit')%>">AUDIT</a><i class="bi bi-info-circle-fill text-danger"></i></div></li>
 
+
+            <% if @has_incomplete %>
+              <li class="unavailable list-group-item <%= ['attestation_signature','reattest_application'].include?(params[:page]) ? 'bg-primary fw-bold' : 'bg-medium-grey'%>  border-0"><div class="d-flex justify-content-between"><a class="text-black <%= ['attestation_signature','reattest_application'].include?(params[:page]) ? 'text-white' : 'text-black'%>" href="javascript:void(0);">ATTESTATION</a><i class="bi bi-info-circle-fill text-danger"></i></div></li>
+            <% else %>
 						<li class="list-group-item <%= ['attestation_signature','reattest_application'].include?(params[:page]) ? 'bg-primary fw-bold' : 'bg-medium-grey'%>  border-0"><div class="d-flex justify-content-between"><a class="text-black <%= ['attestation_signature','reattest_application'].include?(params[:page]) ? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path(page: 'attestation_signature')%>">ATTESTATION</a><i class="bi bi-info-circle-fill text-danger"></i></div></li>
+            <% end %>
 
 						<!-- <li class="list-group-item <%#= params[:page] == 'attestation_signature' ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0"><div class="d-flex justify-content-between %>" ><a class="<%#= params[:page] == 'attestation_signature' ? 'text-white' : 'text-black'%>" href="<%#= custom_provider_source_path(page: 'attestation_signature')%>">ATTESTATION AND SIGNATURE</a><i class="bi bi-info-circle-fill text-danger"></i></div></li> -->
 

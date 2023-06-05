@@ -33,9 +33,45 @@
 				</div>
 				<div class="row">
 					<div class="col-lg-12">
-		                 <p>Your application is missing required documents. Please complete your application in order to Attest.</p>
-					</div>
+            <% if @has_incomplete %>
+		         <p style="font-size: 15px;" class="text-danger">Please complete your application in order to Attest.</p>
+					 <% else %>
+              <p style="font-size: 15px;" class="text-success">All documents completed you can now attest.</p>
+            <% end %>
+          </div>
 				</div>
+
+        <div class="row mb-3">
+          <div class="col-lg-12">
+            <p class="my-1" style="font-size: 18px;">
+              <%= @provider.general_information_progress == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>General Information</strong>'.html_safe : '<strong>General Information document is required</strong>'%>
+            </p>
+            <p class="my-1" style="font-size: 18px;">
+              <%= @provider.professional_ids_progress == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Profession IDs</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Profession IDs document is required</strong>'.html_safe %>
+            </p>
+            <p class="my-1" style="font-size: 18px;">
+              <%= @provider.health_plans_progress == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Health Plans</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Health Plans document is required</strong>'.html_safe %>
+            </p>
+            <p class="my-1" style="font-size: 18px;">
+              <%= @provider.specialties_progress == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Specialties</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Specialties document is required</strong>'.html_safe %>
+            </p>
+            <p class="my-1" style="font-size: 18px;">
+              <%= @provider.education_traning_progess == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Education and Training</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Education and Training document is required</strong>'.html_safe %>
+            </p>
+            <p class="my-1" style="font-size: 18px;">
+              <%= @provider.affiliation_progress == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Healthcare Facilities And Affiliations</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Healthcare Facilities And Affiliations document is required</strong>'.html_safe %>
+            </p>
+            <p class="my-1" style="font-size: 18px;">
+              <%= @provider.professional_liability_progress == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Professional Liability</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Professional Liability document is required</strong>'.html_safe %>
+            </p>
+            <p class="my-1" style="font-size: 18px;">
+              <%= @provider.work_history_progress == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Work History</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Work History document is required</strong>'.html_safe %>
+            </p>
+            <p class="my-1" style="font-size: 18px;">
+              <%= @provider.disclosure_progress == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Disclosure</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Disclosure document is required</strong>'.html_safe %>
+            </p>
+          </div>
+        </div>
 			</div>
 		</div>
 	</div>

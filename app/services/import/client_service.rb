@@ -57,7 +57,6 @@ class Import::ClientService < ApplicationService
 					client_id: sheet[34],
 					external_id: sheet[35]
 				)
-
 			end
 		end
 	end
