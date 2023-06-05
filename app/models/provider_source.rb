@@ -87,27 +87,27 @@ class ProviderSource < ApplicationRecord
       0
   end
 
-  def disclosure_progress
-    total_fields_required = disclosures.count
-    completed_fields = required_fields_counter(disclosures)
-   ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
-   rescue
-      100
-  end
+  # def disclosure_progress
+  #   total_fields_required = disclosures.count
+  #   completed_fields = required_fields_counter(disclosures)
+  #  ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
+  #  rescue
+  #     100
+  # end
 
   # will continue this
-  # def disclosure_progress
-  #   total_fields_required = (disclosures_with_prerequisites).count
-  #   completed_fields = required_fields_with_prerequisetes_has_answer(disclosures_with_prerequisites)
-  #   progress = if completed_fields == 0 && total_fields_required == 0
-  #     100
-  #   else
-  #     ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
-  #   end
-  #   progress
-  #  rescue
-  #     100 #by default i made this 100 since the default answer to all disclosure question is NO
-  # end
+  def disclosure_progress
+    total_fields_required = (disclosures_with_prerequisites).count
+    completed_fields = required_fields_with_prerequisetes_has_answer(disclosures_with_prerequisites)
+    progress = if completed_fields == 0 && total_fields_required == 0
+      100
+    else
+      ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
+    end
+    progress
+   rescue
+      100 #by default i made this 100 since the default answer to all disclosure question is NO
+  end
 
   def education_traning_progess
     total_fields_required = (education_with_prerequisites).count
