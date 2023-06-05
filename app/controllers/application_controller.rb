@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
 	before_action :can_read?, only: [
-		:index, :show, :overview, :fetch, :dashboard, :client_portal, :provider_source, :plm_sales_tool,
+		:index, :show, :overview, :dashboard, :client_portal, :provider_source, :plm_sales_tool,
 		:organization_profile, :virtual_review_committee
 	]
 	before_action :can_create?, only: [:new, :create]
