@@ -18,7 +18,7 @@ class ProvidersController < ApplicationController
 
 	def create
 			@provider = Provider.new(provider_params)
-			@provider.encoded_by = current_user.full_name
+			@provider.encoded_by = current_user&.full_name
 			if @provider.save
 					redirect_to providers_path
 			else
@@ -29,7 +29,7 @@ class ProvidersController < ApplicationController
 
 	def update
 		if @provider.update(provider_params)
-				 @provider.update updated_by: current_user.full_name
+				 @provider.update updated_by: current_user&.full_name
 				redirect_to providers_path, notice: 'Provider was successfully updated.'
 		else
 			 build_associations

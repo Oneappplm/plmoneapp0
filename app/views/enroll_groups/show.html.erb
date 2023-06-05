@@ -112,12 +112,12 @@
             <p class="text-dark-grey my-1 mb-2"><strong>EDI (Electronic Data Interchange) Do you  want us to indicate Yes on applications:</strong> <%= @enroll_group.with_edi&.upcase %></p>
           </div>
         </div>
-    </div>    
+    </div>
     <div class="row mb-3">
       <div class="col-lg-12">
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
           <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Enrollment Details', collapse_name: 'enrollment_details'}%>
-          <div class="collapsible" style="<%= current_user.is_card_open?('licenses') ? '' : 'display: none;' %>">
+          <div class="collapsible" style="<%= current_user&.is_card_open?('licenses') ? '' : 'display: none;' %>">
           <% @enroll_group.details.each do |detail|%>
           <p class="text-dark-grey my-1"><strong>Start Date: </strong><%= detail.start_date&.strftime('%B %d, %Y') %></p>
           <p class="text-dark-grey my-1"><strong>End Date:</strong> <%= detail.due_date&.strftime('%B %d, %Y') %></p>

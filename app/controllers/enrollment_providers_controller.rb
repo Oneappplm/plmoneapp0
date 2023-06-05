@@ -18,7 +18,7 @@ class EnrollmentProvidersController < ApplicationController
 
 	def create
 		@enrollment_provider = EnrollmentProvider.new(enrollment_provider_params)
-		@enrollment_provider.enrolled_by = current_user.full_name
+		@enrollment_provider.enrolled_by = current_user&.full_name
 		if @enrollment_provider.save
 			redirect_to enrollment_providers_path, notice: 'Enrollment Provider has been successfully created.'
 		else

@@ -1,5 +1,5 @@
 class RoleBasedAccess < ApplicationRecord
-	PAGES = [:overview, :client_portal, :provider_app, :office_manager, :enrollment_tracking, :verification_platform, :plm_sales_tool, :smart_contract]
+	PAGES = [:overview, :client_portal, :virtual_review_committee, :organization_profile, :provider_app, :office_manager, :enrollment_tracking, :verification_platform, :plm_sales_tool, :smart_contract]
 	CRUD = [:create, :read, :update, :delete]
 
 	default_scope { order(:id) }

@@ -121,11 +121,11 @@ class AjaxController < ApplicationController
 
   def update_collapse
     collapse_name = params[:collapse_name]
-    if UserSidebarPreference.exists?(user_id: current_user.id, collapse_name: collapse_name)
-      collapse = UserSidebarPreference.find_by(user_id: current_user.id, collapse_name: collapse_name)
+    if UserSidebarPreference.exists?(user_id: current_user&.id, collapse_name: collapse_name)
+      collapse = UserSidebarPreference.find_by(user_id: current_user&.id, collapse_name: collapse_name)
       collapse.update_attribute('is_open', !collapse.is_open)
     else
-      UserSidebarPreference.create(user_id: current_user.id, collapse_name: collapse_name, is_open: false)
+      UserSidebarPreference.create(user_id: current_user&.id, collapse_name: collapse_name, is_open: false)
     end
     head :ok
   end

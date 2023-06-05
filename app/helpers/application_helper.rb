@@ -1,4 +1,28 @@
 module ApplicationHelper
+	def can_read?
+		return if current_role&.can_read || !current_user
+
+		render 'shared/permission_denied' and return
+	end
+
+	def can_create?
+		return if current_role&.can_create || !current_user
+
+		render 'shared/permission_denied' if current_user and return
+	end
+
+	def can_update?
+		return if current_role&.can_update || !current_user
+
+		render 'shared/permission_denied' if current_user and return
+	end
+
+	def	can_delete?
+		return if current_role&.can_delete || !current_user
+
+		render 'shared/permission_denied' if current_user and return
+	end
+
 	def active_menu cname, aname = nil
 		if aname.present?
 			cname.split(',').include?(controller_name) && aname.split(',').include?(action_name) ? 'ph-active fw-semibold' : ''
@@ -176,4 +200,21 @@ module ApplicationHelper
   def countries
      Country.all_translated
   end
+
+		def translate_page
+			if ['pages'].include?(controller_name)
+				'overview'
+			elsif ['providers'].include?(controller_name)
+				'provider_app'
+			else
+				controller_name
+			end
+		end
+
+		def current_role
+			return nil unless current_user
+
+			page = translate_page
+			role = current_user&.roles.find_by(page: page)
+		end
 end

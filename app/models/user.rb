@@ -47,13 +47,26 @@ class User < ApplicationRecord
   # Ex:- scope :active, -> {where(:active => true)}
 
   has_many :sidebar_preferences, class_name: "UserSidebarPreference"
+  has_many :roles, class_name: "RoleBasedAccess", foreign_key: "role", primary_key: "user_role"
 
-  def self.set_user_sidebar_preferences
-    User.all.each do |user|
-      sidebar_cards = ['enrollment_details', 'licenses', 'documents','group', 'practice_location', 'enrollments', 'enrollment_payer', 'dco_outreach' ,'schedules']
-      sidebar_cards.each  do |card|
-         UserSidebarPreference.find_or_create_by(user_id: user.id, collapse_name: card)
+  class << self
+    def set_user_sidebar_preferences
+      User.all.each do |user|
+        sidebar_cards = ['enrollment_details', 'licenses', 'documents','group', 'practice_location', 'enrollments', 'enrollment_payer', 'dco_outreach' ,'schedules']
+        sidebar_cards.each  do |card|
+           UserSidebarPreference.find_or_create_by(user_id: user.id, collapse_name: card)
+        end
       end
+    end
+
+    def create_admin
+      User.create!(
+        email: 'admin@plmhealthoneapp.com',
+        password: 'plmadmin123!',
+        user_role: 'administrator',
+        first_name: 'Admin',
+        last_name: 'PLM',
+      )
     end
   end
 
@@ -89,6 +102,10 @@ class User < ApplicationRecord
     self.sidebar_preferences.find_by(collapse_name: collapse_name).is_open
     rescue
       true
+  end
+
+  def admin?
+    user_role == 'administrator'
   end
 
   private
