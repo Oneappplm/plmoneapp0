@@ -65,6 +65,8 @@ class ProviderSource < ApplicationRecord
    total_fields_required = (personal_info + general_name_address + general_info_with_prerequesites).count
    completed_fields = required_fields_counter(personal_info) + required_fields_counter(general_name_address) + required_fields_with_prerequisetes_has_answer(general_info_with_prerequesites)
    ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
+    rescue
+      0
   end
 
   def professional_ids_progress
@@ -72,6 +74,8 @@ class ProviderSource < ApplicationRecord
     completed_fields = required_fields_counter(certifications) + required_fields_with_prerequisetes_has_answer(registration_ids_with_prerequisites) + required_fields_with_prerequisetes_has_answer(licensures_with_prerequisites) + required_fields_with_prerequisetes_has_answer(certifications_with_prerequisites)
    ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
    # total_fields_required
+   rescue
+      0
   end
 
   # example of not prerequisites
@@ -79,18 +83,24 @@ class ProviderSource < ApplicationRecord
     total_fields_required = (health_plans).count
     completed_fields = required_fields_counter(health_plans)
    ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
+   rescue
+      0
   end
 
   def disclosure_progress
     total_fields_required = disclosures.count
     completed_fields = required_fields_counter(disclosures)
    ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
+   rescue
+      0
   end
 
   def education_traning_progess
     total_fields_required = (education_with_prerequisites).count
     completed_fields = required_fields_with_prerequisetes_has_answer(education_with_prerequisites)
    ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
+   rescue
+      0
   end
 
   # example of both with not prerequisite and with prerequisite
@@ -98,6 +108,8 @@ class ProviderSource < ApplicationRecord
     total_fields_required = (specialties + specialties_with_prerequisites).count
     completed_fields = required_fields_counter(specialties) + required_fields_with_prerequisetes_has_answer(specialties_with_prerequisites)
    ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
+   rescue
+      0
   end
 
   # example of pure fields with required condition to count
@@ -105,18 +117,24 @@ class ProviderSource < ApplicationRecord
     total_fields_required = (affiliation_with_prerequisites).count
     completed_fields = required_fields_with_prerequisetes_has_answer(affiliation_with_prerequisites)
    ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
+   rescue
+      0
   end
 
   def professional_liability_progress
     total_fields_required = (professional_liability + professional_liability_with_prerequisites).count
     completed_fields = required_fields_counter(professional_liability) + required_fields_with_prerequisetes_has_answer(professional_liability_with_prerequisites)
    ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
+   rescue
+      0
   end
 
   def work_history_progress
     total_fields_required = (military_info_with_prerequisites + employment_with_prerequisites + employment_gap_with_prerequisites + professional_references + professional_organization_with_prerequisites).count
     completed_fields = required_fields_counter(professional_references) + required_fields_with_prerequisetes_has_answer(military_info_with_prerequisites) + required_fields_with_prerequisetes_has_answer(employment_with_prerequisites) + required_fields_with_prerequisetes_has_answer(employment_gap_with_prerequisites) + required_fields_with_prerequisetes_has_answer(professional_organization_with_prerequisites)
    ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
+   rescue
+      0
   end
 
   # no prerequisites - this part contains required fields that don't have a hidden field
