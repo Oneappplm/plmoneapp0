@@ -3,7 +3,7 @@
 		<div id= "undergrad-location">
 		<div class="form-group">
 			<label class="text-dark-grey">Undergraduate School Location</label>
-		<%= select_tag :states, options_for_select([['Select Option', nil]] + @states.map { |state| [state.name, state.name] }), required: true, class: 'form-select border-dark', placeholder: 'Undergraduate School Location', id: 'usd-school-location' %>
+		<%= select_tag :usd_school_location, options_for_select([['Select Option', nil]] + @states.map { |state| [state.name, state.name] }), required: true, class: 'form-select border-dark', placeholder: 'Undergraduate School Location' %>
 		</div>
 		</div>
 	</div>
@@ -104,19 +104,3 @@
 		  	<button class="btn btn-primary">Save This Record</button>
 	</div>
 </div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Retrieve the saved value from Local Storage, if it exists
-    var savedValue = localStorage.getItem('usdSchoolLocation');
-    if (savedValue) {
-      document.querySelector('#usd-school-location').value = savedValue; // Set the dropdown value
-    }
-
-    // Store the selected value in Local Storage when the dropdown value changes
-    document.querySelector('#usd-school-location').addEventListener('change', function() {
-      var selectedValue = this.value;
-      localStorage.setItem('usdSchoolLocation', selectedValue);
-    });
-  });
-</script>

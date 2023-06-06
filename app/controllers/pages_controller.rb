@@ -226,10 +226,6 @@ class PagesController < ApplicationController
     @services = Service.all
   end
 
-	def get_training_types
-    @training_types = TrainingType.all
-  end
-
 	def get_education_types
     @education_types = EducationType.all
   end

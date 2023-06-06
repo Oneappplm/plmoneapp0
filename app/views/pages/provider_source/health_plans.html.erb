@@ -29,7 +29,7 @@
 								<div class="row my-3">
 							<div class="col-lg-12">
 								<!-- select-search | this is for frontend devs - you should be responsible for preparing the data value to be submitted and handle the data -->
-								<%= select_tag :health_plans, options_for_select([['Health Plan *', nil]] + @health_plans.map { |plan| [plan.name, plan.name] }), required: true, class: 'form-select border-dark py-3', placeholder: 'Health Plan', id:'health-plan-plan' %>
+								<%= select_tag :hp_health_plans, options_for_select([['Health Plan *', nil]] + @health_plans.map { |plan| [plan.name, plan.name] }), required: true, class: 'form-select border-dark py-3', placeholder: 'Health Plan' %>
 								<!-- <input type="text" name="" placeholder="Health Plans*" class="form-control border-dark"> -->
 							</div>
 						</div>
@@ -37,14 +37,14 @@
 							<div class="form-group">
 								<label class="text-dark-grey">Hospitals</label>
 								<!-- multi-select | this is for frontend devs - you should be responsible for preparing the data value to be submitted and handle the data back to the element when retrieving -->
-								<%= select_tag :hospitals, options_for_select([['Hospital *', nil]] + @hospitals.map { |hospital| [hospital.name, hospital.name] }), required: true, class: 'form-select border-dark py-3', placeholder: 'Hospitals', id:'health-plan-hospital'  %>
+								<%= select_tag :hp_hospitals, options_for_select([['Hospital *', nil]] + @hospitals.map { |hospital| [hospital.name, hospital.name] }), required: true, class: 'form-select border-dark py-3', placeholder: 'Hospitals' %>
 							</div>
 						</div>
 						<div class="col-lg-12 mb-2">
 							<div class="form-group">
 								<label class="text-dark-grey">Directories</label>
 								<!-- multi-select | this is for frontend devs - you should be responsible for preparing the data value to be submitted and handle the data back to the element when retrieving -->
-								<%= select_tag :directory, options_for_select([['Directory *', nil]] + @directories.map { |directory| [directory.name, directory.name] }), required: true, class: 'form-select border-dark py-3', placeholder: 'Directories', id:'health-plan-directory' %>
+								<%= select_tag :hp_directories, options_for_select([['Directory *', nil]] + @directories.map { |directory| [directory.name, directory.name] }), required: true, class: 'form-select border-dark py-3', placeholder: 'Directories' %>
 							</div>
 						</div>
 					</div>
@@ -58,7 +58,9 @@
 	</div>
 </div>
 
-<% content_for :js do %>
+<%
+=begin%>
+ <% content_for :js do %>
 	<script>
 
 		VirtualSelect.init({
@@ -67,55 +69,6 @@
 		});
 
 	</script>
-<% end %>
-
-<script>
-$(document).ready(function() {
-  // Retrieve the saved value from Local Storage, if it exists
-  var savedValue = localStorage.getItem('healthplanPlan');
-  if (savedValue) {
-    $('#health-plan-plan').val(savedValue); // Set the dropdown value
-  }
-
-  // Store the selected value in Local Storage when the dropdown value changes
-  $('#health-plan-plan').on('change', function() {
-    var selectedValue = $(this).val();
-    localStorage.setItem('healthplanPlan', selectedValue);
-  });
-});
-
-</script>
-
-<script>
-$(document).ready(function() {
-  // Retrieve the saved value from Local Storage, if it exists
-  var savedValue = localStorage.getItem('healthplanHospital');
-  if (savedValue) {
-    $('#health-plan-hospital').val(savedValue); // Set the dropdown value
-  }
-
-  // Store the selected value in Local Storage when the dropdown value changes
-  $('#health-plan-hospital').on('change', function() {
-    var selectedValue = $(this).val();
-    localStorage.setItem('healthplanHospital', selectedValue);
-  });
-});
-
-</script>
-
-<script>
-$(document).ready(function() {
-  // Retrieve the saved value from Local Storage, if it exists
-  var savedValue = localStorage.getItem('healthplanDirectory');
-  if (savedValue) {
-    $('#health-plan-directory').val(savedValue); // Set the dropdown value
-  }
-
-  // Store the selected value in Local Storage when the dropdown value changes
-  $('#health-plan-directory').on('change', function() {
-    var selectedValue = $(this).val();
-    localStorage.setItem('healthplanDirectory', selectedValue);
-  });
-});
-
-</script>
+<% end %> 
+<%
+=end%>

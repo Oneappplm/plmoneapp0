@@ -5,7 +5,7 @@
 	</div>
 	<div class="col-lg-6">
 		<label class="form-label">Graduate/Professional School Location*</label>
-		<%= select_tag :states, options_for_select([['Select Option', nil]] + @states.map { |state| [state.name, state.name] }), required: true, class: 'form-select border-dark', placeholder: 'Undergraduate School Location', id:'train-school-location' %>
+		<%= select_tag :training_location, options_for_select([['Select Option', nil]] + @states.map { |state| [state.name, state.name] }), required: true, class: 'form-select border-dark', placeholder: 'Undergraduate School Location', id:'train-school-location' %>
 	</div>
 </div>
 <div class="row mb-3">
@@ -64,13 +64,13 @@
 
 <div class="row mb-3">
 	<div class="col-lg-12">
-		<label class="form-label">Type of Training*</label>
+		<label class="form-label">Type of Training * </label>
 	<small>If your training program was rotating or transitional, please create a separate training record for each rotation including the specialty or department and the time associated with each. </small>
-	<%= select_tag :training_types, options_for_select([['Select Option']] + @training_types.map { |training| [training.name, training.name] }), required: true, class: 'form-select border-dark', placeholder: 'Education Type', id: 'training-type' %>
+	<%= select_tag :tr_training_types, options_for_select([['Select Option']] + @training_types.map { |training| [training.name, training.name] }), required: true, class: 'form-select border-dark', placeholder: 'Education Type' %>
 	</div>
 	<div class="col-lg-12">
 		<label class="form-label">Specialty</label>
-		<%= select_tag :specialties, options_for_select([['Select Option']] + @specialties.map { |specialty| [specialty.fch, specialty.fch] }), required: true, class: 'form-select border-dark', placeholder: 'Specialty', id: 'specialty' %>
+		<%= select_tag :tr_specialties, options_for_select([['Select Option']] + @specialties.map { |specialty| [specialty.fch, specialty.fch] }), required: true, class: 'form-select border-dark', placeholder: 'Specialty' %>
 	</div>
 </div>
 <div class="row mb-3">
@@ -123,7 +123,7 @@
 <div class="row mb-3">
 	<div class="col-lg-12">
 		<label class="form-label">University Affiliated Program Location</label>
-		<%= select_tag :states, options_for_select([['Select Option', nil]] + @states.map { |state| [state.name, state.name] }), required: true, class: 'form-select border-dark', placeholder: 'University Affiliate School Location', id:'train-affiliate-location' %>
+		<%= select_tag :train_affiliate_location, options_for_select([['Select Option', nil]] + @states.map { |state| [state.name, state.name] }), required: true, class: 'form-select border-dark', placeholder: 'University Affiliate School Location'%>
 	</div>
 </div>
 <div class="row mb-3">
@@ -171,88 +171,3 @@
 		  	<button class="btn btn-primary">Save This Record</button>
 	</div>
 </div> --> %>
-
-<script>
-$(document).ready(function() {
-  // Retrieve the saved value from Local Storage, if it exists
-  var savedValue = localStorage.getItem('trainEducationType');
-  if (savedValue) {
-    $('#train-education-type').val(savedValue); // Set the dropdown value
-  }
-
-  // Store the selected value in Local Storage when the dropdown value changes
-  $('#train-education-type').on('change', function() {
-    var selectedValue = $(this).val();
-    localStorage.setItem('trainEducationType', selectedValue);
-  });
-});
-
-</script>
-
-<script>
-$(document).ready(function() {
-  // Retrieve the saved value from Local Storage, if it exists
-  var savedValue = localStorage.getItem('trainLocation');
-  if (savedValue) {
-    $('#train-school-location').val(savedValue); // Set the dropdown value
-  }
-
-  // Store the selected value in Local Storage when the dropdown value changes
-  $('#train-school-location').on('change', function() {
-    var selectedValue = $(this).val();
-    localStorage.setItem('trainLocation', selectedValue);
-  });
-});
-
-</script>
-
-<script>
-$(document).ready(function() {
-  // Retrieve the saved value from Local Storage, if it exists
-  var savedValue = localStorage.getItem('trainType');
-  if (savedValue) {
-    $('#training-type').val(savedValue); // Set the dropdown value
-  }
-
-  // Store the selected value in Local Storage when the dropdown value changes
-  $('#training-type').on('change', function() {
-    var selectedValue = $(this).val();
-    localStorage.setItem('trainType', selectedValue);
-  });
-});
-
-</script>
-
-<script>
-$(document).ready(function() {
-  // Retrieve the saved value from Local Storage, if it exists
-  var savedValue = localStorage.getItem('trainSpecialty');
-  if (savedValue) {
-    $('#specialty').val(savedValue); // Set the dropdown value
-  }
-
-  // Store the selected value in Local Storage when the dropdown value changes
-  $('#specialty').on('change', function() {
-    var selectedValue = $(this).val();
-    localStorage.setItem('trainSpecialty', selectedValue);
-  });
-});
-
-</script>
-
-<script>
-$(document).ready(function() {
-  // Retrieve the saved value from Local Storage, if it exists
-  var savedValue = localStorage.getItem('trainAffiliateLocation');
-  if (savedValue) {
-    $('#train-affiliate-location').val(savedValue); // Set the dropdown value
-  }
-
-  // Store the selected value in Local Storage when the dropdown value changes
-  $('#train-affiliate-location').on('change', function() {
-    var selectedValue = $(this).val();
-    localStorage.setItem('trainAffiliateLocation', selectedValue);
-  });
-});
-
-</script>

@@ -118,6 +118,10 @@ module ApplicationHelper
   def groups
     @groups ||= EnrollmentGroup.all
   end
+
+	def training_types
+    @training_types = TrainingType.all
+  end
 	# memoization
 
 

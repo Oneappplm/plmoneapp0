@@ -162,7 +162,7 @@ class ProviderSource < ApplicationRecord
   end
 
   def health_plans
-    infos = ['health_plans', 'hospitals', 'directories']
+    infos = ['hp_health_plans', 'hp_hospitals', 'hp_directories']
   end
 
   def personal_info
@@ -289,7 +289,7 @@ class ProviderSource < ApplicationRecord
           ['professional_school', '', 'yes'],
           ['professional_school', '', 'yes'],
           ['professional_school', '', 'yes'],
-          ['professional_school', '', 'yes'],
+          ['professional_school', 'prof_school_location', 'yes'],
           ['professional_school', 'prof_date_start', 'yes'],
           ['professional_school', 'prof_date_graduation', 'yes'],
           ['incomplete_prof', '', 'yes'],
@@ -298,10 +298,10 @@ class ProviderSource < ApplicationRecord
           ['has_training_program', '', 'yes'],
           ['has_training_program', '', 'yes'],
           ['has_training_program', '', 'yes'],
-          ['has_training_program', '', 'yes'],
-          ['has_training_program', '', 'yes'],
-          ['has_training_program', '', 'yes'],
-          ['incomplete_training', '', 'yes'],
+          ['has_training_program', 'tr_training_types', 'yes'],
+          ['has_training_program', 'tr_specialties', 'yes'],
+          ['has_training_program', 'training_location', 'yes'],
+          ['incomplete_training', 'train_affiliate_location', 'yes'],
           ['an_instructor', 'hp-zipcode', 'yes'],
           ['an_instructor', '', 'yes'],
           ['an_instructor', '', 'yes'],

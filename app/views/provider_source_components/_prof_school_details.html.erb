@@ -1,11 +1,11 @@
 <div class="row mb-3">
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Education Type*</label>
-  <%= select_tag :education_types, options_for_select([['Select Option']] + @education_types.map { |education| [education.name, education.name] }), required: true, class: 'form-select border-dark', placeholder: 'Education Type', id: 'grad-education-type' %>
+  <%= select_tag :education_types, options_for_select([['Select Option']] + @education_types.map { |education| [education.name, education.name] }), required: true, class: 'form-select border-dark', placeholder: 'Education Type' %>
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Graduate/Professional School Location*</label>
-		<%= select_tag :states, options_for_select([['Select Option', nil]] + @states.map { |state| [state.name, state.name] }), required: true, class: 'form-select border-dark', placeholder: 'Graduate/Professional School Location', id: 'grad-school-location' %>
+		<%= select_tag :prof_school_location, options_for_select([['Select Option', nil]] + @states.map { |state| [state.name, state.name] }), required: true, class: 'form-select border-dark', placeholder: 'Graduate/Professional School Location' %>
 	</div>
 </div>
 <div class="row mb-3">
@@ -119,36 +119,3 @@
 	</div>
 </div>
 
-<script>
-$(document).ready(function() {
-  // Retrieve the saved value from Local Storage, if it exists
-  var savedValue = localStorage.getItem('gradEducationType');
-  if (savedValue) {
-    $('#grad-education-type').val(savedValue); // Set the dropdown value
-  }
-
-  // Store the selected value in Local Storage when the dropdown value changes
-  $('#grad-education-type').on('change', function() {
-    var selectedValue = $(this).val();
-    localStorage.setItem('gradEducationType', selectedValue);
-  });
-});
-
-</script>
-
-<script>
-$(document).ready(function() {
-  // Retrieve the saved value from Local Storage, if it exists
-  var savedValue = localStorage.getItem('gradSchoolLocation');
-  if (savedValue) {
-    $('#grad-school-location').val(savedValue); // Set the dropdown value
-  }
-
-  // Store the selected value in Local Storage when the dropdown value changes
-  $('#grad-school-location').on('change', function() {
-    var selectedValue = $(this).val();
-    localStorage.setItem('gradSchoolLocation', selectedValue);
-  });
-});
-
-</script>
