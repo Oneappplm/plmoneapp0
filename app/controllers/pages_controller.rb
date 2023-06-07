@@ -12,7 +12,6 @@ class PagesController < ApplicationController
 	before_action :get_practice_types, only: %i[provider_source]
 	before_action :get_practitioner_profiles, only: %i[provider_source]
 	before_action :get_services, only: %i[provider_source]
-	before_action :get_training_types, only: %i[provider_source]
 	before_action :get_education_types, only: %i[provider_source]
 	before_action :set_provider
   before_action :has_incomplete_tabs, only: [:provider_source]

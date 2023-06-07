@@ -370,6 +370,7 @@ class ProviderSource < ApplicationRecord
       ['has_work_history', 'edc-contact-method', 'yes'],
       ['has_work_history', 'edc-start-date', 'yes'],
       ['has_work_history', 'edc-end-date', 'yes'],
+      ['has_collab_agreement', '', 'yes'],
     ]
     prerequisite_checker(infos)
   end

@@ -123,10 +123,6 @@ module ApplicationHelper
     @training_types = TrainingType.all
   end
 
-	def training_types
-    @training_types = TrainingType.all
-  end
-
 	def privilege_statuses
     @privilege_status ||= PrivilegeStatus.all
   end

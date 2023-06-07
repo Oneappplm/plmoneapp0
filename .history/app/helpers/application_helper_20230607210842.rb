@@ -119,20 +119,8 @@ module ApplicationHelper
     @groups ||= EnrollmentGroup.all
   end
 
-	def training_types
+	def get_training_types
     @training_types = TrainingType.all
-  end
-
-	def training_types
-    @training_types = TrainingType.all
-  end
-
-	def privilege_statuses
-    @privilege_status ||= PrivilegeStatus.all
-  end
-
-	def visa_types
-    @visa_types ||= VisaType.all
   end
 	# memoization
 
