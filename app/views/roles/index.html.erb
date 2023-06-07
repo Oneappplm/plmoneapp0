@@ -1,0 +1,34 @@
+<div class="content container-fluid">
+<p style="color: green"><%= notice %></p>
+<h1>Roles</h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col" class="bg-primary text-white">Name</th>
+      <th scope="col" class="bg-primary text-white"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @roles.each do |role| %>
+    <tr>
+      <td scope="row"><%= role.name %></td>
+      <th scope="row">
+        <div class="d-flex gap-2">
+          <%= link_to edit_role_path(role), class: 'btn btn-sm btn-primary' do %>
+            <i class="bi bi-pencil"></i>
+          <% end %>
+          <%= button_to role_path(role), method: :delete, class: 'btn btn-sm btn-danger' do %>
+            <i class="bi bi-trash"></i>
+          <% end %>
+       </div>
+      </th>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
+<%= link_to "New role", new_role_path, class: 'btn btn-primary' %>
+
+</div>
+

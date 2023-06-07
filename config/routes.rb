@@ -102,7 +102,17 @@ Rails.application.routes.draw do
       get :data_import, path: 'data-import'
     end
   end
-  resources :settings
+  resources :settings do
+    collection do
+      resources :users
+      resources :roles
+      resources :role_based_accesses, only: [:index], path: 'role-based-access' do
+        member do
+          post :update_access
+        end
+      end
+    end
+  end
   resources :pals_verifications, only: [:index], path: 'pals-verification'
 
   resources :view_summary
@@ -134,12 +144,5 @@ Rails.application.routes.draw do
       end
     end
   end
-
-  resources :role_based_accesses, only: [:index], path: 'role-based-access' do
-    member do
-      post :update_access
-    end
-  end
-
   resources :auto_verifies, only: [:index], path: 'auto-verify'
 end

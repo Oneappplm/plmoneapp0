@@ -39,15 +39,15 @@ module ApplicationHelper
 	# 	cname == controller_name && aname.split(',').include?(action_name) ? 'ph-active' : ''
 	# end
 
-	def active_submenu cname, aname
+	def active_submenu cname, aname = ''
 		(cname.split(',').include?(controller_name) && aname.split(',').include?(action_name)) ? '' : 'd-none'
 	end
 
-	def chevron_active cname, aname
+	def chevron_active cname, aname = ''
 		(cname.split(',').include?(controller_name) && aname.split(',').include?(action_name)) ? 'rotate-chev' : ''
 	end
 
-	def active_submenu_link cname, aname
+	def active_submenu_link cname, aname = ''
 		cname == controller_name && aname.split(',').include?(action_name) ? 'link_active fw-semibold' : ''
 	end
 

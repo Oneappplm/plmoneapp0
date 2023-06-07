@@ -44,6 +44,8 @@ class User < ApplicationRecord
   after_create :set_sidebar_preferences
 
   scope :from_enrollment, -> { where(from_source: 'enrollment')}
+  scope :not_admin, -> { where.not(user_role: 'administrator') }
+  scope :admins, -> { where(user_role: 'administrator') }
   # Ex:- scope :active, -> {where(:active => true)}
 
   has_many :sidebar_preferences, class_name: "UserSidebarPreference"
@@ -70,6 +72,8 @@ class User < ApplicationRecord
     end
   end
 
+  def role = user_role&.titleize
+
   def password_match
     errors.add(:password_confirmation, "must match the password") unless temporary_password == password_confirmation
   end
@@ -92,10 +96,6 @@ class User < ApplicationRecord
     else
       "#{self.email.first}".upcase
     end
-  end
-
-  def role
-    User.user_roles[user_role]
   end
 
   def is_card_open?(collapse_name)

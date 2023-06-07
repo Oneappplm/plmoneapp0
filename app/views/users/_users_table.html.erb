@@ -1,3 +1,4 @@
+<h2>Users List</h2>
 <table class="table">
   <thead>
     <tr>
@@ -8,35 +9,37 @@
     </tr>
   </thead>
   <tbody>
-    <% if @enrollment_users %>
-      <% @enrollment_users.each do |user| %>
+    <% if @users %>
+      <% @users.each do |user| %>
       <tr>
         <td scope="row"><%= user.full_name %></td>
         <td><%= user.email %></td>
         <td><%= user.role  %></td>
         <th scope="row">
-          <%= link_to edit_user_enrollment_path(user), class: 'text-primary' do %>
-            <i class="bi bi-pencil"></i>
-          <% end %>
-          <%= link_to delete_user_enrollment_path(user), class: 'text-danger' do %>
-            <i class="bi bi-trash"></i>
-          <% end %>
+          <div class="d-flex gap-2">
+            <%= link_to edit_user_path(user), class: 'btn btn-sm btn-primary' do %>
+              <i class="bi bi-pencil"></i>
+            <% end %>
+            <%= button_to user_path(user), method: :delete, class: 'btn btn-sm btn-danger' do %>
+              <i class="bi bi-trash"></i>
+            <% end %>
+         </div>
         </th>
       </tr>
       <% end %>
     <% end %>
   </tbody>
 </table>
-<% if @enrollment_users %>
+<% if @users %>
 <div class="col-lg-12">
   <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
   <div class="page_info ms-3 text-black">
-      <%= page_entries_info @enrollment_users %>
+      <%= page_entries_info @users %>
   </div>
   <% if params[:per_page ].present? %>
-    <%= will_paginate @enrollment_users, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+    <%= will_paginate @users, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
   <% else %>
-    <%= will_paginate @enrollment_users, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+    <%= will_paginate @users, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
   <% end %>
   </div>
 </div>
