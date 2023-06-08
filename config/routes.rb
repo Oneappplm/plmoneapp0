@@ -2,11 +2,11 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
-  root 'pages#dashboard'
+  root 'dashboard#dashboard'
   get 'client-portal', to: 'pages#client_portal'
   get 'virtual-review-committee', to: 'pages#virtual_review_committee'
   get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
-  get 'provider-source', to: 'pages#provider_source', as: :custom_provider_source
+  get 'provider-source', to: 'provider_app#provider_source', as: :custom_provider_source
   get 'app-tracker', to: 'pages#app_tracker'
   get 'encompass', to: 'pages#encompass'
   get 'microsite', to: 'pages#microsite'
@@ -144,5 +144,18 @@ Rails.application.routes.draw do
       end
     end
   end
+  namespace :enrollment_trackings do
+    root to: 'overviews#index'
+  end
   resources :auto_verifies, only: [:index], path: 'auto-verify'
+
+  namespace :api do
+    namespace :v1 do
+      resources :providers, only: [:index]
+      resources :enrollment_providers, only: [:index], path: 'enrollment-providers'
+      resources :enroll_groups, only: [:index], path: 'enrollment-groups'
+      resources :groups, only: [:index], path: 'groups'
+      resources :dcos, only: [:index]
+    end
+  end
 end

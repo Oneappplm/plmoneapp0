@@ -13,6 +13,7 @@
          <div class="navbar-vertical-content">
             <div id="navbarVerticalMenu" class="nav nav-pills nav-vertical card-navbar-nav px-0">
                <!-- Collapse -->
+               <% if can_view?('overview') %>
                <div class="nav-item mb-2 nav-item-active">
                   <!-- ph-active -->
                   <a class="nav-link <%= active_menu('pages', 'dashboard') %>" href="<%= root_path %>">
@@ -20,6 +21,9 @@
                   <span class="nav-link-title">Overview</span>
                   </a>
                </div>
+               <% end %>
+
+               <% if can_view?('client_portal') %>
                <div class="nav-item mb-2">
                   <div class="d-flex with-submenu align-items-center justify-content-between pe-3 <%= active_menu('pages,users', 'client_portal,virtual_review_committee,data_access,all_users,new') %>">
                       <a class="nav-link has-submenu" href="javascript:void(0);" data-placement="left" data-submenu="client_submenu">
@@ -34,14 +38,16 @@
 
                   <div id="client_submenu" class="sub_menu <%= active_submenu('pages,users', 'client_portal,virtual_review_committee,data_access,organization_profile,new')%> mt-3">
                       <ul>
-                        <li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'client_portal,data_access')%>"><span></span><a href="<%= client_portal_path %>">Data Access</a>
+
+                        <li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'client_portal,data_access')%>">
+                           <span></span><a href="<%= client_portal_path %>">Data Access</a>
                         </li>
 
                         <li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'virtual_review_committee')%>"><span></span><a href="<%= virtual_review_committee_path %>">VRC</a>
                         </li>
 
-                        <li class="d-flex gap-2 align-items-center <%= active_submenu_link('users', 'all_users,edit,new,show,organization_profile')%>"><span></span><a href="<%= organization_profile_path %>">Users</a>
-                        </li>
+                        <!-- <li class="d-flex gap-2 align-items-center <%= active_submenu_link('users', 'all_users,edit,new,show,organization_profile')%>"><span></span><a href="<%= organization_profile_path %>">Users</a>
+                        </li> -->
 
                         <li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', '')%>"><span></span><a href="<%= client_portal_path %>">Clients</a>
                         </li>
@@ -62,12 +68,14 @@
                       </ul>
                   </div>
                </div>
+               <% end %>
              <!--   <div class="nav-item mb-2">
                   <a class="nav-link <%#= active_menu('pages', 'virtual_review_committee,show_virtual_review_committee') %>" href="<%#= virtual_review_committee_path %>" data-placement="left">
                   <i class="bi bi-file-bar-graph nav-icon"></i>
                   <span class="nav-link-title">Virtual Review Committee</span>
                   </a>
                </div> -->
+               <% if can_view?('provider_app') %>
                <div class="nav-item mb-2">
                   <a class="nav-link <%= active_menu('pages', 'provider_source') %>" href="<%= custom_provider_source_path %>" data-placement="left">
                      <!-- <i class="bi-receipt nav-icon"></i> -->
@@ -75,6 +83,9 @@
                      <span class="nav-link-title">Provider App</span>
                   </a>
                </div>
+               <% end %>
+
+               <% if can_view?('office_manager') %>
                <div class="nav-item mb-2">
                   <a class="nav-link <%= active_menu('office_manager', 'index') %>" href="<%= office_manager_index_path %>" data-placement="left">
                      <!-- <i class="bi-receipt nav-icon"></i> -->
@@ -82,6 +93,9 @@
                      <span class="nav-link-title">Office Manager</span>
                   </a>
                </div>
+               <% end %>
+
+               <% if can_view?('enrollment_tracking') %>
                <div class="nav-item mb-2">
                   <a class="nav-link <%= active_menu('providers,enrollments,enrollment_providers,enroll_groups') %>" href="<%= overview_providers_path %>" data-placement="left">
                      <!-- <i class="bi-receipt nav-icon"></i> -->
@@ -89,6 +103,9 @@
                      <span class="nav-link-title">Enrollment Tracking</span>
                   </a>
                </div>
+               <% end %>
+
+               <% if can_view?('verification_platform') %>
                <div class="nav-item mb-2">
                   <a class="nav-link <%= active_menu('verification_platform', 'index') %>" href="<%= verification_platform_index_path %>" data-placement="left">
                      <!-- <i class="bi-receipt nav-icon"></i> -->
@@ -97,6 +114,9 @@
                      <span class="nav-link-title">Verification Platform</span>
                   </a>
                </div>
+               <% end %>
+
+               <% if can_view?('plm_sales_tool') %>
                <div class="nav-item mb-2">
                   <a class="nav-link <%= active_menu('pages', 'plm_sales_tool') %>" target="_blank" href="<%= plm_sales_tool_path %>" data-placement="left">
                      <!-- <i class="bi-layers nav-icon"></i> -->
@@ -105,6 +125,9 @@
                      <span class="nav-link-title">PLM Sales Tool </span>
                   </a>
                </div>
+               <% end %>
+
+               <% if can_view?('smart_contract') %>
                <div class="nav-item mb-2">
                   <a class="nav-link <%= active_menu('pages', 'smart_contract') %> text-muted" href="javascript:void(0);" data-placement="left">
                      <!-- <i class="bi-layers nav-icon"></i> -->
@@ -114,7 +137,9 @@
                      </span>
                   </a>
                </div>
-               <% if current_user&.admin? %>
+               <% end %>
+
+               <% if current_user&.admin? && can_view?('settings') %>
                <div class="nav-item mb-2">
                   <div class="d-flex with-submenu align-items-center justify-content-between pe-3 <%= active_menu('role_based_accesses,roles') %>">
                      <a class="nav-link has-submenu" href="javascript:void(0);" data-placement="left" data-submenu="settings_submenu">

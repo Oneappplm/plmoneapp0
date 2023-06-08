@@ -1,9 +1,16 @@
 class RoleBasedAccess < ApplicationRecord
 	PAGES = [
-		:overview, :client_portal, :virtual_review_committee, :organization_profile, :provider_app,
-		:office_manager, :enrollment_tracking, :verification_platform, :plm_sales_tool, :smart_contract,
-		:systems, :users, :provider_sources, :view_summary, :enrollment_providers, :enroll_groups, :dcos,
-		:auto_verifies, :query_reports
+		:overview,
+		# :client_portal_data_access, :client_portal_vrc, :client_portal_clients, :client_portal_systems, :client_portal_reports, :client_portal_service, :client_portal_screening, :client_portal_support,
+		# :client_portal_data_access, :client_portal_vrc, :client_portal_clients, :client_portal_systems,
+		:client_portal,
+		:provider_app,
+		:office_manager,
+		:enrollment_tracking,
+		:verification_platform,
+		:plm_sales_tool,
+		:smart_contract,
+		:settings
 	]
 	CRUD = [:create, :read, :update, :delete]
 

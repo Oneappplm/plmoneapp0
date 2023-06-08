@@ -2,25 +2,64 @@ module ApplicationHelper
 	def can_read?
 		return if current_role&.can_read || !current_user
 
-		render 'shared/permission_denied' and return
+		render 'shared/access_denied' and return
 	end
 
 	def can_create?
 		return if current_role&.can_create || !current_user
 
-		render 'shared/permission_denied' if current_user and return
+		render 'shared/access_denied' if current_user and return
 	end
 
 	def can_update?
 		return if current_role&.can_update || !current_user
 
-		render 'shared/permission_denied' if current_user and return
+		render 'shared/access_denied' if current_user and return
 	end
 
 	def	can_delete?
 		return if current_role&.can_delete || !current_user
 
-		render 'shared/permission_denied' if current_user and return
+		render 'shared/access_denied' if current_user and return
+	end
+
+	def can_view? page
+	 find_role(page)&.can_read
+	end
+
+	def translate_page
+		if ['dashboard'].include?(controller_name)
+			'overview'
+		elsif ['providers'].include?(controller_name)
+			if ['overview', 'index'].include?(action_name)
+				'enrollment_tracking'
+			else
+			'provider_app'
+			end
+		elsif ['enrollment_providers', 'enroll_groups', 'dcos', 'groups'].include?(controller_name)
+			'enrollment_tracking'
+		elsif ['auto_verifies', 'query_reports'].include?(controller_name)
+			'verification_platform'
+		elsif ['view_summary', 'provider_sources'].include?(controller_name)
+			'provider_app'
+		elsif ['pages', 'systems'].include?(controller_name)
+			'client_portal'
+		elsif	['roles', 'users'].include?(controller_name)
+			'settings'
+		else
+			controller_name
+		end
+	end
+
+	def current_role
+		return nil unless current_user
+
+		page = translate_page
+		role = current_user&.roles.find_by(page: page)
+	end
+
+	def find_role page
+		current_user&.roles.find_by(page: page)
 	end
 
 	def active_menu cname, aname = nil
@@ -216,21 +255,4 @@ module ApplicationHelper
   def countries
      Country.all_translated
   end
-
-		def translate_page
-			if ['pages'].include?(controller_name)
-				'overview'
-			elsif ['providers'].include?(controller_name)
-				'provider_app'
-			else
-				controller_name
-			end
-		end
-
-		def current_role
-			return nil unless current_user
-
-			page = translate_page
-			role = current_user&.roles.find_by(page: page)
-		end
 end

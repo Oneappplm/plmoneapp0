@@ -20,10 +20,10 @@
 				<thead>
 					<tr>
 						<th scope="col" class="bg-primary text-white">Page</th>
-						<th scope="col" class="bg-primary text-white">View
+						<th scope="col" class="bg-primary text-white">Full Access
 							<%= check_box_tag "role_based_can_read"%>
 						</th>
-						<th scope="col" class="bg-primary text-white">Create
+						<!-- <th scope="col" class="bg-primary text-white">Create
 							<%= check_box_tag "role_based_can_create"%>
 						</th>
 						<th scope="col" class="bg-primary text-white">Update
@@ -31,7 +31,7 @@
 						</th>
 						<th scope="col" class="bg-primary text-white">Delete
 							<%= check_box_tag "role_based_can_delete"%>
-						</th>
+						</th> -->
 					</tr>
 				</thead>
 				<tbody>
@@ -41,7 +41,7 @@
 						<td>
 							<%= check_box_tag "role_based[#{role_based.id}][can_read]", 1, role_based.can_read, class: 'role-based-access can-read' %>
 						</td>
-						<td>
+						<!-- <td>
 							<%= check_box_tag "role_based[#{role_based.id}][can_create]", 1, role_based.can_create, class: 'role-based-access can-create' %>
 						</td>
 						<td>
@@ -49,7 +49,7 @@
 						</td>
 						<td>
 							<%= check_box_tag "role_based[#{role_based.id}][can_delete]", 1, role_based.can_delete, class: 'role-based-access can-delete' %>
-						</td>
+						</td> -->
 					</tr>
 					<% end %>
 				</tbody>
@@ -65,7 +65,7 @@
   var checkboxValue = checkbox.is(':checked');
   var roleId = checkbox.attr('name').match(/\[([^[\]]+)\]/)[1];
   var attributeName = checkbox.attr('name').match(/\]\[([^[\]]+)\]$/)[1];
-		var update_url = "/role-based-access/"+roleId+"/update_access";
+		var update_url = "/settings/role-based-access/"+roleId+"/update_access";
 
 		$.post(update_url, {authenticity_token: $('meta[name="csrf-token"]').attr('content'), attribute_name: attributeName, attribute_value: checkboxValue});
 });

@@ -84,3 +84,4 @@ gem "fog-aws" # https://github.com/fog/fog-aws
 gem 'rack-cors'
 gem 'nokogiri'
 gem 'mechanize', '~> 2.7', '>= 2.7.6'
+gem 'active_model_serializers'

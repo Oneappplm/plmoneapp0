@@ -42,6 +42,7 @@ class User < ApplicationRecord
   end
 
   after_create :set_sidebar_preferences
+  before_create :generate_api_token
 
   scope :from_enrollment, -> { where(from_source: 'enrollment')}
   scope :not_admin, -> { where.not(user_role: 'administrator') }
@@ -106,6 +107,13 @@ class User < ApplicationRecord
 
   def admin?
     user_role == 'administrator'
+  end
+
+  def generate_api_token
+    self.api_token = loop do
+      random_token = SecureRandom.urlsafe_base64(32)
+      break random_token unless User.exists?(api_token: random_token)
+    end
   end
 
   private
