@@ -9,7 +9,7 @@
 	<div class="row mb-3">
 		<div class="col-lg-6">
 			<%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
-				<%= form.select :role_based, options_for_select(User.where.not(user_role: nil).map{|user| [user.user_role.titleize, user.user_role]}.uniq, params[:role_based]), { prompt: 'Select Role' }, {:class => 'form-select', required: true,  onchange: 'this.form.submit();'}  %>
+				<%= form.select :role_based, options_for_select(Role.all.map{|role|[role.name.titleize, role.slug]}, params[:role_based]), { prompt: 'Select Role' }, {:class => 'form-select', required: true,  onchange: 'this.form.submit();'}  %>
 			<% end %>
 		</div>
 	</div>
