@@ -151,7 +151,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :providers, only: [:index]
+      resources :providers, only: [:index, :create]
       resources :enrollment_providers, only: [:index], path: 'enrollment-providers'
       resources :enroll_groups, only: [:index], path: 'enrollment-groups'
       resources :groups, only: [:index], path: 'groups'

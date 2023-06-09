@@ -71,6 +71,10 @@ class User < ApplicationRecord
         last_name: 'PLM',
       )
     end
+
+    def find_by_token(token)
+      User.find_by(api_token: token)
+    end
   end
 
   def role = user_role&.titleize

@@ -14,7 +14,7 @@ class Provider < ApplicationRecord
   has_many :np_licenses , class_name: 'ProviderNpLicense', dependent: :destroy
   has_many :rn_licenses , class_name: 'ProviderRnLicense', dependent: :destroy
   has_many :comments, class_name: 'EnrollmentComment'
-  
+
   accepts_nested_attributes_for :taxonomies, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :licenses, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :np_licenses, allow_destroy: true, reject_if: :all_blank
@@ -22,6 +22,8 @@ class Provider < ApplicationRecord
 
   validates_presence_of :first_name, :last_name, :birth_date, :practitioner_type,
     :ssn, :npi
+
+  default_scope { where(api_token: nil) }
 
   def provider_name = "#{first_name} #{middle_name} #{last_name}"
   def from_provider_title = "Local Provider"
