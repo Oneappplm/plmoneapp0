@@ -1,7 +1,11 @@
 class ProvidersController < ApplicationController
 	before_action :set_provider, only: [:show, :edit, :update, :destroy]
 	def index
-    @providers = Provider.all
+			@providers = if params[:user_search].present?
+						Provider.search(params[:user_search]).paginate(per_page: 10, page: params[:page] || 1)
+				else
+						Provider.paginate(per_page: 10, page: params[:page] || 1)
+				end
 	end
 
 	def new

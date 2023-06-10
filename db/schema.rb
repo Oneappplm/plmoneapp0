@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_09_103534) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_10_134717) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -500,6 +500,38 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_09_103534) do
     t.string "admitting_facility_arrangments"
     t.integer "enrollment_group_id"
     t.string "api_token"
+    t.string "roster_result"
+    t.string "terminated"
+    t.string "dco_name"
+    t.string "taxonomy"
+    t.string "specialty"
+    t.string "caqh_id"
+    t.string "license_number"
+    t.string "license_effective_date"
+    t.string "license_expiration_date"
+    t.string "np_license_number"
+    t.string "np_license_effective_date"
+    t.string "np_license_expiration_date"
+    t.string "rn_license_number"
+    t.string "rn_license_effective_date"
+    t.string "rn_license_expiration_date"
+    t.string "dea_effective_date"
+    t.string "dea_expiration_date"
+    t.string "liability_issue_date"
+    t.string "liability_expiration_date"
+    t.string "policy_number"
+    t.string "oig"
+    t.string "sam"
+    t.string "medicare"
+    t.string "medicare_revalidation_date"
+    t.string "medicaid"
+    t.string "medicaid_revalidation_date"
+    t.string "molina"
+    t.string "mclaren"
+    t.string "meridian"
+    t.string "aetna"
+    t.string "priority_health"
+    t.string "amerihealth"
   end
 
   create_table "role_based_accesses", force: :cascade do |t|

@@ -4,7 +4,7 @@
 		<div class="col-lg-6">
 			<form class="form_search_with_icon">
 			<div class="">
-				<input type="" name="user_search" class="form-control">
+				<input type="" name="user_search" class="form-control" value="<%=  params[:user_search] %>">
 				<i class="bi bi-search"></i>
 			</div>
 			</form>
@@ -33,6 +33,20 @@
 						<%= render @providers %>
 			  </tbody>
 			</table>
+			<% if @providers %>
+			<div class="col-lg-12">
+							<div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+							<div class="page_info ms-3 text-black">
+															<%= page_entries_info @providers %>
+							</div>
+							<% if params[:per_page ].present? %>
+											<%= will_paginate @providers, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+							<% else %>
+											<%= will_paginate @providers, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+							<% end %>
+							</div>
+			</div>
+			<% end %>
 		</div>
 	</div>
 </div>

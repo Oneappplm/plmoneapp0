@@ -1,4 +1,11 @@
 class Provider < ApplicationRecord
+  include PgSearch::Model
+	pg_search_scope :search,
+          against: self.column_names,
+          using: {
+            tsearch: {any_word: true}
+          }
+
   mount_uploader :dco_file, DocumentUploader
   mount_uploader :school_certificate, DocumentUploader
 
