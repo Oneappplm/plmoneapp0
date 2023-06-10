@@ -7,6 +7,18 @@ class EnrollmentsController < ApplicationController
 		@enrollment_group = Group.all
 	end
 
+	def new
+		@enrollment_group = EnrollmentGroup.new
+		@enrollment_group.details.build
+	end
+
+	def edit
+    # had to add this condition to prvent details fields from duplicating
+    if @enrollment_group.details.blank?
+			@enrollment_group.details.build
+   end
+  end
+
 	# USER
 	def new_user
 		if request.post?
@@ -66,12 +78,13 @@ class EnrollmentsController < ApplicationController
 			end
 		else
 			@enrollment_group = EnrollmentGroup.new
+			@enrollment_group.details.build
 		end
 	end
 
 	def edit_group
 		@enrollment_group = EnrollmentGroup.find params[:id]
-
+		@enrollment_group.details.build
 		if	request.patch?
 			if @enrollment_group.update(group_params)
 				redirect_to groups_enrollments_path, notice: "#{@enrollment_group.group_name} has been successfully updated." and return
@@ -122,6 +135,11 @@ class EnrollmentsController < ApplicationController
 				 :phone_number,
 				 :ext,
 				 :fax_number,
+				 :group_personnel_name,
+				 :group_personnel_email,
+				 :group_personnel_phone_number,
+				 :group_personnel_fax_number,
+				 :group_personnel_position,
 				 :business_group,
 				 :legal_business_name,
 				 :another_business_name,
@@ -149,6 +167,8 @@ class EnrollmentsController < ApplicationController
 					:specific_type_file,
 					:ownership_file,
 					:npi_digit_type_group,
+					details_attributes: [:id, :individual_ownership_first_name, :individual_ownership_middle_name, :individual_ownership_last_name,:individual_ownership_title, :individual_ownership_ssn, :individual_ownership_dob, :individual_ownership_percent_of_ownership, :individual_ownership_effective_date, :individual_ownership_control_date,
+					:_destroy]
 			)
 		end
 

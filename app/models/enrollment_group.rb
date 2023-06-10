@@ -5,6 +5,8 @@ class EnrollmentGroup < ApplicationRecord
   mount_uploader :ownership_file, DocumentUploader
 
   has_many :dcos, class_name: 'GroupDco', dependent: :destroy
+  has_many :details, class_name: 'EnrollmentGroupsDetail'
+  accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank
 
   validates_presence_of :group_name, :group_code, :office_address, :city, :state, :zip_code, :phone_number, :fax_number
 

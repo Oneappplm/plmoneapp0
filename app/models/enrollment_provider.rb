@@ -6,7 +6,7 @@ class EnrollmentProvider < ApplicationRecord
             tsearch: {any_word: true}
           }
 
-  attr_accessor :npi
+  attr_accessor :npi 
 
 	mount_uploader :state_license_file, DocumentUploader
 	mount_uploader :dea_file, DocumentUploader
