@@ -207,6 +207,27 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_10_134717) do
     t.string "cp575_file"
     t.string "specific_type_file"
     t.string "ownership_file"
+    t.string "group_personnel_name"
+    t.string "group_personnel_email"
+    t.string "group_personnel_phone_number"
+    t.string "group_personnel_fax_number"
+    t.string "group_personnel_position"
+  end
+
+  create_table "enrollment_groups_details", force: :cascade do |t|
+    t.bigint "enrollment_group_id"
+    t.string "individual_ownership_first_name"
+    t.string "individual_ownership_middle_name"
+    t.string "individual_ownership_last_name"
+    t.string "individual_ownership_title"
+    t.string "individual_ownership_ssn"
+    t.string "individual_ownership_dob"
+    t.string "individual_ownership_percent_of_ownership"
+    t.date "individual_ownership_effective_date"
+    t.date "individual_ownership_control_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enrollment_group_id"], name: "index_enrollment_groups_details_on_enrollment_group_id"
   end
 
   create_table "enrollment_providers", force: :cascade do |t|
