@@ -28,7 +28,7 @@ class Provider < ApplicationRecord
   accepts_nested_attributes_for :rn_licenses, allow_destroy: true, reject_if: :all_blank
 
   validates_presence_of :first_name, :last_name, :birth_date, :practitioner_type,
-    :ssn, :npi
+    :ssn, :gender, :city, :state, :telephone_number, :ext, :email_address, :taxonomies
 
   default_scope { where(api_token: nil) }
 
