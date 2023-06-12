@@ -2,7 +2,7 @@ class User < ApplicationRecord
   include PgSearch::Model
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
+  devise :invitable, :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
   pg_search_scope :search,
@@ -30,8 +30,8 @@ class User < ApplicationRecord
   }
 
 
-  validates :first_name, presence: true
-  validates :last_name, presence: true
+  validates :first_name, presence: true,  on: :create
+  validates :last_name, presence: true, on: :create
   validate :password_match
 
   with_options :on => :create, if: :from_source_enrollment? do |user|

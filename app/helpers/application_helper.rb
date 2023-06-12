@@ -44,6 +44,8 @@ module ApplicationHelper
 			'provider_app'
 		elsif ['pages', 'systems'].include?(controller_name)
 			'client_portal'
+		elsif ['office_managers'].include?(controller_name)
+			'office_manager'
 		elsif	['roles', 'users'].include?(controller_name)
 			'settings'
 		else
@@ -52,14 +54,16 @@ module ApplicationHelper
 	end
 
 	def current_role
-		return nil unless current_user
+		return nil unless current_user.present?
 
 		page = translate_page
 		role = current_user&.roles.find_by(page: page)
+	rescue
+		nil
 	end
 
 	def find_role page
-		current_user&.roles.find_by(page: page)
+		current_user&.roles.find_by(page: page) rescue	nil
 	end
 
 	def active_menu cname, aname = nil

@@ -51,7 +51,11 @@ Rails.application.routes.draw do
 
   # added these two resources just to make it different to pages_controller for now it doesn't have any model
   resources :verification_platform
-  resources :office_manager
+  resources :office_managers, path: 'office-managers' do
+    collection do
+      post :send_invitation
+    end
+  end
   resources :comments
   resources :query_reports, path: 'query-reports' do
     collection do
@@ -122,7 +126,10 @@ Rails.application.routes.draw do
     get "users", to: "devise/sessions#new"
   end
 
-  devise_for :users
+  devise_for :users, controllers: {
+    invitations: 'users/invitations',
+    sessions: 'users/sessions',
+  }
 
   get 'organization-profile', to: 'users#organization_profile'
   get 'new-user', to: 'users#new'

@@ -669,41 +669,41 @@
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-body">
-                            <div class="content">
+                            <div class="">
                                 <div class="modal-title">
-                                    <h6 class="">Send Email Invitation</h6>
-                                    <p>Providers: 17 selected</p>
+                                    <h1 class="mb-2">Send Email Invitation</h1>
+                                    <!-- <p>Providers: 17 selected</p> -->
                                 </div>
                                 <div class="form-row row">
-                                    <div class="col-xl-6">
-                                        <label for="">Sender Name</label>
-                                        <input type="text" class="form-control" placeholder="">
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <label for="">Email To</label>
-                                        <input type="text" class="form-control" placeholder="">
-                                    </div>
-                                </div>
-                                <div class="form-row row">
-                                    <div class="col-xl-6">
-                                        <label for="">Subject</label>
-                                        <input type="text" class="form-control" placeholder="">
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <label for="">Email CC</label>
-                                        <input type="text" class="form-control" placeholder="">
-                                    </div>
-                                </div>
-                                <div class="form-row row">
+                                    <!-- <div class="col-xl-6">
+                                        <label for="">Sender Name *</label>
+                                        <input type="text" name="sender_name" class="form-control" placeholder="">
+                                    </div> -->
                                     <div class="col-xl-12">
-                                        <label for="">Message</label>
-                                        <textarea name="" id="" class="form-control" cols="30" rows="5"></textarea>
+                                        <label for="">Email To *</label>
+                                        <input type="email" name="email_to" class="form-control" placeholder="">
                                     </div>
                                 </div>
-                                <h6 class="note-heading mt-4">Invite link which will be added by the system</h6>
-                                <p class="note">You are invited to connect to Office Manager account on (link of the website). To agree to designate him/her as your office manager, please click the link. Please do not close your browser until the page completely loads, which may take some time. If you do not wish to accept the invitation, please disregard this message. <a href="">[Click to open link]</a> </p>
+                                <div class="form-row row">
+                                    <!-- <div class="col-xl-12">
+                                        <label for="">Subject *</label>
+                                        <input type="text" name="subject" class="form-control" placeholder="">
+                                    </div> -->
+                                    <!-- <div class="col-xl-6">
+                                        <label for="">Email CC</label>
+                                        <input type="text" name="email_cc" class="form-control" placeholder="">
+                                    </div> -->
+                                </div>
+                                <div class="form-row row">
+                                    <!-- <div class="col-xl-12">
+                                        <label for="">Message *</label>
+                                        <textarea name="message" id="" class="form-control" cols="30" rows="5"></textarea>
+                                    </div> -->
+                                </div>
+                                <!-- <h6 class="note-heading mt-4">Invite link which will be added by the system</h6>
+                                <p class="note">You are invited to connect to Office Manager account on (link of the website). To agree to designate him/her as your office manager, please click the link. Please do not close your browser until the page completely loads, which may take some time. If you do not wish to accept the invitation, please disregard this message. <a href="">[Click to open link]</a> </p> -->
                                 <div class="form-row mt-3">
-                                    <button class="btn btn-manage btn-primary">Send</button>
+                                    <button class="btn btn-manage btn-primary" onclick="sendInvitation()">Send</button>
                                     <button class="btn btn-card-remove fw-bold text-black" data-bs-dismiss="modal">Cancel</button>
                                 </div>
                             </div>
@@ -848,7 +848,7 @@
                                     <div class="modal-title">
                                         <h6 class="text-white">Add Existing Provider to Roster</h6>
                                     </div>
-                                </div>  
+                                </div>
                             </div>
                             <div class="content">
                                 <table class="table">
@@ -899,3 +899,86 @@
             </div>
         </div>
     </div>
+
+    <script>
+     $(document).ready(function() {
+        $('#btn-send-invite').click(function() {
+            // Get the form values
+
+        });
+     });
+
+     function sendInvitation(){
+        var senderName = $('input[name="sender_name"]').val();
+        var emailTo = $('input[name="email_to"]').val();
+        var subject = $('input[name="subject"]').val();
+        var emailCC = $('input[name="email_cc"]').val();
+        var message = $('textarea[name="message"]').val();
+
+        // Perform validation
+        if (senderName === '') {
+            $('input[name="sender_name"]').css('border-color', 'red');
+        } else {
+            $('input[name="sender_name"]').css('border-color', '');
+        }
+
+        if (emailTo === '') {
+            $('input[name="email_to"]').css('border-color', 'red');
+        } else {
+            $('input[name="email_to"]').css('border-color', '');
+        }
+
+        if (subject === '') {
+            $('input[name="subject"]').css('border-color', 'red');
+        } else {
+            $('input[name="subject"]').css('border-color', '');
+        }
+
+        if (message === '') {
+            $('textarea[name="message"]').css('border-color', 'red');
+        } else {
+            $('textarea[name="message"]').css('border-color', '');
+        }
+
+        // Check if any required fields are empty
+        if (senderName === '' || emailTo === '' || subject === '' || message === '') {
+            // Handle validation error (one or more required fields are empty)
+            alert('Please fill in all required fields.');
+            return;
+        }
+
+        $('.loading-overlay').show(); //
+
+        // Add a delay before making the AJAX request (e.g., 2 seconds)
+        setTimeout(function() {
+            // Prepare the data to be sent
+            var data = {
+            senderName: senderName,
+            emailTo: emailTo,
+            subject: subject,
+            emailCC: emailCC,
+            message: message,
+            authenticity_token:  $('meta[name="csrf-token"]').attr('content')
+            };
+
+            // Make the AJAX request
+            $.ajax({
+                url: "<%= send_invitation_office_managers_path %>",
+                type: 'POST',
+                data: data,
+                success: function(response) {
+                    // Handle the success response here
+                    console.log(response);
+                    // Display a success message or perform any other actions
+                    $('.loading-overlay').hide();
+                },
+                error: function(xhr, status, error) {
+                    // Handle the error response here
+                    alert(xhr.responseText);
+                    // Display an error message or perform any other actions
+                    $('.loading-overlay').hide();
+                }
+            });
+        }, 2000); // Adjust the delay time (in milliseconds) as needed
+     }
+    </script>
