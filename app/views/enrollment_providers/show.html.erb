@@ -102,6 +102,32 @@
         </div>
     </div>
 
+     <div class="row mb-3">
+        <div class="col-lg-12">
+          <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <h5 class="mt-2 text-center">Payer Enrollment Details</h5>
+            <% @enrollment_provider&.details.each_with_index do |detail,idx|%>
+            <div class="text-left mt-3">
+              <p class="mb-1"><strong>Start Date:</strong> <%= detail.start_date&.strftime('%m/%d/%Y') %></p>
+               <p class="mb-1"><strong>Enrollment Type:</strong> <%= detail.enrollment_type %></p>
+              <p class="mb-1"><strong>Application Status:</strong> <%= detail&.enrollment_status&.titleize %></p>
+              <p class="mb-1"><strong>Provider ID:</strong>
+              <p class="mb-1"><strong>Group ID:</strong>
+              <p class="mb-1"><strong>Effective Date / Association Start Date:</strong>
+              <p class="mb-1"><strong>Association End Date:</strong>
+              <p class="mb-1"><strong>Business End Date:</strong>
+              <p class="mb-1"><strong>LOB:</strong>
+              <p class="mb-1"><strong>Revalidation Status:</strong> <%= detail&.enrollment_status&.titleize %></p>
+              <p class="mb-1"><strong>Approved Date:</strong> <%= detail&.approved_date&.strftime('%m/%d/%Y') %></p>
+              <p class="mb-1"><strong>Revalidation Date:</strong> <%= detail&.revalidation_date&.strftime('%m/%d/%Y') %></p>
+              <p class="mb-1"><strong>Revalidation Due Date:</strong> <%= detail&.revalidation_due_date&.strftime('%m/%d/%Y') %></p>
+              <p class="mb-1"><strong>Notes:</strong> <%= detail&.comment %></p>
+            </div>
+            <% end %>
+          </div>
+        </div>
+    </div>
+
     <div class="row mb-3">
       <div class="col-lg-12">
         <% if @enrollment_provider.status == 'submitted' %>

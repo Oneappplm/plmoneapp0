@@ -48,39 +48,28 @@
 				<%= f.text_field :phone_number, class: 'form-control border border-dark', placeholder: 'Telephone Number *' %>
 			</div>
 			<div class="col-lg-2">
-        <label class="text-dark-grey">Ext</label>
+        <label class="text-dark-grey">Ext </label>
 				<%= f.text_field :ext, class: 'form-control border border-dark', placeholder: 'Ext' %>
 			</div>
 			<div class="col-lg-6">
-        <label class="text-dark-grey">Fax Number *</label>
+        <label class="text-dark-grey">Fax Number(optional) </label>
 				<%= f.text_field :fax_number, class: 'form-control border border-dark', required:  true ,placeholder: 'Fax Number *' %>
 			</div>
 		</div>
-		<h5>Group Contact Personnel</h5>
-		<div class="row mb-3">
-			<div class="col-lg-6">
-        <label class="text-dark-grey">Name </label>
-				<%= f.text_field :group_personnel_name, class: 'form-control border border-dark', placeholder: 'Name ' %>
-			</div>
-			<div class="col-lg-6">
-        <label class="text-dark-grey">Email </label>
-				<%= f.text_field :group_personnel_email, class: 'form-control border border-dark', placeholder: 'Email ' %>
-			</div>
-		</div>
-		<div class="row mb-3">
-			<div class="col-lg-4">
-        <label class="text-dark-grey">Phone Number </label>
-				<%= f.text_field :group_personnel_phone_number, class: 'form-control border border-dark', placeholder: 'Phone Number ' %>
-			</div>
-			<div class="col-lg-4">
-        <label class="text-dark-grey">Fax Number </label>
-				<%= f.text_field :group_personnel_fax_number, class: 'form-control border border-dark', placeholder: 'Fax Number ' %>
-			</div>
-			<div class="col-lg-4">
-        <label class="text-dark-grey">Position </label>
-				<%= f.text_field :group_personnel_position, class: 'form-control border border-dark', placeholder: 'Position ' %>
-			</div>
-		</div>
+				<div id="contact_personnels">
+            <div class="fields">
+               <%= f.fields_for :contact_personnels do |contact_personnels| %>
+               <%= render 'contact_personnel_fields', f: contact_personnels %>
+               <% end %>
+            </div>
+            <div class="row">
+               <div class="col-lg-12 text-center d-flex justify-content-end">
+                  <div class="links mt-2 mb-3">
+                     <button type="button" class="add_association btn btn-primary btn-s" ><i class="bi bi-plus-lg"></i> Add New Contact </button>
+                  </div>
+               </div>
+            </div>
+    			</div>
 		<div class="row mb-3">
 			<div class="col-lg-12">
 							<%= HtmlUtils.radio_toggle name: 'enrollment_group[business_group]',
@@ -97,7 +86,7 @@
 		<div class="row mb-3">
 			<div class="col-lg-12">
 				<%= HtmlUtils.radio_toggle name: 'enrollment_group[another_business_name]',
-					label: 'Do you have another name?',
+					label: 'Do you have another Group name?',
 					toshow: 'other_name'
 				%>
 				<%= f.hidden_field :another_business_name %>
@@ -196,7 +185,7 @@
 			</div>
 			<div class="row mb-2">
 				<div class="col-lg-12 mb-1">
-					<label class="text-dark-grey">Correspondence Address (if different from biling address)</label>
+					<label class="text-dark-grey">Remittance Address (if Different from Billing Address)</label>
 				</div>
 				<div class="col-lg-6">
           <label class="text-dark-grey">Address or PO Box</label>
@@ -234,7 +223,7 @@
 					<%= HtmlUtils.generate_view_link file_url: @enrollment_group.ownership_file.url %>
 				</div>
 			</div>
-				 <div id="details_fields">
+			 <div id="details">
             <div class="fields">
                <%= f.fields_for :details do |details| %>
                <%= render 'details_fields', f: details %>
@@ -243,7 +232,7 @@
             <div class="row">
                <div class="col-lg-12 text-center">
                   <div class="links mt-2">
-                     <button type="button" class="add_association btn btn-primary btn-s" > Add New </button>
+                     <button type="button" class="add_association btn btn-primary btn-s" ><i class="bi bi-plus-lg"></i>  Add New </button>
                   </div>
                </div>
             </div>
@@ -261,12 +250,20 @@
 
 <script>
 var csrfToken = $('meta[name="csrf-token"]').attr('content');
-	 $("#details_fields").on("click", ".add_association", function () {
-         var detailsFields = $("#details_fields .field");
+		$("#contact_personnels").on("click", ".add_association", function () {
+         var detailsFields = $("#contact_personnels .field");
+         var newEnrollmentdetails = detailsFields.last().clone();
+         var newId = new Date().getTime();
+         newEnrollmentdetails.html(newEnrollmentdetails.html().replace(/contact_personnels_attributes\]\[\d+\]/g, "contact_personnels_attributes][" + newId + "]"));
+         $("#contact_personnels .fields").append(newEnrollmentdetails);
+    });
+
+	 $("#details").on("click", ".add_association", function () {
+         var detailsFields = $("#details .field");
          var newEnrollmentdetails = detailsFields.last().clone();
          var newId = new Date().getTime();
          newEnrollmentdetails.html(newEnrollmentdetails.html().replace(/details_attributes\]\[\d+\]/g, "details_attributes][" + newId + "]"));
-         $("#details_fields .fields").append(newEnrollmentdetails);
+         $("#details .fields").append(newEnrollmentdetails);
     });
 
   $('#group_type_picker').on('change',function(){

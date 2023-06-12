@@ -51,6 +51,7 @@ class EnrollmentProvidersController < ApplicationController
 	protected
 	def set_enrollment_provider
 		@enrollment_provider = EnrollmentProvider.find(params[:id])
+		@enrollment_provider_details = EnrollmentProvidersDetail.find(params[:id])
 	end
 
 	def enrollment_provider_params

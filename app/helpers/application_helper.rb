@@ -138,7 +138,7 @@ module ApplicationHelper
 
 	def mixed_providers_options
 		providers = Provider.all + ProviderSource.all
-		providers.map{|p| ["#{p.provider_name} from #{p.from_provider_title}", p.id]}
+		providers.map{|p| ["#{p.provider_name}", p.id]}
 	end
 
 	# memoization
@@ -211,7 +211,8 @@ module ApplicationHelper
       ['Processing','processing'],
       ['Approved','approved'],
       ['Denied','denied'],
-      ['Terminated','terminated']
+      ['Terminated','terminated'],
+			['Not Eligible','not eligible']
     ]
   end
 
