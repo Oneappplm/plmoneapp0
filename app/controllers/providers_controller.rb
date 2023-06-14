@@ -69,6 +69,7 @@ end
 		@provider.licenses.build if @provider.licenses.blank?
 		@provider.np_licenses.build if @provider.np_licenses.blank?
 		@provider.rn_licenses.build if @provider.rn_licenses.blank?
+		@provider.service_locations.build if @provider.service_locations.blank?
 	end
 
 	def provider_params
@@ -94,14 +95,15 @@ end
 					:dco_file,
           :enrollment_group_id,
 					:address_line_1, :address_line_2, :city, :state, :telephone_number, :ext, :email_address, :provider_hire_date_seeing_patient, :effective_date_seeing_patient,
-					:medicare_provider_number, :medicaid_provider_number, :tricare_provider_number, :admitting_privileges, :revalidation, :employed_by_other, :supervised_by_psychologist,
+					:medicare_provider_number, :medicaid_provider_number, :tricare_provider_number, :telehealth_providers, :admitting_privileges, :revalidation, :employed_by_other, :supervised_by_psychologist,
 					:medical_school_name, :medical_school_address, :graduation_date, :school_certificate, :caqh_username, :caqh_password, :caqh_state, :caqh_app, :caqh_payor,
 					:telehealth_license_number, :board_certification_number, :dea_registration_state, :pa_license_effective_date, :pa_license_expiration_date, :name_admitting_physician,
-					:facility_location, :facility_name, :admitting_facility_address_line1, :admitting_facility_address_line2, :admitting_facility_city, :admitting_facility_zip_code, :admitting_facility_arrangments,
+					:facility_location, :facility_name, :admitting_facility_address_line1, :admitting_facility_address_line2, :admitting_facility_city, :admitting_facility_state, :admitting_facility_zip_code, :admitting_facility_arrangments, :state_license_copy_file, :dea_copy_file, :w9_form_file, :certificate_insurance_file, :drivers_license_file, :board_certification_file, :caqh_app_copy_file, :cv_file, :telehealth_license_copy_file,
 					taxonomies_attributes: [:id, :taxonomy_code, :specialty, :_destroy],
 					licenses_attributes: [:id, :license_number, :license_effective_date, :license_expiration_date, :_destroy],
 					np_licenses_attributes: [:id, :np_license_number, :np_license_effective_date, :np_license_expiration_date, :_destroy],
-					rn_licenses_attributes: [:id, :rn_license_number, :rn_license_effective_date, :rn_license_expiration_date, :_destroy]
+					rn_licenses_attributes: [:id, :rn_license_number, :rn_license_effective_date, :rn_license_expiration_date, :_destroy],
+					service_locations_attributes: [:id, :primary_service_non_office_area, :primary_service_location_apps, :primary_service_zip_code, :primary_service_office_email, :primary_service_fax, :primary_service_office_website, :primary_service_crisis_phone, :primary_service_location_other_phone, :primary_service_appt_scheduling, :primary_service_interpreter_language, :primary_service_telehealth_only_state]
 			)
 	end
 end

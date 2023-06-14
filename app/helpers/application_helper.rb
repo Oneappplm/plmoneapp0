@@ -164,6 +164,10 @@ module ApplicationHelper
     @groups ||= EnrollmentGroup.all
   end
 
+	def group_dcos
+    @group_dcos ||= GroupDco.all
+  end
+
 	def training_types
     @training_types = TrainingType.all
   end
@@ -178,6 +182,10 @@ module ApplicationHelper
 
 	def visa_types
     @visa_types ||= VisaType.all
+  end
+
+	def languages
+    @languages ||= Language.all
   end
 	# memoization
 

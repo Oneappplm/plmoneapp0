@@ -6,8 +6,17 @@ class Provider < ApplicationRecord
             tsearch: {any_word: true}
           }
 
-  mount_uploader :dco_file, DocumentUploader
   mount_uploader :school_certificate, DocumentUploader
+  mount_uploader :state_license_copy_file, DocumentUploader
+  mount_uploader :dea_copy_file, DocumentUploader
+  mount_uploader :w9_form_file, DocumentUploader
+  mount_uploader :certificate_insurance_file, DocumentUploader
+  mount_uploader :drivers_license_file, DocumentUploader
+  mount_uploader :board_certification_file, DocumentUploader
+  mount_uploader :caqh_app_copy_file, DocumentUploader
+  mount_uploader :cv_file, DocumentUploader
+  mount_uploader :telehealth_license_copy_file, DocumentUploader
+
 
   # validates_format_of :telephone_number, with: /\A\d{3}-\d{4}\z/, message: "should be in the format xxx-xxxx"
   # validates_format_of :ext, with: /\A\d{2}\z/, message: "should be in the format xx"
@@ -20,12 +29,14 @@ class Provider < ApplicationRecord
   has_many :licenses , class_name: 'ProviderLicense', dependent: :destroy
   has_many :np_licenses , class_name: 'ProviderNpLicense', dependent: :destroy
   has_many :rn_licenses , class_name: 'ProviderRnLicense', dependent: :destroy
+  has_many :service_locations , class_name: 'ProvidersServiceLocation', dependent: :destroy
   has_many :comments, class_name: 'EnrollmentComment'
 
   accepts_nested_attributes_for :taxonomies, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :licenses, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :np_licenses, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :rn_licenses, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :service_locations, allow_destroy: true, reject_if: :all_blank
 
   validates_presence_of :first_name, :last_name, :birth_date, :practitioner_type,
     :ssn, :gender, :city, :state, :telephone_number, :ext, :email_address, :taxonomies
@@ -62,4 +73,15 @@ class Provider < ApplicationRecord
   def pending
     Client.pending_data.where(provider_name: provider_name).count
   end
+
+  def doc_submitted(doc)
+    # auto check if file is not nil
+    doc = self.send(doc)
+    (doc && doc&.url.nil?) ? false : true
+  end
+
+  def doc_url(doc)
+    doc = self.send(doc)
+    (doc && doc&.url.present?) ? doc&.url : nil
+end
 end

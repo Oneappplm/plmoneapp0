@@ -116,7 +116,6 @@
 						<p class="mb-1"><strong>DEA Registration State:</strong> <%= State.find_by(id: @provider.dea_registration_state)&.name %></p>
 						<p class="mb-1"><strong>DEA License Effective Date:</strong> <%= @provider.dea_license_effective_date%></p>
 						<p class="mb-1"><strong>DEA License Expiration Date:</strong> <%= @provider.dea_license_expiration_date%></p>
-            </div>
 
 						<h5 class="text-center my-3">CAQH</h5>
 						<p class="mb-1"><strong>CAQH ID:</strong> <%= @provider.caqhid %></p>
@@ -129,6 +128,7 @@
 						<h5 class="text-center my-3">Telehealth</h5>
 						<p class="mb-1"><strong>Telehealth Number:</strong> <%= @provider.telehealth_license_number %> </p>
 						<p class="mb-1"><strong>License Registered State:</strong></p>
+						</div>
 					</div>
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
@@ -149,19 +149,38 @@
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
           <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'DCO/Practice Location', collapse_name: 'practice'}%>
           <div class="collapsible" style="<%= current_user&.is_card_open?('practice') ? '' : 'display: none;' %>">
-						<p class="mb-1"><strong>Name:</strong> </p>
-						<p class="mb-1"><strong>Address:</strong> </p>
-						<p class="mb-1"><strong>City:</strong> <%= @provider&.city %> </p>
-						<p class="mb-1"><strong>State:</strong> <%= @provider&.state %> </p>
-						<p class="mb-1"><strong>Zip Code:</strong>  </p>
-						<p class="mb-1"><strong>Country:</strong>  </p>
-						<p class="mb-1"><strong>Service Location Phone:</strong> <%= @provider&.telephone_number %>  </p>
-						<p class="mb-1"><strong>Panel Status to New Patients:</strong>  </p>
-						<p class="mb-1"><strong>Include in Directory?</strong>  </p>
-						<p class="mb-1"><strong>Is this location an inpatient facility?</strong>  </p>
-						<p class="mb-1"><strong>Is this location a clinic?</strong>  </p>
-						<p class="mb-1"><strong>Are Telehealth services provided?</strong>  </p>
+						<p class="mb-1"><strong>Name:</strong> <%= @provider.group_dco&.dco_name %> </p>
+						<p class="mb-1"><strong>Address:</strong> <%= @provider.group_dco&.dco_address %> </p>
+						<p class="mb-1"><strong>City:</strong> <%= @provider.group_dco&.dco_city %> </p>
+						<p class="mb-1"><strong>State:</strong> <%= @provider.group_dco&.state %> </p>
+						<p class="mb-1"><strong>Zip Code:</strong> <%= @provider.group_dco&.dco_zipcode %> </p>
+						<p class="mb-1"><strong>Country:</strong> <%= @provider.group_dco&.county %> </p>
+						<p class="mb-1"><strong>Service Location Phone:</strong> <%= @provider.group_dco&.service_location_phone_number %>  </p>
+						<p class="mb-1"><strong>Panel Status to New Patients:</strong> <%= @provider.group_dco&.panel_status_to_new_patients %>  </p>
+						<p class="mb-1"><strong>Include in Directory?</strong> <%= @provider.group_dco&.include_in_directory %> </p>
+						<p class="mb-1"><strong>Is this location an inpatient facility?</strong> <%= @provider.group_dco&.inpatient_facility %>  </p>
+						<p class="mb-1"><strong>Is this location a clinic?</strong> <%= @provider.group_dco&.is_clinic %> </p>
+						<p class="mb-1"><strong>Are Telehealth services provided?</strong> <%= @provider.group_dco&.telehealth_provider %> </p>
 					</div>
+          </div>
+
+					<div class="card rounded shadow-lg p-1 px-3 mb-3">
+          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Primary Service Location', collapse_name: 'service_location'}%>
+          <div class="collapsible" style="<%= current_user&.is_card_open?('service_location') ? '' : 'display: none;' %>">
+							<% @provider&.service_locations.each_with_index do |service_location,idx|%>
+							<p class="mb-1"><strong>Non-Office Service Area:</strong> <%= service_location.primary_service_non_office_area %> </p>
+							<p class="mb-1"><strong>Apps/Intake Phone:</strong> <%= service_location.primary_service_location_apps %> </p>
+							<p class="mb-1"><strong>Zip Code:</strong> <%= service_location.primary_service_zip_code %> </p>
+							<p class="mb-1"><strong>Office Email Address:</strong> <%= service_location.primary_service_office_email %> </p>
+							<p class="mb-1"><strong>Fax:</strong> <%= service_location.primary_service_fax %>  </p>
+							<p class="mb-1"><strong>Office Website:</strong> <%= service_location.primary_service_office_website %> </p>
+							<p class="mb-1"><strong>Crisis Phone:</strong> <%= service_location.primary_service_crisis_phone %>  </p>
+							<p class="mb-1"><strong>Other Phone/Pager:</strong> <%= service_location.primary_service_location_other_phone %> </p>
+							<p class="mb-1"><strong>Self Service Appt Scheduling Available:</strong> <%= service_location.primary_service_non_office_area %> </p>
+							<p class="mb-1"><strong>Qualified Medical Interpreter Language:</strong> <%= service_location.primary_service_interpreter_language %> </p>
+							<p class="mb-1"><strong>Telehealth Only State/District:</strong> <%= service_location.primary_service_telehealth_only_state %> </p>
+							<% end %>
+						</div>
           </div>
 
 						<div class="card rounded shadow-lg p-1 px-3 mb-3">
@@ -174,39 +193,65 @@
 						<p class="mb-1"><strong>Does the provider require to work under a supervising licensed psychologist:</strong> <%= @provider&.supervised_by_psychologist %>  </p>
 						
 							<h5 class="text-center my-3">Admitting Privileges</h5>
-						<p class="mb-1"><strong>Admitting Physician/Practice/Clinic/Group:</strong>  </p>
+						<p class="mb-1"><strong>Admitting Physician/Practice/Clinic/Group:</strong> <%= @provider&.name_admitting_physician %>  </p>
 						<p class="mb-1"><strong>Facility Name:</strong> <%= @provider&.facility_name %> </p>
-						<p class="mb-1"><strong>Facility Location:</strong> <%= @provider&.facility_location %>  </p>
-						<p class="mb-1"><strong>Address Line 1:</strong> <%= @provider&.admitting_facility_address_line1 %>   </p>
-						<p class="mb-1"><strong>Address Line 2:</strong>  <%= @provider&.admitting_facility_address_line1 %>  </p>
-						<p class="mb-1"><strong>City:</strong> <%= @provider&.admitting_facility_city %>  </p>
-						<p class="mb-1"><strong>State:</strong>  </p>
+						<p class="mb-1"><strong>Facility Location:</strong> <%= @provider&.facility_location %> </p>
+						<p class="mb-1"><strong>Address Line 1:</strong> <%= @provider&.admitting_facility_address_line1 %> </p>
+						<p class="mb-1"><strong>Address Line 2:</strong>  <%= @provider&.admitting_facility_address_line1 %> </p>
+						<p class="mb-1"><strong>City:</strong> <%= @provider&.admitting_facility_city %> </p>
+						<p class="mb-1"><strong>State:</strong> <%= @provider&.admitting_facility_state %> </p>
 						<p class="mb-1"><strong>Zip Code:</strong> <%= @provider&.admitting_facility_zip_code %>  </p>
 						<p class="mb-1"><strong>Admitting Arrangements:</strong> <%= @provider&.admitting_facility_arrangments %> </p>
 					</div>
           </div>
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
-          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Uploaded Documents', collapse_name: 'documents'}%>
-          <div class="collapsible" style="<%= current_user&.is_card_open?('documents') ? '' : 'display: none;' %>">
-						<p>
-							<label for="">School Certificate</label>
-							<%= HtmlUtils.generate_view_link file_url: @provider.school_certificate.url %>
-						</p>
-						<p>
-							<label for="">Practice Location</label>
-							<%= HtmlUtils.generate_view_link file_url: @provider.dco_file.url %>
-						</p>
-            </div>
+          	<%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Uploaded Documents', collapse_name: 'documents'}%>
+						<div class="collapsible" style="<%= current_user&.is_card_open?('documents') ? '' : 'display: none;' %>">
+						<div class="row mb-3">
+							<div class="col-lg-12">
+									<% docs = [['State License Copy', 'state_license_copy_file'], ['DEA Copy', 'dea_copy_file'], ['W9 Form', 'w9_form_file' ], ['Certificate of Insurance', 'certificate_insurance_file' ], ['Drivers License', 'drivers_license_file' ], ['Board Certification', 'board_certification_file' ], ['CAQH App Copy', 'caqh_app_copy_file' ], ['Curriculum Vitae (CV)', 'cv_file' ], ['Telehealth License Copy', 'telehealth_license_copy_file' ] ] %>
+										<div class="text-left text-dark-grey d-flex flex-column">
+										<% docs.each do |doc|%>
+										<label class="text-dark-grey mb-2">
+											<% if  @provider.doc_submitted(doc[1])%>
+												<input type="checkbox" name="" checked>
+											<% else %>
+												<input type="checkbox" name="">
+											<% end %>
+											<%= doc[0]%>
+										</label>
+										<% end %>
+										</div>
+										<div class="text-center my-2">
+											<button class="btn btn-primary btn-sm w-50">Approve Documents</button>
+										</div>
+
+										<div class="d-flex flex-column  gap-2">
+											<% docs.each do |doc|%>
+											<% doc_url = @provider.doc_url(doc[1]) %>
+											<% if !doc_url.nil?%>
+											<div class="card p-2">
+												<div class="d-flex justify-content-between">
+													<a href="<%= doc_url %>" target="_blank" class="text-dark-grey"><%= doc[0]%></a>
+													<a href="<%= doc_url %>" target="_blank" class="text-dark-grey">
+													<i class="bi bi-eye"></i>
+													</a>
+												</div>
+											</div>
+											<% end %>
+											<% end %>
+										</div>
+							</div>
+							</div>
+						</div>
 					</div>
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
-          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Enrollments', collapse_name: 'enrollments'}%>
-          <div class="collapsible" style="<%= current_user&.is_card_open?('enrollments') ? '' : 'display: none;' %>">
-						<% @provider.enrollments.each do |enrollment| %>
-						<p><%= enrollment.enrollment_payer %></p>
-						<% end %>
-            </div>
+          	<%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Enrollments', collapse_name: 'enrollments'}%>
+						<div class="collapsible" style="<%= current_user&.is_card_open?('enrollments') ? '' : 'display: none;' %>">
+							
+							</div>
 					</div>
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3  pb-5">
