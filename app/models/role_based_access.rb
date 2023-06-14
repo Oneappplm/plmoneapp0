@@ -10,12 +10,15 @@ class RoleBasedAccess < ApplicationRecord
 		:verification_platform,
 		:plm_sales_tool,
 		:smart_contract,
-		:settings
+		:settings,
+    :manage_clients,
+    :manage_practitioners,
+    :work_ticklers
 	]
 	CRUD = [:create, :read, :update, :delete]
 
 	default_scope { order(:id) }
-
+  
 	class << self
 		def initialize_access(role_based = 'administrator')
 			return unless role_based.present?

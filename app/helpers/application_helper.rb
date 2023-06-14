@@ -48,6 +48,8 @@ module ApplicationHelper
 			'office_manager'
 		elsif	['roles', 'users'].include?(controller_name)
 			'settings'
+    elsif ['manage_clients'].include?(controller_name)
+      'manage_clients'
 		else
 			controller_name
 		end

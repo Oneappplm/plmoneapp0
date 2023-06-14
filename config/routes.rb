@@ -56,6 +56,11 @@ Rails.application.routes.draw do
       post :send_invitation
     end
   end
+
+  resources :manage_clients, path: 'manage-clients'
+  resources :manage_practitioners, path: 'manage-practitioners'
+  resources :work_ticklers, path: 'work-ticklers'
+
   resources :comments
   resources :query_reports, path: 'query-reports' do
     collection do
