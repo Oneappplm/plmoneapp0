@@ -12,7 +12,17 @@ class Webscraper::OigService < ApplicationService
 	end
 
 	def call
-		options = Selenium::WebDriver::Chrome::Options.new
+
+		if Rails.env.development?
+			options = Selenium::WebDriver::Chrome::Options.new
+		else
+			Selenium::WebDriver::Chrome.path = ENV.fetch('GOOGLE_CHROME_BIN', nil)
+			options = Selenium::WebDriver::Chrome::Options.new(
+					prefs: { 'profile.default_content_setting_values.notifications': 2 },
+					binary: ENV.fetch('GOOGLE_CHROME_SHIM', nil)
+			)
+		end
+
 		options.add_argument('--headless')
 		options.add_argument('--disable-gpu')
 		options.add_argument('--no-sandbox')
