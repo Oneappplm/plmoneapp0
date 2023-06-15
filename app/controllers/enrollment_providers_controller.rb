@@ -87,7 +87,7 @@ class EnrollmentProvidersController < ApplicationController
 			:provider_id,
 			:user_id,
 			:outreach_type,
-      details_attributes: [:id, :start_date, :due_date, :enrollment_payer, :enrollment_type, :enrollment_status, :approved_date, :revalidation_date, :revalidation_due_date, :comment, :ptan_number ,:_destroy],
+      details_attributes: [:id, :start_date, :due_date, :enrollment_payer, :enrollment_type, :enrollment_status, :approved_date, :revalidation_date, :revalidation_due_date, :comment, :ptan_number, :provider_ptan, :group_ptan, :enrollment_tracking_id, :enrollment_effective_date, :association_start_date, :business_end_date, :association_end_date, :line_of_business, :revalidation_status, :_destroy],
 
 		)
 	end

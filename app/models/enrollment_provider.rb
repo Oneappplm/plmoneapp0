@@ -54,6 +54,10 @@ class EnrollmentProvider < ApplicationRecord
 		end
 	end
 
+	def selected_providers
+     self.provider ? self.provider.split(',') : nil
+  end
+
 	def doc_submitted(doc)
 			# auto check if file is not nil
 			doc = self.send(doc)

@@ -217,12 +217,13 @@ module ApplicationHelper
   # not sure why but for some reason this has different options
   def enrollment_status
     [
+			['Application Not Submitted','application-not-submitted'],
       ['Application Submitted','application-submitted'],
       ['Processing','processing'],
       ['Approved','approved'],
       ['Denied','denied'],
       ['Terminated','terminated'],
-			['Not Eligible','not eligible']
+			['Not Eligible','not-eligible']
     ]
   end
 

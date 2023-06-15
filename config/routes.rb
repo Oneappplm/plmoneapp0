@@ -37,6 +37,8 @@ Rails.application.routes.draw do
   post 'change-enrollment-status', to: 'ajax#change_enrollment_status'
   get 'get-provider-types', to: 'ajax#get_provider_types'
   post 'get-selected-provider-types', to: 'ajax#get_selected_provider_types'
+  get 'get-mixed-providers-options', to: 'ajax#get_mixed_providers_options'
+  post 'get-selected-mixed-providers-options', to: 'ajax#get_selected_mixed_providers_options'
   get 'doughnut-data', to: 'ajax#get_dougnut_data'
   post 'get-dashboard-providers', to: 'ajax#get_dashboard_providers'
   post 'update-collapse', to: 'ajax#update_collapse'
