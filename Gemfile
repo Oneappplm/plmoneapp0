@@ -70,8 +70,6 @@ end
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
-  gem "selenium-webdriver"
-  gem "webdrivers"
 end
 
 # additional gems
@@ -86,3 +84,6 @@ gem 'nokogiri'
 gem 'mechanize', '~> 2.7', '>= 2.7.6'
 gem 'active_model_serializers'
 gem 'devise_invitable', '~> 2.0.0' # https://github.com/scambra/devise_invitable
+gem "selenium-webdriver"
+gem "webdrivers"
+gem 'prawn'

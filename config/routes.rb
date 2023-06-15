@@ -159,7 +159,16 @@ Rails.application.routes.draw do
   namespace :enrollment_trackings do
     root to: 'overviews#index'
   end
-  resources :auto_verifies, only: [:index], path: 'auto-verify'
+  resources :auto_verifies, only: [:index], path: 'auto-verify' do
+    collection do
+      resources :oigs do
+        collection do
+          get :download_as_pdf
+        end
+      end
+    end
+  end
+
 
   namespace :api do
     namespace :v1 do

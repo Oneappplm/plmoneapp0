@@ -13,16 +13,30 @@
 
 				<%= form.select :search_state, options_for_select([
 								['PALS','PALS'],
+								['OIG', 'OIG'],
 								['ALASKA','ALASKA'],
 								['CALIFORNIA','CALIFORNIA']
-						], params[:search_state]), { prompt: 'Select State of Practice' }, {:class => 'form-select', required: true}  %>
+						], params[:search_state]), { prompt: 'Select State of Practice' }, {:class => 'form-select'}  %>
 						<br>
 						<label for="">Search by License Number</label>
 				<div class="">
 					<input type="text" name="license_number" value="<%= params[:license_number] %>" class="form-control">
 					<i class="bi bi-search"></i>
 		  </div>
-				<input type="submit" value="Search" class="btn btn-primary mt-2">
+
+				<br>
+				<label for="">OIG FIELDS</label>
+				<div class="oig">
+					<div class="">
+						<input type="text" name="first_name" placeholder="First name" value="<%= params[:first_name] %>" class="form-control">
+					</div>
+					<div class="">
+						<input type="text" name="last_name" placeholder="Last name" value="<%= params[:last_name] %>" class="form-control">
+
+					</div>
+				</div>
+				<br>
+				<input type="submit" value="Search" class="btn btn-primary mt-4">
 			<% end %>
 		</div>
 	</div>
@@ -35,7 +49,31 @@
 				<%= render 'alaska_table' %>
 			<% elsif params[:search_state] == 'CALIFORNIA' %>
 				<%= render 'california_table' %>
+			<% elsif params[:search_state] == 'OIG' %>
+				<%= render 'oig_table' %>
 			<% end %>
 		</div>
 	</div>
 </div>
+
+<script>
+	$(document).ready(function() {
+		$('.oig').hide();
+		setInterval(function() {
+			$('select[name="search_state"]').trigger('change');
+		}, 500);
+
+		$('select[name="search_state"]').change(function() {
+			if ($(this).val() == 'OIG') {
+				$('.oig').show();
+			} else {
+				$('.oig').hide();
+			}
+		});
+
+		// show loader when search button is clicked
+		$('input[type="submit"]').click(function() {
+			$('.loading-overlay').show();
+		});
+	});
+</script>
