@@ -1,4 +1,5 @@
 class PagesController < ApplicationController
+  include Sys
 	before_action :set_global_search, only: [:virtual_review_committee]
 	before_action :set_clients, only: %i[client_portal show_client_details data_access]
 	before_action :search_clients, only: %i[client_search data_access]
@@ -19,6 +20,9 @@ class PagesController < ApplicationController
 	layout "public_application", only: %i[terms privacy_policy data_access]
 	layout "overview", only: %i[dashboard]
 
+  # Will be used to convert bytes to gb
+  GB_DISIVOR = 1073741824
+
 	def provider_source
 		@provider_sources = ProviderSource.all
 		@provider_source = ProviderSource.new
@@ -29,9 +33,19 @@ class PagesController < ApplicationController
 		end
 	end
 
-  # def dashboard
-  #   render "dashboard_old"
-  # end
+  def dashboard
+    stat = Sys::Filesystem.stat('/')
+    total_size_bytes = stat.blocks * stat.block_size
+    free_size_bytes = stat.blocks_available * stat.block_size
+    used_size_bytes = total_size_bytes - free_size_bytes
+
+    @total_size_gb = total_size_bytes/GB_DISIVOR
+    @free_size_gb = free_size_bytes/GB_DISIVOR
+    @used_size_gb = used_size_bytes/GB_DISIVOR
+    @used_size_percent = ((used_size_bytes.to_f/total_size_bytes.to_f) * 100).to_i
+    @free_size_percent = ((free_size_bytes.to_f/total_size_bytes.to_f) * 100).to_i
+    # render json: @free_size_percent and return
+  end
 
 	def plm_sales_tool
 		render layout: 'plm_sales_tool'

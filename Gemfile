@@ -87,3 +87,5 @@ gem 'devise_invitable', '~> 2.0.0' # https://github.com/scambra/devise_invitable
 gem "selenium-webdriver"
 gem "webdrivers"
 gem 'prawn'
+gem 'sys-filesystem' #https://github.com/djberg96/sys-filesystem/tree/32bit_linux
+
