@@ -22,8 +22,10 @@ class ApplicationService
 			crawl!
 			success!
 		rescue => exception
-      save_screenshot
-			crawler.quit() if crawler
+      if crawler
+        save_screenshot
+			  crawler.quit()
+      end
 			error!(exception)
 		end
   end
@@ -69,6 +71,8 @@ class ApplicationService
   def save_screenshot
     crawler.manage.window.resize_to(1024, 1024)
 		crawler.save_screenshot(PUBLIC_PATH.join(crawler_folder_name, SCREENSHOT_FILENAME))
+  rescue => exception
+    nil
   end
 
   def initialize_folder_path!
