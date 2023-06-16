@@ -69,6 +69,7 @@ class ApplicationService
   end
 
   def save_screenshot
+    crawler.execute_script('window.scrollTo(0,0);')
     crawler.manage.window.resize_to(1024, 1024)
 		crawler.save_screenshot(PUBLIC_PATH.join(crawler_folder_name, SCREENSHOT_FILENAME))
   rescue => exception

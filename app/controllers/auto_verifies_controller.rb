@@ -10,6 +10,8 @@ class AutoVerifiesController < ApplicationController
 				Webscraper::StateCaliforniaService.call(params[:license_number])
 			elsif search_state == 'oig'
 				Webscraper::OigService.call(params[:last_name], params[:first_name])
+			elsif	search_state == 'sam'
+				Webscraper::SamService.call(params[:last_name], params[:first_name])
 			else
 				[]
 			end
