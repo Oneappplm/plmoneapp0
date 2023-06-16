@@ -21,7 +21,8 @@ class PagesController < ApplicationController
 	layout "overview", only: %i[dashboard]
 
   # Will be used to convert bytes to gb
-  GB_DISIVOR = 1073741824
+  GB_DISIVOR = 1_073_741_824
+  MB_DIVISOR = 1_048_576
 
 	def provider_source
 		@provider_sources = ProviderSource.all
@@ -42,6 +43,7 @@ class PagesController < ApplicationController
     @total_size_gb = total_size_bytes/GB_DISIVOR
     @free_size_gb = free_size_bytes/GB_DISIVOR
     @used_size_gb = used_size_bytes/GB_DISIVOR
+    @used_size_mb = used_size_bytes/MB_DIVISOR
     @used_size_percent = ((used_size_bytes.to_f/total_size_bytes.to_f) * 100).to_i
     @free_size_percent = ((free_size_bytes.to_f/total_size_bytes.to_f) * 100).to_i
     # render json: @free_size_percent and return
