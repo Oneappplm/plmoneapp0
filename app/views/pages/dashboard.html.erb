@@ -326,3 +326,143 @@
       </div>
    </div>
 </div>
+<script src="/dist/app.js" > </script>
+<script >
+   document.addEventListener("DOMContentLoaded", function () {
+   var clientData = [];
+   getClientDataForDoughnutGraph();
+   createDoughnutGraph();
+
+   function createDoughnutGraph() {
+      new Chart(document.getElementById("chartjs-doughnut"), {
+            type: "doughnut",
+            data: {
+              labels: ["Attested", "No Application", "Complete Application", "Incomplete Application","Pending Data Entry","In Process", "PSV", "Returned"],
+              datasets: [{
+                data: clientData,
+                backgroundColor: [
+                "#00a2ff",
+                "#8f00ff",
+                "#7bb31a",
+                "#ff0032",
+                "#ffc107",
+                "#ff9800",
+                "#000000",
+                "#b74200"
+                ],
+                borderColor: "transparent"
+              }]
+            },
+            options: {
+              maintainAspectRatio: false,
+              cutoutPercentage: 30,
+              legend: {
+                display: false
+              }
+            }
+          });
+   }
+
+   function createBarGraph() {
+    new Chart(document.getElementById("chartjs-bar"), {
+       type: "bar",
+       data: {
+          labels: ["", "", "", "", "", "", "", ""],
+          datasets: [{
+             label: "",
+             backgroundColor: [
+                "#00a2ff",
+                "#8f00ff",
+                "#7bb31a",
+                "#ff0032",
+                "#ffc107",
+                "#ff9800",
+                "#000000",
+                "#b74200"
+             ],
+             // borderColor: window.theme.primary,
+             // hoverBackgroundColor: window.theme.primary,
+             // hoverBorderColor: window.theme.primary,
+             data: clientData,
+             barPercentage: .75,
+             categoryPercentage: .9
+          }]
+       },
+       options: {
+          maintainAspectRatio: false,
+          legend: {
+             display: false
+          },
+          scales: {
+             yAxes: [{
+                gridLines: {
+                   display: false
+                },
+                stacked: false,
+                ticks: {
+                   stepSize: 20
+                }
+             }],
+             xAxes: [{
+                stacked: false,
+                gridLines: {
+                   color: "transparent"
+                }
+             }]
+          },
+          tooltips: {
+             callbacks: {
+                label: function (tooltipItem, data) {
+                   var value = tooltipItem.value;
+                   return value;
+                }
+             }
+          }
+       }
+    });
+   }
+
+  $('.provider-range-selector').on('change',function() {
+    // alert('hah')
+    getProviderCount($(this).val());
+  })
+  var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+  function getProviderCount(range) {
+    $.ajax({
+      url: '<%= get_dashboard_providers_path %>',
+      method: 'POST',
+      data: { authenticity_token: csrfToken, range: range },
+      success: function(data) {       
+        var providers = data['providers'];
+        var order_of_providers = ["new","assigned","completed","terminated","unassigned"];
+        for (var i = 0; i < providers.length; i++) {
+          $('#'+order_of_providers[i]+"_providers").html(providers[i]);
+        }
+      }
+    })
+  }
+
+  function getClientDataForDoughnutGraph()
+    {
+      $.ajax({
+        url: "<%= doughnut_data_path %>",
+        method: "GET",
+        data: { authenticity_token: csrfToken },
+        success: function(data) {
+          clientData = data['clients'];
+          clientPercentage = data['percentages'];
+          createBarGraph();
+          createDoughnutGraph();
+
+          var order_of_status = ["attested", "no-application", "complete-application", "incomplete-application","pending-data-entry","in-process", "psv", "returned"]
+
+          for (var i = 0; i < clientPercentage.length; i++) {
+            $('.col-'+order_of_status[i]).html(clientPercentage[i]+'%');
+            $('.col-'+order_of_status[i]).addClass('text-center');
+          }
+        }
+      })
+  }
+});
+ </script>
