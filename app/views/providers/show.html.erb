@@ -35,7 +35,7 @@
 		</div>
 		<div class="col-lg-4">
 			<div class="row">
-				<div class="col-lg-12">
+				<div id="provider-sidebar" class="col-lg-12">
 					<div class="card rounded p-1 shadow-lg px-3 mb-3">
 						<p class="mb-0"><strong>Data Encoder: <%= @provider.encoded_by %></strong></p>
 						<p class="mb-3"><strong>Encoded: <%= @provider.created_at%></strong></p>
@@ -76,7 +76,7 @@
 								<p class="mb-1"><strong>Taxonomy specialty :</strong> <%= taxonomy.specialty %></p>
 							<% end %>
 						</div>
-					</div>	
+					</div>
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
           <%= render partial: "global_components/collapsible_sidebar_header", locals: { title: 'Licenses & Numbers', collapse_name: 'licenses'}%>
           <div class="collapsible" style="<%= current_user&.is_card_open?('licenses') ? '' : 'display: none;' %>">
@@ -85,7 +85,7 @@
 						<p class="mb-1"><strong>Medicare Number:</strong> <%= @provider.medicare_provider_number %> </p>
 						<p class="mb-1"><strong>Medicaid Number:</strong> <%= @provider.medicaid_provider_number %></p>
 						<p class="mb-1"><strong>Tricare Number:</strong> <%= @provider.tricare_provider_number %> </p>
-						
+
 							<h5 class="text-center my-3">State License</h5>
 							<p class="mb-1"><strong>State License Number:</strong> <%= @provider.nccpa_number %></p>
 							<p class="mb-1"><strong>State License Effective Date:</strong> <%= @provider.pa_license_effective_date %></p>
@@ -124,7 +124,7 @@
 						<p class="mb-1"><strong>CAQH Username:</strong> <%= @provider.caqh_username %></p>
 						<p class="mb-1"><strong>CAQH Password:</strong> <%= @provider.caqh_password %></p>
 						<p class="mb-1"><strong>CAQH State:</strong> <%= @provider.caqh_state %></p>
-						
+
 						<h5 class="text-center my-3">Telehealth</h5>
 						<p class="mb-1"><strong>Telehealth Number:</strong> <%= @provider.telehealth_license_number %> </p>
 						<p class="mb-1"><strong>License Registered State:</strong></p>
@@ -191,7 +191,7 @@
 						<p class="mb-1"><strong>Are you employed by other groups or facilities:</strong> <%= @provider&.employed_by_other %>  </p>
 						<p class="mb-1"><strong>Have you gone recently through revalidation with any payor:</strong> <%= @provider&.revalidation %>  </p>
 						<p class="mb-1"><strong>Does the provider require to work under a supervising licensed psychologist:</strong> <%= @provider&.supervised_by_psychologist %>  </p>
-						
+
 							<h5 class="text-center my-3">Admitting Privileges</h5>
 						<p class="mb-1"><strong>Admitting Physician/Practice/Clinic/Group:</strong> <%= @provider&.name_admitting_physician %>  </p>
 						<p class="mb-1"><strong>Facility Name:</strong> <%= @provider&.facility_name %> </p>
@@ -250,7 +250,7 @@
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
           	<%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Enrollments', collapse_name: 'enrollments'}%>
 						<div class="collapsible" style="<%= current_user&.is_card_open?('enrollments') ? '' : 'display: none;' %>">
-							
+
 							</div>
 					</div>
 
@@ -262,6 +262,7 @@
             <%= render partial: 'comments/form'%>
 					</div>
 				</div>
+				<%= link_to 'Download', '#', class: 'btn btn-primary' %>
 			</div>
 </div>
 
