@@ -161,11 +161,7 @@ Rails.application.routes.draw do
   end
   resources :auto_verifies, only: [:index], path: 'auto-verify' do
     collection do
-      resources :oigs do
-        collection do
-          get :download_as_pdf
-        end
-      end
+      get :download_as_pdf
     end
   end
 

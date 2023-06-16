@@ -1,53 +1,52 @@
 # frozen_string_literal: true
-require 'nokogiri'
-require 'open-uri'
-require 'mechanize'
-require 'json'
-
 class Webscraper::PalsVerificationService < ApplicationService
 	attr_reader :license_number
 
-	def initialize(license_number	= nil)
+	def initialize(license_number	= 'OS010089L')
 		@license_number = license_number
+		@crawler_folder = 'pals'
 	end
 
 	def call
-		return {}	if license_number.blank?
-		# MD063880L
-		# Bhavank V. Doshi MD
+		crawl
+	end
 
+	def crawl!
+		crawler.get('https://www.pals.pa.gov/')
+		sleep(20)
 
-		agent = Mechanize.new{ |a|
-				a.user_agent_alias = 'Mac Safari'
-			}
+		# find link with href href="#/page/search" and text 'Person Search'
+		link = crawler.find_element(xpath: "//a[contains(., 'Person Search')]")
+		link.click
+		sleep(10)
 
-		headers = {
-			'Accept' => 'application/json, text/plain, */*',
-			'Accept-Language' => 'en-PH,en-US;q=0.9,en;q=0.8',
-			'Content-Type' => 'application/json;charset=UTF-8',
-			'Request-Id' => '|IPueL.pdMlV',
-			'Sec-Ch-Ua' => '"Google Chrome";v="113", "Chromium";v="113", "Not-A.Brand";v="24"',
-			'Sec-Ch-Ua-Mobile' => '?0',
-			'Sec-Ch-Ua-Platform' => '"macOS"',
-			'Sec-Fetch-Dest' => 'empty',
-			'Sec-Fetch-Mode' => 'cors',
-			'Sec-Fetch-Site' => 'same-origin'
-	}
+		# find input with id 'LicenseNo' and set value to license_number
+		input = crawler.find_element(:id, 'LicenseNo')
+		input.send_keys(license_number)
 
-	data = {
-				OptPersonFacility: 'Person',
-				LicenseNumber: license_number,
-				State: '',
-				Country: 'ALL',
-				County: nil,
-				IsFacility: 0,
-				PersonId: nil,
-				PageNo: 1
-		}
+		# find button with type 'submit' and click
+		button = crawler.find_element(:xpath, "//button[@type='submit']")
+		button.click
+		sleep(5)
 
-		url = 'https://www.pals.pa.gov/api/Search/SearchForPersonOrFacilty'
+		# find table with id DataTables_Table_2
+		table = crawler.find_element(:id, 'DataTables_Table_2')
+		# find row with license_number
+		row = table.find_element(xpath: "//tr[contains(., '#{license_number}')]")
+		sleep(2)
 
-		response = agent.post(url, data.to_json, headers)
-		JSON.parse(response.body)
+		# find link in row with ng-click search.getAssetDetail(perDetails.LicenseNumber,perDetails.PersonId,perDetails.LicenseId)
+		link = row.find_element(xpath: "//a[contains(@ng-click, 'search')]")
+		link.click
+		sleep(5)
+
+		# find new page and move to the page
+		crawler.switch_to.window(crawler.window_handles.last)
+		sleep(3)
+
+		save_screenshot
+
+		sleep(2)
+		crawler.quit()
 	end
 end
