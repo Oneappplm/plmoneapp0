@@ -13,12 +13,12 @@ class Webscraper::PalsVerificationService < ApplicationService
 
 	def crawl!
 		crawler.get('https://www.pals.pa.gov/')
-		sleep(20)
+		sleep(10)
 
 		# find link with href href="#/page/search" and text 'Person Search'
 		link = crawler.find_element(xpath: "//a[contains(., 'Person Search')]")
 		link.click
-		sleep(10)
+		sleep(8)
 
 		# find input with id 'LicenseNo' and set value to license_number
 		input = crawler.find_element(:id, 'LicenseNo')
@@ -27,26 +27,25 @@ class Webscraper::PalsVerificationService < ApplicationService
 		# find button with type 'submit' and click
 		button = crawler.find_element(:xpath, "//button[@type='submit']")
 		button.click
-		sleep(5)
+		sleep(3)
 
 		# find table with id DataTables_Table_2
 		table = crawler.find_element(:id, 'DataTables_Table_2')
 		# find row with license_number
 		row = table.find_element(xpath: "//tr[contains(., '#{license_number}')]")
-		sleep(2)
+		sleep(3)
 
 		# find link in row with ng-click search.getAssetDetail(perDetails.LicenseNumber,perDetails.PersonId,perDetails.LicenseId)
 		link = row.find_element(xpath: "//a[contains(@ng-click, 'search')]")
 		link.click
-		sleep(5)
+		sleep(3)
 
 		# find new page and move to the page
 		crawler.switch_to.window(crawler.window_handles.last)
-		sleep(3)
+		sleep(1)
 
 		save_screenshot
 
-		sleep(2)
 		crawler.quit()
 	end
 end
