@@ -476,7 +476,7 @@
       var to_change = $(this).data('tochange');
       $(this).hasClass('active') ? $('input[name='+to_change+']').val('yes') : $('input[name='+to_change+']').val('no');
 
-      saveData($('input[name='+to_change+']'));
+      saveInput($('input[name='+to_change+']'));
     }
 
     if($(this).hasClass('has-to-hide')){
@@ -488,39 +488,13 @@
     show ? $('#'+to_show).removeClass('d-none') : $('#'+to_show).addClass('d-none');
   }
 
-  function saveData(input) {
-      var input = input;
-      // console.log(input.val());
-      var url = '/provider_sources/autosave'; // Replace with the URL for your autosave endpoint
-      var fieldName = input.attr('name');
-      var value = input.val();
 
-      console.log(fieldName)
-        if(fieldName == 'hp-unrestricted-privileges'){
-          // console.log(value);
-        }
-
-      $.ajax({
-          url: url,
-          method: 'POST',
-          dataType: 'json',
-          data: { authenticity_token: csrfToken, field_name: fieldName, value: value },
-          success: function(data) {
-              console.log('Autosaved successfully!');
-          },
-          error: function() {
-              console.log('Autosave failed!');
-          }
-      });
-      getProgress();
-  }
 </script>
 
 <script>
 var csrfToken = $('meta[name="csrf-token"]').attr('content');
-$('input,textarea,select').on('change', function() {
-		  saveInput($(this));
-      getProgress();
+$('input:not([type="hidden"]), textarea, select').on('change', function() {
+	saveInput($(this));
 });
 
 function saveInput(input) {
@@ -540,6 +514,7 @@ function saveInput(input) {
           data: { authenticity_token: csrfToken, field_name: fieldName, value: value },
           success: function(data) {
               console.log('Autosaved successfully!');
+              getProgress();
           },
           error: function() {
               console.log('Autosave failed!');
@@ -548,7 +523,7 @@ function saveInput(input) {
 }
 
 
-$('input,textarea,select').each(function(element) {
+$('input, textarea, select').each(function(element) {
 	var inputName = $(this).attr('name');
 	var inputValue = $(this).val();
   var tagName = $(this).prop('tagName').toLowerCase();
