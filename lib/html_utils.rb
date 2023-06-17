@@ -16,6 +16,7 @@ module HtmlUtils
 		options[:label] ||= ''
 		options[:toshow] ||= ''
     options[:tohide] ||= ''
+    options[:hidden_field] ||= false
 
 		toggle = <<-HTML
 			<div class="#{ options[:container_class] }">
@@ -25,6 +26,12 @@ module HtmlUtils
         <small class="ms-2 fw-semibold text-dark-grey">#{ options[:label] }</small>
 			</div>
 		HTML
+
+    if options[:hidden_field]
+      toggle += <<-HTML
+        <input type="hidden" id="#{ options[:name] }" name="#{ options[:name] }" value="no">
+      HTML
+    end
 
 		toggle.html_safe
 	end
