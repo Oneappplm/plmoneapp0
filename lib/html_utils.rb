@@ -29,7 +29,7 @@ module HtmlUtils
 
     if options[:hidden_field]
       toggle += <<-HTML
-        <input type="hidden" id="#{ options[:name] }" name="#{ options[:name] }" value="no">
+        <input type="hidden" id="#{ options[:name] }" name="#{ options[:name] }" value="#{ ProviderSourceData.find_by(data_key: options[:name])&.data_value }">
       HTML
     end
 

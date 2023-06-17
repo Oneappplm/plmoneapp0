@@ -482,9 +482,6 @@
     if($(this).hasClass('has-to-hide')){
       $(this).hasClass('active') ? toShow($(this).data('tohide'),false) : toShow($(this).data('tohide'),true);
     }
-
-
-
   });
 
   function toShow(to_show,show) {
@@ -609,6 +606,8 @@ $('input,textarea,select').each(function(element) {
 
           } else if(tagName == 'select'){
             displayFieldsFromSelectElement(data, inputName, tagName);
+          }  else if(inputType == 'hidden'){
+            displayFieldsFromHiddenElement(data, inputName, tagName);
           } else {
             displayFieldsFromInputElement(data, inputName, tagName, inputType)
           }
@@ -634,13 +633,13 @@ function displayFieldsFromSelectElement(data, inputName, tagName) {
 }
 
 function displayFieldsFromInputElement(data, inputName, tagName, inputType){
-  if(inputType == 'hidden'){
-    if(data.value == 'yes'){
-      $('input[name="'+inputName+'"]').parent().find('button.btn-toggle').click();
-    }
-  }
-
   $(tagName + '[name="' + inputName + '"]').val(data.value);
+}
+
+function displayFieldsFromHiddenElement(data, inputName, tagName){
+  if(data.value == 'yes'){
+    $('input[name="'+inputName+'"]').parent().find('button.btn-toggle').trigger('click');
+  }
 }
 
 function displayFieldsFromCheckboxElement(data, inputName, tagName){
