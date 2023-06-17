@@ -973,6 +973,17 @@ $('#provider_enrollment_group_id').on('change',function(){
 <script>
   var csrfToken = $('meta[name="csrf-token"]').attr('content');
   var id = $('#enrollment_model_id').val();
+
+  $(document).ready(function() {
+    $('.delete-button').on('click', function(e) {
+      var confirmationMessage = $(this).data('confirm');
+
+      if (!confirm(confirmationMessage)) {
+        e.preventDefault();
+      }
+    });
+  });
+
   $(document).on('click', '.enrollment-update-status',function() {
     var model = $(this).data('model');
     var status = $(this).data('status');
@@ -987,7 +998,6 @@ $('#provider_enrollment_group_id').on('change',function(){
         $('#status_identified').html('ID: ' + data['id'] + ' Enrollment ' + data['status']);
       }
     })
-
   });
 
   function changeBtnToDisable(btn) {

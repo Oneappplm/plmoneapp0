@@ -38,6 +38,15 @@ class UsersController < ApplicationController
 		end
 	end
 
+	def destroy
+		@user = User.find(params[:id])
+		if @user.destroy
+			redirect_to users_path, notice: 'User has been successfully deleted.'
+		else
+			redirect_to users_path, alert: 'Something went wrong.'
+		end
+	end
+
 	def organization_profile;end
 
 	def show;end
