@@ -1,0 +1,58 @@
+function createBarGraph() {
+   new Chart(document.getElementById("chartjs-bar"), {
+      type: "bar",
+      data: {
+         labels: ["", "", "", "", "", "", "", ""],
+         datasets: [{
+            label: "",
+            backgroundColor: [
+               "#00a2ff",
+               "#8f00ff",
+               "#7bb31a",
+               "#ff0032",
+               "#ffc107",
+               "#ff9800",
+               "#000000",
+               "#b74200"
+            ],
+            // borderColor: window.theme.primary,
+            // hoverBackgroundColor: window.theme.primary,
+            // hoverBorderColor: window.theme.primary,
+            data: clientData,
+            barPercentage: .75,
+            categoryPercentage: .9
+         }]
+      },
+      options: {
+         maintainAspectRatio: false,
+         legend: {
+            display: false
+         },
+         scales: {
+            yAxes: [{
+               gridLines: {
+                  display: false
+               },
+               stacked: false,
+               ticks: {
+                  stepSize: 20
+               }
+            }],
+            xAxes: [{
+               stacked: false,
+               gridLines: {
+                  color: "transparent"
+               }
+            }]
+         },
+         tooltips: {
+            callbacks: {
+               label: function (tooltipItem, data) {
+                  var value = tooltipItem.value;
+                  return value;
+               }
+            }
+         }
+      }
+   });
+}

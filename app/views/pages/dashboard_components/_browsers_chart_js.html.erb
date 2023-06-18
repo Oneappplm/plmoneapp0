@@ -1,0 +1,37 @@
+function getBrowserVisits() {
+   $.ajax({
+    url: '<%= browser_visits_path %>',
+    method: 'GET',
+    data: {
+         authenticity_token: csrfToken
+      },
+    success: function(data) {
+      browserData = data['browser_data'];
+      createBrowserDoughnutGraph();
+    }
+  })
+ }
+   function createBrowserDoughnutGraph() {
+   new Chart(document.getElementById("browser-doughnut-chart"), {
+      type: "doughnut",
+      data: {
+         labels: ["Chrome", "Safari", "Firefox"],
+         datasets: [{
+            data: browserData,
+            backgroundColor: [
+               "#FFA723",
+               "#59A7FF",
+               "#FF2525"
+            ],
+            borderColor: "transparent"
+         }]
+      },
+      options: {
+         maintainAspectRatio: false,
+         cutoutPercentage: 30,
+         legend: {
+            display: false
+         }
+      }
+   });
+}

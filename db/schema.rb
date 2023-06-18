@@ -10,9 +10,51 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_12_123314) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_18_210330) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "ahoy_events", force: :cascade do |t|
+    t.bigint "visit_id"
+    t.bigint "user_id"
+    t.string "name"
+    t.jsonb "properties"
+    t.datetime "time"
+    t.index ["name", "time"], name: "index_ahoy_events_on_name_and_time"
+    t.index ["properties"], name: "index_ahoy_events_on_properties", opclass: :jsonb_path_ops, using: :gin
+    t.index ["user_id"], name: "index_ahoy_events_on_user_id"
+    t.index ["visit_id"], name: "index_ahoy_events_on_visit_id"
+  end
+
+  create_table "ahoy_visits", force: :cascade do |t|
+    t.string "visit_token"
+    t.string "visitor_token"
+    t.bigint "user_id"
+    t.string "ip"
+    t.text "user_agent"
+    t.text "referrer"
+    t.string "referring_domain"
+    t.text "landing_page"
+    t.string "browser"
+    t.string "os"
+    t.string "device_type"
+    t.string "country"
+    t.string "region"
+    t.string "city"
+    t.float "latitude"
+    t.float "longitude"
+    t.string "utm_source"
+    t.string "utm_medium"
+    t.string "utm_term"
+    t.string "utm_content"
+    t.string "utm_campaign"
+    t.string "app_version"
+    t.string "os_version"
+    t.string "platform"
+    t.datetime "started_at"
+    t.index ["user_id"], name: "index_ahoy_visits_on_user_id"
+    t.index ["visit_token"], name: "index_ahoy_visits_on_visit_token", unique: true
+  end
 
   create_table "clients", force: :cascade do |t|
     t.string "full_name"
@@ -294,6 +336,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_12_123314) do
     t.text "comment"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "provider_ptan"
+    t.string "group_ptan"
+    t.integer "enrollment_tracking_id"
+    t.string "enrollment_effective_date"
+    t.string "association_start_date"
+    t.string "business_end_date"
+    t.string "association_end_date"
+    t.string "line_of_business"
+    t.string "revalidation_status"
     t.index ["enrollment_provider_id"], name: "index_enrollment_providers_details_on_enrollment_provider_id"
   end
 
@@ -560,6 +611,35 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_12_123314) do
     t.string "aetna"
     t.string "priority_health"
     t.string "amerihealth"
+    t.string "telehealth_providers"
+    t.string "admitting_facility_state"
+    t.string "state_license_copy_file"
+    t.string "dea_copy_file"
+    t.string "w9_form_file"
+    t.string "certificate_insurance_file"
+    t.string "drivers_license_file"
+    t.string "board_certification_file"
+    t.string "caqh_app_copy_file"
+    t.string "cv_file"
+    t.string "telehealth_license_copy_file"
+  end
+
+  create_table "providers_service_locations", force: :cascade do |t|
+    t.bigint "provider_id"
+    t.string "primary_service_non_office_area"
+    t.string "primary_service_location_apps"
+    t.string "primary_service_zip_code"
+    t.string "primary_service_office_email"
+    t.string "primary_service_fax"
+    t.string "primary_service_office_website"
+    t.string "primary_service_crisis_phone"
+    t.string "primary_service_location_other_phone"
+    t.string "primary_service_appt_scheduling"
+    t.string "primary_service_interpreter_language"
+    t.string "primary_service_telehealth_only_state"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_providers_service_locations_on_provider_id"
   end
 
   create_table "role_based_accesses", force: :cascade do |t|
@@ -702,6 +782,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_12_123314) do
     t.string "assignment_indicator"
     t.string "orig_synch_date"
     t.string "review_details"
+  end
+
+  create_table "visa_types", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "webscraper_alaska_states", force: :cascade do |t|

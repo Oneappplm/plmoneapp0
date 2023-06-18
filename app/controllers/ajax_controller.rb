@@ -16,7 +16,6 @@ class AjaxController < ApplicationController
 
     head :ok
   end
-
   def get_group_dcos
     id = params[:group_id]
     group = EnrollmentGroup.find_by(id: id) if params[:group_id] != 'all'
@@ -127,5 +126,28 @@ class AjaxController < ApplicationController
       UserSidebarPreference.create(user_id: current_user&.id, collapse_name: collapse_name, is_open: false)
     end
     head :ok
+  end
+
+  def get_monthly_visits
+     months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+     current_month = Time.now.strftime('%B')
+     month_range = months_before = months.slice(0, months.index(current_month) + 1)
+      # for now only available is hvhs
+     visit_data = []
+     month_range.each_with_index do |m,idx|
+      visit_data << Visit.hvhs_count(idx+1)
+     end
+
+     render json: {
+      'visits' => visit_data
+     }
+  end
+
+  def browser_visits
+    browser_data = [Visit.chrome_count, Visit.safari_count, Visit.firefox_count]
+
+    render json: {
+      'browser_data' => browser_data
+    }
   end
 end

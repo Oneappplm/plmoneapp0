@@ -1,0 +1,53 @@
+function getVisitData() {
+   $.ajax({
+      url: '<%= monthly_visits_path %>',
+      method: 'GET',
+      data: {
+         authenticity_token: csrfToken
+      },
+      success: function (data) {
+         visitData = data['visits'];
+         createlinetGraph();
+      }
+   })
+}
+
+function createlinetGraph() {
+   // Get current month and year
+   var today = new Date();
+   var currentMonth = today.getMonth() + 1;
+   var currentYear = today.getFullYear();
+
+   // Generate labels for the x-axis (months from January to present month)
+   var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+   var labels = months.slice(0, currentMonth);
+
+   new Chart(document.getElementById("traffic-line-chart"), {
+      type: "line",
+      data: {
+         labels: labels,
+         datasets: [{
+            label: 'Visits',
+            data: visitData,
+            backgroundColor: '#fff',
+            borderColor: '#59A7FF',
+            fill: false,
+            pointRadius: 6
+         }]
+      },
+      options: {
+         responsive: true,
+         legend: {
+            display: false
+         },
+         scales: {
+            y: {
+               beginAtZero: true,
+               ticks: {
+                  stepSize: 1
+               }
+            }
+         }
+      }
+   });
+}

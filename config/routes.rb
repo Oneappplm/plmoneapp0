@@ -42,6 +42,8 @@ Rails.application.routes.draw do
   get 'doughnut-data', to: 'ajax#get_dougnut_data'
   post 'get-dashboard-providers', to: 'ajax#get_dashboard_providers'
   post 'update-collapse', to: 'ajax#update_collapse'
+  get 'monthly-visits', to: 'ajax#get_monthly_visits'
+  get 'browser-visits', to: 'ajax#browser_visits'
 
   resources :provider_sources do
     collection do
