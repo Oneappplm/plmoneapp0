@@ -189,8 +189,6 @@ module ApplicationHelper
   end
 	# memoization
 
-
-
 	def yes_or_no_options
 		[
 			['Yes', 'yes'],
@@ -251,6 +249,10 @@ module ApplicationHelper
       ["Sir","Sir"]
     ]
   end
+
+		def toggle_hide data_key
+			ProviderSourceData.find_by(data_key: data_key)&.hide_class
+		end
 
   def enrollment_group_options
     EnrollmentGroup.all.pluck(:group_name, :id)

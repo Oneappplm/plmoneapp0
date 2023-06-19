@@ -17,10 +17,11 @@ module HtmlUtils
 		options[:toshow] ||= ''
     options[:tohide] ||= ''
     options[:hidden_field] ||= false
+    options[:data] ||= ProviderSourceData.find_by(data_key: options[:name])
 
 		toggle = <<-HTML
 			<div class="#{ options[:container_class] }">
-        <button type="button" class="#{ options[:button_class] }" data-tochange="#{ options[:name] }" data-toshow="#{ options[:toshow] }" data-toggle="button" aria-pressed="false" autocomplete="off" data-tohide="#{options[:tohide]}">
+        <button type="button" class="#{ options[:button_class] } #{ options[:data]&.active_class }" data-tochange="#{ options[:name] }" data-toshow="#{ options[:toshow] }" data-toggle="button" aria-pressed="false" autocomplete="off" data-tohide="#{options[:tohide]}">
           <div class="handle"></div>
         </button>
         <small class="ms-2 fw-semibold text-dark-grey">#{ options[:label] }</small>
@@ -29,12 +30,13 @@ module HtmlUtils
 
     if options[:hidden_field]
       toggle += <<-HTML
-        <input type="hidden" id="#{ options[:name] }" name="#{ options[:name] }" value="#{ ProviderSourceData.find_by(data_key: options[:name])&.data_value }">
+        <input type="hidden" id="#{ options[:name] }" name="#{ options[:name] }" value="#{ options[:data]&.data_value }">
       HTML
     end
 
 		toggle.html_safe
 	end
+
 
   def radio_options **options
 
