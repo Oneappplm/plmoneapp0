@@ -18,9 +18,9 @@
                </div>
                <div class="col-lg-5">
                   <div class="d-flex align-items-center gap">
-                     <input type="time" name="practice_hours_from" class="form-control">
+                     <input type="time" name="<%= day.downcase %>_practice_hours_from" class="form-control">
                      <label class="mx-2">to</label>
-                     <input type="time" name="practice_hours_to" class="form-control">
+                     <input type="time" name="<%= day.downcase %>_practice_hours_to" class="form-control">
                   </div>
                </div>
                <div class="col-lg-2">
@@ -42,8 +42,7 @@
       <div class="row mb-3">
          <div class="col-lg-12">
             <label class="text-dark-grey">Comments</label>
-            <textarea class="form-control" rows="8">
-            </textarea>
+            <textarea name="practice_comments" class="form-control border-dark" rows="8"></textarea>
          </div>
       </div>
       <div class="row mb-3">
@@ -62,16 +61,16 @@
       <div class="row mb-3">
          <div class="col-lg-12 mb-3">
             <div class="d-flex align-items-center my-3">
-               <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="practice_phone_coverage" data-toshow="phone_coverage_fields" data-toggle="button" aria-pressed="false" autocomplete="off">
-                  <div class="handle"></div>
-               </button>
-               <span class="ms-2"> Does this location have 24 hours/7 days per week telephone coverage? *</span>
+            <%= HtmlUtils.radio_toggle name: 'phone_coverage_field',
+                  label: 'Does this location have 24 hours/7 days per week telephone coverage? *',
+                  toshow: 'phone_coverage_fields',
+                  hidden_field: true
+               %>
             </div>
-            <input type="hidden" value="no" name="practice_phone_coverage">
          </div>
       </div>
 
-      <div class="row mb-3 d-none" id="phone_coverage_fields">
+      <div class="row mb-3 d-none <%= toggle_hide('phone_coverage_field')%> " id="phone_coverage_fields">
         <div class="col-lg-6">
           <label class="text-dark-grey">Telephone Coverage Type</label>
           <select class="form-select border-dark" name="practice_phone_coverage_type">
