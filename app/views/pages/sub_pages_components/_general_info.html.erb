@@ -73,15 +73,15 @@
          <label class="text-dark-grey">Do you offer Telehealth?</label>
          <div>
             <label class="text-dark-grey">
-            <input type="radio" value="yes" name="practice_telehealth">
+            <input type="radio" value="yes" name="offer_telehealth">
             Yes
             </label>
             <label class="text-dark-grey">
-            <input type="radio" value="no" name="practice_telehealth">
+            <input type="radio" value="no" name="offer_telehealth">
             No
             </label>
             <label class="text-dark-grey">
-            <input type="radio" value="n/a" name="practice_telehealth">
+            <input type="radio" value="n/a" name="offer_telehealth">
             N/A
             </label>
          </div>
@@ -107,19 +107,19 @@
          <label class="text-dark-grey">If Telehealth?</label>
          <div>
             <label class="text-dark-grey">
-            <input type="radio" value="Audio" name="practice_exclusive_telehealth">
+            <input type="radio" value="Audio" name="practice_telehealth">
             Audio
             </label>
             <label class="text-dark-grey">
-            <input type="radio" value="Visual" name="practice_exclusive_telehealth">
+            <input type="radio" value="Visual" name="practice_telehealth">
             Visual
             </label>
             <label class="text-dark-grey">
-            <input type="radio" value="Both" name="practice_exclusive_telehealth">
+            <input type="radio" value="Both" name="practice_telehealth">
             Both
             </label>
             <label class="text-dark-grey">
-            <input type="radio" value="n/a" name="practice_exclusive_telehealth">
+            <input type="radio" value="n/a" name="practice_telehealth">
             N/A
             </label>
          </div>
@@ -185,14 +185,13 @@
    <div class="row mb-3">
       <div class="col-lg-12 mb-3">
          <div class="d-flex align-items-center my-3">
-            <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value" data-tochange="has_practice_group_npi" data-toshow="group_npi_fields" data-toggle="button" aria-pressed="false" autocomplete="off">
-               <div class="handle"></div>
-            </button>
-            <span class="ms-2">Do you have Group NPI Number for this location? *</span>
-         </div>
-         <input type="hidden" value="no" name="has_practice_group_npi">
+         <%= HtmlUtils.radio_toggle name: 'group_npi_field',
+            label: 'Do you have Group NPI Number for this location? *',
+            toshow: 'group_npi_fields',
+            hidden_field: true
+          %>
       </div>
-      <div class="col-lg-12 d-none" id="group_npi_fields">
+      <div class="col-lg-12 <%=toggle_hide('has_practice_group_npi')%>" id="group_npi_fields">
          <div class="row">
             <div class="col-lg-6">
                <label class="text-dark-grey">Group NPI Number *</label>
