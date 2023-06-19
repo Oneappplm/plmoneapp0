@@ -27,7 +27,7 @@ class ProviderSourcesController < ApplicationController
 		data.save
 
 		respond_to do |format|
-				format.json { render json: { success: true } }
+				format.json { render json: { success: true, data_key: field_name, data_value: value } }
 		end
 	end
 
