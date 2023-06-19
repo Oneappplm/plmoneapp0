@@ -31,7 +31,7 @@
 								%>
 									<input type="hidden" id="has_dea_registration_number" name="has_dea_registration_number" value="<%= @provider.fetch('has_dea_registration_number').nil? ? 'no' : @provider.fetch('has_dea_registration_number') %>">
 					</div>
-					<div id="dea_form" class="d-none">
+					<div class=" <%=toggle_hide('has_dea_registration_number') %>" id="dea_form">
 						<%= render partial: 'provider_source_components/dea_form'%>
 					</div>
 				</div>
@@ -40,12 +40,12 @@
 					<div class="d-flex align-items-center my-3">
 							<%= HtmlUtils.radio_toggle name: 'has_cds_registration_number',
 								label: 'Do/Did you have a CDS Registration Number? *',
-								toshow: 'cds_form'
+								toshow: 'cds_form',
+								hidden_field:true
 							%>
-							<input type="hidden" id="has_cds_registration_number" name="has_cds_registration_number" value="<%= @provider.fetch('has_cds_registration_number').nil? ? 'no' : @provider.fetch('has_cds_registration_number') %>">
 					</div>
 
-				   <div class="<%= @provider.is_answer_yes?('has_cds_registration_number') ? '' : 'd-none'%>" id="cds_form">
+				   <div class="<%= toggle_hide('has_cds_registration_number')%>" id="cds_form">
 						<%= render partial: 'provider_source_components/cds_form'%>
 					</div>
 
@@ -93,13 +93,13 @@
 					<div class="d-flex align-items-center my-3">
 							<%= HtmlUtils.radio_toggle name: 'has_registration_number',
 								label: 'Do/Did you have a registration number related to your practicing specialty? *',
-								toshow: 'prof_ids_form'
+								toshow: 'prof_ids_form',
+								hidden_field: true
 							%>
-							<input type="hidden" id="has_registration_number" name="has_registration_number" value="<%= @provider.fetch('has_dea_registration_number').nil? ? 'no' : @provider.fetch('has_registration_number') %>">
 					</div>
-				</div>
-				<div id="prof_ids_form" class="<%= @provider.is_answer_yes?('has_registration_number') ? '' : 'd-none'%>">
-					<%= render partial: 'provider_source_components/prof_registration_form'%>
+					<div class="<%= toggle_hide('has_registration_number')%>" id="prof_ids_form">
+						<%= render partial: 'provider_source_components/prof_registration_form'%>
+					</div>
 				</div>
 			</div>
 		</div>
