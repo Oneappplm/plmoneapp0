@@ -15,7 +15,7 @@ class PagesController < ApplicationController
 	before_action :get_services, only: %i[provider_source]
 	before_action :get_education_types, only: %i[provider_source]
 	before_action :set_provider
-  before_action :has_incomplete_tabs, only: [:provider_source]
+ before_action :has_incomplete_tabs, only: [:provider_source]
 
 	layout "public_application", only: %i[terms privacy_policy data_access]
 	layout "overview", only: %i[dashboard]
@@ -246,10 +246,15 @@ class PagesController < ApplicationController
   end
 
   def set_provider
-    @provider = ProviderSource.current
+			if !ProviderSource.current.present?
+				ProviderSource.last.update_columns current_provider_source: true
+			end
+   @provider = ProviderSource.current.take
   end
 
   def has_incomplete_tabs
+				set_provider unless @provider.present?
+
     tabs ||= [@provider.general_information_progress, @provider.professional_ids_progress, @provider.health_plans_progress,
             @provider.specialties_progress, @provider.education_traning_progess, @provider.affiliation_progress, @provider.professional_liability_progress,@provider.work_history_progress, @provider.disclosure_progress ]
     tabs = tabs.map{|tab| tab == 100}
