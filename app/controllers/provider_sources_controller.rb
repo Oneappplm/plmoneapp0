@@ -23,8 +23,7 @@ class ProviderSourcesController < ApplicationController
 		value = params[:value]
 
 		data = current_provider_source.data.find_or_create_by(data_key: field_name)
-		data.data_value = value
-		data.save
+		data.update_columns data_value: value
 
 		respond_to do |format|
 				format.json { render json: { success: true, data_key: field_name, data_value: value } }

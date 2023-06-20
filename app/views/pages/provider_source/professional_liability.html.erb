@@ -33,23 +33,20 @@
 					<div class="row">
 						<div class="col-lg-12">
 							<div class="d-flex align-items-center my-3">
-                  <%= HtmlUtils.radio_toggle name: 'has_sovereign_immunity',
-                      label: 'Do you have a Sovereign Immunity document? *',
-                      toshow: '',
-                      tochange: 'has_sovereign_immunity',
-                      active: "#{@provider.is_answer_yes?('has_sovereign_immunity') ? 'active' : ''}"
-                    %>
+											<%= HtmlUtils.radio_toggle name: 'has_sovereign_immunity',
+															label: 'Do you have a Sovereign Immunity document? *',
+															hidden: true
+											%>
 							</div>
 						</div>
 						<div class="col-lg-12">
 							<div class="d-flex align-items-center my-3">
-                  <%= HtmlUtils.radio_toggle name: 'has_liability_coverage',
-                      label: 'Do/Did you have professional liability coverage within the past ten (10) years? *',
-                      toshow: 'self_insurance_fields',
-                      tochange: 'has_liability_coverage',
-                      tohide: 'lack_of_liability_form',
-                      active: "#{@provider.is_answer_yes?('has_liability_coverage') ? 'active' : ''}"
-                    %>
+										<%= HtmlUtils.radio_toggle name: 'has_liability_coverage',
+														label: 'Do/Did you have professional liability coverage within the past ten (10) years? *',
+														toshow: 'self_insurance_fields',
+												 	hidden_field: true
+
+												%>
 							</div>
 						</div>
             <div class="col-lg-12 <%= @provider.fetch('has_liability_coverage') ? 'd-none' : ''%>" id="lack_of_liability_form">
@@ -57,7 +54,7 @@
               <textarea class="form-control" name="lf-lack-of-liability-coverage" rows="5"></textarea>
             </div>
 					</div>
-          <div class="<%= @provider.fetch('has_liability_coverage') ? '' : 'd-none' %>" id="self_insurance_fields">
+   <div class="<%= toggle_hide('has_liability_coverage') %>" id="self_insurance_fields">
 					<div class="row mt-2" id="">
 						<div class="col-lg-12">
 							<div class="alert alert-info alert-light-blue">

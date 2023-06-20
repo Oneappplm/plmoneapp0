@@ -38,11 +38,10 @@
                       <%= HtmlUtils.radio_toggle name: 'served_in_military',
                       label: 'Have you served in the U.S. Military? *',
                       toshow: 'work_history',
-                      tochange: 'served_in_military',
-                      active: "#{@provider.is_answer_yes?('served_in_military') ? 'active' : ''}"
+                      hidden_field: true
                     %>
 		                  </div>
-		                <div class="<%= @provider.is_answer_yes?('served_in_military') ? '' : 'd-none'%>" id="work_history">
+		                <div class="<%= toggle_hide('served_in_military') %>" id="work_history">
 		                	<%= render "provider_source_components/military_info" %>
 		                </div>
 				 	</div>
@@ -50,5 +49,3 @@
 		</div>
 	</div>
 </div>
-<input type="text" name="served_in_military" value="no" class="invisible-input">
-

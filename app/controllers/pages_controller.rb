@@ -26,7 +26,8 @@ class PagesController < ApplicationController
 
 	def provider_source
 		@provider_sources = ProviderSource.all
-		@provider_source = ProviderSource.new
+		@provider = current_provider_source
+
 		if params[:page].present?
 			render "pages/provider_source/#{params[:page]}", layout: 'provider_source'
 		else

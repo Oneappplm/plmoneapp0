@@ -523,7 +523,7 @@ function saveInput(input) {
 }
 
 
-$('input:not([type="hidden"]), textarea, select').each(function(element) {
+$('input, textarea, select').each(function(element) {
 	var inputName = $(this).attr('name');
 	var inputValue = $(this).val();
   var tagName = $(this).prop('tagName').toLowerCase();
@@ -622,7 +622,15 @@ function displayFieldsFromInputElement(data, inputName, tagName, inputType){
 
 function displayFieldsFromHiddenElement(data, inputName, tagName){
   if(data.value == 'yes'){
-    $('input[name="'+inputName+'"]').parent().find('button.btn-toggle').trigger('click');
+    var element = $('[data-tochange="'+inputName+'"]');
+    var to_show_id = $(element).data('toshow');
+
+    $(element).addClass('active')
+    $('#' + to_show_id).removeClass('d-none');
+  }else{
+    var element = $('[data-tochange="'+inputName+'"]');
+    var to_show_id = $(element).data('toshow');
+    $('#' + to_show_id).addClass('d-none');
   }
 }
 
