@@ -58,6 +58,7 @@
 							<p class="mb-1"><strong>Address 1:</strong> <%= @provider&.address_line_1 %></p>
 							<p class="mb-1"><strong>Address 2:</strong> <%= @provider&.address_line_2 %></p>
 							<p class="mb-1"><strong>City:</strong> <%= @provider&.city %></p>
+							<p class="mb-1"><strong>Zip code:</strong> <%= @provider&.zip_code %></p>
 							<p class="mb-1"><strong>State:</strong> <%= @provider&.state %></p>
 							<p class="mb-1"><strong>Phone Number:</strong> <%= @provider&.telephone_number %></p>
 							<p class="mb-1"><strong>Ext:</strong> <%= @provider&.ext %></p>
@@ -73,7 +74,7 @@
 
 							<% @provider&.taxonomies.each_with_index do |taxonomy,idx|%>
 								<p class="mb-1"><strong>Taxonomy Code :</strong> <%= taxonomy.taxonomy_code %></p>
-								<p class="mb-1"><strong>Taxonomy specialty :</strong> <%= taxonomy.specialty %></p>
+								<p class="mb-1"><strong>Specialty :</strong> <%= taxonomy.specialty %></p>
 							<% end %>
 						</div>
 					</div>
@@ -93,7 +94,7 @@
 							<p class="mb-1"><strong>License Registration State:</strong> </p>
 
 							<h5 class="text-center my-3">PA License</h5>
-							<p class="mb-1"><strong>NCCPA Number:</strong> <%= @provider.nccpa_number %></p>
+							<p class="mb-1"><strong>PA:</strong> <%= @provider.nccpa_number %></p>
 							<p class="mb-1"><strong>PA Effective Date:</strong> <%= @provider.pa_license_effective_date %></p>
 							<p class="mb-1"><strong>PA Expiration Date:</strong> <%= @provider.pa_license_expiration_date %></p>
 
@@ -102,6 +103,7 @@
 							<p class="mb-1"><strong>NP License:</strong> <%= license.np_license_number %></p>
 							<p class="mb-1"><strong>NP Effective Date:</strong> <%= license.np_license_effective_date %></p>
 							<p class="mb-1"><strong>NP Expiration Date:</strong> <%= license.np_license_expiration_date %></p>
+							</br>
 						<% end %>
 
 							<h5 class="text-center my-3">RN License</h5>
@@ -154,9 +156,11 @@
 						<p class="mb-1"><strong>City:</strong> <%= @provider.group_dco&.dco_city %> </p>
 						<p class="mb-1"><strong>State:</strong> <%= @provider.group_dco&.state %> </p>
 						<p class="mb-1"><strong>Zip Code:</strong> <%= @provider.group_dco&.dco_zipcode %> </p>
-						<p class="mb-1"><strong>Country:</strong> <%= @provider.group_dco&.county %> </p>
+						<p class="mb-1"><strong>County:</strong> <%= @provider.group_dco&.county %> </p>
 						<p class="mb-1"><strong>Service Location Phone:</strong> <%= @provider.group_dco&.service_location_phone_number %>  </p>
+						<p class="mb-1"><strong>Service Location Fax:</strong> <%= @provider.group_dco&.service_location_fax_number %>  </p>
 						<p class="mb-1"><strong>Panel Status to New Patients:</strong> <%= @provider.group_dco&.panel_status_to_new_patients %>  </p>
+						<p class="mb-1"><strong>Panel Age Limit:</strong> <%= @provider.group_dco&.panel_age_limit %>  </p>
 						<p class="mb-1"><strong>Include in Directory?</strong> <%= @provider.group_dco&.include_in_directory %> </p>
 						<p class="mb-1"><strong>Is this location an inpatient facility?</strong> <%= @provider.group_dco&.inpatient_facility %>  </p>
 						<p class="mb-1"><strong>Is this location a clinic?</strong> <%= @provider.group_dco&.is_clinic %> </p>
@@ -255,7 +259,7 @@
 					</div>
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3  pb-5">
-						<h3 class="text-center my-3">Comments</h3>
+					<%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Comments', collapse_name: 'comments'}%>
 						<% @provider.comments.each do |comment|%>
               <%= render partial: 'comments/comment', locals: {comment: comment}%>
             <% end %>
