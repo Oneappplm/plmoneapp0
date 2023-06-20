@@ -251,6 +251,8 @@ class PagesController < ApplicationController
 			end
 
    @provider = ProviderSource.current || ProviderSource.current.last
+		rescue
+			nil
   end
 
   def has_incomplete_tabs
@@ -260,6 +262,8 @@ class PagesController < ApplicationController
             @provider.specialties_progress, @provider.education_traning_progess, @provider.affiliation_progress, @provider.professional_liability_progress,@provider.work_history_progress, @provider.disclosure_progress ]
     tabs = tabs.map{|tab| tab == 100}
     @has_incomplete ||= tabs.include?(false)
+		rescue
+					nil
   end
 
 end
