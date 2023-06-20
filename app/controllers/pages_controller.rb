@@ -249,7 +249,8 @@ class PagesController < ApplicationController
 			if !ProviderSource.current.present?
 				ProviderSource.last.update_columns current_provider_source: true
 			end
-   @provider = ProviderSource.current.take
+
+   @provider = ProviderSource.current || ProviderSource.current.last
   end
 
   def has_incomplete_tabs
