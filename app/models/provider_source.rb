@@ -23,6 +23,7 @@ class ProviderSource < ApplicationRecord
   def degree = fetch('degree_titles')
   def email_address = fetch('email_address')
   def from_provider_title = "Provider App"
+  def user = User.find_by(email: email_address)
 
 	def fetch(key = nil)
 		data.find_by(data_key: key)&.data_value

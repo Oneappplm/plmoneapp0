@@ -73,6 +73,7 @@
             <div class="card-wpr">
              <div class="row">
                 <% @providers.each do |provider| %>
+                <% next unless provider.full_name.present? || provider.email_address.present?%>
                 <div class="col-xl-3 mb-2">
                     <div class="border p-4 rounded shadow h-100">
                        <div class="d-flex justify-content-between">
@@ -114,8 +115,13 @@
                        </div>
                        <div class="row mt-4">
                         <div class="col-lg-12">
-                            <%= link_to 'Manage Application', manage_applications_office_manager_path(provider), class: 'btn btn-manage btn-primary' %>
-                            <%= link_to 'Send Invite', 'javascript::void(0);', class: 'btn btn-manage btn-purple mt-2', onclick: "sendInvite(this)", data: { providerid: provider.id } %>
+
+                            <% if provider.user.present? && provider.user.invitation_accepted? %>
+                                <%= link_to 'Manage Application', manage_applications_office_manager_path(provider), class: 'btn btn-manage btn-primary' %>
+                            <% else %>
+                                <%= link_to 'Send Invite', 'javascript::void(0);', class: 'btn btn-manage btn-purple mt-2', onclick: "sendInvite(this)", data: { providerid: provider.id } %>
+                            <% end%>
+
                             <%= button_to 'Remove', remove_provider_office_manager_path(provider), class: 'btn btn-manage btn-danger mt-2 delete-button', data: {confirm: 'Are you sure?'} %>
                         </div>
                        </div>

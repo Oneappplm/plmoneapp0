@@ -5,7 +5,16 @@ class OfficeManagersController < ApplicationController
     if params[:template].present?
       render params[:template]
     else
+      clean_empty_providers
       @providers = ProviderSource.unscoped.order(created_at: :asc).paginate(page: params[:page], per_page: 10)
+    end
+  end
+
+  def clean_empty_providers
+    ProviderSource.unscoped.each do |provider|
+      if !provider.full_name.present?
+        provider.destroy
+      end
     end
   end
 
