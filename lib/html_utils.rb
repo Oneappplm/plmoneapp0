@@ -30,7 +30,7 @@ module HtmlUtils
 
     if options[:hidden_field]
       toggle += <<-HTML
-        <input type="hidden" id="#{ options[:name] }" name="#{ options[:name] }" value="#{ options[:data]&.data_value }">
+        <input type="hidden" id="#{ options[:name] }" name="#{ options[:name] }" value="#{ options[:data]&.data_value || 'no' }">
       HTML
     end
 

@@ -20,6 +20,8 @@ class ProviderSource < ApplicationRecord
   end
 
   def provider_name = "#{full_name}"
+  def degree = fetch('degree_titles')
+  def email_address = fetch('email_address')
   def from_provider_title = "Provider App"
 
 	def fetch(key = nil)

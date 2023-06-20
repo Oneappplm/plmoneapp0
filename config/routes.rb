@@ -58,6 +58,15 @@ Rails.application.routes.draw do
   resources :office_managers, path: 'office-managers' do
     collection do
       post :send_invitation
+      post :bulk_remove_providers
+      post :send_invite
+    end
+    member do
+      get :manage_applications
+      post :credentialing_application
+      post :view_summary
+      post :re_attest_application
+      post :remove_provider
     end
   end
 

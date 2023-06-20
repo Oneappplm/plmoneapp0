@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_18_210330) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_20_020333) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -249,6 +249,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_18_210330) do
     t.string "cp575_file"
     t.string "specific_type_file"
     t.string "ownership_file"
+    t.string "group_personnel_name"
+    t.string "group_personnel_email"
+    t.string "group_personnel_phone_number"
+    t.string "group_personnel_fax_number"
+    t.string "group_personnel_position"
   end
 
   create_table "enrollment_groups_contact_details", force: :cascade do |t|
@@ -486,6 +491,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_18_210330) do
     t.boolean "current_provider_source", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "invitation_count", default: 0
+    t.datetime "invitation_sent_at"
   end
 
   create_table "provider_taxonomies", force: :cascade do |t|

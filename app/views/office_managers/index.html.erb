@@ -13,7 +13,7 @@
                                 All Provider
                             </span>
                             <div class="card-counter">
-                                <h3 class="text-white">6</h3>
+                                <h3 class="text-white"><%= ProviderSource.count %></h3>
                             </div>
                         </div>
                     </div>
@@ -24,7 +24,7 @@
             <div class="filter-wpr">
                 <div class="row mb-3">
                     <div class="col-xl-5">
-                        <label for="filter-select">Location</label>
+                        <!-- <label for="filter-select">Location</label>
                         <div class="form-wrp">
                             <select name="" id="filter-select" class="form-select">
                                 <option value="All Location">All Location</option>
@@ -34,7 +34,7 @@
                                 <i class="bx bx-trash"></i>
                                 Remove Location
                             </button>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="col-xl-7 button-wpr">
                         <button class="btn btn-primary btn-xs" id="add-provider" data-bs-toggle="modal" data-bs-target="#addProviderModal">
@@ -45,624 +45,106 @@
                             <i class='bx bxs-paper-plane' ></i>
                             Send Invites
                         </button>
-                        <button class="btn btn-danger btn-xs">
+                        <button id="btn-bulk-remove-providers" class="btn btn-danger btn-xs delete-button" data-confirm="Are you sure?">
                             <i class="bx bx-trash"></i>
                             Remove Provider
                         </button>
                     </div>
                 </div>
-                <div class="row result-controls">
-                    <div class="col-xl-6 filter-result">
-                        <h6 class="">Search result: 4 records</h6>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="table-controls">
-                            <div class="control-wrp">
-                                <label for="limit">Show limit</label>
-                                <input type="text" id="limit" class="form-control" value="20">
-                            </div>
-                            <div class="control-wrp">
-                                <label for="page">Page 1 of 32</label>
-                                <input type="text" id="page" class="form-control" value="1">
-                            </div>
+                <div class="row result-controls mb-4">
+                    <div class="col-lg-12">
+                        <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+                           <div class="page_info ms-3 text-black">
+                            <%= page_entries_info @providers, entry_name: 'Providers' %>
+                           </div>
+                           <% if params[:per_page ].present? %>
+                               <%= will_paginate @providers, :params =>  {per_page: params[:page] }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                           <% else %>
+                               <%= will_paginate @providers, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                           <% end %>
                         </div>
                     </div>
                 </div>
             </div>
 
+
+
             <!-- Cards -->
             <div class="card-wpr">
-                <div class="row">
-                    <div class="col-xl-3">
-                        <div class="card card-result">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="result-name">Gallardo, Rosa P.</h6>
-                                    <input class="form-check-input" type="checkbox" value="" id="check-1">
-                                    <label class="form-check-label" for="check-1">
-                                        Default checkbox
-                                    </label>
-                                </div>
-                                <div class="form-row row result-details mt-3">
-                                    <div class="col-xl-6">
-                                        <h6>Attest Date:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 1, 1999</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Degree:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>MSN</p>
-                                    </div>
-                                </div>
-                                <!-- <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Last Invite Sent:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 2, 2022</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Sent invite count:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>10</p>
-                                    </div>
-                                </div> -->
-                                <div class="form-row mt-3 card-buttons pb-3">
-                                    <button class="btn btn-manage btn-primary">Manage Application</button>
-                                    <button class="btn btn-card-remove fw-bold text-black">Remove</button>
-                                </div>
-                            </div>
+             <div class="row">
+                <% @providers.each do |provider| %>
+                <div class="col-xl-3 mb-2">
+                    <div class="border p-4 rounded shadow h-100">
+                       <div class="d-flex justify-content-between">
+                            <h6><%= provider.full_name %></h6>
+                            <input class="form-check-input border-dark" type="checkbox" value="<%= provider.id %>">
+                       </div>
+                       <hr style="margin-top: 8px; margin-bottom: 8px;">
+                       <div class="row">
+                         <div class="col-xl-6">
+                            <h6>Attest Date:</h6>
+                         </div>
+                         <div class="col-xl-6">
+                            <p></p>
+                         </div>
+                       </div>
+                       <div class="row">
+                        <div class="col-xl-6">
+                            <h6>Degree:</h6>
                         </div>
+                        <div class="col-xl-6">
+                            <p><%= provider.degree %></p>
+                        </div>
+                       </div>
+                     <div class="row">
+                        <div class="col-xl-6">
+                            <h6>Last Invite Sent:</h6>
+                        </div>
+                        <div class="col-xl-6">
+                            <p><%= provider&.invitation_sent_at&.strftime("%Y-%m-%d") %></p>
+                        </div>
+                       </div>
+                       <div class="row">
+                        <div class="col-xl-6">
+                            <h6>Sent invite count:</h6>
+                        </div>
+                        <div class="col-xl-6">
+                            <p><%= provider.invitation_count  %></p>
+                        </div>
+                       </div>
+                       <div class="row mt-4">
+                        <div class="col-lg-12">
+                            <%= link_to 'Manage Application', manage_applications_office_manager_path(provider), class: 'btn btn-manage btn-primary' %>
+                            <%= link_to 'Send Invite', 'javascript::void(0);', class: 'btn btn-manage btn-purple mt-2', onclick: "sendInvite(this)", data: { providerid: provider.id } %>
+                            <%= button_to 'Remove', remove_provider_office_manager_path(provider), class: 'btn btn-manage btn-danger mt-2 delete-button', data: {confirm: 'Are you sure?'} %>
+                        </div>
+                       </div>
                     </div>
-                    <div class="col-xl-3">
-                        <div class="card card-result">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="result-name">Gallardo, Rosa P.</h6>
-                                    <input class="form-check-input" type="checkbox" value="" id="check-2">
-                                    <label class="form-check-label" for="check-2">
-                                        Default checkbox
-                                    </label>
-                                </div>
-                                <div class="form-row row result-details mt-3">
-                                    <div class="col-xl-6">
-                                        <h6>Attest Date:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 1, 1999</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Degree:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>MSN</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Last Invite Sent:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 2, 2022</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Sent invite count:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>10</p>
-                                    </div>
-                                </div>
-                                <div class="form-row mt-3 card-buttons pb-3 card-buttons pb-3">
-                                    <button class="btn btn-send-invite btn-purple" data-bs-toggle="modal" data-bs-target=".sendSingleInviteModal">Send Invite</button>
-                                    <button class="btn btn-card-remove fw-bold text-black">Remove</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3">
-                        <div class="card card-result">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="result-name">Gallardo, Rosa P.</h6>
-                                    <input class="form-check-input" type="checkbox" value="" id="check-3">
-                                    <label class="form-check-label" for="check-3">
-                                        Default checkbox
-                                    </label>
-                                </div>
-                                <div class="form-row row result-details mt-3">
-                                    <div class="col-xl-6">
-                                        <h6>Attest Date:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 1, 1999</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Degree:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>MSN</p>
-                                    </div>
-                                </div>
-                                <!-- <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Last Invite Sent:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 2, 2022</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Sent invite count:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>10</p>
-                                    </div>
-                                </div> -->
-                                <div class="form-row mt-3 card-buttons pb-3">
-                                    <button class="btn btn-manage btn-primary">Manage Application</button>
-                                    <button class="btn btn-card-remove fw-bold text-black">Remove</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3">
-                        <div class="card card-result">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="result-name">Gallardo, Rosa P.</h6>
-                                    <input class="form-check-input" type="checkbox" value="" id="check-4">
-                                    <label class="form-check-label" for="check-4">
-                                        Default checkbox
-                                    </label>
-                                </div>
-                                <div class="form-row row result-details mt-3">
-                                    <div class="col-xl-6">
-                                        <h6>Attest Date:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 1, 1999</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Degree:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>MSN</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Last Invite Sent:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 2, 2022</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Sent invite count:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>10</p>
-                                    </div>
-                                </div>
-                                <div class="form-row mt-3 card-buttons pb-3">
-                                    <button class="btn btn-send-invite btn-purple" data-bs-toggle="modal" data-bs-target=".sendSingleInviteModal">Send Invite</button>
-                                    <button class="btn btn-card-remove fw-bold text-black">Remove</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3">
-                        <div class="card card-result">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="result-name">Gallardo, Rosa P.</h6>
-                                    <input class="form-check-input" type="checkbox" value="" id="check-5">
-                                    <label class="form-check-label" for="check-5">
-                                        Default checkbox
-                                    </label>
-                                </div>
-                                <div class="form-row row result-details mt-3">
-                                    <div class="col-xl-6">
-                                        <h6>Attest Date:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 1, 1999</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Degree:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>MSN</p>
-                                    </div>
-                                </div>
-                                <!-- <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Last Invite Sent:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 2, 2022</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Sent invite count:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>10</p>
-                                    </div>
-                                </div> -->
-                                <div class="form-row mt-3 card-buttons pb-3">
-                                    <button class="btn btn-manage btn-primary">Manage Application</button>
-                                    <button class="btn btn-card-remove fw-bold text-black">Remove</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3">
-                        <div class="card card-result">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="result-name">Gallardo, Rosa P.</h6>
-                                    <input class="form-check-input" type="checkbox" value="" id="check-6">
-                                    <label class="form-check-label" for="check-6">
-                                        Default checkbox
-                                    </label>
-                                </div>
-                                <div class="form-row row result-details mt-3">
-                                    <div class="col-xl-6">
-                                        <h6>Attest Date:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 1, 1999</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Degree:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>MSN</p>
-                                    </div>
-                                </div>
-                                <!-- <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Last Invite Sent:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 2, 2022</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Sent invite count:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>10</p>
-                                    </div>
-                                </div> -->
-                                <div class="form-row mt-3 card-buttons pb-3">
-                                    <button class="btn btn-manage btn-primary">Manage Application</button>
-                                    <button class="btn btn-card-remove fw-bold text-black">Remove</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3">
-                        <div class="card card-result">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="result-name">Gallardo, Rosa P.</h6>
-                                    <input class="form-check-input" type="checkbox" value="" id="check-7">
-                                    <label class="form-check-label" for="check-7">
-                                        Default checkbox
-                                    </label>
-                                </div>
-                                <div class="form-row row result-details mt-3">
-                                    <div class="col-xl-6">
-                                        <h6>Attest Date:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 1, 1999</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Degree:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>MSN</p>
-                                    </div>
-                                </div>
-                                <!-- <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Last Invite Sent:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 2, 2022</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Sent invite count:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>10</p>
-                                    </div>
-                                </div> -->
-                                <div class="form-row mt-3 card-buttons pb-3">
-                                    <button class="btn btn-manage btn-primary">Manage Application</button>
-                                    <button class="btn btn-card-remove fw-bold text-black">Remove</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3">
-                        <div class="card card-result">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="result-name">Gallardo, Rosa P.</h6>
-                                    <input class="form-check-input" type="checkbox" value="" id="check-8">
-                                    <label class="form-check-label" for="check-8">
-                                        Default checkbox
-                                    </label>
-                                </div>
-                                <div class="form-row row result-details mt-3">
-                                    <div class="col-xl-6">
-                                        <h6>Attest Date:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 1, 1999</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Degree:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>MSN</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Last Invite Sent:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 2, 2022</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Sent invite count:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>10</p>
-                                    </div>
-                                </div>
-                                <div class="form-row mt-3 card-buttons pb-3">
-                                    <button class="btn btn-send-invite btn-purple" data-bs-toggle="modal" data-bs-target=".sendSingleInviteModal">Send Invite</button>
-                                    <button class="btn btn-card-remove fw-bold text-black">Remove</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3">
-                        <div class="card card-result">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="result-name">Gallardo, Rosa P.</h6>
-                                    <input class="form-check-input" type="checkbox" value="" id="check-9">
-                                    <label class="form-check-label" for="check-9">
-                                        Default checkbox
-                                    </label>
-                                </div>
-                                <div class="form-row row result-details mt-3">
-                                    <div class="col-xl-6">
-                                        <h6>Attest Date:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 1, 1999</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Degree:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>MSN</p>
-                                    </div>
-                                </div>
-                                <!-- <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Last Invite Sent:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 2, 2022</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Sent invite count:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>10</p>
-                                    </div>
-                                </div> -->
-                                <div class="form-row mt-3 card-buttons pb-3">
-                                    <button class="btn btn-manage btn-primary">Manage Application</button>
-                                    <button class="btn btn-card-remove fw-bold text-black">Remove</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3">
-                        <div class="card card-result">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="result-name">Gallardo, Rosa P.</h6>
-                                    <input class="form-check-input" type="checkbox" value="" id="check-10">
-                                    <label class="form-check-label" for="check-10">
-                                        Default checkbox
-                                    </label>
-                                </div>
-                                <div class="form-row row result-details mt-3">
-                                    <div class="col-xl-6">
-                                        <h6>Attest Date:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 1, 1999</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Degree:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>MSN</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Last Invite Sent:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 2, 2022</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Sent invite count:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>10</p>
-                                    </div>
-                                </div>
-                                <div class="form-row mt-3 card-buttons pb-3">
-                                    <button class="btn btn-send-invite btn-purple" data-bs-toggle="modal" data-bs-target=".sendSingleInviteModal">Send Invite</button>
-                                    <button class="btn btn-card-remove fw-bold text-black">Remove</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3">
-                        <div class="card card-result">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="result-name">Gallardo, Rosa P.</h6>
-                                    <input class="form-check-input" type="checkbox" value="" id="check-11">
-                                    <label class="form-check-label" for="check-11">
-                                        Default checkbox
-                                    </label>
-                                </div>
-                                <div class="form-row row result-details mt-3">
-                                    <div class="col-xl-6">
-                                        <h6>Attest Date:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 1, 1999</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Degree:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>MSN</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Last Invite Sent:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 2, 2022</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Sent invite count:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>10</p>
-                                    </div>
-                                </div>
-                                <div class="form-row mt-3 card-buttons pb-3">
-                                    <button class="btn btn-send-invite btn-purple" data-bs-toggle="modal" data-bs-target=".sendSingleInviteModal">Send Invite</button>
-                                    <button class="btn btn-card-remove fw-bold text-black">Remove</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3">
-                        <div class="card card-result">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="result-name">Gallardo, Rosa P.</h6>
-                                    <input class="form-check-input" type="checkbox" value="" id="check-12">
-                                    <label class="form-check-label" for="check-12">
-                                        Default checkbox
-                                    </label>
-                                </div>
-                                <div class="form-row row result-details mt-3">
-                                    <div class="col-xl-6">
-                                        <h6>Attest Date:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 1, 1999</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Degree:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>MSN</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Last Invite Sent:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>January 2, 2022</p>
-                                    </div>
-                                </div>
-                                <div class="form-row row result-details">
-                                    <div class="col-xl-6">
-                                        <h6>Sent invite count:</h6>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <p>10</p>
-                                    </div>
-                                </div>
-                                <div class="form-row mt-3 card-buttons pb-3">
-                                    <button class="btn btn-send-invite btn-purple" data-bs-toggle="modal" data-bs-target=".sendSingleInviteModal">Send Invite</button>
-                                    <button class="btn btn-card-remove fw-bold text-black">Remove</button>
-                                </div>
-                            </div>
-                        </div>
+                </div>
+
+
+
+
+
+                <% end %>
+             </div>
+            </div>
+            <div class="row result-controls mb-4">
+                <div class="col-lg-12">
+                    <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+                       <div class="page_info ms-3 text-black">
+                        <%= page_entries_info @providers, entry_name: 'Providers' %>
+                       </div>
+                       <% if params[:per_page ].present? %>
+                           <%= will_paginate @providers, :params =>  {per_page: params[:page] }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                       <% else %>
+                           <%= will_paginate @providers, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                       <% end %>
                     </div>
                 </div>
             </div>
+            <hr>
+
 
             <!-- Send Invite Modal -->
             <div class="modal fade" id="sendInviteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -902,11 +384,61 @@
 
     <script>
      $(document).ready(function() {
-        $('#btn-send-invite').click(function() {
-            // Get the form values
+        $('#btn-bulk-remove-providers').click(function() {
+            var checkedValues = []; // Array to store checked values
 
+            // Select all checked checkboxes with class "myCheckbox"
+            var checkedCheckboxes = $(".form-check-input:checked");
+
+            // Loop through each checked checkbox
+            checkedCheckboxes.each(function() {
+                var value = $(this).val();
+                checkedValues.push(value); // Add value to the array
+            });
+
+            $.ajax({
+                url: "<%= bulk_remove_providers_office_managers_path %>",
+                method: 'POST',
+                data: {
+                    authenticity_token: $('meta[name="csrf-token"]').attr('content'),
+                    data: checkedValues
+                },
+                beforeSend: function() {
+                    // Show the loading button
+                    $('.loading-overlay').show(); //
+                },
+                success: function(data) {
+                    // reload the page
+                    location.reload();
+                }
+            });
+
+            // Log the array of checked values
+            // console.log("Checked values: ", checkedValues);
         });
      });
+
+     function sendInvite(link){
+        var provider_id = $(link).data('providerid');
+        // send_invite_office_manager_path(provider)
+        // send_invite_office_managers
+        $.ajax({
+            url: "<%= send_invite_office_managers_path %>",
+            method: 'POST',
+            data: {
+                authenticity_token: $('meta[name="csrf-token"]').attr('content'),
+                id: provider_id
+            },
+            beforeSend: function() {
+                // Show the loading button
+                $('.loading-overlay').show(); //
+            },
+            success: function(data) {
+                $('html, body').animate({scrollTop: 0}, 'fast');
+                location.reload();
+            }
+        });
+     }
 
      function sendInvitation(){
         var senderName = $('input[name="sender_name"]').val();
