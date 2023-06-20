@@ -250,7 +250,7 @@ class PagesController < ApplicationController
 				ProviderSource.last.update_columns current_provider_source: true
 			end
 
-   @provider = ProviderSource.current || ProviderSource.current.last
+			@provider = ProviderSource.current.is_a?(Array) ? ProviderSource.current.last : ProviderSource.current
 		rescue
 			nil
   end
