@@ -80,6 +80,8 @@ end
 					:suffix,
 					:gender,
 					:birth_date,
+					:birth_city,
+					:birth_state,
 					:practitioner_type,
 					:ssn,
 					:npi,
