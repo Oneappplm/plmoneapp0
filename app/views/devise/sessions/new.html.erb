@@ -11,6 +11,14 @@
                </div>
 
                <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+               <% if flash[:alert] %>
+               <div id="error_explanation" data-turbo-cache="false">
+                  <small class="text-danger">
+                     <%= flash[:alert] %>
+                  </small>
+               </div>
+               <% end %>
+
                <div class="form-group my-3">
                   <%= f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control', placeholder: 'Email' %>
                </div>
