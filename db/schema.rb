@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_20_104833) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_20_143404) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -549,7 +549,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_20_104833) do
     t.string "address_line_1"
     t.string "address_line_2"
     t.string "city"
-    t.string "state"
+    t.integer "state_id"
     t.string "telephone_number"
     t.string "ext"
     t.string "email_address"
@@ -708,6 +708,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_20_104833) do
     t.string "alpha_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "color"
   end
 
   create_table "training_types", force: :cascade do |t|

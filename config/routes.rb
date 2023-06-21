@@ -44,6 +44,8 @@ Rails.application.routes.draw do
   post 'update-collapse', to: 'ajax#update_collapse'
   get 'monthly-visits', to: 'ajax#get_monthly_visits'
   get 'browser-visits', to: 'ajax#browser_visits'
+  get 'state-providers', to: 'ajax#state_providers'
+  get 'providers-gender', to: 'ajax#providers_gender'
 
   resources :provider_sources do
     collection do

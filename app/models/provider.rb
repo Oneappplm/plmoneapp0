@@ -24,6 +24,7 @@ class Provider < ApplicationRecord
 
   belongs_to :group, class_name: 'EnrollmentGroup', foreign_key: 'enrollment_group_id', optional: true
   belongs_to :group_dco, class_name: 'GroupDco', foreign_key: 'dco', optional: true
+  # belongs_to :state, class_name: 'State', foreign_key: 'state_id', required: true
 
   has_many :taxonomies, class_name: 'ProviderTaxonomy', dependent: :destroy
   has_many :licenses , class_name: 'ProviderLicense', dependent: :destroy
@@ -42,6 +43,10 @@ class Provider < ApplicationRecord
     :ssn, :gender, :city, :state, :telephone_number, :ext, :email_address, :taxonomies
 
   default_scope { where(api_token: nil) }
+  scope :male, -> { where(gender: 'Male') }
+  scope :female, -> { where(gender: 'Female') }
+  scope :non_binary, -> { where(gender: 'Non Binary') }
+
 
   def provider_name = "#{first_name} #{middle_name} #{last_name}"
   def from_provider_title = "Local Provider"

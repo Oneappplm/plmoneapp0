@@ -1,0 +1,39 @@
+function getProviderGenderData() {
+   $.ajax({
+      url: '<%= providers_gender_path %>',
+      method: "GET",
+      data: {
+         authenticity_token: csrfToken
+      },
+      success: function (data) {
+         providerGenders = data['genders'];
+         createGenderPieGraph();
+
+      }
+   })
+}
+
+function createGenderPieGraph() {
+   new Chart(document.getElementById("gender-chart-pie"), {
+      type: "pie",
+      data: {
+         labels: ["Male", "Female", "Non Binary"],
+         datasets: [{
+            data: providerGenders,
+            backgroundColor: [
+               "#59a7ff",
+               "#2cddc7",
+               "#C42CDD",
+            ],
+            borderColor: "transparent"
+         }]
+      },
+      options: {
+         maintainAspectRatio: false,
+         cutoutPercentage: 30,
+         legend: {
+            display: false
+         }
+      }
+   });
+}

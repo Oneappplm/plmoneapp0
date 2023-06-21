@@ -16,6 +16,7 @@ class AjaxController < ApplicationController
 
     head :ok
   end
+
   def get_group_dcos
     id = params[:group_id]
     group = EnrollmentGroup.find_by(id: id) if params[:group_id] != 'all'
@@ -148,6 +149,26 @@ class AjaxController < ApplicationController
 
     render json: {
       'browser_data' => browser_data
+    }
+  end
+
+  def state_providers
+    providers ||= State.providers_count
+
+    state_data = providers.map { |state| [state.name, state.providers_count, state.color, state.alpha_code] }
+
+
+    render json: {
+      'state_providers' => state_data
+    }
+
+  end
+
+  def providers_gender
+    genders = [Provider.male.count, Provider.female.count, Provider.non_binary.count]
+    
+    render json: {
+      'genders' => genders
     }
   end
 end

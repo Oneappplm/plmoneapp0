@@ -47,7 +47,7 @@ class PagesController < ApplicationController
     @used_size_mb = used_size_bytes/MB_DIVISOR
     @used_size_percent = ((used_size_bytes.to_f/total_size_bytes.to_f) * 100).to_i
     @free_size_percent = ((free_size_bytes.to_f/total_size_bytes.to_f) * 100).to_i
-    # render json: @free_size_percent and return
+    @state_providers = State.providers_count
   end
 
 	def plm_sales_tool

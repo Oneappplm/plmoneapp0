@@ -1,0 +1,60 @@
+function creatReportsGraph() {
+   new Chart(document.getElementById("reports-generated-chart"), {
+      type: "bar",
+      data: {
+         labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+         datasets: [{
+            label: "",
+            backgroundColor: [
+               "#59a7ff",
+               "#2cddc7",
+               "#59a7ff",
+               "#59a7ff",
+               "#59a7ff",
+               "#59a7ff",
+               "#59a7ff"
+            ],
+            // borderColor: window.theme.primary,
+            // hoverBackgroundColor: window.theme.primary,
+            // hoverBorderColor: window.theme.primary,
+            data: [200,150,100,90,180,400,120],
+            barPercentage: .75,
+            categoryPercentage: .9
+         }]
+      },
+      options: {
+         maintainAspectRatio: false,
+         legend: {
+            display: false
+         },
+         scales: {
+           y: {
+            display: false
+           }
+         },
+         tooltips: {
+            callbacks: {
+               label: function (tooltipItem, data) {
+                  var value = tooltipItem.value;
+                  return value;
+               }
+            }
+         },
+          plugins: {
+            tooltip: {
+              enabled: false  // Disable tooltips
+            },
+            datalabels: {
+              anchor: 'end',
+              align: 'top',
+              font: {
+                weight: 'bold'
+              },
+              formatter: function(value) {
+                return value;  // Display value above each bar
+              }
+          }
+        }
+      }
+   });
+}
