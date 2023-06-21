@@ -76,6 +76,14 @@ module ApplicationHelper
 		end
 	end
 
+	def active_manage_tool_sub_menu cname, aname = nil
+		if aname.present?
+			cname.split(',').include?(controller_name) && aname.split(',').include?(action_name) ? 'active' : ''
+		else
+			cname.split(',').include?(controller_name) ? 'active' : ''
+		end
+	end
+
 	def current_provider_source
 		ProviderSource.find_or_create_by(current_provider_source: true)
 	end

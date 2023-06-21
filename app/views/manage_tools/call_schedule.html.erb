@@ -1,0 +1,105 @@
+<%= render "manage_tools_container" do %>
+    <div class="d-flex gap-2 mt-3">
+        <%= link_to(call_schedule_manage_tools_path, class: "button-lg #{active_manage_tool_sub_menu('manage_tools', 'call_schedule')}") do %>
+        <span>Call Schedule View</span>
+        <% end %>
+        <%= link_to(cme_calendar_manage_tools_path, class: "button-lg #{active_manage_tool_sub_menu('manage_tools', 'cme_calendar')}") do %>
+        <span>CME Calendar View</span>
+        <% end %>
+        <%= link_to(meetings_calendar_manage_tools_path, class: "button-lg #{active_manage_tool_sub_menu('manage_tools', 'meetings_calendar')}") do %>
+        <span>Meetings Calendar View</span>
+        <% end %>
+    </div>
+    <form action="">
+        <div class="form-row row mt-3">
+            <div class="col-xl-1 d-flex align-items-end">
+                <input class="form-check-input form-radio" type="radio" name="call-sched-radio" id="dept-radio" value="">
+            </div>
+            <div class="col-xl-11">
+                <div class="row">
+                    <div class="col-xl-6">
+                        <label for="department" class="">Department:</label>
+                        <select name="department" id="department" class="form-select">
+                            <option value="">Select option</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-6">
+                        <label for="division" class="">Division:</label>
+                        <select name="division" id="division" class="form-select">
+                            <option value="">Select option</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row row">
+            <div class="col-xl-1 d-flex align-items-end">
+                <input class="form-check-input form-radio" type="radio" name="call-sched-radio" id="group-radio" value="">
+            </div>
+            <div class="col-xl-11">
+                <div class="row">
+                    <div class="col-xl-6">
+                        <label for="group" class="">Group:</label>
+                        <select name="group" id="group" class="form-select">
+                            <option value="">Select option</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-6">
+                        <label for="contact" class="">Contact:</label>
+                        <select class="js-example-basic-multiple form-select" name="contact[]" id="contact" multiple="multiple">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row row">
+            <div class="col-xl-1 d-flex align-items-end">
+            </div>
+            <div class="col-xl-11">
+                <div class="row">
+                    <div class="col-xl-6">
+                        <label for="sched-year" class="">Calendar:</label>
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <label for="calendar-month" class="d-none">Calendar:</label>
+                                <select name="calendar-month" id="calendar-month" class="form-select">
+                                    <option value="">Month</option>
+                                </select>
+                            </div>
+                            <div class="col-xl-6">
+                                <label for="calendar-year" class="d-none">Year:</label>
+                                <select name="calendar-year" id="calendar-year" class="form-select">
+                                    <option value="">Year</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-end gap-2 mt-4">
+            <%= button_to "Delete Schedule", nil, class: "btn button-sm"%>
+            <%= button_to "Print Schedule", nil, class: "btn button-sm"%>
+            <%= button_to "Export To Word", nil, class: "btn button-sm"%>
+        </div>
+        <div class="mt-4">
+            <div id='calendar'></div>
+        </div>
+    </form>
+<% end %>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          headerToolbar: {
+              left: '',
+              center: 'title',
+              right: ''
+          }
+      });
+      calendar.render();
+  });
+</script>

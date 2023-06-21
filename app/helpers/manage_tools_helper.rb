@@ -1,0 +1,2 @@
+module ManageToolsHelper
+end

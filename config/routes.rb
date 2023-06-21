@@ -139,6 +139,25 @@ Rails.application.routes.draw do
   end
   resources :pals_verifications, only: [:index], path: 'pals-verification'
 
+  resources :manage_tools, path: 'manage-tools' do
+    collection do
+      get :manage_cme, path: 'manage-cme'
+      get :meeting_attendance, path: 'meeting-attendance'
+      get :call_schedule_maintenance, path: 'call-schedule-maintenance'
+      get :call_schedule_group_maintenance, path: 'call-schedule-group-maintenance'
+      get :generate_call_schedule, path: 'generate-call-schedule'
+      get :generate_alpha_order_call_schedule, path: 'generate-alpha-order-call-schedule'
+      get :call_schedule, path: 'calendar-view/call-schedule'
+      get :cme_calendar, path: 'calendar-view/cme-calendar'
+      get :meetings_calendar, path: 'calendar-view/meetings-calendar'
+      get :daily_report, path: 'daily-report'
+      get :health_plan_contract_enrollment, path: 'health-plan-contract-enrollment'
+      get :site_review_questionnaire, path: 'site-review-questionnaire'
+      get :correction_action_plan, path: 'correction-action-plan'
+      get :define_privileges, path: 'define-privileges'
+    end
+  end
+
   resources :view_summary
 
   devise_scope :user do

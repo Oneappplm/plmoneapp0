@@ -1,0 +1,15 @@
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<%= render "manage_tools_container" do %>
+  <div class="d-flex gap-2 mt-3">
+    <%= link_to(calendar_view_manage_tools_path('calendar-view-type': "call_schedule"), class: "button-lg #{active_manage_tool_sub_menu('manage_tools', 'call_schedule_view')}") do %>
+      <span>Call Schedule View</span>
+    <% end %>
+    <%= link_to(calendar_view_manage_tools_path('calendar-view-type': "cme_calendar"), class: "button-lg #{active_manage_tool_sub_menu('manage_tools', 'cme_schedule_view')}") do %>
+      <span>CME Calendar View</span>
+    <% end %>
+    <%= link_to(calendar_view_manage_tools_path('calendar-view-type': "meetings_calendar"), class: "button-lg #{active_manage_tool_sub_menu('manage_tools', 'meetings_calendar_view')}") do %>
+      <span>Meetings Calendar View</span>
+    <% end %>
+  </div>
+  <%= render "manage_tools/calendar_view/#{params[:'calendar-view-type'].present? ? params[:'calendar-view-type'] : "call_schedule"}" %>
+<% end %>
