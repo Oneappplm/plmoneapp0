@@ -249,6 +249,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_20_104833) do
     t.string "cp575_file"
     t.string "specific_type_file"
     t.string "ownership_file"
+    t.string "group_personnel_name"
+    t.string "group_personnel_email"
+    t.string "group_personnel_phone_number"
+    t.string "group_personnel_fax_number"
+    t.string "group_personnel_position"
   end
 
   create_table "enrollment_groups_contact_details", force: :cascade do |t|
