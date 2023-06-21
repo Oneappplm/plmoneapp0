@@ -24,7 +24,7 @@ class Provider < ApplicationRecord
 
   belongs_to :group, class_name: 'EnrollmentGroup', foreign_key: 'enrollment_group_id', optional: true
   belongs_to :group_dco, class_name: 'GroupDco', foreign_key: 'dco', optional: true
-  # belongs_to :state, class_name: 'State', foreign_key: 'state_id', required: true
+  belongs_to :state, class_name: 'State', foreign_key: 'state_id', required: true
 
   has_many :taxonomies, class_name: 'ProviderTaxonomy', dependent: :destroy
   has_many :licenses , class_name: 'ProviderLicense', dependent: :destroy
