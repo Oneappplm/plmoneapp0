@@ -9,7 +9,7 @@ class User < ApplicationRecord
           against: self.column_names,
           using: {
             tsearch: {any_word: true}
-          }
+          } rescue nil
 
   enum user_type: {
     client_staff: 'Client Staff',
@@ -63,7 +63,7 @@ class User < ApplicationRecord
     end
 
     def create_admin
-      User.create!(
+      User.create(
         email: 'admin@plmhealthoneapp.com',
         password: 'plmadmin123!',
         user_role: 'administrator',

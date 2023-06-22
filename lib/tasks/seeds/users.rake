@@ -1,7 +1,7 @@
 namespace :users	do
 	desc "Create admin account"
 
-	task :create_admin => :environment do
+	task :seed_data => :environment do
 		User.create_admin
 	end
 
