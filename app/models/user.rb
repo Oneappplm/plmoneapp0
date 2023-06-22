@@ -75,6 +75,10 @@ class User < ApplicationRecord
     def find_by_token(token)
       User.find_by(api_token: token)
     end
+
+    def admin
+      find_by(user_role: 'administrator')
+    end
   end
 
   def role = user_role&.titleize

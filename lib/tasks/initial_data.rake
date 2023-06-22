@@ -21,4 +21,17 @@ namespace :plmhealthoneapp do
 		puts "Updating client name to #{client_name}..."
 		Setting.update_setting({client_name: client_name})
 	end
+
+	task :update_default_admin_password => :environment do |task, args|
+		desc "Update default admin password"
+		puts "Updating default admin password..."
+		password = SecureRandom.urlsafe_base64(8)
+		admin = User.admin
+		if admin
+			admin.update!(password: password, password_confirmation: password, temporary_password: password)
+			puts "\nAdmin user successfully updated. \nClient: #{Setting.take.client_name}"
+			puts "Email: #{admin.email}"
+			puts "Password: #{password}\n\n"
+		end
+	end
 end
