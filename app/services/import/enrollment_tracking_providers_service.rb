@@ -20,7 +20,7 @@ class Import::EnrollmentTrackingProvidersService < ApplicationService
 				if index > 0
 					next if sheet.compact.size == 0
 
-					Provider.create(
+					provider = Provider.new(
 						roster_result: sheet[0],
 						terminated: sheet[1],
 						dco_name: sheet[2],
@@ -66,6 +66,8 @@ class Import::EnrollmentTrackingProvidersService < ApplicationService
 						priority_health:	sheet[42],
 						amerihealth:	sheet[43],
 					)
+
+					provider.save(validate: false)
 
 				end
 			end
