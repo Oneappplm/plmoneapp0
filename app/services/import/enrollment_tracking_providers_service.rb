@@ -12,7 +12,7 @@ class Import::EnrollmentTrackingProvidersService < ApplicationService
 
 		if	data.sheets.size != 0
 
-			Provider.destroy_all
+			# Provider.destroy_all
 
 			data.default_sheet = data.sheets.first
 
