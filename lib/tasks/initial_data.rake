@@ -13,4 +13,12 @@ namespace :plmhealthoneapp do
 						puts "=============================================================="
 			end
 	end
+
+	# rake 'plmhealthoneapp:update_client_name[client_name]' e.g.: rake 'plmhealthoneapp:update_client_name[plmhealthoneapp]'
+	task :update_client_name, [:client_name] => :environment do |task, args|
+		desc "Update client name"
+		client_name = args.client_name
+		puts "Updating client name to #{client_name}..."
+		Setting.update_setting({client_name: client_name})
+	end
 end
