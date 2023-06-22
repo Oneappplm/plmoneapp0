@@ -9,7 +9,7 @@ module PagesHelper
         'health_plans_progress'
       elsif ['disclosure'].include?(page)
         'disclosure_progress'
-      elsif ['education_training'].include?(page)
+      elsif ['education_training', 'training','teaching_appointments'].include?(page)
         'education_traning_progess'
       elsif ['specialties'].include?(page)
         'specialties_progress'

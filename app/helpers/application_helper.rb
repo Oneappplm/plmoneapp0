@@ -282,7 +282,7 @@ module ApplicationHelper
      Country.all_translated
   end
 
-		def page_entries_info(collection, options = {})
+	def page_entries_info(collection, options = {})
 			entry_name = options[:entry_name] || (collection.empty?? 'item' :
 							collection.first.class.name.split('::').last.titleize)
 			if collection.total_pages < 2

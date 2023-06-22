@@ -113,8 +113,8 @@ class ProviderSource < ApplicationRecord
   end
 
   def education_traning_progess
-    total_fields_required = (education_with_prerequisites).count
-    completed_fields = required_fields_with_prerequisetes_has_answer(education_with_prerequisites)
+    total_fields_required = (education_with_prerequisites + training_program_with_prerequisites + teaching_appointments_with_prerequisites).count
+    completed_fields = required_fields_with_prerequisetes_has_answer(education_with_prerequisites) + required_fields_with_prerequisetes_has_answer(teaching_appointments_with_prerequisites) + required_fields_with_prerequisetes_has_answer(training_program_with_prerequisites)
    ((completed_fields.to_f/total_fields_required.to_f) * 100).to_i
    rescue
       0
@@ -275,44 +275,53 @@ class ProviderSource < ApplicationRecord
 
   def education_with_prerequisites
     infos = [
-          ['undergrad_school', 'usd_undergraduate_school_name', 'yes'],
-          ['undergrad_school', 'usd_address_line1', 'yes'],
-          ['undergrad_school', 'usd_degree_awarded', 'yes'],
-          ['undergrad_school', 'usd_zipcode', 'yes'],
-          ['undergrad_school', 'usd_city', 'yes'],
-          ['undergrad_school', 'complete_undergrad', 'yes'],
-          ['undergrad_school', 'usd_date_graduation', 'yes'],
-          ['undergrad_school', 'usd_school_location', 'yes'],
-          ['incomplete_undergrad', '', 'yes'],
-          ['professional_school', '', 'yes'],
-          ['professional_school', '', 'yes'],
-          ['professional_school', '', 'yes'],
-          ['professional_school', '', 'yes'],
-          ['professional_school', '', 'yes'],
-          ['professional_school', '', 'yes'],
-          ['professional_school', '', 'yes'],
-          ['professional_school', '', 'yes'],
+          ['undergraduate_school', 'usd_undergraduate_school_name', 'yes'],
+          ['undergraduate_school', 'usd_address_line1', 'yes'],
+          ['undergraduate_school', 'usd_degree_awarded', 'yes'],
+          ['undergraduate_school', 'usd_zipcode', 'yes'],
+          ['undergraduate_school', 'usd_city', 'yes'],
+          ['undergraduate_school', 'usd_date_graduation', 'yes'],
+          ['undergraduate_school', 'usd_school_location', 'yes'],
+          ['incomplete_undergrad', 'usd-reason', 'yes'],
+          ['professional_school', 'education_types', 'yes'],
+          ['professional_school', 'prof_school_location', 'yes'],
+          ['professional_school', 'psd-psn', 'yes'],
+          ['professional_school', 'psd-address-line1', 'yes'],
+          ['professional_school', 'psd-city', 'yes'],
+          ['professional_school', 'psd-zipcode', 'yes'],
+          ['professional_school', 'psd-telephone-number', 'yes'],
+          ['professional_school', 'psd-degree-awarded', 'yes'],
           ['professional_school', 'prof_school_location', 'yes'],
           ['professional_school', 'prof_date_start', 'yes'],
-          ['professional_school', 'prof_date_graduation', 'yes'],
-          ['incomplete_prof', '', 'yes'],
-          ['has_training_program', '', 'yes'],
-          ['has_training_program', '', 'yes'],
-          ['has_training_program', '', 'yes'],
-          ['has_training_program', '', 'yes'],
-          ['has_training_program', '', 'yes'],
+          ['professional_school', 'prof_date_graduation', 'yes']
+    ]
+    prerequisite_checker(infos)
+  end
+
+  def training_program_with_prerequisites
+    infos = [
+          ['has_training_program', 'tf-location', 'yes'],
+          ['has_training_program', 'tf-psn', 'yes'],
+          ['has_training_program', 'tf-address-line1', 'yes'],
+          ['has_training_program', 'tf-city', 'yes'],
+          ['has_training_program', 'tf-zipcode', 'yes'],
           ['has_training_program', 'tr_training_types', 'yes'],
           ['has_training_program', 'tr_specialties', 'yes'],
+          ['has_training_program', 'tf-start-date', 'yes'],
+          ['has_training_program', 'tf-end-date', 'yes'],
           ['has_training_program', 'training_location', 'yes'],
-          ['incomplete_training', 'train_affiliate_location', 'yes'],
-          ['an_instructor', 'hp-zipcode', 'yes'],
-          ['an_instructor', '', 'yes'],
-          ['an_instructor', '', 'yes'],
-          ['an_instructor', '', 'yes'],
-          ['an_instructor', '', 'yes'],
-          ['an_instructor', '', 'yes'],
-          ['an_instructor', '', 'yes'],
-          ['an_instructor', '', 'yes']
+          ['incomplete_training', 'tf-reason', 'no'],
+    ]
+    prerequisite_checker(infos)
+  end
+
+  def teaching_appointments_with_prerequisites
+    infos = [
+          ['an_instructor', 'taf-address-line1', 'yes'],
+          ['an_instructor', 'taf-psn', 'yes'],
+          ['an_instructor', 'taf-location', 'yes'],
+          ['an_instructor', 'taf-city', 'yes'],
+          ['an_instructor', 'taf-zipcode', 'yes']
     ]
     prerequisite_checker(infos)
   end

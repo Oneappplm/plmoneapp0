@@ -67,11 +67,11 @@
 						<li class="list-group-item <%= (['audit'].include?(params[:page])) ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0"><div class="d-flex justify-content-between"><a class="<%= (['audit'].include?(params[:page]))? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path(page: 'audit')%>">AUDIT</a><i class="bi bi-info-circle-fill text-danger"></i></div></li>
 
 
- <!--            <%# if @has_incomplete %>
-              <li class="unavailable list-group-item <%#= ['attestation_signature','reattest_application'].include?(params[:page]) ? 'bg-primary fw-bold' : 'bg-medium-grey'%>  border-0"><div class="d-flex justify-content-between"><a class="text-black <%#= ['attestation_signature','reattest_application'].include?(params[:page]) ? 'text-white' : 'text-black'%>" href="javascript:void(0);">ATTESTATION</a><i class="bi bi-info-circle-fill text-danger"></i></div></li>
-            <%# else %> -->
+            <% if @has_incomplete %>
+              <li class="unavailable list-group-item <%= ['attestation_signature','reattest_application'].include?(params[:page]) ? 'bg-primary fw-bold' : 'bg-medium-grey'%>  border-0"><div class="d-flex justify-content-between"><a class="text-black <%= ['attestation_signature','reattest_application'].include?(params[:page]) ? 'text-white' : 'text-black'%>" href="javascript:void(0);">ATTESTATION</a><i class="bi bi-info-circle-fill text-danger"></i></div></li>
+            <% else %>
 						<li class="list-group-item <%= ['attestation_signature','reattest_application'].include?(params[:page]) ? 'bg-primary fw-bold' : 'bg-medium-grey'%>  border-0"><div class="d-flex justify-content-between"><a class="text-black <%= ['attestation_signature','reattest_application'].include?(params[:page]) ? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path(page: 'attestation_signature')%>">ATTESTATION</a><i class="bi bi-info-circle-fill text-danger"></i></div></li>
-            <%# end %>
+            <% end %>
 
 						<!-- <li class="list-group-item <%#= params[:page] == 'attestation_signature' ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0"><div class="d-flex justify-content-between %>" ><a class="<%#= params[:page] == 'attestation_signature' ? 'text-white' : 'text-black'%>" href="<%#= custom_provider_source_path(page: 'attestation_signature')%>">ATTESTATION AND SIGNATURE</a><i class="bi bi-info-circle-fill text-danger"></i></div></li> -->
 
