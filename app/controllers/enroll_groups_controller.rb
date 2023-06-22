@@ -73,6 +73,7 @@ class EnrollGroupsController < ApplicationController
 					:application_payer_name,
 					:with_medicare,
 					:with_eft,
+					:voided_bank_letter,
 					:with_edi,
 					:payer,
 					:status,
