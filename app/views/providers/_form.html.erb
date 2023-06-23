@@ -52,7 +52,7 @@
 			</div>
 			<div class="col-lg-4">
         <label class="text-dark-grey">Birth State</label>
-				<%= f.select :birth_state, options_for_select(states.pluck(:name), @provider.state), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
+				<%= f.select :birth_state, options_for_select(states.pluck(:name, :id), @provider.state), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
 			</div>
 		</div>
 		
@@ -78,7 +78,7 @@
 			<div class="col-lg-6">
 				<!-- new field -->
         <label class="text-dark-grey">State</label>
-				<%= f.select :state, options_for_select(states.pluck(:name), @provider.state), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
+				<%= f.select :state, options_for_select(states.pluck(:name, :id), @provider.state), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
 			</div>
 		</div>
 			<div class="row mb-3">
@@ -398,7 +398,7 @@
 
 					 <div class="col-lg-6 mb-3">
             <label class="text-dark-grey">State(optional)</label>
-           <%= f.select :admitting_facility_state, options_for_select(states.pluck(:name, :name), @provider.admitting_facility_state), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
+           <%= f.select :admitting_facility_state, options_for_select(states.pluck(:name, :id), @provider.admitting_facility_state), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
           </div>
 
           <div class="col-lg-6 mb-3">
@@ -542,6 +542,13 @@
 							$("#licenses .fields").append(newLicense);
 					});
 
+					$("#licenses").on("click", ".remove-dynamic-fields", function() {
+						var licensesFieldss =document.getElementsByClassName("licenses-field");
+						if(licensesFieldss.length > 1) {
+							licensesFieldss[0].remove();
+						}
+					});
+
 					// np licenses
 					$("#np_licenses").on("click", ".add_association", function() {
 							var npLicensesFields = $("#np_licenses .field");
@@ -551,6 +558,13 @@
 							$("#np_licenses .fields").append(newNpLicense);
 					});
 
+					$("#np_licenses").on("click", ".remove-dynamic-fields", function() {
+						var licensesFieldss =document.getElementsByClassName("np-licenses-field");
+						if(licensesFieldss.length > 1) {
+							licensesFieldss[0].remove();
+						}
+					});
+
 					// rn licenses
 					$("#rn_licenses").on("click", ".add_association", function() {
 							var rnLicensesFields = $("#rn_licenses .field");
@@ -558,6 +572,13 @@
 							var newId = new Date().getTime();
 							newRnLicense.html(newRnLicense.html().replace(/rn_licenses_attributes\]\[\d+\]/g, "rn_licenses_attributes][" + newId + "]"));
 							$("#rn_licenses .fields").append(newRnLicense);
+					});
+
+					$("#rn_licenses").on("click", ".remove-dynamic-fields", function() {
+						var licensesFieldss =document.getElementsByClassName("rn-licenses-field");
+						if(licensesFieldss.length > 1) {
+							licensesFieldss[0].remove();
+						}
 					});
 
 					// telehealth providers

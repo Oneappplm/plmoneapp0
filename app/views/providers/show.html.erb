@@ -122,7 +122,7 @@
 						<h5 class="text-center my-3">CAQH</h5>
 						<p class="mb-1"><strong>CAQH ID:</strong> <%= @provider.caqhid %></p>
 						<p class="mb-1"><strong>CAQH Attestation Date:</strong> <%= @provider.caqh_attestation_date %></p>
-						<p class="mb-1"><strong>CAQH PDF:</strong> <%= @provider&.caqh_pdf&.blank? ? 'None' : 'Yes' %></p>
+						<p class="mb-1"><strong>CAQH PDF Date Received:</strong> <%= @provider&.caqh_pdf_date_received %></p>
 						<p class="mb-1"><strong>CAQH Username:</strong> <%= @provider.caqh_username %></p>
 						<p class="mb-1"><strong>CAQH Password:</strong> <%= @provider.caqh_password %></p>
 						<p class="mb-1"><strong>CAQH State:</strong> <%= @provider.caqh_state %></p>
@@ -214,7 +214,7 @@
 						<div class="collapsible" style="<%= current_user&.is_card_open?('documents') ? '' : 'display: none;' %>">
 						<div class="row mb-3">
 							<div class="col-lg-12">
-									<% docs = [['State License Copy', 'state_license_copy_file'], ['DEA Copy', 'dea_copy_file'], ['W9 Form', 'w9_form_file' ], ['Certificate of Insurance', 'certificate_insurance_file' ], ['Drivers License', 'drivers_license_file' ], ['Board Certification', 'board_certification_file' ], ['CAQH App Copy', 'caqh_app_copy_file' ], ['Curriculum Vitae (CV)', 'cv_file' ], ['Telehealth License Copy', 'telehealth_license_copy_file' ] ] %>
+									<% docs = [['State License Copy', 'state_license_copy_file'], ['DEA Copy', 'dea_copy_file'], ['W9 Form', 'w9_form_file' ], ['Certificate of Insurance', 'certificate_insurance_file' ], ['Drivers License', 'drivers_license_file' ], ['License Registered State', 'board_certification_file' ], ['CAQH App Copy', 'caqh_app_copy_file' ], ['Curriculum Vitae (CV)', 'cv_file' ], ['Telehealth License Copy', 'telehealth_license_copy_file' ] ] %>
 										<div class="text-left text-dark-grey d-flex flex-column">
 										<% docs.each do |doc|%>
 										<label class="text-dark-grey mb-2">
@@ -276,8 +276,15 @@
 
 <% content_for :js do %>
 <script>
+var deleteComment;
+$(document).ready(function() {
 	if($('body.navbar-vertical-aside-mini-mode').length == 0){
 		setTimeout(function () {$('#navbar-aside-toggler').click();}, 1000);
 	}
+	$(".comment-field").on("click", ".remove-comment-fields", function() {
+		var commentBox = document.getElementsByClassName("comment-field");
+		commentBox[0].remove();
+		});
+});
 </script>
 <% end %>
