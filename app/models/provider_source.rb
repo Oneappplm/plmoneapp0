@@ -29,6 +29,11 @@ class ProviderSource < ApplicationRecord
 		data.find_by(data_key: key)&.data_value
 	end
 
+  def add_data(key, value)
+    datakey = data.find_or_create_by(data_key: key)
+    datakey.update_attribute('data_value', value)
+  end
+
 	def full_name
 	 "#{fetch('first_name')} #{fetch('last_name')}"
 	end

@@ -30,7 +30,6 @@ namespace :vrc do
 
 	end
 	task :import_data => :environment do
-		VirtualReviewCommittee.destroy_all
 		Import::VirtualReviewCommitteeService.call(Rails.root.join('lib', 'data', 'vrc.csv'))
 	end
 end

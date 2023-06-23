@@ -6,7 +6,7 @@ class OfficeManagersController < ApplicationController
       render params[:template]
     else
       clean_empty_providers
-      @providers = ProviderSource.unscoped.order(created_at: :asc).paginate(page: params[:page], per_page: 10)
+      @providers = ProviderSource.unscoped.order(created_at: :asc).paginate(page: params[:page], per_page: 12)
     end
   end
 
