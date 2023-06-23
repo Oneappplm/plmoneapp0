@@ -178,7 +178,7 @@ class ProviderSource < ApplicationRecord
 
   def general_name_address
     infos = [
-      'first_name', 'last_name', 'degree_titles', 'state_or_practice', 'primary-practioner-type',
+      'first_name', 'last_name', 'degree_titles', 'state_of_practice', 'primary-practioner-type',
       'address_line_1', 'telephone', 'city', 'ps-state', 'zipcode', 'email_address'
     ]
   end
