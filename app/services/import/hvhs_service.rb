@@ -25,13 +25,11 @@ class Import::HvhsService < ApplicationService
 				if index >	0
 					next if sheet.compact.size == 0
 
-					puts "Creating Provider Source"
-					provider_source = ProviderSource.create
-					data_fields.each_with_index do |field, index|
-						puts "Adding #{field} to Provider Source"
-						provider_source.add_data(field, sheet[index])
-					end
-					puts	"\n"
+				 hvhs_data = HvhsDatum.new
+      data_fields.each_with_index do |field, field_index|
+        hvhs_data.send("#{field}=", sheet[field_index])
+      end
+      hvhs_data.save
 
 				end
 			end
