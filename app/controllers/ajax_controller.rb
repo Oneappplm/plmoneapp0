@@ -171,4 +171,11 @@ class AjaxController < ApplicationController
       'genders' => genders
     }
   end
+
+  def delete_comment
+		comment_id = params[:comment_id]&.to_i
+		comment = EnrollmentComment.delete(comment_id)
+
+		head :ok
+  end
 end

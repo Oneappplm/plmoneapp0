@@ -284,7 +284,19 @@ $(document).ready(function() {
 	$(".comment-field").on("click", ".remove-comment-fields", function() {
 		var commentBox = document.getElementsByClassName("comment-field");
 		commentBox[0].remove();
-		});
+
+		var comment_id = $(this).data("id")
+		console.log(comment_id)
+		$.ajax({
+			url: '<%= delete_comment_path %>',
+			method: 'POST',
+			data: { authenticity_token: csrfToken, comment_id: comment_id },
+			success: function(data) {
+				selected_provider_types = data['delete_comment'];
+			}
+		})
+	});
 });
+
 </script>
 <% end %>

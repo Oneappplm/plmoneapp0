@@ -46,6 +46,7 @@ Rails.application.routes.draw do
   get 'browser-visits', to: 'ajax#browser_visits'
   get 'state-providers', to: 'ajax#state_providers'
   get 'providers-gender', to: 'ajax#providers_gender'
+  post 'delete-comment', to: 'ajax#delete_comment'
 
   resources :provider_sources do
     collection do
