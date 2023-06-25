@@ -1,15 +1,12 @@
 module HtmlUtils
+  include ApplicationHelper
 	include ActionView::Helpers::TagHelper
 	include ActionView::Helpers::FormOptionsHelper
 	include ActionView::Helpers::FormTagHelper
+  include Rails.application.routes.url_helpers
 	extend self
 
-	class << self
-		include Rails.application.routes.url_helpers
-	end
-
 	def radio_toggle **options
-    model ||= options[:model] || ProviderSourceData
     options[:active] = ''
 		options[:container_class] ||= "d-flex align-items-center"
 		options[:button_class] ||= "btn btn-xs btn-toggle has-to-show to-change-value has-to-hide #{options[:active]}"
@@ -18,7 +15,7 @@ module HtmlUtils
 		options[:toshow] ||= ''
     options[:tohide] ||= ''
     options[:hidden_field] ||= false
-    options[:data] ||= model.find_by(options[:find_by])
+    options[:data] ||= current_provider_source.finder(options[:name])
 
 		toggle = <<-HTML
 			<div class="#{ options[:container_class] }">

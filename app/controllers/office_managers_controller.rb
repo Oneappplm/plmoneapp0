@@ -74,7 +74,7 @@ class OfficeManagersController < ApplicationController
   end
 
   def set_current_provider
-    current_provider_source.update(current_provider_source: false)
+    ProviderSource.update_all(current_provider_source: false)
 		ProviderSource.find(params[:id]).update(current_provider_source: true)
   end
 end
