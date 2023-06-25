@@ -266,6 +266,19 @@ module ApplicationHelper
     EnrollmentGroup.all.pluck(:group_name, :id)
   end
 
+  def enrollment_payer
+    [
+      ['Medicaid','medicaid'],
+      ['Medicare','medicare'],
+      ['Molina','molina'],
+      ['Mclaren','mclaren'],
+      ['Meridian','meridian'],
+      ['Aetna','aetna'],
+      ['Amerihealth','amerihealth'],
+      ['Priority Health','priority_health']
+    ]
+  end
+
   def enrollment_provider_options
     EnrollmentProvider.all.pluck(:name, :id)
   end

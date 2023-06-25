@@ -16,19 +16,19 @@ var csrfToken = $('meta[name="csrf-token"]').attr('content');
   })
 
   $('#payer_selector').on('change',function() {
-    var provider_id = $(this).val();
-    // alert(provider_id)
-    if(provider_id != '') {
+    var enrollment_payer = $(this).val();
+    if(enrollment_payer != '') {
       $.ajax({
         url: '<%= get_provider_payers_path %>',
         method: 'POST',
-        data: { authenticity_token: csrfToken, provider_id: provider_id },
+        data: { authenticity_token: csrfToken, enrollment_payer: enrollment_payer },
         success: function(data) {
           $('#payer_submitted').html(data['submitted']);
           $('#payer_processing').html(data['processing']);
           $('#payer_approved').html(data['approved']);
           $('#payer_denied').html(data['denied']);
           $('#payer_terminated').html(data['terminated']);
+          $('#payer_not_eligible').html(data['not_eligible']);
         }
       })
     }

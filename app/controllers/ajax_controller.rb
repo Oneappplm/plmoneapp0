@@ -28,18 +28,21 @@ class AjaxController < ApplicationController
   end
 
   def get_provider_payers
-    id = params[:provider_id]
-    provider = EnrollmentProvider.find_by(id: id)
+    payer = params[:enrollment_payer]
+    # provider = EnrollmentProvider.find_by(id: id)
     # render json: provider.details and return
     # render json: params and return
 
     render json: {
-      'submitted' => provider.details.submitted.count,
-      'processing' => provider.details.processing.count,
-      'approved' =>  provider.details.approved.count,
-      'denied' => provider.details.denied.count,
-      'terminated' => provider.details.terminated.count
+      'submitted' => EnrollmentProvidersDetail.send(payer).submitted.count,
+      'processing' => EnrollmentProvidersDetail.send(payer).processing.count,
+      'approved' =>  EnrollmentProvidersDetail.send(payer).approved.count,
+      'denied' => EnrollmentProvidersDetail.send(payer).denied.count,
+      'terminated' => EnrollmentProvidersDetail.send(payer).terminated.count,
+      'not_eligible' =>  EnrollmentProvidersDetail.send(payer).not_eligible.count
     }
+
+
   end
 
   def get_enrollment_status_count
