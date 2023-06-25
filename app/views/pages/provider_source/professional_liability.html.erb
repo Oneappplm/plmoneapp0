@@ -33,20 +33,21 @@
 					<div class="row">
 						<div class="col-lg-12">
 							<div class="d-flex align-items-center my-3">
-											<%= HtmlUtils.radio_toggle name: 'has_sovereign_immunity',
-															label: 'Do you have a Sovereign Immunity document? *',
-															hidden: true
-											%>
+							 <%= HtmlUtils.radio_toggle name: 'has_sovereign_immunity',
+									label: 'Do you have a Sovereign Immunity document? *',
+									hidden: true,
+                  find_by: @provider.finder('has_sovereign_immunity')
+          			%>
 							</div>
 						</div>
 						<div class="col-lg-12">
 							<div class="d-flex align-items-center my-3">
-										<%= HtmlUtils.radio_toggle name: 'has_liability_coverage',
-														label: 'Do/Did you have professional liability coverage within the past ten (10) years? *',
-														toshow: 'self_insurance_fields',
-												 	hidden_field: true
-
-												%>
+							 <%= HtmlUtils.radio_toggle name: 'has_liability_coverage',
+										label: 'Do/Did you have professional liability coverage within the past ten (10) years? *',
+										toshow: 'self_insurance_fields',
+										hidden_field: true,
+                    find_by: @provider.finder('has_liability_coverage')
+								%>
 							</div>
 						</div>
             <div class="col-lg-12 <%= @provider.fetch('has_liability_coverage') ? 'd-none' : ''%>" id="lack_of_liability_form">
@@ -84,7 +85,7 @@
                       toshow: 'insured_form_fields',
                       tochange: 'is_self_insured',
                       tohide: 'not_insured_form_fields',
-                      active: "#{@provider.is_answer_yes?('is_self_insured') ? 'active' : ''}"
+                      find_by: @provider.finder('is_self_insured')
                     %>
 							</div>
 						</div>

@@ -1,0 +1,74 @@
+<script>
+var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+  $('.dco-select').on('change',function() {
+    var group_id = $(this).val();
+
+    $.ajax({
+      url: '<%= get_group_dcos_path %>',
+      method: 'POST',
+      data: { authenticity_token: csrfToken, group_id: group_id },
+      success: function(data) {
+        var group_dco = data['group_dco'];
+        $('#group_dco_counter').html(group_dco);
+      }
+    })
+  })
+
+  $('#payer_selector').on('change',function() {
+    var provider_id = $(this).val();
+    // alert(provider_id)
+    if(provider_id != '') {
+      $.ajax({
+        url: '<%= get_provider_payers_path %>',
+        method: 'POST',
+        data: { authenticity_token: csrfToken, provider_id: provider_id },
+        success: function(data) {
+          $('#payer_submitted').html(data['submitted']);
+          $('#payer_processing').html(data['processing']);
+          $('#payer_approved').html(data['approved']);
+          $('#payer_denied').html(data['denied']);
+          $('#payer_terminated').html(data['terminated']);
+        }
+      })
+    }
+  })
+
+  $('.enrollment-by-status').on('click',function() {
+    var model = $(this).data('model');
+    var status = $(this).data('status');
+    $.ajax({
+      url: '<%= get_enrollment_status_count_path %>',
+      method: 'POST',
+      data: { authenticity_token: csrfToken, model: model, status: status },
+      success: function(data) {
+        $('#'+status+'_enrollment_ctr').html(data['count']);
+      }
+    })
+    changeTextColorEnrollmentStatus($(this));
+  })
+
+  function changeTextColorEnrollmentStatus(link) {
+    link.parent().find('a').find('h5').removeClass('text-primary');
+    link.find('h5').addClass('text-primary');
+  }
+
+  $('a.circle').on('click',function(){
+    var mode = $(this).data('model');
+     $(this).hasClass('pending-dot-nav-inactive') ? addActiveDotClass($(this)) : addInactiveDotClass($(this));
+     
+     mode == 'pending-client' ? $('#enrollment_card_header').html('Pending Client Enrollments') : $('#enrollment_card_header').html('Pending Provider Enrollments');
+  })
+
+  function addActiveDotClass(nav)
+      {$('a.circle').addClass('pending-dot-nav-inactive')
+      nav.addClass('pending-dot-nav-active');
+      nav.removeClass('pending-dot-nav-inactive');
+  }
+
+  function addInactiveDotClass(nav) {
+      $('a.circle').addClass('pending-dot-nav-active');
+      nav.addClass('pending-dot-nav-inactive');
+      nav.removeClass('pending-dot-nav-active');
+  }
+</script>

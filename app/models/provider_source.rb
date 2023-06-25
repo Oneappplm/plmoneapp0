@@ -33,6 +33,11 @@ class ProviderSource < ApplicationRecord
     datakey = data.find_or_create_by(data_key: key)
     datakey.update_attribute('data_value', value)
   end
+  
+  # this will be used for the HtmlUtils.toggle_button for the find_by there
+  def finder(field = nil)
+    { data_key: field, provider_source_id: self.id }
+  end
 
 	def full_name
 	 "#{fetch('first_name')} #{fetch('last_name')}"

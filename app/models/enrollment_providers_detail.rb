@@ -7,4 +7,5 @@ class EnrollmentProvidersDetail < ApplicationRecord
   scope :approved, -> { where(enrollment_status: 'approved') }
   scope :denied, -> { where(enrollment_status: 'denied') }
   scope :terminated, -> { where(enrollment_status: 'terminated') }
-end 
+  scope :not_eligible, -> { where(enrollment_status: 'not_eligible') }
+end

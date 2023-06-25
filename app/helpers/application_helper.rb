@@ -258,9 +258,9 @@ module ApplicationHelper
     ]
   end
 
-		def toggle_hide data_key
+	def toggle_hide data_key
 			ProviderSourceData.find_by(data_key: data_key)&.hide_class
-		end
+	end
 
   def enrollment_group_options
     EnrollmentGroup.all.pluck(:group_name, :id)

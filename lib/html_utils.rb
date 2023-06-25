@@ -9,7 +9,8 @@ module HtmlUtils
 	end
 
 	def radio_toggle **options
-    options[:active] ||= ''
+    model ||= options[:model] || ProviderSourceData
+    options[:active] = ''
 		options[:container_class] ||= "d-flex align-items-center"
 		options[:button_class] ||= "btn btn-xs btn-toggle has-to-show to-change-value has-to-hide #{options[:active]}"
 		options[:name] ||= ''
@@ -17,7 +18,7 @@ module HtmlUtils
 		options[:toshow] ||= ''
     options[:tohide] ||= ''
     options[:hidden_field] ||= false
-    options[:data] ||= ProviderSourceData.find_by(data_key: options[:name])
+    options[:data] ||= model.find_by(options[:find_by])
 
 		toggle = <<-HTML
 			<div class="#{ options[:container_class] }">
