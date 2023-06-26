@@ -68,27 +68,14 @@
 							<div class="col-lg-12">
 								<!-- multi-select | this is for frontend devs - you should be responsible for preparing the data value to be submitted and handle the data back to the element when retrieving -->
                 <label class="text-dark-grey">State(s) of Practice *</label>
-
-								<select class="form-control border-dark" name="state_of_practice" id="multi-select" placeholder="State(s) of Practice *" multiple style="height:200px;">
-									<option value="">Select option</option>
-									<% @states.each do |state|%>
-									<option value="<%= state.alpha_code %>"><%= state.name %></option>
-									<% end %>
-								</select>
+								<div class="multi-select form-select border-dark" name="state_of_practice" id="state_of_practice" placeholder="State(s) of Practice *"></div>
 							</div>
 						</div>
 
 						<div class="row my-3">
 							<div class="col-lg-12">
                  <label class="text-dark-grey">Primary Practitioner Type *</label>
-
-								<!-- select-search | this is for frontend devs - you should be responsible for preparing the data value to be submitted and handle the data -->
-								<select name="primary-practioner-type" required class="form-select border-dark  py-3" placeholder="Primary Practitioner Type *">
-									<option>Primary Practitioner Type *</option>
-									<% @provider_types.each do |provider_type|%>
-									<option value="<%= provider_type.fch %>"><%= provider_type.fch %></option>
-									<% end %>
-								</select>
+								<div class="single-select form-select border-dark" name="primary-practioner-type" id="primary-practioner-type" placeholder="Primary Practitioner Type *"></div>
 							</div>
 						</div>
 
@@ -193,6 +180,7 @@
 								<!-- <input type="text" class="form-control border-dark" name="" placeholder="State"> -->
 							</div>
 							<div class="col-lg-6">
+							 <label class="text-dark-grey">Zip Code</label>
 								<input type="text" class="form-control border-dark" name="zipcode" placeholder="Zip Code">
 							</div>
 						</div>
@@ -258,14 +246,6 @@
 
 </div>
 
-<% content_for :js do %>
-	<script>
-		VirtualSelect.init({
-		  ele: '.multi-select'
-		});
-
-	</script>
-<% end %>
 
 <script>
 	var csrfToken = $('meta[name="csrf-token"]').attr('content');
@@ -276,4 +256,92 @@
 		// console.log($(this).val());
 		($(this).val() == 'yes') ?	$('#other_name_field').removeClass('d-none') : $('#other_name_field').addClass('d-none');
 	})
+
+var states = [];
+var selected_states = []; 
+
+$(document).ready(function() {
+  getStates();
+});
+
+function getSelectedStates(provider_source_id) {
+  $.ajax({
+    url: '<%= get_selected_states_path %>',
+    method: 'POST',
+    data: { authenticity_token: csrfToken, provider_source_id: provider_source_id },
+    success: function(data) {
+      selected_states = data['selected_states'];
+    }
+  });
+}
+
+function getStates() {
+  $.ajax({
+    url: '<%= get_states_path %>',
+    method: 'GET',
+    data: { authenticity_token: csrfToken },
+    success: function(data) {
+      VirtualSelect.init({
+        options: data['states'],
+        ele: '.multi-select',
+        multiple: true,
+        search: true,
+        showSelectedOptionsFirst: true,
+        selectedValue: selected_states
+      });
+
+    }
+  });
+}
+
+var ps_provider_types = [];
+var selected_ps_provider_types = []; // Initialize selected_states variable
+
+$(document).ready(function() {
+  getProviderTypes();
+});
+
+function getSelectedProviderTypes(provider_source_id) {
+  $.ajax({
+    url: '<%= get_selected_ps_provider_types_path %>',
+    method: 'POST',
+    data: { authenticity_token: csrfToken, provider_source_id: provider_source_id },
+    success: function(data) {
+      selected_ps_provider_types = data['selected_ps_provider_types'];
+    }
+  });
+}
+
+function getProviderTypes() {
+  $.ajax({
+    url: '<%= get_ps_provider_types_path %>',
+    method: 'GET',
+    data: { authenticity_token: csrfToken },
+    success: function(data) {
+      VirtualSelect.init({
+        options: data['ps_provider_types'],
+        ele: '.single-select',
+        multiple: true,
+        search: true,
+        showSelectedOptionsFirst: true,
+        selectedValue: selected_ps_provider_types
+      });
+    }
+  });
+}
+
+
+
 </script>
+
+<style>
+  .multi-select {
+    padding: 0;
+  }
+	.single-select {
+        width: 100%; /* Set the width to 100% to match the container */
+        max-width: 1000px; /* Adjust the max-width value as per your requirement */
+        padding: 0;
+   }
+</style>
+

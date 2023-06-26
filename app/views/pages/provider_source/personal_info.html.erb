@@ -41,20 +41,13 @@
                   <div class="row mb-3">
                      <div class="col-lg-6">
                         <label class="text-dark-grey">Citizenship*</label>
-                        <select name="ps-citizenship" class="form-select border-dark">
-                           <% countries.each do |country|%>
-                           <option value="<%= country%>"><%= country%></option>
-                           <% end %>
-                        </select>
+                        <div class="single-select form-select border-dark" name="ps-citizenship" id="ps-citizenship" placeholder="Select Option "></div>
                      </div>
                      <div class="col-lg-6">
                         <label class="text-dark-grey">Country of Birth</label>
-                        <select name="ps-cob" class="form-select border-dark">
-                           <% countries.each do |country|%>
-                           <option value="<%= country%>"><%= country%></option>
-                           <% end %>
-                        </select>
+                        <div class="single-select form-select border-dark" name="ps-cob" id="ps-cob" placeholder="Select Option" "></div>
                      </div>
+
                   </div>
                   <div class="row mb-3">
                      <div class="d-flex justify-content-between ">
@@ -124,25 +117,21 @@
                   <div class="row mb-3">
                      <div class="col-lg-6">
                         <label class="text-dark-grey">Foreign National Identification Number</label>
-                        <input type="text" name="foreign-national-identification-number" class="form-control border-dark" name="">
+                        <input type="text" name="foreign-national-identification-number" class="form-control border-dark">
                      </div>
                      <div class="col-lg-6">
                         <label class="text-dark-grey">FNIN Country of Issue</label>
-                        <select name="fnin-country-of-issue" class="form-select border-dark">
-                           <% countries.each do |country|%>
-                           <option value="<%= country %>"><%= country %></option>
-                           <% end %>
-                        </select>
+                        <div class="single-select form-select border-dark" name="fnin-country-of-issue" id="fnin-country-of-issue" placeholder="Select Option "></div>
                      </div>
                   </div>
                   <div class="row mb-3">
                      <div class="col-lg-6">
                         <label class="text-dark-grey">Visa Number</label>
-                        <input type="text" name="visa-number" class="form-control border-dark" name="">
+                        <input type="text" name="visa-number" class="form-control border-dark">
                      </div>
                      <div class="col-lg-6">
                         <label class="text-dark-grey">Visa Type</label>
-                           <%= select_tag :gi_visa_types, options_for_select([['', nil]] + visa_types.map { |visa_type| [visa_type.name, visa_type.name] }), required: true, class: 'form-select border-dark', placeholder: 'Visa Type' %>
+                           <div class="select form-select border-dark" name="gi-visa-types" id="gi-visa-types" placeholder="Select Option "></div>
                      </div>
                   </div>
                   <div class="row mb-3">
@@ -159,24 +148,13 @@
                      <div class="col-lg-12">
                         <label class="text-dark-grey">Please select all the languages you speak *</label>
                         <!-- multi-select -->
-                        <select name="languages-you-speak" class="form-control border-dark" id="multi-select" multiple style="height: 150px;">
-                           <option value="">Select option</option>
-                           <% @languages.each do |language|%>
-                           <option value="<%= language.name %>"><%= language.name %></option>
-                           <% end %>
-                        </select>
+                       <div class="multi-select form-select border-dark" name="languages-you-speak" id="multi-select-lang-speak" placeholder="Select Option "></div>
                      </div>
                   </div>
                   <div class="row my-3">
                      <div class="col-lg-12">
                         <label class="text-dark-grey">Please select all the languages you write *</label>
-                        <select name="languages-you-write" class="form-control border-dark" id="multi-select" multiple style="height: 150px;">
-                           <!-- multi-select -->
-                           <option value="">Select option</option>
-                           <% @languages.each do |language|%>
-                           <option value="<%= language.name %>"><%= language.name %></option>
-                           <% end %>
-                        </select>
+                        <div class="multi-select form-select border-dark" name="languages-you-write" id="multi-select-lang-write" placeholder="Select Option "></div>
                      </div>
                   </div>
                   <div class="row mb-3">
@@ -194,7 +172,7 @@
                      </div>
                      <div class="col-lg-6">
                         <label class="text-dark-grey">Marital Status</label>
-                        <select class="form-control border-dark" required name="marital-status">
+                        <select class="form-control border-dark select2" required name="marital-status">
                            <option selected="selected" value=""></option>
                            <option value="Domestic Partner">Domestic Partner</option>
                            <option value="Divorced">Divorced</option>
@@ -240,14 +218,137 @@
       </div>
    </div>
 </div>
-<% content_for :js do %>
+
 <script>
-   VirtualSelect.init({
-   	 ele: '.multi-select'
+   var countries = [];
+   var selected_countries = [];
+
+   $(document).ready(function() {
+   getCountries('#ps-citizenship');
+   getCountries('#ps-cob');
+   getCountries('#fnin-country-of-issue');
    });
 
+   function getSelectedCountries(provider_source_id) {
+   $.ajax({
+      url: '<%= get_selected_countries_path %>',
+      method: 'POST',
+      data: { authenticity_token: csrfToken, provider_source_id: provider_source_id },
+      success: function(data) {
+         selected_countries = data['selected_countries'];
+      }
+   });
+   }
+
+   function getCountries() {
+   $.ajax({
+      url: '<%= get_countries_path %>',
+      method: 'GET',
+      data: { authenticity_token: csrfToken },
+      success: function(data) {
+         VirtualSelect.init({
+         options: data['countries'],
+         ele: '.single-select',
+         multiple: false,
+         search: true,
+         showSelectedOptionsFirst: true,
+         selectedValue: selected_countries
+         });
+
+      }
+   });
+   }
+
+   var visa_types = [];
+   var selected_visa_types = [];
+
+   $(document).ready(function() {
+   getVisaTypes('#gi-visa-types');
+   });
+
+   function getSelectedVisaTypes(provider_source_id) {
+   $.ajax({
+      url: '<%= get_selected_visa_types_path %>',
+      method: 'POST',
+      data: { authenticity_token: csrfToken, provider_source_id: provider_source_id },
+      success: function(data) {
+         selected_visa_types = data['selected_visa_types'];
+      }
+   });
+   }
+
+   function getVisaTypes() {
+   $.ajax({
+      url: '<%= get_visa_types_path %>',
+      method: 'GET',
+      data: { authenticity_token: csrfToken },
+      success: function(data) {
+         VirtualSelect.init({
+         options: data['visa_types'],
+         ele: '.select',
+         multiple: false,
+         search: true,
+         showSelectedOptionsFirst: true,
+         selectedValue: selected_visa_types
+         });
+
+      }
+   });
+   }
+
+   var languages = [];
+   var selected_languages = [];
+
+   $(document).ready(function() {
+   getLanguages('#multi-select-lang-speak');
+   getLanguages('#multi-select-lang-write');
+   });
+
+   function getSelectedLanguages(provider_source_id) {
+   $.ajax({
+      url: '<%= get_selected_languages_path %>',
+      method: 'POST',
+      data: { authenticity_token: csrfToken, provider_source_id: provider_source_id },
+      success: function(data) {
+         selected_languages = data['selected_languages'];
+      }
+   });
+   }
+
+   function getLanguages() {
+   $.ajax({
+      url: '<%= get_languages_path %>',
+      method: 'GET',
+      data: { authenticity_token: csrfToken },
+      success: function(data) {
+         VirtualSelect.init({
+         options: data['languages'],
+         ele: '.multi-select',
+         multiple: true,
+         search: true,
+         showSelectedOptionsFirst: true,
+         selectedValue: selected_languages
+         });
+      }
+   });
+   }
+
    $('input[name="ps-ssn"]').on('change',function(){
-   	$(this).val() == 'yes' ? $('#ssn_field').removeClass('d-none') : $('#ssn_field').addClass('d-none');
+       $(this).val() == 'yes' ? $('#ssn_field').removeClass('d-none') : $('#ssn_field').addClass('d-none');
    });
 </script>
-<% end %>
+
+<style>
+  .multi-select {
+    padding: 0;
+  }
+  .single-select {
+        width: 100%; 
+        max-width: 500px; 
+   }
+  .select {
+        width: 100%; 
+        max-width: 500px;
+        padding: 0;
+   }
+</style>
