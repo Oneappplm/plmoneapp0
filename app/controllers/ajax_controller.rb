@@ -89,8 +89,84 @@ class AjaxController < ApplicationController
   def get_selected_provider_types
     enrollment_group = EnrollmentGroup.find(params[:group_id])
     selected_provider_types = (enrollment_group.selected_provider_types || [])
+      render json: {
+        'selected_provider_types' => selected_provider_types
+      }
+  end
+
+  def get_ps_provider_types
+    ps_provider_types = ProviderType.all.map{|ptype| { label: ptype.fch, value: ptype.fch} }
+    # render json: provider_types and return
     render json: {
-      'selected_provider_types' => selected_provider_types
+      'ps_provider_types' => ps_provider_types
+    }
+  end
+
+  def get_ps_selected_provider_types
+    provider_source = ProviderSource.find(params[:group_id])
+    selected_ps_provider_types = (provider_source.selected_ps_provider_types || [])
+      render json: {
+        'selected_ps_provider_types' => selected_ps_provider_types
+      }
+  end
+
+  def get_states
+    states = State.all.map{|m| { label: m.name, value: m.name} }
+    render json: {
+      'states' => states
+    }
+  end  
+  
+  def get_selected_states
+    provider_source = ProviderSource.find(params[:provider_source_id])
+    selected_states = (provider_source.selected_states || [])
+    render json: {
+      'selected_states' => selected_states
+    }
+  end
+
+  def get_languages
+    languages = Language.all.map(&:name)
+    render json: {
+      'languages' => languages
+    }
+  end  
+  
+  def get_selected_languages
+    provider_source = ProviderSource.find(params[:provider_source_id])
+    selected_languages = (provider_source.selected_languages || [])
+    render json: {
+      'selected_languages' => selected_languages
+    }
+  end
+
+  def get_countries
+    countries = Country.all_translated.map{|country| { label: country, value: country} }
+    render json: {
+      'countries' => countries
+    }
+  end  
+  
+  def get_selected_countries
+    provider_source = ProviderSource.find(params[:provider_source_id])
+    selected_countries = (provider_source.selected_countries || [])
+    render json: {
+      'selected_countries' => selected_countries
+    }
+  end
+
+  def get_visa_types
+    visa_types = VisaType.all.map{|visa| { label: visa.name, value: visa.name} }
+    render json: {
+      'visa_types' => visa_types
+    }
+  end  
+  
+  def get_selected_visa_types
+    provider_source = ProviderSource.find(params[:provider_source_id])
+    selected_visa_types = (provider_source.selected_visa_types || [])
+    render json: {
+      'selected_visa_types' => selected_visa_types
     }
   end
 
