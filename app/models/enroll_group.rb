@@ -15,8 +15,8 @@ class EnrollGroup < ApplicationRecord
   scope :completed, -> { where(status: 'completed') }
   scope :pending, -> { where(status: 'pending') }
 
-  has_many :details, class_name: 'EnrollGroupsDetail'
-  has_many :comments, class_name: 'EnrollmentComment'
+  has_many :details, class_name: 'EnrollGroupsDetail', dependent: :destroy
+  has_many :comments, class_name: 'EnrollmentComment', dependent: :destroy
   accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank
 
 

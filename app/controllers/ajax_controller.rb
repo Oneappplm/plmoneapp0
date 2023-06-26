@@ -34,12 +34,12 @@ class AjaxController < ApplicationController
     # render json: params and return
 
     render json: {
-      'submitted' => EnrollmentProvidersDetail.send(payer).submitted.count,
-      'processing' => EnrollmentProvidersDetail.send(payer).processing.count,
-      'approved' =>  EnrollmentProvidersDetail.send(payer).approved.count,
-      'denied' => EnrollmentProvidersDetail.send(payer).denied.count,
-      'terminated' => EnrollmentProvidersDetail.send(payer).terminated.count,
-      'not_eligible' =>  EnrollmentProvidersDetail.send(payer).not_eligible.count
+      'submitted' => EnrollmentProvidersDetail.send(payer).submitted.count + EnrollGroupsDetail.send(payer).submitted.count,
+      'processing' => EnrollmentProvidersDetail.send(payer).processing.count  + EnrollGroupsDetail.send(payer).processing.count,
+      'approved' =>  EnrollmentProvidersDetail.send(payer).approved.count  + EnrollGroupsDetail.send(payer).approved.count,
+      'denied' => EnrollmentProvidersDetail.send(payer).denied.count  + EnrollGroupsDetail.send(payer).denied.count,
+      'terminated' => EnrollmentProvidersDetail.send(payer).terminated.count + EnrollGroupsDetail.send(payer).terminated.count,
+      'not_eligible' =>  EnrollmentProvidersDetail.send(payer).not_eligible.count + EnrollGroupsDetail.send(payer).not_eligible.count
     }
 
 

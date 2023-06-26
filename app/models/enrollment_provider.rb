@@ -37,8 +37,8 @@ class EnrollmentProvider < ApplicationRecord
   scope :today, -> { where(created_at: DateTime.now) }
   scope :this_week, -> { where(created_at: DateTime.now.beginning_of_week..DateTime.now.end_of_month) }
 
-	has_many :details, class_name: 'EnrollmentProvidersDetail'
-  has_many :comments, class_name: 'EnrollmentComment'
+	has_many :details, class_name: 'EnrollmentProvidersDetail', dependent: :destroy
+  has_many :comments, class_name: 'EnrollmentComment', dependent: :destroy
 
 	accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank
 	
