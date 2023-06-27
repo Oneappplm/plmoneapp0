@@ -1,3 +1,4 @@
+
 module ApplicationHelper
 	def can_read?
 		return if current_role&.can_read || !current_user
@@ -131,6 +132,22 @@ module ApplicationHelper
 	def current_setting
 		@current_setting ||= Setting.take || Setting.new
 	end
+
+  def current_logo
+   @current_logo ||= if current_setting.qualifacts?
+      'qualifacts-logo.png'
+    else
+      'plm-logo-3.png'
+    end
+  end
+
+  def current_logo_sm
+    @current_logo_sm ||= if current_setting.qualifacts?
+      'qualifacts-logo-sm.png'
+    else
+      'plm-logo-square.png'
+    end
+  end
 
 	def dark_mode
 		if current_setting.dark_mode.downcase == 'yes'
