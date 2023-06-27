@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+puts `git checkout master && git pull zcorp master --rebase`
 puts `git as -av`
 puts `git checkout hvhs-app && git push	origin hvhs-app &&	git push zcorp hvhs-app`
 puts `git checkout qualifacts-app && git push origin qualifacts-app && git push zcorp qualifacts-app`
