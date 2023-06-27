@@ -6,11 +6,7 @@ class Setting < ApplicationRecord
 		end
 	end
 
-	def plmhealthoneapp?
-		client_name == 'plmhealthoneapp'
-	end
-
-	def hvhs?
-		client_name == 'hvhs'
-	end
+	def plmhealthoneapp? = client_name == 'plmhealthoneapp'
+	def hvhs? = client_name == 'hvhs'
+	def qualifacts? = client_name == 'qualifacts'
 end
