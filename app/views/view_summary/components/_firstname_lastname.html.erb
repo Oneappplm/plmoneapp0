@@ -1,7 +1,7 @@
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['First Name:', 'Last Name:']%>
+			<% titles = [['First Name:', first_name_key], ['Last Name:', last_name_key]] %>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>

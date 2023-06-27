@@ -48,46 +48,42 @@
 
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = [['Last Name:', '4'], ['Suffix:', '2'], ['First Name:', '3'], ['Middle Name:', '3']]%>
+			<% titles = [['Last Name:', '4', :last_name], ['Suffix:', '2', :suffix], ['First Name:', '3', :first_name], ['Middle Name:', '3', :middle_name]]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title[0], height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
 			<% end %>
 		</div>
 
-		<%= HtmlUtils.single_column title: 'List any other name(s) under which you have been known by reference, licensing and or educational institutions, including the date of name change(s) if known (mm/dd/yy):', height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'List any other name(s) under which you have been known by reference, licensing and or educational institutions, including the date of name change(s) if known (mm/dd/yy):', value: @current_provider_source.fetch(:other_names), height: 'h-50px'%>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Degree Title:', 'State(s) of Practice:']%>
-			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
-			<% end %>
+			<%= HtmlUtils.table_column title: 'Degree Title:', value: @current_provider_source.fetch(:degree_titles)&.titleize, height: 'h-50px', last: false, size: '6' %>
+			<%= HtmlUtils.table_column title: 'State(s) of Practice:', value: State.where(alpha_code: @current_provider_source.fetch(:state_of_practice)).first&.name, height: 'h-50px', last: true, size: '6' %>
 		</div>
 
-		<%= HtmlUtils.single_column title: 'Primary Practitioner Type:', height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Primary Practitioner Type:', value: @current_provider_source.fetch(:'primary-practioner-type'), height: 'h-50px'%>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Country:', 'Home Mailing Address:']%>
+			<% titles = [['County:', @current_provider_source.fetch(:'county')], ['Home Mailing Address:', @current_provider_source.fetch(:email_address)]] %>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+				<%= HtmlUtils.table_column title: title[0], value: title[1], height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 
 		<!-- some partials were added late but some of them are repeating -->
-		<%= render "view_summary/components/city_state_zipcode"%>
-
-
+		<%= render partial: "view_summary/components/city_state_zipcode", locals: { city_key: :city, zipcode_key: :zipcode, state_key: :'ps-state'} %>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Home Telephone Number:', 'Mobile Phone Number:', 'Fax Number:']%>
+			<% titles = [['Home Telephone Number:', @current_provider_source.fetch(:telephone)], ['Mobile Phone Number:', @current_provider_source.fetch(:mobile_number)], ['Fax Number:', @current_provider_source.fetch(:fax_number)]]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+				<%= HtmlUtils.table_column title: title[0], value: title[1], height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
 		</div>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Page Number:', 'Ext:', 'Email Address:']%>
+			<% titles = [['Page Number:', @current_provider_source.fetch(:page_number)], ['Ext:', @current_provider_source.fetch(:ext)], ['Email Address:', @current_provider_source.fetch(:email_address)]] %>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+				<%= HtmlUtils.table_column title: title[0], value: title[1], height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
 		</div>
 
@@ -95,32 +91,32 @@
 		<%= HtmlUtils.table_section_header title: '2.2 General Information - Personal Information' %>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Gender:', 'Date of Birth:', 'Citizenship:', 'Country of Birth:']%>
+			<%= HtmlUtils.table_column title: 'Gender:', value: @current_provider_source.fetch(:'ps-gender')&.titleize, height: 'h-50px', last: false, size: '3' %>
+			<% date = Date.parse(@current_provider_source.fetch(:'ps-dob'))&.strftime('%B %d, %Y') rescue nil%>
+			<%= HtmlUtils.table_column title: 'Date of Birth:', value: date, height: 'h-50px', last: false, size: '3' %>
+			<%= HtmlUtils.table_column title: 'Country of Birth:', value: @current_provider_source.fetch(:'ps-cob')&.titleize, height: 'h-50px', last: true, size: '3' %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Social Security Number:', @current_provider_source.fetch(:'social-security-number')], ['Ethnicity:', @current_provider_source.fetch(:'ethnicity')], ['Marital Status:', @current_provider_source.fetch(:'marital-status')]] %>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '3' %>
+				<%= HtmlUtils.table_column title: title[0], value: title[1], height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
 		</div>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Social Security Number:', 'Ethnicity:', 'Marital Status:']%>
+			<% titles = [['Languages that you speak:', @current_provider_source.fetch(:'languages-you-speak')], ['Languages that you write:', @current_provider_source.fetch(:'languages-you-write')]] %>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
-			<% end %>
-		</div>
-
-		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Languages that you speak:', 'Languages that you write:']%>
-			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-75px', last: ((titles.count-1) == idx ), size: '6' %>
+				<%= HtmlUtils.table_column title: title[0], value: title[1], height: 'h-75px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 
 
 		<%= HtmlUtils.table_sub_section_header title: 'Emergency Contact Person' %>
 
-		<%= render 'view_summary/components/firstname_lastname_middlename'%>
+		<%= render partial: "view_summary/components/firstname_lastname_middlename", locals: { first_name_key: :'emergency-first-name', last_name_key: :'emergency-last-name', middle_name_key: :'emergency-middle-name' } %>
 
-		<%= HtmlUtils.single_column title: 'Mobile Number:', height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Mobile Number:', value: @current_provider_source.fetch(:'emergency-contact-phone-number'), height: 'h-50px'%>
 
 	</div>
 

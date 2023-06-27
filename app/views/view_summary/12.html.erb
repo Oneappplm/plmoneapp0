@@ -2,46 +2,47 @@
 	<div class="col-lg-12 text-black border border-dark py-3 px-0 pb-0">
 		<%= HtmlUtils.table_section_header title: '10.3 Practice Information - Covering Colleagues' %>
 
-		<%= HtmlUtils.single_column title: 'Do you have any covering colleagues who are not partners or associates at any of your practice locations?', height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Do you have any covering colleagues who are not partners or associates at any of your practice locations?', value: @current_provider_source.fetch(:covering_colleague)&.titleize, height: 'h-50px'%>
 		<%= HtmlUtils.table_sub_section_header title: 'Colleague Name' %>
-		<%= render "view_summary/components/firstname_lastname_middlename"%>
-		<%= HtmlUtils.single_column title: 'Degree:', height: 'h-50px'%>
-		<%= HtmlUtils.single_column title: 'Specialty:', height: 'h-50px'%>
+		<%= render partial: "view_summary/components/firstname_lastname_middlename", locals: { first_name_key: :'cv-first-name', last_name_key: :'cv-last-name', middle_name_key: :'cv-middle-name' } %>
+		<%= HtmlUtils.single_column title: 'Degree:', value: @current_provider_source.fetch(:'cv-degree')&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Specialty:',value: @current_provider_source.fetch(:'specialty'), height: 'h-50px'%>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Primary License State:', 'Primary License Number:','Primary License Type:']%>
+			<%= HtmlUtils.table_column title: 'Primary License State:', value: State.where(alpha_code: @current_provider_source.fetch(:state_abbr)).first&.name, height: 'h-50px', last: false, size: '4' %>
+			<% titles = [['Primary License Number:', :'cv-primary-license-number'],['Primary License Type:']]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
 		</div>
 
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['NPI Number:', 'Address Line 1:']%>
+			<% titles = [['NPI Number:', :'cv-npi-number'], ['Address Line 1:', :'cv-address-line1']]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
-		<%= render "view_summary/components/city_state_zipcode"%>
-		<%= render "view_summary/components/telephone_ext_fax_email"%>
-		<%= HtmlUtils.single_column title: 'Please explain your coverage arrangement:', height: 'h-75px'%>
+		<%= render partial: "view_summary/components/city_state_zipcode", locals: { city_key: :'cv-city', zipcode_key: :'cv-zipcode', state_key: :'state_abbr_1'} %>
+		<%= render partial: "view_summary/components/telephone_ext_fax_email", locals: { telephone_number_key: :'cv-telephone-number', ext_key: :'cv-ext', fax_number_key: :'cv-fax-number', email_key: :'cv-email-address'}%>
+		<%= HtmlUtils.single_column title: 'Please explain your coverage arrangement:', value: @current_provider_source.fetch(:'cv-description'), height: 'h-75px'%>
 
 
 		<%= HtmlUtils.table_section_header title: '10.4 Practice Information - Unique Circumstances' %>
-		<%= HtmlUtils.single_column title: 'Please explain any unique circumstances concerning your practice locations or the method by which you render healthcare services (e.g., you only render services in patients’ homes).', height: 'h-75px'%>
+		<%= HtmlUtils.single_column title: 'Please explain any unique circumstances concerning your practice locations or the method by which you render healthcare services (e.g., you only render services in patients’ homes).', value: @current_provider_source.fetch(:unique_circumstances_note), height: 'h-75px'%>
 		<%= HtmlUtils.table_section_header title: '11. Disclosure Questions' %>
 		<%= HtmlUtils.table_sub_section_header title: 'Licensure' %>
 
 
-		<%= HtmlUtils.two_column_with_yes text1: '1. Has your license, registration or certification to practice in your profession ever been voluntarily or involuntarily relinquished, denied, suspended, revoked, restricted, or have you ever been subject to a fine, reprimand, consent order, probation or any conditions or limitations by any state or professional licensing, registration or certification board?' %>
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q1)&.titleize, explanation: @current_provider_source.fetch(:q1_explanation), text1: '1. Has your license, registration or certification to practice in your profession ever been voluntarily or involuntarily relinquished, denied, suspended, revoked, restricted, or have you ever been subject to a fine, reprimand, consent order, probation or any conditions or limitations by any state or professional licensing, registration or certification board?' %>
 
-		<%= HtmlUtils.two_column_with_yes text1: '2. Has there been any challenge to your licensure, registration or certification?', height: 'h-50px' %>
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q2)&.titleize, explanation: @current_provider_source.fetch(:q2_explanation), text1: '2. Has there been any challenge to your licensure, registration or certification?', height: 'h-50px' %>
 
 		<%= HtmlUtils.table_sub_section_header title: 'Hospital Privileges and Other Affiliations' %>
 
-		<%= HtmlUtils.two_column_with_yes text1: '3. Have your clinical privileges or medical staff membership at any hospital or healthcare institution, voluntarily or involuntarily, ever been denied, suspended, revoked, restricted, denied renewal or subject to probationary or to other disciplinary conditions (for reasons other than non-completion of medical record when quality of care was not adversely affected) or have proceedings toward any of those ends been instituted or recommended by any hospital or healthcare institution, medical staff or committee, or governing board?. Has your license, registration or certification to practice in your profession ever been voluntarily or involuntarily relinquished, denied, suspended, revoked, restricted, or have you ever been subject to a fine, reprimand, consent order, probation or any conditions or limitations by any state or professional licensing, registration or certification board?' %>
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q3)&.titleize, explanation: @current_provider_source.fetch(:q3_explanation),text1: '3. Have your clinical privileges or medical staff membership at any hospital or healthcare institution, voluntarily or involuntarily, ever been denied, suspended, revoked, restricted, denied renewal or subject to probationary or to other disciplinary conditions (for reasons other than non-completion of medical record when quality of care was not adversely affected) or have proceedings toward any of those ends been instituted or recommended by any hospital or healthcare institution, medical staff or committee, or governing board?. Has your license, registration or certification to practice in your profession ever been voluntarily or involuntarily relinquished, denied, suspended, revoked, restricted, or have you ever been subject to a fine, reprimand, consent order, probation or any conditions or limitations by any state or professional licensing, registration or certification board?' %>
 
-		<%= HtmlUtils.two_column_with_yes text1: '4. Have you voluntarily or involuntarily surrendered, limited your privileges or not reapplied for privileges while under investigation?', height: 'h-50px' %>
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q4)&.titleize, explanation: @current_provider_source.fetch(:q4_explanation),text1: '4. Have you voluntarily or involuntarily surrendered, limited your privileges or not reapplied for privileges while under investigation?', height: 'h-50px' %>
 
 	</div>
 	<%= HtmlUtils.summary_footer page: 12 %>

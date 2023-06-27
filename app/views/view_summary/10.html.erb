@@ -3,75 +3,80 @@
 		<%= HtmlUtils.table_section_header title: '10.2 Practice Information - Practice Location' %>
 		<%= HtmlUtils.table_sub_section_header title: 'Remittance Contact' %>
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Same as Office Manager/Business Office Contact:', 'Same as Billing Contact:']%>
+			<% titles = [['Same as Office Manager/Business Office Contact:', :contact_am_contact_person], ['Same as Billing Contact:', :contact_am_contact_person]]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
-		<%= render "view_summary/components/firstname_lastname"%>
-		<%= render "view_summary/components/address1_city_state"%>
-		<%= render "view_summary/components/zipcode_telephone_mobile"%>
+		<%= render partial: "view_summary/components/firstname_lastname", locals: { first_name_key: :contact_remittance_first_name, last_name_key: :contact_remittance_last_name } %>
+		<%= render partial: "view_summary/components/address1_city_state", locals: { address_1_key: :contact_remittance_address_line_1, city_key: :contact_remittance_city, state_key: :contact_remittance_state } %>
+		<%= render partial: "view_summary/components/zipcode_telephone_mobile", locals: { zipcode_key: :contact_remittance_zip_code, telephone_number_key: :contact_remittance_telephone_number, mobile_number_key: :contact_remittance_mobile_number } %>
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Fax Number:', 'Remittance Email Address:']%>
+			<% titles = [['Fax Number:', :contact_remittance_fax_number], ['Remittance Email Address:', :contact_remittance_email]]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 		<%= HtmlUtils.table_sub_section_header title: 'Practice Hours' %>
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Monday:', 'Tuesday:', 'Wednesday:']%>
+			<% titles = [['Monday:', :monday_practice_hours_from, :monday_practice_hours_to], ['Tuesday:', :tuesday_practice_hours_from, :tuesday_practice_hours_to], ['Wednesday:', :wednesday_practice_hours_from, :wednesday_practice_hours_to]]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+				<% from_time = Time.parse(@current_provider_source.fetch(title[1])).strftime("%l:%M %p") rescue nil%>
+				<% to_time = Time.parse(@current_provider_source.fetch(title[2])).strftime("%l:%M %p") rescue nil%>
+				<%= HtmlUtils.table_column title: title[0], value: "#{from_time}-#{to_time}", height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
 		</div>
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Thursday:', 'Friday:', 'Saturday:']%>
+			<% titles = [['Thursday:', :thursday_practice_hours_from, :thursday_practice_hours_to], ['Friday:', :friday_practice_hours_from, :friday_practice_hours_to], ['Saturday:', :saturday_practice_hours_from, :saturday_practice_hours_to]]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+				<% from_time = Time.parse(@current_provider_source.fetch(title[1])).strftime("%l:%M %p") rescue nil%>
+				<% to_time = Time.parse(@current_provider_source.fetch(title[2])).strftime("%l:%M %p") rescue nil%>
+				<%= HtmlUtils.table_column title: title[0], value: "#{from_time}-#{to_time}", height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
 		</div>
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = [['Sunday:', '4'], ['Comment:', 8]]%>
-			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title[0], height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
-			<% end %>
+			<% from_time = Time.parse(@current_provider_source.fetch(:sunday_practice_hours_from)).strftime("%l:%M %p") rescue nil%>
+			<% to_time = Time.parse(@current_provider_source.fetch(:sunday_practice_hours_to)).strftime("%l:%M %p") rescue nil%>
+			<%= HtmlUtils.table_column title: 'Sunday', value: "#{from_time}-#{to_time}", height: 'h-50px', last: false, size: '4' %>
+
+			<%= HtmlUtils.table_column title: 'Comment', value: @current_provider_source.fetch(:practice_comments), height: 'h-50px', last: true, size: '4' %>
 		</div>
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = [['Ext:', '4'], ['Patient Appointment Telephone Number (if different than listed practice telephone number):', 8]]%>
+			<% titles = [['Ext:', '4', :practice_patient_phone_ext], ['Patient Appointment Telephone Number (if different than listed practice telephone number):', 8, :practice_patient_phone]]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title[0], height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2]), height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
 			<% end %>
 		</div>
-		<%= HtmlUtils.single_column title: 'Does this location have 24 hours/7 days per week telephone coverage?', height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Does this location have 24 hours/7 days per week telephone coverage?', value: @current_provider_source.fetch(:phone_coverage_field), height: 'h-50px'%>
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Telephone Coverage Type:', 'After Hours Telephone Number:', 'Ext:']%>
+			<% titles = [['Telephone Coverage Type:', :practice_phone_coverage_type], ['After Hours Telephone Number:', :practice_after_hour_phone_number], ['Ext:', :practice_after_hour_phone_number_ext]]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
 		</div>
 		<%= HtmlUtils.table_sub_section_header title: 'Patient Acceptance' %>
-		<%= HtmlUtils.single_column title: 'Please select your open practice status:', height: 'h-50px'%>
-		<%= HtmlUtils.single_column title: 'If patient acceptance varies by health plan, please explain:', height: 'h-75px'%>
+		<%= HtmlUtils.single_column title: 'Please select your open practice status:', value: @current_provider_source.fetch(:practice_status)&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'If patient acceptance varies by health plan, please explain:', value: @current_provider_source.fetch(:practice_patient_acceptance_varies), height: 'h-75px'%>
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Are there any practice limitations at this location?', 'Gender Limitations:']%>
+			<% titles = [['Are there any practice limitations at this location?', :practice_limitations_field], ['Gender Limitations:', :practice_gender_limitation]]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Minimum Age:', 'Maximum Age:']%>
+			<% titles = [['Minimum Age:', :practice_patient_min_age], ['Maximum Age:', :practice_patient_max_age]]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
-		<%= HtmlUtils.single_column title: 'Please list any other limitations:', height: 'h-75px'%>
+		<%= HtmlUtils.single_column title: 'Please list any other limitations:', value: @current_provider_source.fetch(:practice_patient_other_limits), height: 'h-75px'%>
 
 		<%= HtmlUtils.table_sub_section_header title: 'Foreign Languages' %>
-		<%= HtmlUtils.single_column title: 'Please select all language that your staffs speaks:', height: 'h-50px'%>
-		<%= HtmlUtils.single_column title: 'Please select all language that your staffs writes:', height: 'h-50px'%>
-		<%= HtmlUtils.single_column title: 'Are interpreters available at this location?', height: 'h-50px'%>
-		<%= HtmlUtils.single_column title: 'Please select all languages interpreted:', height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Please select all language that your staffs speaks:', value: @current_provider_source.fetch(:readonly_foreign_language_speak)&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Please select all language that your staffs writes:', value: @current_provider_source.fetch(:foreign_language_write)&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Are interpreters available at this location?', value: @current_provider_source.fetch(:practice_location_interpreter)&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Please select all languages interpreted:', value: @current_provider_source.fetch(:practice_staff_foreign_laguages)&.titleize, height: 'h-50px'%>
 		<%= HtmlUtils.table_sub_section_header title: 'Foreign Languages' %>
 
 

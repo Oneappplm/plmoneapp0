@@ -3,9 +3,9 @@
 		<%= HtmlUtils.table_section_header title: '10.2 Practice Information - Practice Location' %>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Is this location accessible by public transportation?', 'If Yes, Please select from the following:']%>
+			<% titles = [['Is this location accessible by public transportation?'], ['If Yes, Please select from the following:']]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 
@@ -15,81 +15,80 @@
 
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Do you provide laboratory services at this location?', 'Please select all accrediting/certifying programs:']%>
+			<% titles = [['Do you provide laboratory services at this location?', :practice_laboratory_services], ['Please select all accrediting/certifying programs:']]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Does this location have a CLIA Waiver?', 'CLIA Waiver Number:', 'Expiration Date:']%>
+			<% titles = [['Does this location have a CLIA Waiver?', :practice_clia_waiver], ['CLIA Waiver Number:'], ['Expiration Date:']]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
 		</div>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Does this location have a CLIA Certificate?', 'CLIA Certificate Number:', 'Expiration Date:']%>
+			<% titles = [['Does this location have a CLIA Certificate?', :practice_clia_certificate], ['CLIA Certificate Number:'], ['Expiration Date:']]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
 		</div>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Do you provide radiology services at this location?', 'Please list all X-ray certifications:']%>
+			<% titles = [['Do you provide radiology services at this location?', :practice_clia_radiology], ['Please list all X-ray certifications:']]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 
-		<%= HtmlUtils.single_column title: 'FDA/Radiology (Mammography) Certification Number for this location:', height: 'h-50px'%>
-
-		<%= HtmlUtils.single_column title: 'Please select all services offered at this location:', height: 'h-75px'%>
+		<%= HtmlUtils.single_column title: 'FDA/Radiology (Mammography) Certification Number for this location:', value: @current_provider_source.fetch(:practice_fda_radiology),height: 'h-50px'%>
+		<% services = Service.where(id: @current_provider_source.data.where("data_key LIKE ?", "service_%").where(data_value: "yes").pluck(:data_key).collect {|i|i[-1]}) rescue nil%>
+		<%= HtmlUtils.single_column title: 'Please select all services offered at this location:', value: services&.pluck(:name).join(','), height: 'h-75px'%>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Is anesthesia administered at this location?', 'Class/Category:']%>
+			<% titles = [['Is anesthesia administered at this location?', :practice_administered_anesthesia], ['Class/Category:']]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
-		<%= render "view_summary/components/firstname_lastname_middlename"%>
+		<%= render partial: "view_summary/components/firstname_lastname_middlename", locals: { first_name_key: :'practice_staff_first_name', last_name_key: :'practice_staff_last_name', middle_name_key: :'practice_staff_middle_name' } %>
 
-		<%= HtmlUtils.single_column title: 'Degree:', height: 'h-50px'%>
-		<%= HtmlUtils.single_column title: 'Please list any additional procedures provided at this location (including surgical procedures):', height: 'h-75px'%>
+		<%= HtmlUtils.single_column title: 'Degree:', value: @current_provider_source.fetch(:practice_staff_degree)&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Please list any additional procedures provided at this location (including surgical procedures):', value: @current_provider_source.fetch(:practice_additional_procedures), height: 'h-75px'%>
 
 		<%= HtmlUtils.table_sub_section_header title: 'Mid-Level Practitioners' %>
-		<%= HtmlUtils.single_column title: 'Do mid-level practitioners (nurse practitioners, nurse midwives, physician assistants, registered nurse first assistant, etc.) care for patients at this location?', height: 'h-50px'%>
-		<%= render "view_summary/components/firstname_lastname_middlename"%>
-		<%= HtmlUtils.single_column title: 'Mid-Level Practitioner Degree:', height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Do mid-level practitioners (nurse practitioners, nurse midwives, physician assistants, registered nurse first assistant, etc.) care for patients at this location?', value: @current_provider_source.fetch(:midlevel_practitioner_field), height: 'h-50px'%>
+		<%= render partial: "view_summary/components/firstname_lastname_middlename", locals: { first_name_key: :'practice_midlevel_first_name', last_name_key: :'practice_midlevel_middle_name', middle_name_key: :'practice_midlevel_last_name' } %>
+		<%= HtmlUtils.single_column title: 'Mid-Level Practitioner Degree:', value: @current_provider_source.fetch(:practice_midlevel_degree)&.titleize, height: 'h-50px'%>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Primary License State:', 'Primary License Number:']%>
+			<% titles = [['Primary License State:', :practice_midlevel_state], ['Primary License Number:', :practice_midlevel_degree]]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 		<%= HtmlUtils.table_sub_section_header title: 'Partners' %>
-		<%= render "view_summary/components/firstname_lastname_middlename"%>
+		<%= render partial: "view_summary/components/firstname_lastname_middlename", locals: { first_name_key: :'practice_partners_first_name', last_name_key: :'practice_partners_last_name', middle_name_key: :'practice_partners_middle_name' } %>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Primary License State:', 'Primary License Number:']%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 
-		<%= HtmlUtils.single_column title: 'Practitioner Degree:', height: 'h-50px'%>
-		<%= HtmlUtils.single_column title: 'NPI Number:', height: 'h-50px'%>
-		<%= HtmlUtils.single_column title: 'Specialty:', height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Practitioner Degree:', value: @current_provider_source.fetch(:practice_partners_degree)&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'NPI Number:', value: @current_provider_source.fetch(:practice_partners_npi_number), height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Specialty:', value: @current_provider_source.fetch(:practice_partners_specialty), height: 'h-50px'%>
 
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = ['Primary License State:', 'Primary License Number:']%>
+			<% titles = [['Primary License State:', :practice_partners_state], ['Primary License Number:', :practice_partners_license_number]]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
-		<%= HtmlUtils.single_column title: 'Does this partner/associate cover for you?', height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Does this partner/associate cover for you?', value: @current_provider_source.fetch(:practice_partners_cover)&.titleize, height: 'h-50px'%>
 
 	</div>
 	<%= HtmlUtils.summary_footer page: 11 %>
