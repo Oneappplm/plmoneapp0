@@ -80,7 +80,13 @@ class EnrollGroupsController < ApplicationController
 					:group_id,
 					:user_id,
 					:outreach_type,
-          details_attributes: [:id, :start_date, :due_date, :enrollment_payer, :enrollment_type, :enrollment_status, :approved_date, :revalidation_date, :revalidation_due_date, :comment, :ptan_number ,:_destroy],
+          # details_attributes: [:id, :start_date, :due_date, :enrollment_payer, :enrollment_type, :enrollment_status, :approved_date, :revalidation_date, :revalidation_due_date, :comment, :ptan_number ,:_destroy],
+          details_attributes: [ :id, :state_id, :group_number, :effective_date, :revalidation_date,
+                      :application_status, :payor_type, :medicare_tricare, :payor_name,
+                      :payor_phone, :payor_email, :enrollment_link, :payor_username, :payor_password,
+                      :payor_question, :payor_answer, :portal_admin, :portal_admin_name,
+                      :portal_admin_phone, :portal_admin_email, :caqh_payer, :eft, :era, :client_notes, :notes, :_destroy
+                    ]
 	)
 	end
 
@@ -92,3 +98,4 @@ class EnrollGroupsController < ApplicationController
     end
   end
 end
+

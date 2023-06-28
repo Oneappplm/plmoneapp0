@@ -1,0 +1,258 @@
+<%= form_for @enrollment_provider, html: { multipart: true , id: 'enrollment-provider-form'} do |f| %>
+<% if @enrollment_provider.errors.any? %>
+<div id="error_explanation" class="row mb-3">
+   <div class="col-lg-12">
+      <h2><%= pluralize(@enrollment_provider.errors.count, "error") %> prohibited this enrollment provider from being saved:</h2>
+      <ul>
+         <% @enrollment_provider.errors.full_messages.each do |message| %>
+         <li><%= message %></li>
+         <% end %>
+      </ul>
+   </div>
+</div>
+<% end %>
+<div class="row mb-3">
+		<div class="col-lg-12">
+			<h5 class="mb-0">Practitioner Personal Information</h5>
+			<small class="text-black">Please fill out all required fields. Optional field are marked as (optional)</small>
+		</div>
+</div>
+<div class="row mb-1">
+   <div class="col-lg-12 pe-5">
+      <label class="text-dark-grey">Provider Name</label>
+      <%= f.select :provider_id, options_for_select(mixed_providers_options, @enrollment_provider.provider_id), { prompt: 'Provider name' }, {:class => 'form-select'}%>
+   </div>
+</div>
+<div class="row">
+	<div class="col-lg-12 mb-3 d-flex justify-content-start gap-2">
+       <label class="text-dark-grey">Filter:</label>
+         <div class="d-flex gap-2">
+            <div class="">
+            <%= f.check_box :outreach_type %>
+            <%= f.label :outreach_type, "Provider from Enrollment", class: 'text-dark-grey' %>
+            </div>
+            <div class="">
+            <%= f.check_box :outreach_type %>
+            <%= f.label :outreach_type, "Provider from Provider App", class: 'text-dark-grey' %>
+            </div>
+         </div>
+	</div>
+</div>
+
+<div class="row mb-3">
+   <div class="col-lg-12">
+      <div class="row">
+         <div id="details">
+            <div class="fields">
+               <%= f.fields_for :details do |details| %>
+               <%= render 'details_fields', f: details %>
+               <% end %>
+            </div>
+            <div class="row">
+               <div class="col-lg-12 text-center">
+                  <div class="links mt-2">
+                     <button type="button" class="add_association btn btn-primary btn-xs" > Add New Payer </button>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+<div class="row mb-3">
+   <div class="col-lg-12">
+      <h3>Documents</h3>
+   </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+         <label>State Medical License</label>
+         <%= f.text_field :state_license_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+         <label >File upload</label>
+         <%= f.file_field :state_license_file, class: 'form-control' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_provider.state_license_file.url %>
+      </div>
+   </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+         <label>DEA</label>
+         <%= f.text_field :dea_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+         <label >File upload</label>
+         <%= f.file_field :dea_file, class: 'form-control' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_provider.dea_file.url %>
+      </div>
+   </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+         <label>IRS Letter</label>
+         <%= f.text_field :irs_letter_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+         <label >File upload</label>
+         <%= f.file_field :irs_letter_file, class: 'form-control' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_provider.irs_letter_file.url %>
+      </div>
+   </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+         <label>W9 Form,  <a href="https://www.irs.gov/pub/irs-pdf/fw9.pdf" target="_blank">download template here.</a></label>
+         <%= f.text_field :w9_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+         <label >File upload</label>
+         <%= f.file_field :w9_file, class: 'form-control' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_provider.w9_file.url %>
+      </div>
+   </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+         <label>Voided Check</label>
+         <%= f.text_field :voided_check_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+         <label >File upload</label>
+         <%= f.file_field :voided_check_file, class: 'form-control' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_provider.voided_check_file.url %>
+      </div>
+   </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+         <label>Curriculum Vitae</label>
+         <%= f.text_field :curriculum_vitae_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+         <label >File upload</label>
+         <%= f.file_field :curriculum_vitae_file, class: 'form-control' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_provider.curriculum_vitae_file.url %>
+      </div>
+   </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+         <label>CMS 460</label>
+         <%= f.text_field :cms_460_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+         <label >File upload</label>
+         <%= f.file_field :cms_460_file, class: 'form-control' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_provider.cms_460_file.url %>
+      </div>
+   </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+         <label>Electronic File Transfer (EFT)</label>
+         <%= f.text_field :eft_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+         <label >File upload</label>
+         <%= f.file_field :eft_file, class: 'form-control' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_provider.eft_file.url %>
+      </div>
+   </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+         <label>Certificate of Insurance</label>
+         <%= f.text_field :cert_insurance_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+         <label >File upload</label>
+         <%= f.file_field :cert_insurance_file, class: 'form-control' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_provider.irs_letter_file.url %>
+      </div>
+   </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+         <label>Driver's License</label>
+         <%= f.text_field :driver_license_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+         <label >File upload</label>
+         <%= f.file_field :driver_license_file, class: 'form-control' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_provider.driver_license_file.url %>
+      </div>
+   </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+         <label>Board Certification</label>
+         <%= f.text_field :board_certification_submitted, placeholder: 'Date Submitted', class: 'form-control', onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+         <label >File upload</label>
+         <%= f.file_field :board_certification_file, class: 'form-control' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_provider.board_certification_file.url %>
+      </div>
+   </div>
+</div>
+<div class="row">
+   <div class="col-lg-12 d-flex justify-content-end pe-5">
+      <button class="btn btn-primary btn-md">Submit</button>
+   </div>
+</div>
+</div>
+
+   <div class="col-lg-4">
+      <div class="text white" style="background-color: #377dff; border-radius: 10px;">
+         <div class="col-lg-12">
+            <div class="p-3 text-white">
+               <h5 class="mb-3 text-white">Data Encoded Agent</h5>
+               <div class="p-2" style="background-color: #5491ff; border-radius: 10px;">
+                  <label>Username: <%= current_user&.full_name %> </label>
+                  <label>Email: <%= current_user&.email %></label>
+               </div>
+            </div>
+         </div>
+      
+         <div class="col-lg-12">
+            <div class="p-3 text-white">
+               <h5 class="mb-3 text-white" >Assign Agent</h5>
+               <%= f.select :user_id, options_for_select(User.from_enrollment.map{ |user| [user.full_name, user.id] }, @enrollment_provider&.user_id), {prompt: 'Select Option'}, {:class => 'form-select mb-2'} %>
+
+               <%= f.select :outreach_type, options_for_select([
+                  ['Email','email'],
+                  ['Call','call']
+                  ], @enrollment_provider.outreach_type), { prompt: 'Select Option' }, {:class => 'form-select'}  %>
+                </div>
+         </div>
+      </div>
+   </div>
+   <% end %>
+
+<script>
+   $(document).ready(function () {
+      $("#details").on("click", ".add_association", function () {
+         var detailsFields = $("#details .field");
+         var newEnrollmentdetails = detailsFields.last().clone();
+         var newId = new Date().getTime();
+         newEnrollmentdetails.html(newEnrollmentdetails.html().replace(/details_attributes\]\[\d+\]/g, "details_attributes][" + newId + "]"));
+         $("#details .fields").append(newEnrollmentdetails);
+      });
+
+      $(document).on('change', '.multi-enrollment-status', function () {
+         var status = $(this).val();
+         if (status == 'application-not-submitted') {
+            showHideDetailFields($(this), '.application-not-submitted-field', 'show')
+         }
+         if (status == 'approved') {
+            showHideDetailFields($(this), '.application-not-submitted-field', 'show')
+            showHideDetailFields($(this), '.application-submitted-field', 'hide')
+            showHideDetailFields($(this), '.revalidation-fields', 'show')
+         } else if (status == 'application-submitted') {
+            showHideDetailFields($(this), '.application-not-submitted-field', 'show')
+            showHideDetailFields($(this), '.revalidation-fields', 'hide')
+            showHideDetailFields($(this), '.application-submitted-field', 'show')
+         } else {
+            showHideDetailFields($(this), '.revalidation-fields', 'hide')
+            showHideDetailFields($(this), '.application-submitted-field', 'hide')
+         }
+      })
+
+      function showHideDetailFields(dropDown, divClass, mode) {
+         if (mode == 'show')
+            dropDown.parent().parent().parent().find(divClass).removeClass('d-none');
+         else
+            dropDown.parent().parent().parent().find(divClass).addClass('d-none');
+      }
+   })
+</script>

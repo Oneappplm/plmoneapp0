@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_24_112930) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_28_051628) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -177,6 +177,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_24_112930) do
     t.integer "user_id"
     t.string "outreach_type"
     t.string "enrollment_payer"
+    t.string "voided_bank_letter"
   end
 
   create_table "enroll_groups_details", force: :cascade do |t|
@@ -193,6 +194,29 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_24_112930) do
     t.text "comment"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "state_id"
+    t.string "group_number"
+    t.datetime "effective_date"
+    t.string "application_status"
+    t.string "payor_type"
+    t.string "medicare_tricare"
+    t.string "payor_name"
+    t.string "payor_phone"
+    t.string "payor_email"
+    t.string "enrollment_link"
+    t.string "payor_username"
+    t.string "payor_password"
+    t.string "payor_question"
+    t.string "payor_answer"
+    t.string "portal_admin"
+    t.string "portal_admin_name"
+    t.string "portal_admin_phone"
+    t.string "portal_admin_email"
+    t.string "caqh_payer"
+    t.string "eft"
+    t.string "era"
+    t.string "client_notes"
+    t.string "notes"
     t.index ["enroll_group_id"], name: "index_enroll_groups_details_on_enroll_group_id"
   end
 
