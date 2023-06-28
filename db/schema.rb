@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_28_051628) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_28_144446) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -677,6 +677,24 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_28_051628) do
     t.integer "zip_code"
     t.string "birth_city"
     t.string "birth_state"
+    t.string "practice_location_name"
+    t.date "provider_effective_date"
+    t.string "caqh_login"
+    t.date "reattestation_date"
+    t.string "security_question_answer"
+    t.boolean "board_certified"
+    t.string "birth_city_state"
+    t.string "medical_school"
+    t.string "medical_license"
+    t.string "state_license"
+    t.date "state_license_effective_date"
+    t.date "state_license_expiration_date"
+    t.string "pa_license_number"
+    t.date "nccpa_expiration_date"
+    t.string "ins_policy"
+    t.date "ins_policy_effective_date"
+    t.date "ins_policy_expiration_date"
+    t.date "state_license_effectice_date"
   end
 
   create_table "providers_service_locations", force: :cascade do |t|
