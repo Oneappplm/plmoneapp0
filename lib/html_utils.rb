@@ -65,11 +65,11 @@ module HtmlUtils
   def generate_view_link **options
 
    options[:file_url] ||= nil
-   options[:link_class] ||= 'btn btn-outline-primary btn-sm mt-2 fw-semibold'
+   options[:link_class] ||= 'btn btn-outline-primary btn-sm py-1 mt-2 fw-semibold'
 
    html = if options[:file_url].present?
       <<-HTML
-        <a href="#{ options[:file_url] }" target="_blank" class="#{ options[:link_class] }">View File</a>
+        <a href="#{ options[:file_url] }" target="_blank" class="#{ options[:link_class] }">View Uploaded file</a>
       HTML
    else
       <<-HTML

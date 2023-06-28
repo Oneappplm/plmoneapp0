@@ -175,9 +175,6 @@
 							<%= render 'license_fields', f: license_fields %>
 						<% end %>
 				 </div>
-					<div class="links mt-2">
-						<button type="button" class="add_association btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> 	Add License </button>
-					</div>
 			</div>
 		</div>
 
@@ -209,9 +206,6 @@
 							<%= render 'np_license_fields', f: np_license_fields %>
 						<% end %>
 					</div>
-					<div class="links mt-2">
-						<button type="button" class="add_association btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> 	Add NP License </button>
-					</div>
 			</div>
 		</div>
 		<div class="row mb-5 mt-2">
@@ -223,9 +217,6 @@
 						<%= f.fields_for :rn_licenses do |rn_license_fields| %>
 							<%= render 'rn_license_fields', f: rn_license_fields %>
 						<% end %>
-					</div>
-					<div class="links mt-2">
-						<button type="button" class="add_association btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> 	Add RN License </button>
 					</div>
 			</div>
 		</div>
@@ -455,7 +446,12 @@
 			<div class="col-lg-6 mb-3">
 				<label>State License Copy</label>
 							<%= f.file_field :state_license_copy_file, placeholder: 'State License Copy', class: 'form-control border border-dark' %>
-							<%= HtmlUtils.generate_view_link file_url: @provider.state_license_copy_file.url %>
+            <div class="d-flex justify-content-between">
+              <%= HtmlUtils.generate_view_link file_url: @provider.state_license_copy_file.url %>
+              <a href="javascript:void(0);" class="btn  btn-sm mt-2 btn-danger py-1 text-white">
+                <i class="bi bi-trash-fill"></i>
+              </a>
+        </div>
 			</div>
 			<div class="col-lg-6 mb-3">
 				<label>DEA Copy</label>
@@ -463,7 +459,7 @@
 							<%= HtmlUtils.generate_view_link file_url: @provider.dea_copy_file.url %>
 			</div>
 			<div class="col-lg-6 mb-3">
-				<label>W9 Form</label>
+				<label>W9 Form, <a href="https://www.irs.gov/pub/irs-pdf/fw9.pdf" target="_blank">download template here</a></label>
 							<%= f.file_field :w9_form_file, placeholder: 'W9 Form', class: 'form-control border border-dark' %>
 							<%= HtmlUtils.generate_view_link file_url: @provider.w9_form_file.url %>
 			</div>
@@ -498,10 +494,6 @@
 							<%= HtmlUtils.generate_view_link file_url: @provider.telehealth_license_copy_file.url %>
 			</div>
 		</div>
-
-					
-		
-		
 		<div class="row">
 			<div class="col-lg-12 d-flex justify-content-end">
 				<button class="btn btn-primary btn-md">Submit</button>
@@ -538,35 +530,40 @@
 							var licensesFields = $("#licenses .field");
 							var newLicense = licensesFields.last().clone();
 							var newId = new Date().getTime();
-							console.log(newLicense)
+							// console.log(newLicense)
 							newLicense.html(newLicense.html().replace(/licenses_attributes\]\[\d+\]/g, "licenses_attributes][" + newId + "]"));
 							$("#licenses .fields").append("</br>");
-							$("#licenses .fields").append(newLicense);
+							$("#licenses .field").append(newLicense);
 					});
 
-					$("#licenses").on("click", ".remove-dynamic-fields", function() {
-						var licensesFields = document.getElementsByClassName("licenses-field");
-						if(licensesFields.length > 1) {
-							licensesFields[0].remove();
-						}
-					});
+					// $("#licenses").on("click", ".remove-dynamic-fields", function() {
+          //   $(this).closest('.field').remove();
+					// 	// var licensesFields = document.getElementsByClassName("licenses-field");
+					// 	// if(licensesFields.length > 1) {
+					// 	// 	licensesFields[0].remove();
+					// 	// }
+					// });
 
 					// np licenses
 					$("#np_licenses").on("click", ".add_association", function() {
 							var npLicensesFields = $("#np_licenses .field");
 							var newNpLicense = npLicensesFields.last().clone();
 							var newId = new Date().getTime();
+              // var btns = $("#np_licenses .buttons");
 							newNpLicense.html(newNpLicense.html().replace(/np_licenses_attributes\]\[\d+\]/g, "np_licenses_attributes][" + newId + "]"));
 							$("#np_licenses .fields").append("</br>");
 							$("#np_licenses .fields").append(newNpLicense);
+
+              $("#np_licenses .field").append(btns);
 					});
 
-					$("#np_licenses").on("click", ".remove-dynamic-fields", function() {
-						var licensesFields = document.getElementsByClassName("np-licenses-field");
-						if(licensesFields.length > 1) {
-							licensesFields[0].remove();
-						}
-					});
+					// $("#np_licenses").on("click", ".remove-dynamic-fields", function() {
+          //    $(this).closest('.field').remove();
+					// 	// var licensesFields = document.getElementsByClassName("np-licenses-field");
+					// 	// if(licensesFields.length > 1) {
+					// 	// 	licensesFields[0].remove();
+					// 	// }
+					// });
 
 					// rn licenses
 					$("#rn_licenses").on("click", ".add_association", function() {
@@ -578,11 +575,8 @@
 							$("#rn_licenses .fields").append(newRnLicense);
 					});
 
-					$("#rn_licenses").on("click", ".remove-dynamic-fields", function() {
-						var licensesFields = document.getElementsByClassName("rn-licenses-field");
-						if(licensesFields.length > 1) {
-							licensesFields[0].remove();
-						}
+					$(document).on("click", ".remove-dynamic-fields", function() {
+             $(this).closest('.field').remove();
 					});
 
 					// telehealth providers
