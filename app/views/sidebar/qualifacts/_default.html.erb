@@ -1,0 +1,133 @@
+<aside class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-bordered <%= dark_mode %>  ">
+	<div class="navbar-vertical-container">
+				<div class="navbar-vertical-footer-offset">
+							<a class="navbar-brand" href="javascript:void(0);" aria-label="">
+										<!-- <img class="navbar-brand-logo" src="./dist/assets/img/plm-logos/logo-blue.jpg" alt="Logo" data-hs-theme-appearance="default"> -->
+										<img class="navbar-brand-logo-mini" src="../logos/<%= current_logo_sm %>" alt="Logo" data-hs-theme-appearance="default" style="width: auto;height: 60%;"  data-hs-theme-appearance="default">
+										<img class="navbar-brand-logo" src="../logos/<%= current_logo %>" alt="Logo" data-hs-theme-appearance="default" data-hs-theme-appearance="default" style="height: 60% !important;width: auto;">
+							</a>
+							<button type="button" class="js-navbar-vertical-aside-toggle-invoker navbar-aside-toggler" id="navbar-aside-toggler">
+							<i class="bi-arrow-bar-left navbar-toggler-short-align" data-bs-template='<div class="tooltip d-none d-md-block" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>' data-bs-toggle="tooltip" data-bs-placement="right" title="Collapse"></i>
+							<i class="bi-arrow-bar-right navbar-toggler-full-align" data-bs-template='<div class="tooltip d-none d-md-block" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>' data-bs-toggle="tooltip" data-bs-placement="right" title="Expand"></i>
+							</button>
+							<div class="navbar-vertical-content">
+										<div id="navbarVerticalMenu" class="nav nav-pills nav-vertical card-navbar-nav px-0">
+													<!-- Collapse -->
+													<% if can_view?('overview') %>
+													<div class="nav-item mb-2 nav-item-active">
+																<!-- ph-active -->
+																<a class="nav-link <%= active_menu('dashboard', 'dashboard') %>" href="<%= root_path %>">
+																<i class="bi bi-box nav-icon"></i>
+																<span class="nav-link-title">Overview</span>
+																</a>
+													</div>
+													<% end %>
+
+
+													<% if (can_view?('client_portal') || can_view?('enrollment_clients')) && current_setting.plmhealthoneapp? || current_setting.qualifacts? %>
+													<div class="nav-item mb-1">
+																<a class="nav-link <%= active_menu('enrollment_clients', 'index') %> <%= active_menu('index') %>" href="<%= enrollment_clients_path %>" data-placement="left">
+																			<!-- <i class="bi-receipt nav-icon"></i> -->
+																			<!-- <i class="bi bi-person nav-icon"></i> -->
+																			<i class="bi bi-geo-fill nav-icon"></i>
+																			<span class="nav-link-title">Client Portal</span>
+																</a>
+													</div>
+													<% end %>
+
+													<% if can_view?('provider_app') %>
+													<div class="nav-item mb-2">
+																<a class="nav-link <%= active_menu('provider_app') %>" href="<%= custom_provider_source_path %>" data-placement="left">
+																			<!-- <i class="bi-receipt nav-icon"></i> -->
+																			<i class="bi bi-people nav-icon"></i>
+																			<span class="nav-link-title">Provider App</span>
+																</a>
+													</div>
+													<% end %>
+
+													<% if can_view?('office_manager') %>
+													<div class="nav-item mb-2">
+																<a class="nav-link <%= active_menu('office_managers', 'index') %>" href="<%= office_managers_path %>" data-placement="left">
+																			<!-- <i class="bi-receipt nav-icon"></i> -->
+																			<i class="bi bi-person-rolodex nav-icon"></i>
+																			<span class="nav-link-title">Office Manager</span>
+																</a>
+													</div>
+													<% end %>
+
+
+													<% if can_view?('enrollment_tracking') && current_setting.plmhealthoneapp? || !current_setting.hvhs? %>
+													<div class="nav-item mb-2">
+																<a class="nav-link <%= active_menu('providers,enrollments,enrollment_providers,enroll_groups') %>" href="<%= overview_providers_path %>" data-placement="left">
+																			<i class="bi bi-person nav-icon"></i>
+																			<span class="nav-link-title">Enrollment Tracking</span>
+																</a>
+													</div>
+													<% end %>
+
+													<% if can_view?('verification_platform') && current_setting.plmhealthoneapp? || !current_setting.qualifacts? %>
+													<div class="nav-item mb-1">
+																<a class="nav-link <%= active_menu('verification_platform', 'index') %> <%= active_menu('manage_tools') %>" href="<%= verification_platform_index_path %>" data-placement="left">
+																			<!-- <i class="bi-receipt nav-icon"></i> -->
+																			<!-- <i class="bi bi-person nav-icon"></i> -->
+																			<i class="bi bi-folder nav-icon"></i>
+																			<span class="nav-link-title">Verification Platform</span>
+																</a>
+													</div>
+													<% end %>
+
+													<% if can_view?('plm_sales_tool') %>
+													<div class="nav-item mb-2">
+																<a class="nav-link <%= active_menu('pages', 'plm_sales_tool') %> d-none" target="_blank" href="<%= plm_sales_tool_path %>" data-placement="left">
+																			<!-- <i class="bi-layers nav-icon"></i> -->
+																			<i class="bi bi-currency-dollar nav-icon"></i>
+																			<!-- <span class="nav-link-title">PLM Sales Tool <small class="fw-semibold">Coming soon</small></span> -->
+																			<span class="nav-link-title">PLM Sales Tool </span>
+																</a>
+													</div>
+													<% end %>
+
+													<% if can_view?('smart_contract') %>
+													<div class="nav-item mb-2">
+																<a class="nav-link <%= active_menu('pages', 'smart_contract') %> text-muted d-none" href="javascript:void(0);" data-placement="left">
+																			<!-- <i class="bi-layers nav-icon"></i> -->
+																			<i class="bi bi-file-earmark-lock nav-icon"></i>
+																			<span class="nav-link-title">
+																			Smart Contract <small class="fw-semibold">Coming soon</small>
+																			</span>
+																</a>
+													</div>
+													<% end %>
+
+													<% if current_user&.admin? && can_view?('settings') %>
+													<div class="nav-item mb-2">
+														<div class="d-flex with-submenu align-items-center justify-content-between pe-3 <%= active_menu('role_based_accesses,roles,users') %>">
+																		<a class="nav-link has-submenu" href="javascript:void(0);" data-placement="left" data-submenu="client_submenu">
+																			<i class="bi bi-gear nav-icon"></i>
+																		<span class="nav-link-title ml-4">Settings</span>
+																		</a>
+																		<svg xmlns="http://www.w3.org/2000/svg" id="client_submenu_chevron" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="open_submenu <%= chevron_active('pages,users', 'client_portal,virtual_review_committee,data_access,organization_profile') %>" data-toopen="client_submenu" style="width: 20px;height: auto;">
+																				<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+																		</svg>
+														</div>
+
+													 <div id="client_submenu" class="sub_menu <%= active_submenu('pages,users', 'client_portal,virtual_review_committee,data_access,organization_profile,new')%> mt-3">
+																	<ul>
+																				<li class="d-flex gap-2 align-items-center <%= active_submenu_link('users')%>">
+																							<span></span><a href="<%= users_path %>">Users</a>
+																				</li>
+																				<li class="d-flex gap-2 align-items-center <%= active_submenu_link('role_based_accesses')%>">
+																							<span></span><a href="<%= roles_path %>">Roles</a>
+																				</li>
+																				<li class="d-flex gap-2 align-items-center <%= active_submenu_link('role_based_accesses')%>">
+																							<span></span><a href="<%= role_based_accesses_path %>">Role-Based Access</a>
+																				</li>
+																	</ul>
+																</div>
+													 </div>
+													<% end %>
+										</div>
+							</div>
+				</div>
+	</div>
+</aside>
