@@ -1,252 +1,322 @@
-	<%= form_for @enrollment_group, :url => {action: action_name} , html: { multipart: true } do |f| %>
-	<% if @enrollment_group.errors.any? %>
-    <div id="error_explanation" class="row mb-3">
-					<div class="col-lg-12">
-							<h2><%= pluralize(@enrollment_group.errors.count, "error") %> prohibited this enrollment user from being saved:</h2>
-
-							<ul>
-									<% @enrollment_group.errors.full_messages.each do |message| %>
-											<li><%= message %></li>
-									<% end %>
-							</ul>
-					</div>
-    </div>
-  <% end %>
-		<div class="row mb-3">
-			<div class="col-lg-6">
-        <label class="text-dark-grey">Group Name *</label>
-				<%= f.text_field :group_name, class: 'form-control border border-dark', required: true, placeholder: 'Group Name *' %>
-			</div>
-			<div class="col-lg-6">
-        <label class="text-dark-grey">Group Code *</label>
-				<%= f.text_field :group_code, class: 'form-control border border-dark', required: true, placeholder: 'Group Code *' %>
-			</div>
-		</div>
-		<div class="row mb-3">
-			<div class="col-lg-6">
-        <label class="text-dark-grey">Office Address *</label>
-				<%= f.text_field :office_address, class: 'form-control border border-dark', required:  true,  placeholder: 'Office Address *' %>
-			</div>
-			<div class="col-lg-6">
-        <label class="text-dark-grey">City *</label>
-				<%= f.text_field :city, class: 'form-control border border-dark', required: true, placeholder: 'City *' %>
-			</div>
-		</div>
-		<div class="row mb-3">
-			<div class="col-lg-6">
-        <label class="text-dark-grey">State *</label>
-				<%= f.collection_select :state, @states, :name, :name, { prompt: 'State *' }, { class: 'form-control border border-dark', required: true } %>
-			</div>
-			<div class="col-lg-6">
-        <label class="text-dark-grey">Zip Code *</label>
-				<%= f.text_field :zip_code, class: 'form-control border border-dark', required: true, placeholder: 'Zipcode *' %>
-			</div>
-		</div>
-		<div class="row mb-3">
-			<div class="col-lg-4">
-        <label class="text-dark-grey">Telephone Number *</label>
-				<%= f.text_field :phone_number, class: 'form-control border border-dark', placeholder: 'Telephone Number *' %>
-			</div>
-			<div class="col-lg-2">
-        <label class="text-dark-grey">Ext </label>
-				<%= f.text_field :ext, class: 'form-control border border-dark', placeholder: 'Ext' %>
-			</div>
-			<div class="col-lg-6">
-        <label class="text-dark-grey">Fax Number(optional) </label>
-				<%= f.text_field :fax_number, class: 'form-control border border-dark', required:  true ,placeholder: 'Fax Number *' %>
-			</div>
-		</div>
-				<div id="contact_personnels">
-            <div class="fields">
-               <%= f.fields_for :contact_personnels do |contact_personnels| %>
-               <%= render 'contact_personnel_fields', f: contact_personnels %>
-               <% end %>
-            </div>
-            <div class="row">
-               <div class="col-lg-12 text-center d-flex justify-content-end">
-                  <div class="links mt-2 mb-3">
-                     <button type="button" class="add_association btn btn-primary btn-s" ><i class="bi bi-plus-lg"></i> Add New Contact </button>
-                  </div>
-               </div>
-            </div>
-    			</div>
-		<div class="row mb-3">
-			<div class="col-lg-12">
-							<%= HtmlUtils.radio_toggle name: 'enrollment_group[business_group]',
-								label: 'Are you an established business group? If yes, enter your legal business name as reported to IRS.',
-								toshow: 'established_business_group'
-							%>
-					<%= f.hidden_field :business_group %>
-			</div>
-		    <div class="d-none" id="established_business_group">
-            <label class="text-dark-grey">Legal Business Name</label>
-							<%= f.text_field :legal_business_name, class: 'form-control border border-dark', placeholder: 'Legal Business Name' %>
-		    </div>
-		</div>
-		<div class="row mb-3">
-			<div class="col-lg-12">
-				<%= HtmlUtils.radio_toggle name: 'enrollment_group[another_business_name]',
-					label: 'Do you have another Group name?',
-					toshow: 'other_name'
-				%>
-				<%= f.hidden_field :another_business_name %>
-			</div>
-		</div>
-			<div class="row mb-3 <%=@enrollment_group.another_business_name == 'yes' ? '' : 'd-none'%>" id="other_name">
-				<div class="col-lg-6">
-          <label class="text-dark-grey">Other Business Name</label>
-					<%= f.text_field :other_business_name, class: 'form-control border border-dark', placeholder: '' %>
-				</div>
-				<div class="col-lg-6">
-          <label class="text-dark-grey">Business Type</label>
-					<%= f.select :other_business_type, options_for_select(['Former Business Name', 'DBA', 'Other'], f.object.other_business_type), { prompt: 'Type' }, { class: 'form-select border border-dark' } %>
-				</div>
-			</div>
-      <div class="row mb-3">
-        <div class="col-lg-6">
-          <label class="text-dark-grey">9-digit TIN (XX-XXXXXXX)</label>
-          <%= f.text_field :tin_digit, class: 'form-control border border-dark'%>
-        </div>
-
-        <div class="col-lg-6">
-          <label class="text-dark-grey d-none" id='more_details'>Type in additional details</label>
-          <label class="text-dark-grey" id="obtained_from_irs">Have you obtained your 9-digit TIN from IRS?</label>
-          <%= f.text_field :tin_digit_irs, class: 'form-control border border-dark'%>
-        </div>
-      </div>
-			<div class="row mb-3">
-				<div class="col-lg-6">
-					<%= HtmlUtils.radio_toggle name: 'enrollment_group[shared_tin]',
-						label: 'Is this a shared TIN?',
-            toshow: 'more_details',
-            tohide: 'obtained_from_irs'
-					%>
-					<%= f.hidden_field :shared_tin %>
-				</div>
-				<div class="col-lg-6">
-						<label class="text-dark-grey">Upload CP575 or Proof of TIN</label>
-						<%= f.file_field :cp575_file, class: 'form-control border border-dark' %>
-						<%= HtmlUtils.generate_view_link file_url: @enrollment_group.cp575_file.url %>
-				</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col-lg-6">
-          <label class="text-dark-grey">Specify type of Group</label>
-										<%= f.select :specify_type_of_group, options_for_select([
-											'LLC', 'Partnership', 'Incorporate', 'Other(Specify)'
-											], f.object.specify_type_of_group), { prompt: 'Specific Type' }, { class: 'form-select border border-dark', id: 'group_type_select' } %>
-				</div>
-				<div class="col-lg-6">
-							<label class="text-dark-grey" id="group_specific_label">Upload File</label>
-							<%= f.file_field :specific_type_file, class: 'form-control border border-dark' %>
-							<%= HtmlUtils.generate_view_link file_url: @enrollment_group.specific_type_file.url %>
-				</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col-lg-6">
-          <label class="text-dark-grey">10 Digit Type II NPI (XXXXXXXXXX)</label>
-					<%= f.text_field :npi_digit_type, class: 'form-control border border-dark', placeholder: '10 Digit Type II NPI (XXXXXXXXXX)' %>
-				</div>
-				<div class="col-lg-6">
-						<label class="text-dark-grey">Group *</label>
-						<%= f.select :npi_digit_type_group, options_for_select([
-						'Multi-Specialty Group- 193200000X', 'Single Specialty Group-193400000X'
-						], f.object.npi_digit_type_group), { prompt: 'Specific Type' }, { class: 'form-select border border-dark', id: 'group_type_select' } %>
-				</div>
-			</div>
-			<div class="row mb-5">
-				<div class="col-lg-6">
-					<label class="text-dark-grey">Which of the following provider types do you employ?</label>
-          <div class="multi-select form-control border border-dark" name="enrollment_group[provider_type]"></div>
-
-            <%#= f.select :provider_type, options_for_select(@provider_types.pluck(:fch ,:fch)), { prompt: 'Include in Directory?' }, { class: 'form-select multi-select', required: true } %>
-				</div>
-			</div>
-			<div class="row mb-5">
-				<div class="col-lg-12 mb-1">
-					<label class="text-dark-grey">Pay To/Billing Address (where checks are mailed)</label>
-				</div>
-				<div class="col-lg-6">
-          <label class="text-dark-grey">P.O. Box</label>
-					<%= f.text_field :po_box, class: 'form-control border border-dark', placeholder: 'Address or PO Box' %>
-				</div>
-				<div class="col-lg-6">
-          <label class="text-dark-grey">City</label>
-					<%= f.text_field :po_box_city, class: 'form-control border border-dark', placeholder: 'City' %>
-				</div>
-				<div class="col-lg-6 mt-1">
-          <label class="text-dark-grey">State</label>
-					<%= f.collection_select :po_box_state, @states, :name, :name, { prompt: 'Select option' }, { class: 'form-control border border-dark' } %>
-				</div>
-				<div class="col-lg-6 mt-1">
-          <label class="text-dark-grey">Zip Code</label>
-					<%= f.text_field :po_box_zip_code, class: 'form-control border border-dark', placeholder: 'Zip code' %>
-				</div>
-			</div>
-			<div class="row mb-2">
-				<div class="col-lg-12 mb-1">
-					<label class="text-dark-grey">Remittance Address (if Different from Billing Address)</label>
-				</div>
-				<div class="col-lg-6">
-          <label class="text-dark-grey">Address or PO Box</label>
-					<%= f.text_field :ca_po_box_address, class: 'form-control border border-dark', placeholder: 'Address or PO Box' %>
-				</div>
-				<div class="col-lg-6">
-          <label class="text-dark-grey">City</label>
-					<%= f.text_field :ca_po_box_city, class: 'form-control border border-dark', placeholder: 'City' %>
-				</div>
-				<div class="col-lg-6 mt-1">
-          <label class="text-dark-grey">State</label>
-					<%= f.collection_select :ca_po_box_state, @states, :name, :name, { prompt: 'Select option' }, { class: 'form-control border border-dark' } %>
-				</div>
-				<div class="col-lg-6 mt-1">
-          <label class="text-dark-grey">Zip Code</label>
-					<%= f.text_field :ca_po_box_zip_code, class: 'form-control border border-dark', placeholder: 'Zip code' %>
-				</div>
-			</div>
-
-      <div class="row mt-3 mb-5">
-        <div class="col-lg-12 mb-2">
-          <a href="https://www.irs.gov/pub/irs-pdf/fw9.pdf" class="btn bg-alt-grey fw-bold text-primary" target="_blank">Complete W9</a>
-        </div>
-								<div class="col-lg-12">
-									<%= f.file_field :w9_file, class: 'form-control border border-dark' %>
-									<%= HtmlUtils.generate_view_link file_url: @enrollment_group.w9_file.url %>
-								</div>
-      </div>
-			<div class="row mb-5">
-				<div class="col-lg-12 mb-1">
-					<label class="text-dark-grey">Upload a list for each individual with ownership interest and or managing control in the group to include the following information:</label>
-				</div>
-				<div class="col-lg-12">
-					<%= f.file_field :ownership_file, class: 'form-control border border-dark' %>
-					<%= HtmlUtils.generate_view_link file_url: @enrollment_group.ownership_file.url %>
-				</div>
-			</div>
-			 <div id="details">
-            <div class="fields">
-               <%= f.fields_for :details do |details| %>
-               <%= render 'details_fields', f: details %>
-               <% end %>
-            </div>
-            <div class="row">
-               <div class="col-lg-12 text-center">
-                  <div class="links mt-2">
-                     <button type="button" class="add_association btn btn-primary btn-s" ><i class="bi bi-plus-lg"></i>  Add New </button>
-                  </div>
-               </div>
-            </div>
-         </div>
-			<div class="row">
-				<div class="col-lg-12 d-flex justify-content-end">
-					<button type="submit" class="btn btn-primary btn-md">
-						<%= action_name == 'edit_group' ? 'Update Group' : 'Add Group' %>
-					</button>
-				</div>
-			</div>
-	</form>
+<%= form_for @enrollment_group, :url => {action: action_name} , html: { multipart: true } do |f| %>
+<% if @enrollment_group.errors.any? %>
+<div id="error_explanation" class="row mb-3">
+   <div class="col-lg-12">
+      <h2><%= pluralize(@enrollment_group.errors.count, "error") %> prohibited this enrollment user from being saved:</h2>
+      <ul>
+         <% @enrollment_group.errors.full_messages.each do |message| %>
+         <li><%= message %></li>
+         <% end %>
+      </ul>
+   </div>
 </div>
 <% end %>
+<div class="row mb-3">
+   <div class="col-lg-6">
+      <label class="text-dark-grey">Group Name *</label>
+      <%= f.text_field :group_name, class: 'form-control border border-dark', required: true, placeholder: 'Group Name *' %>
+   </div>
+   <div class="col-lg-6">
+      <label class="text-dark-grey">Group Code *</label>
+      <%= f.text_field :group_code, class: 'form-control border border-dark', required: true, placeholder: 'Group Code *' %>
+   </div>
+</div>
+<div class="row mb-3">
+   <div class="col-lg-6">
+      <label class="text-dark-grey">Office Address *</label>
+      <%= f.text_field :office_address, class: 'form-control border border-dark', required:  true,  placeholder: 'Office Address *' %>
+   </div>
+   <div class="col-lg-6">
+      <label class="text-dark-grey">City *</label>
+      <%= f.text_field :city, class: 'form-control border border-dark', required: true, placeholder: 'City *' %>
+   </div>
+</div>
+<div class="row mb-3">
+   <div class="col-lg-6">
+      <label class="text-dark-grey">State *</label>
+      <%= f.collection_select :state, @states, :name, :name, { prompt: 'State *' }, { class: 'form-control border border-dark', required: true } %>
+   </div>
+   <div class="col-lg-6">
+      <label class="text-dark-grey">Zip Code *</label>
+      <%= f.text_field :zip_code, class: 'form-control border border-dark', required: true, placeholder: 'Zipcode *' %>
+   </div>
+</div>
+<div class="row mb-3">
+   <div class="col-lg-4">
+      <label class="text-dark-grey">Telephone Number *</label>
+      <%= f.text_field :phone_number, class: 'form-control border border-dark', placeholder: 'Telephone Number *' %>
+   </div>
+   <div class="col-lg-2">
+      <label class="text-dark-grey">Ext </label>
+      <%= f.text_field :ext, class: 'form-control border border-dark', placeholder: 'Ext' %>
+   </div>
+   <div class="col-lg-6">
+      <label class="text-dark-grey">Fax Number(optional) </label>
+      <%= f.text_field :fax_number, class: 'form-control border border-dark', required:  true ,placeholder: 'Fax Number *' %>
+   </div>
+</div>
+<div id="contact_personnels">
+   <div class="fields">
+      <%= f.fields_for :contact_personnels do |contact_personnels| %>
+      <%= render 'contact_personnel_fields', f: contact_personnels %>
+      <% end %>
+   </div>
+   <div class="row">
+      <div class="col-lg-12 text-center d-flex justify-content-end">
+         <div class="links mt-2 mb-3">
+            <button type="button" class="add_association btn btn-primary btn-s" ><i class="bi bi-plus-lg"></i> Add New Contact </button>
+         </div>
+      </div>
+   </div>
+</div>
+<div class="row mb-3">
+   <div class="col-lg-12">
+      <%= HtmlUtils.radio_toggle name: 'enrollment_group[business_group]',
+         label: 'Are you an established business group? If yes, enter your legal business name as reported to IRS.',
+         toshow: 'established_business_group'
+         %>
+      <%= f.hidden_field :business_group %>
+   </div>
+   <div class="d-none" id="established_business_group">
+      <label class="text-dark-grey">Legal Business Name</label>
+      <%= f.text_field :legal_business_name, class: 'form-control border border-dark', placeholder: 'Legal Business Name' %>
+   </div>
+</div>
+<div class="row mb-3">
+   <div class="col-lg-12">
+      <%= HtmlUtils.radio_toggle name: 'enrollment_group[another_business_name]',
+         label: 'Do you have another Group name?',
+         toshow: 'other_name'
+         %>
+      <%= f.hidden_field :another_business_name %>
+   </div>
+</div>
+<div class="row mb-3 <%=@enrollment_group.another_business_name == 'yes' ? '' : 'd-none'%>" id="other_name">
+   <div class="col-lg-6">
+      <label class="text-dark-grey">Other Business Name</label>
+      <%= f.text_field :other_business_name, class: 'form-control border border-dark', placeholder: '' %>
+   </div>
+   <div class="col-lg-6">
+      <label class="text-dark-grey">Business Type</label>
+      <%= f.select :other_business_type, options_for_select(['Former Business Name', 'DBA', 'Other'], f.object.other_business_type), { prompt: 'Type' }, { class: 'form-select border border-dark' } %>
+   </div>
+</div>
+<div class="row mb-3">
+   <div class="col-lg-6">
+      <label class="text-dark-grey">9-digit TIN (XX-XXXXXXX)</label>
+      <%= f.text_field :tin_digit, class: 'form-control border border-dark'%>
+   </div>
+   <div class="col-lg-6">
+      <label class="text-dark-grey d-none" id='more_details'>Type in additional details</label>
+      <label class="text-dark-grey" id="obtained_from_irs">Have you obtained your 9-digit TIN from IRS?</label>
+      <%= f.select :tin_digit_irs, options_for_select([['Yes','yes'],['No','no']], f.object.tin_digit_irs), { prompt: 'Select option' }, { class: 'form-select border border-dark', id: 'tin_digit_irs' } %>
+   </div>
+</div>
+<div class="row mb-3">
+   <div class="col-lg-6">
+      <%= HtmlUtils.radio_toggle name: 'enrollment_group[shared_tin]',
+         label: 'Is this a shared TIN?',
+               toshow: 'more_details',
+               tohide: 'obtained_from_irs'
+         %>
+      <%= f.hidden_field :shared_tin %>
+   </div>
+  <!--  <div class="col-lg-6">
+      <label class="text-dark-grey">Upload CP575 or Proof of TIN</label>
+      <%#= f.file_field :cp575_file, class: 'form-control border border-dark' %>
+      <%#= HtmlUtils.generate_view_link file_url: @enrollment_group.cp575_file.url %>
+   </div> -->
+</div>
+<div class="row mb-3">
+   <div class="col-lg-6">
+      <label class="text-dark-grey">Group Type</label>
+      <%= f.select :specify_type_of_group, options_for_select([
+         'LLC', 'Partnership', 'Incorporate', 'Other(Specify)'
+         ], f.object.specify_type_of_group), { prompt: 'Specific Type' }, { class: 'form-select border border-dark', id: 'group_type_select' } %>
+   </div>
+   <div class="col-lg-6">
+      <label class="text-dark-grey" id="group_specific_label">Upload File</label>
+      <%= f.file_field :specific_type_file, class: 'form-control border border-dark' %>
+      <%= HtmlUtils.generate_view_link file_url: @enrollment_group.specific_type_file.url %>
+   </div>
+</div>
+<div class="row mb-3">
+   <div class="col-lg-6">
+      <label class="text-dark-grey">10 Digit Type II NPI (XXXXXXXXXX)</label>
+      <%= f.text_field :npi_digit_type, class: 'form-control border border-dark', placeholder: '10 Digit Type II NPI (XXXXXXXXXX)' %>
+   </div>
+   <div class="col-lg-6">
+      <label class="text-dark-grey">Group *</label>
+      <%= f.select :npi_digit_type_group, options_for_select([
+         'Multi-Specialty Group- 193200000X', 'Single Specialty Group-193400000X'
+         ], f.object.npi_digit_type_group), { prompt: 'Specific Type' }, { class: 'form-select border border-dark', id: 'group_type_select' } %>
+   </div>
+</div>
+<div class="row mb-5">
+   <div class="col-lg-6">
+      <label class="text-dark-grey">Which of the following provider types do you employ?</label>
+      <div class="multi-select form-control border border-dark" name="enrollment_group[provider_type]"></div>
+      <%#= f.select :provider_type, options_for_select(@provider_types.pluck(:fch ,:fch)), { prompt: 'Include in Directory?' }, { class: 'form-select multi-select', required: true } %>
+   </div>
+</div>
+<div class="row mb-5">
+   <div class="col-lg-12 mb-1">
+      <label class="text-dark-grey">Pay To/Billing Address (where checks are mailed)</label>
+   </div>
+   <div class="col-lg-6">
+      <label class="text-dark-grey">P.O. Box</label>
+      <%= f.text_field :po_box, class: 'form-control border border-dark', placeholder: 'Address or PO Box' %>
+   </div>
+   <div class="col-lg-6">
+      <label class="text-dark-grey">City</label>
+      <%= f.text_field :po_box_city, class: 'form-control border border-dark', placeholder: 'City' %>
+   </div>
+   <div class="col-lg-6 mt-1">
+      <label class="text-dark-grey">State</label>
+      <%= f.collection_select :po_box_state, @states, :name, :name, { prompt: 'Select option' }, { class: 'form-control border border-dark' } %>
+   </div>
+   <div class="col-lg-6 mt-1">
+      <label class="text-dark-grey">Zip Code</label>
+      <%= f.text_field :po_box_zip_code, class: 'form-control border border-dark', placeholder: 'Zip code' %>
+   </div>
+</div>
+<div class="row mb-2">
+   <div class="col-lg-12 mb-1">
+      <label class="text-dark-grey">Remittance Address (if Different from Billing Address)</label>
+   </div>
+   <div class="col-lg-6">
+      <label class="text-dark-grey">Address or PO Box</label>
+      <%= f.text_field :ca_po_box_address, class: 'form-control border border-dark', placeholder: 'Address or PO Box' %>
+   </div>
+   <div class="col-lg-6">
+      <label class="text-dark-grey">City</label>
+      <%= f.text_field :ca_po_box_city, class: 'form-control border border-dark', placeholder: 'City' %>
+   </div>
+   <div class="col-lg-6 mt-1">
+      <label class="text-dark-grey">State</label>
+      <%= f.collection_select :ca_po_box_state, @states, :name, :name, { prompt: 'Select option' }, { class: 'form-control border border-dark' } %>
+   </div>
+   <div class="col-lg-6 mt-1">
+      <label class="text-dark-grey">Zip Code</label>
+      <%= f.text_field :ca_po_box_zip_code, class: 'form-control border border-dark', placeholder: 'Zip code' %>
+   </div>
+</div>
+<div class="row mb-5">
+   <div class="col-lg-12 mb-1">
+      <label class="text-dark-grey">Upload a list for each individual with ownership interest and or managing control in the group to include the following information:</label>
+   </div>
+   <div class="col-lg-12">
+      <%= f.file_field :ownership_file, class: 'form-control border border-dark' %>
+      <%= HtmlUtils.generate_view_link file_url: @enrollment_group.ownership_file.url %>
+   </div>
+</div>
+<div id="details">
+   <div class="fields">
+      <%= f.fields_for :details do |details| %>
+      <%= render 'details_fields', f: details %>
+      <% end %>
+   </div>
+   <div class="row">
+      <div class="col-lg-12 text-center">
+         <div class="links mt-2">
+            <button type="button" class="add_association btn btn-primary btn-s" ><i class="bi bi-plus-lg"></i>  Add New </button>
+         </div>
+      </div>
+   </div>
+</div>
+<% if action_name == 'edit_group'%>
+<div class="row my-3 mb-5">
+  <div class="col-lg-12 card p-2">
+    <h4 class="text-dark-grey mb-3">List of Individual with ownership</h4>
+    <div class="w-100" style="overflow-x: scroll;">
+      <table class="table table-striped table-bordered table-responsive">
+        <thead>
+          <tr>
+            <th class="text-white bg-primary" style="font-size: 12px;">Title</th>
+            <th class="text-white bg-primary" style="font-size: 12px;">Name</th>
+            <th class="text-white bg-primary" style="font-size: 12px;">SSN</th>
+            <th class="text-white bg-primary" style="font-size: 12px;">DOB</th>
+            <th class="text-white bg-primary" style="font-size: 12px;">% of Ownership</th>
+            <th class="text-white bg-primary" style="font-size: 12px;">Effective Date of Ownership</th>
+            <th class="text-white bg-primary" style="font-size: 12px;">Account Managing Control Date</th>
+            <th class="text-white bg-primary" style="font-size: 12px;">Role</th>
+            <!-- <th class="text-white bg-primary" style="font-size: 12px;" scope="col"></th> -->
+          </tr>
+        </thead>
+        <tbody>
+          <% @enrollment_group.details.each do |detail|%>
+          <tr>
+            <td><%= detail.individual_ownership_title%></td>
+            <td><%= detail.full_name %></td>
+            <td><%= detail.individual_ownership_ssn %></td>
+            <td><%= detail.individual_ownership_dob %></td>
+            <td><%= detail.individual_ownership_percent_of_ownership %></td>
+            <td><%= detail.individual_ownership_effective_date%></td>
+            <td><%= detail.individual_ownership_control_date %></td>
+            <td><%= detail.roles %></td>
+            <!-- <td>title</td> -->
+
+          </tr>
+          <% end %>
+        </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+<% end %>
+<div class="documents">
+  <h3>Documents</h3>
+   <div class="row my-3">
+      <div class="col-lg-6 mb-2">
+         <!-- <a href="" class="btn bg-alt-grey fw-bold text-primary" target="_blank">Complete W9</a> -->
+         <label class="text-dark-grey">W9 Form, <a href="https://www.irs.gov/pub/irs-pdf/fw9.pdf">download template here.</a></label>
+         <%= f.file_field :w9_file, class: 'form-control border border-dark' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_group.w9_file.url %>
+      </div>
+      <div class="col-lg-6">
+         <label class="text-dark-grey">CP575 or Proof of TIN</label>
+         <%= f.file_field :cp575_file, class: 'form-control border border-dark' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_group.cp575_file.url %>
+      </div>
+   </div>
+   <div class="row my-3">
+      <div class="col-lg-6 mb-2">
+         <!-- <a href="" class="btn bg-alt-grey fw-bold text-primary" target="_blank">Complete W9</a> -->
+         <label class="text-dark-grey">Payer Contracts Copy</label>
+         <%= f.file_field :payer_contracts, class: 'form-control border border-dark' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_group.payer_contracts.url %>
+      </div>
+      <div class="col-lg-6">
+         <label class="text-dark-grey">Group Type Documents</label>
+         <%= f.file_field :group_type_documents, class: 'form-control border border-dark' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_group.group_type_documents.url %>
+      </div>
+   </div>
+   <div class="row my-3">
+      <div class="col-lg-6 mb-2">
+         <!-- <a href="" class="btn bg-alt-grey fw-bold text-primary" target="_blank">Complete W9</a> -->
+         <label class="text-dark-grey">EFT(Electronic Fund Transfer)</label>
+         <%= f.file_field :eft_file, class: 'form-control border border-dark' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_group.eft_file.url %>
+      </div>
+      <div class="col-lg-6">
+         <label class="text-dark-grey">Voided Check</label>
+         <%= f.file_field :voided_check_file, class: 'form-control border border-dark' %>
+         <%= HtmlUtils.generate_view_link file_url: @enrollment_group.voided_check_file.url %>
+      </div>
+   </div>
+</div>
+<div class="row">
+   <div class="col-lg-12 d-flex justify-content-end">
+      <button type="submit" class="btn btn-primary btn-md">
+      <%= action_name == 'edit_group' ? 'Update Group' : 'Add Group' %>
+      </button>
+   </div>
+</div>
+</form>
+</div>
+<% end %>
+
 
 <script>
 var csrfToken = $('meta[name="csrf-token"]').attr('content');
@@ -257,6 +327,20 @@ var csrfToken = $('meta[name="csrf-token"]').attr('content');
          newEnrollmentdetails.html(newEnrollmentdetails.html().replace(/contact_personnels_attributes\]\[\d+\]/g, "contact_personnels_attributes][" + newId + "]"));
          $("#contact_personnels .fields").append(newEnrollmentdetails);
     });
+    var selected_roles = "";
+    $(document).on('change', '.role-cb',function() {
+      var hiddenValues = [];
+
+      $('.role-cb').each(function() {
+      if ($(this).is(':checked')) {
+        hiddenValues.push($(this).val());
+      }
+     });
+
+      var $hidden_role = $(this).parent().parent().find('.hid-roles');
+      $hidden_role.val(hiddenValues.join(','));
+
+    })
 
 	 $("#details").on("click", ".add_association", function () {
          var detailsFields = $("#details .field");

@@ -3,6 +3,11 @@ class EnrollmentGroup < ApplicationRecord
   mount_uploader :cp575_file, DocumentUploader
   mount_uploader :specific_type_file, DocumentUploader
   mount_uploader :ownership_file, DocumentUploader
+  mount_uploader :payer_contracts, DocumentUploader
+  mount_uploader :group_type_documents, DocumentUploader
+  mount_uploader :eft_file, DocumentUploader
+  mount_uploader :voided_check_file, DocumentUploader
+
 
   has_many :dcos, class_name: 'GroupDco', dependent: :destroy
   has_many :details, class_name: 'EnrollmentGroupsDetail'

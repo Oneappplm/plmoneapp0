@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_28_144446) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_29_130849) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -178,6 +178,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_28_144446) do
     t.string "outreach_type"
     t.string "enrollment_payer"
     t.string "voided_bank_letter"
+    t.integer "dco"
   end
 
   create_table "enroll_groups_details", force: :cascade do |t|
@@ -205,7 +206,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_28_144446) do
     t.string "payor_email"
     t.string "enrollment_link"
     t.string "payor_username"
-    t.string "payor_password"
+    t.string "password"
     t.string "payor_question"
     t.string "payor_answer"
     t.string "portal_admin"
@@ -217,7 +218,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_28_144446) do
     t.string "era"
     t.string "client_notes"
     t.string "notes"
+    t.string "password_digest"
     t.index ["enroll_group_id"], name: "index_enroll_groups_details_on_enroll_group_id"
+  end
+
+  create_table "enroll_groups_details_questions", force: :cascade do |t|
+    t.integer "enroll_groups_detail_id"
+    t.string "secret_question"
+    t.string "answer"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "enrollment_comments", force: :cascade do |t|
@@ -273,6 +283,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_28_144446) do
     t.string "cp575_file"
     t.string "specific_type_file"
     t.string "ownership_file"
+    t.string "payer_contracts"
+    t.string "group_type_documents"
+    t.string "eft_file"
+    t.string "voided_check_file"
   end
 
   create_table "enrollment_groups_contact_details", force: :cascade do |t|
@@ -300,6 +314,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_28_144446) do
     t.date "individual_ownership_control_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "roles"
     t.index ["enrollment_group_id"], name: "index_enrollment_groups_details_on_enrollment_group_id"
   end
 

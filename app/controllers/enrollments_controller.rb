@@ -164,9 +164,14 @@ class EnrollmentsController < ApplicationController
 					:specific_type_file,
 					:ownership_file,
 					:npi_digit_type_group,
+          :payer_contracts,
+          :group_type_documents,
+          :eft_file,
+          :roles,
+          :voided_check_file,
 					contact_personnels_attributes: [:id, :group_personnel_name, :group_personnel_email, :group_personnel_phone_number, :group_personnel_fax_number, :group_personnel_position,
 						:_destroy],
-					details_attributes: [:id, :individual_ownership_first_name, :individual_ownership_middle_name, :individual_ownership_last_name,:individual_ownership_title, :individual_ownership_ssn, :individual_ownership_dob, :individual_ownership_percent_of_ownership, :individual_ownership_effective_date, :individual_ownership_control_date,
+					details_attributes: [:id, :individual_ownership_first_name, :individual_ownership_middle_name, :individual_ownership_last_name,:individual_ownership_title, :individual_ownership_ssn, :individual_ownership_dob, :individual_ownership_percent_of_ownership, :individual_ownership_effective_date, :individual_ownership_control_date, :roles,
 					:_destroy]
 			)
 		end
