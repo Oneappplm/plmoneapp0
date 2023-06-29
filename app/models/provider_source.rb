@@ -198,7 +198,7 @@ class ProviderSource < ApplicationRecord
   end
 
   def specialties
-    infos = ['special_ranking', 'specialty', 'sp_ppo_directory', 'sp_pos_directory']
+    infos = ['special_ranking', 'specialty', 'specialties_ppo_directory', 'specialties_pos_directory']
   end
 
   def professional_liability
