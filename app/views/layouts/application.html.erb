@@ -891,6 +891,33 @@ function addRequiredAttribute(formId, elementIds) {
 }
 
 var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+$('#enroll_group_group_id').on('change',function() {
+  var id = $(this).val();
+  var url = '/enrollments/groups/'+id+'/get_dcos';
+
+  if(id != '')
+  {
+          $.ajax({
+            url: url,
+            type: 'POST',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              var practice_locations = data['practice_locations'];
+              if(practice_locations.length != 0) {
+                $('#enroll_group_dco').empty();
+                for (var i = 0; i < practice_locations.length ; i++) {
+                  $('#enroll_group_dco').append('<option value="'+practice_locations[i][0]+'">'+practice_locations[i][1]+'</option>');
+                }
+              }else{
+                $('#enroll_group_dco').empty();
+                $('#enroll_group_dco').append('<option value="">Practice Location</option>');
+              }
+            }
+          })
+    
+  }
+})
 $('#provider_enrollment_group_id').on('change',function(){
         var id = $(this).val();
         var url = '/enrollments/groups/'+id+'/get_dcos';
