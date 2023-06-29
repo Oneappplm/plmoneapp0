@@ -101,7 +101,7 @@ class AjaxController < ApplicationController
                 Client.psv.count, Client.returned.count
             ]
     total_clients = clients.sum
-    percentages = clients.map{|c| ((c.to_f/total_clients.to_f)*100).to_i}
+    percentages = clients.map{|c| ((c.to_f/total_clients.to_f)*100).round(2)}
     
     render json: {
       "clients" => clients,
