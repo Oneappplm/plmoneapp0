@@ -102,7 +102,7 @@ module HtmlUtils
     header = <<-HTML
       <div class="row g-0 border-bottom border-dark">
         <div class="col-lg-12">
-          <h3>#{options[:title]}</h3>
+          <h3 class="p-1">#{options[:title]}</h3>
         </div>
       </div>
     HTML
@@ -113,7 +113,7 @@ module HtmlUtils
     header = <<-HTML
       <div class="row g-0 border-bottom border-dark">
         <div class="col-lg-12">
-          <h5>#{options[:title]}</h5>
+          <h5 class="p-1">#{options[:title]}</h5>
         </div>
       </div>
     HTML
@@ -122,10 +122,10 @@ module HtmlUtils
 
   def single_column **options
     column = <<-HTML
-    <div class="row g-0 border-bottom border-dark">
-      <div class="col-lg-12 #{options[:height]}">
+    <div class="row g-0 #{options[:is_last_field] == true ? '' : 'border-bottom'} border-dark">
+      <div class="col-lg-12 p-1 #{options[:height]}">
         <span>#{options[:title]}</span>
-        <p class="text-center m-0">
+        <p class="m-0">
           <strong>#{options[:value]}</strong>
         </p>
       </div>
@@ -137,8 +137,8 @@ module HtmlUtils
   def table_column **options
     column = <<-HTML
       <div class="col-lg-#{options[:size]} #{options[:last] ? '' : 'border-end border-dark'} #{options[:height]}">
-        <span>#{options[:title]}</span>
-        <p class="text-center m-0">
+        <span class="p-1">#{options[:title]}</span>
+        <p class="m-0 p-1">
           <strong>#{options[:value]}</strong>
         </p>
       </div>
@@ -162,15 +162,15 @@ module HtmlUtils
 
   def two_column_with_yes **options
     columns = <<-HTML
-    <div class="row g-0 border-bottom border-dark">
+    <div class="row g-0 #{options[:is_last_field] ? '' : 'border-bottom'} border-dark">
       <div class="col-lg-11">
         <div class="row g-0">
-          <div class="col-lg-12 border-bottom border-dark #{options[:height].present? ? options[:height] : ''}">
+          <div class="col-lg-12 p-1 border-bottom border-dark #{options[:height].present? ? options[:height] : ''}">
             <span>#{options[:text1]}</span>
           </div>
           <div class="col-lg-12 h-50px">
-            <span>#{options[:text2].present? ? options[:text2] : 'Please provide explanation below:'}</span>
-            <p class="text-center">
+            <span class="p-1">#{options[:text2].present? ? options[:text2] : 'Please provide explanation below:'}</span>
+            <p class="p-1">
               <strong>
                 #{options[:explanation]}
               </strong>

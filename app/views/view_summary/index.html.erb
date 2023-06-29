@@ -1,7 +1,7 @@
 <div id="printableDiv"><!-- Content you want to print goes here --></div>
 <div class="content container-fluid ps-0">
 	<%= render "provider_source_components/top_buttons"%>
-<div class="row p-4" id="page1">
+<div class="row p-4 view-summary" id="page1">
 	<div class="col-lg-12 d-flex justify-content-end mb-3">
 		<h3>Provider Application</h3>
 	</div>
@@ -39,13 +39,8 @@
 		</div>
 	</div>
 
-	<div class="col-lg-12 text-black border border-dark py-3 px-2">
-		<div class="row g-0 border-bottom border-dark">
-			<div class="col-lg-12">
-				<h3>2.1 General Information - Name and Home Address</h3>
-			</div>
-		</div>
-
+	<div class="col-lg-12 text-black border border-dark py-0 px-0">
+		<%= HtmlUtils.table_section_header title: "2.1 General Information - Name and Home Address" %>
 
 		<div class="row g-0 border-bottom border-dark">
 			<% titles = [['Last Name:', '4', :last_name], ['Suffix:', '2', :suffix], ['First Name:', '3', :first_name], ['Middle Name:', '3', :middle_name]]%>
@@ -54,7 +49,7 @@
 			<% end %>
 		</div>
 
-		<%= HtmlUtils.single_column title: 'List any other name(s) under which you have been known by reference, licensing and or educational institutions, including the date of name change(s) if known (mm/dd/yy):', value: @current_provider_source.fetch(:other_names), height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'List any other name(s) under which you have been known by reference, licensing and or educational institutions, including the date of name change(s) if known (mm/dd/yy):', value: @current_provider_source.fetch(:other_names) %>
 
 		<div class="row g-0 border-bottom border-dark">
 			<%= HtmlUtils.table_column title: 'Degree Title:', value: @current_provider_source.fetch(:degree_titles)&.titleize, height: 'h-50px', last: false, size: '6' %>
@@ -116,7 +111,7 @@
 
 		<%= render partial: "view_summary/components/firstname_lastname_middlename", locals: { first_name_key: :'emergency-first-name', last_name_key: :'emergency-last-name', middle_name_key: :'emergency-middle-name' } %>
 
-		<%= HtmlUtils.single_column title: 'Mobile Number:', value: @current_provider_source.fetch(:'emergency-contact-phone-number'), height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Mobile Number:', is_last_field: true, value: @current_provider_source.fetch(:'emergency-contact-phone-number'), height: 'h-50px'%>
 
 	</div>
 
