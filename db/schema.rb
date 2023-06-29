@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_28_051628) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_28_172308) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -205,7 +205,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_28_051628) do
     t.string "payor_email"
     t.string "enrollment_link"
     t.string "payor_username"
-    t.string "payor_password"
+    t.string "password"
     t.string "payor_question"
     t.string "payor_answer"
     t.string "portal_admin"
@@ -217,7 +217,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_28_051628) do
     t.string "era"
     t.string "client_notes"
     t.string "notes"
+    t.string "password_digest"
     t.index ["enroll_group_id"], name: "index_enroll_groups_details_on_enroll_group_id"
+  end
+
+  create_table "enroll_groups_details_questions", force: :cascade do |t|
+    t.integer "enroll_groups_detail_id"
+    t.string "secret_question"
+    t.string "answer"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "enrollment_comments", force: :cascade do |t|

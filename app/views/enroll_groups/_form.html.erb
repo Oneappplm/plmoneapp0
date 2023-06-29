@@ -65,7 +65,7 @@
          <div id="details">
             <div class="fields">
                <%= f.fields_for :details do |details| %>
-               `<%= render 'details_fields', f: details %>
+                <%= render 'details_fields', f: details %>
                <% end %>
             </div>
             <div class="row">
@@ -121,6 +121,15 @@
          $("#details .fields").append(newEnrollmentdetails);
       });
 
+      $(document).on('click', '.add_questions',function() {
+          var detailsFields = $('#question-fields .field');
+          var newQuestionFields = detailsFields.last().clone();
+          var newId = new Date().getTime();
+          newQuestionFields.html(newQuestionFields.html().replace(/questions_attributes\]\[\d+\]/g, "questions_attributes][" + newId + "]"));
+          $('#question-fields .field').append(newQuestionFields);
+      })
+
+
       // $(document).on('change', '.multi-enrollment-status', function () {
       //    var status = $(this).val();
       //    if (status == 'approved') {
@@ -137,6 +146,8 @@
       //    }
       // })
       
+
+
       $(document).on('change', '.select-show', function () {
          var revalidated = $(this).val();
          if (revalidated == 'yes') {

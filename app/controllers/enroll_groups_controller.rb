@@ -6,13 +6,15 @@ class EnrollGroupsController < ApplicationController
 
 	def new
 		@enroll_group = EnrollGroup.new
-    @enroll_group.details.build
+    details = @enroll_group.details.build
+    details.questions.build
 	end
 
 	def edit
     # had to add this condition to prvent details fields from duplicating
     if @enroll_group.details.blank?
-     @enroll_group.details.build
+     details = @enroll_group.details.build
+     details.questions.build
    end
   end
 
@@ -85,8 +87,10 @@ class EnrollGroupsController < ApplicationController
                       :application_status, :payor_type, :medicare_tricare, :payor_name,
                       :payor_phone, :payor_email, :enrollment_link, :payor_username, :payor_password,
                       :payor_question, :payor_answer, :portal_admin, :portal_admin_name,
-                      :portal_admin_phone, :portal_admin_email, :caqh_payer, :eft, :era, :client_notes, :notes, :_destroy
-                    ]
+                      :portal_admin_phone, :portal_admin_email, :caqh_payer, :eft, :era, :client_notes, :notes, :_destroy,
+                      questions_attributes: [:id, :secret_question, :answer]
+                    ],
+          
 	)
 	end
 
