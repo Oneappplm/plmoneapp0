@@ -34,9 +34,9 @@
    </div>
    <div class="col-lg-6">
       <label class="text-dark-grey">Expiration Date *</label>
-      <input type="date" name="licensure_expiration_date"  required class="form-control border-dark">
+      <input type="date" name="licensure_expiration_date"  required class="form-control border-dark licensure-expire">
       <span class="d-flex gap-2">
-      <input type="checkbox" name="licensure_not_expire">
+      <input type="checkbox" name="licensure_not_expire" id="licensure-not-expire">
       <small>Does not expire</small>
       </span>
    </div>
@@ -127,4 +127,16 @@
 	$('input[name=licensure_require_supervision]').on('change',function(){
 		$(this).val() == 'yes' ? $('#supervised_fields').removeClass('d-none') : $('#supervised_fields').addClass('d-none');
 	})
+
+   $('#licensure-not-expire').on('change',function(){
+    console.log($(this).prop('checked'));
+    if($(this).prop('checked'))
+    {
+      $('.licensure-expire').prop('disabled', true);
+      $('.licensure-expire').val('');
+    }
+    else
+      $('.licensure-expire').removeAttr('disabled');
+
+   });
 </script>

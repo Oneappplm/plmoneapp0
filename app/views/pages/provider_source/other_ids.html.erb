@@ -69,9 +69,9 @@
 						</div>
 						<div class="col-lg-6">
 							<label class="text-dark-grey">Medicaid Number *</label>
-							<input type="text" name="participating_medicaid_number" required class="form-control border-dark">
+							<input type="text" name="participating_medicaid_number" required class="form-control border-dark medicaid-number">
 							<label class="text-dark-grey">
-								<input type="checkbox" name="participating_medicaid_no_number">
+								<input type="checkbox" name="participating_medicaid_no_number" id="participating-medicaid-no-number">
 								<strong>I don't have a number</strong>
 							</label>
 						</div>
@@ -144,9 +144,9 @@
 						</div>
 						<div class="col-lg-6 mb-3">
 							<label class="text-dark-grey">Expiration Date *</label>
-							<input type="text" name="other_certification_expiration_date" required class="form-control border-dark" placeholder="MM/DD/YYYY" onfocus="(this.type = 'date')">
+							<input type="text" name="other_certification_expiration_date" required class="form-control border-dark other-cert-expire" placeholder="MM/DD/YYYY" onfocus="(this.type = 'date')">
 							<label class="text-dark-grey">
-								<input type="checkbox" name="other_certification_not_expire">
+								<input type="checkbox" name="other_certification_not_expire" id="other-certification-not-expire">
 								<strong>Does not expire</strong>
 							</label>
 						</div>
@@ -156,3 +156,27 @@
 	</div>
 </div>
 
+<script>
+$('#participating-medicaid-no-number').on('change',function(){
+    console.log($(this).prop('checked'));
+    if($(this).prop('checked'))
+    {
+      $('.medicaid-number').prop('disabled', true);
+      $('.medicaid-number').val('');
+    }
+    else
+      $('.medicaid-number').removeAttr('disabled');
+});
+
+$('#other-certification-not-expire').on('change',function(){
+    console.log($(this).prop('checked'));
+    if($(this).prop('checked'))
+    {
+      $('.other-cert-expire').prop('disabled', true);
+      $('.other-cert-expire').val('');
+    }
+    else
+      $('.other-cert-expire').removeAttr('disabled');
+
+});
+</script>
