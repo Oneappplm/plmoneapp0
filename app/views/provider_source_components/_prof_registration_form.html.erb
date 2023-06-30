@@ -81,9 +81,9 @@
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Expiration Date *</label>
-		<input type="date" name="registration_expiration_date" class="form-control border-dark">
+		<input type="date" name="registration_expiration_date" class="form-control border-dark ps-registration-expire">
 		<span class="d-flex gap-2">
-			<input type="checkbox" name="ps_registration_not_expire">
+			<input type="checkbox" name="ps_registration_not_expire" id="ps-registration-not-expire">
 			<small>Does not expire</small>
 		</span>
 	</div>
@@ -105,3 +105,17 @@
       </div>
 	</div>
 </div>
+
+<script>
+$('#ps-registration-not-expire').on('change',function(){
+    console.log($(this).prop('checked'));
+    if($(this).prop('checked'))
+    {
+      $('.ps-registration-expire').prop('disabled', true);
+      $('.ps-registration-expire').val('');
+    }
+    else
+      $('.ps-registration-expire').removeAttr('disabled');
+
+   });
+</script>

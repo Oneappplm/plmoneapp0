@@ -17,9 +17,9 @@
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Expiration Date *</label>
-		<input type="date" name="cds_expire_date" required class="form-control border-dark">
+		<input type="date" name="cds_expire_date" required class="form-control border-dark cds-expire">
 		<span class="d-flex gap-2">
-			<input type="checkbox" name="cds_not_expire">
+			<input type="checkbox" name="cds_not_expire" id="cds-not-expire">
 			<small>Does not expire</small>
 		</span>
 	</div>
@@ -35,3 +35,17 @@
 		</div>
 	</div>
 </div>
+
+<script>
+$('#cds-not-expire').on('change',function(){
+    console.log($(this).prop('checked'));
+    if($(this).prop('checked'))
+    {
+      $('.cds-expire').prop('disabled', true);
+      $('.cds-expire').val('');
+    }
+    else
+      $('.cds-expire').removeAttr('disabled');
+
+   });
+</script>

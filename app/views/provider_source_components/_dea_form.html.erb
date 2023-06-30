@@ -17,9 +17,9 @@
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Expiration Date *</label>
-		<input type="date" name="dea_expire_date" class="form-control border-dark">
+		<input type="date" name="dea_expire_date" class="form-control border-dark dea-expire">
 		<span class="d-flex gap-2">
-			<input type="checkbox" name="dea_not_expire">
+			<input type="checkbox" name="dea_not_expire" id="dea-not-expire">
 			<small>Does not expire</small>
 		</span>
 	</div>
@@ -64,4 +64,16 @@
 	{
 		$(this).val() == 'no' ? $("#dea_tarea").removeClass('d-none') : $("#dea_tarea").addClass('d-none'); 
 	})
+
+	 $('#dea-not-expire').on('change',function(){
+    console.log($(this).prop('checked'));
+    if($(this).prop('checked'))
+    {
+      $('.dea-expire').prop('disabled', true);
+      $('.dea-expire').val('');
+    }
+    else
+      $('.dea-expire').removeAttr('disabled');
+
+   });
 </script>
