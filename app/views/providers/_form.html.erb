@@ -526,39 +526,57 @@
 					});
 
 					// licenses
+					let addLicensesCount = 0;
 					$("#licenses").on("click", ".add_association", function() {
 							var licensesFields = $("#licenses .field");
 							var newLicense = licensesFields.last().clone();
 							var newId = new Date().getTime();
 							newLicense.html(newLicense.html().replace(/licenses_attributes\]\[\d+\]/g, "licenses_attributes][" + newId + "]"));
 							$("#licenses .fields").append(newLicense);
+							addLicensesCount += 1;
+
+							newLicense.find('.remove-dynamic-fields').attr('data-id', addLicensesCount);
+							newLicense.attr('data-id', addLicensesCount);
+							$("#licenses .fields").append(newLicense);
 					});
 
-					 $("#licenses").on("click", ".remove-dynamic-fields", function() {
-					 	 var licensesFields = document.getElementsByClassName("licenses-field");
-					 	 if(licensesFields.length > 1) {
-					 	 	licensesFields[0].remove();
-					 	 }
-					 });
+					$("#licenses").on("click", ".remove-dynamic-fields", function() {
+						var field = document.getElementsByClassName("licenses-field");
+						licenseField = $(this).attr("data-id");
+
+						var licensesFields = $('.licenses-field[data-id='+licenseField+']');
+						if(field.length > 1) {
+							licensesFields.remove();
+						}
+					});
 
 					// np licenses
+					let addNpLicensesCount = 0;
 					$("#np_licenses").on("click", ".add_association", function() {
 							var npLicensesFields = $("#np_licenses .field");
 							var newNpLicense = npLicensesFields.last().clone();
 							var newId = new Date().getTime();
 							newNpLicense.html(newNpLicense.html().replace(/np_licenses_attributes\]\[\d+\]/g, "np_licenses_attributes][" + newId + "]"));
 							$("#np_licenses .fields").append(newNpLicense);
+							addNpLicensesCount += 1;
+
+							newNpLicense.find('.remove-dynamic-fields').attr('data-id', addNpLicensesCount);
+							newNpLicense.attr('data-id', addNpLicensesCount);
+							$("#np_licenses .fields").append(newNpLicense);
 					});
 
 					$("#np_licenses").on("click", ".remove-dynamic-fields", function() {
-						var licensesFields = document.getElementsByClassName("np-licenses-field");
-						if(licensesFields.length > 1) {
-						licensesFields[0].remove();
-						}
+						var field = document.getElementsByClassName("np-licenses-field");
+						npField = $(this).attr("data-id");
+
+						var npLicensesFields = $('.np-licenses-field[data-id='+npField+']');
+						if(field.length > 1) {
+							npLicensesFields.remove();
+					 	}
 					});
 
-					let addRnLicensesCount = 0;
 					// rn licenses
+					let addRnLicensesCount = 0;
 					$("#rn_licenses").on("click", ".add_association", function() {
 							var rnLicensesFields = $("#rn_licenses .field");
 							var newRnLicense = rnLicensesFields.last().clone();
@@ -567,7 +585,7 @@
 							addRnLicensesCount += 1;
 
 							newRnLicense.find('.remove-dynamic-fields').attr('data-id', addRnLicensesCount);
-							newRnLicense.attr('data-id', addRnLicensesCount)
+							newRnLicense.attr('data-id', addRnLicensesCount);
 							$("#rn_licenses .fields").append(newRnLicense);
 					});
 
@@ -575,7 +593,7 @@
 						var field = document.getElementsByClassName("rn-licenses-field");
 						rnField = $(this).attr("data-id");
 						
-						var rnLicensesFields = $('[data-id='+rnField+']');
+						var rnLicensesFields = $('.rn-licenses-field[data-id='+rnField+']');
 						if(field.length > 1) {
 							rnLicensesFields.remove();
 					 	}
