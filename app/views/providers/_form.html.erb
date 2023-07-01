@@ -557,20 +557,28 @@
 						}
 					});
 
+					let addRnLicensesCount = 0;
 					// rn licenses
 					$("#rn_licenses").on("click", ".add_association", function() {
 							var rnLicensesFields = $("#rn_licenses .field");
 							var newRnLicense = rnLicensesFields.last().clone();
 							var newId = new Date().getTime();
 							newRnLicense.html(newRnLicense.html().replace(/rn_licenses_attributes\]\[\d+\]/g, "rn_licenses_attributes][" + newId + "]"));
+							addRnLicensesCount += 1;
+
+							newRnLicense.find('.remove-dynamic-fields').attr('data-id', addRnLicensesCount);
+							newRnLicense.attr('data-id', addRnLicensesCount)
 							$("#rn_licenses .fields").append(newRnLicense);
 					});
 
 					$("#rn_licenses").on("click", ".remove-dynamic-fields", function() {
-					 	 var licensesFields = document.getElementsByClassName("rn-licenses-field");
-					 	 if(licensesFields.length > 1) {
-					 	 	licensesFields[0].remove();
-					 	 }
+						var field = document.getElementsByClassName("rn-licenses-field");
+						rnField = $(this).attr("data-id");
+						
+						var rnLicensesFields = $('[data-id='+rnField+']');
+						if(field.length > 1) {
+							rnLicensesFields.remove();
+					 	}
 					});
 
 					//$(document).on("click", ".remove-dynamic-fields", function() {
