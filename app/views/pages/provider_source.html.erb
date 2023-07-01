@@ -66,16 +66,13 @@
 
 						<div class="row my-3">
 							<div class="col-lg-12">
-								<!-- multi-select | this is for frontend devs - you should be responsible for preparing the data value to be submitted and handle the data back to the element when retrieving -->
-                <label class="text-dark-grey">State(s) of Practice *</label>
-								<div class="multi-select form-select border-dark" name="state_of_practice" id="state_of_practice" placeholder="State(s) of Practice *"></div>
+								<%= HtmlUtils::dropdown name: 'state_of_practice', label: 'State(s) of Practice *', multiple: true %>
 							</div>
 						</div>
 
 						<div class="row my-3">
 							<div class="col-lg-12">
-                 <label class="text-dark-grey">Primary Practitioner Type *</label>
-								<div class="single-select form-select border-dark" name="primary-practioner-type" id="primary-practioner-type" placeholder="Primary Practitioner Type *"></div>
+								<%= HtmlUtils::dropdown name: 'primary-practioner-type', label: 'Primary Practitioner Type *', multiple: true %>
 							</div>
 						</div>
 
@@ -170,14 +167,7 @@
 
 						<div class="row my-3">
 							<div class="col-lg-6">
-                <label class="text-dark-grey">State *</label>
-								<select name="ps-state" class="form-select border-dark ">
-									<option value="">State *</option>
-									<% @states.each do |state|%>
-									<option value="<%= state.alpha_code %>"><%= state.name %></option>
-									<% end %>
-								</select>
-								<!-- <input type="text" class="form-control border-dark" name="" placeholder="State"> -->
+								<%= HtmlUtils::dropdown name: 'ps-state', label: 'State *' %>
 							</div>
 							<div class="col-lg-6">
 							 <label class="text-dark-grey">Zip Code</label>
@@ -256,82 +246,6 @@
 		// console.log($(this).val());
 		($(this).val() == 'yes') ?	$('#other_name_field').removeClass('d-none') : $('#other_name_field').addClass('d-none');
 	})
-
-var states = [];
-var selected_states = []; 
-
-$(document).ready(function() {
-  getStates();
-});
-
-function getSelectedStates(provider_source_id) {
-  $.ajax({
-    url: '<%= get_selected_states_path %>',
-    method: 'POST',
-    data: { authenticity_token: csrfToken, provider_source_id: provider_source_id },
-    success: function(data) {
-      selected_states = data['selected_states'];
-    }
-  });
-}
-
-function getStates() {
-  $.ajax({
-    url: '<%= get_states_path %>',
-    method: 'GET',
-    data: { authenticity_token: csrfToken },
-    success: function(data) {
-      VirtualSelect.init({
-        options: data['states'],
-        ele: '.multi-select',
-        multiple: true,
-        search: true,
-        showSelectedOptionsFirst: true,
-        selectedValue: selected_states
-      });
-
-    }
-  });
-}
-
-var ps_provider_types = [];
-var selected_ps_provider_types = []; // Initialize selected_states variable
-
-$(document).ready(function() {
-  getProviderTypes();
-});
-
-function getSelectedProviderTypes(provider_source_id) {
-  $.ajax({
-    url: '<%= get_selected_ps_provider_types_path %>',
-    method: 'POST',
-    data: { authenticity_token: csrfToken, provider_source_id: provider_source_id },
-    success: function(data) {
-      selected_ps_provider_types = data['selected_ps_provider_types'];
-    }
-  });
-}
-
-function getProviderTypes() {
-  $.ajax({
-    url: '<%= get_ps_provider_types_path %>',
-    method: 'GET',
-    data: { authenticity_token: csrfToken },
-    success: function(data) {
-      VirtualSelect.init({
-        options: data['ps_provider_types'],
-        ele: '.single-select',
-        multiple: true,
-        search: true,
-        showSelectedOptionsFirst: true,
-        selectedValue: selected_ps_provider_types
-      });
-    }
-  });
-}
-
-
-
 </script>
 
 <style>

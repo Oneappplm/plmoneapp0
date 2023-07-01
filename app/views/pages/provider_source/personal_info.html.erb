@@ -41,11 +41,11 @@
                   <div class="row mb-3">
                      <div class="col-lg-6">
                         <label class="text-dark-grey">Citizenship*</label>
-                        <div class="single-select form-select border-dark" name="ps-citizenship" id="ps-citizenship" placeholder="Select Option "></div>
+                        <div class="single-select multi-select-ps-citizenship form-select border-dark" name="ps-citizenship" id="ps-citizenship" placeholder="Select Option "></div>
                      </div>
                      <div class="col-lg-6">
                         <label class="text-dark-grey">Country of Birth</label>
-                        <div class="single-select form-select border-dark" name="ps-cob" id="ps-cob" placeholder="Select Option" "></div>
+                        <div class="single-select multi-select-ps-cob form-select border-dark" name="ps-cob" id="ps-cob" placeholder="Select Option" "></div>
                      </div>
 
                   </div>
@@ -63,7 +63,7 @@
                            </span>
                         </div>
                      </div>
-                     <div class="col-lg-12 d-none" id="ssn_field">
+                     <div class="col-lg-12 d-none" id="ps-ssn-holder">
                         <label class="text-dark-grey">Social Security Number*</label>
                         <input type="text" name="social-security-number" id="social-security-number" class="form-control border-dark">
                      </div>
@@ -121,7 +121,7 @@
                      </div>
                      <div class="col-lg-6">
                         <label class="text-dark-grey">FNIN Country of Issue</label>
-                        <div class="single-select form-select border-dark" name="fnin-country-of-issue" id="fnin-country-of-issue" placeholder="Select Option "></div>
+                        <div class="single-select multi-select-fnin-country-of-issue form-select border-dark" name="fnin-country-of-issue" id="fnin-country-of-issue" placeholder="Select Option "></div>
                      </div>
                   </div>
                   <div class="row mb-3">
@@ -130,8 +130,7 @@
                         <input type="text" name="visa-number" class="form-control border-dark">
                      </div>
                      <div class="col-lg-6">
-                        <label class="text-dark-grey">Visa Type</label>
-                           <div class="select form-select border-dark" name="gi-visa-types" id="gi-visa-types" placeholder="Select Option "></div>
+                        <%= HtmlUtils::dropdown name: 'gi-visa-types', label: 'Visa Type' %>
                      </div>
                   </div>
                   <div class="row mb-3">
@@ -156,15 +155,12 @@
                   </div>
                   <div class="row my-3">
                      <div class="col-lg-12">
-                        <label class="text-dark-grey">Please select all the languages you speak *</label>
-                        <!-- multi-select -->
-                       <div class="multi-select form-select border-dark" name="languages-you-speak" id="multi-select-lang-speak" placeholder="Select Option "></div>
+                        <%= HtmlUtils::dropdown name: 'languages-you-speak', label: 'Please select all the languages you speak *', multiple: true %>
                      </div>
                   </div>
                   <div class="row my-3">
                      <div class="col-lg-12">
-                        <label class="text-dark-grey">Please select all the languages you write *</label>
-                        <div class="multi-select form-select border-dark" name="languages-you-write" id="multi-select-lang-write" placeholder="Select Option "></div>
+                        <%= HtmlUtils::dropdown name: 'languages-you-write', label: 'Please select all the languages you write *', multiple: true %>
                      </div>
                   </div>
                   <div class="row mb-3">
@@ -224,136 +220,27 @@
    </div>
 </div>
 
+<% content_for :css do %>
+<style>
+   .multi-select {
+     padding: 0;
+   }
+   .single-select {
+         width: 100%;
+         max-width: 500px;
+    }
+   .select {
+         width: 100%;
+         max-width: 500px;
+         padding: 0;
+    }
+ </style>
+<% end %>
+
+<% content_for :js do %>
 <script>
-   var countries = [];
-   var selected_countries = [];
-
-   $(document).ready(function() {
-   getCountries('#ps-citizenship');
-   getCountries('#ps-cob');
-   getCountries('#fnin-country-of-issue');
-   });
-
-   function getSelectedCountries(provider_source_id) {
-   $.ajax({
-      url: '<%= get_selected_countries_path %>',
-      method: 'POST',
-      data: { authenticity_token: csrfToken, provider_source_id: provider_source_id },
-      success: function(data) {
-         selected_countries = data['selected_countries'];
-      }
-   });
-   }
-
-   function getCountries() {
-   $.ajax({
-      url: '<%= get_countries_path %>',
-      method: 'GET',
-      data: { authenticity_token: csrfToken },
-      success: function(data) {
-         VirtualSelect.init({
-         options: data['countries'],
-         ele: '.single-select',
-         multiple: false,
-         search: true,
-         showSelectedOptionsFirst: true,
-         selectedValue: selected_countries
-         });
-
-      }
-   });
-   }
-
-   var visa_types = [];
-   var selected_visa_types = [];
-
-   $(document).ready(function() {
-   getVisaTypes('#gi-visa-types');
-   });
-
-   function getSelectedVisaTypes(provider_source_id) {
-   $.ajax({
-      url: '<%= get_selected_visa_types_path %>',
-      method: 'POST',
-      data: { authenticity_token: csrfToken, provider_source_id: provider_source_id },
-      success: function(data) {
-         selected_visa_types = data['selected_visa_types'];
-      }
-   });
-   }
-
-   function getVisaTypes() {
-   $.ajax({
-      url: '<%= get_visa_types_path %>',
-      method: 'GET',
-      data: { authenticity_token: csrfToken },
-      success: function(data) {
-         VirtualSelect.init({
-         options: data['visa_types'],
-         ele: '.select',
-         multiple: false,
-         search: true,
-         showSelectedOptionsFirst: true,
-         selectedValue: selected_visa_types
-         });
-
-      }
-   });
-   }
-
-   var languages = [];
-   var selected_languages = [];
-
-   $(document).ready(function() {
-   getLanguages('#multi-select-lang-speak');
-   getLanguages('#multi-select-lang-write');
-   });
-
-   function getSelectedLanguages(provider_source_id) {
-   $.ajax({
-      url: '<%= get_selected_languages_path %>',
-      method: 'POST',
-      data: { authenticity_token: csrfToken, provider_source_id: provider_source_id },
-      success: function(data) {
-         selected_languages = data['selected_languages'];
-      }
-   });
-   }
-
-   function getLanguages() {
-   $.ajax({
-      url: '<%= get_languages_path %>',
-      method: 'GET',
-      data: { authenticity_token: csrfToken },
-      success: function(data) {
-         VirtualSelect.init({
-         options: data['languages'],
-         ele: '.multi-select',
-         multiple: true,
-         search: true,
-         showSelectedOptionsFirst: true,
-         selectedValue: selected_languages
-         });
-      }
-   });
-   }
-
    $('input[name="ps-ssn"]').on('change',function(){
-       $(this).val() == 'yes' ? $('#ssn_field').removeClass('d-none') : $('#ssn_field').addClass('d-none');
+       $(this).val() == 'yes' ? $('#ps-ssn-holder').removeClass('d-none') : $('#ps-ssn-holder').addClass('d-none');
    });
 </script>
-
-<style>
-  .multi-select {
-    padding: 0;
-  }
-  .single-select {
-        width: 100%; 
-        max-width: 500px; 
-   }
-  .select {
-        width: 100%; 
-        max-width: 500px;
-        padding: 0;
-   }
-</style>
+<% end %>

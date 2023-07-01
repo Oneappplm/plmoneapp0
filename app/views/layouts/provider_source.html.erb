@@ -46,8 +46,10 @@
     }
   </style>
 
+  <%= yield :css %>
+
   <script>
-    
+
             window.hs_config = {"autopath":"@@autopath","deleteLine":"hs-builder:delete","deleteLine:build":"hs-builder:build-delete","deleteLine:dist":"hs-builder:dist-delete","previewMode":false,"startPath":"/index.html","vars":{"themeFont":"https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap","version":"?v=1.0"},"layoutBuilder":{"extend":{"switcherSupport":true},"header":{"layoutMode":"default","containerMode":"container-fluid"},"sidebarLayout":"default"},"themeAppearance":{"layoutSkin":"default","sidebarSkin":"default","styles":{"colors":{"primary":"#377dff","transparent":"transparent","white":"#fff","dark":"132144","gray":{"100":"#f9fafc","900":"#1e2022"}},"font":"Inter"}},"languageDirection":{"lang":"en"},"skipFilesFromBundle":{"dist":["assets/js/hs.theme-appearance.js","assets/js/hs.theme-appearance-charts.js","assets/js/demo.js"],"build":["assets/css/theme.css","assets/vendor/hs-navbar-vertical-aside/dist/hs-navbar-vertical-aside-mini-cache.js","assets/js/demo.js","assets/css/theme-dark.css","assets/css/docs.css","assets/vendor/icon-set/style.css","assets/js/hs.theme-appearance.js","assets/js/hs.theme-appearance-charts.js","node_modules/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.min.js","assets/js/demo.js"]},"minifyCSSFiles":["assets/css/theme.css","assets/css/theme-dark.css"],"copyDependencies":{"dist":{"*assets/js/theme-custom.js":""},"build":{"*assets/js/theme-custom.js":"","node_modules/bootstrap-icons/font/*fonts/**":"assets/css"}},"buildFolder":"","replacePathsToCDN":{},"directoryNames":{"src":"./src","dist":"./dist","build":"./build"},"fileNames":{"dist":{"js":"theme.min.js","css":"theme.min.css"},"build":{"css":"theme.min.css","js":"theme.min.js","vendorCSS":"vendor.min.css","vendorJS":"vendor.min.js"}},"fileTypes":"jpg|png|svg|mp4|webm|ogv|json"}
             window.hs_config.gulpRGBA = (p1) => {
   const options = p1.split(',')
@@ -500,28 +502,20 @@ $('input:not([type="hidden"]), textarea, select').on('change', function() {
 
 //Autosave for custom dropdown
 $('.multi-select').on('change', function() {
-    var dropdownId = $(this).attr('id');
-    if (dropdownId == 'multi-select-lang-speak') {
-        saveInput($(this)); 
-    } else if (dropdownId == 'multi-select-lang-write') {
-        saveInput($(this));
-    } else if (dropdownId == 'state_of_practice') {
-        saveInput($(this));
-    }
-  });
-
+  var dropdownId = $(this).attr('id');
+  if([
+      'multi-select-lang-speak', 'multi-select-lang-write', 'state_of_practice',
+      'primary-practioner-type', 'languages-you-speak', 'languages-you-write'
+     ].includes(dropdownId)) {
+      saveInput($(this));
+  }
+});
 
 $('.single-select').on('change', function() {
-var dropdownId = $(this).attr('id');
-    if (dropdownId == 'ps-citizenship') {
-        saveInput($(this)); 
-    } else if (dropdownId == 'ps-cob') {
-        saveInput($(this));
-    } else if (dropdownId == 'fnin-country-of-issue') {
-        saveInput($(this));
-    } else if (dropdownId == 'primary-practioner-type') {
-        saveInput($(this));
-    }
+  var dropdownId = $(this).attr('id');
+  if(['ps-citizenship', 'ps-cob', 'fnin-country-of-issue', 'ps-state', 'gi-visa-types'].includes(dropdownId)) {
+    saveInput($(this));
+  }
 });
 
 function saveInput(input) {
@@ -550,11 +544,22 @@ function saveInput(input) {
 }
 
 
-$('input, textarea, select').each(function(element) {
+$('input, textarea, select, div.multi-select, div.single-select').each(function(element) {
 	var inputName = $(this).attr('name');
 	var inputValue = $(this).val();
   var tagName = $(this).prop('tagName').toLowerCase();
   var inputType = $(this).attr('type');
+
+  //  add multi-select and single-select to inputType name
+  if (
+      [
+        'state_of_practice', 'primary-practioner-type',
+        'ps-citizenship', 'ps-cob', 'fnin-country-of-issue',
+        'ps-state','gi-visa-types', 'languages-you-speak', 'languages-you-write'
+      ].includes(inputName)
+    ){
+    inputType = 'multi-select' // single-select is included here
+  }
 
 	// Make an AJAX request to retrieve the value for the input field
 	$.ajax({
@@ -563,13 +568,13 @@ $('input, textarea, select').each(function(element) {
 			data: { authenticity_token: csrfToken, field_name: inputName },
 			dataType: 'json',
 			success: function(data) {
-
           if (inputType == 'radio' || inputType == 'checkbox') {
             var radioInput = $(tagName + '[name="' + inputName + '"][value="' + data.value + '"]');
 
             if (data.value == 'yes' || data.value == 'on'){
               if(inputType == 'radio'){
                 radioInput.prop("checked", true);
+                $('#'+inputName+'-holder').removeClass('d-none')
               }else if(inputType == 'checkbox'){
                 $(tagName + '[name="' + inputName + '"]').prop("checked", true);
               }
@@ -577,6 +582,7 @@ $('input, textarea, select').each(function(element) {
               // console.log(tagName + '[name="' + inputName + '"]')
               if(inputType == 'radio'){
                 radioInput.prop("checked", true);
+                $('#'+inputName+'-holder').addClass('d-none')
               }else if(inputType == 'checkbox'){
                 $(tagName + '[name="' + inputName + '"]').prop("checked", false);
               }
@@ -620,7 +626,7 @@ $('input, textarea, select').each(function(element) {
               }else{
                 $('#collab_form').addClass('d-none');
               }
-            } 
+            }
 
             if (inputName == 'practice_patient_age_not_applicable') {
               if ($('#age_not_applicable').is(':checked')) {
@@ -629,7 +635,7 @@ $('input, textarea, select').each(function(element) {
               } else {
                 $('.age-restrict').removeAttr('disabled');
               }
-            }  
+            }
 
             if (inputName == 'dea_not_expire') {
               if ($('#dea-not-expire').is(':checked')) {
@@ -684,13 +690,25 @@ $('input, textarea, select').each(function(element) {
                 $('.other-cert-expire').removeAttr('disabled');
               }
             }
-            
+
           } else if(tagName == 'select'){
             displayFieldsFromSelectElement(data, inputName, tagName);
           }  else if(inputType == 'hidden'){
             displayFieldsFromHiddenElement(data, inputName, tagName);
-          } else {
-            displayFieldsFromInputElement(data, inputName, tagName, inputType)
+          } else if(inputType == 'multi-select'){
+            displayFieldsFromMultiSelectElement(data, inputName, tagName);
+          } else  {
+            try {
+              if (typeof inputName === 'undefined') {
+                console.error('inputName is not defined', inputName, tagName, inputType, data);
+              } else {
+                displayFieldsFromInputElement(data, inputName, tagName, inputType);
+              }
+            } catch (error) {
+              // Handle the error here
+              console.log(inputName, tagName, inputType);
+              console.error("An error occurred:", error);
+            }
           }
 			}
 	  });
@@ -711,6 +729,44 @@ function displayFieldsFromSelectElement(data, inputName, tagName) {
 
   // Manually trigger the change event for the single select dropdown
   $(tagName + '[name="' + inputName + '"]').trigger('change.select2');
+}
+
+function displayFieldsFromMultiSelectElement(data, inputName, tagName){
+  // convert data.value string with comma separated to array
+  // sample: 'Arizona,Alaska,Alabama'
+  var splitted_values = [];
+
+  if(data.value !== null){
+    splitted_values = data.value.split(',');
+  }
+  // add more div element that is using multi-select
+  var multi_select_name = '.multi-select-' + inputName;
+  var path = ''
+  var multiselect = true;
+
+  if(['state_of_practice', 'ps-state'].includes(inputName)){
+    path = '<%= states_multi_select_data_path %>';
+    if(['ps-state'].includes(inputName)){ // single select
+      multiselect = false
+    }
+  }else if(inputName == 'primary-practioner-type'){
+    path = '<%= provider_types_multi_select_data_path %>';
+  } else if(['ps-citizenship', 'ps-cob', 'fnin-country-of-issue'].includes(inputName)){
+    // if single select, use this path
+    path = '<%= countries_multi_select_data_path %>';
+    multiselect = false
+  } else if(['gi-visa-types'].includes(inputName)){
+    path = '<%= visa_types_multi_select_data_path %>';
+    multiselect = false
+  } else if(['languages-you-speak', 'languages-you-write'].includes(inputName)){
+    path = '<%= languages_multi_select_data_path %>';
+  }
+
+  // add more else if here for multi-select
+
+  if (path != ''){
+    $.get(path, function (data) { initMultiSelect(data['result'], splitted_values, multi_select_name, multiselect); });
+  }
 }
 
 function displayFieldsFromInputElement(data, inputName, tagName, inputType){
@@ -737,6 +793,16 @@ function displayFieldsFromCheckboxElement(data, inputName, tagName){
 
 function displayFieldsFromSelectRadioElement(data, inputName, tagName){
  // put the refactor here for radio
+}
+
+function initMultiSelect(collection, selected_values, element = '.multi-select', multiselect = true){
+  VirtualSelect.init({
+    options: collection,
+    ele: element,
+    multiple: multiselect,
+    search: true,
+    selectedValue: selected_values
+  });
 }
 
 // some text input where they can type and it will be added to a readonly text input

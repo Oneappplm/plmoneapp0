@@ -62,6 +62,19 @@ module HtmlUtils
     option.html_safe
   end
 
+  def dropdown **options
+    options[:label] ||= ''
+    options[:multiple] ||= false
+    options[:name] ||= ''
+
+    option = <<-HTML
+      <label class="text-dark-grey">#{ options[:label] }</label>
+      <div class="#{ options[:multiple] ? 'multi' : 'single'}-select multi-select-#{ options[:name] } form-select border-dark" name="#{ options[:name] }" id="#{ options[:name] }" placeholder="#{ options[:label] }" ></div>
+    HTML
+
+    option.html_safe
+  end
+
   def generate_view_link **options
 
    options[:file_url] ||= nil

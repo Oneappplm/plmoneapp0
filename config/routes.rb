@@ -211,6 +211,16 @@ Rails.application.routes.draw do
       get :download_as_pdf
     end
   end
+  resources :multi_select_data, only: [], path: 'multi-select-data' do
+    collection do
+      get :states
+      get :provider_types
+      get :countries
+      get :visa_types
+      get :languages
+      # add more here
+    end
+  end
 
 
   namespace :api do
