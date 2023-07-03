@@ -22,29 +22,18 @@
 					</div>
 					<div class="row mb-2">
 						<div class="col-lg-12 mb-2">
-							<div class="form-group  w-100">
-								<label class="text-dark-grey">Health Plans</label>
-								<label class="text-dark-grey">Health Plans</label>
-								<!-- multi-select | this is for frontend devs - you should be responsible for preparing the data value to be submitted and handle the data back to the element when retrieving -->
-								<div class="row my-3">
-							<div class="col-lg-12">
-								<!-- select-search | this is for frontend devs - you should be responsible for preparing the data value to be submitted and handle the data -->
-								<%= select_tag :hp_health_plans, options_for_select([['Health Plan *', nil]] + @health_plans.map { |plan| [plan.name, plan.name] }), required: true, class: 'form-select border-dark py-3', placeholder: 'Health Plan' %>
-								<!-- <input type="text" name="" placeholder="Health Plans*" class="form-control border-dark"> -->
+							<div class="form-group">
+									<%= HtmlUtils::dropdown name: 'hp_health_plans', label: 'Health Plans *', multiple: true %>
+							</div>
+						</div>	
+						<div class="col-lg-12 mb-2">
+							<div class="form-group">
+								<%= HtmlUtils::dropdown name: 'hp_hospitals', label: 'Hospitals *', multiple: true %>
 							</div>
 						</div>
 						<div class="col-lg-12 mb-2">
 							<div class="form-group">
-								<label class="text-dark-grey">Hospitals</label>
-								<!-- multi-select | this is for frontend devs - you should be responsible for preparing the data value to be submitted and handle the data back to the element when retrieving -->
-								<%= select_tag :hp_hospitals, options_for_select([['Hospital *', nil]] + @hospitals.map { |hospital| [hospital.name, hospital.name] }), required: true, class: 'form-select border-dark py-3', placeholder: 'Hospitals' %>
-							</div>
-						</div>
-						<div class="col-lg-12 mb-2">
-							<div class="form-group">
-								<label class="text-dark-grey">Directories</label>
-								<!-- multi-select | this is for frontend devs - you should be responsible for preparing the data value to be submitted and handle the data back to the element when retrieving -->
-								<%= select_tag :hp_directories, options_for_select([['Directory *', nil]] + @directories.map { |directory| [directory.name, directory.name] }), required: true, class: 'form-select border-dark py-3', placeholder: 'Directories' %>
+								<%= HtmlUtils::dropdown name: 'hp_directories', label: 'Directories *', multiple: true %>
 							</div>
 						</div>
 					</div>
@@ -58,17 +47,3 @@
 	</div>
 </div>
 
-<%
-=begin%>
- <% content_for :js do %>
-	<script>
-
-		VirtualSelect.init({
-		  ele: '.multi-select'
-		  // options: myOptions
-		});
-
-	</script>
-<% end %> 
-<%
-=end%>

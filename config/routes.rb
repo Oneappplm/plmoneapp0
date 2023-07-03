@@ -218,6 +218,12 @@ Rails.application.routes.draw do
       get :countries
       get :visa_types
       get :languages
+      get :health_plans
+      get :hospitals
+      get :directories
+      get :specialties
+      get :training_types
+      get :privilege_statuses
       # add more here
     end
   end
