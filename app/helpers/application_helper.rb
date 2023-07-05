@@ -328,4 +328,12 @@ module ApplicationHelper
 					]
 			end
 	end
+
+  def civil_statuses
+    [
+      ['Single','single'],
+      ['Married', 'married'],
+      ['Widowed','widowed']
+    ]
+  end
 end
