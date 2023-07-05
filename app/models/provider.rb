@@ -110,5 +110,9 @@ class Provider < ApplicationRecord
   def doc_url(doc)
     doc = self.send(doc)
     (doc && doc&.url.present?) ? doc&.url : nil
-end
+  end
+
+  def selected_practitioner_types
+    self.practitioner_type ? self.practitioner_type.split(',') : nil
+ end
 end
