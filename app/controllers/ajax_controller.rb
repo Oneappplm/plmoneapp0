@@ -94,6 +94,14 @@ class AjaxController < ApplicationController
       }
   end
 
+  def get_selected_practitioner_types
+    provider_practitioner_type = Provider.find(params[:provider_id])
+    selected_practitioner_types = (provider_practitioner_type.selected_practitioner_types || [])
+    render json: {
+      'selected_practitioner_types' => selected_practitioner_types
+    }
+  end
+
   def get_ps_provider_types
     ps_provider_types = ProviderType.all.map{|ptype| { label: ptype.fch, value: ptype.fch} }
     # render json: provider_types and return
