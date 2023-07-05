@@ -38,6 +38,7 @@ Rails.application.routes.draw do
   post 'change-enrollment-status', to: 'ajax#change_enrollment_status'
   get 'get-provider-types', to: 'ajax#get_provider_types'
   post 'get-selected-provider-types', to: 'ajax#get_selected_provider_types'
+  post 'get-selected-practitioner-types', to: 'ajax#get_selected_practitioner_types'
   get 'get-ps-provider-types', to: 'ajax#get_ps_provider_types'
   post 'get-selected-ps-provider-types', to: 'ajax#get_selected_ps_provider_types'
   get 'get-mixed-providers-options', to: 'ajax#get_mixed_providers_options'
