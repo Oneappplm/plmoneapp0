@@ -26,21 +26,43 @@ class Provider < ApplicationRecord
   belongs_to :group_dco, class_name: 'GroupDco', foreign_key: 'dco', optional: true
   belongs_to :state, class_name: 'State', foreign_key: 'state_id', required: true
 
-  has_many :taxonomies, class_name: 'ProviderTaxonomy', dependent: :destroy
+  # has_many :taxonomies, class_name: 'ProviderTaxonomy', dependent: :destroy
   has_many :licenses , class_name: 'ProviderLicense', dependent: :destroy
   has_many :np_licenses , class_name: 'ProviderNpLicense', dependent: :destroy
   has_many :rn_licenses , class_name: 'ProviderRnLicense', dependent: :destroy
   has_many :service_locations , class_name: 'ProvidersServiceLocation', dependent: :destroy
   has_many :comments, class_name: 'EnrollmentComment'
+  # made it like this to prepare if needed to be multiple
+  has_many :pa_licenses, class_name: 'ProviderPaLicense', dependent: :destroy
+  has_many :dea_licenses, class_name: 'ProviderDeaLicense', dependent: :destroy
+  has_many :mn_licenses, class_name: 'ProviderMnLicense', dependent: :destroy
+  has_many :mccs, class_name: 'ProviderMcc', dependent: :destroy
+  has_many :mn_medicaids, class_name: 'ProviderMnMedicaid', dependent: :destroy
+  has_many :medicaids, class_name: 'ProviderMedicaid', dependent: :destroy
+  has_many :wi_medicaids, class_name: 'ProviderWiMedicaid', dependent: :destroy
+  has_many :medicares, class_name: 'ProviderMedicare', dependent: :destroy
+  has_many :cnp_licenses, class_name: 'ProviderCnpLicense', dependent: :destroy
+  has_many :ins_policies, class_name: 'ProviderInsPolicy', dependent: :destroy
 
-  accepts_nested_attributes_for :taxonomies, allow_destroy: true, reject_if: :all_blank
+
+  # accepts_nested_attributes_for :taxonomies, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :licenses, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :np_licenses, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :rn_licenses, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :service_locations, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :pa_licenses, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :dea_licenses, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :mn_licenses, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :mccs, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :mn_medicaids, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :medicaids, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :wi_medicaids, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :medicares, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :cnp_licenses, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :ins_policies, allow_destroy: true, reject_if: :all_blank
 
   validates_presence_of :first_name, :last_name, :birth_date, :practitioner_type,
-    :ssn, :gender, :city, :state, :telephone_number, :ext, :email_address, :taxonomies
+    :ssn, :gender, :city, :state, :telephone_number, :ext, :email_address
 
   default_scope { where(api_token: nil) }
   scope :male, -> { where(gender: 'Male') }

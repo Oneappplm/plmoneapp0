@@ -2,6 +2,16 @@
   <div class="col-lg-12">
       <h3>Payer Enrollment Details</h3>
     </div>
+<div class="row mb-3">
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Start Date</label>
+      <%= f.text_field :start_date, placeholder: 'Start Date', class: 'form-control', onfocus: "(this.type = 'date')" %>
+    </div>
+    <div class="col-lg-6">
+      <label class="text-dark-grey"></label>
+      <%= f.text_field :due_date, placeholder: 'Due Date', class: 'form-control', onfocus: "(this.type = 'date')" %>
+    </div>
+  </div>
   <div class="row mb-3">
     <div class="col-lg-6">
       <label class="text-dark-grey">Enrollment Payer</label>
@@ -16,35 +26,12 @@
         ], f.object.enrollment_type), { prompt: 'Enrollment Type' }, {:class => 'form-select'}  %>
     </div>
   </div>
-  <% if current_setting.qualifacts? %>
-    <div class="row mb-3">
-        <div class="col-lg-6">
-          <label class="text-dark-grey">CPT® Code</label>
-          <%= f.text_field :cpt_code, placeholder: 'Type here', class: 'form-control' %>
-        </div>
-        <div class="col-lg-6">
-          <label class="text-dark-grey">Descriptor</label>
-          <%= f.text_field :descriptor, placeholder: 'Type here', class: 'form-control' %>
-        </div>
-      </div>
-  <% end %>
   <div class="row mb-3">
     <div class="col-lg-12">
-      <label class="text-dark-grey">Application Status</label>
+      <label class="text-dark-grey">Enrollment Status</label>
       <%= f.select :enrollment_status, options_for_select(enrollment_status, f.object.enrollment_status), { prompt: 'Enrollment Status' }, {:class => 'form-select multi-enrollment-status'}  %>
     </div>
   </div>
-
-  <div class="row mb-3">
-        <div class="col-lg-6">
-          <label class="text-dark-grey">Provider ID</label>
-          <%= f.text_field :provider_id, placeholder: 'PTAN, CHAMPS, PIN, etc.', class: 'form-control' %>
-        </div>
-        <div class="col-lg-6">
-          <label class="text-dark-grey">Group ID</label>
-          <%= f.text_field :group_id, placeholder: 'PTAN, CHAMPS, PIN, etc.', class: 'form-control' %>
-        </div>
-      </div>
 
    <div class="row mb-3 application-submitted-field <%= f.object&.enrollment_status == 'application-submitted' ? '' : 'd-none'%>">
     <div class="col-lg-6">

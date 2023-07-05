@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_29_130849) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_05_064648) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -384,6 +384,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_29_130849) do
     t.string "association_end_date"
     t.string "line_of_business"
     t.string "revalidation_status"
+    t.string "cpt_code"
+    t.string "descriptor"
+    t.string "provider_id"
+    t.string "group_id"
     t.index ["enrollment_provider_id"], name: "index_enrollment_providers_details_on_enrollment_provider_id"
   end
 
@@ -498,6 +502,37 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_29_130849) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "provider_cnp_licenses", force: :cascade do |t|
+    t.bigint "provider_id"
+    t.string "cnp_license_number"
+    t.datetime "effective_date"
+    t.datetime "expiration_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_cnp_licenses_on_provider_id"
+  end
+
+  create_table "provider_dea_licenses", force: :cascade do |t|
+    t.bigint "provider_id"
+    t.string "dea_license_number"
+    t.integer "state_id"
+    t.datetime "dea_license_effective_date"
+    t.datetime "dea_license_expiration_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_dea_licenses_on_provider_id"
+  end
+
+  create_table "provider_ins_policies", force: :cascade do |t|
+    t.bigint "provider_id"
+    t.string "ins_policy_number"
+    t.datetime "effective_date"
+    t.datetime "expiration_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_ins_policies_on_provider_id"
+  end
+
   create_table "provider_licenses", force: :cascade do |t|
     t.bigint "provider_id", null: false
     t.string "license_number"
@@ -505,7 +540,67 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_29_130849) do
     t.date "license_expiration_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "state_id"
     t.index ["provider_id"], name: "index_provider_licenses_on_provider_id"
+  end
+
+  create_table "provider_mccs", force: :cascade do |t|
+    t.bigint "provider_id"
+    t.string "mcc_username"
+    t.string "password"
+    t.string "password_digest"
+    t.string "mcc_electronic_signature_code"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_mccs_on_provider_id"
+  end
+
+  create_table "provider_medicaids", force: :cascade do |t|
+    t.bigint "provider_id"
+    t.datetime "effective_date"
+    t.datetime "reval_date"
+    t.string "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_medicaids_on_provider_id"
+  end
+
+  create_table "provider_medicares", force: :cascade do |t|
+    t.bigint "provider_id"
+    t.string "ptan_number"
+    t.datetime "effective_date"
+    t.string "medicare_username"
+    t.string "password"
+    t.string "password_digest"
+    t.string "question"
+    t.string "answer"
+    t.datetime "reval_date"
+    t.string "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_medicares_on_provider_id"
+  end
+
+  create_table "provider_mn_licenses", force: :cascade do |t|
+    t.bigint "provider_id"
+    t.string "mn_license_number"
+    t.datetime "mn_license_expiration_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_mn_licenses_on_provider_id"
+  end
+
+  create_table "provider_mn_medicaids", force: :cascade do |t|
+    t.bigint "provider_id"
+    t.string "mn_medicaid_number"
+    t.string "mn_medicaid_username"
+    t.string "password"
+    t.string "password_digest"
+    t.string "question"
+    t.string "answer"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_mn_medicaids_on_provider_id"
   end
 
   create_table "provider_np_licenses", force: :cascade do |t|
@@ -516,6 +611,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_29_130849) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_id"], name: "index_provider_np_licenses_on_provider_id"
+  end
+
+  create_table "provider_pa_licenses", force: :cascade do |t|
+    t.bigint "provider_id"
+    t.string "pa_license_number"
+    t.datetime "pa_license_effective_date"
+    t.datetime "pa_license_expiration_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_pa_licenses_on_provider_id"
   end
 
   create_table "provider_rn_licenses", force: :cascade do |t|
@@ -580,6 +685,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_29_130849) do
     t.string "nkcph"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "provider_wi_medicaids", force: :cascade do |t|
+    t.bigint "provider_id"
+    t.string "wi_medicaid"
+    t.string "wi_medicaid_username"
+    t.string "password"
+    t.string "password_digest"
+    t.string "question"
+    t.string "answer"
+    t.string "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_wi_medicaids_on_provider_id"
   end
 
   create_table "providers", force: :cascade do |t|
@@ -710,6 +829,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_29_130849) do
     t.date "ins_policy_effective_date"
     t.date "ins_policy_expiration_date"
     t.date "state_license_effectice_date"
+    t.string "status"
+    t.datetime "caqh_current_reattestation_date"
+    t.string "caqh_reattest_completed_by"
+    t.string "caqh_question"
+    t.string "caqh_answer"
+    t.string "caqh_notes"
+    t.integer "licensed_registered_state_id"
   end
 
   create_table "providers_service_locations", force: :cascade do |t|
