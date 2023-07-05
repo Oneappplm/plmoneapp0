@@ -94,6 +94,14 @@ class AjaxController < ApplicationController
       }
   end
 
+  def get_selected_practitioner_types
+    provider_practitioner_type = Provider.find(params[:provider_id])
+    selected_practitioner_types = (provider_practitioner_type.selected_practitioner_types || [])
+    render json: {
+      'selected_practitioner_types' => selected_practitioner_types
+    }
+  end
+
   def get_dougnut_data
     clients = [Client.attested.count,Client.no_application.count,
                 Client.complete.count,Client.incomplete.count,

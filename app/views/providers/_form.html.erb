@@ -150,9 +150,8 @@
       </div>
       <div class="row mb-3">
         <div class="col-lg-6">
-          <label class="text-dark-grey">Practitioner Type</label>
-          <%= f.collection_select :practitioner_type, provider_types, :fch, :fch, { prompt: 'Select Option' }, { class: 'form-control border border-dark', required: true } %>
-        </div>
+					<%= HtmlUtils::dropdown name: 'provider[practitioner_type]', label: 'Practitioner Type *', multiple: true %>
+				</div>
       </div> 
       <div class="row mb-3 mt-2">
       <div id="taxonomies">
@@ -493,8 +492,11 @@
     <div class="col-lg-12">
     <%= HtmlUtils.form_add_required_attribute form_id: 'provider-form',
             required_fields: 'provider_first_name,provider_last_name,provider_birth_date,provider_practitioner_type,provider_ssn,provider_npi'
-    %>
+						%>
+	<% end %>
     <script>
+			var csrfToken = $('meta[name="csrf-token"]').attr('content');
+			var selected_practitioner_types = [];
       $(document).ready(function() {
         var dco = "<%= @provider.dco %>";
 
@@ -657,6 +659,44 @@
               serviceLocationFields[0].remove();
             }
           });
+
+					// For multiple practitioner types
+					var action_name = "<%= action_name %>";
+					if(action_name == 'edit'){
+						var provider_id = '<%= @provider.id %>';
+						getSelectedPractitionerTypes(provider_id);
+					}
+					getProviderTypes();
       });
+
+			function getSelectedPractitionerTypes(provider_id) {
+				$.ajax({
+					url: '<%= get_selected_practitioner_types_path %>',
+					method: 'POST',
+					data: { authenticity_token: csrfToken, provider_id: provider_id },
+					success: function(data) {
+						selected_practitioner_types = data['selected_practitioner_types'];
+					},
+					error: function(xhr, status, error) {
+						console.log(error);
+					}
+				})
+			}
+
+			function getProviderTypes() {
+				$.ajax({
+					url: '<%= get_provider_types_path %>',
+					method: 'GET',
+					data: { authenticity_token: csrfToken },
+					success: function(data) {
+						VirtualSelect.init({
+								options: data['provider_types'],
+								ele: '.multi-select',
+								multiple: true,
+								showSelectedOptionsFirst: true,
+								selectedValue: selected_practitioner_types
+						});
+					}
+				})
+			}
     </script>
-    <% end %>
