@@ -132,7 +132,7 @@
           <div class="col-lg-6">
             <!-- new field -->
             <label class="text-dark-grey">Copy of Certificate(optional)</label>
-            <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: 'form-control border border-dark', title: 'Copy of Certificate'%>
+						<%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: 'form-control border border-dark', title: 'Copy of Certificate'%>
             <%= HtmlUtils.generate_view_link file_url: @provider.school_certificate.url %>
           </div>
         </div>
@@ -150,8 +150,7 @@
       </div>
       <div class="row mb-3">
         <div class="col-lg-6">
-          <label class="text-dark-grey">Practitioner Type</label>
-          <%= f.collection_select :practitioner_type, provider_types, :fch, :fch, { prompt: 'Select Option' }, { class: 'form-control border border-dark', required: true } %>
+          <%= HtmlUtils::dropdown name: 'provider[practitioner_type]', label: 'Practitioner Type *', multiple: true %>
         </div>
       </div> 
       <div class="row mb-3 mt-2">
@@ -227,10 +226,9 @@
           </div>
       </div>
     </div>
-
-    <div class="row mb-3">
-      <div class="col-lg-4">
-        <!-- new field -->
+		<div class="row mb-3">
+			<div class="col-lg-4">
+				<!-- new field -->
 
         <label class="text-dark-grey">Medicare Provider Number</label>
         <%= f.text_field :medicare_provider_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
@@ -441,154 +439,158 @@
               </a>
               <% end %>
         </div>
-      </div>
-      <div class="col-lg-6 mb-3">
-        <label>DEA Copy</label>
-              <%= f.file_field :dea_copy_file, placeholder: 'DEA Copy', class: 'form-control border border-dark' %>
-              <%= HtmlUtils.generate_view_link file_url: @provider.dea_copy_file.url %>
-      </div>
-      <div class="col-lg-6 mb-3">
-        <label>W9 Form, <a href="https://www.irs.gov/pub/irs-pdf/fw9.pdf" target="_blank">download template here</a></label>
-              <%= f.file_field :w9_form_file, placeholder: 'W9 Form', class: 'form-control border border-dark' %>
-              <%= HtmlUtils.generate_view_link file_url: @provider.w9_form_file.url %>
-      </div>
-      <div class="col-lg-6 mb-3">
-        <label>Certificate of Insurance</label>
-              <%= f.file_field :certificate_insurance_file, placeholder: 'Certificate of Insurance', class: 'form-control border border-dark' %>
-              <%= HtmlUtils.generate_view_link file_url: @provider.certificate_insurance_file.url %>
-      </div>
-      <div class="col-lg-6 mb-3">
-        <label>Drivers License</label>
-              <%= f.file_field :drivers_license_file, placeholder: 'Drivers License', class: 'form-control border border-dark' %>
-              <%= HtmlUtils.generate_view_link file_url: @provider.drivers_license_file.url %>
-      </div>
-      <div class="col-lg-6">
-        <label>Board Certification</label>
-              <%= f.file_field :board_certification_file, placeholder: 'Board Certification', class: 'form-control border border-dark' %>
-              <%= HtmlUtils.generate_view_link file_url: @provider.board_certification_file.url %>
-      </div>
-      <div class="col-lg-6 mb-3">
-        <label>CAQH App Copy</label>
-              <%= f.file_field :caqh_app_copy_file, placeholder: 'CAQH App Copy', class: 'form-control border border-dark' %>
-              <%= HtmlUtils.generate_view_link file_url: @provider.caqh_app_copy_file.url %>
-      </div>
-      <div class="col-lg-6 mb-3">
-        <label>Curriculum Vitae (CV)</label>
-              <%= f.file_field :cv_file, placeholder: 'Curriculum Vitae (CV)', class: 'form-control border border-dark' %>
-              <%= HtmlUtils.generate_view_link file_url: @provider.cv_file.url %>
-      </div>
-        <div class="col-lg-6 mb-3">
-        <label>Telehealth License Copy</label>
-              <%= f.file_field :telehealth_license_copy_file, placeholder: 'Telehealth License Copy', class: 'form-control border border-dark' %>
-              <%= HtmlUtils.generate_view_link file_url: @provider.telehealth_license_copy_file.url %>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-lg-12 d-flex justify-content-end">
-        <button class="btn btn-primary btn-md">Submit</button>
-      </div>
-    </div>
-    <% end %>
-    <% content_for :js do %>
-    <div class="col-lg-12">
-    <%= HtmlUtils.form_add_required_attribute form_id: 'provider-form',
-            required_fields: 'provider_first_name,provider_last_name,provider_birth_date,provider_practitioner_type,provider_ssn,provider_npi'
-    %>
-    <script>
-      $(document).ready(function() {
-        var dco = "<%= @provider.dco %>";
+			</div>
+			<div class="col-lg-6 mb-3">
+				<label>DEA Copy</label>
+							<%= f.file_field :dea_copy_file, placeholder: 'DEA Copy', class: 'form-control border border-dark' %>
+							<%= HtmlUtils.generate_view_link file_url: @provider.dea_copy_file.url %>
+			</div>
+			<div class="col-lg-6 mb-3">
+				<label>W9 Form, <a href="https://www.irs.gov/pub/irs-pdf/fw9.pdf" target="_blank">download template here</a></label>
+							<%= f.file_field :w9_form_file, placeholder: 'W9 Form', class: 'form-control border border-dark' %>
+							<%= HtmlUtils.generate_view_link file_url: @provider.w9_form_file.url %>
+			</div>
+			<div class="col-lg-6 mb-3">
+				<label>Certificate of Insurance</label>
+							<%= f.file_field :certificate_insurance_file, placeholder: 'Certificate of Insurance', class: 'form-control border border-dark' %>
+							<%= HtmlUtils.generate_view_link file_url: @provider.certificate_insurance_file.url %>
+			</div>
+			<div class="col-lg-6 mb-3">
+				<label>Drivers License</label>
+							<%= f.file_field :drivers_license_file, placeholder: 'Drivers License', class: 'form-control border border-dark' %>
+							<%= HtmlUtils.generate_view_link file_url: @provider.drivers_license_file.url %>
+			</div>
+			<div class="col-lg-6">
+				<label>Board Certification</label>
+							<%= f.file_field :board_certification_file, placeholder: 'Board Certification', class: 'form-control border border-dark' %>
+							<%= HtmlUtils.generate_view_link file_url: @provider.board_certification_file.url %>
+			</div>
+			<div class="col-lg-6 mb-3">
+				<label>CAQH App Copy</label>
+							<%= f.file_field :caqh_app_copy_file, placeholder: 'CAQH App Copy', class: 'form-control border border-dark' %>
+							<%= HtmlUtils.generate_view_link file_url: @provider.caqh_app_copy_file.url %>
+			</div>
+			<div class="col-lg-6 mb-3">
+				<label>Curriculum Vitae (CV)</label>
+							<%= f.file_field :cv_file, placeholder: 'Curriculum Vitae (CV)', class: 'form-control border border-dark' %>
+							<%= HtmlUtils.generate_view_link file_url: @provider.cv_file.url %>
+			</div>
+				<div class="col-lg-6 mb-3">
+				<label>Telehealth License Copy</label>
+							<%= f.file_field :telehealth_license_copy_file, placeholder: 'Telehealth License Copy', class: 'form-control border border-dark' %>
+							<%= HtmlUtils.generate_view_link file_url: @provider.telehealth_license_copy_file.url %>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-12 d-flex justify-content-end">
+				<button class="btn btn-primary btn-md">Submit</button>
+			</div>
+		</div>
+		<% end %>
+		<% content_for :js do %>
+		<div class="col-lg-12">
+		<%= HtmlUtils.form_add_required_attribute form_id: 'provider-form',
+						required_fields: 'provider_first_name,provider_last_name,provider_birth_date,provider_practitioner_type,provider_ssn,provider_npi'
+		%>
+		
+		<% end %>
+		<script>
+			var csrfToken = $('meta[name="csrf-token"]').attr('content');
+			var selected_practitioner_types = [];
+			$(document).ready(function() {
+				var dco = "<%= @provider.dco %>";
 
-       setTimeout(function() { $('#provider_enrollment_group_id').trigger('change'); }, 500);
-        setTimeout(function() {
-          if(dco != ''){
-              $('#provider_dco option[value="' + dco + '"]').prop('selected', true);
-          }
-        }, 1500);
+			 setTimeout(function() { $('#provider_enrollment_group_id').trigger('change'); }, 500);
+				setTimeout(function() {
+					if(dco != ''){
+							$('#provider_dco option[value="' + dco + '"]').prop('selected', true);
+					}
+				}, 1500);
 
-          // taxonomies
-          $("#taxonomies").on("click", ".add_association", function() {
-              var taxonomiesFields = $("#taxonomies .field");
-              var newTaxonomy = taxonomiesFields.last().clone();
-              var newId = new Date().getTime();
-              newTaxonomy.html(newTaxonomy.html().replace(/taxonomies_attributes\]\[\d+\]/g, "taxonomies_attributes][" + newId + "]"));
-              $("#taxonomies .fields").append(newTaxonomy);
-          });
+					// taxonomies
+					$("#taxonomies").on("click", ".add_association", function() {
+							var taxonomiesFields = $("#taxonomies .field");
+							var newTaxonomy = taxonomiesFields.last().clone();
+							var newId = new Date().getTime();
+							newTaxonomy.html(newTaxonomy.html().replace(/taxonomies_attributes\]\[\d+\]/g, "taxonomies_attributes][" + newId + "]"));
+							$("#taxonomies .fields").append(newTaxonomy);
+					});
 
-          // licenses
-          let addLicensesCount = 0;
-          $("#licenses").on("click", ".add_association", function() {
-              var licensesFields = $("#licenses .field");
-              var newLicense = licensesFields.last().clone();
-              var newId = new Date().getTime();
-              newLicense.html(newLicense.html().replace(/licenses_attributes\]\[\d+\]/g, "licenses_attributes][" + newId + "]"));
-              $("#licenses .fields").append(newLicense);
-              addLicensesCount += 1;
+					// licenses
+					let addLicensesCount = 0;
+					$("#licenses").on("click", ".add_association", function() {
+							var licensesFields = $("#licenses .field");
+							var newLicense = licensesFields.last().clone();
+							var newId = new Date().getTime();
+							newLicense.html(newLicense.html().replace(/licenses_attributes\]\[\d+\]/g, "licenses_attributes][" + newId + "]"));
+							$("#licenses .fields").append(newLicense);
+							addLicensesCount += 1;
 
-              newLicense.find('.remove-dynamic-fields').attr('data-id', addLicensesCount);
-              newLicense.attr('data-id', addLicensesCount);
-              $("#licenses .fields").append(newLicense);
-          });
+							newLicense.find('.remove-dynamic-fields').attr('data-id', addLicensesCount);
+							newLicense.attr('data-id', addLicensesCount);
+							$("#licenses .fields").append(newLicense);
+					});
 
-          $("#licenses").on("click", ".remove-dynamic-fields", function() {
-            var field = document.getElementsByClassName("licenses-field");
-            licenseField = $(this).attr("data-id");
+					$("#licenses").on("click", ".remove-dynamic-fields", function() {
+						var field = document.getElementsByClassName("licenses-field");
+						licenseField = $(this).attr("data-id");
 
-            var licensesFields = $('.licenses-field[data-id='+licenseField+']');
-            if(field.length > 1) {
-              licensesFields.remove();
-            }
-          });
+						var licensesFields = $('.licenses-field[data-id='+licenseField+']');
+						if(field.length > 1) {
+							licensesFields.remove();
+						}
+					});
 
-          // np licenses
-          let addNpLicensesCount = 0;
-          $("#np_licenses").on("click", ".add_association", function() {
-              var npLicensesFields = $("#np_licenses .field");
-              var newNpLicense = npLicensesFields.last().clone();
-              var newId = new Date().getTime();
-              newNpLicense.html(newNpLicense.html().replace(/np_licenses_attributes\]\[\d+\]/g, "np_licenses_attributes][" + newId + "]"));
-              $("#np_licenses .fields").append(newNpLicense);
-              addNpLicensesCount += 1;
+					// np licenses
+					let addNpLicensesCount = 0;
+					$("#np_licenses").on("click", ".add_association", function() {
+							var npLicensesFields = $("#np_licenses .field");
+							var newNpLicense = npLicensesFields.last().clone();
+							var newId = new Date().getTime();
+							newNpLicense.html(newNpLicense.html().replace(/np_licenses_attributes\]\[\d+\]/g, "np_licenses_attributes][" + newId + "]"));
+							$("#np_licenses .fields").append(newNpLicense);
+							addNpLicensesCount += 1;
 
-              newNpLicense.find('.remove-dynamic-fields').attr('data-id', addNpLicensesCount);
-              newNpLicense.attr('data-id', addNpLicensesCount);
-              $("#np_licenses .fields").append(newNpLicense);
-          });
+							newNpLicense.find('.remove-dynamic-fields').attr('data-id', addNpLicensesCount);
+							newNpLicense.attr('data-id', addNpLicensesCount);
+							$("#np_licenses .fields").append(newNpLicense);
+					});
 
-          $("#np_licenses").on("click", ".remove-dynamic-fields", function() {
-            var field = document.getElementsByClassName("np-licenses-field");
-            npField = $(this).attr("data-id");
+					$("#np_licenses").on("click", ".remove-dynamic-fields", function() {
+						var field = document.getElementsByClassName("np-licenses-field");
+						npField = $(this).attr("data-id");
 
-            var npLicensesFields = $('.np-licenses-field[data-id='+npField+']');
-            if(field.length > 1) {
-              npLicensesFields.remove();
-            }
-          });
+						var npLicensesFields = $('.np-licenses-field[data-id='+npField+']');
+						if(field.length > 1) {
+							npLicensesFields.remove();
+					 	}
+					});
 
-          // rn licenses
-          let addRnLicensesCount = 0;
-          $("#rn_licenses").on("click", ".add_association", function() {
-              var rnLicensesFields = $("#rn_licenses .field");
-              var newRnLicense = rnLicensesFields.last().clone();
-              var newId = new Date().getTime();
-              newRnLicense.html(newRnLicense.html().replace(/rn_licenses_attributes\]\[\d+\]/g, "rn_licenses_attributes][" + newId + "]"));
-              addRnLicensesCount += 1;
+					// rn licenses
+					let addRnLicensesCount = 0;
+					$("#rn_licenses").on("click", ".add_association", function() {
+							var rnLicensesFields = $("#rn_licenses .field");
+							var newRnLicense = rnLicensesFields.last().clone();
+							var newId = new Date().getTime();
+							newRnLicense.html(newRnLicense.html().replace(/rn_licenses_attributes\]\[\d+\]/g, "rn_licenses_attributes][" + newId + "]"));
+							addRnLicensesCount += 1;
 
-              newRnLicense.find('.remove-dynamic-fields').attr('data-id', addRnLicensesCount);
-              newRnLicense.attr('data-id', addRnLicensesCount);
-              $("#rn_licenses .fields").append(newRnLicense);
-          });
+							newRnLicense.find('.remove-dynamic-fields').attr('data-id', addRnLicensesCount);
+							newRnLicense.attr('data-id', addRnLicensesCount);
+							$("#rn_licenses .fields").append(newRnLicense);
+					});
 
-          $("#rn_licenses").on("click", ".remove-dynamic-fields", function() {
-            var field = document.getElementsByClassName("rn-licenses-field");
-            rnField = $(this).attr("data-id");
-            
-            var rnLicensesFields = $('.rn-licenses-field[data-id='+rnField+']');
-            if(field.length > 1) {
-              rnLicensesFields.remove();
-            }
-          });
+					$("#rn_licenses").on("click", ".remove-dynamic-fields", function() {
+						var field = document.getElementsByClassName("rn-licenses-field");
+						rnField = $(this).attr("data-id");
+						
+						var rnLicensesFields = $('.rn-licenses-field[data-id='+rnField+']');
+						if(field.length > 1) {
+							rnLicensesFields.remove();
+					 	}
+					});
 
-          // pa_licenses
+					// pa_licenses
           let addPaLicensesCount = 0;
           $("#pa_licenses").on("click", ".add_association", function() {
               var paLicensesFields = $("#pa_licenses .field");
@@ -606,7 +608,7 @@
           $("#pa_licenses").on("click", ".remove-dynamic-fields", function() {
             var field = document.getElementsByClassName("pa-licenses-field");
             rnField = $(this).attr("data-id");
-            
+
             var rnLicensesFields = $('.pa-licenses-field[data-id='+rnField+']');
             if(field.length > 1) {
               rnLicensesFields.remove();
@@ -631,32 +633,70 @@
           $("#dea_licenses").on("click", ".remove-dynamic-fields", function() {
             var field = document.getElementsByClassName("dea-licenses-field");
             rnField = $(this).attr("data-id");
-            
+
             var rnLicensesFields = $('.dea-licenses-field[data-id='+rnField+']');
             if(field.length > 1) {
               rnLicensesFields.remove();
             }
           });
 
-          //$(document).on("click", ".remove-dynamic-fields", function() {
+					//$(document).on("click", ".remove-dynamic-fields", function() {
           //   $(this).closest('.field').remove();
-          //});
+					//});
 
-          // telehealth providers
-          $("#service_locations").on("click", ".add_association", function() {
-              var serviceLocationsFields = $("#service_locations .field");
-              var newServiceLocation = serviceLocationsFields.last().clone();
-              var newId = new Date().getTime();
-              newServiceLocation.html(newServiceLocation.html().replace(/service_locations_attributes\]\[\d+\]/g, "service_locations_attributes][" + newId + "]"));
-              $("#service_locations .fields").append(newServiceLocation);
-          });
+					// telehealth providers
+					$("#service_locations").on("click", ".add_association", function() {
+							var serviceLocationsFields = $("#service_locations .field");
+							var newServiceLocation = serviceLocationsFields.last().clone();
+							var newId = new Date().getTime();
+							newServiceLocation.html(newServiceLocation.html().replace(/service_locations_attributes\]\[\d+\]/g, "service_locations_attributes][" + newId + "]"));
+							$("#service_locations .fields").append(newServiceLocation);
+					});
 
-          $("#service_locations").on("click", ".remove-dynamic-fields", function() {
-            var serviceLocationFields = document.getElementsByClassName("primary-service-location-field");
-            if(serviceLocationFields.length > 1) {
-              serviceLocationFields[0].remove();
-            }
-          });
-      });
-    </script>
-    <% end %>
+					$("#service_locations").on("click", ".remove-dynamic-fields", function() {
+						var serviceLocationFields = document.getElementsByClassName("primary-service-location-field");
+						if(serviceLocationFields.length > 1) {
+							serviceLocationFields[0].remove();
+						}
+					});
+
+					// For multiple practitioner types
+					var action_name = "<%= action_name %>";
+					if(action_name == 'edit'){
+						var provider_id = '<%= @provider.id %>';
+						getSelectedPractitionerTypes(provider_id);
+					}
+					getProviderTypes();
+			});
+
+			function getSelectedPractitionerTypes(provider_id) {
+				$.ajax({
+					url: '<%= get_selected_practitioner_types_path %>',
+					method: 'POST',
+					data: { authenticity_token: csrfToken, provider_id: provider_id },
+					success: function(data) {
+						selected_practitioner_types = data['selected_practitioner_types'];
+					},
+					error: function(xhr, status, error) {
+						console.log(error);
+					}
+				})
+			}
+
+			function getProviderTypes() {
+				$.ajax({
+					url: '<%= get_provider_types_path %>',
+					method: 'GET',
+					data: { authenticity_token: csrfToken },
+					success: function(data) {
+						VirtualSelect.init({
+								options: data['provider_types'],
+								ele: '.multi-select',
+								multiple: true,
+								showSelectedOptionsFirst: true,
+								selectedValue: selected_practitioner_types
+						});
+					}
+				})
+			}
+		</script>

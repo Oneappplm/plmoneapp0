@@ -21,6 +21,7 @@ class ProvidersController < ApplicationController
   end
 
 	def create
+		# raise provider_params.inspect
 			@provider = Provider.new(provider_params)
 			@provider.encoded_by = current_user&.full_name
 			if @provider.save
