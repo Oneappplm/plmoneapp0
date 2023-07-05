@@ -133,126 +133,99 @@
             <!-- new field -->
             <label class="text-dark-grey">Copy of Certificate(optional)</label>
 						<%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: 'form-control border border-dark', title: 'Copy of Certificate'%>
-						<%= HtmlUtils.generate_view_link file_url: @provider.school_certificate.url %>
-					</div>
-				</div>
-				<div class="row mt-0 mb-3">
-					<div class="col-lg-6">
-					<label class="text-dark-grey">NPI(optional)</label>
-					<%= f.text_field :npi, placeholder: 'Type here...',class: 'form-control border border-dark' %>
-					</div> 
-				</div>	
-			</div>
-		</div>
-		<div class="row-mb-5">
-			<div class="col-lg-12 mb-2">
-					<h3 class="mt-5 mb-2">Practitioner Type Details</h3>
-			</div>
-			<div class="row mb-3">
-				<div class="col-lg-6">
-					<%= HtmlUtils::dropdown name: 'provider[practitioner_type]', label: 'Practitioner Type *', multiple: true %>
-				</div>
-			</div> 
-			<div class="row mb-3 mt-2">
-				<div id="taxonomies">
-					<div class="fields">
-						<%= f.fields_for :taxonomies do |taxonomy_fields| %>
-							<%= render 'taxonomy_fields', f: taxonomy_fields %>
-						<% end %>
-				 	</div>
-				</div>
-			</div>
-		</div>	
+            <%= HtmlUtils.generate_view_link file_url: @provider.school_certificate.url %>
+          </div>
+        </div>
+        <div class="row mt-0 mb-3">
+          <div class="col-lg-6">
+          <label class="text-dark-grey">NPI(optional)</label>
+          <%= f.text_field :npi, placeholder: 'Type here...',class: 'form-control border border-dark' %>
+          </div> 
+        </div>  
+      </div>
+    </div>
+    <div class="row-mb-5">
+      <div class="col-lg-12 mb-2">
+          <h3 class="mt-5 mb-2">Practitioner Type Details</h3>
+      </div>
+      <div class="row mb-3">
+        <div class="col-lg-6">
+          <%= HtmlUtils::dropdown name: 'provider[practitioner_type]', label: 'Practitioner Type *', multiple: true %>
+        </div>
+      </div> 
+      <div class="row mb-3 mt-2">
+      <div id="taxonomies">
+         <div class="fields">
+            <%= f.fields_for :taxonomies do |taxonomy_fields| %>
+              <%= render 'taxonomy_fields', f: taxonomy_fields %>
+            <% end %>
+         </div>
+      </div>
+    </div>
+    </div>  
 
-		<div class="row mb-3 mt-2">
-			<div class="col-lg-12 mt-3">
-				<h3>State License</h3>
-			</div>
-			<div id="licenses">
-				 <div class="fields">
-						<%= f.fields_for :licenses do |license_fields| %>
-							<%= render 'license_fields', f: license_fields %>
-						<% end %>
-				 </div>
-			</div>
-		</div>
+    <div class="row mb-3 mt-2">
+      <div class="col-lg-12 mt-3">
+        <h3>State License</h3>
+      </div>
+      <div id="licenses">
+         <div class="fields">
+            <%= f.fields_for :licenses do |license_fields| %>
+              <%= render 'license_fields', f: license_fields %>
+            <% end %>
+         </div>
+      </div>
+    </div> 
 
-		<div class="row mb-3">
-			<div class="col-lg-12 mt-3">
-				<h3>PA License</h3>
-			</div>
-			<div class="col-lg-4">
-				<!-- only change placement -->
-        <label class="text-dark-grey">PA License Number(optional) </label>
-				<%= f.text_field :nccpa_number, placeholder:'Type here...', class: 'form-control border border-dark' %>
-			</div>
-			<div class="col-lg-4">
-        <label class="text-dark-grey">PA License Effective Date(optional)</label>
-				<%= f.text_field :pa_license_effective_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
-			</div>
-			<div class="col-lg-4">
-        <label class="text-dark-grey">PA License Expiration Date(optional)</label>
-				<%= f.text_field :pa_license_expiration_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
-			</div>
-		</div>
-		<div class="row mb-3 mt-2">
-			<div class="col-lg-12 mt-3">
-				<h3>NP License</h3>
-			</div>
-			<div id="np_licenses">
-					<div class="fields">
-						<%= f.fields_for :np_licenses do |np_license_fields| %>
-							<%= render 'np_license_fields', f: np_license_fields %>
-						<% end %>
-					</div>
-			</div>
-		</div>
-		<div class="row mb-5 mt-2">
-			<div class="col-lg-12 mt-3">
-				<h3>RN License</h3>
-			</div>
-			<div id="rn_licenses">
-					<div class="fields">
-						<%= f.fields_for :rn_licenses do |rn_license_fields| %>
-							<%= render 'rn_license_fields', f: rn_license_fields %>
-						<% end %>
-					</div>
-			</div>
-		</div>
-		<h3>DEA License</h3>
-		<div class="row mb-3">
-			<div class="col-lg-6">
-        <label class="text-dark-grey">DEA License Number(optional)</label>
-				<%= f.text_field :dea_number ,placeholder: 'Type here...', class: 'form-control border border-dark' %>
-			</div>
-			<div class="col-lg-6">
-				<!-- new field -->
-      <label class="text-dark-grey">DEA License Effective Date(optional)</label>
-				<%= f.text_field :dea_license_effective_date, placeholder: 'MM-DD-YYYY' ,class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
-			</div>
-		</div>
-		<div class="row mb-3">
-			<div class="col-lg-6">
-			<label class="text-dark-grey">DEA Registration State(optional)</label>
-					<%= f.select :dea_registration_state, options_for_select(states.pluck(:name, :id), @provider.dea_registration_state),  {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
-			</div>
-			<div class="col-lg-6">
-        <label class="text-dark-grey">DEA License Expiration Date(optional)</label>
-				<%= f.text_field :dea_license_expiration_date, placeholder: 'MM-DD-YYYY' ,class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
-			</div>
-		</div>
-		<div class="row mb-3">
-			<div class="col-lg-6">
-				<!-- new field -->
-        <label class="text-dark-grey">Hire date of provider seeing patients</label>
-				<%= f.text_field :provider_hire_date_seeing_patient,  placeholder: 'Type here...', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
-			</div>
-			<div class="col-lg-6">
-				<!-- new field -->
-        <label class="text-dark-grey">Effective date of provider seeing patients</label>
-				<%= f.text_field :effective_date_seeing_patient , placeholder: 'Type here...', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
-			</div>
-		</div>
+    <div class="row mb-3 mt-2">
+      <div class="col-lg-12 mt-3">
+        <h3>PA License</h3>
+      </div>
+      <div id="pa_licenses">
+         <div class="fields">
+            <%= f.fields_for :pa_licenses do |pa_license_fields| %>
+              <%= render 'pa_license_fields', f: pa_license_fields %>
+            <% end %>
+         </div>
+      </div>
+    </div>
+
+    <div class="row mb-3 mt-2">
+      <div class="col-lg-12 mt-3">
+        <h3>NP License</h3>
+      </div>
+      <div id="np_licenses">
+          <div class="fields">
+            <%= f.fields_for :np_licenses do |np_license_fields| %>
+              <%= render 'np_license_fields', f: np_license_fields %>
+            <% end %>
+          </div>
+      </div>
+    </div>
+    <div class="row mb-5 mt-2">
+      <div class="col-lg-12 mt-3">
+        <h3>RN License</h3>
+      </div>
+      <div id="rn_licenses">
+          <div class="fields">
+            <%= f.fields_for :rn_licenses do |rn_license_fields| %>
+              <%= render 'rn_license_fields', f: rn_license_fields %>
+            <% end %>
+          </div>
+      </div>
+    </div>
+    <div class="row mb-5 mt-2">
+      <div class="col-lg-12 mt-3">
+        <h3>DEA License</h3>
+      </div>
+      <div id="dea_licenses">
+          <div class="fields">
+            <%= f.fields_for :dea_licenses do |dea_license_fields| %>
+              <%= render 'dea_license_fields', f: dea_license_fields %>
+            <% end %>
+          </div>
+      </div>
+    </div>
 		<div class="row mb-3">
 			<div class="col-lg-4">
 				<!-- new field -->
@@ -616,6 +589,56 @@
 							rnLicensesFields.remove();
 					 	}
 					});
+
+					// pa_licenses
+          let addPaLicensesCount = 0;
+          $("#pa_licenses").on("click", ".add_association", function() {
+              var paLicensesFields = $("#pa_licenses .field");
+              var newPaLicense = paLicensesFields.last().clone();
+              var newId = new Date().getTime();
+              newPaLicense.html(newPaLicense.html().replace(/pa_licenses_attributes\]\[\d+\]/g, "pa_licenses_attributes][" + newId + "]"));
+              $("#np_licenses .fields").append(newPaLicense);
+              addPaLicensesCount += 1;
+
+              newPaLicense.find('.remove-dynamic-fields').attr('data-id', addPaLicensesCount);
+              newPaLicense.attr('data-id', addPaLicensesCount);
+              $("#pa_licenses .fields").append(newPaLicense);
+          });
+
+          $("#pa_licenses").on("click", ".remove-dynamic-fields", function() {
+            var field = document.getElementsByClassName("pa-licenses-field");
+            rnField = $(this).attr("data-id");
+
+            var rnLicensesFields = $('.pa-licenses-field[data-id='+rnField+']');
+            if(field.length > 1) {
+              rnLicensesFields.remove();
+            }
+          });
+
+          // dea_licenses
+          let addDeaLicensesCount = 0;
+          $("#dea_licenses").on("click", ".add_association", function() {
+              var deaLicensesFields = $("#dea_licenses .field");
+              var newDeaLicense = deaLicensesFields.last().clone();
+              var newId = new Date().getTime();
+              newDeaLicense.html(newDeaLicense.html().replace(/pa_licenses_attributes\]\[\d+\]/g, "pa_licenses_attributes][" + newId + "]"));
+              $("#np_licenses .fields").append(newDeaLicense);
+              addDeaLicensesCount += 1;
+
+              newDeaLicense.find('.remove-dynamic-fields').attr('data-id', addDeaLicensesCount);
+              newDeaLicense.attr('data-id', addDeaLicensesCount);
+              $("#dea_licenses .fields").append(newDeaLicense);
+          });
+
+          $("#dea_licenses").on("click", ".remove-dynamic-fields", function() {
+            var field = document.getElementsByClassName("dea-licenses-field");
+            rnField = $(this).attr("data-id");
+
+            var rnLicensesFields = $('.dea-licenses-field[data-id='+rnField+']');
+            if(field.length > 1) {
+              rnLicensesFields.remove();
+            }
+          });
 
 					//$(document).on("click", ".remove-dynamic-fields", function() {
           //   $(this).closest('.field').remove();
