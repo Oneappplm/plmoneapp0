@@ -62,7 +62,8 @@ Rails.application.routes.draw do
   get 'get-specialties', to: 'ajax#get_specialties'
   get 'get-languages', to: 'ajax#get_languages'
   get 'get-states', to: 'ajax#get_states'
-
+  post 'get-provider-practitioner-types', to: 'ajax#get_provider_practitioner_types'
+  post 'get-provider-specialties', to: 'ajax#get_provider_specialties'
 
   resources :provider_sources do
     collection do

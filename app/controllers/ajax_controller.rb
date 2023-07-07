@@ -213,4 +213,24 @@ class AjaxController < ApplicationController
       'states' => states
     }
   end
+
+  def get_provider_practitioner_types
+    provider_id = params[:provider_id]
+    provider = Provider.find(provider_id)
+    practitioner_types = provider.practitioner_type.split(',')
+
+    render json: {
+      'practitioner_types' => practitioner_types
+    }
+  end
+
+  def get_provider_specialties
+    provider_id = params[:provider_id]
+    provider = Provider.find(provider_id)
+    specialties = provider.specialty.split(',')
+
+    render json: {
+      'specialties' => specialties
+    }
+  end
 end

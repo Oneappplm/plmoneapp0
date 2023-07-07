@@ -1,3 +1,4 @@
+<% index_of_object = f.object.provider.service_location_ids.index(f.object.id) rescue 0 %>
 <div class="field card p-3 py-3 mb-3 primary-service-location-field">
 				<h5>Primary Service Location</h5>
 				<div class="row mb-3">
@@ -50,14 +51,12 @@
 					<div class="col-lg-6">
 						<label class="text-dark-grey">Qualified Medical Interpreter Language (can be multiple)</label>
 
-          <%= HtmlUtils.multi_select_dropdown name: 'provider[service_locations_attributes][0][primary_service_interpreter_language]]', id: 'provider_service_locations_attributes_0_primary_service_interpreter_language', classes: 'medical-interpreter-dropdown'%>
+          <%= HtmlUtils.multi_select_dropdown name: "provider[service_locations_attributes][#{index_of_object}][primary_service_interpreter_language]]", id: "provider_service_locations_attributes_#{index_of_object}_primary_service_interpreter_language", classes: "#{f.object.id ? ('edit-interpreter-dropdown-'+index_of_object.to_s) : 'medical-interpreter-dropdown'}"%>
 						<%#= f.collection_select :primary_service_interpreter_language, languages, :name, :name, { prompt: 'Select Option' }, { class: 'form-control border border-dark' } %>
 					</div>
 					<div class="col-lg-6">
 						<label class="text-dark-grey">Telehealth Only State/District (can be multiple)</label>
-
-          <%= HtmlUtils.multi_select_dropdown name: 'provider[provider[service_locations_attributes][0][primary_service_telehealth_only_state]][0][primary_service_interpreter_language]]', id: 'provider_service_locations_attributes_0_primary_service_telehealth_only_state', classes: 'telehealth-states'%>
-						<%#= f.collection_select :primary_service_telehealth_only_state, states, :name, :name, { prompt: 'Select Option' }, { class: 'form-control border border-dark' } %>
+          <%= HtmlUtils.multi_select_dropdown name: "provider[service_locations_attributes][#{index_of_object}][primary_service_telehealth_only_state]]", id: "primary_service_telehealth_only_state#{index_of_object}_primary_service_telehealth_only_state", classes: "#{f.object.id ? ('edit-telehealth-states-'+index_of_object.to_s) : 'telehealth-states'}"%>
 					</div>
 				</div>
 				<hr>
@@ -71,3 +70,56 @@
 						</div>
 				</div>
 </div>
+
+<% chosen_languages = f.object.selected_languages %>
+<% chosen_states = f.object.selected_states %>
+
+<script>
+  $(document).ready(function() {
+   var languages = '<%= chosen_languages %>';
+   var states = '<%= chosen_states %>';
+   var selected_languages  = stringArrayModifier(languages);
+   var selected_states = stringArrayModifier(states);
+   var languages_dropdown = '.edit-interpreter-dropdown-'+'<%= index_of_object.to_s %>';
+   var states_dropdown = '.edit-telehealth-states-'+'<%= index_of_object.to_s %>';
+  function getServiceLocationInterpreterLanguages() {
+          $.ajax({
+            url: '<%= get_languages_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              VirtualSelect.init({
+                  options: data['languages'],
+                  ele: languages_dropdown,
+                  multiple: true,
+                  showSelectedOptionsFirst: true,
+                  selectedValue: selected_languages
+              });
+            }
+          })
+      }
+
+
+     function getStates() {
+          $.ajax({
+            url: '<%= get_states_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              VirtualSelect.init({
+                  options: data['states'],
+                  ele: states_dropdown,
+                  multiple: true,
+                  showSelectedOptionsFirst: true,
+                  selectedValue: selected_states
+              });
+            }
+          })
+      }
+
+    setTimeout(getServiceLocationInterpreterLanguages(),3000);
+    setTimeout(getStates(),3000);
+
+  })
+
+</script>

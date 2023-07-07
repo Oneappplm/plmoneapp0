@@ -1,0 +1,78 @@
+<script>
+  $(document).ready(function(){
+        var selected_practitioner_types= stringArrayModifier('<%= @provider.selected_practitioner_types %>');
+       var selected_specialties= stringArrayModifier('<%= @provider.selected_specialties %>');
+       var csrfToken = $('meta[name="csrf-token"]').attr('content');
+       getPractitionerTypes();
+       getSpecialties();
+       getLanguages();
+       getStates();
+
+       function getPractitionerTypes() {
+          $.ajax({
+            url: '<%= get_provider_types_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              VirtualSelect.init({
+                  options: data['provider_types'],
+                  ele: '#provider_practitioner_type',
+                  multiple: true,
+                  showSelectedOptionsFirst: true,
+                  selectedValue: selected_practitioner_types
+              });
+            }
+          })
+        }
+      
+      function getSpecialties() {
+          $.ajax({
+            url: '<%= get_specialties_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              VirtualSelect.init({
+                  options: data['specialties'],
+                  ele: '#provider_specialty',
+                  multiple: true,
+                  showSelectedOptionsFirst: true,
+                  selectedValue: selected_specialties
+              });
+            }
+          })
+      }
+      var languages = [];
+      function getLanguages() {
+          $.ajax({
+            url: '<%= get_languages_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              languages = data['languages'];
+              VirtualSelect.init({
+                  options: data['languages'],
+                  ele: '.medical-interpreter-dropdown',
+                  multiple: true,
+              });
+            }
+          })
+      }
+      var states = [];
+      function getStates() {
+          $.ajax({
+            url: '<%= get_states_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              states = data['states']
+              VirtualSelect.init({
+                  options: data['states'],
+                  ele: '.telehealth-states',
+                  multiple: true,
+              });
+            }
+          })
+      }
+
+  })
+</script>
