@@ -189,4 +189,28 @@ class AjaxController < ApplicationController
 
 		head :ok
   end
+
+  def get_specialties
+    specialties = Specialty.all.map{|m| { label: m.bcbs, value: m.bcbs} }
+    # render json: provider_types and return
+    render json: {
+      'specialties' => specialties
+    }
+  end
+
+  def get_languages
+    languages = Language.all.map{|m| { label: m.name, value: m.name} }
+    # render json: provider_types and return
+    render json: {
+      'languages' => languages
+    }
+  end
+
+  def get_states
+    states = State.all.map{|m| { label: m.name, value: m.name} }
+    # render json: states and return
+    render json: {
+      'states' => states
+    }
+  end
 end

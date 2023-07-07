@@ -160,8 +160,9 @@
       </div>
       <div class="row mb-3">
         <div class="col-lg-6">
-          <label class="text-dark-grey">Practitioner Type</label>
-          <%= f.collection_select :practitioner_type, provider_types, :fch, :fch, { prompt: 'Select Option' }, { class: 'form-control border border-dark', required: true } %>
+          <label class="text-dark-grey">Practitioner Type (can be multiple)</label>
+          <%= HtmlUtils.multi_select_dropdown name: 'provider[practitioner_type]', id: 'provider_practitioner_type'%>
+          <%#= f.collection_select :practitioner_type, provider_types, :fch, :fch, { prompt: 'Select Option' }, { class: 'form-control border border-dark', required: true } %>
         </div>
         <div class="col-lg-6">
           <label class="text-dark-grey">Taxonomy</label>
@@ -170,8 +171,9 @@
       </div> 
       <div class="row mb-3 mt-2">
       <div class="col-lg-6">
-        <label class="text-dark-grey">Specialty</label>
-        <%= f.collection_select :specialty, specialties, :bcbs, :bcbs, { prompt: 'Select Option' }, { class: 'form-control border border-dark' } %>
+        <label class="text-dark-grey">Specialty (can be multiple)</label>
+        <%= HtmlUtils.multi_select_dropdown name: 'provider[specialty]', id: 'provider_specialty'%>
+        <%#= f.collection_select :specialty, specialties, :bcbs, :bcbs, { prompt: 'Select Option' }, { class: 'form-control border border-dark' } %>
       </div>
       <div class="col-lg-6">
         <label class="text-dark-grey">Provider Effective Date</label>
@@ -467,7 +469,7 @@
         <div class="row">
           <div class="col-lg-6">
             <!-- new field -->
-            <%= HtmlUtils.radio_toggle name: 'provider[telehealth_provider]',
+            <%= HtmlUtils.radio_toggle name: 'provider[telehealth_providers]',
                     label: 'Are you a Telehealth Provider?',
                     container_class: 'd-flex align-items-center my-3',
                     toshow: 'service_locations_fields'
@@ -869,6 +871,16 @@
               var newId = new Date().getTime();
               newServiceLocation.html(newServiceLocation.html().replace(/service_locations_attributes\]\[\d+\]/g, "service_locations_attributes][" + newId + "]"));
               $("#service_locations .fields").append(newServiceLocation);
+
+              var languageDropdown = $('[name="provider[service_locations_attributes]['+newId+'][primary_service_interpreter_language]]"]');
+              languageDropdown.attr('id',("language_"+newId));
+              setLanguages(languageDropdown.attr('id'));
+
+              var statesDropdown = $('[name="provider[provider[service_locations_attributes]['+newId+'][primary_service_telehealth_only_state]][0][primary_service_interpreter_language]]"]');
+              statesDropdown.attr('id',("states_"+newId));
+              alert(statesDropdown.attr('id'));
+
+              setStates(statesDropdown.attr('id'));
           });
 
           $("#service_locations").on("click", ".remove-dynamic-fields", function() {
@@ -877,6 +889,115 @@
               serviceLocationFields[0].remove();
             }
           });
+
+       var selected_practitioner_types=[];
+       var csrfToken = $('meta[name="csrf-token"]').attr('content');
+       getSelectedPractitionerTypes()
+       getPractitionerTypes();
+       getSpecialties();
+       getLanguages();
+       getStates();
+
+
+        function getSelectedPractitionerTypes() {
+          var provider_id = '<%= @provider&.id %>'
+          $.ajax({
+            url: '<%= get_selected_practitioner_types_path %>',
+            method: 'POST',
+            data: { authenticity_token: csrfToken, provider_id: provider_id },
+            success: function(data) {
+              selected_practitioner_types = data['selected_practitioner_types'];
+            }
+          })
+        }
+
+       function getPractitionerTypes() {
+          $.ajax({
+            url: '<%= get_provider_types_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              VirtualSelect.init({
+                  options: data['provider_types'],
+                  ele: '#provider_practitioner_type',
+                  multiple: true,
+                  showSelectedOptionsFirst: true,
+                  selectedValue: selected_practitioner_types
+              });
+            }
+          })
+        }
       });
+      
+      function getSpecialties() {
+          $.ajax({
+            url: '<%= get_specialties_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              VirtualSelect.init({
+                  options: data['specialties'],
+                  ele: '#provider_specialty',
+                  multiple: true,
+              });
+            }
+          })
+      }
+      var languages = [];
+      function getLanguages() {
+          $.ajax({
+            url: '<%= get_languages_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              languages = data['languages'];
+              VirtualSelect.init({
+                  options: data['languages'],
+                  ele: '.medical-interpreter-dropdown',
+                  multiple: true,
+              });
+            }
+          })
+      }
+      var states = [];
+      function getStates() {
+          $.ajax({
+            url: '<%= get_states_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              states = data['states']
+              VirtualSelect.init({
+                  options: data['states'],
+                  ele: '.telehealth-states',
+                  multiple: true,
+              });
+            }
+          })
+      }
+
+      function setLanguages(dropdown_id) {
+          var id = dropdown_id;
+          VirtualSelect.init({
+                  options: languages,
+                  ele: '#'+id,
+                  multiple: true,
+          });
+      }
+
+      function setStates(dropdown_id) {
+          var id = dropdown_id;
+          VirtualSelect.init({
+                  options: states,
+                  ele: '#'+id,
+                  multiple: true,
+          });
+      }
     </script>
     <% end %>
+
+    <style type="text/css">
+      .multi-select {
+        padding: 0;
+      }
+    </style>
