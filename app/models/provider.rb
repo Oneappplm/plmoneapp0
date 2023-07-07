@@ -113,6 +113,14 @@ class Provider < ApplicationRecord
   end
 
   def selected_practitioner_types
-    self.practitioner_type ? self.practitioner_type.split(',') : nil
+    self.practitioner_type ? self.practitioner_type.split(',') : ''
+  rescue
+    ''
+  end
+
+  def selected_specialties
+    self.specialty ? self.specialty.split(',') : ''
+  rescue
+    ''
   end
 end
