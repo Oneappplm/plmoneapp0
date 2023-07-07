@@ -52,7 +52,7 @@
       </div>
       <div class="col-lg-4">
         <label class="text-dark-grey">Birth State</label>
-        <%= f.select :birth_state, options_for_select(states.pluck(:name, :id), @provider.state), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
+        <%= f.select :birth_state, options_for_select(states.pluck(:name, :id), @provider.birth_state), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
       </div>
     </div>
     
@@ -78,7 +78,7 @@
       <div class="col-lg-6">
         <!-- new field -->
         <label class="text-dark-grey">State</label>
-        <%= f.select :state_id, options_for_select(states.pluck(:name, :id), @provider.state), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
+        <%= f.select :state_id, options_for_select(states.pluck(:name, :id), @provider.state_id), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
       </div>
     </div>
       <div class="row mb-3">
@@ -298,16 +298,21 @@
         <div class="row">
           <div class="col-lg-6">
             <!-- new field -->
+            <% telehealth_on = (!@provider.service_locations.length.zero? ? 'active' : '')  
+              show_telehealth = (telehealth_on ? '' : 'd-none')
+            %>
             <%= HtmlUtils.radio_toggle name: 'provider[telehealth_provider]',
                     label: 'Are you a Telehealth Provider?',
                     container_class: 'd-flex align-items-center my-3',
-                    toshow: 'service_locations_fields'
+                    toshow: 'service_locations_fields',
+                    active: telehealth_on
                   %>
+
           <%= f.hidden_field :telehealth_providers %>
           </div>
           <div class="row mb-3">
             <div id="service_locations">
-               <div class="row d-none" id="service_locations_fields">
+               <div class="row <%= show_telehealth %>" id="service_locations_fields">
                   <div class="fields">
                     <%= f.fields_for :service_locations do |service_location_fields| %>
                       <%= render 'service_location_fields', f: service_location_fields %>
@@ -334,15 +339,19 @@
     <div class="row mb-3">
       <div class="col-lg-6">
         <!-- new field -->
+        <% privileges_on = @provider.name_admitting_physician.present?
+              show_privileges = (privileges_on ? '' : 'd-none')
+            %>
         <%= HtmlUtils.radio_toggle name: 'provider[admitting_privileges]',
                 label: 'Admitting Privileges?',
                 container_class: 'd-flex align-items-center my-3',
-                toshow: 'admitting_privileges_fields'
+                toshow: 'admitting_privileges_fields',
+                active: privileges_on
               %>
       <%= f.hidden_field :admitting_privileges %>
       </div>
       <div class="col-lg-12 mt-1">
-        <div class="row d-none" id="admitting_privileges_fields">
+        <div class="row <%= show_privileges %>" id="admitting_privileges_fields">
           <div class="col-lg-6 mb-3">
             <label class="text-dark-grey">Name of Admitting Physician/Practice/Clinic/Group(optional)</label>
             <%= f.text_field :name_admitting_physician, placeholder:'Type here...', class: 'form-control border-dark' %>
@@ -546,6 +555,7 @@
           $("#np_licenses").on("click", ".add_association", function() {
               var npLicensesFields = $("#np_licenses .field");
               var newNpLicense = npLicensesFields.last().clone();
+              console.log(newNpLicense);
               var newId = new Date().getTime();
               newNpLicense.html(newNpLicense.html().replace(/np_licenses_attributes\]\[\d+\]/g, "np_licenses_attributes][" + newId + "]"));
               $("#np_licenses .fields").append(newNpLicense);
@@ -621,6 +631,7 @@
               var deaLicensesFields = $("#dea_licenses .field");
               var newDeaLicense = deaLicensesFields.last().clone();
               var newId = new Date().getTime();
+              console.log( newId);
               newDeaLicense.html(newDeaLicense.html().replace(/pa_licenses_attributes\]\[\d+\]/g, "pa_licenses_attributes][" + newId + "]"));
               $("#np_licenses .fields").append(newDeaLicense);
               addDeaLicensesCount += 1;
