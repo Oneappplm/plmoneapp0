@@ -202,4 +202,13 @@ module HtmlUtils
     columns.html_safe
   end
 
+  def multi_select_dropdown **options
+    multi_select = <<-HTML
+      <div class="multi-select form-control border border-dark #{options[:classes]}" name="#{options[:name]}" id="#{options[:id]}">
+      </div>
+    HTML
+
+    multi_select.html_safe
+  end
+
 end

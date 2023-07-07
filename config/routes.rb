@@ -59,6 +59,10 @@ Rails.application.routes.draw do
   get 'state-providers', to: 'ajax#state_providers'
   get 'providers-gender', to: 'ajax#providers_gender'
   post 'delete-comment', to: 'ajax#delete_comment'
+  get 'get-specialties', to: 'ajax#get_specialties'
+  get 'get-languages', to: 'ajax#get_languages'
+  get 'get-states', to: 'ajax#get_states'
+
 
   resources :provider_sources do
     collection do

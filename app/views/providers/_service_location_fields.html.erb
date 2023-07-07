@@ -2,7 +2,7 @@
 				<h5>Primary Service Location</h5>
 				<div class="row mb-3">
 					<div class="col-lg-6">
-						<label class="text-dark-grey">None-Office Service Area </label>
+						<label class="text-dark-grey">Non-Office Service Area </label>
 						<%= f.collection_select :primary_service_non_office_area, states, :name, :name, { prompt: 'Select Option' }, { class: 'form-control border border-dark' } %>
 					</div>
 					<div class="col-lg-6">
@@ -20,7 +20,6 @@
 						<%= f.text_field :primary_service_office_email, class: 'form-control border border-dark', placeholder: 'Type here... ' %>
 					</div>
 				</div>
-        <% if !current_setting.qualifacts?%>
 				<div class="row mb-3">
 					<div class="col-lg-6">
 						<label class="text-dark-grey">Service Location Fax </label>
@@ -31,7 +30,6 @@
 						<%= f.text_field :primary_service_office_website, class: 'form-control border border-dark', placeholder: 'Type here... ' %>
 					</div>
 				</div>
-        <% end %>	
 				<div class="row mb-3">
 					<div class="col-lg-6">
 						<label class="text-dark-grey"> Service Location Crisis Phone </label>
@@ -50,12 +48,16 @@
 				</div>
 				<div class="row mb-3">
 					<div class="col-lg-6">
-						<label class="text-dark-grey">Qualified Medical Interpreter Language </label>
-						<%= f.collection_select :primary_service_interpreter_language, languages, :name, :name, { prompt: 'Select Option' }, { class: 'form-control border border-dark' } %>
+						<label class="text-dark-grey">Qualified Medical Interpreter Language (can be multiple)</label>
+
+          <%= HtmlUtils.multi_select_dropdown name: 'provider[service_locations_attributes][0][primary_service_interpreter_language]]', id: 'provider_service_locations_attributes_0_primary_service_interpreter_language', classes: 'medical-interpreter-dropdown'%>
+						<%#= f.collection_select :primary_service_interpreter_language, languages, :name, :name, { prompt: 'Select Option' }, { class: 'form-control border border-dark' } %>
 					</div>
 					<div class="col-lg-6">
-						<label class="text-dark-grey">Telehealth Only State/District </label>
-						<%= f.collection_select :primary_service_telehealth_only_state, states, :name, :name, { prompt: 'Select Option' }, { class: 'form-control border border-dark' } %>
+						<label class="text-dark-grey">Telehealth Only State/District (can be multiple)</label>
+
+          <%= HtmlUtils.multi_select_dropdown name: 'provider[provider[service_locations_attributes][0][primary_service_telehealth_only_state]][0][primary_service_interpreter_language]]', id: 'provider_service_locations_attributes_0_primary_service_telehealth_only_state', classes: 'telehealth-states'%>
+						<%#= f.collection_select :primary_service_telehealth_only_state, states, :name, :name, { prompt: 'Select Option' }, { class: 'form-control border border-dark' } %>
 					</div>
 				</div>
 				<hr>
