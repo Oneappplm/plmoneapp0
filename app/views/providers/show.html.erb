@@ -52,7 +52,7 @@
 							<p class="mb-1"><strong>Gender:</strong> <%= @provider.gender %></p>
 							<p class="mb-1"><strong>Date of Birth:</strong> <%= @provider.birth_date %></p>
 							<p class="mb-1"><strong>Birth City:</strong> <%= @provider&.birth_city %></p>
-							<p class="mb-1"><strong>Birth State:</strong> <%= @provider&.birth_state %></p>
+							<p class="mb-1"><strong>Birth State:</strong> <%= State.find_by(id: @provider&.birth_state.to_i)&.name %></p>
 
 							<h5 class="mt-2 text-center">Home Address</h5>
 							<p class="mb-1"><strong>Address 1:</strong> <%= @provider&.address_line_1 %></p>
@@ -85,6 +85,7 @@
 						<p class="mb-1"><strong>Medicaid Number:</strong> <%= @provider.medicaid_provider_number %></p>
 						<p class="mb-1"><strong>Tricare Number:</strong> <%= @provider.tricare_provider_number %> </p>
 
+<<<<<<< HEAD
 						<h5 class="text-center my-3">State License</h5>
 						<p class="mb-1"><strong>State License Number:</strong> <%= @provider.nccpa_number %></p>
 						<p class="mb-1"><strong>State License Effective Date:</strong> <%= @provider.pa_license_effective_date %></p>
@@ -98,13 +99,29 @@
 							<p class="mb-1"><strong>PA Expiration Date:</strong> <%= pa_license.pa_license_expiration_date ? Time.zone.parse(pa_license.pa_license_expiration_date.to_s).strftime('%m-%d-%y') : '' %> </p>
 							<% if (@provider&.pa_licenses.length % 2) %> </br> <% end %>
 						<% end %>
+=======
+							<h5 class="text-center my-3">State License</h5>
+							<p class="mb-1"><strong>State License Number:</strong> <%= @provider.license_number %></p>
+							<p class="mb-1"><strong>State License Effective Date:</strong> <%= @provider.license_effective_date %></p>
+							<p class="mb-1"><strong>State License Expiration Date:</strong> <%= @provider.license_expiration_date %></p>
+							<p class="mb-1"><strong>License Registration State:</strong>  <%= @provider.state_id %> </p>
+
+							<h5 class="text-center my-3">PA License</h5>
+							<p class="mb-1"><strong>PA license number:</strong> <%= @provider.nccpa_number %></p>
+							<p class="mb-1"><strong>PA Effective Date:</strong> <%= @provider.pa_license_effective_date %></p>
+							<p class="mb-1"><strong>PA Expiration Date:</strong> <%= @provider.pa_license_expiration_date %></p>
+>>>>>>> Adjusted the states
 
 							<h5 class="text-center my-3">NP License</h5>
 						<% @provider&.np_licenses.each_with_index do |license,idx|%>
 							<p class="mb-1"><strong>NP License:</strong> <%= license.np_license_number %></p>
 							<p class="mb-1"><strong>NP Effective Date:</strong> <%= license.np_license_effective_date %></p>
 							<p class="mb-1"><strong>NP Expiration Date:</strong> <%= license.np_license_expiration_date %></p>
+<<<<<<< HEAD
 							<% if (@provider&.np_licenses.length % 2) %> </br> <% end %>
+=======
+							<% if @provider&.np_licenses.length % 2 == 0 %> </br> <% end %>
+>>>>>>> Adjusted the states
 						<% end %>
 
 							<h5 class="text-center my-3">RN License</h5>
@@ -112,6 +129,7 @@
 							<p class="mb-1"><strong>RN License:</strong> <%= license.rn_license_number %></p>
 							<p class="mb-1"><strong>RN Effective Date:</strong> <%= license.rn_license_effective_date %></p>
 							<p class="mb-1"><strong>RN Expiration Date:</strong> <%= license.rn_license_expiration_date %></p>
+<<<<<<< HEAD
 							<% if (@provider&.rn_licenses.length % 2) %> </br> <% end %>
 						<% end %>
 
@@ -122,6 +140,16 @@
 							<p class="mb-1"><strong>DEA License Effective Date:</strong> <%= dea_license.dea_license_effective_date ? Time.zone.parse(dea_license.dea_license_effective_date.to_s).strftime('%m-%d-%y') : '' %></p>
 							<p class="mb-1"><strong>DEA License Expiration Date:</strong> <%= dea_license.dea_license_expiration_date ? Time.zone.parse(dea_license.dea_license_expiration_date.to_s).strftime('%m-%d-%y') : '' %></p>
 						<% end %>
+=======
+							<% if @provider&.np_licenses.length % 2 %> </br> <% end %>
+						<% end %>
+
+						<h5 class="text-center my-3">DEA License</h5>
+						<p class="mb-1"><strong>DEA Number:</strong> <%= @provider.dea_number%></p>
+						<p class="mb-1"><strong>DEA Registration State:</strong><%= State.find_by(id: @provider.dea_registration_state.to_i)&.name %></p>
+						<p class="mb-1"><strong>DEA License Effective Date:</strong> <%= @provider.dea_license_effective_date%></p>
+						<p class="mb-1"><strong>DEA License Expiration Date:</strong> <%= @provider.dea_license_expiration_date%></p>
+>>>>>>> Adjusted the states
 
 						<h5 class="text-center my-3">CAQH</h5>
 						<p class="mb-1"><strong>CAQH ID:</strong> <%= @provider.caqhid %></p>
@@ -129,7 +157,7 @@
 						<p class="mb-1"><strong>CAQH PDF Date Received:</strong> <%= @provider&.caqh_pdf_date_received %></p>
 						<p class="mb-1"><strong>CAQH Username:</strong> <%= @provider.caqh_username %></p>
 						<p class="mb-1"><strong>CAQH Password:</strong> <%= @provider.caqh_password %></p>
-						<p class="mb-1"><strong>CAQH State:</strong> <%= @provider.caqh_state %></p>
+						<p class="mb-1"><strong>CAQH State:</strong> <%= State.find_by(id: @provider.caqh_state.to_i)&.name %></p>
 
 						<h5 class="text-center my-3">Telehealth</h5>
 						<p class="mb-1"><strong>Telehealth Number:</strong> <%= @provider.telehealth_license_number %> </p>
@@ -205,7 +233,7 @@
 						<p class="mb-1"><strong>Address Line 1:</strong> <%= @provider&.admitting_facility_address_line1 %> </p>
 						<p class="mb-1"><strong>Address Line 2:</strong>  <%= @provider&.admitting_facility_address_line1 %> </p>
 						<p class="mb-1"><strong>City:</strong> <%= @provider&.admitting_facility_city %> </p>
-						<p class="mb-1"><strong>State:</strong> <%= @provider&.admitting_facility_state %> </p>
+						<p class="mb-1"><strong>State:</strong> <%= State.find_by(id: @provider&.admitting_facility_state.to_i)&.name %> </p>
 						<p class="mb-1"><strong>Zip Code:</strong> <%= @provider&.admitting_facility_zip_code %>  </p>
 						<p class="mb-1"><strong>Admitting Arrangements:</strong> <%= @provider&.admitting_facility_arrangments %> </p>
 					</div>
