@@ -86,16 +86,17 @@
 						<p class="mb-1"><strong>Tricare Number:</strong> <%= @provider.tricare_provider_number %> </p>
 
 							<h5 class="text-center my-3">State License</h5>
-							<p class="mb-1"><strong>State License Number:</strong> <%= @provider.license_number %></p>
-							<p class="mb-1"><strong>State License Effective Date:</strong> <%= @provider.license_effective_date %></p>
-							<p class="mb-1"><strong>State License Expiration Date:</strong> <%= @provider.license_expiration_date %></p>
-							<p class="mb-1"><strong>License Registration State:</strong>  <%= @provider.state_id %> </p>
+							<p class="mb-1"><strong>State License Number:</strong> <%= @provider.licenses.license_number %></p>
+							<p class="mb-1"><strong>State License Effective Date:</strong> <%= @provider.licenses.license_effective_date %></p>
+							<p class="mb-1"><strong>State License Expiration Date:</strong> <%= @provider.licenses.license_expiration_date %></p>
+							<p class="mb-1"><strong>License Registration State:</strong>  <%= State.find_by(id: @provider.licenses.state_id)&.name %> </p>
 
-							<h5 class="text-center my-3">PA License</h5>
-							<p class="mb-1"><strong>PA license number:</strong> <%= @provider.nccpa_number %></p>
-							<p class="mb-1"><strong>PA Effective Date:</strong> <%= @provider.pa_license_effective_date %></p>
-							<p class="mb-1"><strong>PA Expiration Date:</strong> <%= @provider.pa_license_expiration_date %></p>
-
+						<h5 class="text-center my-3">PA License</h5>
+							<% @provider&.pa_licenses.each_with_index do |pa_license,idx|%>
+							<p class="mb-1"><strong>PA License number:</strong> <%= pa_license.pa_license_number %></p>
+							<p class="mb-1"><strong>PA Effective Date:</strong> <%= pa_license.pa_license_effective_date %></p>
+							<p class="mb-1"><strong>PA Expiration Date:</strong> <%= pa_license.pa_license_expiration_date %></p>
+						<% end %>
 							<h5 class="text-center my-3">NP License</h5>
 						<% @provider&.np_licenses.each_with_index do |license,idx|%>
 							<p class="mb-1"><strong>NP License:</strong> <%= license.np_license_number %></p>
@@ -113,10 +114,13 @@
 						<% end %>
 
 						<h5 class="text-center my-3">DEA License</h5>
-						<p class="mb-1"><strong>DEA Number:</strong> <%= @provider.dea_number%></p>
-						<p class="mb-1"><strong>DEA Registration State:</strong><%= State.find_by(id: @provider.dea_registration_state.to_i)&.name %></p>
-						<p class="mb-1"><strong>DEA License Effective Date:</strong> <%= @provider.dea_license_effective_date%></p>
-						<p class="mb-1"><strong>DEA License Expiration Date:</strong> <%= @provider.dea_license_expiration_date%></p>
+						<% @provider&.dea_licenses.each_with_index do |dea_license,idx|%>
+							<p class="mb-1"><strong>DEA Number:</strong> <%= dea_license.dea_license_number%></p>
+							<p class="mb-1"><strong>DEA Registration State:</strong><%= State.find_by(id: dea_license.state_id.to_i)&.name %></p>
+							<p class="mb-1"><strong>DEA License Effective Date:</strong> <%= dea_license.dea_license_effective_date%></p>
+							<p class="mb-1"><strong>DEA License Expiration Date:</strong> <%= dea_license.dea_license_expiration_date%></p>
+							<% if @provider&.dea_licenses.length % 2 %> </br> <% end %>
+						<% end %>
 
 						<h5 class="text-center my-3">CAQH</h5>
 						<p class="mb-1"><strong>CAQH ID:</strong> <%= @provider.caqhid %></p>
@@ -128,7 +132,7 @@
 
 						<h5 class="text-center my-3">Telehealth</h5>
 						<p class="mb-1"><strong>Telehealth Number:</strong> <%= @provider.telehealth_license_number %> </p>
-						<p class="mb-1"><strong>License Registered State:</strong></p>
+						<p class="mb-1"><strong>License Registered State:</strong><%= State.find_by(id: @provider.licensed_registered_state_id.to_i)&.name %></p>
 						</div>
 					</div>
 
@@ -167,7 +171,7 @@
 					<div class="card rounded shadow-lg p-1 px-3 mb-3">
           <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Primary Service Location', collapse_name: 'service_location'}%>
           <div class="collapsible" style="<%= current_user&.is_card_open?('service_location') ? '' : 'display: none;' %>">
-							<% @provider&.service_locations.each_with_index do |service_location,idx|%>
+						<% @provider&.service_locations.each_with_index do |service_location,idx|%>
 							<p class="mb-1"><strong>Non-Office Service Area:</strong> <%= service_location.primary_service_non_office_area %> </p>
 							<p class="mb-1"><strong>Apps/Intake Phone:</strong> <%= service_location.primary_service_location_apps %> </p>
 							<p class="mb-1"><strong>Zip Code:</strong> <%= service_location.primary_service_zip_code %> </p>
@@ -179,8 +183,8 @@
 							<p class="mb-1"><strong>Self Service Appt Scheduling Available:</strong> <%= service_location.primary_service_non_office_area %> </p>
 							<p class="mb-1"><strong>Qualified Medical Interpreter Language:</strong> <%= service_location.primary_service_interpreter_language %> </p>
 							<p class="mb-1"><strong>Telehealth Only State/District:</strong> <%= service_location.primary_service_telehealth_only_state %> </p>
-							<% if (@provider&.service_locations.length > 1) %> </br> <% end %>
-							<% end %>
+							<% if @provider&.service_locations.length % 2 %> </br> <% end %>
+						<% end %>
 						</div>
           </div>
 
