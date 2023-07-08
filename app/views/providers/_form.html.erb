@@ -298,8 +298,9 @@
         <div class="row">
           <div class="col-lg-6">
             <!-- new field -->
-            <% telehealth_on = (!@provider.service_locations.length.zero? ? 'active' : '')  
-              show_telehealth = (telehealth_on ? '' : 'd-none')
+            <% telehealth_on = (@provider.service_locations.first.primary_service_non_office_area.present? && params[:action] != 'new' ? 'active' : '')  
+              show_telehealth = (telehealth_on.blank? ? 'd-none' : '')
+
             %>
             <%= HtmlUtils.radio_toggle name: 'provider[telehealth_provider]',
                     label: 'Are you a Telehealth Provider?',
@@ -307,9 +308,21 @@
                     toshow: 'service_locations_fields',
                     active: telehealth_on
                   %>
-
-          <%= f.hidden_field :telehealth_providers %>
+            <%= f.hidden_field :telehealth_providers %>
           </div>
+          <div class="row mb-3">
+            <div class="col-lg-6">
+              <!-- new field -->
+              <label class="text-dark-grey">Hire date of provider seeing patients</label>
+              <%= f.text_field :provider_hire_date_seeing_patient,  placeholder: 'Type here...', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+            </div>
+            <div class="col-lg-6">
+              <!-- new field -->
+              <label class="text-dark-grey">Effective date of provider seeing patients</label>
+              <%= f.text_field :effective_date_seeing_patient , placeholder: 'Type here...', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+            </div>
+          </div>
+
           <div class="row mb-3">
             <div id="service_locations">
                <div class="row <%= show_telehealth %>" id="service_locations_fields">
@@ -323,20 +336,7 @@
           </div>
         </div>
 
-
-    <div class="row mb-3">
-      <div class="col-lg-6">
-        <!-- new field -->
-        <label class="text-dark-grey">Hire date of provider seeing patients</label>
-        <%= f.text_field :provider_hire_date_seeing_patient,  placeholder: 'Type here...', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
-      </div>
-      <div class="col-lg-6">
-        <!-- new field -->
-        <label class="text-dark-grey">Effective date of provider seeing patients</label>
-        <%= f.text_field :effective_date_seeing_patient , placeholder: 'Type here...', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
-      </div>
-    </div>
-    <div class="row mb-3">
+    <div class="row">
       <div class="col-lg-6">
         <!-- new field -->
         <% privileges_on = @provider.name_admitting_physician.present?
@@ -429,7 +429,7 @@
         <%= f.text_field :telehealth_license_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
       </div>
       <div class="col-lg-6">
-        <label class="text-dark-grey">Board Certification</label>
+        <label class="text-dark-grey">License Registered State</label>
         <%= f.text_field :board_certification_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
       </div>
     </div>
@@ -471,7 +471,7 @@
               <%= HtmlUtils.generate_view_link file_url: @provider.drivers_license_file.url %>
       </div>
       <div class="col-lg-6">
-        <label>Board Certification</label>
+        <label>License Registered State</label>
               <%= f.file_field :board_certification_file, placeholder: 'Board Certification', class: 'form-control border border-dark' %>
               <%= HtmlUtils.generate_view_link file_url: @provider.board_certification_file.url %>
       </div>

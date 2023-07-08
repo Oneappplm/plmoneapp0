@@ -94,8 +94,8 @@
 						<h5 class="text-center my-3">PA License</h5>
 							<% @provider&.pa_licenses.each_with_index do |pa_license,idx|%>
 							<p class="mb-1"><strong>PA License number:</strong> <%= pa_license.pa_license_number %></p>
-							<p class="mb-1"><strong>PA Effective Date:</strong> <%= pa_license.pa_license_effective_date %></p>
-							<p class="mb-1"><strong>PA Expiration Date:</strong> <%= pa_license.pa_license_expiration_date %></p>
+							<p class="mb-1"><strong>PA Effective Date:</strong> <%= Time.zone.parse(pa_license.pa_license_effective_date&.to_s)&.strftime('%Y-%m-%d') %></p>
+							<p class="mb-1"><strong>PA Expiration Date:</strong> <%= Time.zone.parse(pa_license.pa_license_expiration_date&.to_s)&.strftime('%Y-%m-%d') %></p>
 						<% end %>
 							<h5 class="text-center my-3">NP License</h5>
 						<% @provider&.np_licenses.each_with_index do |license,idx|%>
@@ -110,16 +110,16 @@
 							<p class="mb-1"><strong>RN License:</strong> <%= license.rn_license_number %></p>
 							<p class="mb-1"><strong>RN Effective Date:</strong> <%= license.rn_license_effective_date %></p>
 							<p class="mb-1"><strong>RN Expiration Date:</strong> <%= license.rn_license_expiration_date %></p>
-							<% if @provider&.np_licenses.length % 2 %> </br> <% end %>
+							<% if @provider&.np_licenses.length % 2 == 0 %> </br> <% end %>
 						<% end %>
 
 						<h5 class="text-center my-3">DEA License</h5>
 						<% @provider&.dea_licenses.each_with_index do |dea_license,idx|%>
 							<p class="mb-1"><strong>DEA Number:</strong> <%= dea_license.dea_license_number%></p>
 							<p class="mb-1"><strong>DEA Registration State:</strong><%= State.find_by(id: dea_license.state_id.to_i)&.name %></p>
-							<p class="mb-1"><strong>DEA License Effective Date:</strong> <%= dea_license.dea_license_effective_date%></p>
-							<p class="mb-1"><strong>DEA License Expiration Date:</strong> <%= dea_license.dea_license_expiration_date%></p>
-							<% if @provider&.dea_licenses.length % 2 %> </br> <% end %>
+							<p class="mb-1"><strong>DEA License Effective Date:</strong> <%= Time.zone.parse(dea_license.dea_license_effective_date.to_s).strftime('%Y-%m-%d')%></p>
+							<p class="mb-1"><strong>DEA License Expiration Date:</strong> <%= Time.zone.parse(dea_license.dea_license_expiration_date.to_s).strftime('%Y-%m-%d')%></p>
+							<% if @provider&.dea_licenses.length % 2 == 0 %> </br> <% end %>
 						<% end %>
 
 						<h5 class="text-center my-3">CAQH</h5>
