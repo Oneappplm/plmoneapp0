@@ -1,0 +1,2 @@
+class EnrollmentPayer < ApplicationRecord
+end

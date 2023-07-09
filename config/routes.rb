@@ -43,6 +43,8 @@ Rails.application.routes.draw do
   post 'get-selected-ps-provider-types', to: 'ajax#get_selected_ps_provider_types'
   get 'get-mixed-providers-options', to: 'ajax#get_mixed_providers_options'
   post 'get-selected-mixed-providers-options', to: 'ajax#get_selected_mixed_providers_options'
+  get 'get-providers', to: 'ajax#get_providers'
+  post 'get-selected-providers', to: 'ajax#get_selected_providers'
   get 'get-states', to: 'ajax#get_states'
   post 'get-selected-states', to: 'ajax#get_selected_states'
   get 'get-visa-types', to: 'ajax#get_visa_types'
@@ -231,6 +233,7 @@ Rails.application.routes.draw do
       get :specialties
       get :training_types
       get :privilege_statuses
+      get :providers
       # add more here
     end
   end

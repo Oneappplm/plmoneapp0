@@ -318,6 +318,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_08_131723) do
     t.index ["enrollment_group_id"], name: "index_enrollment_groups_details_on_enrollment_group_id"
   end
 
+  create_table "enrollment_payers", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "enrollment_providers", force: :cascade do |t|
     t.string "name"
     t.datetime "start_date"

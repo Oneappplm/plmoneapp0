@@ -5,21 +5,27 @@ class EnrollmentProvidersController < ApplicationController
   def index;end
 
 	def new
-		@enrollment_provider = EnrollmentProvider.new
-    @enrollment_provider.details.build
+		@enrollment_provider = EnrollmentProvider.new(outreach_type: 'provider-from-enrollment')
+  @enrollment_provider.details.build
 	end
 
 	def edit
-    # had to add this condition to prvent details fields from duplicating
-    if @enrollment_provider.details.blank?
-      @enrollment_provider.details.build
-    end
-  end
+		@enrollment_provider.outreach_type = 'provider-from-enrollment' if @enrollment_provider.outreach_type.blank?
+
+		# had to add this condition to prvent details fields from duplicating
+		if @enrollment_provider.details.blank?
+				@enrollment_provider.details.build
+		end
+ end
 
 	def create
 		@enrollment_provider = EnrollmentProvider.new(enrollment_provider_params)
 		@enrollment_provider.enrolled_by = current_user&.full_name
 		if @enrollment_provider.save
+			@enrollment_provider.update_columns(
+				provider_id: params[:provider_id],
+				outreach_type:	params[:outreach_type]
+			)
 			redirect_to enrollment_providers_path, notice: 'Enrollment Provider has been successfully created.'
 		else
 			render 'new'
@@ -28,6 +34,10 @@ class EnrollmentProvidersController < ApplicationController
 
 	def update
 		if @enrollment_provider.update(enrollment_provider_params)
+			@enrollment_provider.update_columns(
+				provider_id: params[:provider_id],
+				outreach_type:	params[:outreach_type]
+			)
 			redirect_to enrollment_providers_path, notice: 'Enrollment Provider has been successfully updated.'
 		else
 			render 'edit'

@@ -41,8 +41,6 @@ class EnrollmentProvider < ApplicationRecord
   has_many :comments, class_name: 'EnrollmentComment', dependent: :destroy
 
 	accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank
-	
-
 
 	def provider_name
 		provider =	if Provider.exists?(id: self.provider_id)

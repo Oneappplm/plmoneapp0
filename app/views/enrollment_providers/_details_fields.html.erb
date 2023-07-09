@@ -5,7 +5,7 @@
   <div class="row mb-3">
     <div class="col-lg-6">
       <label class="text-dark-grey">Enrollment Payer</label>
-      <%= f.select :enrollment_payer, options_for_select(enrollment_payer, f.object.enrollment_payer), { prompt: 'Enrollment Payer' }, {:class => 'form-select'}  %>
+      <%= f.collection_select :enrollment_payer, enrollment_payers, :name, :name, { prompt: 'Select option' }, { class: 'form-control border border-grey' } %>
     </div>
     <div class="col-lg-6">
       <label class="text-dark-grey">Enrollment Type</label>
@@ -34,17 +34,6 @@
       <%= f.select :enrollment_status, options_for_select(enrollment_status, f.object.enrollment_status), { prompt: 'Enrollment Status' }, {:class => 'form-select multi-enrollment-status'}  %>
     </div>
   </div>
-
-  <div class="row mb-3">
-        <div class="col-lg-6">
-          <label class="text-dark-grey">Provider ID</label>
-          <%= f.text_field :provider_id, placeholder: 'PTAN, CHAMPS, PIN, etc.', class: 'form-control' %>
-        </div>
-        <div class="col-lg-6">
-          <label class="text-dark-grey">Group ID</label>
-          <%= f.text_field :group_id, placeholder: 'PTAN, CHAMPS, PIN, etc.', class: 'form-control' %>
-        </div>
-      </div>
 
    <div class="row mb-3 application-submitted-field <%= f.object&.enrollment_status == 'application-submitted' ? '' : 'd-none'%>">
     <div class="col-lg-6">
@@ -94,12 +83,12 @@
 
   <div class="row mb-3 application-not-submitted-field <%= f.object&.enrollment_status == 'application-not-submitted' ? '' : 'd-none'%>">
     <div class="col-lg-6">
-      <label class="text-dark-grey">Provider ID</label>
-      <%= f.text_field :provider_ptan, placeholder: 'PTAN, CHAMPS, PIN, etc.', class: 'form-control' %>
+          <label class="text-dark-grey">Provider ID</label>
+          <%= f.text_field :provider_id, placeholder: 'Medicare and Medicaid,  PIN, etc.', class: 'form-control' %>
     </div>
-     <div class="col-lg-6">
-      <label class="text-dark-grey">Group ID</label>
-      <%= f.text_field :group_ptan, placeholder: 'Group PTAN, CHAMPS, PIN, etc.', class: 'form-control' %>
+    <div class="col-lg-6">
+          <label class="text-dark-grey">Group ID</label>
+          <%= f.text_field :group_id, placeholder: 'Medicare and Medicaid, PIN, etc.', class: 'form-control' %>
     </div>
   </div>
 

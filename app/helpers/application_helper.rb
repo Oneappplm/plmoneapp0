@@ -212,6 +212,10 @@ module ApplicationHelper
 	def languages
     @languages ||= Language.all
   end
+
+	def enrollment_payers
+		@enrollment_payers ||= EnrollmentPayer.all
+	end
 	# memoization
 
 	def yes_or_no_options

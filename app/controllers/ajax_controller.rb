@@ -102,6 +102,21 @@ class AjaxController < ApplicationController
     }
   end
 
+  def get_providers
+    providers = Provider.all.map { |provider| { label: provider.provider_name, value: provider.id } }
+    render json: {
+      'providers' => providers
+    }
+  end
+
+  def get_selected_providers
+    enrollment_provider = EnrollmentProvider.find(params[:enrollment_provider_id])
+    selected_providers = (enrollment_provider.selected_providers || [])
+      render json: {
+        'selected_providers' => selected_providers
+      }
+  end
+
   def get_dougnut_data
     clients = [Client.attested.count,Client.no_application.count,
                 Client.complete.count,Client.incomplete.count,
@@ -110,7 +125,7 @@ class AjaxController < ApplicationController
             ]
     total_clients = clients.sum
     percentages = clients.map{|c| ((c.to_f/total_clients.to_f)*100).round(2)}
-    
+
     render json: {
       "clients" => clients,
       "percentages" => percentages
@@ -177,7 +192,7 @@ class AjaxController < ApplicationController
 
   def providers_gender
     genders = [Provider.male.count, Provider.female.count, Provider.non_binary.count]
-    
+
     render json: {
       'genders' => genders
     }
