@@ -18,6 +18,12 @@ class AjaxController < ApplicationController
       GroupDcoContact.delete(id)
     elsif model == 'group_dco_provider_outreach_info'
       GroupDcoProviderOutreachInformation.delete(id)
+    elsif model == 'dea_licenses'
+      ProviderDeaLicense.delete(id)
+    elsif model == 'cnp_licenses'
+      ProviderCnpLicense.delete(id)
+    elsif model == 'ins_policies'
+      ProviderInsPolicy.delete(id)
     end
 
     head :ok
@@ -228,8 +234,14 @@ class AjaxController < ApplicationController
   end
 
   def get_states
-    states = State.all.map{|m| { label: m.name, value: m.name} }
-    # render json: states and return
+    states = State.all.map{|m| { label: "#{m.name} - #{m.alpha_code}", value: m.name} }
+    render json: {
+      'states' => states
+    }
+  end
+
+  def get_states_with_id
+    states = State.all.map{|m| { label: "#{m.name} - #{m.alpha_code}", value: m.id} }
     render json: {
       'states' => states
     }
@@ -253,5 +265,12 @@ class AjaxController < ApplicationController
     render json: {
       'specialties' => specialties
     }
+  end
+
+  def update_timeline
+    timeline_id = params[:timeline_id]
+    timeline = ProvidersTimeLine.find(timeline_id)
+    timeline.update_attribute('status','done')
+    head :ok
   end
 end

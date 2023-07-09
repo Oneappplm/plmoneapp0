@@ -1,4 +1,8 @@
 class Provider < ApplicationRecord
+  has_one :licenses , class_name: 'ProviderLicense', dependent: :destroy
+end
+
+class Provider < ApplicationRecord
   include PgSearch::Model
 	pg_search_scope :search,
           against: self.column_names,
@@ -43,7 +47,7 @@ class Provider < ApplicationRecord
   has_many :medicares, class_name: 'ProviderMedicare', dependent: :destroy
   has_many :cnp_licenses, class_name: 'ProviderCnpLicense', dependent: :destroy
   has_many :ins_policies, class_name: 'ProviderInsPolicy', dependent: :destroy
-
+  has_many :time_lines, class_name: 'ProvidersTimeLine', dependent: :destroy
 
   # accepts_nested_attributes_for :taxonomies, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :licenses, allow_destroy: true, reject_if: :all_blank

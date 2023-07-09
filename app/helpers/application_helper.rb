@@ -340,4 +340,20 @@ module ApplicationHelper
       ['Widowed','widowed']
     ]
   end
+
+  def time_line_class(status)
+    cls = "danger"
+    if status == 'done'
+      cls = 'success'
+    end
+    cls
+  end
+
+  def time_line_icon(status)
+    icon = "bi-clock-fill"
+    if status == 'done'
+      icon = 'bi-check-circle-fill'
+    end
+    icon
+  end
 end

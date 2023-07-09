@@ -181,9 +181,23 @@
             }
           });
 
-          //$(document).on("click", ".remove-dynamic-fields", function() {
-          //   $(this).closest('.field').remove();
-          //});
+          $(document).on("click", ".delete-license", function() {
+
+              var model = $(this).data('model');
+            var id = $(this).data('id');
+            $(this).closest('.field').remove();
+            $.ajax({
+              url: '<%= delete_record_path %>',
+              method: 'POST',
+              data: { authenticity_token: csrfToken, model: model, id: id },
+              success: function(data) {
+                $(this).closest('.field').remove();
+
+              }
+            })
+          });
+
+
 
           // telehealth providers
           $("#service_locations").on("click", ".add_association", function() {
@@ -198,10 +212,14 @@
               setLanguages(languageDropdown.attr('id'));
 
               var statesDropdown = $('[name="provider[service_locations_attributes]['+newId+'][primary_service_telehealth_only_state]]"]');
-              languageDropdown.attr('id',("language_"+newId));
               statesDropdown.attr('id',("states_"+newId));
 
               setStates(statesDropdown.attr('id'));
+              var nonOfficeDropdown = $('[name="provider[service_locations_attributes]['+newId+'][primary_service_non_office_area]"]');
+              nonOfficeDropdown.attr('id',("non_office_service_location_"+newId));
+
+              setNonOfficeServiceLocation(nonOfficeDropdown.attr('id'));
+              
           });
 
           $("#service_locations").on("click", ".remove-dynamic-fields", function() {
@@ -240,6 +258,36 @@
                   options: data['states'],
                   ele: '#'+id,
                   multiple: true,
+              });
+            }
+          })
+      }
+
+      function setNonOfficeServiceLocation(dropdown_id) {
+        var id = dropdown_id;
+          $.ajax({
+            url: '<%= get_states_with_id_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              VirtualSelect.init({
+                  options: data['states'],
+                  ele: '#'+id
+              });
+            }
+          })
+      }
+
+      function setDeaStates(dropdown_id) {
+        var id = dropdown_id;
+          $.ajax({
+            url: '<%= get_states_with_id_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              VirtualSelect.init({
+                  options: data['states'],
+                  ele: '#'+id
               });
             }
           })

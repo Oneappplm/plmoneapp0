@@ -4,8 +4,12 @@
 				<div class="row mb-3">
 					<div class="col-lg-6">
 						<label class="text-dark-grey">Non-Office Service Area </label>
-						<%= f.select :primary_service_non_office_area, options_for_select(states.pluck(:name, :id),  f.object.primary_service_non_office_area), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
+						<%#= f.select :primary_service_non_office_area, options_for_select(states.pluck(:name, :id),  f.object.primary_service_non_office_area), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
+
+            <div class="search-select <%= f.object.id ? ('edit-non-office-service-'+index_of_object.to_s) : 'non-office-service-location'%> form-control border border-dark" name="provider[service_locations_attributes][<%= index_of_object%>][primary_service_non_office_area]">
+            <!--  -->
 						</div>
+          </div>
 					<div class="col-lg-6">
 						<label class="text-dark-grey">Service Location Apps/Intake Phone </label>
 						<%= f.text_field :primary_service_location_apps, class: 'form-control border border-dark', placeholder: 'Type here... ' %>
@@ -51,7 +55,6 @@
 					<div class="col-lg-6">
 						<label class="text-dark-grey">Qualified Medical Interpreter Language (can be multiple)</label>
           <%= HtmlUtils.multi_select_dropdown name: "provider[service_locations_attributes][#{index_of_object}][primary_service_interpreter_language]]", id: "provider_service_locations_attributes_#{index_of_object}_primary_service_interpreter_language", classes: "#{f.object.id ? ('edit-interpreter-dropdown-'+index_of_object.to_s) : 'medical-interpreter-dropdown'}"%>
-						<%#= f.collection_select :primary_service_interpreter_language, languages, :name, :name, { prompt: 'Select Option' }, { class: 'form-control border border-dark' } %>
 					</div>
 					<div class="col-lg-6">
 						<label class="text-dark-grey">Telehealth Only State/District (can be multiple)</label>
@@ -79,8 +82,10 @@
    var states = '<%= chosen_states %>';
    var selected_languages  = stringArrayModifier(languages);
    var selected_states = stringArrayModifier(states);
+   var non_office_service_location = '<%= f.object.primary_service_non_office_area %>';
    var languages_dropdown = '.edit-interpreter-dropdown-'+'<%= index_of_object.to_s %>';
    var states_dropdown = '.edit-telehealth-states-'+'<%= index_of_object.to_s %>';
+   var non_office_service_dropdown = '.edit-non-office-service-'+'<%= index_of_object.to_s %>';
   function getServiceLocationInterpreterLanguages() {
           $.ajax({
             url: '<%= get_languages_path %>',
@@ -116,6 +121,24 @@
           })
       }
 
+      function getNonOfficeService() {
+          $.ajax({
+            url: '<%= get_states_with_id_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              VirtualSelect.init({
+                  options: data['states'],
+                  ele: non_office_service_dropdown,
+                  search: true,
+                  showSelectedOptionsFirst: true,
+                  selectedValue: non_office_service_location
+              });
+            }
+          })
+      }
+
+    setTimeout(getNonOfficeService(),3000);
     setTimeout(getServiceLocationInterpreterLanguages(),3000);
     setTimeout(getStates(),3000);
 

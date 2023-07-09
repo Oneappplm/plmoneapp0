@@ -1,0 +1,30 @@
+<% tl_class = time_line_class(time_line.status)%>
+<div class="card time-line tl_<%= time_line.status %> p-2 mb-2">
+  <div class="row">
+    <div class="col-lg-1" id="tl_icon_<%= time_line.id%>">
+      <i class="time-line-icon bi <%= time_line_icon(time_line.status )%> text-<%= tl_class %>"></i>
+    </div>
+    <div class="col-lg-11">
+      <div class="d-flex justify-content-between">
+        <span class="text-black"><%= time_line.created_at&.strftime("%m/%d/%Y")%></span>
+        <a href="javascript:void(0);" class="text-black">
+          <!-- <i class="bi bi-three-dots-vertical"></i> -->
+        </a>
+      </div>
+      <div>
+        <p class="text-black fw-semibold my-0"><%= time_line.title %></p>
+        <p class="text-black my-0">Due Date: <%= time_line.due_date.strftime("%m/%d/%Y") %></p>
+        <p class="text-black mt-2">
+          <%= time_line.notes %>
+        </p>
+      </div>
+    </div>
+    <% if time_line.status == 'pending' %>
+    <div class="row px-0">
+      <div class="col-lg-12 d-flex justify-content-end px-0">
+        <a href="javascript:void(0);" class="btn btn-primary btn-xs time-line-done" data-timeline="<%= time_line.id %>">Mark as Done</a>
+      </div>
+    </div>
+    <% end %>
+  </div>
+</div>
