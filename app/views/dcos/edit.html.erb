@@ -4,13 +4,17 @@
 		<div class="col-lg-12">
 			<h2>
 				<a href="<%= group_dcos_path(@enrollment_group) %>" class="d-flex gap-2 text-secondary">
-				<i class="bi bi-arrow-left"></i>
-				<span><%= @enrollment_group.group_name %></span>
+				<i class="h5 bi bi-arrow-left my-auto"></i>
+				<span class="h1 my-auto px-2"><%= @enrollment_group.group_name %></span>
 				</a>
 			</h2>
 		</div>
 	</div>
-	<%= render 'form' %>
+	<% if current_setting.qualifacts? %>
+		<%= render 'dcos/qualifacts/form' %>
+	<% else %>
+		<%= render 'form' %>
+	<% end %>
 </div>
 
 <script>

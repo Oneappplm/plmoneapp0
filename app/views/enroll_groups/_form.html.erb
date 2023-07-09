@@ -1,33 +1,34 @@
 <div class="col-lg-8">
+
    <%= form_for @enroll_group, html: { multipart: true } do |f| %>
+
    <% if @enroll_group.errors.any? %>
-   <div id="error_explanation" class="row mb-3">
-      <div class="col-lg-12">
-         <h2><%= pluralize(@enroll_group.errors.count, "error") %> prohibited this enrollment provider from being saved:</h2>
-         <ul>
-            <% @enroll_group.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
-            <% end %>
-         </ul>
+      <div id="error_explanation" class="row mb-3">
+         <div class="col-lg-12">
+            <h2><%= pluralize(@enroll_group.errors.count, "error") %> prohibited this enrollment provider from being saved:</h2>
+            <ul>
+               <% @enroll_group.errors.full_messages.each do |message| %>
+               <li><%= message %></li>
+               <% end %>
+            </ul>
+         </div>
       </div>
-   </div>
    <% end %>
    <div class="row mb-3">
-    <div class="col-lg-12">
-      <h5 class="mb-0">Group Information</h5>
-      <small class="text-black">Please fill out all required fields. Optional field are marked as (optional)</small>
-    </div>
-</div>
+      <div class="col-lg-12">
+         <h5 class="mb-0">Group Information</h5>
+         <small class="text-black">Please fill out all required fields. Optional field are marked as (optional)</small>
+      </div>
+   </div>
    <div class="row mb-3">
       <div class="col-lg-12">
          <label for="" class="text-dark-grey">Client Name</label>
-          <%= f.select :group_id, options_for_select(EnrollmentGroup.pluck(:group_name, :id), @enroll_group.group_id), {prompt: 'Select option'}, {:class => 'form-select border border-dark select-with-show', data: {show: 'client_dco'}}  %>
+         <%= f.select :group_id, options_for_select(EnrollmentGroup.pluck(:group_name, :id), @enroll_group.group_id), {prompt: 'Select option'}, {:class => 'form-select border border-dark select-with-show', data: {show: 'client_dco'}}  %>
       </div>
-
       <div class="col-lg-12 my-3 <%= @enroll_group.dco.nil? ? 'd-none' : '' %>" id="client_dco">
-      <!-- new field -->
-      <label class="text-dark-grey">DCO/Practice Location</label>
-      <%= f.select :dco, options_for_select(group_dcos.pluck(:dco_name, :id), @enroll_group.dco), {prompt: 'Select option'}, {:class => 'form-select border border-dark'}  %>
+         <!-- new field -->
+         <label class="text-dark-grey">DCO/Practice Location</label>
+         <%= f.select :dco, options_for_select(group_dcos.pluck(:dco_name, :id), @enroll_group.dco), {prompt: 'Select option'}, {:class => 'form-select border border-dark'}  %>
       </div>
    </div>
 
@@ -67,60 +68,59 @@
       </div>
    </div>
    <div class="row mb-3">
-   <div class="col-lg-12">
-      <div class="row">
-         <div id="details">
-            <div class="fields">
-               <%= f.fields_for :details do |details| %>
-                <%= render 'details_fields', f: details %>
-               <% end %>
-            </div>
-            <div class="row">
-               <div class="col-lg-12 text-center">
-                  <div class="links mt-2">
-                     <button type="button" class="add_association btn btn-primary btn-xs" > Add New Payer </button>
+      <div class="col-lg-12">
+         <div class="row">
+            <div id="details">
+               <div class="fields">
+                  <%= f.fields_for :details do |details| %>
+                  <%= render 'details_fields', f: details %>
+                  <% end %>
+               </div>
+               <div class="row">
+                  <div class="col-lg-12 text-center">
+                     <div class="links mt-2">
+                        <button type="button" class="add_association btn btn-primary btn-xs" > Add New Payer </button>
+                     </div>
                   </div>
                </div>
             </div>
          </div>
       </div>
    </div>
-  </div>
    <div class="row">
-   <div class="col-lg-12 d-flex justify-content-end pe-5">
-      <button class="btn btn-primary btn-md">Submit</button>
+      <div class="col-lg-12 d-flex justify-content-end pe-5">
+         <button class="btn btn-primary btn-md">Submit</button>
+      </div>
    </div>
 </div>
-</div>
       <div class="col-lg-4">
-       <div class="text white" style="background-color: #377dff; border-radius: 10px;">
-         <div class="col-lg-12">
-            <div class="p-3 text-white">
-               <h5 class="mb-3 text-white">Data Encoded Agent</h5>
-               <div class="p-2" style="background-color: #5491ff; border-radius: 10px;">
-                  <label>Username: <%= current_user&.full_name %> </label>
-                  <label>Email: <%= current_user&.email %></label>
+         <div class="text-white p-3" style="background-color: #377dff; border-radius: 10px;">
+            <div class="col-lg-12 mb-2">
+               <h4 class="text-white">Data Encoded Agent</h4>
+               <div class="text-white p-2">
+                  <div class="row py-2" style="background-color: #5491ff; border-radius: 10px;">
+                     <label>Username: <%= current_user&.full_name %> </label>
+                     <label>Email: <%= current_user&.email %></label>
+                  </div>
+               </div>
+            </div>
+            <div class="col-lg-12">
+               <div class="text-white">
+                  <h4 class="text-white py-2" >Assign Agent</h4>
+                  <h5 class="text-white" >Agent Name</h5>
+                  <%= f.select :user_id, options_for_select(User.from_enrollment.map{ |user| [user.full_name, user.id] }, @enroll_group&.user_id), {prompt: 'Select Option'}, {:class => 'form-select mb-2'} %>
+                  <h5 class="text-white" >Type of Outreach</h5>
+                  <%= f.select :outreach_type, options_for_select([
+                     ['Email','email'],
+                     ['Call','call']
+                     ], @enroll_group.outreach_type), { prompt: 'Select Option' }, {:class => 'form-select'}  %>
                </div>
             </div>
          </div>
-      
-         <div class="col-lg-12">
-            <div class="p-3 text-white">
-               <h5 class="mb-3 text-white" >Assign Agent</h5>
-               <%= f.select :user_id, options_for_select(User.from_enrollment.map{ |user| [user.full_name, user.id] }, @enroll_group&.user_id), {prompt: 'Select Option'}, {:class => 'form-select mb-2'} %>
-
-               <%= f.select :outreach_type, options_for_select([
-                  ['Email','email'],
-                  ['Call','call']
-                  ], @enroll_group.outreach_type), { prompt: 'Select Option' }, {:class => 'form-select'}  %>
-                </div>
-         </div>
       </div>
-       <% end %>
-   </div>
+   <% end %>
 <script>
    $(document).ready(function () {
-    
       $(document).on("click", ".remove-dynamic-fields", function() {
             $(this).closest('.field').remove();
       });
@@ -134,11 +134,11 @@
       });
 
       $(document).on('click', '.add_questions',function() {
-          var detailsFields = $('#question-fields .field');
+          var detailsFields = $('#question-fields .question-field');
           var newQuestionFields = detailsFields.last().clone();
           var newId = new Date().getTime();
           newQuestionFields.html(newQuestionFields.html().replace(/questions_attributes\]\[\d+\]/g, "questions_attributes][" + newId + "]"));
-          $('#question-fields .field').append(newQuestionFields);
+          $('#question-fields .question-field').append(newQuestionFields);
       })
 
 

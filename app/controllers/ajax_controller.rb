@@ -12,6 +12,12 @@ class AjaxController < ApplicationController
       ProviderNpLicense.delete(id)
     elsif model == 'rn_licenses'
       ProviderRnLicense.delete(id)
+    elsif model == 'group_dco_schedules'
+      GroupDcoSchedule.delete(id)
+    elsif model == 'group_dco_qualifacts_contacts'
+      GroupDcoContact.delete(id)
+    elsif model == 'group_dco_provider_outreach_info'
+      GroupDcoProviderOutreachInformation.delete(id)
     end
 
     head :ok

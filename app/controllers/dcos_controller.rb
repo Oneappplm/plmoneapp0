@@ -11,11 +11,13 @@ class DcosController < ApplicationController
 		@dco = @enrollment_group.dcos.new
 		@dco.schedules.build
 		@dco.provider_outreach_info.build
+		@dco.group_dco_contacts.build if current_setting.qualifacts?
 	end
 
 	def edit
 		@dco.schedules.build
 		@dco.provider_outreach_info.build
+		@dco.group_dco_contacts.build if current_setting.qualifacts?
 	end
 
 	def create
@@ -23,6 +25,9 @@ class DcosController < ApplicationController
 		if @dco.save
 			redirect_to group_dcos_path(@enrollment_group), notice: 'DCO has been successfully created.'
 		else
+			@dco.schedules.build
+			@dco.provider_outreach_info.build
+			@dco.group_dco_contacts.build if current_setting.qualifacts?
 			render :new
 		end
 	end
@@ -31,6 +36,9 @@ class DcosController < ApplicationController
 		if @dco.update(dco_params)
 			redirect_to group_dcos_path(@enrollment_group), notice: 'DCO has been successfully updated.'
 		else
+			@dco.schedules.build
+			@dco.provider_outreach_info.build
+			@dco.group_dco_contacts.build if current_setting.qualifacts?
 			render :edit
 		end
 	end
@@ -51,9 +59,14 @@ class DcosController < ApplicationController
 			:service_location_phone_number, :service_location_fax_number,
 			:panel_status_to_new_patients, :panel_age_limit, :include_in_directory,
 			:dco_provider_name, :dco_provider_email, :dco_provider_phone_number,
-			:dco_provider_fax_number, :dco_provider_position, :inpatient_facility, :is_clinic, :telehealth_provider,
+			:dco_provider_fax_number, :dco_provider_position, :inpatient_facility, :is_clinic,
+			:telehealth_provider, :website, :tax_id, :facility_billing_npi, :mn_medicaid_number,
+			:wi_medicaid_number, :medicare_id_ptan, :taxonomy, :telehealth_video_conferencing_technology,
+			:is_gender_affirming_treatment, :panel_size, :is_medicare_authorized,
+			:old_address, :old_city, :old_state, :old_county, :old_zipcode, :is_old_location_primary,
 			schedules_attributes: [:id, :day, :start_time, :end_time, :_destroy],
-			provider_outreach_info_attributes: [:id, :name, :email, :phone, :fax, :position, :_destroy]
+			provider_outreach_info_attributes: [:id, :name, :email, :phone, :fax, :position, :_destroy],
+			group_dco_contacts_attributes: [:id, :department, :name, :role, :email, :phone, :_destroy]
 		)
 	end
 
