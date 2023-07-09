@@ -66,6 +66,8 @@ Rails.application.routes.draw do
   get 'get-states', to: 'ajax#get_states'
   post 'get-provider-practitioner-types', to: 'ajax#get_provider_practitioner_types'
   post 'get-provider-specialties', to: 'ajax#get_provider_specialties'
+  post 'update-timeline', to: 'ajax#update_timeline'
+  get 'get-states-with-id', to: 'ajax#get_states_with_id'
 
   resources :provider_sources do
     collection do
@@ -92,6 +94,8 @@ Rails.application.routes.draw do
     end
   end
 
+
+  resources :time_lines, path: 'time-lines'
   resources :manage_clients, path: 'manage-clients'
   resources :manage_practitioners, path: 'manage-practitioners'
   resources :work_ticklers, path: 'work-ticklers'

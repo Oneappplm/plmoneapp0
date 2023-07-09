@@ -259,8 +259,23 @@
 
 							</div>
 					</div>
+          <div class="card rounded shadow-lg p-1 px-3 mb-3">
+          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Timeline', collapse_name: 'timeline'}%>
 
-					<div class="card rounded shadow-lg p-1 px-3 mb-3  pb-5">
+            <div class="collapsible" style="<%= current_user&.is_card_open?('timeline') ? '' : 'display: none;' %>">
+            <% @provider.time_lines.each do |time_line|%>
+              <% if time_line.persisted?%>
+                <%= render partial: 'time_lines/time_line', locals: {time_line: time_line}%>
+              <% end %>
+            <% end %>
+            <a href="javascript:void(0);" class="btn btn-primary my-3 w-100" data-bs-toggle="modal" data-bs-target="#timeLineModal">
+              <!-- <i class='bx bx-plus' ></i> -->
+              Add Timeline
+            </a>
+          </div>
+          </div>
+
+					<div class="card rounded shadow-lg p-1 px-3 mb-3 pb-5">
 					<%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Comments', collapse_name: 'comments'}%>
 						<% @provider.comments.each do |comment|%>
               <%= render partial: 'comments/comment', locals: {comment: comment}%>
@@ -274,7 +289,7 @@
 
 		</div>
 	</div>
-
+<%= render "timeline_modal"%>
 
 <% content_for :js do %>
 <script>
@@ -298,6 +313,32 @@ $(document).ready(function() {
 			}
 		})
 	});
+
+
+  $('.time-line-done').on('click',function() {
+    changeTimeLineStatus($(this));
+  });
+
+  function changeTimeLineCardState(btn) {
+    var timeline_id = btn.data('timeline');
+    btn.closest('.time-line').removeClass('tl_pending');
+    btn.closest('.time-line').addClass('tl_done');
+    $('#tl_icon_'+timeline_id).find('i').remove();
+    $('#tl_icon_'+timeline_id).html('<i class="bi bi-check-circle-fill text-success"></i>');
+    btn.remove();
+  }
+
+  function changeTimeLineStatus(btn) {
+    var timeline_id = btn.data('timeline');
+    $.ajax({
+      url: '<%= update_timeline_path %>',
+      method: 'POST',
+      data:  { authenticity_token: csrfToken, timeline_id: timeline_id },
+      success: function(data) {
+        changeTimeLineCardState(btn);
+      }
+    })
+  }
 });
 
 </script>

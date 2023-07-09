@@ -3,10 +3,13 @@
         var selected_practitioner_types= stringArrayModifier('<%= @provider.selected_practitioner_types %>');
        var selected_specialties= stringArrayModifier('<%= @provider.selected_specialties %>');
        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+       getStates();
+       
        getPractitionerTypes();
        getSpecialties();
        getLanguages();
-       getStates();
+       setBirthStates();
+       getNonOfficeServiceLocationStates();
 
        function getPractitionerTypes() {
           $.ajax({
@@ -74,5 +77,37 @@
           })
       }
 
+
+      function getNonOfficeServiceLocationStates() {
+          $.ajax({
+            url: '<%= get_states_with_id_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              states = data['states']
+              VirtualSelect.init({
+                  options: data['states'],
+                  ele: '.non-office-service-location',
+                  search: true
+              });
+            }
+          })
+      }
+    
+     function setBirthStates() {
+       $.ajax({
+        url: '<%= get_states_with_id_path %>',
+        method: 'GET',
+        data: { authenticity_token: csrfToken },
+        success: function(data) {
+          states = data['states']
+          VirtualSelect.init({
+              options: data['states'],
+              ele: '.state-search-select',
+              search: true
+          });
+        }
+      })
+     }
   })
 </script>
