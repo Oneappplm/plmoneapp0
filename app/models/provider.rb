@@ -31,7 +31,7 @@ class Provider < ApplicationRecord
   belongs_to :state, class_name: 'State', foreign_key: 'state_id', required: true
 
   # has_many :taxonomies, class_name: 'ProviderTaxonomy', dependent: :destroy
-  has_many :licenses , class_name: 'ProviderLicense', dependent: :destroy
+  has_one :licenses , class_name: 'ProviderLicense', dependent: :destroy
   has_many :np_licenses , class_name: 'ProviderNpLicense', dependent: :destroy
   has_many :rn_licenses , class_name: 'ProviderRnLicense', dependent: :destroy
   has_many :service_locations , class_name: 'ProvidersServiceLocation', dependent: :destroy
@@ -66,7 +66,7 @@ class Provider < ApplicationRecord
   accepts_nested_attributes_for :ins_policies, allow_destroy: true, reject_if: :all_blank
 
   validates_presence_of :first_name, :last_name, :birth_date, :practitioner_type,
-    :ssn, :gender, :city, :state, :telephone_number, :ext, :email_address
+    :ssn, :gender, :city, :state, :telephone_number, :email_address
 
   default_scope { where(api_token: nil) }
   scope :male, -> { where(gender: 'Male') }
