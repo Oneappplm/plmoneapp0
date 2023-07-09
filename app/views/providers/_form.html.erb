@@ -311,19 +311,6 @@
             <%= f.hidden_field :telehealth_providers %>
           </div>
           <div class="row mb-3">
-            <div class="col-lg-6">
-              <!-- new field -->
-              <label class="text-dark-grey">Hire date of provider seeing patients</label>
-              <%= f.text_field :provider_hire_date_seeing_patient,  placeholder: 'Type here...', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
-            </div>
-            <div class="col-lg-6">
-              <!-- new field -->
-              <label class="text-dark-grey">Effective date of provider seeing patients</label>
-              <%= f.text_field :effective_date_seeing_patient , placeholder: 'Type here...', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
-            </div>
-          </div>
-
-          <div class="row mb-3">
             <div id="service_locations">
                <div class="row <%= show_telehealth %>" id="service_locations_fields">
                   <div class="fields">
@@ -335,6 +322,18 @@
             </div>
           </div>
         </div>
+        <div class="row mb-3">
+            <div class="col-lg-6">
+              <!-- new field -->
+              <label class="text-dark-grey">Hire date of provider seeing patients</label>
+              <%= f.text_field :provider_hire_date_seeing_patient,  placeholder: 'Type here...', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+            </div>
+            <div class="col-lg-6">
+              <!-- new field -->
+              <label class="text-dark-grey">Effective date of provider seeing patients</label>
+              <%= f.text_field :effective_date_seeing_patient , placeholder: 'Type here...', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+            </div>
+          </div>
 
     <div class="row">
       <div class="col-lg-6">
@@ -607,7 +606,6 @@
               var newPaLicense = paLicensesFields.last().clone();
               var newId = new Date().getTime();
               newPaLicense.html(newPaLicense.html().replace(/pa_licenses_attributes\]\[\d+\]/g, "pa_licenses_attributes][" + newId + "]"));
-              $("#np_licenses .fields").append(newPaLicense);
               addPaLicensesCount += 1;
 
               newPaLicense.find('.remove-dynamic-fields').attr('data-id', addPaLicensesCount);
@@ -631,9 +629,7 @@
               var deaLicensesFields = $("#dea_licenses .field");
               var newDeaLicense = deaLicensesFields.last().clone();
               var newId = new Date().getTime();
-              console.log( newId);
-              newDeaLicense.html(newDeaLicense.html().replace(/pa_licenses_attributes\]\[\d+\]/g, "pa_licenses_attributes][" + newId + "]"));
-              $("#np_licenses .fields").append(newDeaLicense);
+              newDeaLicense.html(newDeaLicense.html().replace(/dea_licenses_attributes\]\[\d+\]/g, "dea_licenses_attributes][" + newId + "]"));
               addDeaLicensesCount += 1;
 
               newDeaLicense.find('.remove-dynamic-fields').attr('data-id', addDeaLicensesCount);
@@ -680,35 +676,35 @@
 					getProviderTypes();
      
 
-			function getSelectedPractitionerTypes(provider_id) {
-				$.ajax({
-					url: '<%= get_selected_practitioner_types_path %>',
-					method: 'POST',
-					data: { authenticity_token: csrfToken, provider_id: provider_id },
-					success: function(data) {
-						selected_practitioner_types = data['selected_practitioner_types'];
-					},
-					error: function(xhr, status, error) {
-						console.log(error);
-					}
-				})
-			}
+          function getSelectedPractitionerTypes(provider_id) {
+            $.ajax({
+              url: '<%= get_selected_practitioner_types_path %>',
+              method: 'POST',
+              data: { authenticity_token: csrfToken, provider_id: provider_id },
+              success: function(data) {
+                selected_practitioner_types = data['selected_practitioner_types'];
+              },
+              error: function(xhr, status, error) {
+                console.log(error);
+              }
+            })
+          }
 
-			function getProviderTypes() {
-				$.ajax({
-					url: '<%= get_provider_types_path %>',
-					method: 'GET',
-					data: { authenticity_token: csrfToken },
-					success: function(data) {
-						VirtualSelect.init({
-								options: data['provider_types'],
-								ele: '.multi-select',
-								multiple: true,
-								showSelectedOptionsFirst: true,
-								selectedValue: selected_practitioner_types
-						});
-					}
-				})
-			}
+          function getProviderTypes() {
+            $.ajax({
+              url: '<%= get_provider_types_path %>',
+              method: 'GET',
+              data: { authenticity_token: csrfToken },
+              success: function(data) {
+                VirtualSelect.init({
+                    options: data['provider_types'],
+                    ele: '.multi-select',
+                    multiple: true,
+                    showSelectedOptionsFirst: true,
+                    selectedValue: selected_practitioner_types
+                });
+              }
+            })
+          }
       });
     </script>
