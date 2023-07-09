@@ -11,7 +11,7 @@ class EnrollGroup < ApplicationRecord
   mount_uploader :voided_bank_letter, DocumentUploader
 
 	belongs_to :group,	class_name: "EnrollmentGroup", foreign_key: "group_id", optional: true
-  validates_presence_of :first_name, :middle_name, :last_name, :telephone_number
+  validates_presence_of :first_name, :last_name, :telephone_number
 
 	default_scope { order(:id) }
   scope :completed, -> { where(status: 'completed') }
