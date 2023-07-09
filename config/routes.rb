@@ -196,6 +196,7 @@ Rails.application.routes.draw do
   get 'download-clients', to: 'pages#download_clients'
 
   namespace :webscrapers do
+    root to: 'logs#index'
     resources :alaska_states, only: [:index], path: 'state-alaska' do
       collection do
         get :crawl

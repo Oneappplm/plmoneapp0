@@ -14,7 +14,7 @@ class RoleBasedAccess < ApplicationRecord
 		:manage_clients,
 		:manage_practitioners,
 		:work_ticklers,
-    :enrollment_clients,
+  :enrollment_clients,
 	]
 	CRUD = [:create, :read, :update, :delete]
 

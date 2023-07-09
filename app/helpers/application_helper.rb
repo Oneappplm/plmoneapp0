@@ -39,7 +39,7 @@ module ApplicationHelper
 			end
 		elsif ['enrollment_providers', 'enroll_groups', 'dcos', 'groups'].include?(controller_name)
 			'enrollment_tracking'
-		elsif ['auto_verifies', 'query_reports', 'hvhs_data'].include?(controller_name)
+		elsif ['auto_verifies', 'query_reports', 'hvhs_data', 'logs'].include?(controller_name)
 			'verification_platform'
 		elsif ['view_summary', 'provider_sources'].include?(controller_name)
 			'provider_app'

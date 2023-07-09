@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_05_064648) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_08_131723) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -476,6 +476,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_05_064648) do
     t.string "license_state"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "hvhs_sams", force: :cascade do |t|
+    t.bigint "hvhs_datum_id", null: false
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "last_name"
+    t.string "suffix"
+    t.string "ssn"
+    t.boolean "primary", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["hvhs_datum_id"], name: "index_hvhs_sams_on_hvhs_datum_id"
   end
 
   create_table "languages", force: :cascade do |t|
@@ -1006,6 +1019,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_05_064648) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "webcrawler_logs", force: :cascade do |t|
+    t.string "crawler_type"
+    t.string "filepath"
+    t.string "filetype"
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "webscraper_alaska_states", force: :cascade do |t|
     t.string "program"
     t.string "license_number"
@@ -1033,6 +1055,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_05_064648) do
   end
 
   add_foreign_key "group_dcos", "enrollment_groups"
+  add_foreign_key "hvhs_sams", "hvhs_data"
   add_foreign_key "provider_licenses", "providers"
   add_foreign_key "provider_np_licenses", "providers"
   add_foreign_key "provider_rn_licenses", "providers"
