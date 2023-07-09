@@ -70,9 +70,9 @@ end
     # to jayson added if condition here to prevent extra build of attr fields on edit
 		# @provider.taxonomies.build if @provider.taxonomies.blank?
     @provider.build_licenses if @provider.licenses.blank? && current_setting.qualifacts?
-	@provider.np_licenses.build if @provider.np_licenses.blank?
-	@provider.rn_licenses.build if @provider.rn_licenses.blank?
-	@provider.service_locations.build if @provider.service_locations.blank?
+  	@provider.np_licenses.build if @provider.np_licenses.blank?
+  	@provider.rn_licenses.build if @provider.rn_licenses.blank?
+  	@provider.service_locations.build if @provider.service_locations.blank?
     @provider.pa_licenses.build if @provider.pa_licenses.blank?
     @provider.dea_licenses.build if @provider.dea_licenses.blank?
     @provider.mn_licenses.build if @provider.mn_licenses.blank?
