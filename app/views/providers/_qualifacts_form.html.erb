@@ -65,7 +65,7 @@
         <%= f.select :status, options_for_select(civil_statuses, @provider.status), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
       </div>
     </div>
-    
+
     <h3 class="mt-5 mb-2">Home Address</h3>
     <div class="row mb-3">
       <div class="col-lg-6">
@@ -151,7 +151,7 @@
           <div class="col-lg-6">
           <label class="text-dark-grey">NPI(optional)</label>
           <%= f.text_field :npi, placeholder: 'Type here...',class: 'form-control border border-dark' %>
-          </div> 
+          </div>
 
           <div class="col-lg-6">
             <!-- new field -->
@@ -159,7 +159,7 @@
             <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: 'form-control border border-dark', title: 'Copy of Certificate'%>
             <%= HtmlUtils.generate_view_link file_url: @provider.school_certificate.url %>
           </div>
-        </div>  
+        </div>
       </div>
     </div>
     <div class="row-mb-5">
@@ -496,7 +496,7 @@
                       <%= render 'service_location_fields', f: service_location_fields %>
                     <% end %>
                   </div>
-                </div>  
+                </div>
             </div>
           </div>
         </div>
@@ -618,18 +618,12 @@
     <div class="row mb-3">
       <div class="col-lg-12 mt-3">
           <h3>Documents</h3>
+          <%= link_to 'Deleted Logs', 'javascript:void(0);', class: 'btn btn-xs bg-primary text-white mb-2', "data-bs-toggle": 'modal', "data-bs-target": '#deletedLogsModal' %>
       </div>
       <div class="col-lg-6 mb-3">
         <label>State License Copy</label>
-              <%= f.file_field :state_license_copy_file, placeholder: 'State License Copy', class: 'form-control border border-dark' %>
-            <div class="d-flex justify-content-between">
-              <%= HtmlUtils.generate_view_link file_url: @provider.state_license_copy_file.url %>
-              <% if @provider.state_license_copy_file.url %>
-              <a href="javascript:void(0);" class="btn  btn-sm mt-2 btn-danger py-1 text-white">
-                <i class="bi bi-trash-fill"></i>
-              </a>
-              <% end %>
-        </div>
+        <%= f.file_field :state_license_copy_file, placeholder: 'State License Copy', class: 'form-control border border-dark' %>
+        <%= render partial: 'document', locals: { key: 'state_license_copy_file', slug: 'state-license' } %>
       </div>
       <div class="col-lg-6 mb-3">
         <label>DEA Copy</label>
@@ -674,11 +668,66 @@
     </div>
     <div class="row">
       <div class="col-lg-12 d-flex justify-content-end">
-        <button class="btn btn-primary btn-md">Submit</button>
+        <button type="submit" class="btn btn-primary btn-md">Submit</button>
       </div>
     </div>
-    <% end %>
+<% end %>
+
+
+
     <% content_for :js do %>
+
+      <!-- Modals -->
+      <div class="modal fade" id="deleteFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="">
+                        <div class="modal-title">
+                            <h1 class="mb-2">Delete existing <strong id="documentTitle">W9 Form</strong>?</h1>
+                        </div>
+                        <div class="form-row row">
+                            <div class="col-xl-12">
+                                <label for="">Note</label>
+                                <textarea name="note" id="delete-form-note" cols="30" rows="10" class="form-control"></textarea>
+
+                            </div>
+                        </div>
+                        <div class="form-row mt-3">
+                            <button id="btnDelete" class="btn btn-manage btn-danger" onclick="deleteDocument(this)" data-providerid="" data-documentholder="">Yes</button>
+                            <button id="btnCancel" class="btn btn-card-remove fw-bold text-black" data-bs-dismiss="modal" onclick="clearNote()">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deletedLogsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                  <div class="modal-body">
+                      <div class="">
+                          <div class="modal-title border-1 border-bottom mb-2">
+                              <h3>Deleted Logs</h3>
+                          </div>
+                          <div class="form-row row">
+                              <div id="deleted-logs" class="col-xl-12">
+                                <!-- loading -->
+                                <div class="d-flex justify-content-center">
+                                  <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                  </div>
+                                </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <!-- Modals -->
+
     <div class="col-lg-12">
     <%= HtmlUtils.form_add_required_attribute form_id: 'provider-form',
             required_fields: 'provider_first_name,provider_last_name,provider_birth_date,provider_practitioner_type,provider_ssn,provider_npi'
@@ -697,6 +746,74 @@
         }, 1500);
 
       });
+    </script>
+
+    <script>
+      var csrfToken = $('meta[name="csrf-token"]').attr('content');
+      var provider_id = "<%= @provider.id %>";
+      var deleteFormModals = document.querySelectorAll('#deleteFormModal');
+      var deleteButtons = document.querySelectorAll('[data-bs-target="#deleteFormModal"]');
+      var deletedLogsModal = document.getElementById('deletedLogsModal');
+      var documentTitle = document.getElementById('documentTitle');
+
+      deleteButtons.forEach(function (button) {
+          button.addEventListener('click', function (event) {
+              var providerId = button.getAttribute('data-providerid');
+              var documentholder = button.getAttribute('data-documentholder');
+              var key = button.getAttribute('data-key');
+              var title = button.getAttribute('data-title');
+              btnDelete.setAttribute('data-providerid', providerId);
+              btnDelete.setAttribute('data-documentholder', documentholder);
+              btnDelete.setAttribute('data-key', key);
+              documentTitle.innerHTML = title;
+          });
+      });
+
+      deleteFormModals.forEach(function (modal) {
+          modal.addEventListener('show.bs.modal', function () {
+            btnDelete.setAttribute('data-providerid', '');
+            btnDelete.setAttribute('data-documentholder', '');
+            btnDelete.setAttribute('data-key', '');
+            documentTitle.innerHTML = '';
+          });
+      });
+
+      deletedLogsModal.addEventListener('show.bs.modal', function(){
+        $.get("<%= document_deleted_logs_providers_path %>", { authenticity_token: csrfToken, provider_id: provider_id }, function(data){
+          var results = data['results'];
+          var html = '';
+          //  make a ul list of deleted logs
+          results.forEach(function(result){
+            html += '<p style="color: red; margin: 0;">' + result + '</p>';
+          });
+          // put it on ul tag
+          $('#deleted-logs').html(html);
+        });
+      });
+
+      function deleteDocument(btn){
+        var note = $('#delete-form-note').val();
+        if(note == ''){
+          alert('Please enter note');
+          e.preventDefault();
+          return false;
+        }
+
+        var providerid = $(btn).data('providerid');
+        var documentholder = $(btn).data('documentholder');
+        var key = $(btn).data('key');
+
+        $('.loading-overlay').show();
+        $.post("<%= delete_document_providers_path %>", {
+          authenticity_token: csrfToken, note: note, providerid: providerid, key: key
+        }, function(data){
+          $('#' + documentholder).html('<span class="text-muted">No File Uploaded</span>');
+          $('.loading-overlay').hide();
+          location.reload();
+        });
+      }
+
+      function clearNote(){$('#delete-form-note').val('');}
     </script>
     <% end %>
 
