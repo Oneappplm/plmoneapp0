@@ -115,6 +115,8 @@ Rails.application.routes.draw do
   resources :providers do
     collection do
       get "overview"
+      get :document_deleted_logs
+      post :delete_document
     end
   end
   resources :enrollments do

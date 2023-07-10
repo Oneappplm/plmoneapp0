@@ -1,0 +1,8 @@
+<div id="<%= slug %>-document-holder" class="d-flex justify-content-between">
+	<%= HtmlUtils.generate_view_link file_url: @provider.send(key).url %>
+	<% if @provider.send("#{key}?") %>
+		<%= link_to 'javascript:void(0);', class: 'btn btn-sm mt-2 btn-danger py-1 text-white', "data-bs-toggle": 'modal', "data-bs-target": '#deleteFormModal', data: { providerid: @provider.id, documentholder: "#{slug}-document-holder", key: key, title: slug.titleize } do %>
+					<i class="bi bi-trash-fill "></i>
+			<% end %>
+	<% end %>
+</div>

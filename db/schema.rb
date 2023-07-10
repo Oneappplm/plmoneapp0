@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_09_103718) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_10_052311) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -513,6 +513,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_09_103718) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "hvhs_sams", force: :cascade do |t|
+    t.bigint "hvhs_datum_id", null: false
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "last_name"
+    t.string "suffix"
+    t.string "ssn"
+    t.boolean "primary", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["hvhs_datum_id"], name: "index_hvhs_sams_on_hvhs_datum_id"
+  end
+
   create_table "languages", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -556,6 +569,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_09_103718) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_id"], name: "index_provider_dea_licenses_on_provider_id"
+  end
+
+  create_table "provider_deleted_document_logs", force: :cascade do |t|
+    t.bigint "provider_id", null: false
+    t.string "document_key"
+    t.string "title"
+    t.string "note"
+    t.string "deleted_by"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_deleted_document_logs_on_provider_id"
   end
 
   create_table "provider_ins_policies", force: :cascade do |t|
@@ -1088,6 +1113,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_09_103718) do
   end
 
   add_foreign_key "group_dcos", "enrollment_groups"
+  add_foreign_key "hvhs_sams", "hvhs_data"
+  add_foreign_key "provider_deleted_document_logs", "providers"
   add_foreign_key "provider_licenses", "providers"
   add_foreign_key "provider_np_licenses", "providers"
   add_foreign_key "provider_rn_licenses", "providers"

@@ -60,6 +60,31 @@ end
     end
   end
 
+		def document_deleted_logs
+			provider = Provider.find(params[:provider_id])
+			render json: {
+				results:  provider.deleted_document_logs.map {	|log| log.deleted_notes }
+			}
+		end
+
+		def delete_document
+			provider = Provider.find(params[:providerid])
+			key = params[:key]
+			note = params[:note]
+			provider.send("remove_#{key}!")
+			if provider.save!
+				provider.deleted_document_logs.create(
+					deleted_by: current_user&.full_name,
+					deleted_at: Time.now,
+					note: note,
+					document_key: key
+				)
+				render json:	{ success: true }
+			else
+				render	json:	{ success: false }
+			end
+		end
+
 	private
 
 	def set_provider
