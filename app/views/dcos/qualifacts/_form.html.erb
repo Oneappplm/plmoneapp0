@@ -216,7 +216,7 @@
     </div>
     <div class="col-lg-6">
       <label class="text-dark-grey">Medicare Authorized Official</label>
-			<%= f.select :is_medicare_authorized, options_for_select(yes_or_no_options, f.object.is_clinic), { prompt: 'Select option' }, { class: 'form-select', required: true } %>
+			<%= f.text_field :medicare_authorized_official, class: 'form-control', placeholder: 'Type here...', required: true %>
 		</div>
   </div>
 
@@ -250,22 +250,31 @@
 													group_dco_dco_provider_position,group_dco_inpatient_facility,group_dco_is_clinic,group_dco_telehealth_provider,group_dco_website,
 													group_dco_tax_id,group_dco_facility_billing_npi,group_dco_mn_medicaid_number,group_dco_wi_medicaid_number,group_dco_medicare_id_ptan,
 													group_dco_taxonomy,group_dco_telehealth_video_conferencing_technology,group_dco_is_gender_affirming_treatment,group_dco_panel_size,
-													group_dco_is_medicare_authorized'
+													group_dco_medicare_authorized_official'
 %>
 <script>
 	$(document).ready(function(){
 			// schedules
 			$("#schedules").on("click", ".add_association", function() {
-					var schedulesFields = $("#schedules .field .row");
-					var newSchedule = schedulesFields.last().clone();
-					console.log(schedulesFields)
-					var newId = new Date().getTime();
-					newSchedule.html(newSchedule.html().replace(/schedules_attributes\]\[\d+\]/g, "schedules_attributes][" + newId + "]"));
-					$("#schedules .fields").append(newSchedule);
+				var schedulesFields = $("#schedules .field .row");
+				var newSchedule = schedulesFields.last().clone();
+				console.log($(newSchedule).find("input"))
+				var newId = new Date().getTime();
+				newSchedule.html(newSchedule.html().replace(/schedules_attributes\]\[\d+\]/g, "schedules_attributes][" + newId + "]"));
+				$("#schedules .fields").append(newSchedule);
 
-					newSchedule.find('.remove-dynamic-fields').attr('data-id', newId);
-					newSchedule.attr('data-id', newId);
-					$("#schedules .fields").append(newSchedule);
+				$(newSchedule).find("select").each(function() {
+					$(this).val("Day")
+					$(this).find("option[selected]").first().removeAttr("selected")
+				});
+
+				$(newSchedule).find("input").each(function() {
+					$(this).val("")
+				});
+
+				newSchedule.find('.remove-dynamic-fields').attr('data-id', newId);
+				newSchedule.attr('data-id', newId);
+				$("#schedules .fields").append(newSchedule);
 			});
 
 			$("#schedules").on("click", ".remove-dynamic-fields", function() {
@@ -281,15 +290,19 @@
 			});
 			// provider outreach info
 			$("#dco-provider-outreach-info").on("click", ".add_association", function() {
-					var providerOutreachInfoFields = $("#dco-provider-outreach-info .field .provider_outreach_info_container");
-					var newProviderOutreachInfo = providerOutreachInfoFields.last().clone();
-					var newId = new Date().getTime();
-					newProviderOutreachInfo.html(newProviderOutreachInfo.html().replace(/provider_outreach_info_attributes\]\[\d+\]/g, "provider_outreach_info_attributes][" + newId + "]"));
-					$("#dco-provider-outreach-info .fields").append(newProviderOutreachInfo);
+				var providerOutreachInfoFields = $("#dco-provider-outreach-info .field .provider_outreach_info_container");
+				var newProviderOutreachInfo = providerOutreachInfoFields.last().clone();
+				var newId = new Date().getTime();
+				newProviderOutreachInfo.html(newProviderOutreachInfo.html().replace(/provider_outreach_info_attributes\]\[\d+\]/g, "provider_outreach_info_attributes][" + newId + "]"));
+				$("#dco-provider-outreach-info .fields").append(newProviderOutreachInfo);
 
-					newProviderOutreachInfo.find('.remove-dynamic-fields').attr('data-id', newId);
-					newProviderOutreachInfo.attr('data-id', newId);
-					$("#dco-provider-outreach-info .fields").append(newProviderOutreachInfo);
+				$(newProviderOutreachInfo).find("input").each(function() {
+					$(this).val("")
+				});
+
+				newProviderOutreachInfo.find('.remove-dynamic-fields').attr('data-id', newId);
+				newProviderOutreachInfo.attr('data-id', newId);
+				$("#dco-provider-outreach-info .fields").append(newProviderOutreachInfo);
 			});
 			$("#dco-provider-outreach-info").on("click", ".remove-dynamic-fields", function() {
 				var field = document.getElementsByClassName("provider_outreach_info_container");
@@ -304,16 +317,21 @@
 			});
 			// group-dco-contacts
 			$("#group-dco-contacts").on("click", ".add_association", function() {
-					var groupDcoContactsFields = $("#group-dco-contacts .field .contact_list_container");
-					var groupDcoContact = groupDcoContactsFields.last().clone();
-					var newId = new Date().getTime();
-					groupDcoContact.html(groupDcoContact.html().replace(/group_dco_contacts_attributes\]\[\d+\]/g, "group_dco_contacts_attributes][" + newId + "]"));
-					$("#group-dco-contacts .fields").append(groupDcoContact);
+				var groupDcoContactsFields = $("#group-dco-contacts .field .contact_list_container");
+				var groupDcoContact = groupDcoContactsFields.last().clone();
+				var newId = new Date().getTime();
+				groupDcoContact.html(groupDcoContact.html().replace(/group_dco_contacts_attributes\]\[\d+\]/g, "group_dco_contacts_attributes][" + newId + "]"));
+				$("#group-dco-contacts .fields").append(groupDcoContact);
 
-					groupDcoContact.find('.remove-dynamic-fields').attr('data-id', newId);
-					groupDcoContact.attr('data-id', newId);
-					$("#group-dco-contacts .fields").append(groupDcoContact);
+				$(groupDcoContact).find("input").each(function() {
+					$(this).val("")
+				});
+
+				groupDcoContact.find('.remove-dynamic-fields').attr('data-id', newId);
+				groupDcoContact.attr('data-id', newId);
+				$("#group-dco-contacts .fields").append(groupDcoContact);
 			});
+
 			$("#group-dco-contacts").on("click", ".remove-dynamic-fields", function() {
 				var field = document.getElementsByClassName("contact_list_container");
 				groupDcoContactsField = $(this).attr("data-id");
@@ -326,13 +344,6 @@
 					deleteDynamicAttr(id,model,$(this));
 				}
 			});
-
-			// $('.remove-dynamic-fields').on('click',function (){
-      //   var id = $(this).data('id');
-      //   var model = $(this).data('model');
-
-      //   deleteDynamicAttr(id,model,$(this));
-      // })
 
       function deleteDynamicAttr(id,model,button) {
         $.ajax({

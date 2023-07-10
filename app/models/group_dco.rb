@@ -10,6 +10,7 @@ class GroupDco < ApplicationRecord
   has_many :schedules, class_name: 'GroupDcoSchedule', dependent: :destroy
   has_many :provider_outreach_info, class_name: 'GroupDcoProviderOutreachInformation', dependent: :destroy
   has_many :group_dco_contacts, class_name: 'GroupDcoContact', dependent: :destroy
+  has_many :notes, class_name: 'GroupDcoNote', dependent: :destroy
 
   validate :number_of_schedules
   validate :number_of_provider_outreach_info

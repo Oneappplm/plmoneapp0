@@ -1,0 +1,49 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col" class="bg-primary text-white">Location Name</th>
+            <th scope="col" class="bg-primary text-white">Address</th>
+            <th scope="col" class="bg-primary text-white">Phone Number</th>
+            <th scope="col" class="bg-primary text-white">Fax Number</th>
+            <th scope="col" class="bg-primary text-white"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <% if @dcos %>
+            <% @dcos.each do |dco| %>
+            <% url = (action_name == 'show' ?  group_dcos_path(@enrollment_group) : group_dco_path(@enrollment_group,dco))%>
+            <tr>
+                <td><%= link_to dco.dco_name, url, class: 'text-dark-grey' %></td>
+                <td><%= link_to dco.dco_address, url,class: 'text-dark-grey' %></td>
+                <td><%= link_to dco.service_location_phone_number, url, class: 'text-dark-grey' %></td>
+                <td><%= link_to dco.service_location_fax_number, url, class: 'text-dark-grey' %></td>
+                <td scope="row">
+                <div class="d-flex gap-1">
+                    <%= link_to edit_group_dco_path(@enrollment_group, dco), class: 'text-primary' do %>
+                        <i class="bi bi-pencil"></i>
+                    <% end %>
+                    <%= button_to group_dco_path(@enrollment_group, dco), method: :delete, class: 'text-danger', style: 'border: none; background-color: transparent;' do %>
+                        <i class="bi bi-trash"></i>
+                    <% end %>
+                </div>
+
+        </td>
+            </tr>
+            <% end %>
+        <% end %>
+    </tbody>
+</table>
+<% if @dcos %>
+    <div class="col-lg-12">
+        <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+        <div class="page_info ms-3 text-black">
+            <%= page_entries_info @dcos, entry_name: "Client's Locations" %>
+        </div>
+        <% if params[:per_page ].present? %>
+            <%= will_paginate @dcos, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+        <% else %>
+            <%= will_paginate @dcos, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+        <% end %>
+        </div>
+    </div>
+<% end %>

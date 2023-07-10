@@ -1,0 +1,63 @@
+<div class="col-lg-3" style="background: #eee;">
+  <div class="row">
+      <div class="col-lg-12">
+        <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <div class="avatar-circle mt-3" style="text-align: center">
+              <img class="avatar-img" src="/dist/assets/img/400x400/img1.jpg" alt="Image Description" style="width: 100px;">
+            </div>
+            <h3 class="font-bold mb-0 text-dark-grey fw-semibold text-center my-3"><%= @dco.dco_name %></h3>
+            <span class="text-center text-dark-grey fw-semibold"><i class="bi bi-pin-map me-2"></i><%= @dco.dco_address %></span>
+            <div class="text-left mt-3">
+              <p class="mb-1"><strong>City:</strong> <%= @dco.dco_city %></p>
+              <p class="mb-1"><strong>State:</strong> <%= @dco.state %></p>
+              <p class="mb-1"><strong>Zip Code:</strong> <%= @dco.dco_zipcode %></p>
+              <p class="mb-1"><strong>Service Location Phone:</strong> <%= @dco&.service_location_phone_number %></p>
+              <p class="mb-1"><strong>Service Location Fax:</strong> <%= @dco&.service_location_fax_number %></p>
+              <p class="mb-1"><strong>Panel Status to New Patients:</strong> <%= @dco&.panel_status_to_new_patients %></p>
+              <p class="mb-1"><strong>Panel Age Limits:</strong> <%= @dco&.panel_age_limit %></p>
+              <p class="mb-1"><strong>Include in Directory?</strong> <%= @dco&.include_in_directory&.titleize %></p>
+              <p class="mb-1"><strong>Is this location an inpatient facility?</strong> <%= @dco&.inpatient_facility&.titleize %></p>
+              <p class="mb-1"><strong>Is this location a clinic?:</strong> <%= @dco&.is_clinic&.titleize %></p>
+              <p class="mb-1"><strong>Are you a Telehealth services provider?</strong> <%= @dco&.telehealth_provider&.titleize %></p>
+            </div>
+        </div>
+      </div>
+  </div>
+  <div class="row">
+      <div class="col-lg-12">
+        <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'DCO Provider Outreach Info', collapse_name: 'dco_outreach' }%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('dco_outreach') ? '' : 'display: none;' %>">
+            <% @dco.provider_outreach_info.each do |dco| %>
+            <div class="mb-4">
+              <p class="mb-0"><strong>Name:</strong> <%= dco&.name %></p>
+              <p class="mb-0"><strong>Email:</strong> <%= dco&.email %> </p>
+              <p class="mb-0"><strong>Phone Number:</strong> <%= dco&.phone %></p>
+              <p class="mb-0"><strong>Fax Number:</strong> <%= dco&.fax %></p>
+              <p class="mb-0"><strong>Position:</strong> <%= dco&.position %></p>
+            </div>
+            <% end %>
+            </div>
+        </div>
+      </div>
+  </div>
+  <div class="row">
+      <div class="col-lg-12">
+        <div class="card rounded shadow-lg p-1 px-3 mb-3">
+
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Schedules', collapse_name: 'schedules' }%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('schedules') ? '' : 'display: none;' %>">
+            <% @dco.schedules.each do |sched|%>
+            <div class="d-flex gap-2 mb-1">
+            <% days_options.each do |day|%>
+              <span class="<%= day[0] == sched.day ? 'bg-primary' : 'border'%> d-flex p-2 <%= day[0] == sched.day ? 'text-white' : 'text-dark-grey'%> justify-content-center align-items-center" style="border-radius: 50%;width:30px;height: 30px;"><%= day[1]%></span>
+            <% end %>
+            </div>
+              <p class="m-0"><strong>Start time:</strong> <%= sched.start_time %></p>
+              <p class="m-b"><strong>End time:</strong> <%= sched.end_time %></p>
+            <% end %>
+            </div>
+        </div>
+      </div>
+  </div>
+</div>
