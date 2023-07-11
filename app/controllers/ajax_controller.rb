@@ -24,9 +24,16 @@ class AjaxController < ApplicationController
       ProviderCnpLicense.delete(id)
     elsif model == 'ins_policies'
       ProviderInsPolicy.delete(id)
+    elsif model == 'group_dco_notes'
+      GroupDcoContact.delete(id)
     end
 
     head :ok
+  end
+
+  def create_group_dco_note
+    @group_dco_note = GroupDcoNote.create(group_dco_notes_params)
+    render json: { html: render_to_string(partial: 'dcos/qualifacts/group_dco_note', locals: { group_dco_note: @group_dco_note }).html_safe }
   end
 
   def get_group_dcos
@@ -272,5 +279,13 @@ class AjaxController < ApplicationController
     timeline = ProvidersTimeLine.find(timeline_id)
     timeline.update_attribute('status','done')
     head :ok
+  end
+
+  protected
+
+  def group_dco_notes_params
+    params.require(:data).permit(
+      :title, :description, :group_dco_id
+    )
   end
 end
