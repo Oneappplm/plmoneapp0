@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_10_052311) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_10_131546) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -409,6 +409,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_10_052311) do
     t.index ["group_dco_id"], name: "index_group_dco_contacts_on_group_dco_id"
   end
 
+  create_table "group_dco_notes", force: :cascade do |t|
+    t.bigint "group_dco_id"
+    t.string "title"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_dco_id"], name: "index_group_dco_notes_on_group_dco_id"
+  end
+
   create_table "group_dco_provider_outreach_informations", force: :cascade do |t|
     t.bigint "group_dco_id"
     t.string "name"
@@ -471,7 +480,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_10_052311) do
     t.string "telehealth_video_conferencing_technology"
     t.string "is_gender_affirming_treatment"
     t.string "panel_size"
-    t.string "is_medicare_authorized"
+    t.string "medicare_authorized_official"
     t.index ["enrollment_group_id"], name: "index_group_dcos_on_enrollment_group_id"
   end
 
