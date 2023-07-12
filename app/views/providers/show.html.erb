@@ -263,7 +263,7 @@
           <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Timeline', collapse_name: 'timeline'}%>
 
             <div class="collapsible" style="<%= current_user&.is_card_open?('timeline') ? '' : 'display: none;' %>">
-            <% @provider.time_lines.each do |time_line|%>
+            <% @provider.time_lines.not_deleted.each do |time_line|%>
               <% if time_line.persisted?%>
                 <%= render partial: 'time_lines/time_line', locals: {time_line: time_line}%>
               <% end %>
@@ -291,6 +291,12 @@
 	</div>
 <%= render "timeline_modal"%>
 
+ <% @provider.time_lines.not_deleted.each do |time_line|%>
+    <% if time_line.persisted?%>
+      <%= render partial: 'time_lines/edit_timeline_modal', locals: {time_line: time_line}%>
+    <% end %>
+<% end %>
+
 <% content_for :js do %>
 <script>
 var deleteComment;
@@ -317,6 +323,11 @@ $(document).ready(function() {
 
   $('.time-line-done').on('click',function() {
     changeTimeLineStatus($(this));
+  });
+
+  $('.time-line-options-toggle').on('click',function(){
+    $(this).parent().find('.time-line-options').toggle();
+    // $(this).parent().find('.time-line-options').removeClass('d-none');
   });
 
   function changeTimeLineCardState(btn) {
