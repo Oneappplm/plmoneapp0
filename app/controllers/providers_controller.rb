@@ -140,7 +140,7 @@ end
           :caqh_question,
           :caqh_answer,
           :caqh_notes,
-					:licensed_registered_state_id,
+          :caqh_state,
           :taxonomy,
           :specialty,
           :provider_effective_date,
