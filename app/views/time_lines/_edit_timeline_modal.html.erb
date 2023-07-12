@@ -1,0 +1,35 @@
+    <div class="modal fade" id="edittimeLineModal<%= time_line.id%>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="content">
+                      <h3 class="text-center">Edit Timeline</h3>
+                        <%= form_for time_line, url: time_line_path(time_line), method: :put do |f|%>
+                          <div class="row">
+                            <div class="col-lg-12 mb-3">
+                              <label class="text-dark-grey">Title</label>
+                              <%= f.text_field :title, class: 'form-control border-dark', placeholder: 'Type here...' %>
+                            </div>
+                            <div class="col-lg-12 mb-3">
+                              <label class="text-dark-grey">Due Date</label>
+                              <%= f.date_field :due_date, class: 'form-control border-dark', placeholder: 'Type here...' %>
+                            </div>
+
+                            <div class="col-lg-12 mb-3">
+                              <label class="text-dark-grey">Notes</label>
+                              <%= f.text_area :notes, class: 'form-control border-dark', placeholder: 'Type here...'%>
+                            </div>
+                            <%= f.hidden_field :provider_id %>
+                            <div class="col-lg-12 mb-3">
+                              <%= f.submit 'Update Timeline', class: 'btn btn-primary w-100'%>
+                            </div>
+                            <div class="col-lg-12">
+                                <a href="javascript:void(0);" class="btn btn-cancel w-100" data-bs-dismiss="modal">Cancel</a>
+                            </div>
+                          </div>
+                        <% end %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

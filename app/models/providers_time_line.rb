@@ -1,6 +1,9 @@
 class ProvidersTimeLine < ApplicationRecord
   belongs_to :provider
   after_create :notify_provider
+ 
+  scope :not_deleted, -> { where.not(status: 'deleted') }
+
 
   def notify_provider
     return unless provider.present? && provider.email_address.present?

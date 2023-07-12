@@ -7,9 +7,18 @@
     <div class="col-lg-11">
       <div class="d-flex justify-content-between">
         <span class="text-black"><%= time_line.created_at&.strftime("%m/%d/%Y")%></span>
-        <a href="javascript:void(0);" class="text-black">
-          <!-- <i class="bi bi-three-dots-vertical"></i> -->
-        </a>
+        <div class="position-relative">
+           <a href="javascript:void(0);" class="text-black time-line-options-toggle">
+              <i class="bi bi-three-dots-vertical"></i>
+            </a>
+            <div class="position-absolute time-line-options">
+              <a href="#" class="text-primary"  data-bs-toggle="modal" data-bs-target="#edittimeLineModal<%=time_line.id%>">
+                <i class="bi bi-pencil-square"></i><span class="ms-2">Edit</span></a>
+              <%= button_to time_line_path(time_line), class: 'text-danger btn btn-xs px-0 ms-1', method: :delete, data: {confirm: 'Do you want to delete timeline?'} do %>
+              <i class="bi bi-trash-fill"></i><span class="ms-1">Delete</span>
+              <% end %>
+            </div>
+        </div>
       </div>
       <div>
         <p class="text-black fw-semibold my-0"><%= time_line.title %></p>
