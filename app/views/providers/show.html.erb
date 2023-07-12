@@ -261,7 +261,50 @@
 					</div>
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3  pb-5">
-					<%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Comments', collapse_name: 'comments'}%>
+						<%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Timeline', collapse_name: 'timeline'}%>
+						<% @provider.provider_timelines.each do |timeline|%>
+							<%= render 'timeline', f: timeline %>
+            <% end %>
+						<a href="" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTimeline" >
+							<span class="mx-1">Add Timeline</span>
+						</a>
+					</div>
+					<div class="modal fade" id="addTimeline" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="">
+                                <div class="modal-title">
+                                    <h1 class="mb-2 text-center">Add New Timeline</h1>
+                                    <!-- <p>Providers: 17 selected</p> -->
+                                </div>
+                                <div class="form-row row">
+                                    <div class="col-xl-12">
+                                        <label for="">Title</label>
+                                        <input type="text" name="title" class="form-control" placeholder="Type here...">
+                                    </div>
+                                    <div class="col-xl-12">
+                                        <label for="">Due Date</label>
+                                        <input type="date" name="due_date" class="form-control" placeholder="">
+                                    </div>
+																		<div class="col-xl-12">
+                                        <label for="">Note</label>
+																				<textarea id="note" name="note" class="form-control" value="" cols="40" rows="5" placeholder="Type here..."></textarea>
+                                    </div>
+																		<input type="hidden" id="provider_id" name="providerId" value="<%= @provider.id %>">
+                                </div>
+                                <div class="form-row mt-3">
+                                    <button class="btn btn-manage btn-primary" onclick="sendTimeline()">Add Timeline</button>
+                                    <button class="btn btn-card-remove fw-bold text-black" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+					<div class="card rounded shadow-lg p-1 px-3 mb-3  pb-5">
+						<%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Comments', collapse_name: 'comments'}%>
 						<% @provider.comments.each do |comment|%>
               <%= render partial: 'comments/comment', locals: {comment: comment}%>
             <% end %>
@@ -298,7 +341,60 @@ $(document).ready(function() {
 			}
 		})
 	});
-});
+
+	$(".provider-timeline").on("click", ".remove-timeline-fields", function() {
+		var element = document.getElementById("timeline-menu");
+   	element.classList.toggle("timeline-menu-active");
+	});
+});	
+
+
+function sendTimeline(){
+	var title = $('input[name="title"]').val();
+	var due_date = $('input[name="due_date"]').val();
+	console.log($('#note').val())
+	var note = document.getElementById("note").value;
+	var provider_id = $('#note').val();
+	// Check if any required fields are empty
+	if (title === '' || due_date === '' || note === '') {
+			// Handle validation error (one or more required fields are empty)
+			alert('Please fill in all required fields.');
+			return;
+	}
+
+	$('.loading-overlay').show(); //
+
+	// Add a delay before making the AJAX request (e.g., 2 seconds)
+	setTimeout(function() {
+			// Prepare the data to be sent
+			var data = {
+			title: title,
+			due_date: due_date,
+			note: note,
+			provider_id: provider_id,
+			authenticity_token:  $('meta[name="csrf-token"]').attr('content')
+			};
+
+			// Make the AJAX request
+			$.ajax({
+					url: "<%= add_provider_timeline_path %>",
+					type: 'POST',
+					data: data,
+					success: function(response) {
+							// Handle the success response here
+							console.log(response);
+							// Display a success message or perform any other actions
+							$('.loading-overlay').hide();
+					},
+					error: function(xhr, status, error) {
+							// Handle the error response here
+							alert(xhr.responseText);
+							// Display an error message or perform any other actions
+							$('.loading-overlay').hide();
+					}
+			});
+	}, 2000); // Adjust the delay time (in milliseconds) as needed
+}
 
 </script>
 <% end %>

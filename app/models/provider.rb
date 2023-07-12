@@ -32,6 +32,7 @@ class Provider < ApplicationRecord
   has_many :rn_licenses , class_name: 'ProviderRnLicense', dependent: :destroy
   has_many :service_locations , class_name: 'ProvidersServiceLocation', dependent: :destroy
   has_many :comments, class_name: 'EnrollmentComment'
+  has_many :provider_timelines, class_name: 'ProviderTimeline'
   # made it like this to prepare if needed to be multiple
   has_many :pa_licenses, class_name: 'ProviderPaLicense', dependent: :destroy
   has_many :dea_licenses, class_name: 'ProviderDeaLicense', dependent: :destroy

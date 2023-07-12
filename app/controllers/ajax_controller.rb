@@ -94,6 +94,26 @@ class AjaxController < ApplicationController
       }
   end
 
+  def get_provider_timelines
+    timelines = ProviderTimelines.all
+
+    render json: {
+      'provider_timelines' => timelines
+    }
+  end
+
+  def add_provider_timeline
+    timeline = ProviderTimeline.new
+    timeline.title = params[:title]
+    timeline.due_date = params[:due_date]
+    timeline.notes = params[:note]
+    timeline.provider_id = params[:provider_id]
+    timeline.save
+
+    head :ok
+  end
+  
+
   def get_selected_practitioner_types
     provider_practitioner_type = Provider.find(params[:provider_id])
     selected_practitioner_types = (provider_practitioner_type.selected_practitioner_types || [])
@@ -201,6 +221,7 @@ class AjaxController < ApplicationController
   def get_languages
     languages = Language.all.map{|m| { label: m.name, value: m.name} }
     # render json: provider_types and return
+    raise languages.inspect
     render json: {
       'languages' => languages
     }

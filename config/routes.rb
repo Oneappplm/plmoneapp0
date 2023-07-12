@@ -38,6 +38,8 @@ Rails.application.routes.draw do
   post 'change-enrollment-status', to: 'ajax#change_enrollment_status'
   get 'get-provider-types', to: 'ajax#get_provider_types'
   post 'get-selected-provider-types', to: 'ajax#get_selected_provider_types'
+  post 'add-provider-timeline', to: 'ajax#add_provider_timeline'
+  get 'get-provider-timelines', to: 'ajax#get_provider_timelines'
   post 'get-selected-practitioner-types', to: 'ajax#get_selected_practitioner_types'
   get 'get-ps-provider-types', to: 'ajax#get_ps_provider_types'
   post 'get-selected-ps-provider-types', to: 'ajax#get_selected_ps_provider_types'
@@ -106,6 +108,7 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :timelines
   resources :providers do
     collection do
       get "overview"
