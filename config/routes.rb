@@ -246,6 +246,7 @@ Rails.application.routes.draw do
       get :training_types
       get :privilege_statuses
       get :providers
+      get :enrollment_payers
       # add more here
     end
   end

@@ -37,7 +37,7 @@ class EnrollmentProvider < ApplicationRecord
   scope :today, -> { where(created_at: DateTime.now) }
   scope :this_week, -> { where(created_at: DateTime.now.beginning_of_week..DateTime.now.end_of_month) }
 
-	belongs_to :provider
+	belongs_to :provider, optional: true
 
 	has_one :client_provider_enrollment, as: :enrollable, dependent: :destroy
 	has_many :details, class_name: 'EnrollmentProvidersDetail', dependent: :destroy

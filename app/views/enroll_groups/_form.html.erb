@@ -119,6 +119,26 @@
          </div>
       </div>
    <% end %>
+
+<%= content_for :js do %>
+<script>
+   $(document).ready(function(){
+    $('.enrollment-payor').each(function(){
+      var id = $(this).attr('id');
+      var value = $(this).data('value');
+      
+      setTimeout(function(){
+         $.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
+            VirtualSelect.init({ele: '#' + id, search: true });
+            document.querySelector('#' + id).setOptions(data['result']);
+            document.querySelector('#' + id).setValue(value);
+         });
+      }, 1000);
+    });
+   });
+</script>
+<% end %>
+
 <script>
    $(document).ready(function () {
       $(document).on("click", ".remove-dynamic-fields", function() {
@@ -128,18 +148,28 @@
       $("#details").on("click", ".add_association", function () {
          var detailsFields = $("#details .field");
          var newEnrollmentdetails = detailsFields.last().clone();
-         var newId = new Date().getTime();
-         newEnrollmentdetails.html(newEnrollmentdetails.html().replace(/details_attributes\]\[\d+\]/g, "details_attributes][" + newId + "]"));
+         var lastId = detailsFields.length - 1;
+         var newId = lastId + 1;
+         var id = "enroll_group_details_attributes_" + newId + "_enrollment_payer";
+
+         // Update the IDs in the cloned HTML content
+         newEnrollmentdetails.find("[id^='enroll_group_details_attributes_']").each(function() {
+            var oldId = $(this).attr("id");
+            var newIdValue = oldId.replace(/\d+/, newId);
+            $(this).attr("id", newIdValue);
+            $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
+         });
+
+         setTimeout(function(){
+            $.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
+               VirtualSelect.init({ele: '#' + id, search: true }); // initialze virtual select first
+               document.querySelector('#' + id).setOptions(data['result']); // other alternative for initializing collection data
+               document.querySelector('#' + id).setValue(value); // other alternative for setting the value
+            });
+         }, 500);
+
          $("#details .fields").append(newEnrollmentdetails);
       });
-
-      $(document).on('click', '.add_questions',function() {
-          var detailsFields = $('#question-fields .question-field');
-          var newQuestionFields = detailsFields.last().clone();
-          var newId = new Date().getTime();
-          newQuestionFields.html(newQuestionFields.html().replace(/questions_attributes\]\[\d+\]/g, "questions_attributes][" + newId + "]"));
-          $('#question-fields .question-field').append(newQuestionFields);
-      })
 
 
       // $(document).on('change', '.multi-enrollment-status', function () {
@@ -188,4 +218,46 @@
       }
 
    })
+
+   // For searcheable enrollment payers
+var selected_enrollment_payers = [];
+var enroll_group_id = "<%= @enroll_group.id %>";
+$(document).ready(function() {
+  setTimeout(function() {
+    getEnrollmentPayers();
+  }, 500);
+});
+
+var enrollment_payers = [];
+function getEnrollmentPayers() {
+  $.ajax({
+    url: '<%= enrollment_payers_multi_select_data_path %>',
+    method: 'GET',
+    data: {
+      authenticity_token: csrfToken,
+      enroll_group_id: enroll_group_id
+    },
+    success: function(data) {
+      VirtualSelect.init({
+        options: data['result'],
+        ele: '#enrollment-payor',
+        multiple: false,
+        search: true,
+        showSelectedOptionsFirst: true,
+        selectedValue: data['options']['selected_enrollment_payor'],
+      });
+    }
+  });
+}
 </script>
+
+<style>
+  .multi-select {
+    padding: 0;
+  }
+  .enrollment-payor {
+    width: 100%;
+    max-width: 1000px;
+    padding: 0;
+   }
+</style>

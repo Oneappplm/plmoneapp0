@@ -20,11 +20,13 @@ class EnrollmentProvidersController < ApplicationController
 
 	def create
 		@enrollment_provider = EnrollmentProvider.new(enrollment_provider_params)
+		#binding.break
 		@enrollment_provider.enrolled_by = current_user&.full_name
 		if @enrollment_provider.save
 			@enrollment_provider.update_columns(
 				provider_id: params[:provider_id],
-				outreach_type:	params[:outreach_type]
+				outreach_type:	params[:outreach_type],
+				enrollment_payer: params[:enrollment_payer]
 			)
 			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
 			redirect_to redirect_url, notice: 'Enrollment Provider has been successfully created.'
@@ -37,8 +39,10 @@ class EnrollmentProvidersController < ApplicationController
 		if @enrollment_provider.update(enrollment_provider_params)
 			@enrollment_provider.update_columns(
 				provider_id: params[:provider_id],
-				outreach_type:	params[:outreach_type]
+				outreach_type:	params[:outreach_type],
+				enrollment_payer: params[:enrollment_payer]
 			)
+			#binding.break
 			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
 			redirect_to redirect_url, notice: 'Enrollment Provider has been successfully updated.'
 		else
@@ -101,7 +105,7 @@ class EnrollmentProvidersController < ApplicationController
 			:user_id,
 			:outreach_type,
       details_attributes: [:id, :start_date, :due_date,
-                           :enrollment_payer, :enrollment_type, :enrollment_status,
+                           :enrollment_payer, :enrollment_type, :enrollment_status, :payer_state,
                            :approved_date, :revalidation_date, :revalidation_due_date,
                            :comment, :ptan_number, :provider_ptan, :group_ptan,
                            :enrollment_tracking_id, :enrollment_effective_date,
