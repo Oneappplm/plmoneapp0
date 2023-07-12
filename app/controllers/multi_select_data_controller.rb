@@ -53,6 +53,20 @@ class MultiSelectDataController < ApplicationController
 			send_result Provider.all.map { |provider| { label: provider.provider_name, value: provider.id } }, selected_provider: enrollment_provider&.provider_id
 		end
 	end
+
+	def enrollment_payers
+    enrollment_payer = params[:enrollment_payer]
+    if ['selected_enrollment_payer'].include?(enrollment_payer)
+      enrollment_provider = EnrollmentProvider.find_by(id: enrollment_provider_id)
+      send_result EnrollmentPayer.all.map { |m| { label: m.name, value: m.name } }, selected_enrollment_payer: enrollment_provider&.enrollment_payer
+    elsif ['selected_enrollment_payor'].include?(enrollment_payer)
+      enroll_group_id = params[:enroll_group_id]
+      enroll_group = EnrollGroup.find_by(id: enroll_group_id)
+      send_result EnrollmentPayer.all.map { |m| { label: m.name, value: m.name } }, selected_enrollment_payor: enroll_group&.enrollment_payer
+    else
+      send_result EnrollmentPayer.all.map { |m| { label: m.name, value: m.name } }
+    end
+  end
 	# add more methods here
 
 	private
