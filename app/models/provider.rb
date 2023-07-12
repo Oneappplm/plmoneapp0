@@ -70,9 +70,32 @@ class Provider < ApplicationRecord
   scope :female, -> { where(gender: 'Female') }
   scope :non_binary, -> { where(gender: 'Non Binary') }
 
+  class << self
+    def search_by_params(params)
+      return all if client_portal_conditions(params).values.all?(&:blank?)
+
+      where(client_portal_conditions(params).reject { |k, v| v.blank? }.compact)
+    end
+
+    def client_portal_conditions(params)
+      {
+        enrollment_group_id: params[:provider_enrollment_group_id],
+        first_name: params[:first_name],
+        middle_name: params[:middle_name],
+        last_name: params[:last_name],
+        practitioner_type: params[:practitioner_type],
+        npi: params[:npi],
+        ssn: params[:ssn],
+        dco: params[:provider_dco]
+      }
+    end
+  end
 
   def provider_name = "#{first_name} #{middle_name} #{last_name}"
   def from_provider_title = "Local Provider"
+  def client = group
+  def location = group_dco
+  def practitioner = selected_practitioner_types.join(',') rescue nil
 
   def enrollments
     EnrollmentProvider.where(provider_id: self.id)
