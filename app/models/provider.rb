@@ -74,7 +74,16 @@ class Provider < ApplicationRecord
     def search_by_params(params)
       return all if client_portal_conditions(params).values.all?(&:blank?)
 
-      where(client_portal_conditions(params).reject { |k, v| v.blank? }.compact)
+      results = if params[:practitioner_type].present?
+        practitioner_types = params[:practitioner_type].split(',').map(&:strip).reject(&:blank?)
+        conditions = practitioner_types.map { |type| "practitioner_type ILIKE ?" }
+        wildcards = practitioner_types.map { |type| "%#{type}%" }
+
+        where(client_portal_conditions(params.except(:practitioner_type)).reject { |k, v| v.blank? }.compact)
+          .where(conditions.join(" OR "), *wildcards)
+      else
+        where(client_portal_conditions(params).reject { |k, v| v.blank? }.compact)
+      end
     end
 
     def client_portal_conditions(params)
