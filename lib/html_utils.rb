@@ -69,10 +69,41 @@ module HtmlUtils
 
     option = <<-HTML
       <label class="text-dark-grey">#{ options[:label] }</label>
-      <div class="#{ options[:multiple] ? 'multi' : 'single'}-select multi-select-#{ options[:name] } form-select border-dark" name="#{ options[:name] }" id="#{ options[:name] }" placeholder="#{ options[:label] }" ></div>
+      <div class="#{ options[:multiple] ? 'multi' : 'single' }-select multi-select-#{ options[:name] } form-select border-dark" name="#{ options[:name] }" id="#{ options[:name] }" placeholder="#{ options[:label] }" ></div>
     HTML
 
     option.html_safe
+  end
+
+  def virtual_select **options
+    options[:collection] ||= []
+    options[:id] ||= ''
+    options[:search] ||= true
+    options[:hide_clear_button] ||= true
+    options[:multiple] ||= false
+    options[:mark_search_results] ||= true
+    options[:show_value_as_tags] ||= false
+    options[:selected_value] ||= ''
+
+    script = <<-HTML
+      <script>
+        $(document).ready(function(){
+          var collection = '#{ options[:collection] }';
+          VirtualSelect.init({
+            ele: '##{ options[:id]}',
+            options: collection,
+            search: '#{ options[:search] }',
+            hideClearButton: '#{ options[:hide_clear_button] }',
+            multiple: '#{ options[:multiple] }',
+            markSearchResults: '#{ options[:mark_search_results] }',
+            showValueAsTags: '#{ options[:show_value_as_tags] }',
+            selectedValue: '#{ options[:selected_value] }'
+          });
+        });
+      </script>
+    HTML
+
+    script.html_safe
   end
 
   def generate_view_link **options

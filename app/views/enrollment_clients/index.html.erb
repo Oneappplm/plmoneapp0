@@ -1,3 +1,9 @@
+<style>
+   .vscomp-ele{
+      max-width: inherit;
+      padding: 0;
+   }
+</style>
 <div class="content container-fluid">
    <div class="row">
       <div class="col-xl-12">
@@ -8,14 +14,11 @@
                   <div class="row mt-3">
                      <div class="col-xl-4">
                         <label for="">Provider Status</label>
-                        <select name="" id="" class="form-select">
-                           <option value="">Select option</option>
-                        </select>
+                        <%= select_tag('status', options_for_select([['Active', 'active'], ['Terminated','terminated']]), class: 'form-select', prompt: 'Select option')%>
                      </div>
                      <div class="col-xl-4">
                         <label for="">Client</label>
                         <%= select_tag('provider_enrollment_group_id', options_for_select(groups.pluck(:group_name, :id)), class: 'form-select', prompt: 'Select option')%>
-
                      </div>
                      <div class="col-xl-4">
                         <label for="">DCO/Organization</label>
@@ -39,7 +42,10 @@
                   <div class="row mt-3">
                      <div class="col-xl-4">
                         <label for="">Practitioner Type</label>
-                        <%= select_tag('practitioner_type', options_for_select(provider_types.map{|m| [m.fch, m.fch]}),class: 'form-select', prompt: 'Select option')%>
+                        <%= select_tag('practitioner_type', options_for_select(provider_types.map{|m| [m.fch, m.fch]}), class: 'form-control',  prompt: 'Select option')%>
+                        <%= content_for :js do %>
+                           <%= HtmlUtils::virtual_select id: 'practitioner_type', collection: provider_types.map{|m| {label: m.fch, value: m.fch} }, multiple: true %>
+                        <% end %>
                      </div>
                      <div class="col-xl-4">
                         <label for="">NPI</label>
@@ -98,7 +104,7 @@
                <tbody>
                   <% @providers.each do |provider| %>
                   <tr>
-                     <td></td>
+                     <td><%= provider&.status&.upcase %></td>
                      <td><%= provider&.client&.group_name %></td>
                      <td><%= provider&.location&.dco_name %></td>
                      <td><%= provider&.first_name %></td>

@@ -79,11 +79,12 @@ class Provider < ApplicationRecord
 
     def client_portal_conditions(params)
       {
+        status: params[:status],
         enrollment_group_id: params[:provider_enrollment_group_id],
         first_name: params[:first_name],
         middle_name: params[:middle_name],
         last_name: params[:last_name],
-        practitioner_type: params[:practitioner_type],
+        practitioner_type: params[:practitioner_type].split(','),
         npi: params[:npi],
         ssn: params[:ssn],
         dco: params[:provider_dco]
