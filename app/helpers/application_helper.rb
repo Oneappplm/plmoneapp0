@@ -341,6 +341,13 @@ module ApplicationHelper
     ]
   end
 
+		def provider_statuses
+			[
+				['Active','active'],
+				['Terminated','terminated']
+		]
+		end
+
   def time_line_class(status)
     cls = "danger"
     if status == 'done'
