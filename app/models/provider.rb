@@ -84,7 +84,7 @@ class Provider < ApplicationRecord
         first_name: params[:first_name],
         middle_name: params[:middle_name],
         last_name: params[:last_name],
-        practitioner_type: params[:practitioner_type].split(','),
+        practitioner_type: params[:practitioner_type].split(',') rescue '',
         npi: params[:npi],
         ssn: params[:ssn],
         dco: params[:provider_dco]
