@@ -9,12 +9,15 @@ class DcosController < ApplicationController
 
 	def new
 		@dco = @enrollment_group.dcos.new
-		@dco.schedules.build
-		@dco.provider_outreach_info.build
-		@dco.group_dco_contacts.build if current_setting.qualifacts?
+		@dco.schedules.build if !@dco.schedules.present?
+		@dco.provider_outreach_info.build if !@dco.provider_outreach_info.present?
+		@dco.group_dco_contacts.build if current_setting.qualifacts? && !@dco.group_dco_contacts.present?
 	end
 
 	def edit
+		@dco.schedules.build if !@dco.schedules.present?
+		@dco.provider_outreach_info.build if !@dco.provider_outreach_info.present?
+		@dco.group_dco_contacts.build if current_setting.qualifacts? && !@dco.group_dco_contacts.present?
 	end
 
 	def create
@@ -22,9 +25,9 @@ class DcosController < ApplicationController
 		if @dco.save
 			redirect_to group_dcos_path(@enrollment_group), notice: 'DCO has been successfully created.'
 		else
-			@dco.schedules.build
-			@dco.provider_outreach_info.build
-			@dco.group_dco_contacts.build if current_setting.qualifacts?
+			@dco.schedules.build if !@dco.schedules.present?
+			@dco.provider_outreach_info.build if !@dco.provider_outreach_info.present?
+			@dco.group_dco_contacts.build if current_setting.qualifacts? && !@dco.group_dco_contacts.present?
 			render :new
 		end
 	end
@@ -33,6 +36,9 @@ class DcosController < ApplicationController
 		if @dco.update(dco_params)
 			redirect_to group_dcos_path(@enrollment_group), notice: 'DCO has been successfully updated.'
 		else
+			@dco.schedules.build if !@dco.schedules.present?
+			@dco.provider_outreach_info.build if !@dco.provider_outreach_info.present?
+			@dco.group_dco_contacts.build if current_setting.qualifacts? && !@dco.group_dco_contacts.present?
 			render :edit
 		end
 	end
@@ -56,7 +62,7 @@ class DcosController < ApplicationController
 			:dco_provider_fax_number, :dco_provider_position, :inpatient_facility, :is_clinic,
 			:telehealth_provider, :website, :tax_id, :facility_billing_npi, :mn_medicaid_number,
 			:wi_medicaid_number, :medicare_id_ptan, :taxonomy, :telehealth_video_conferencing_technology,
-			:is_gender_affirming_treatment, :panel_size, :medicare_authorized_official,
+			:is_gender_affirming_treatment, :panel_size, :medicare_authorized_official, :collab_npi, :collab_name,
 			:old_address, :old_city, :old_state, :old_county, :old_zipcode, :is_old_location_primary,
 			schedules_attributes: [:id, :day, :start_time, :end_time, :_destroy],
 			provider_outreach_info_attributes: [:id, :name, :email, :phone, :fax, :position, :_destroy],

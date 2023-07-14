@@ -142,6 +142,7 @@ Rails.application.routes.draw do
     end
   end
   resources :enrollment_providers, path: 'enrollment-providers'
+  resources :client_provider_enrollments, path: 'client-provider-enrollments', only: [:index, :show]
   resources :enroll_groups, path: 'enrollment-groups'
   resources :enrollment_clients, path: 'enrollment-clients' do
     collection do

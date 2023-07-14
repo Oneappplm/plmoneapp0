@@ -1,0 +1,92 @@
+<div class="col-lg-4"  style="background-color: #eee;">
+  <div class="row my-3 mb-2">
+    <div class="col-lg-12">
+      <div class="card rounded shadow-lg p-2">
+        <p class="text-dark-grey fw-semibold mb-1">Enrolled by: <%= client_provider_enrollment.enrollable&.enrolled_by %> </p>
+        <p class="text-dark-grey fw-semibold mb-1">Enrolled: <%= client_provider_enrollment.enrollable&.created_at&.strftime('%B %d, %Y') %> </p>
+      </div>
+    </div>
+  </div>
+  <div class="row my-3 mb-3">
+    <div class="col-lg-12">
+      <div class="card rounded shadow-lg p-2">
+        <p class="text-dark-grey fw-semibold mb-1">Assigned Agent: <%= client_provider_enrollment.enrollable.assigned_agent&.full_name %> </p>
+        <p class="text-dark-grey fw-semibold mb-1">Type of outreach: <%= client_provider_enrollment.enrollable&.outreach_type&.titleize  %> </p>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-lg-6">
+      <a href="javascript:void(0);" data-model="enroll_groups" data-status="completed" class="btn bg-white btn-lg btn-outline-success w-100 <%= client_provider_enrollment.enrollable.status != 'completed' ? 'enrollment-update-status' : ' unavailable disabled'%>">
+        <span class="text-dark-grey">
+          Mark as Complete
+        </span>
+      </a>
+    </div>
+    <div class="col-lg-6">
+      <a href="javascript:void(0);" data-model="enroll_groups" data-status="callback" class="btn bg-white btn-lg btn-outline-primary w-100 <%= client_provider_enrollment.enrollable.status != 'callback' ? 'enrollment-update-status' : ' unavailable disabled'%>">
+        <span class="text-dark-grey">
+          Schedule for Callback
+        </span>
+      </a>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-lg-12">
+      <div class="card rounded shadow-lg p-1 px-3 mb-3">
+        <span class="fw-semibold mt-2 text-white rounded px-1" style="background: #3bc539; width: 70%;" id="status_identified">ID: <%= client_provider_enrollment.enrollable.id %> <%= "Enrollment #{client_provider_enrollment.enrollable&.status&.titleize}"%></span>
+        <div class="avatar-circle mt-3" style="text-align: center">
+          <img class="avatar-img" src="../dist/assets/img/400x400/img1.jpg" alt="Image Description" style="width: 100px;">
+        </div>
+        <h3 class="font-bold mb-3 text-center my-3"><%= client_provider_enrollment.enrollable.group&.group_name %></h3>
+        <p class="text-dark-grey text-center mb-0"><strong>Name of person who can answer questions related to enrollment for the group</strong></p>
+        <p class="text-dark-grey my-1"><strong>Telephone: </strong> <%= client_provider_enrollment.enrollable.telephone_number%></p>
+        <p class="text-dark-grey my-1"><strong>Email: </strong> <%= client_provider_enrollment.enrollable.email %></p>
+        <p class="text-dark-grey my-1"><strong>Medical PTAN: </strong> <%= client_provider_enrollment.enrollable.medicare_ptan %></p>
+        <p class="text-dark-grey my-1"><strong>Medicaid Group Number: </strong> <%= client_provider_enrollment.enrollable.medicaid_group_number %></p>
+        <p class="text-dark-grey my-1"><strong>BCBS Number: </strong> <%= client_provider_enrollment.enrollable.bcbs_number %></p>
+        <p class="text-dark-grey my-1 mb-2"><strong>Are you enrolled in TRICARE: </strong> <%= client_provider_enrollment.enrollable.tricate_military&.upcase %></p>
+        <p class="text-dark-grey my-1"><strong>Commercial Name: </strong> <%= client_provider_enrollment.enrollable.commercial_name %></p>
+        <p class="text-dark-grey my-1 mb-2"><strong>Contracted: </strong> <%= client_provider_enrollment.enrollable.contracted&.upcase %></p>
+        <p class="text-dark-grey my-1"><strong>Has the group recently been revalidated with any payor?  </strong> <%= client_provider_enrollment.enrollable.revalidated&.upcase %></p>
+        <p class="text-dark-grey my-1 mb-2"><strong>Payer Name:  </strong> <%= client_provider_enrollment.enrollable.revalidated_payer_name %></p>
+        <p class="text-dark-grey my-1"><strong>Are there currently any group applications or contracts in process at a payer?   </strong> <%= client_provider_enrollment.enrollable.application_contracts&.upcase %></p>
+        <p class="text-dark-grey my-1 mb-2"><strong>Payer Name:  </strong> <%= client_provider_enrollment.enrollable.revalidated_payer_name %></p>
+        <p class="text-dark-grey my-1 mb-2"><strong>Is the group participating with Medicare?   </strong> <%= client_provider_enrollment.enrollable.with_medicare&.upcase %></p>
+        <p class="text-dark-grey my-1 mb-2"><strong>Do you currently have EFT (Electronic Fund Transfer) established?  </strong> <%= client_provider_enrollment.enrollable.with_eft&.upcase %></p>
+        <p class="text-dark-grey my-1 mb-2"><strong>EDI (Electronic Data Interchange) Do you  want us to indicate "yes" on applications?</strong> <%= client_provider_enrollment.enrollable.with_edi&.upcase %></p>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-3 d-none">
+    <div class="col-lg-12">
+      <div class="card rounded shadow-lg p-1 px-3 mb-3">
+        <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Enrollment Details', collapse_name: 'enrollment_details'}%>
+        <div class="collapsible" style="<%= current_user&.is_card_open?('licenses') ? '' : 'display: none;' %>">
+          <% client_provider_enrollment.enrollable.details.each do |detail|%>
+            <p class="text-dark-grey my-1"><strong>Start Date: </strong><%= detail.start_date&.strftime('%B %d, %Y') %></p>
+            <p class="text-dark-grey my-1"><strong>End Date:</strong> <%= detail.due_date&.strftime('%B %d, %Y') %></p>
+            <p class="text-dark-grey my-1"><strong>Enrollment Payer:</strong> <%= detail.enrollment_payer %></p>
+            <p class="text-dark-grey my-1"><strong>Enrollment Type:</strong> <%= detail.start_date %><%= detail.enrollment_type %></p>
+            <p class="text-dark-grey my-1"><strong>Status of Enrollment:</strong> <%= detail.enrollment_status&.titleize %></p>
+
+            <p class="text-dark-grey my-1"><strong>Approved Date:</strong> <%= detail.approved_date&.strftime('%B %d, %Y') %></p>
+            <p class="text-dark-grey my-1"><strong>Revalidation Date:</strong> <%= detail.revalidation_date&.strftime('%B %d, %Y') %></p>
+            <p class="text-dark-grey my-1"><strong>Revalidation Due Date:</strong> <%= detail.revalidation_due_date&.strftime('%B %d, %Y') %></p>
+            <p class="text-dark-grey my-1"><strong>Comment: </strong> <%= detail.comment %></p>
+            <hr>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row-mb-3 d-none">
+    <div class="card rounded shadow-lg p-1 px-3 mb-3  pb-5">
+      <h3 class="text-center my-3">Comments</h3>
+      <% client_provider_enrollment.enrollable.comments.each do |comment|%>
+        <%= render partial: 'comments/comment', locals: {comment: comment}%>
+      <% end %>
+      <%= render partial: 'comments/form', comment: @comment %>
+    </div>
+  </div>
+</div>

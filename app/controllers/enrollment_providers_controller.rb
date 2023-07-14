@@ -26,7 +26,8 @@ class EnrollmentProvidersController < ApplicationController
 				provider_id: params[:provider_id],
 				outreach_type:	params[:outreach_type]
 			)
-			redirect_to enrollment_providers_path, notice: 'Enrollment Provider has been successfully created.'
+			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
+			redirect_to redirect_url, notice: 'Enrollment Provider has been successfully created.'
 		else
 			render 'new'
 		end
@@ -38,17 +39,19 @@ class EnrollmentProvidersController < ApplicationController
 				provider_id: params[:provider_id],
 				outreach_type:	params[:outreach_type]
 			)
-			redirect_to enrollment_providers_path, notice: 'Enrollment Provider has been successfully updated.'
+			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
+			redirect_to redirect_url, notice: 'Enrollment Provider has been successfully updated.'
 		else
 			render 'edit'
 		end
 	end
 
 	def destroy
+		redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
 		if @enrollment_provider.destroy
-			redirect_to enrollment_providers_path, notice: 'Enrollment Provider has been successfully deleted.'
+			redirect_to redirect_url, notice: 'Enrollment Provider has been successfully deleted.'
 		else
-			redirect_to enrollment_providers_path, alert: 'Something went wrong'
+			redirect_to redirect_url, alert: 'Something went wrong'
 		end
 	end
 

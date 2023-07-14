@@ -1,0 +1,18 @@
+class ClientProviderEnrollmentsController < ApplicationController
+	before_action :set_client_provider_enrollment, only: [:show]
+  before_action :set_client_provider_enrollments, only: [:show, :index]
+  def show
+    @comment = EnrollmentComment.new
+  end
+
+  def index; end
+
+  protected
+
+	def set_client_provider_enrollment
+		@client_provider_enrollment = ClientProviderEnrollment.find(params[:id])
+	end
+  def set_client_provider_enrollments
+		@client_provider_enrollments = ClientProviderEnrollment.search_by_params(params)
+  end
+end

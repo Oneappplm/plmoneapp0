@@ -1,0 +1,48 @@
+<% if client_provider_enrollment.enrollable_type == "EnrollGroup" %>
+  <% url = (action_name == 'show' ?  client_provider_enrollments_path : client_provider_enrollment_path(client_provider_enrollment))%>
+  <% name = client_provider_enrollment.enrollable&.group&.group_name %>
+  <% type = client_provider_enrollment.enrollable&.group&.provider_type%>
+  <% npi = client_provider_enrollment.enrollable&.npi%>
+  <% ssn = client_provider_enrollment.enrollable&.ssn%>
+  <% edit_path = edit_enroll_group_path(client_provider_enrollment.enrollable)%>
+  <% delete_path = enroll_group_path(client_provider_enrollment.enrollable)%>
+<% else %>
+  <% url = (action_name == 'show' ?  client_provider_enrollments_path : client_provider_enrollment_path(client_provider_enrollment))%>
+  <% name = client_provider_enrollment.enrollable&.provider_name %>
+  <% type = client_provider_enrollment.enrollable&.provider&.practitioner_type%>
+  <% npi = client_provider_enrollment.enrollable&.provider&.npi%>
+  <% ssn = client_provider_enrollment.enrollable&.provider&.ssn%>
+  <% edit_path = edit_enrollment_provider_path(client_provider_enrollment.enrollable)%>
+  <% delete_path = enrollment_provider_path(client_provider_enrollment.enrollable)%>
+<% end %>
+
+<tr>
+	<td scope="row">
+    <%= link_to url, class: 'text-dark-grey' do %>
+      <%= name %>
+    <% end %>
+  </td>
+	<td scope="row">
+    <%= link_to url, class: 'text-dark-grey' do %>
+      <%= type %>
+    <% end %>
+  </td>
+	<td scope="row">
+    <%= link_to url, class: 'text-dark-grey' do %>
+      <%= npi %>
+    <% end %>
+  </td>
+	<td scope="row">
+    <%= link_to url, class: 'text-dark-grey' do %>
+      <%= ssn %>
+    <% end %>
+    <div class="d-flex gap-2" style="float:right;">
+      <%= link_to edit_path, class: 'text-primary' do %>
+        <i class="bi bi-pencil"></i>
+      <% end %>
+      <%= button_to delete_path, method: :delete, class: 'text-danger', style: 'border: none; background-color: transparent;' do %>
+        <i class="bi bi-trash"></i>
+      <% end %>
+    </div>
+  </td>
+</tr>

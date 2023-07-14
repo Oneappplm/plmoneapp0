@@ -25,7 +25,7 @@ class AjaxController < ApplicationController
     elsif model == 'ins_policies'
       ProviderInsPolicy.delete(id)
     elsif model == 'group_dco_notes'
-      GroupDcoContact.delete(id)
+      GroupDcoNote.delete(id)
     end
 
     head :ok

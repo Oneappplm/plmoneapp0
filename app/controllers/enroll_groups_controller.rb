@@ -21,7 +21,8 @@ class EnrollGroupsController < ApplicationController
 	def create
 		@enroll_group = EnrollGroup.new(enroll_group_params)
 		if @enroll_group.save
-			redirect_to enroll_groups_path, notice: 'Enrollment Group has been successfully created.'
+			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
+			redirect_to redirect_url, notice: 'Enrollment Group has been successfully created.'
 		else
 			render 'new'
 		end
@@ -29,17 +30,19 @@ class EnrollGroupsController < ApplicationController
 
 	def update
 		if @enroll_group.update(enroll_group_params)
-			redirect_to enroll_groups_path, notice: 'Enrollment Group has been successfully updated.'
+			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
+			redirect_to redirect_url, notice: 'Enrollment Group has been successfully updated.'
 		else
 			render 'edit'
 		end
 	end
 
 	def destroy
+		redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enroll_groups_path
 		if @enroll_group.destroy
-			redirect_to enroll_groups_path, notice: 'Enrollment Group has been successfully deleted.'
+			redirect_to redirect_url, notice: 'Enrollment Group has been successfully deleted.'
 		else
-			redirect_to enroll_groups_path, alert: 'Something went wrong'
+			redirect_to redirect_url, alert: 'Something went wrong'
 		end
 	end
 
