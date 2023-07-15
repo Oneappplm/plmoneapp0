@@ -157,4 +157,25 @@ class Provider < ApplicationRecord
   rescue
     ''
   end
+
+  def fullname
+    "#{self.first_name} #{self.last_name}"
+  end
+
+  def selected_birth_state
+    State.find(self.birth_state)
+  rescue
+    nil
+  end
+
+  def formatted_phone
+    "#{self.ext} #{self.telephone_number}"
+    rescue nil
+  end
+
+  def licensed_registered_state
+    State.find(self.birth_state)
+  rescue
+    nil
+  end
 end

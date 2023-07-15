@@ -1,0 +1,31 @@
+<h3 class="text-primary">DEA License</h3>
+<% @provider.dea_licenses.each do |dea_license|%>
+<div class="row mb-1">
+   <div class="col-lg-6">
+      <label>DEA License Number</label>
+      <p class="text-black fw-semibold"><%= dea_license.dea_license_number %></p>
+   </div>
+   <div class="col-lg-6">
+      <label>DEA License Effective Date</label>
+      <p class="text-black fw-semibold"><%= dea_license.dea_license_effective_date&.strftime('%B %d, %Y') %></p>
+   </div>
+</div>
+<div class="row mb-1">
+   <div class="col-lg-6">
+      <label>DEA Registration State</label>
+      <p class="text-black fw-semibold"><%= dea_license.state&.name %></p>
+   </div>
+   <div class="col-lg-6">
+      <label>DEA License Expiration Date</label>
+      <p class="text-black fw-semibold"><%= dea_license.dea_license_expiration_date&.strftime('%B %d, %Y') %></p>
+   </div>
+</div>
+<% end %>
+
+<% if @provider.dea_licenses.blank? %>
+<div class="row mb-1">
+   <div class="col-lg-12">
+      <label>No DEA License record to show</label>
+   </div>
+</div>
+<% end %>

@@ -1,7 +1,14 @@
 class EnrollmentClientsController < ApplicationController
   before_action :set_providers, only: [:index, :download_documents]
-
+  before_action :set_provider, only: [:show]
   def index; end
+
+
+  def show
+    if params[:page].present?
+      render params[:page]
+    end
+  end
 
   def providers_to_csv
     CSV.generate(headers: true) do |csv|
@@ -30,6 +37,10 @@ class EnrollmentClientsController < ApplicationController
   end
 
   protected
+
+  def set_provider
+    @provider = Provider.find(params[:id])
+  end
   def set_providers
     @providers = Provider.search_by_params(params).paginate(per_page: 50, page: params[:page] || 1)
   end

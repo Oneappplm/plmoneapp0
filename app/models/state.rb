@@ -2,6 +2,8 @@ class State < ApplicationRecord
 	validates_uniqueness_of :name, :alpha_code
 
   has_many :providers
+  has_many :dea_licenses, class_name: 'ProviderDeaLicense'
+  has_many :state_licenses, class_name: 'ProviderLicense'
 
   def self.providers_count
     State.select(:alpha_code, :name, :color, 'COUNT(providers.id) AS providers_count').joins(:providers).group(:alpha_code, :name, :color)

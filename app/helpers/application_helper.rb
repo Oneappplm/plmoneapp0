@@ -363,4 +363,16 @@ module ApplicationHelper
     end
     icon
   end
+
+  def provider_uploaded_files_titles
+    [
+      'State License Copy',
+      'DEA Copy', 'W9 Form',
+      'Certificate of Insurance',
+      'Driver’s License',
+      'License Registered State',
+      'CAQH App Copy','Curriculum Vitae (CV)',
+      'Telehealth License Copy'
+    ]
+  end
 end

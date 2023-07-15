@@ -1,0 +1,42 @@
+<div class="content container-fluid">
+  <%= render "enrollment_clients/nav"%>
+
+   <% @provider.enrollments.each do |enrollment|%>
+   <% enrollment.details.each do |detail|%>
+   <div class="row mb-3">
+     <div class="col-lg-12 card p-3">
+        <div class="w-100 d-flex justify-content-between">
+           <h3 class="text-primary"><%= detail.enrollment_payer %></h3>
+           <a href="javascript:void(0);" class="text-black fw-semibold collapsible-trigger" data-collapse="provider_enrollment_<%= detail.id%>">
+           <i class="bi bi-sort-up rotate-180" style="font-size: 18px;"></i>
+           </a>
+        </div>
+      <div class="w-100 collapsible" id="provider_enrollment_<%= detail.id%>">
+        <div class="row">
+          <div class="col-lg-2">
+            <label>Enrollment Type</label>
+            <p class="text-black fw-semibold"><%= detail.enrollment_type %></p>
+          </div>
+          <div class="col-lg-2">
+            <label>Application Status</label>
+            <p class="text-black fw-semibold"><%= detail.enrollment_status&.titleize %></p>
+          </div>
+          <div class="col-lg-2">
+            <label>Provider ID</label>
+            <p class="text-black fw-semibold"><%= detail.provider_id %></p>
+          </div>
+          <div class="col-lg-2">
+            <label>Group ID</label>
+            <p class="text-black fw-semibold"><%= detail.group_id %></p>
+          </div>
+          <div class="col-lg-2">
+            <label>Notes</label>
+            <p class="text-black fw-semibold"><%= detail.comment %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% end %>
+  <% end %>
+ </div>
