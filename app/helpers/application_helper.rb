@@ -37,7 +37,7 @@ module ApplicationHelper
 			else
 			'provider_app'
 			end
-		elsif ['enrollment_providers', 'enroll_groups', 'dcos', 'groups'].include?(controller_name)
+		elsif ['enrollment_providers', 'enroll_groups', 'dcos', 'groups', 'client_provider_enrollments'].include?(controller_name)
 			'enrollment_tracking'
 		elsif ['auto_verifies', 'query_reports', 'hvhs_data', 'logs'].include?(controller_name)
 			'verification_platform'
