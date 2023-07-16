@@ -94,7 +94,7 @@ class EnrollGroupsController < ApplicationController
 					:outreach_type,
           :dco,
           # details_attributes: [:id, :start_date, :due_date, :enrollment_payer, :enrollment_type, :enrollment_status, :approved_date, :revalidation_date, :revalidation_due_date, :comment, :ptan_number ,:_destroy],
-          details_attributes: [ :id, :state_id, :group_number, :enrollment_payer, :payer, :effective_date, :revalidation_date,
+          details_attributes: [ :id, :payer_state, :group_number, :enrollment_payer, :payer, :effective_date, :revalidation_date,
                       :application_status, :payor_type, :medicare_tricare, :payor_name,
                       :payor_phone, :payor_email, :enrollment_link, :payor_username, :payor_password,
                       :payor_question, :payor_answer, :portal_admin, :portal_admin_name,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_13_150545) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_16_071642) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -227,6 +227,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_13_150545) do
     t.string "client_notes"
     t.string "notes"
     t.string "password_digest"
+    t.string "payer_state"
     t.index ["enroll_group_id"], name: "index_enroll_groups_details_on_enroll_group_id"
   end
 
