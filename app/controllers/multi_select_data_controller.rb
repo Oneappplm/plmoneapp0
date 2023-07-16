@@ -1,6 +1,17 @@
 class MultiSelectDataController < ApplicationController
 	def states
-		send_result State.all.map{ |state| { label: "#{state.name} - #{state.alpha_code}", value: state.alpha_code } }
+		payer_state = params[:payer_state]
+    if ['selected_state'].include?(payer_state)
+      enrollment_provider = EnrollmentProvider.find_by(id: enrollment_provider_id)
+      send_result State.all.map{ |state| { label: "#{state.name} - #{state.alpha_code}", value: state.alpha_code } }, selected_state: enrollment_provider&.payer_state
+    elsif ['selected_state'].include?(payer_state)
+      enroll_group_id = params[:enroll_group_id]
+      enroll_group = EnrollGroup.find_by(id: enroll_group_id)
+      send_result State.all.map{ |state| { label: "#{state.name} - #{state.alpha_code}", value: state.alpha_code } }, selected_state: enroll_group&.payer_state
+    else
+			send_result State.all.map{ |state| { label: "#{state.name} - #{state.alpha_code}", value: state.alpha_code } }
+    end
+		
 	end
 
 	def provider_types

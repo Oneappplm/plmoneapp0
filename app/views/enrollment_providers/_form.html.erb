@@ -119,6 +119,21 @@
       }, 1000);
     });
    });
+
+    $(document).ready(function(){
+    $('.payer-state').each(function(){
+      var id = $(this).attr('id');
+      var value = $(this).data('value');
+      
+      setTimeout(function(){
+         $.get('<%= states_multi_select_data_path %>', function(data){
+            VirtualSelect.init({ele: '#' + id, search: true });
+            document.querySelector('#' + id).setOptions(data['result']);
+            document.querySelector('#' + id).setValue(value);
+         });
+      }, 1000);
+    });
+   });
 </script>
 <% end %>
 
@@ -131,6 +146,7 @@
          var lastId = detailsFields.length - 1;
          var newId = lastId + 1;
          var id = "enrollment_provider_details_attributes_" + newId + "_enrollment_payer";
+         var id = "enrollment_provider_details_attributes_" + newId + "_payer_state";
 
          // Update the IDs in the cloned HTML content
          newEnrollmentdetails.find("[id^='enrollment_provider_details_attributes_']").each(function() {
@@ -230,10 +246,9 @@
   .multi-select {
     padding: 0;
   }
-  .enrollment-payer {
+  .single-select {
     width: 100%;
     max-width: 1000px;
     padding: 0;
    }
-
 </style>
