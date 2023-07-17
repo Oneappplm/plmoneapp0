@@ -17,4 +17,14 @@ class EnrollmentProvidersDetail < ApplicationRecord
   scope :meridian, -> {where(enrollment_payer: 'meridian')}
   scope :priority_health, -> {where(enrollment_payer: 'priority_health')}
   scope :medicaid, -> {where(enrollment_payer: 'medicaid')}
+
+  after_save :update_enrollment_status_logs, if: :enrollment_status_changed?
+
+  private
+
+  def update_enrollment_status_logs
+    log_entry = "#{Date.today.strftime('%m/%d/%Y')}: Application Status changed to #{enrollment_status}"
+    self.status_logs = [log_entry] + status_logs
+    save
+  end
 end
