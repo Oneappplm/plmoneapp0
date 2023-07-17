@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   include PgSearch::Model
+  include DynamicRolesInitializer
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :invitable, :database_authenticatable, :registerable,
@@ -45,7 +46,7 @@ class User < ApplicationRecord
   before_create :generate_api_token
 
   scope :from_enrollment, -> { where(from_source: 'enrollment')}
-  scope :not_admin, -> { where.not(user_role: 'administrator') }
+  scope :not_admin, -> { where.not(user_role: ['super_administrator', 'administrator']) }
   scope :admins, -> { where(user_role: 'administrator') }
   # Ex:- scope :active, -> {where(:active => true)}
 
@@ -79,6 +80,33 @@ class User < ApplicationRecord
     def admin
       find_by(user_role: 'administrator')
     end
+
+    def superadmin
+      find_by(user_role: 'super_administrator')
+    end
+  end
+
+  def not_allowed_to_view?(role = nil)
+    find_excluded_roles.include?(role)
+  end
+
+  def allowed_roles
+    excluded_roles = find_excluded_roles
+
+    Role.all.map do |role|
+      next if excluded_roles.include?(role.slug)
+
+      [role.name, role.slug]
+    end.compact
+  end
+
+  def find_excluded_roles
+    case user_role
+      when 'administrator'
+        ['super_administrator']
+      else
+        []
+    end
   end
 
   def role = user_role&.titleize
@@ -111,10 +139,6 @@ class User < ApplicationRecord
     self.sidebar_preferences.find_by(collapse_name: collapse_name).is_open
     rescue
       true
-  end
-
-  def admin?
-    user_role == 'administrator'
   end
 
   def generate_api_token

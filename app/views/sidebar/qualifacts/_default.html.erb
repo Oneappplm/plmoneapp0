@@ -24,13 +24,13 @@
 													<% end %>
 
 
-													<% if (can_view?('client_portal') || can_view?('enrollment_clients')) && current_setting.plmhealthoneapp? || current_setting.qualifacts? %>
+													<% if can_view?('enrollment_clients') && (current_setting.plmhealthoneapp? || current_setting.qualifacts?) %>
 													<div class="nav-item mb-1">
 																<a class="nav-link <%= active_menu('enrollment_clients', 'index') %> <%= active_menu('index') %>" href="<%= enrollment_clients_path %>" data-placement="left">
 																			<!-- <i class="bi-receipt nav-icon"></i> -->
 																			<!-- <i class="bi bi-person nav-icon"></i> -->
 																			<i class="bi bi-geo-fill nav-icon"></i>
-																			<span class="nav-link-title">Client Portal</span>
+																			<span class="nav-link-title">Enrollment Clients</span>
 																</a>
 													</div>
 													<% end %>
@@ -56,8 +56,9 @@
 													<% end %>
 
 
-													<% if can_view?('enrollment_tracking') && current_setting.plmhealthoneapp? || !current_setting.hvhs? %>
+													<% if can_view?('enrollment_tracking') && (current_setting.plmhealthoneapp? || current_setting.qualifacts?) %>
 													<div class="nav-item mb-2">
+
 																<a class="nav-link <%= active_menu('providers,enrollments,enrollment_providers,enroll_groups,client_provider_enrollments') %> <%= current_setting.qualifacts? ? active_menu('dcos') : "" %>" href="<%= overview_providers_path %>" data-placement="left">
 																			<i class="bi bi-person nav-icon"></i>
 																			<span class="nav-link-title">Enrollment Tracking</span>
@@ -99,7 +100,7 @@
 													</div>
 													<% end %>
 
-													<% if current_user&.admin? && can_view?('settings') %>
+													<% if (current_user&.super_administrator? || current_user.administrator?) && can_view?('settings') %>
 													<div class="nav-item mb-2">
 														<div class="d-flex with-submenu align-items-center justify-content-between pe-3 <%= active_menu('role_based_accesses,roles,users') %>">
 																		<a class="nav-link has-submenu" href="javascript:void(0);" data-placement="left" data-submenu="client_submenu">

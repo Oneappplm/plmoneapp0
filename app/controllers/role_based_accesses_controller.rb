@@ -15,12 +15,12 @@ class RoleBasedAccessesController < ApplicationController
 	end
 
 	def can_read?
-		return if current_user&.admin?
+		return if current_user&.super_administrator? || current_user&.administrator?
 		super
 	end
 
 	def can_update?
-		return if current_user&.admin?
+		return if current_user&.super_administrator? || current_user&.administrator?
 		super
 	end
 end

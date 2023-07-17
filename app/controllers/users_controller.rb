@@ -56,9 +56,9 @@ class UsersController < ApplicationController
 
 	def initialize_users
 		@users = if params[:user_search].present?
-			User.not_admin.search(params[:user_search]).paginate(per_page: 10, page: params[:page] || 1)
+			User.search(params[:user_search]).paginate(per_page: 10, page: params[:page] || 1)
 		else
-			User.not_admin.paginate(per_page: 10, page: params[:page] || 1)
+			User.paginate(per_page: 10, page: params[:page] || 1)
 		end
 	end
 

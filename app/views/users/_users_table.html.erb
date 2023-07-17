@@ -11,6 +11,8 @@
   <tbody>
     <% if @users %>
       <% @users.each do |user| %>
+      <% next if current_user.email == user.email %>
+      <% next if current_user.not_allowed_to_view?(user.user_role)%>
       <tr>
         <td scope="row"><%= user.full_name %></td>
         <td><%= user.email %></td>

@@ -10,6 +10,7 @@
   </thead>
   <tbody>
     <% @roles.each do |role| %>
+    <% next if current_user.not_allowed_to_view?(role.slug)%>
     <tr>
       <td scope="row"><%= role.name %></td>
       <th scope="row">
