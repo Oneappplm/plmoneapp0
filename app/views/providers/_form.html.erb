@@ -15,8 +15,8 @@
 
     <div class="row mb-3">
       <div class="col-lg-4">
-        <label class="text-dark-grey">First Name </label>
-        <%= f.text_field :first_name, class: 'form-control border border-dark', required: true ,placeholder: 'Type here...' %>
+        <label class="text-dark-grey">First Name</label>
+        <%= f.text_field :first_name, class: form_control_classes(danger: @provider.first_name.blank? && @provider.persisted?), placeholder: 'Type here...', id: 'first-name-input' %>
       </div>
       <div class="col-lg-2">
         <label class="text-dark-grey">Middle Name(optional)</label>
@@ -24,7 +24,7 @@
       </div>
       <div class="col-lg-4">
         <label class="text-dark-grey">Last Name </label>
-        <%= f.text_field :last_name, class: 'form-control border border-dark', required: true, placeholder: 'Type here...' %>
+        <%= f.text_field :last_name, class: form_control_classes(danger: @provider.last_name.blank? && @provider.persisted?), placeholder: 'Type here...' %>
       </div>
       <div class="col-lg-2">
         <label class="text-dark-grey">Suffix(optional)</label>
@@ -38,21 +38,21 @@
       </div>
       <div class="col-lg-4">
         <label class="text-dark-grey">SSN </label>
-        <%= f.text_field :ssn, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+        <%= f.text_field :ssn, class: form_control_classes(danger: @provider.ssn.blank? && @provider.persisted?), placeholder: 'Type here...' %>
       </div>
       <div class="col-lg-4">
         <label class="text-dark-grey">Date of Birth </label>
-        <%= f.text_field :birth_date, placeholder: 'MM-DD-YYYY', required: true ,class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+        <%= f.text_field :birth_date, placeholder: 'MM-DD-YYYY', class: form_control_classes(danger: @provider.birth_date.blank? && @provider.persisted?), onfocus: "(this.type = 'date')" %>
       </div>
       </div>
     <div class="row mb-3">
       <div class="col-lg-4">
         <label class="text-dark-grey">Birth City </label>
-        <%= f.text_field :birth_city, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+        <%= f.text_field :birth_city, class: form_control_classes(danger: @provider.birth_city.blank? && @provider.persisted?), placeholder: 'Type here...' %>
       </div>
       <div class="col-lg-4">
         <label class="text-dark-grey">Birth State</label>
-        <%= f.select :birth_state, options_for_select(states.pluck(:name, :id), @provider.birth_state), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
+        <%= f.select :birth_state, options_for_select(states.pluck(:name, :id), @provider.birth_state), {prompt: 'Select Option'}, {class: form_select_classes(danger: @provider.birth_state.blank? && @provider.persisted?)}  %>
       </div>
     </div>
 
@@ -61,7 +61,7 @@
       <div class="col-lg-6">
         <!-- new field -->
         <label class="text-dark-grey">Address Line 1</label>
-        <%= f.text_field :address_line_1, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+        <%= f.text_field :address_line_1, placeholder: 'Type here...', class: form_control_classes(danger: @provider.address_line_1.blank? && @provider.persisted?) %>
       </div>
       <div class="col-lg-6">
         <!-- new field -->
@@ -73,19 +73,19 @@
       <div class="col-lg-6">
         <!-- new field -->
         <label class="text-dark-grey">City</label>
-        <%= f.text_field :city, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+        <%= f.text_field :city, placeholder: 'Type here...', class: form_control_classes(danger: @provider.city.blank? && @provider.persisted?) %>
       </div>
       <div class="col-lg-6">
         <!-- new field -->
         <label class="text-dark-grey">State</label>
-        <%= f.select :state_id, options_for_select(states.pluck(:name, :id), @provider.state_id), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
+        <%= f.select :state_id, options_for_select(states.pluck(:name, :id), @provider.state_id), {prompt: 'Select Option'}, {class: form_select_classes(danger: @provider.state_id.blank? && @provider.persisted?)}  %>
       </div>
     </div>
       <div class="row mb-3">
       <div class="col-lg-6">
         <!-- new field -->
         <label class="text-dark-grey">Zipcode</label>
-        <%= f.text_field :zip_code, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+        <%= f.text_field :zip_code, placeholder: 'Type here...', class: form_control_classes(danger: @provider.zip_code.blank? && @provider.persisted?) %>
       </div>
     </div>
     <div class="row mb-3">
@@ -131,8 +131,8 @@
           </div>
           <div class="col-lg-6">
             <!-- new field -->
-            <label class="text-dark-grey">Copy of Certificate(optional)</label>
-            <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: 'form-control border border-dark', title: 'Copy of Certificate'%>
+            <label class="text-dark-grey">Copy of Certificate</label>
+            <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: form_control_classes(danger: @provider.school_certificate.blank? && @provider.persisted?), title: 'Copy of Certificate'%>
             <%= HtmlUtils.generate_view_link file_url: @provider.school_certificate.url %>
           </div>
         </div>
@@ -149,19 +149,20 @@
           <h3 class="mt-5 mb-2">Practitioner Type Details</h3>
       </div>
       <div class="row mb-3">
+       <div class="col-lg-6">
+        <%= HtmlUtils::dropdown name: 'provider[practitioner_type]', label: 'Practitioner Type', multiple: true, value: @provider.practitioner_type %>
+      </div>
+      </div>
+      <div class="row mb-3">
         <div class="col-lg-6">
-					<%= HtmlUtils::dropdown name: 'provider[practitioner_type]', label: 'Practitioner Type *', multiple: true %>
-				</div>
-      </div>
-      <div class="row mb-3 mt-2">
-      <div id="taxonomies">
-         <div class="fields">
-            <%= f.fields_for :taxonomies do |taxonomy_fields| %>
-              <%= render 'taxonomy_fields', f: taxonomy_fields %>
-            <% end %>
-         </div>
-      </div>
-    </div>
+          <label class="text-dark-grey">Taxonomy Code</label>
+          <%= f.text_field :taxonomy, placeholder:'Type here...', class: form_control_classes(danger: @provider.taxonomy.blank? && @provider.persisted?) %>
+        </div>
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Specialty</label>
+          <%= f.collection_select :specialty, specialties, :bcbs, :bcbs, { prompt: 'Select Option' }, { class: form_select_classes(danger: @provider.specialty.blank? && @provider.persisted?) } %>
+        </div>
+      </div>  
     </div>
 
     <div class="row mb-3 mt-2">
@@ -261,7 +262,7 @@
     <div class="row mb-3">
       <div class="col-lg-6">
         <label class="text-dark-grey">CAQH PDF Date Received(optional)</label>
-        <%= f.text_field :caqh_pdf_date_received, required: true ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+        <%= f.text_field :caqh_pdf_date_received, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
       </div>
       <div class="col-lg-6">
         <label class="text-dark-grey">CAQH Username(optional)</label>
@@ -286,7 +287,7 @@
       <div class="col-lg-6">
       <!-- new field -->
       <label class="text-dark-grey">Client</label>
-      <%= f.select :enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, {:class => 'form-select border border-dark select-with-show', data: {show: 'provider_dco_div'}}  %>
+      <%= f.select :enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, {:class => form_select_classes(danger: @provider.first_name.blank? && @provider.persisted?), data: {show: 'provider_dco_div'}}  %>
       </div>
       <div class="col-lg-6 <%= @provider.no_group? ? 'd-none' : '' %>" id="provider_dco_div">
       <!-- new field -->
@@ -541,10 +542,7 @@
     </div>
 </div>
 
-<% content_for :js do %>
-<%= HtmlUtils.form_add_required_attribute form_id: 'provider-form',
-required_fields: 'provider_first_name,provider_last_name,provider_birth_date,provider_practitioner_type,provider_ssn'
-%>
+
  <script>
 var csrfToken = $('meta[name="csrf-token"]').attr('content');
 var selected_practitioner_types = [];
@@ -821,4 +819,9 @@ function clearNote(){
   $('#delete-form-note').val('');
 }
 </script>
-<% end %>
+
+<style>
+  .multi-select {
+    padding: 0;
+  }
+</style>
