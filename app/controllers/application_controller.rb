@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
 	before_action :can_read?, only: [
-		:index, :show, :overview, :dashboard, :client_portal, :provider_source, :plm_sales_tool,
+		:index, :show, :overview, :client_portal, :provider_source, :plm_sales_tool,
 		:organization_profile, :virtual_review_committee
 	]
 	before_action :can_create?, only: [:new, :create]
@@ -10,11 +10,7 @@ class ApplicationController < ActionController::Base
 	before_action :authenticate_user!, except: %i[terms privacy_policy]
 	before_action :configure_permitted_parameters, if: :devise_controller?
   # exceptions for track_event are mostly ajax requests
-  before_action :track_event, except: [:delete_record, :get_group_dcos, :get_provider_payers,
-                                       :get_enrollment_status_count, :change_enrollment_status, :get_provider_types,
-                                       :get_selected_provider_types, :get_dougnut_data, :update_collapse, :get_dashboard_providers,
-                                       :get_monthly_visits, :browser_visits, :autosave, :get_progress, :fetch
-                                      ]
+  before_action :track_event
 	include ApplicationHelper
 
 	protected
@@ -34,7 +30,7 @@ class ApplicationController < ActionController::Base
   end
 
   def track_event
-    ahoy.track "Visited page", visit_properties
+    ahoy.track "Visited page", visit_properties unless request.xhr?
   end
 
   private

@@ -84,6 +84,14 @@ class User < ApplicationRecord
     def superadmin
       find_by(user_role: 'super_administrator')
     end
+
+    def agent
+      find_by(user_role: 'agent')
+    end
+
+    def admin_staff
+      find_by(user_role: 'admin_staff')
+    end
   end
 
   def not_allowed_to_view?(role = nil)
@@ -146,6 +154,19 @@ class User < ApplicationRecord
       random_token = SecureRandom.urlsafe_base64(32)
       break random_token unless User.exists?(api_token: random_token)
     end
+  end
+
+  def default_page
+   return 'overview' if roles.find_by(page: 'overview').can_read
+
+   page = nil
+   roles.each do |role|
+    next if !role.can_read
+    page = role.page
+    break
+   end
+
+   page
   end
 
   private

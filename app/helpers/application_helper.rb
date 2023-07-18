@@ -28,7 +28,8 @@ module ApplicationHelper
 	 find_role(page)&.can_read
 	end
 
-	def translate_page
+	def translate_page(page = nil)
+		page =	page || controller_name
 		if ['dashboard'].include?(controller_name)
 			'overview'
 		elsif ['providers'].include?(controller_name)
@@ -55,6 +56,22 @@ module ApplicationHelper
 			'enrollment_clients'
 		else
 			controller_name
+		end
+	end
+
+	def redirect_to_filtered_page page
+		return if page == 'overview'
+		case page
+		when 'verification_platform', 'enrollment_clients', 'office_manager', 'settings', 'manage_clients', 'manage_practitioners', 'work_ticklers'
+			redirect_to controller: page, action: 'index'
+		when 'client_portal', 'plm_sales_tool', 'smart_contract'
+				redirect_to send("#{page}_path")
+	 when 'enrollment_tracking'
+			redirect_to overview_providers_path
+		when 'provider_app'
+			redirect_to custom_provider_source_path
+		else
+		 render 'shared/access_denied' and return
 		end
 	end
 

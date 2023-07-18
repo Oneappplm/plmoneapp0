@@ -16,6 +16,7 @@ class PagesController < ApplicationController
 	before_action :get_education_types, only: %i[provider_source]
 	before_action :set_provider
  before_action :has_incomplete_tabs, only: [:provider_source]
+	before_action :redirect_to_default_page, only: [:dashboard]
 
 	layout "public_application", only: %i[terms privacy_policy data_access]
 	layout "overview", only: %i[dashboard]
@@ -35,20 +36,20 @@ class PagesController < ApplicationController
 		end
 	end
 
-  def dashboard
-    stat = Sys::Filesystem.stat('/')
-    total_size_bytes = stat.blocks * stat.block_size
-    free_size_bytes = stat.blocks_available * stat.block_size
-    used_size_bytes = total_size_bytes - free_size_bytes
+	def dashboard
+			stat = Sys::Filesystem.stat('/')
+			total_size_bytes = stat.blocks * stat.block_size
+			free_size_bytes = stat.blocks_available * stat.block_size
+			used_size_bytes = total_size_bytes - free_size_bytes
 
-    @total_size_gb = total_size_bytes/GB_DISIVOR
-    @free_size_gb = free_size_bytes/GB_DISIVOR
-    @used_size_gb = used_size_bytes/GB_DISIVOR
-    @used_size_mb = used_size_bytes/MB_DIVISOR
-    @used_size_percent = ((used_size_bytes.to_f/total_size_bytes.to_f) * 100).to_i
-    @free_size_percent = ((free_size_bytes.to_f/total_size_bytes.to_f) * 100).to_i
-    @state_providers = State.providers_count
-  end
+			@total_size_gb = total_size_bytes/GB_DISIVOR
+			@free_size_gb = free_size_bytes/GB_DISIVOR
+			@used_size_gb = used_size_bytes/GB_DISIVOR
+			@used_size_mb = used_size_bytes/MB_DIVISOR
+			@used_size_percent = ((used_size_bytes.to_f/total_size_bytes.to_f) * 100).to_i
+			@free_size_percent = ((free_size_bytes.to_f/total_size_bytes.to_f) * 100).to_i
+			@state_providers = State.providers_count
+	end
 
 	def plm_sales_tool
 		render layout: 'plm_sales_tool'
@@ -267,4 +268,8 @@ class PagesController < ApplicationController
 					nil
   end
 
+		def redirect_to_default_page
+			redirect_to_filtered_page(current_user.default_page) if current_user.default_page.present? && current_user.default_page != 'overview'
+			render 'shared/access_denied' and return if current_user.default_page.blank?
+		end
 end
