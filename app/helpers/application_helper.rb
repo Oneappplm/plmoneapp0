@@ -362,8 +362,9 @@ module ApplicationHelper
 
 		def provider_statuses
 			[
+        ['Pending','pending'],
 				['Active','active'],
-				['Terminated','terminated']
+				['Inactive','inactive']
 		]
 		end
 

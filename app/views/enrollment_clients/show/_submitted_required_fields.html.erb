@@ -1,0 +1,39 @@
+  <div class="card rounded shadow-lg py-2 px-3 mb-3">
+    <h3 class="text-center">Missing Required Fields</h3>
+    <% if @provider.missing_field_submissions.pluck(:status).include?('pending')%><p class="text-center"><%= controller_name == 'enrollment_clients' ? 'You have a missing required details that needs to be filled' : 'A provider submitted their missing details.'%></p>
+    <% end %>
+
+    <% @provider.missing_field_submissions.each do |submission|%>
+      <% if submission.data %>
+        <% submission.data.each do |field|%>
+          <div class="form-group mb-2">
+            <% title = if field.data_attribute.nil?
+              field.get_title(field.data_key)
+            else
+              field.get_attribute_title(field.data_key)
+            end
+            %>
+
+            <% value = if field.is_state_id?
+                field.get_state_name
+            else
+              field.data_value
+            end
+            %>
+            <label><%= title %></label>
+            <input type="" name="" disabled value="<%= value %>" class="form-control">
+          </div>
+        <% end %>
+      <% end %>
+      <% if submission.status == 'pending' && controller_name == 'enrollment_clients'%>
+        <p class="text-center my-3">Pending for completion</p>
+      <% elsif submission.status == 'done' && controller_name =='enrollment_clients' %>
+        <p class="text-center my-3">Agent marked the task as done</p>
+      <% elsif submission.status == "done" && controller_name == 'providers'%>
+        <p class="text-center my-3">Task is done</p>
+      <% end %>
+      <% if controller_name == 'providers' && submission.status == 'pending' %>
+        <a class="btn btn-primary btn-md w-100 missing-fields-submitted-btn"  href="javascript:void(0);" data-submission="<%= submission.id %>">Mark as Done</a>
+      <% end %>
+    <% end %>
+</div>

@@ -1,0 +1,41 @@
+<%
+  providers = if params[:mode] == 'notifications'
+    @incomplete_providers
+  else
+    @providers
+  end
+%>
+
+<table class="table table-bordered mt-2">
+   <thead>
+      <tr>
+         <th class="text-white">Client</th>
+         <th class="text-white">First Name</th>
+         <th class="text-white">Middle Name</th>
+         <th class="text-white">Last Name</th>
+         <th class="text-white">Practitioner Type</th>
+      </tr>
+   </thead>
+   <tbody>
+      <% providers.each do |provider| %>
+      <% url = (params[:mode] == 'notifications' ? enrollment_client_path(provider,mode: 'notifications') : enrollment_client_path(provider) ) %>
+      <tr>
+         <td>
+            <%= link_to "#{provider&.client&.group_name}", url, class: 'text-dark-grey' %>
+         </td>
+         <td>
+            <%= link_to "#{provider&.first_name}", url, class: 'text-dark-grey' %>
+         </td>
+         <td>
+            <%= link_to "#{provider&.middle_name}", url, class: 'text-dark-grey' %>
+         </td>
+         <td>
+            <%= link_to "#{provider&.last_name}", url, class: 'text-dark-grey' %>
+         </td>
+         <td>
+            <%= link_to "#{provider&.practitioner}", url, class: 'text-dark-grey' %>
+         </td>
+      </tr>
+      <% end %>
+   </tbody>
+</table>

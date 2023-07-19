@@ -78,6 +78,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :missing_field_submissions
+
   # added these two resources just to make it different to pages_controller for now it doesn't have any model
   resources :verification_platform
   resources :office_managers, path: 'office-managers' do
@@ -114,6 +116,8 @@ Rails.application.routes.draw do
   end
 
   resources :providers do
+    put :update_from_notifications, path: 'update-from-notifications'
+
     collection do
       get "overview"
       get :document_deleted_logs
@@ -147,6 +151,7 @@ Rails.application.routes.draw do
   resources :enrollment_clients, path: 'enrollment-clients' do
     collection do
       get :download_documents
+      get :reports
     end
   end
 
@@ -247,6 +252,7 @@ Rails.application.routes.draw do
       get :privilege_statuses
       get :providers
       get :enrollment_payers
+      get :provider_states, path: 'provider-states'
       # add more here
     end
   end

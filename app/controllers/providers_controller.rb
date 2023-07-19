@@ -1,5 +1,5 @@
 class ProvidersController < ApplicationController
-	before_action :set_provider, only: [:show, :edit, :update, :destroy]
+	before_action :set_provider, only: [:show, :edit, :update, :destroy, :update_from_notifications]
 	def index
 			@providers = if params[:user_search].present?
 						Provider.search(params[:user_search]).paginate(per_page: 10, page: params[:page] || 1)
@@ -31,11 +31,28 @@ class ProvidersController < ApplicationController
 			end
 	end
 
+  def update_from_notifications
+    submission = @provider.create_missing_field_submission
+    params[:provider].each do |key, value|
+        submission.create_missing_field_submission_data(key,value) if !key.include?('_attributes') && key != 'id'
+        if key.include?('_attributes')
+          params[:provider][key.to_sym].each do |key2,value2|
+            submission.create_missing_field_submission_data(key2,value2,key) if key2 != 'id'
+          end
+        end
+     end
+    redirect_to enrollment_client_path(@provider, mode: 'notifications'), notice: 'Provider was successfully updated.'
+  end
+
 	def update
-		if @provider.update(provider_params)
-				 @provider.update updated_by: current_user&.full_name
-				redirect_to providers_path, notice: 'Provider was successfully updated.'
-		else
+    if @provider.update(provider_params)
+			@provider.update updated_by: current_user&.full_name
+			if params[:from_notifications].present?
+        redirect_to enrollment_client_path(@provider, mode: 'notifications'), notice: 'Provider was successfully updated.'
+      else
+        redirect_to providers_path, notice: 'Provider was successfully updated.'
+		  end
+    else
 			 build_associations
 				render :edit
 		end
@@ -88,7 +105,7 @@ end
 	private
 
 	def set_provider
-			@provider = Provider.find(params[:id])
+			@provider = Provider.find(params[:id] || params[:provider_id])
 	end
 
 	def build_associations

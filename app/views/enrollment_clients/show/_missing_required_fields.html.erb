@@ -1,0 +1,40 @@
+  <div class="card rounded shadow-lg py-2 px-3 mb-3">
+          <h3 class="text-center">Missing Required Fields</h3>
+          <p class="text-center">You have a missing required details that needs to be filled</p>
+          <%= form_for @provider, url: provider_update_from_notifications_path(@provider) , method: :put do |f|%>
+          <%= hidden_field_tag :from_notifications, 'true'%>
+            <% @provider&.required_fields.each do |field|%>
+              <% if @provider&.send(field[1]).nil? %>
+                <div class="form-group mb-2">
+                  <label class="text-dark-grey"><%= field[0]%></label>
+                  <% if ['state_dropdown'].include?(field[2])%>
+                    <%= f.select field[1].to_sym, options_for_select([]), { prompt: 'State' }, {:class => "form-select border border-dark single-select #{field[2]}", id: "#{field[1]}",  data: { value: f.object.send(field[1]) } }  %>
+                  <% elsif ['practitioner_dropdown'].include?(field[2])%>
+                  <% elsif ['specialty_dropdown'].include?(field[2])%>
+                    <%= f.collection_select field[1].to_sym, specialties, :bcbs, :bcbs, { prompt: 'Select Option' }, { class: form_select_classes(danger: @provider.specialty.blank? && @provider.persisted?) } %>
+                  <% elsif ['client_dropdown'].include?(field[2])%>
+                    <%= f.select field[1].to_sym, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, {:class => form_select_classes(danger: @provider.first_name.blank? && @provider.persisted?), data: {show: 'provider_dco_div'}}  %>
+
+                    <div class="w-100 my-2 <%= @provider.no_group? ? '' : '' %>" id="provider_dco_div">
+                    <!-- new field -->
+                    <label class="text-dark-grey">DCO/Practice Location</label>
+                    <%= f.select :dco, options_for_select([], @provider.dco), {prompt: 'Select option'}, {:class => 'form-select border border-dark'}  %>
+                    </div>
+                  <% elsif ['date_field'].include?(field[2])%>
+                   <%= f.date_field field[1].to_sym, class: 'form-control'%>
+                  <% else %>
+                   <%= f.text_field field[1].to_sym, class: 'form-control'%>
+                  <% end %>
+                </div>
+              <% end %>
+            <% end %>
+            <% if !@provider&.licenses&.persisted? or @provider.has_missing_state_licenses_fields? %>
+            <%= f.fields_for :licenses do |license_fields| %>
+                <%= render 'enrollment_clients/license_fields', f: license_fields %>
+              <% end %>
+            <% end %>
+            <div class="form-group mt-3">
+              <%= f.submit "Submit", class: "btn btn-primary btn-md w-100" %>
+            </div>
+          <% end %>
+      </div>

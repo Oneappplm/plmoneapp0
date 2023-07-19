@@ -5,8 +5,8 @@
    }
 </style>
 <div class="content container-fluid">
-  <%= render "enrollment_clients_nav"%>
    <div class="row">
+      <%= render "enrollment_clients_nav"%>
       <div class="col-xl-12">
          <div class="card card-payer">
             <div class="card-body">
@@ -88,7 +88,47 @@
                   </div>
             </div>
             <% end %>
-            <%= render "providers_table"%>
+            <table class="table table-bordered mt-2">
+               <thead>
+                  <tr>
+                     <th  class="text-white" scope="col">Provider Status</th>
+                     <th class="text-white">Client</th>
+                     <th class="text-white">Location</th>
+                     <th class="text-white">First Name</th>
+                     <th class="text-white">Middle Name</th>
+                     <th class="text-white">Last Name</th>
+                     <th class="text-white">Practitioner Type</th>
+                     <th class="text-white">NPI</th>
+                     <th class="text-white">Practitioner SSN</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <% @providers.each do |provider| %>
+                  <tr>
+                     <td><%= provider&.status&.upcase %></td>
+                     <td>
+                      <%= link_to "#{provider&.client&.group_name}", enrollment_client_path(provider), class: 'text-dark-grey' %>
+                      </td>
+                     <td>
+                      <%= link_to "#{provider&.location&.dco_name}", enrollment_client_path(provider), class: 'text-dark-grey' %>
+                      </td>
+                     <td>
+                      <%= link_to "#{provider&.first_name}", enrollment_client_path(provider), class: 'text-dark-grey' %>
+                      </td>
+                     <td>
+                      <%= link_to "#{provider&.middle_name}", enrollment_client_path(provider), class: 'text-dark-grey' %></td>
+                     <td>
+                      <%= link_to "#{provider&.last_name}", enrollment_client_path(provider), class: 'text-dark-grey' %></td>
+                     <td>
+                      <%= link_to "#{provider&.practitioner}", enrollment_client_path(provider), class: 'text-dark-grey' %></td>
+                     <td>
+                      <%= link_to "#{provider&.npi}", enrollment_client_path(provider), class: 'text-dark-grey' %></td>
+                     <td>
+                      <%= link_to "#{provider&.ssn}", enrollment_client_path(provider), class: 'text-dark-grey' %></td>
+                  </tr>
+                  <% end %>
+               </tbody>
+            </table>
             <% if @providers %>
             <div class="col-lg-12">
                   <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-1">

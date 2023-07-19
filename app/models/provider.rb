@@ -1,5 +1,17 @@
 class Provider < ApplicationRecord
   include PgSearch::Model
+
+  REQUIRED_ATTRIBUTES = [
+                          'first_name', 'last_name', 'birth_date',
+                          'birth_city', 'birth_state', 'address_line_1',
+                          'ssn','city','state_id','zip_code','practitioner_type',
+                          'taxonomy','specialty', 'enrollment_group_id',
+                          'state_license_copy_file', 'dea_copy_file', 'w9_form_file',
+                          'certificate_insurance_file', 'drivers_license_file', 'board_certification_file',
+                          'caqh_app_copy_file', 'telehealth_license_copy_file', 'school_certificate'
+                        ]
+  REQUIRED_LICENSE_ATTRIBUTES = ['license_number', 'license_effective_date', 'license_expiration_date', 'state_id']
+
 	pg_search_scope :search,
           against: self.column_names,
           using: {
@@ -45,6 +57,7 @@ class Provider < ApplicationRecord
   has_many :ins_policies, class_name: 'ProviderInsPolicy', dependent: :destroy
   has_many :time_lines, class_name: 'ProvidersTimeLine', dependent: :destroy
   has_many :deleted_document_logs, class_name: 'ProviderDeletedDocumentLog', dependent: :destroy
+  has_many :missing_field_submissions, class_name: 'ProvidersMissingFieldSubmission',dependent: :destroy
 
   # accepts_nested_attributes_for :taxonomies, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :licenses, allow_destroy: true, reject_if: :all_blank
@@ -66,6 +79,20 @@ class Provider < ApplicationRecord
   scope :male, -> { where(gender: 'Male') }
   scope :female, -> { where(gender: 'Female') }
   scope :non_binary, -> { where(gender: 'Non Binary') }
+
+   def self.with_missing_required_attributes
+    joins("LEFT JOIN provider_licenses ON providers.id = provider_licenses.provider_id")
+      .where(
+        REQUIRED_ATTRIBUTES.map { |attr| "providers.#{attr} IS NULL" }.join(' OR ')
+      )
+  end
+  # had to separate this since if I combine them in the query above it's not giving proper results
+  def self.with_missing_license_attributes
+    joins("LEFT JOIN provider_licenses ON providers.id = provider_licenses.provider_id")
+      .where(
+        REQUIRED_LICENSE_ATTRIBUTES.map { |attr| "provider_licenses.#{attr} IS NULL" }.join(' OR ')
+      )
+  end
 
   class << self
     def search_by_params(params)
@@ -103,6 +130,14 @@ class Provider < ApplicationRecord
   def client = group
   def location = group_dco
   def practitioner = selected_practitioner_types.join(',') rescue nil
+
+  def fetch(key = nil,attribute=nil)
+    finder(key, attribute)&.data_value
+  end
+
+  def finder(field = nil,attribute=nil)
+    missing_field_submissions.find_by(data_key: field, provider_id: self.id, data_attribute: attribute)
+  end
 
   def enrollments
     EnrollmentProvider.where(provider_id: self.id)
@@ -175,4 +210,80 @@ class Provider < ApplicationRecord
   rescue
     nil
   end
+
+  def required_documents
+    [
+     ['State License Copy', 'state_license_copy_file'],
+     ['DEA Copy', 'dea_copy_file'],
+     ['W9 Form', 'w9_form_file' ],
+     ['Certificate of Insurance', 'certificate_insurance_file'],
+     ['Drivers License', 'drivers_license_file' ],
+     ['License Registered State', 'board_certification_file' ],
+     ['CAQH App Copy', 'caqh_app_copy_file' ],
+     ['Curriculum Vitae (CV)', 'cv_file' ],
+     ['Telehealth License Copy', 'telehealth_license_copy_file'],
+     ['Copy of Certificate', 'school_certificate']
+   ]
+  end
+
+  # needed on notification page http://localhost:3000/enrollment-clients/:id?mode=notifications
+  def required_fields
+    [
+      ['First Name', 'first_name', 'text_field'],
+      ['Last Name', 'last_name', 'text_field'],
+      ['SSN', 'ssn', 'text_field'],
+      ['Date of birth', 'birth_date', 'date_field'],
+      ['Birth City', 'birth_city', 'text_field'],
+      ['Birth State', 'birth_state', 'state_dropdown'],
+      ['Address Line 1', 'address_line_1', 'text_field'],
+      ['City', 'city','text_field'],
+      ['State','state_id', 'state_dropdown'],
+      ['Zip Code', 'zip_code', 'text_field'],
+      ['Practitioner Type', 'practitioner_type', 'practitioner_dropdown'],
+      ['Taxonomy', 'taxonomy', 'text_field'],
+      ['Specialty', 'specialty', 'specialty_dropdown'],
+      ['Client','enrollment_group_id','client_dropdown'],
+    ]
+  end
+
+  def required_state_licenses_fields
+    [
+      ['State License Number', 'license_number', 'text_field'],
+      ['License Effective Date', 'license_effective_date', 'date_field'],
+      ['License Registration State', 'state_id', 'state_dropdown'],
+      ['License Expiration Date', 'license_expiration_date', 'date_field']
+    ]
+  end
+
+  def has_missing_required_fields?
+    required_fields.each do |field|
+      return true if self.send(field[1]).nil?
+    end
+    return false
+  end
+
+  def has_missing_state_licenses_fields?
+    licenses_required_fields = ['license_number','license_effective_date', 'license_expiration_date', 'state_id']
+    licenses_required_fields.each do |field|
+      return true if licenses.send(field).nil?
+    end
+    return false
+  end
+
+  def show_missing_fields?
+    has_missing_required_fields? or licenses.nil? or has_missing_state_licenses_fields?
+  end
+
+
+  def create_missing_field_submission
+    ProvidersMissingFieldSubmission.create(provider_id: self.id)
+  end
+  # def create_missing_field_submission(key, value, attribute = nil)
+  #   new_missing_field_submission = ProvidersMissingFieldSubmission.new
+  #   new_missing_field_submission.provider_id = self.id
+  #   new_missing_field_submission.data_key = key
+  #   new_missing_field_submission.data_value = value
+  #   new_missing_field_submission.data_attribute = attribute
+  #   new_missing_field_submission.save
+  # end
 end

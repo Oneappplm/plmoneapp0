@@ -1,0 +1,75 @@
+<style>
+   .vscomp-ele{
+      max-width: inherit;
+      padding: 0;
+   }
+</style>
+<div class="content container-fluid">
+  <%= render "enrollment_clients_nav"%>
+  <div class="row">
+    <div class="col-xl-8">
+      <%= render "providers_table"%>
+    </div>
+    <div class="col-xl-4">
+      <%= render partial: "enrollment_clients/show/missing_documents"%>
+      <% if @show_missing_fields  %>
+        <%= render partial: "enrollment_clients/show/missing_required_fields"%>
+      <% end %>
+      <% if !@provider.missing_field_submissions.blank? %>
+        <%= render partial: "enrollment_clients/show/submitted_required_fields"%>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    if($('body.navbar-vertical-aside-mini-mode').length == 0){
+      setTimeout(function () {$('#navbar-aside-toggler').click();}, 1000);
+    }
+
+    setTimeout(function(){
+      $('.state_dropdown').each(function() {
+        var dropdown_id = $(this).attr('id');
+        $.get('<%= provider_states_multi_select_data_path %>', function(data){
+          VirtualSelect.init({ele: '#'+dropdown_id, search: true }); // initialze virtual select first
+          document.querySelector('#'+dropdown_id).setOptions(data['result']); // other alternative for initializing collection data
+        });
+      })
+
+       $.get('<%= specialties_multi_select_data_path %>', function(data){
+          VirtualSelect.init({ele: '#provider_specialty', search: true, multiple: true, required: true }); // initialze virtual select first
+          document.querySelector('#provider_specialty').setOptions(data['result']); // other alternative for initializing collection data
+        });
+      }, 500);
+
+    $('#provider_enrollment_group_id').on('change',function(){
+        var id = $(this).val();
+        var url = '/enrollments/groups/'+id+'/get_dcos';
+        if(id != '') {
+          $.ajax({
+            url: url,
+            type: 'POST',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              var practice_locations = data['practice_locations'];
+              if(practice_locations.length != 0) {
+                $('#provider_dco').empty();
+                $('#provider_dco').append('<option value="">Practice Location</option>');
+                for (var i = 0; i < practice_locations.length ; i++) {
+                  $('#provider_dco').append('<option value="'+practice_locations[i][0]+'">'+practice_locations[i][1]+'</option>');
+                }
+              }else{
+                $('#provider_dco').empty();
+                $('#provider_dco').append('<option value="">Practice Location</option>');
+              }
+            }
+          })
+        }else{
+          $('#provider_dco').empty();
+          $('#provider_dco').append('<option value="">Practice Location</option>');
+        }
+
+  })
+  })
+</script>
