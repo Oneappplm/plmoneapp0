@@ -32,115 +32,129 @@
         </tbody>
       </table>
       <% if @enroll_groups %>
-      <div class="col-lg-12">
-          <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
-          <div class="page_info ms-3 text-black">
-                  <%= page_entries_info @enroll_groups %>
-          </div>
-          <% if params[:per_page ].present? %>
-              <%= will_paginate @enroll_groups, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-          <% else %>
-              <%= will_paginate @enroll_groups, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-          <% end %>
-          </div>
-      </div>
+        <div class="col-lg-12">
+            <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+            <div class="page_info ms-3 text-black">
+                    <%= page_entries_info @enroll_groups %>
+            </div>
+            <% if params[:per_page ].present? %>
+                <%= will_paginate @enroll_groups, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+            <% else %>
+                <%= will_paginate @enroll_groups, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+            <% end %>
+            </div>
+        </div>
       <% end %>
     </div>
     <div class="col-lg-4"  style="background-color: #eee;">
-        <div class="row my-3 mb-2">
-          <div class="col-lg-12">
-            <div class="card rounded shadow-lg p-2">
-              <p class="text-dark-grey fw-semibold mb-1">Enrolled by: <%= @enroll_group&.enrolled_by %> </p>
-              <p class="text-dark-grey fw-semibold mb-1">Enrolled: <%= @enroll_group&.created_at&.strftime('%B %d, %Y') %> </p>
-            </div>
+      <div class="row my-3 mb-2">
+        <div class="col-lg-12">
+          <div class="card rounded shadow-lg p-2">
+            <p class="text-dark-grey fw-semibold mb-1">Enrolled by: <%= @enroll_group&.enrolled_by %> </p>
+            <p class="text-dark-grey fw-semibold mb-1">Enrolled: <%= @enroll_group&.created_at&.strftime('%B %d, %Y') %> </p>
           </div>
         </div>
-        <div class="row my-3 mb-3">
-          <div class="col-lg-12">
-            <div class="card rounded shadow-lg p-2">
-              <p class="text-dark-grey fw-semibold mb-1">Assigned Agent: <%= @enroll_group.assigned_agent&.full_name %> </p>
-              <p class="text-dark-grey fw-semibold mb-1">Type of outreach: <%= @enroll_group&.outreach_type&.titleize  %> </p>
-            </div>
+      </div>
+      <div class="row my-3 mb-3">
+        <div class="col-lg-12">
+          <div class="card rounded shadow-lg p-2">
+            <p class="text-dark-grey fw-semibold mb-1">Assigned Agent: <%= @enroll_group.assigned_agent&.full_name %> </p>
+            <p class="text-dark-grey fw-semibold mb-1">Type of outreach: <%= @enroll_group&.outreach_type&.titleize  %> </p>
           </div>
         </div>
-        <div class="row mb-3">
-          <div class="col-lg-6">
-            <a href="javascript:void(0);" data-model="enroll_groups" data-status="completed" class="btn bg-white btn-lg btn-outline-success w-100 <%= @enroll_group.status != 'completed' ? 'enrollment-update-status' : ' unavailable disabled'%>">
-              <span class="text-dark-grey">
-               Mark as Complete
-              </span>
-            </a>
-          </div>
-          <div class="col-lg-6">
-            <a href="javascript:void(0);" data-model="enroll_groups" data-status="callback" class="btn bg-white btn-lg btn-outline-primary w-100 <%= @enroll_group.status != 'callback' ? 'enrollment-update-status' : ' unavailable disabled'%>">
-              <span class="text-dark-grey">
-                Schedule for Callback
-              </span>
-            </a>
-          </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-lg-6">
+          <a href="javascript:void(0);" data-model="enroll_groups" data-status="completed" class="btn bg-white btn-lg btn-outline-success w-100 <%= @enroll_group.status != 'completed' ? 'enrollment-update-status' : ' unavailable disabled'%>">
+            <span class="text-dark-grey">
+              Mark as Complete
+            </span>
+          </a>
         </div>
-    <div class="row mb-3">
+        <div class="col-lg-6">
+          <a href="javascript:void(0);" data-model="enroll_groups" data-status="callback" class="btn bg-white btn-lg btn-outline-primary w-100 <%= @enroll_group.status != 'callback' ? 'enrollment-update-status' : ' unavailable disabled'%>">
+            <span class="text-dark-grey">
+              Schedule for Callback
+            </span>
+          </a>
+        </div>
+      </div>
+      <div class="row mb-3">
         <div class="col-lg-12">
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
             <span class="fw-semibold mt-2 text-white rounded px-1" style="background: #3bc539; width: 70%;" id="status_identified">ID: <%= @enroll_group.id %> <%= "Enrollment #{@enroll_group&.status&.titleize}"%></span>
             <div class="avatar-circle mt-3" style="text-align: center">
               <img class="avatar-img" src="../dist/assets/img/400x400/img1.jpg" alt="Image Description" style="width: 100px;">
             </div>
-            <h3 class="font-bold mb-3 text-center my-3"><%= @enroll_group.group&.group_name %></h3>
-
-            <p class="text-dark-grey text-center mb-0"><strong>Name of person who can answer questions related to enrollment for the group</strong></p>
-            <p class="text-dark-grey my-1"><strong>Telephone: </strong> <%= @enroll_group.telephone_number%></p>
-            <p class="text-dark-grey my-1"><strong>Email: </strong> <%= @enroll_group.email %></p>
-            <p class="text-dark-grey my-1"><strong>Medical PTAN: </strong> <%= @enroll_group.medicare_ptan %></p>
-            <p class="text-dark-grey my-1"><strong>Medicaid Group Number: </strong> <%= @enroll_group.medicaid_group_number %></p>
-            <p class="text-dark-grey my-1"><strong>BCBS Number: </strong> <%= @enroll_group.bcbs_number %></p>
-            <p class="text-dark-grey my-1 mb-2"><strong>Are you enrolled in TRICARE: </strong> <%= @enroll_group.tricate_military&.upcase %></p>
-            <p class="text-dark-grey my-1"><strong>Commercial Name: </strong> <%= @enroll_group.commercial_name %></p>
-            <p class="text-dark-grey my-1 mb-2"><strong>Contracted: </strong> <%= @enroll_group.contracted&.upcase %></p>
-
-            <p class="text-dark-grey my-1"><strong>Has the group recently been revalidated with any payor?  </strong> <%= @enroll_group.revalidated&.upcase %></p>
-            <p class="text-dark-grey my-1 mb-2"><strong>Payer Name:  </strong> <%= @enroll_group.revalidated_payer_name %></p>
-            <p class="text-dark-grey my-1"><strong>Are there currently any group applications or contracts in process at a payer?   </strong> <%= @enroll_group.application_contracts&.upcase %></p>
-            <p class="text-dark-grey my-1 mb-2"><strong>Payer Name:  </strong> <%= @enroll_group.revalidated_payer_name %></p>
-            <p class="text-dark-grey my-1 mb-2"><strong>Is the group participating with Medicare?   </strong> <%= @enroll_group.with_medicare&.upcase %></p>
-            <p class="text-dark-grey my-1 mb-2"><strong>Do you currently have EFT (Electronic Fund Transfer) established?  </strong> <%= @enroll_group.with_eft&.upcase %></p>
-
-            <p class="text-dark-grey my-1 mb-2"><strong>EDI (Electronic Data Interchange) Do you  want us to indicate "yes" on applications?</strong> <%= @enroll_group.with_edi&.upcase %></p>
+            <h3 class="font-bold mb-3 text-center my-3"><%= @enroll_group&.group&.group_name %></h3>
+            <div class="text-left mt-2 text-dark">
+              <p class="mb-2 h5">Name of person who can answer questions related to enrollment for the group</p>
+              <p class="mb-1"><strong>Name:</strong> <%= @enroll_group&.full_name %></p>
+              <p class="mb-1"><strong>Telephone Number:</strong> <%= @enroll_group&.telephone_number %></p>
+              <p class="mb-1"><strong>Email Address:</strong> <%= @enroll_group&.email %></p>
+            </div>
           </div>
         </div>
-    </div>
-    <div class="row mb-3 d-none">
+      </div>
+    <div class="row mb-3">
       <div class="col-lg-12">
+        <div class="card rounded shadow-lg p-1 px-3 mb-3">
+          <h5 class="mt-2 text-center">Payer Enrollment Details</h5>
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
-          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Enrollment Details', collapse_name: 'enrollment_details'}%>
-          <div class="collapsible" style="<%= current_user&.is_card_open?('licenses') ? '' : 'display: none;' %>">
-          <% @enroll_group.details.each do |detail|%>
-          <p class="text-dark-grey my-1"><strong>Start Date: </strong><%= detail.start_date&.strftime('%B %d, %Y') %></p>
-          <p class="text-dark-grey my-1"><strong>End Date:</strong> <%= detail.due_date&.strftime('%B %d, %Y') %></p>
-          <p class="text-dark-grey my-1"><strong>Enrollment Payer:</strong> <%= detail.enrollment_payer %></p>
-          <p class="text-dark-grey my-1"><strong>Enrollment Type:</strong> <%= detail.start_date %><%= detail.enrollment_type %></p>
-          <p class="text-dark-grey my-1"><strong>Status of Enrollment:</strong> <%= detail.enrollment_status&.titleize %></p>
-
-          <p class="text-dark-grey my-1"><strong>Approved Date:</strong> <%= detail.approved_date&.strftime('%B %d, %Y') %></p>
-          <p class="text-dark-grey my-1"><strong>Revalidation Date:</strong> <%= detail.revalidation_date&.strftime('%B %d, %Y') %></p>
-          <p class="text-dark-grey my-1"><strong>Revalidation Due Date:</strong> <%= detail.revalidation_due_date&.strftime('%B %d, %Y') %></p>
-          <p class="text-dark-grey my-1"><strong>Comment: </strong> <%= detail.comment %></p>
-          <hr>
-          <% end %>
+            <% @enroll_group&.details.each_with_index do |detail,idx|%>
+              <%= render partial: "global_components/collapsible_sidebar_header", locals: { title: detail&.enrollment_payer&.titleize, collapse_name: "#{detail&.enrollment_payer&.underscore}_payer", text_position: 'text-start' }%>
+              <div class="collapsible" style="<%= current_user&.is_card_open?("#{detail&.enrollment_payer&.underscore}_payer") ? '' : 'display: none;' %>">
+                <div class="text-left mt-2 text-dark">
+                  <p class="mb-2"><strong>Enrollment Payer:</strong> <%= detail&.enrollment_payer&.titleize %></p>
+                  <p class="mb-2"><strong>Enrollment Type:</strong> <%= detail&.enrollment_type %></p>
+                  <p class="mb-2"><strong>State:</strong> <%= State.find_by(alpha_code: detail&.payer_state).name %></p>
+                  <p class="mb-2"><strong>Group Number:</strong> <%= detail&.group_number %> </p>
+                  <p class="mb-2"><strong>Effective Date:</strong> <%= detail&.effective_date %> </p>
+                  <p class="mb-2"><strong>Revalidation Date:</strong> <%= detail&.revalidation_date %> </p>
+                  <p class="mb-2"><strong>Application Status:</strong> <%= detail&.application_status&.titleize %></p>
+                  <p class="mb-2"><strong>Payor Type:</strong> <%= detail&.payor_type&.titleize %></p>
+                  <p class="mb-2"><strong>Participating with Medicare and Tricare:</strong> <%= detail&.medicare_tricare %></p>
+                  <h5 class="mt-2 text-center">Payer Enrollment Details</h5>
+                  <p class="mb-2"><strong>Name:</strong> <%= detail&.payor_name %></p>
+                  <p class="mb-2"><strong>Phone Number:</strong> <%= detail&.payor_phone %></p>
+                  <p class="mb-2"><strong>Email Address:</strong> <%= detail&.payor_email %></p>
+                  <p class="mb-2"><strong>Type of Enrollment Submission:</strong> <%= detail&.group_number %> </p>
+                  <h5 class="mt-2 text-center">Enrollment Link</h5>
+                  <p class="mb-2"><strong>Link:</strong> <%= detail&.enrollment_link&.titleize %></p>
+                  <p class="mb-2"><strong>Username:</strong> <%= detail&.payor_username %></p>
+                  <p class="mb-2"><strong>Password:</strong> <%= detail&.password %></p>
+                  <% detail&.questions.each_with_index do |question,qidx|%>
+                    <p class="mb-2"><strong>Security Question <%= qidx + 1 %>:</strong> <%= question&.secret_question %> </p>
+                    <p class="mb-2"><strong>Security Answer <%= qidx + 1 %>:</strong> <%= question&.answer %> </p>
+                  <% end %>
+                  <h5 class="mt-2 text-center">Portal Administrator</h5>
+                  <p class="mb-2"><strong>Name:</strong> <%= detail&.portal_admin_name %></p>
+                  <p class="mb-2"><strong>Phone Number:</strong> <%= detail&.portal_admin_phone %></p>
+                  <p class="mb-2"><strong>Email Address:</strong> <%= detail&.portal_admin_email %></p>
+                  <p class="mb-2"><strong>Is this a CAQH Payer:</strong> <%= detail&.caqh_payer&.titleize %> </p>
+                  <p class="mb-2"><strong>EFT:</strong> <%= detail&.eft&.titleize %> </p>
+                  <p class="mb-2"><strong>ERA:</strong> <%= detail&.era&.titleize %> </p>
+                  <p class="mb-2"><strong>Client Notes:</strong> <%= detail&.client_notes %> </p>
+                  <p class="mb-2"><strong>Notes:</strong> <%= detail&.notes %> </p>
+                </div>
+              </div>
+            <% end %>
           </div>
-          </div>
+        </div>
       </div>
     </div>
-
-    <div class="row-mb-3 d-none">
-          <div class="card rounded shadow-lg p-1 px-3 mb-3  pb-5">
-            <h3 class="text-center my-3">Comments</h3>
-            <% @enroll_group.comments.each do |comment|%>
+    <div class="row-mb-3">
+      <div class="card rounded shadow-lg p-1 px-3 mb-3 pb-5">
+        <h3 class="text-center my-3">Comments</h3>
+        <div id="comments-list">
+          <% @enroll_group.comments.each do |comment|%>
+            <% if comment.persisted? %>
               <%= render partial: 'comments/comment', locals: {comment: comment}%>
             <% end %>
-            <%= render partial: 'comments/form', comment: @comment %>
-          </div>
-    </div>
+          <% end %>
+        </div>
+        <%= render partial: 'comments/form_ajax', comment: @comment %>
+      </div>
     </div>
   </div>
 </div>

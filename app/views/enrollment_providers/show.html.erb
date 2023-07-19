@@ -100,19 +100,19 @@
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
             <h5 class="mt-2 text-center">Payer Enrollment Details</h5>
             <div class="card rounded shadow-lg p-1 px-3 mb-3">
-            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Medicare', collapse_name: 'medicare_payer'}%>
-            <div class="collapsible" style="<%= current_user&.is_card_open?('medicare_payer') ? '' : 'display: none;' %>">
-            <% @enrollment_provider&.details.each_with_index do |detail,idx|%>
-            <div class="text-left mt-3">
-              <p class="mb-1"><strong>Enrollment Payer:</strong> <%= detail.enrollment_payer&.titleize %></p>
-              <p class="mb-1"><strong>Enrollment Type:</strong> <%= detail.enrollment_type %></p>
-              <p class="mb-1"><strong>Application Status:</strong> <%= detail&.enrollment_status&.titleize %></p>
-              <p class="mb-1"><strong>Provider ID:</strong> <%= detail&.provider_ptan %> </p>
-              <p class="mb-1"><strong>Group ID:</strong> <%= detail&.group_ptan %> </p>
-              <p class="mb-1"><strong>Notes:</strong> <%= detail&.comment %></p>
-            </div>
-            <% end %>
-            </div>
+              <% @enrollment_provider&.details.each_with_index do |detail,idx|%>
+                <%= render partial: "global_components/collapsible_sidebar_header", locals: { title: detail.enrollment_payer&.titleize, collapse_name: "#{detail.enrollment_payer&.underscore}_payer", text_position: 'text-start' }%>
+                <div class="collapsible" style="<%= current_user&.is_card_open?("#{detail.enrollment_payer&.underscore}_payer") ? '' : 'display: none;' %>">
+                  <div class="text-left mt-2 text-dark">
+                    <p class="mb-2"><strong>Enrollment Payer:</strong> <%= detail.enrollment_payer&.titleize %></p>
+                    <p class="mb-2"><strong>Enrollment Type:</strong> <%= detail.enrollment_type %></p>
+                    <p class="mb-2"><strong>Application Status:</strong> <%= detail&.enrollment_status&.titleize %></p>
+                    <p class="mb-2"><strong>Provider ID:</strong> <%= detail&.provider_id %> </p>
+                    <p class="mb-2"><strong>Group ID:</strong> <%= detail&.group_id %> </p>
+                    <p class="mb-1"><strong>Notes:</strong> <%= detail&.comment %></p>
+                  </div>
+                </div>
+              <% end %>
             </div>
           </div>
         </div>
@@ -193,17 +193,18 @@
           </div>
         </div>
     </div>
-
     <div class="row-mb-3">
-          <div class="card rounded shadow-lg p-1 px-3 mb-3 pb-5">
-            <h3 class="text-center my-3">Comments</h3>
-            <p class="text-dark-grey fw-semibold mb-1"> <%= @enrollment_provider&.enrolled_by %> </p>
-            <p class="text-dark-grey fw-semibold mb-1"> <%= @enrollment_provider&.created_at&.strftime('%B %d, %Y') %> </p>
-            <% @enrollment_provider.comments.each do |comment|%>
+      <div class="card rounded shadow-lg p-1 px-3 mb-3 pb-5">
+        <h3 class="text-center my-3">Comments</h3>
+        <div id="comments-list">
+          <% @enrollment_provider.comments.each do |comment|%>
+            <% if comment.persisted? %>
               <%= render partial: 'comments/comment', locals: {comment: comment}%>
             <% end %>
-            <%= render partial: 'comments/form', comment: @comment %>
-          </div>
+          <% end %>
+        </div>
+        <%= render partial: 'comments/form_ajax', comment: @comment %>
+      </div>
     </div>
 
   </div>

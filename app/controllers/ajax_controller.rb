@@ -26,6 +26,8 @@ class AjaxController < ApplicationController
       ProviderInsPolicy.delete(id)
     elsif model == 'group_dco_notes'
       GroupDcoNote.delete(id)
+    elsif model == 'comment'
+      EnrollmentComment.delete(id)
     end
 
     head :ok
@@ -34,6 +36,11 @@ class AjaxController < ApplicationController
   def create_group_dco_note
     @group_dco_note = GroupDcoNote.create(group_dco_notes_params)
     render json: { html: render_to_string(partial: 'dcos/qualifacts/group_dco_note', locals: { group_dco_note: @group_dco_note }).html_safe }
+  end
+
+  def create_enrollment_comment
+    @comment = EnrollmentComment.create(comment_params)
+    render json: { html: render_to_string(partial: 'comments/comment', locals: { comment: @comment }).html_safe }
   end
 
   def get_group_dcos
@@ -217,13 +224,6 @@ class AjaxController < ApplicationController
     }
   end
 
-  def delete_comment
-		comment_id = params[:comment_id]&.to_i
-		comment = EnrollmentComment.delete(comment_id)
-
-		head :ok
-  end
-
   def get_specialties
     specialties = Specialty.all.map{|m| { label: m.bcbs, value: m.bcbs} }
     # render json: provider_types and return
@@ -286,6 +286,13 @@ class AjaxController < ApplicationController
   def group_dco_notes_params
     params.require(:data).permit(
       :title, :description, :group_dco_id
+    )
+  end
+
+  def comment_params
+    params.require(:data).permit(
+      :enrollment_provider_id, :enroll_group_id,
+      :provider_id, :user_id, :body
     )
   end
 end

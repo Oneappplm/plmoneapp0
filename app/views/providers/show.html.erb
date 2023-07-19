@@ -277,10 +277,14 @@
 
 					<div class="card rounded shadow-lg p-1 px-3 mb-3 pb-5">
 					<%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Comments', collapse_name: 'comments'}%>
-						<% @provider.comments.each do |comment|%>
-              <%= render partial: 'comments/comment', locals: {comment: comment}%>
-            <% end %>
-            <%= render partial: 'comments/form'%>
+						<div id="comments-list">
+							<% @provider.comments.each do |comment|%>
+								<% if comment.persisted? %>
+									<%= render partial: 'comments/comment', locals: {comment: comment}%>
+								<% end %>
+							<% end %>
+						</div>
+						<%= render partial: 'comments/form_ajax', comment: @comment %>
 					</div>
 				</div>
 				<%= link_to 'Download', '#', class: 'btn btn-primary' %>
@@ -304,22 +308,6 @@ $(document).ready(function() {
 	if($('body.navbar-vertical-aside-mini-mode').length == 0){
 		setTimeout(function () {$('#navbar-aside-toggler').click();}, 1000);
 	}
-	$(".comment-field").on("click", ".remove-comment-fields", function() {
-		var commentBox = document.getElementsByClassName("comment-field");
-		commentBox[0].remove();
-
-		var comment_id = $(this).data("id")
-		console.log(comment_id)
-		$.ajax({
-			url: '<%= delete_comment_path %>',
-			method: 'POST',
-			data: { authenticity_token: csrfToken, comment_id: comment_id },
-			success: function(data) {
-				selected_provider_types = data['delete_comment'];
-			}
-		})
-	});
-
 
   $('.time-line-done').on('click',function() {
     changeTimeLineStatus($(this));

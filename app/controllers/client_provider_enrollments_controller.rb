@@ -2,7 +2,7 @@ class ClientProviderEnrollmentsController < ApplicationController
 	before_action :set_client_provider_enrollment, only: [:show]
   before_action :set_client_provider_enrollments, only: [:show, :index]
   def show
-    @comment = EnrollmentComment.new
+    @comment = @client_provider_enrollment.enrollable.comments.build(user: current_user)
   end
 
   def index; end

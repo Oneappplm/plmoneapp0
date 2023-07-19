@@ -4,5 +4,5 @@ class EnrollmentComment < ApplicationRecord
   belongs_to :provider, optional: true
   belongs_to :user
 
-
+  validates_presence_of :body, :user
 end

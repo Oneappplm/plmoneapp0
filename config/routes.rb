@@ -33,6 +33,7 @@ Rails.application.routes.draw do
 
   post 'delete-record', to: 'ajax#delete_record'
   post 'group-dco-note', to: 'ajax#create_group_dco_note'
+  post 'create-enrollment-comment', to: 'ajax#create_enrollment_comment'
   post 'get-group-dcos', to: 'ajax#get_group_dcos'
   post 'get-provider-payers', to: 'ajax#get_provider_payers'
   post 'get-enrollment-status-count', to: 'ajax#get_enrollment_status_count'
@@ -61,7 +62,6 @@ Rails.application.routes.draw do
   get 'browser-visits', to: 'ajax#browser_visits'
   get 'state-providers', to: 'ajax#state_providers'
   get 'providers-gender', to: 'ajax#providers_gender'
-  post 'delete-comment', to: 'ajax#delete_comment'
   get 'get-specialties', to: 'ajax#get_specialties'
   get 'get-languages', to: 'ajax#get_languages'
   get 'get-states', to: 'ajax#get_states'
