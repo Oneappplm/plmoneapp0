@@ -27,25 +27,25 @@ class EnrollmentProvider < ApplicationRecord
 	scope :completed, -> { where(status: 'completed') }
 	scope :pending, -> { where(status: 'pending') }
 	scope :rejected, -> { where(status: 'rejected') }
-  scope :callback, -> { where(status: 'callback') }
-  scope :assigned, -> { where(status: 'assigned') }
-  scope :terminated, -> { where(status: 'terminated') }
-  scope :unassigned, -> { where(status: 'unassigned') }
+	scope :callback, -> { where(status: 'callback') }
+	scope :assigned, -> { where(status: 'assigned') }
+	scope :terminated, -> { where(status: 'terminated') }
+	scope :unassigned, -> { where(status: 'unassigned') }
 
 
-  scope :this_month, -> { where(created_at: DateTime.now.beginning_of_month..DateTime.now.end_of_month) }
-  scope :today, -> { where(created_at: DateTime.now) }
-  scope :this_week, -> { where(created_at: DateTime.now.beginning_of_week..DateTime.now.end_of_month) }
+	scope :this_month, -> { where(created_at: DateTime.now.beginning_of_month..DateTime.now.end_of_month) }
+	scope :today, -> { where(created_at: DateTime.now) }
+	scope :this_week, -> { where(created_at: DateTime.now.beginning_of_week..DateTime.now.end_of_month) }
 
 	belongs_to :provider, optional: true
 
 	has_one :client_provider_enrollment, as: :enrollable, dependent: :destroy
 	has_many :details, class_name: 'EnrollmentProvidersDetail', dependent: :destroy
-  has_many :comments, class_name: 'EnrollmentComment', dependent: :destroy
+ has_many :comments, class_name: 'EnrollmentComment', dependent: :destroy
 
 	accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank
 
-  after_create :create_client_provider_enrollment
+ after_create :create_client_provider_enrollment
 
 	def provider_name
 		provider =	if Provider.exists?(id: self.provider_id)

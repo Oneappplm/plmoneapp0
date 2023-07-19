@@ -17,4 +17,13 @@ class EnrollmentProvidersDetail < ApplicationRecord
   scope :meridian, -> {where(enrollment_payer: 'meridian')}
   scope :priority_health, -> {where(enrollment_payer: 'priority_health')}
   scope :medicaid, -> {where(enrollment_payer: 'medicaid')}
+
+  has_many :application_status_logs, class_name: 'EpdLog', dependent: :destroy
+
+  after_save :create_application_status_log, if: :saved_change_to_enrollment_status?
+
+  protected
+  def create_application_status_log
+    self.application_status_logs.create(status: self.enrollment_status)
+  end
 end
