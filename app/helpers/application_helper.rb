@@ -397,16 +397,16 @@ module ApplicationHelper
   end
 
 	def form_control_classes(options = {})
-    classes = ['form-control', 'border']
-    classes << 'border-danger' if options[:danger]
-    classes << 'border-dark' unless options[:danger]
-    classes.join(' ')
-  end
+  classes = ['form-control', 'border']
+  classes << 'border-danger' if options[:danger]
+  classes << 'border-dark' unless options[:danger]
+  classes.join(' ')
+end
 
-	def form_select_classes(options = {})
-    classes = ['form-select', 'border']
-    classes << 'border-danger' if options[:danger]
-    classes << 'border-dark' unless options[:danger]
-    classes.join(' ')
-  end
+def form_select_classes(options = {})
+  classes = ['form-select', 'border']
+  classes << 'border-danger' if options[:danger]
+  classes << 'border-dark' unless options[:danger]
+  classes.join(' ')
+end
 end
