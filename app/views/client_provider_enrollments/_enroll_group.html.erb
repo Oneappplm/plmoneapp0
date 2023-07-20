@@ -52,8 +52,8 @@
     <div class="col-lg-12">
       <div class="card rounded shadow-lg p-1 px-3 mb-3">
         <h5 class="mt-2 text-center">Payer Enrollment Details</h5>
-        <div class="card rounded shadow-lg p-1 px-3 mb-3">
-          <% client_provider_enrollment.enrollable&.details.each_with_index do |detail,idx|%>
+        <% client_provider_enrollment.enrollable&.details.each_with_index do |detail,idx|%>
+          <div class="card rounded shadow-lg p-1 px-3 mb-3">
             <%= render partial: "global_components/collapsible_sidebar_header", locals: { title: detail&.enrollment_payer&.titleize, collapse_name: "#{detail&.enrollment_payer&.underscore}_payer", text_position: 'text-start' }%>
             <div class="collapsible" style="<%= current_user&.is_card_open?("#{detail&.enrollment_payer&.underscore}_payer") ? '' : 'display: none;' %>">
               <div class="text-left mt-2 text-dark">
@@ -90,8 +90,8 @@
                 <p class="mb-2"><strong>Notes:</strong> <%= detail&.notes %> </p>
               </div>
             </div>
-          <% end %>
-        </div>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>
