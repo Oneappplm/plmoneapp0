@@ -409,4 +409,15 @@ def form_select_classes(options = {})
   classes << 'border-dark' unless options[:danger]
   classes.join(' ')
 end
+
+#for search_select dropdown
+def border_class_for_value(value)
+	if value.nil?
+		'border border-dark'
+	elsif value.blank?
+		'border border-danger'
+	else
+		'border border-dark'
+	end
+end
 end
