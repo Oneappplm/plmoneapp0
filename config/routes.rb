@@ -257,6 +257,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :enrollment_payers do
+    collection do
+      post :add_payer
+      post :delete_payer
+    end
+  end
 
   namespace :api do
     namespace :v1 do

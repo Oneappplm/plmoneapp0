@@ -103,6 +103,47 @@
    </div>
    <% end %>
 
+
+<div class="modal fade" id="enrollmentTrackingPayerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered">
+       <div class="modal-content">
+         <div class="modal-header px-3">
+            <h4 class="modal-title">Edit Enrollment Payor</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+           <div class="modal-body px-3 pt-0">
+            <div class="form-row mt-3">
+               <label for="">Add Payor:</label>
+               <input id="payor-name" type="text" placeholder="Type here..." class="form-control">
+            </div>
+            <div class="form-row mt-3 d-flex justify-content-end">
+               <button class="btn btn-primary py-1" onclick="addPayor()">Add</button>
+            </div>
+            <h5>List of Payors</h5>
+            <div class="list-of-payers">
+               <table class="table table-bordered">
+                  <tbody>
+                     <% enrollment_payers.order(created_at: :desc).each do |payor| %>
+                     <tr>
+                        <td>
+                           <div class="d-flex justify-content-between">
+                              <%= payor.name %>
+                              <%= link_to 'javascript:void(0)',  data: { confirm: 'Are you sure?', id: payor.id }, onclick: "deletePayer(this)" do %>
+                                 <span class="text-danger"><i class="bx bx-x"></i></span>
+                              <% end %>
+                           </div>
+                        </td>
+                     </tr>
+                     <% end %>
+                  </tbody>
+               </table>
+            </div>
+           </div>
+
+       </div>
+   </div>
+</div>
+
 <%= content_for :js do %>
 <script>
    $(document).ready(function(){
@@ -250,6 +291,54 @@
       }
     })
   }
+</script>
+
+<script>
+   function addPayor(){
+      var payor_name = $('#payor-name').val();
+      if(payor_name == ''){
+         alert('Please enter payor name');
+         return false;
+      }
+
+      $.post('<%= add_payer_enrollment_payers_path %>', { authenticity_token: csrfToken, name: payor_name }, function(data){
+         if(data['status'] == 'success'){
+            var payor_id = data['payor_id'];
+            var html = '<tr><td><div class="d-flex justify-content-between">' + payor_name + '<a data-confirm="Are you sure?" data-id="' + payor_id + '" onclick="deletePayer(this)" href="javascript:void(0)"><span class="text-danger"><i class="bx bx-x"></i></span></a></div></td></tr>';
+            $('.list-of-payers table tbody').prepend(html);
+            $('#payor-name').val('');
+         }else{
+            var message = data['message'];
+            alert(message);
+         }
+      })
+   }
+
+   function deletePayer(link){
+      var confirmationMessage = $(link).data('confirm');
+
+      if (!confirm(confirmationMessage)) {
+        e.preventDefault();
+      }
+
+      var id = $(link).data('id');
+
+      $.post('<%= delete_payer_enrollment_payers_path %>', { authenticity_token: csrfToken, id: id }, function(data){
+         if(data['status'] == 'success'){
+            $(link).parent().parent().parent().remove();
+         }else{
+            var message = data['message'];
+            alert(message);
+         }
+      });
+   }
+
+   $(document).ready(function(){
+      $('#enrollmentTrackingPayerModal').on('hidden.bs.modal', function () {
+         console.log('asdasd')
+         location.reload();
+      })
+   })
 </script>
 
 <style>
