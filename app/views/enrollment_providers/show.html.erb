@@ -109,13 +109,13 @@
                     <p class="mb-2"><strong>State:</strong> <%= State.find_by(alpha_code: detail&.payer_state)&.name %></p>
                     <p class="mb-2"><strong>Application Status:</strong> <%= detail&.enrollment_status&.titleize %></p>
                     <% if detail&.enrollment_status == "approved" %>
-                      <p class="mb-2"><strong>Effective Date:</strong> <%= DateTime.parse(detail&.enrollment_effective_date)&.strftime('%B %d, %Y') %></p>
-                      <p class="mb-2"><strong>Association Start Date:</strong> <%= DateTime.parse(detail&.association_start_date)&.strftime('%B %d, %Y') %></p>
-                      <p class="mb-2"><strong>Association End Date:</strong> <%= DateTime.parse(detail&.association_end_date)&.strftime('%B %d, %Y') %></p>
-                      <p class="mb-2"><strong>Business End Date:</strong> <%= DateTime.parse(detail&.business_end_date)&.strftime('%B %d, %Y') %></p>
+                      <p class="mb-2"><strong>Effective Date:</strong> <%= DateTime.parse(detail&.enrollment_effective_date)&.strftime('%B %d, %Y') rescue nil %></p>
+                      <p class="mb-2"><strong>Association Start Date:</strong> <%= DateTime.parse(detail&.association_start_date)&.strftime('%B %d, %Y') rescue nil %></p>
+                      <p class="mb-2"><strong>Association End Date:</strong> <%= DateTime.parse(detail&.association_end_date)&.strftime('%B %d, %Y')  rescue nil %></p>
+                      <p class="mb-2"><strong>Business End Date:</strong> <%= DateTime.parse(detail&.business_end_date)&.strftime('%B %d, %Y')  rescue nil %></p>
                       <p class="mb-2"><strong>Revalidation Status:</strong> <%= detail&.revalidation_status %></p>
-                      <p class="mb-2"><strong>Revalidation Date:</strong> <%= detail&.revalidation_date&.strftime('%B %d, %Y') %></p>
-                      <p class="mb-2"><strong>Revalidation Due Date:</strong> <%=detail&.revalidation_due_date&.strftime('%B %d, %Y') %></p>
+                      <p class="mb-2"><strong>Revalidation Date:</strong> <%= detail&.revalidation_date&.strftime('%B %d, %Y') rescue nil %></p>
+                      <p class="mb-2"><strong>Revalidation Due Date:</strong> <%=detail&.revalidation_due_date&.strftime('%B %d, %Y') rescue nil %></p>
                       <p class="mb-2"><strong>Line of Business:</strong> <%= detail&.line_of_business %></p>
                     <% end %>
                     <p class="mb-2"><strong>Provider ID:</strong> <%= detail&.provider_id %> </p>
