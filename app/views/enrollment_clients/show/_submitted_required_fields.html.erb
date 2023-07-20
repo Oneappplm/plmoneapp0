@@ -1,5 +1,9 @@
   <div class="card rounded shadow-lg py-2 px-3 mb-3">
+    <% if controller_name == 'enrollment_clients'%>
     <h3 class="text-center">Missing Required Fields</h3>
+    <% else %>
+    <h5 class="text-center">Missing Required Fields</h5>
+    <% end %>
     <% if @provider.missing_field_submissions.pluck(:status).include?('pending')%><p class="text-center"><%= controller_name == 'enrollment_clients' ? 'You have a missing required details that needs to be filled' : 'A provider submitted their missing details.'%></p>
     <% end %>
 
@@ -32,6 +36,7 @@
       <% elsif submission.status == "done" && controller_name == 'providers'%>
         <p class="text-center my-3">Task is done</p>
       <% end %>
+      <div class="alert alert-success text-center py-1 submission-msg d-none">Task successfully completed</div>
       <% if controller_name == 'providers' && submission.status == 'pending' %>
         <a class="btn btn-primary btn-md w-100 missing-fields-submitted-btn"  href="javascript:void(0);" data-submission="<%= submission.id %>">Mark as Done</a>
       <% end %>

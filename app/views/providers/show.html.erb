@@ -278,13 +278,6 @@
 
     </div>
   </div>
-<%= render "timeline_modal"%>
-
- <% @provider.time_lines.not_deleted.each do |time_line|%>
-    <% if time_line.persisted?%>
-      <%= render partial: 'time_lines/edit_timeline_modal', locals: {time_line: time_line}%>
-    <% end %>
-<% end %>
 
 <% content_for :js do %>
 <script>
@@ -337,7 +330,10 @@ $(document).ready(function() {
       success: function(data) {
         var status = data['status']
         if(status == 'done') {
-          alert(status);
+          $('.submission-msg').removeClass('d-none');
+          setTimeout(function(){
+            $('.submission-msg').addClass('d-none');
+          },3000)
           $('.missing-fields-submitted-btn').remove();
         }
       }
