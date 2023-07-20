@@ -3,7 +3,7 @@ class ClientProviderEnrollment < ApplicationRecord
 
   class << self
     def search_by_params(params)
-      return all.paginate(per_page: params[:per_page].present? ? params[:per_page] : 5, page:  params[:page].present? ? params[:page] : 1) if params[:search_keyword].blank? && params[:enrollable_type].blank?
+      return all.paginate(per_page: params[:per_page].present? ? params[:per_page] : 20, page:  params[:page].present? ? params[:page] : 1) if params[:search_keyword].blank? && params[:enrollable_type].blank?
 
       enrollable_type_condition = "WHERE cpe.enrollable_type IN ('EnrollGroup','EnrollmentProvider')"
 
@@ -38,7 +38,7 @@ class ClientProviderEnrollment < ApplicationRecord
       paginate_by_sql(
         [sql, { :state => "%" + (params[:search_keyword].present? ? params[:search_keyword] : "") + "%" }],
         page:  params[:page].present? ? params[:page] : 1,
-        per_page: params[:per_page].present? ? params[:per_page] : 5
+        per_page: params[:per_page].present? ? params[:per_page] : 20
       )
     end
   end

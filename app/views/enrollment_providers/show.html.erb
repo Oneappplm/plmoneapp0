@@ -1,6 +1,6 @@
 <div class="content container-fluid">
   <%= render "enrollment_tracking_components/enrollment_nav"%>
-  <div class="row mb-3">
+  <div class="row mb-2">
     <div class="col-lg-6">
       <%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
       <div class="">
@@ -51,7 +51,7 @@
 
     </div>
     <div class="col-lg-4" style="background-color: #eee;">
-      <div class="row my-2 mb-3 mt-3">
+      <div class="row my-2 mb-2 mt-3">
         <div class="col-lg-12">
           <div class="card rounded shadow-lg p-2">
             <p class="text-dark-grey fw-semibold mb-1">Enrolled by: <%= @enrollment_provider&.enrolled_by %> </p>
@@ -59,7 +59,7 @@
           </div>
         </div>
     </div>
-      <div class="row mb-3">
+      <div class="row mb-2">
         <div class="col-lg-12">
           <div class="card rounded shadow-lg p-2">
             <p class="text-dark-grey fw-semibold mb-1">Assigned Agent: <%= @enrollment_provider.assigned_agent&.full_name %> </p>
@@ -67,7 +67,7 @@
           </div>
         </div>
     </div>
-    <div class="row mb-3">
+    <div class="row mb-2">
       <div class="col-lg-6">
         <a href="javascript:void(0);" data-model="enrollment_providers" data-status="completed" class="btn bg-white btn-lg btn-outline-success w-100 <%= @enrollment_provider.status != 'completed' ? 'enrollment-update-status' : ' unavailable disabled'%>">
           <span class="text-dark-grey">
@@ -83,9 +83,9 @@
         </a>
       </div>
     </div>
-    <div class="row mb-3">
+    <div class="row mb-1">
         <div class="col-lg-12">
-          <div class="card rounded shadow-lg p-1 px-3 mb-3">
+          <div class="card rounded shadow-lg p-1 px-3 mb-1">
             <span class="fw-semibold mt-2 text-white rounded px-1" style="background: #3bc539; width: 70%;" id="status_identified">ID: <%= @enrollment_provider.id %> <%= "Enrollment #{@enrollment_provider&.status&.titleize}"%></span>
             <div class="avatar-circle mt-3" style="text-align: center">
               <img class="avatar-img" src="../dist/assets/img/400x400/img1.jpg" alt="Image Description" style="width: 100px;">
@@ -95,9 +95,9 @@
         </div>
     </div>
 
-      <div class="row mb-3">
+      <div class="row mb-1">
         <div class="col-lg-12">
-          <div class="card rounded shadow-lg p-1 px-3 mb-3">
+          <div class="card rounded shadow-lg p-1 px-3 mb-1">
             <h5 class="mt-2 text-center">Payer Enrollment Details</h5>
             <% @enrollment_provider&.details.each_with_index do |detail,idx|%>
               <div class="card rounded shadow-lg p-1 px-3 mb-3">
@@ -106,7 +106,18 @@
                   <div class="text-left mt-2 text-dark">
                     <p class="mb-2"><strong>Enrollment Payer:</strong> <%= detail.enrollment_payer&.titleize %></p>
                     <p class="mb-2"><strong>Enrollment Type:</strong> <%= detail.enrollment_type %></p>
+                    <p class="mb-2"><strong>State:</strong> <%= State.find_by(alpha_code: detail&.payer_state)&.name %></p>
                     <p class="mb-2"><strong>Application Status:</strong> <%= detail&.enrollment_status&.titleize %></p>
+                    <% if detail&.enrollment_status == "approved" %>
+                      <p class="mb-2"><strong>Effective Date:</strong> <%= DateTime.parse(detail&.enrollment_effective_date)&.strftime('%B %d, %Y') %></p>
+                      <p class="mb-2"><strong>Association Start Date:</strong> <%= DateTime.parse(detail&.association_start_date)&.strftime('%B %d, %Y') %></p>
+                      <p class="mb-2"><strong>Association End Date:</strong> <%= DateTime.parse(detail&.association_end_date)&.strftime('%B %d, %Y') %></p>
+                      <p class="mb-2"><strong>Business End Date:</strong> <%= DateTime.parse(detail&.business_end_date)&.strftime('%B %d, %Y') %></p>
+                      <p class="mb-2"><strong>Revalidation Status:</strong> <%= detail&.revalidation_status %></p>
+                      <p class="mb-2"><strong>Revalidation Date:</strong> <%= detail&.revalidation_date&.strftime('%B %d, %Y') %></p>
+                      <p class="mb-2"><strong>Revalidation Due Date:</strong> <%=detail&.revalidation_due_date&.strftime('%B %d, %Y') %></p>
+                      <p class="mb-2"><strong>Line of Business:</strong> <%= detail&.line_of_business %></p>
+                    <% end %>
                     <p class="mb-2"><strong>Provider ID:</strong> <%= detail&.provider_id %> </p>
                     <p class="mb-2"><strong>Group ID:</strong> <%= detail&.group_id %> </p>
                     <p class="mb-1"><strong>Notes:</strong> <%= detail&.comment %></p>
