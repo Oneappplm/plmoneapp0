@@ -259,7 +259,13 @@
 
               </div>
           </div>
+          <% if !@provider.missing_field_submissions.blank?%>
           <%= render "enrollment_clients/show/submitted_required_fields"%>
+          <% end %>
+          <% if @provider.missing_field_submissions.blank? && (@provider.has_missing_required_fields? or has_missing_state_licenses_fields?) %>
+
+          <%= render "enrollment_clients/show/provider_missing_fields"%>
+          <% end %>
           <div class="card rounded shadow-lg p-1 px-3 mb-3 pb-5">
           <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Comments', collapse_name: 'comments'}%>
             <div id="comments-list">

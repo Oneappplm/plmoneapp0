@@ -257,7 +257,7 @@ class Provider < ApplicationRecord
 
   def has_missing_required_fields?
     required_fields.each do |field|
-      return true if self.send(field[1]).nil?
+      return true if self.send(field[1]).nil? or self.send(field[1]).blank?
     end
     return false
   end
@@ -265,7 +265,7 @@ class Provider < ApplicationRecord
   def has_missing_state_licenses_fields?
     licenses_required_fields = ['license_number','license_effective_date', 'license_expiration_date', 'state_id']
     licenses_required_fields.each do |field|
-      return true if licenses.send(field).nil?
+      return true if licenses.send(field).nil? or licenses.send(field).blank?
     end
     return false
   end
@@ -278,12 +278,4 @@ class Provider < ApplicationRecord
   def create_missing_field_submission
     ProvidersMissingFieldSubmission.create(provider_id: self.id)
   end
-  # def create_missing_field_submission(key, value, attribute = nil)
-  #   new_missing_field_submission = ProvidersMissingFieldSubmission.new
-  #   new_missing_field_submission.provider_id = self.id
-  #   new_missing_field_submission.data_key = key
-  #   new_missing_field_submission.data_value = value
-  #   new_missing_field_submission.data_attribute = attribute
-  #   new_missing_field_submission.save
-  # end
 end
