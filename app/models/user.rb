@@ -159,14 +159,17 @@ class User < ApplicationRecord
   def default_page
    return 'overview' if roles.find_by(page: 'overview').can_read
 
-   page = nil
+   pages = []
    roles.each do |role|
     next if !role.can_read
-    page = role.page
-    break
+    pages << role.page
    end
 
-   page
+   if Setting.take.qualifacts? && pages.include?('enrollment_tracking')
+    'enrollment_tracking'
+   else
+    pages.first
+   end
   end
 
   private
