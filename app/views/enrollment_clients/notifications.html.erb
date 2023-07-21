@@ -38,10 +38,17 @@
       })
 
        $.get('<%= specialties_multi_select_data_path %>', function(data){
-          VirtualSelect.init({ele: '#provider_specialty', search: true, multiple: true, required: true }); // initialze virtual select first
-          document.querySelector('#provider_specialty').setOptions(data['result']); // other alternative for initializing collection data
+          VirtualSelect.init({ele: '#missing_provider_specialty', search: true, multiple: true }); // initialze virtual select first
+          document.querySelector('#missing_provider_specialty').setOptions(data['result']); // other alternative for initializing collection data
+        });
+
+        $.get('<%= provider_types_multi_select_data_path %>', function(data){
+          VirtualSelect.init({ele: '#provider_practitioner_type', search: true, multiple: true }); // initialze virtual select first
+          document.querySelector('#provider_practitioner_type').setOptions(data['result']); // other alternative for initializing collection data
         });
       }, 500);
+
+    // 
 
     $('#provider_enrollment_group_id').on('change',function(){
         var id = $(this).val();

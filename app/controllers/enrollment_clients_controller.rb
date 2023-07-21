@@ -53,6 +53,6 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def set_incomplete_providers
-    @incomplete_providers ||= @providers.with_missing_required_attributes
+    @incomplete_providers ||= Provider.search_by_params(params).with_missing_required_attributes.paginate(per_page: 50, page: params[:page] || 1)
   end
 end

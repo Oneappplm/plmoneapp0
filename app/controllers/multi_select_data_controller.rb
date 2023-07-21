@@ -11,7 +11,6 @@ class MultiSelectDataController < ApplicationController
     else
 			send_result State.all.map{ |state| { label: "#{state.name} - #{state.alpha_code}", value: state.alpha_code } }
     end
-		
 	end
 
   def provider_states

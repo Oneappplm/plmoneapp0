@@ -10,8 +10,9 @@
                   <% if ['state_dropdown'].include?(field[2])%>
                     <%= f.select field[1].to_sym, options_for_select([]), { prompt: 'State' }, {:class => "form-select border border-dark single-select #{field[2]}", id: "#{field[1]}",  data: { value: f.object.send(field[1]) } }  %>
                   <% elsif ['practitioner_dropdown'].include?(field[2])%>
+                    <%= HtmlUtils.multi_select_dropdown name: 'provider[practitioner_type]', id: 'provider_practitioner_type'%>
                   <% elsif ['specialty_dropdown'].include?(field[2])%>
-                    <%= f.collection_select field[1].to_sym, specialties, :bcbs, :bcbs, { prompt: 'Select Option' }, { class: form_select_classes(danger: @provider.specialty.blank? && @provider.persisted?) } %>
+                    <%= f.collection_select field[1].to_sym, specialties, :bcbs, :bcbs, { prompt: 'Select Option' }, { class: 'form-select border-dark', id: 'missing_provider_specialty' } %>
                   <% elsif ['client_dropdown'].include?(field[2])%>
                     <%= f.select field[1].to_sym, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, {:class => form_select_classes(danger: @provider.first_name.blank? && @provider.persisted?), data: {show: 'provider_dco_div'}}  %>
 
