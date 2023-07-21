@@ -157,7 +157,7 @@ class User < ApplicationRecord
   end
 
   def default_page
-   return 'overview' if roles.find_by(page: 'overview').can_read
+   return 'overview' if roles.find_by(page: 'overview')&.can_read
 
    pages = []
    roles.each do |role|
@@ -168,7 +168,7 @@ class User < ApplicationRecord
    if Setting.take.qualifacts? && pages.include?('enrollment_tracking')
     'enrollment_tracking'
    else
-    pages.first
+    pages&.first
    end
   end
 
