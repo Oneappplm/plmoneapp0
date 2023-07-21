@@ -40,6 +40,7 @@ class Provider < ApplicationRecord
 
   has_many :taxonomies, class_name: 'ProviderTaxonomy', dependent: :destroy
   has_one :licenses , class_name: 'ProviderLicense', dependent: :destroy
+  has_one :enrollment_provider , class_name: 'EnrollmentProvider', dependent: :destroy
   has_many :np_licenses , class_name: 'ProviderNpLicense', dependent: :destroy
   has_many :rn_licenses , class_name: 'ProviderRnLicense', dependent: :destroy
   has_many :service_locations , class_name: 'ProvidersServiceLocation', dependent: :destroy
