@@ -3,7 +3,7 @@ class ProvidersMissingFieldSubmissionsData < ApplicationRecord
 
 
   def is_state_id?
-    self.data_key == 'state_id'
+    self.data_key == 'state_id' || self.data_key == 'birth_state'
   end
 
   def get_state_name

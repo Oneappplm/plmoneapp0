@@ -152,6 +152,7 @@ Rails.application.routes.draw do
     collection do
       get :download_documents
       get :reports
+      get :notifications
     end
   end
 

@@ -1,20 +1,31 @@
 class EnrollmentClientsController < ApplicationController
-  before_action :set_providers, only: [:index, :download_documents, :show, :reports]
+  before_action :set_providers, only: [:index, :download_documents, :show, :reports, :notifications]
   before_action :set_provider, only: [:show]
-  before_action :set_incomplete_providers, only: [:show, :index, :reports]
+  before_action :set_incomplete_providers, only: [:show, :index, :reports, :notifications]
   def index; end
 
   def show
     if params[:mode].present?
-      if params[:mode] == 'notifications' && @provider
-        @show_missing_fields = @provider.show_missing_fields?
-        @provider.build_licenses if @provider.licenses.nil?
-      end
       render params[:mode]
     end
   end
 
   def reports;end
+
+  def notifications
+
+
+    @provider = if params[:provider_id]
+      Provider.find(params[:provider_id])
+    else
+      @incomplete_providers.first
+    end
+
+    if @provider
+      @show_missing_fields = @provider.show_missing_fields?
+      @provider.build_licenses if @provider.licenses.nil?
+    end
+  end
 
   def providers_to_csv
     CSV.generate(headers: true) do |csv|

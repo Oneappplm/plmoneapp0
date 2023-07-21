@@ -1,5 +1,5 @@
 <%
-  providers = if params[:mode] == 'notifications'
+  providers = if action_name == 'notifications'
     @incomplete_providers
   else
     @providers
@@ -17,25 +17,42 @@
       </tr>
    </thead>
    <tbody>
+      <% if @provider %>
+        <%= render partial: "enrollment_clients/show/selected_provider" %>
+      <% end %>
       <% providers.each do |provider| %>
-      <% url = (params[:mode] == 'notifications' ? enrollment_client_path(provider,mode: 'notifications') : enrollment_client_path(provider) ) %>
+      <% url = (action_name == 'notifications' ? notifications_enrollment_clients_path(provider_id: provider.id) : enrollment_client_path(provider) ) %>
+      <% if @provider&.id != provider.id%>
       <tr>
-         <td class="<%= (params[:id] == provider.id.to_s) ? 'bg-medium-grey' : ''%>">
+         <td class="">
             <%= link_to "#{provider&.client&.group_name}", url, class: 'text-dark-grey' %>
          </td>
-         <td class="<%= (params[:id] == provider.id.to_s) ? 'bg-medium-grey' : ''%>">
+         <td class="">
             <%= link_to "#{provider&.first_name}", url, class: 'text-dark-grey' %>
          </td>
-         <td class="<%= (params[:id] == provider.id.to_s) ? 'bg-medium-grey' : ''%>">
+         <td class="">
             <%= link_to "#{provider&.middle_name}", url, class: 'text-dark-grey' %>
          </td>
-         <td class="<%= (params[:id] == provider.id.to_s) ? 'bg-medium-grey' : ''%>">
+         <td class="">
             <%= link_to "#{provider&.last_name}", url, class: 'text-dark-grey' %>
          </td>
-         <td class="<%= (params[:id] == provider.id.to_s) ? 'bg-medium-grey' : ''%>">
+         <td class="">
             <%= link_to "#{provider&.practitioner}", url, class: 'text-dark-grey' %>
          </td>
       </tr>
       <% end %>
+      <% end %>
    </tbody>
 </table>
+  <div class="col-lg-12">
+        <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+        <div class="page_info ms-3 text-black">
+            <%= page_entries_info providers %>
+        </div>
+        <% if params[:per_page ].present? %>
+          <%= will_paginate providers, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+        <% else %>
+          <%= will_paginate providers, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+        <% end %>
+        </div>
+      </div>

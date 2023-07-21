@@ -75,6 +75,7 @@ class Provider < ApplicationRecord
   accepts_nested_attributes_for :cnp_licenses, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :ins_policies, allow_destroy: true, reject_if: :all_blank
 
+  scope :selected_first, -> { order(selected: :desc) }
   default_scope { where(api_token: nil) }
   scope :male, -> { where(gender: 'Male') }
   scope :female, -> { where(gender: 'Female') }
@@ -253,6 +254,13 @@ class Provider < ApplicationRecord
       ['License Registration State', 'state_id', 'state_dropdown'],
       ['License Expiration Date', 'license_expiration_date', 'date_field']
     ]
+  end
+
+  def has_missing_documents
+    required_documents.each do |field|
+      return true if self.send(field[1]).nil? or self.send(field[1])&.url.nil?
+    end
+    return false
   end
 
   def has_missing_required_fields?
