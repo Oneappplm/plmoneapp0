@@ -96,7 +96,7 @@ class EnrollGroupsController < ApplicationController
           # details_attributes: [:id, :start_date, :due_date, :enrollment_payer, :enrollment_type, :enrollment_status, :approved_date, :revalidation_date, :revalidation_due_date, :comment, :ptan_number ,:_destroy],
           details_attributes: [ :id, :payer_state, :group_number, :enrollment_payer, :payer, :effective_date, :revalidation_date,
                       :application_status, :payor_type, :medicare_tricare, :payor_name,
-                      :payor_phone, :payor_email, :enrollment_link, :payor_username, :payor_password,
+                      :payor_phone, :payor_submission_type, :payor_email, :payor_link, :payor_username, :payor_password,
                       :payor_question, :payor_answer, :portal_admin, :portal_admin_name,
                       :portal_admin_phone, :portal_admin_email, :caqh_payer, :eft, :era, :client_notes, :notes, :_destroy,
                       questions_attributes: [:id, :secret_question, :answer]

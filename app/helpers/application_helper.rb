@@ -409,4 +409,21 @@ def form_select_classes(options = {})
   classes << 'border-dark' unless options[:danger]
   classes.join(' ')
 end
+
+def payor_submission_types
+	[
+		['Paper','paper'],
+		['Roster','roster'],
+		['Portal','portal']
+	]
+end
+
+def medicare_tricare_parties
+	[
+		['Yes-Medicare','yes-medicare'],
+		['Yes-Tricare','yes-tricare'],
+		['Yes-Medicare and Tricare','yes-medicare-and-tricare'],
+		['No','no']
+	]
+end
 end
