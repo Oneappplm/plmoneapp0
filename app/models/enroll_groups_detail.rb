@@ -24,6 +24,7 @@ class EnrollGroupsDetail < ApplicationRecord
   scope :meridian, -> {where(enrollment_payer: 'meridian')}
   scope :priority_health, -> {where(enrollment_payer: 'priority_health')}
   scope :medicaid, -> {where(enrollment_payer: 'medicaid')}
+  
 
   private
 
