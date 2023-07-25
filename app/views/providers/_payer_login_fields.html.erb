@@ -1,0 +1,41 @@
+
+<% index_of_object = f.object.provider.payer_login_ids.index(f.object.id) %>
+<div class="field card p-3 py-3 mb-3 primary-service-location-field">
+    <h5>Payer Login Details</h5>
+      <div class="row mb-3">
+          <div class="col-lg-6">
+            <label class="text-dark-grey">Payer</label>
+             <%= f.select :enrollment_payer, options_for_select([]), { prompt: 'Enrollment Payer' }, {:class => 'form-select border border-dark enrollment-payer single-select',  data: { value: f.object.enrollment_payer } }  %>
+          </div>
+          <div class="col-lg-6">
+            <label class="text-dark-grey">State</label>
+            <%= f.select :state_id, options_for_select([]), { prompt: 'State' }, {:class => 'form-select border border-dark payer-state single-select',  data: { value: f.object.state_id } }  %>
+          </div>
+      </div>
+      <div class="row mb-3">
+          <div class="col-lg-6">
+            <label class="text-dark-grey">Username</label>
+            <%= f.text_field :username , class: 'form-control border-dark'%>
+          </div>
+          <div class="col-lg-6">
+            <label class="text-dark-grey">Password</label>
+            <%= f.text_field :password, class: 'form-control border-dark'%>
+          </div>
+      </div>
+      <div id="questions-fields">
+        <div class="q-fields">
+          <%= f.fields_for :questions do |questions| %>
+              <%= render 'question_fields', q: questions, idx: index_of_object %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+          <div class="col-lg-12">
+            <label class="text-dark-grey">Notes</label>
+            <%= f.text_area :notes, class: 'form-control border-dark'%>
+          </div>
+      </div>
+</div>
+
+

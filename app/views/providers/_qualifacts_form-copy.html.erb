@@ -195,28 +195,157 @@
         </div>
       </div>
     </div>
-     <div class="row mb-3 mt-2">
-      <%= HtmlUtils.radio_toggle name: 'provider[payer_login]',
-          label: 'Payer Login',
-          container_class: 'd-flex align-items-center my-3',
-          toshow: 'payer_login_form',
-          hidden_field: true,
-          active: (@provider.is_payer_login? ? 'active' : '')
-      %>
-      <div id="payer_login_form" class="<%= @provider.is_payer_login? ? '' : 'd-none'%>">
+  <!--   <div class="row mb-3 mt-2">
+      <div class="col-lg-12 mt-3">
+        <h3>MN License</h3>
+      </div>
+      <div id="mn_licenses">
          <div class="fields">
-            <%= f.fields_for :payer_logins do |payer_login_fields| %>
-              <%= render 'payer_login_fields', f: payer_login_fields %>
-            <% end %>
-         </div>
-
-         <div class="row">
-           <div class="col-lg-12 text-center">
-          <a class="btn btn-primary btn-xs add_association">Add New</a>
-        </div>
+            <%#= f.fields_for :mn_licenses do |mn_license_fields| %>
+              <%#= render 'mn_license_fields', f: mn_license_fields %>
+            <%# end %>
          </div>
       </div>
-    </div> 
+    </div> -->
+
+    <div class="row mb-3">
+      <div class="col-lg-12 mt-3">
+        <h3>CAQH</h3>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH ID(optional)</label>
+        <%= f.text_field :caqhid ,placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH Attestation Date(optional)</label>
+        <%= f.text_field :caqh_attestation_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+      </div>
+    </div>
+    <div class="row mb-3">
+       <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH State(optional)</label>
+       <%#= f.select :caqh_state, options_for_select(states.pluck(:name, :id), @provider.caqh_state), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
+       <div class="search-select state-search-select form-control border border-dark" name="provider[caqh_state]" id="caqh_state">
+        </div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH PDF</label>
+        <%= f.select :caqh_pdf, options_for_select(yes_or_no_options, @provider.medical_license), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
+       </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH PDF Date Received(optional)</label>
+        <%= f.text_field :caqh_pdf_date_received, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH Username(optional)</label>
+        <%= f.text_field :caqh_username,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+          <label class="text-dark-grey">CAQH Password(optional)</label>
+        <%= f.text_field :caqh_password,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <!-- add field -->
+        <label class="text-dark-grey">Current Re-Attestation (optional)</label>
+        <%= f.text_field :caqh_current_reattestation_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+        <!-- add field -->
+        <label class="text-dark-grey">Re-Attestation must be completed by (optional)</label>
+        <%= f.text_field :caqh_reattest_completed_by,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <!-- add field -->
+        <label class="text-dark-grey">Questions (optional)</label>
+        <%= f.text_field :caqh_question,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <!-- add field -->
+        <label class="text-dark-grey">Answer (optional)</label>
+        <%= f.text_field :caqh_answer,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-12">
+        <label class="text-dark-grey">CAQH Notes (optional)</label>
+        <%= f.text_area :caqh_notes,  placeholder: 'Type here...', class: 'form-control border border-dark', rows: '3' %>
+      </div>
+    </div>
+
+    <div class="row mb-3 mt-2">
+      <div class="col-lg-12 mt-3">
+        <h3>MCC</h3>
+      </div>
+      <div id="mcc_licenses">
+         <div class="fields">
+            <%= f.fields_for :mccs do |mcc_fields| %>
+              <%= render 'mcc_fields', f: mcc_fields %>
+            <% end %>
+         </div>
+      </div>
+    </div>
+
+    <div class="row mb-3 mt-2">
+      <div class="col-lg-12 mt-3">
+        <h3>MN Medicaid</h3>
+      </div>
+      <div id="mn_medicaid">
+         <div class="fields">
+            <%= f.fields_for :mn_medicaids do |mn_medicaid_fields| %>
+              <%= render 'mn_medicaid_fields', f: mn_medicaid_fields %>
+            <% end %>
+         </div>
+      </div>
+    </div>
+
+    <div class="row mb-3 mt-2">
+      <div class="col-lg-12 mt-3">
+        <h3>Medicaid</h3>
+      </div>
+      <div id="mn_medicaid">
+         <div class="fields">
+            <%= f.fields_for :medicaids do |medicaid_fields| %>
+              <%= render 'medicaid_fields', f: medicaid_fields %>
+            <% end %>
+         </div>
+      </div>
+    </div>
+
+    <div class="row mb-3 mt-2">
+      <div class="col-lg-12 mt-3">
+        <h3>WI Medicaid/Forward Health</h3>
+      </div>
+      <div id="wi_medicaid">
+         <div class="fields">
+            <%= f.fields_for :wi_medicaids do |wi_medicaid_fields| %>
+              <%= render 'wi_medicaid_fields', f: wi_medicaid_fields %>
+            <% end %>
+         </div>
+      </div>
+    </div>
+
+    <div class="row mb-3 mt-2">
+      <div class="col-lg-12 mt-3">
+        <h3>Medicare</h3>
+      </div>
+      <div id="wi_medicaid">
+         <div class="fields">
+            <%= f.fields_for :medicares do |medicare_fields| %>
+              <%= render 'medicare_fields', f: medicare_fields %>
+            <% end %>
+         </div>
+      </div>
+    </div>
 
     <div class="row mb-5 mt-2">
       <div class="col-lg-12 mt-3">
@@ -304,6 +433,25 @@
               <%= render 'ins_policy_fields', f: ins_policy %>
             <% end %>
           </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-4">
+        <!-- new field -->
+
+        <label class="text-dark-grey">Medicare Provider Number</label>
+        <%= f.text_field :medicare_provider_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-4">
+        <!-- new field -->
+        <label class="text-dark-grey">Medicaid Provider Number</label>
+        <%= f.text_field :medicaid_provider_number,  placeholder: 'Type here...', class: 'form-control border border-dark'%>
+      </div>
+      <div class="col-lg-4">
+        <!-- new field -->
+        <label class="text-dark-grey">TRICARE Provider Number</label>
+        <%= f.text_field :tricare_provider_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
       </div>
     </div>
 
@@ -518,7 +666,10 @@
     </div>
 <% end %>
 
+
+
     <% content_for :js do %>
+
       <!-- Modals -->
       <div class="modal fade" id="deleteFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -586,128 +737,12 @@
           }
         }, 1500);
 
-         $('.enrollment-payer').each(function(){
-          var id = $(this).attr('id');
-          var value = $(this).data('value');
-
-          setTimeout(function(){
-             $.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
-                VirtualSelect.init({ele: '#' + id, search: true });
-                document.querySelector('#' + id).setOptions(data['result']);
-                document.querySelector('#' + id).setValue(value);
-             });
-          }, 1000);
-        });
-
-        $('.payer-state').each(function(){
-          var id = $(this).attr('id');
-          var value = $(this).data('value');
-
-          setTimeout(function(){
-             $.get('<%= provider_states_multi_select_data_path %>', function(data){
-                VirtualSelect.init({ele: '#' + id, search: true });
-                document.querySelector('#' + id).setOptions(data['result']);
-                document.querySelector('#' + id).setValue(value);
-             });
-          }, 1000);
-        });
-
-
-         $(document).on('click','#questions-fields .add_questions',function() {
-            var index_of = $(this).data('index');
-            var detailsFields = $("#questions-fields .question-field");
-             var newEnrollmentdetails = detailsFields.last().clone();
-             var lastId = detailsFields.length - 1;
-             var newId = lastId + 1;
-             // alert(newId);
-             // provider_payer_logins_attributes_0_questions_attributes_0_question
-             newEnrollmentdetails.find("[id^='provider_payer_logins_attributes_']").each(function() {
-                var oldId = $(this).attr("id");
-                var newIdValue = oldId.replace(/\d+/, newId).replace(/\d+/,newId);
-                var oldName = $(this).attr('name');
-                var newName = 'provider[payer_logins_attributes]['+index_of+'][questions_attributes]['+newId+'][question]';
-                var anewName = 'provider[payer_logins_attributes]['+index_of+'][questions_attributes]['+newId+'][answer]';
-                
-                // checks if input is answer field
-                if($(this).hasClass('answer')) {
-                  newName = anewName;
-                }
-
-                $(this).attr("id", newIdValue);
-                $(this).attr("name", newName);
-                $(this).val('');
-             });
-
-            $(this).closest("#questions-fields .q-fields").append(newEnrollmentdetails);
-          })
-
-        $('#payer_login_form').on('click','.add_association',function() {
-         var detailsFields = $("#payer_login_form .field");
-
-         var newEnrollmentdetails = detailsFields.last().clone();
-         var lastId = detailsFields.length - 1;
-         var newId = lastId + 1;
-         provider_payer_logins_attributes_0_enrollment_payer
-         var enrollment_payer_id = "provider_payer_logins_attributes_" + newId + "_enrollment_payer";
-         var payer_state_id = "provider_payer_logins_attributes_" + newId + "_state_id";
-
-          newEnrollmentdetails.find("[id^='provider_payer_logins_attributes_']").each(function() {
-            var oldId = $(this).attr("id");
-            var newIdValue = oldId.replace(/\d+/, newId);
-            $(this).attr("id", newIdValue);
-            $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
-            $(this).val('');
-         });
-
-
-
-
-         setTimeout(function(){
-            $.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
-               VirtualSelect.init({ele: '#' + enrollment_payer_id, search: true }); // initialze virtual select first
-               document.querySelector('#' + enrollment_payer_id).setOptions(data['result']); // other alternative for initializing collection data
-               document.querySelector('#' + enrollment_payer_id).setValue(data['value']); // other alternative for setting the value
-            });
-
-            $.get('<%= provider_states_multi_select_data_path %>', function(data){
-               VirtualSelect.init({ele: '#' + payer_state_id, search: true });
-               document.querySelector('#' + payer_state_id).setOptions(data['result']);
-               document.querySelector('#' + payer_state_id).setValue(value);
-            });
-         }, 500);
-
-          $("#payer_login_form .fields").append(newEnrollmentdetails);
-        })
-
-
-        $(document).on('click','.remove-question',function(){
-          if($(this).hasClass('has-data')) {
-            var model = $(this).data('model');
-            var id = $(this).data('id');
-            // alert(id);
-            deleteDynamicAttr(id,model,$(this));
-          }
-          else {
-            $(this).closest('.question-field').remove();
-          }
-        })
-
-        function deleteDynamicAttr(id,model,button) {
-        $.ajax({
-          url: '<%= delete_record_path %>',
-          method: 'POST',
-          data: { authenticity_token: csrfToken, id: id, model: model },
-          success: function(data) {
-              button.parent().parent().remove();
-          }
-        })
-      }
       });
     </script>
     <% end %>
 
     <style type="text/css">
-      .multi-select, .search-select, .single-select {
+      .multi-select, .search-select {
         padding: 0;
          width: 100%;
          max-width: 1000px;

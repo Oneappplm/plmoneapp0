@@ -28,6 +28,8 @@ class AjaxController < ApplicationController
       GroupDcoNote.delete(id)
     elsif model == 'comment'
       EnrollmentComment.delete(id)
+    elsif model == 'payer_questions'
+      ProvidersPayerLoginsQuestion.delete(id);
     end
 
     head :ok

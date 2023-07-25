@@ -59,6 +59,7 @@ class Provider < ApplicationRecord
   has_many :time_lines, class_name: 'ProvidersTimeLine', dependent: :destroy
   has_many :deleted_document_logs, class_name: 'ProviderDeletedDocumentLog', dependent: :destroy
   has_many :missing_field_submissions, class_name: 'ProvidersMissingFieldSubmission',dependent: :destroy
+  has_many :payer_logins, class_name: 'ProvidersPayerLogin', dependent: :destroy
 
   # accepts_nested_attributes_for :taxonomies, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :licenses, allow_destroy: true, reject_if: :all_blank
@@ -75,6 +76,7 @@ class Provider < ApplicationRecord
   accepts_nested_attributes_for :medicares, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :cnp_licenses, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :ins_policies, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :payer_logins, allow_destroy: true, reject_if: :all_blank
 
   scope :selected_first, -> { order(selected: :desc) }
   default_scope { where(api_token: nil) }
@@ -283,8 +285,11 @@ class Provider < ApplicationRecord
     has_missing_required_fields? or licenses.nil? or has_missing_state_licenses_fields?
   end
 
-
   def create_missing_field_submission
     ProvidersMissingFieldSubmission.create(provider_id: self.id)
+  end
+
+  def is_payer_login?
+    self.payer_login == 'yes'
   end
 end

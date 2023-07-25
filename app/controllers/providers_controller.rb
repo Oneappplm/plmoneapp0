@@ -125,7 +125,8 @@ end
     @provider.medicares.build if @provider.medicares.blank?
     @provider.cnp_licenses.build if @provider.cnp_licenses.blank?
     @provider.ins_policies.build if @provider.ins_policies.blank?
-
+    payer_login = @provider.payer_logins.build if @provider.payer_logins.blank?
+    payer_login.questions.build if payer_login
   end
 
 	def provider_params
@@ -164,6 +165,7 @@ end
           :board_certified,
           :medical_license,
           :status,
+          :payer_login,
           :licensed_registered_state_id,
 					:address_line_1, :address_line_2, :city, :zip_code, :state_id, :telephone_number, :ext, :email_address, :provider_hire_date_seeing_patient, :effective_date_seeing_patient,
 					:medicare_provider_number, :medicaid_provider_number, :tricare_provider_number, :telehealth_providers, :admitting_privileges, :revalidation, :employed_by_other, :supervised_by_psychologist,
@@ -185,6 +187,8 @@ end
           medicares_attributes: [:id, :ptan_number, :medicare_username, :password, :question, :answer, :effective_date, :reval_date, :notes, :_destroy],
           cnp_licenses_attributes: [:id, :cnp_license_number, :effective_date, :expiration_date, :_destroy],
           ins_policies_attributes: [:id, :ins_policy_number, :effective_date, :expiration_date, :_destroy],
+          payer_logins_attributes: [:id, :enrollment_payer, :username, :password, :state_id, :notes, :_destroy,
+          questions_attributes: [:id, :question, :answer]],
 			)
 	end
 end
