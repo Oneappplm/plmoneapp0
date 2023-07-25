@@ -249,6 +249,15 @@
 %>
 <script>
 	$(document).ready(function(){
+
+		$('input[required], select[required], textarea[required]').each(function() {
+    // Get the corresponding label element for the input field
+    var labelElement = $(this).siblings('label');
+
+    // Add an asterisk (*) after the label text
+    labelElement.html(labelElement.text() + ' <strong class="text-red">*</strong>');
+  });
+
 			// schedules
 			$("#schedules").on("click", ".add_association", function() {
 				var schedulesFields = $("#schedules .field .row");
