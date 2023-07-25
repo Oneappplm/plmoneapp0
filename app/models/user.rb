@@ -144,9 +144,7 @@ class User < ApplicationRecord
   end
 
   def is_card_open?(collapse_name)
-    self.sidebar_preferences.find_by(collapse_name: collapse_name).is_open
-    rescue
-      true
+    self.sidebar_preferences.find_by(collapse_name: collapse_name)&.is_open rescue true
   end
 
   def generate_api_token

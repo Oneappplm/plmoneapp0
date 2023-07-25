@@ -401,29 +401,33 @@ module ApplicationHelper
   classes << 'border-danger' if options[:danger]
   classes << 'border-dark' unless options[:danger]
   classes.join(' ')
-end
+	end
 
-def form_select_classes(options = {})
-  classes = ['form-select', 'border']
-  classes << 'border-danger' if options[:danger]
-  classes << 'border-dark' unless options[:danger]
-  classes.join(' ')
-end
+	def form_select_classes(options = {})
+			classes = ['form-select', 'border']
+			classes << 'border-danger' if options[:danger]
+			classes << 'border-dark' unless options[:danger]
+			classes.join(' ')
+	end
 
-def payor_submission_types
-	[
-		['Paper','paper'],
-		['Roster','roster'],
-		['Portal','portal']
-	]
-end
+	def payor_submission_types
+		[
+			['Paper','paper'],
+			['Roster','roster'],
+			['Portal','portal']
+		]
+	end
 
-def medicare_tricare_parties
-	[
-		['Yes-Medicare','yes-medicare'],
-		['Yes-Tricare','yes-tricare'],
-		['Yes-Medicare and Tricare','yes-medicare-and-tricare'],
-		['No','no']
-	]
-end
+	def medicare_tricare_parties
+		[
+			['Yes-Medicare','yes-medicare'],
+			['Yes-Tricare','yes-tricare'],
+			['Yes-Medicare and Tricare','yes-medicare-and-tricare'],
+			['No','no']
+		]
+	end
+
+	def hide_show_card card_name
+		current_user&.is_card_open?(card_name) ? '' : 'display: none;' rescue ''
+	end
 end

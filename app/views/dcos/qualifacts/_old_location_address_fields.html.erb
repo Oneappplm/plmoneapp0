@@ -1,0 +1,46 @@
+<div class="row my-2 py-2 border-dash field">
+	<div class="col text-end">
+		<%= f.check_box :_destroy, style: 'display: none' %>
+		<button type="button" class="btn btn-xs btn-danger" onclick="deleteNestedField(this)">
+			<i class="bi bi-trash-fill"></i>
+		</button>
+	</div>
+	<div class="row mb-3" >
+		<div class="col-lg-6">
+						<label class="text-dark-grey">Address</label>
+			<%= f.text_field :old_address, class: 'form-control', placeholder: 'Type here...', required: true %>
+		</div>
+		<div class="col-lg-6">
+						<label class="text-dark-grey">City</label>
+			<%= f.text_field :old_city, class: 'form-control', placeholder: 'Type here...', required: true %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-lg-6">
+						<label class="text-dark-grey">State</label>
+			<%= f.collection_select :old_state, @states, :name, :name, { prompt: 'Select option' }, { class: 'form-control', required: true } %>
+		</div>
+		<div class="col-lg-6">
+						<label class="text-dark-grey">County</label>
+				<%= f.text_field :old_county, class: 'form-control', placeholder: 'Type here...', required: true %>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="text-dark-grey">Zip Code</label>
+				<div class="col-lg-6 mb-lg-0 mb-2">
+			<%= f.text_field :old_zipcode, class: 'form-control', placeholder: 'Type here...', required: true %>
+				</div>
+				<div class="col-lg-6 d-flex justify-content-lg-start justify-content-center align-items-center">
+						<label class="text-dark-grey"></label>
+						<%= f.check_box :is_old_location_primary %>
+						<%= f.label :is_old_location_primary, "Set as primary", class: 'mx-2 text-dark-grey' %>
+				</div>
+	</div>
+</div>
+
+<script>
+	function deleteNestedField(btn){
+		$(btn).parent().find('input[type=checkbox]').click();
+		$(btn).parent().parent().hide();
+	}
+</script>
