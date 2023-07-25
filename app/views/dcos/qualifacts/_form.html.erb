@@ -74,6 +74,23 @@
 			<%= f.text_field :panel_age_limit, class: 'form-control', placeholder: 'Type here...', required: true %>
 		</div>
 	</div>
+
+	<div class="row field mb-3 p-2 border border-2">
+		<%= render partial: "global_components/collapsible_sidebar_header", locals: { title: 'Schedules', collapse_name: 'schedules', text_position: 'text-start'}%>
+		<div class="collapsible" style="<%= current_user&.is_card_open?('schedules') ? '' : 'display: none;' %>">
+			<div id="schedules">
+				<div class="fields field mb-3">
+					<%= f.fields_for :schedules do |schedule_fields| %>
+						<%= render 'dcos/qualifacts/schedule_fields', f: schedule_fields %>
+					<% end %>
+				</div>
+				<div class="links mt-2 text-center">
+					<button type="button" class="add_association btn btn-xs btn-primary m-auto">Add Schedule</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="row mb-3">
 		<div class="col-lg-6">
       <label class="text-dark-grey">Include in Directory?</label>
@@ -92,22 +109,6 @@
 				</div>
 				<div class="links mt-2 text-center">
 					<button type="button" class="add_association btn btn-xs btn-primary m-auto">Add Old Practice Location Address</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="row field mb-3 p-2 border border-2">
-		<%= render partial: "global_components/collapsible_sidebar_header", locals: { title: 'Schedules', collapse_name: 'schedules', text_position: 'text-start'}%>
-		<div class="collapsible" style="<%= current_user&.is_card_open?('schedules') ? '' : 'display: none;' %>">
-			<div id="schedules">
-				<div class="fields field mb-3">
-					<%= f.fields_for :schedules do |schedule_fields| %>
-						<%= render 'dcos/qualifacts/schedule_fields', f: schedule_fields %>
-					<% end %>
-				</div>
-				<div class="links mt-2 text-center">
-					<button type="button" class="add_association btn btn-xs btn-primary m-auto">Add Schedule</button>
 				</div>
 			</div>
 		</div>
