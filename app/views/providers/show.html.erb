@@ -76,14 +76,38 @@
               <p class="mb-1"><strong>Specialty :</strong> <%= @provider&.specialty %></p>
             </div>
           </div>
+
+
+          <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Payer Login Details', collapse_name: 'payer_login_details'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('payer_login_details') ? '' : 'display: none;' %>">
+              <% @provider&.payer_logins&.each do |payer|%>
+              <p class="mb-1"><strong>Payer:</strong> <%= payer&.enrollment_payer %></p>
+              <p class="mb-1"><strong>State:</strong> <%= payer&.state %></p>
+              <p class="mb-1"><strong>Username:</strong> <%= payer&.username %></p>
+              <p class="mb-1"><strong>Password:</strong> <%= payer&.password %></p>
+              <% payer&.questions.each_with_index do |question,idx|%>
+                <p class="mb-1"><strong>Security Question <%= idx + 1 %>:</strong> <%= question&.question %></p>
+                <p class="mb-1"><strong>Security Password <%= idx + 1 %>:</strong> <%= question&.answer %></p>
+              <% end %>
+              <p class="mb-1"><strong>State:</strong> <%= payer&.notes %></p>
+              <hr>
+              <% end %>
+
+            </div>
+          </div>
+
+
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
           <%= render partial: "global_components/collapsible_sidebar_header", locals: { title: 'Licenses & Numbers', collapse_name: 'licenses'}%>
           <div class="collapsible" style="<%= current_user&.is_card_open?('licenses') ? '' : 'display: none;' %>">
             <p class="mb-1"><strong>SSN:</strong> <%= @provider.ssn%></p>
             <p class="mb-1"><strong>NPI:</strong> <%= @provider.npi%></p>
-            <p class="mb-1"><strong>Medicare Number:</strong> <%= @provider&.medicare_provider_number %> </p>
-            <p class="mb-1"><strong>Medicaid Number:</strong> <%= @provider&.medicaid_provider_number %></p>
-            <p class="mb-1"><strong>Tricare Number:</strong> <%= @provider&.tricare_provider_number %> </p>
+            <% if !current_setting.qualifacts? %>
+              <p class="mb-1"><strong>Medicare Number:</strong> <%= @provider&.medicare_provider_number %> </p>
+              <p class="mb-1"><strong>Medicaid Number:</strong> <%= @provider&.medicaid_provider_number %></p>
+              <p class="mb-1"><strong>Tricare Number:</strong> <%= @provider&.tricare_provider_number %> </p>
+            <% end %>
 
               <h5 class="text-center my-3">State License</h5>
               <p class="mb-1"><strong>State License Number:</strong> <%= @provider&.licenses&.license_number %></p>
@@ -125,14 +149,15 @@
               <p class="mb-1"><strong>DEA License Expiration Date:</strong> <%= Time.zone.parse(dea_license_expiration_date.to_s)&.strftime('%Y-%m-%d')%></p>
               <% if @provider&.dea_licenses.length % 2 == 0 %> </br> <% end %>
             <% end %>
-
-            <h5 class="text-center my-3">CAQH</h5>
-            <p class="mb-1"><strong>CAQH ID:</strong> <%= @provider.caqhid %></p>
-            <p class="mb-1"><strong>CAQH Attestation Date:</strong> <%= @provider.caqh_attestation_date %></p>
-            <p class="mb-1"><strong>CAQH PDF Date Received:</strong> <%= @provider&.caqh_pdf_date_received %></p>
-            <p class="mb-1"><strong>CAQH Username:</strong> <%= @provider.caqh_username %></p>
-            <p class="mb-1"><strong>CAQH Password:</strong> <%= @provider.caqh_password %></p>
-            <p class="mb-1"><strong>CAQH State:</strong> <%= State.find_by(id: @provider.caqh_state.to_i)&.name %></p>
+            <% if !current_setting.qualifacts? %>
+              <h5 class="text-center my-3">CAQH</h5>
+              <p class="mb-1"><strong>CAQH ID:</strong> <%= @provider.caqhid %></p>
+              <p class="mb-1"><strong>CAQH Attestation Date:</strong> <%= @provider.caqh_attestation_date %></p>
+              <p class="mb-1"><strong>CAQH PDF Date Received:</strong> <%= @provider&.caqh_pdf_date_received %></p>
+              <p class="mb-1"><strong>CAQH Username:</strong> <%= @provider.caqh_username %></p>
+              <p class="mb-1"><strong>CAQH Password:</strong> <%= @provider.caqh_password %></p>
+              <p class="mb-1"><strong>CAQH State:</strong> <%= State.find_by(id: @provider.caqh_state.to_i)&.name %></p>
+            <% end %>
 
             <h5 class="text-center my-3">Telehealth</h5>
             <p class="mb-1"><strong>Telehealth Number:</strong> <%= @provider.telehealth_license_number %> </p>
@@ -141,7 +166,7 @@
           </div>
 
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
-          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Client', collapse_name: 'client'}%>
+          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Group', collapse_name: 'client'}%>
           <div class="collapsible" style="<%= current_user&.is_card_open?('group') ? '' : 'display: none;' %>">
             <p class="mb-1"><strong>Client Name:</strong> <%= @provider.group&.group_name %></p>
             <p class="mb-1"><strong>Client Code:</strong> <%= @provider.group&.group_code %></p>
@@ -153,7 +178,7 @@
           </div>
 
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
-          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'DCO/Practice Location', collapse_name: 'practice'}%>
+          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Location', collapse_name: 'practice'}%>
           <div class="collapsible" style="<%= current_user&.is_card_open?('practice') ? '' : 'display: none;' %>">
             <p class="mb-1"><strong>Name:</strong> <%= @provider.group_dco&.dco_name %> </p>
             <p class="mb-1"><strong>Address:</strong> <%= @provider.group_dco&.dco_address %> </p>
@@ -176,7 +201,7 @@
           <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Primary Service Location', collapse_name: 'service_location'}%>
           <div class="collapsible" style="<%= current_user&.is_card_open?('service_location') ? '' : 'display: none;' %>">
             <% @provider&.service_locations.each_with_index do |service_location,idx|%>
-              <p class="mb-1"><strong>Non-Office Service Area:</strong> <%= service_location.primary_service_non_office_area %> </p>
+              <p class="mb-1"><strong>Non-Office Service Area:</strong> <%= service_location.state %> </p>
               <p class="mb-1"><strong>Apps/Intake Phone:</strong> <%= service_location.primary_service_location_apps %> </p>
               <p class="mb-1"><strong>Zip Code:</strong> <%= service_location.primary_service_zip_code %> </p>
               <p class="mb-1"><strong>Office Email Address:</strong> <%= service_location.primary_service_office_email %> </p>

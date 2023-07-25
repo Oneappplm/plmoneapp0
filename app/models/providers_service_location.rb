@@ -13,4 +13,10 @@ class ProvidersServiceLocation < ApplicationRecord
   rescue
     ''
   end
+
+  def state
+    State.find_by(id: self.primary_service_non_office_area)&.name
+  rescue
+    ''
+  end
 end
