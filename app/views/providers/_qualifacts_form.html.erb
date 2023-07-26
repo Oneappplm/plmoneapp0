@@ -22,7 +22,7 @@
         <%= f.text_field :first_name, class: form_control_classes(danger: @provider.first_name.blank? && @provider.persisted?), placeholder: 'Type here...' %>
       </div>
       <div class="col-lg-2">
-        <label class="text-dark-grey">Middle Name(optional)</label>
+        <label class="text-dark-grey">Middle Name</label>
         <%= f.text_field :middle_name, class: 'form-control border border-dark', placeholder: 'Type here...' %>
       </div>
       <div class="col-lg-4">
@@ -30,7 +30,7 @@
         <%= f.text_field :last_name, class: form_control_classes(danger: @provider.last_name.blank? && @provider.persisted?), placeholder: 'Type here...' %>
       </div>
       <div class="col-lg-2">
-        <label class="text-dark-grey">Suffix(optional)</label>
+        <label class="text-dark-grey">Suffix</label>
         <%= f.select :suffix, options_for_select(['Jr.', 'Sr.', 'II', 'III', 'IV', 'V'], @provider.suffix), { prompt: 'Select Option' }, { class: 'form-select border border-dark' } %>
       </div>
     </div>
@@ -126,35 +126,35 @@
         <div class="row mb-3">
           <div class="col-lg-6">
             <!-- new field -->
-          <label class="text-dark-grey">Medical School Name(optional)</label>
+          <label class="text-dark-grey">Medical School Name</label>
             <%= f.text_field :medical_school_name,  placeholder: 'Type here...',class: 'form-control border border-dark'%>
           </div>
           <div class="col-lg-6">
             <!-- new field -->
-          <label class="text-dark-grey">Medical School Address(optional)</label>
+          <label class="text-dark-grey">Medical School Address</label>
             <%= f.text_field :medical_school_address,  placeholder: 'Type here...', class: 'form-control border border-dark'%>
           </div>
         </div>
         <div class="row mb-2">
           <div class="col-lg-6">
-            <label class="text-dark-grey">Graduation Date(optional)</label>
+            <label class="text-dark-grey">Graduation Date</label>
             <%= f.text_field :graduation_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
           </div>
           <div class="col-lg-6">
             <!-- new field -->
-            <label class="text-dark-grey">Do you have a medical license? (optional)</label>
+            <label class="text-dark-grey">Do you have a medical license? </label>
             <%= f.select :medical_license, options_for_select(yes_or_no_options, @provider.medical_license), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
           </div>
         </div>
         <div class="row mt-0 mb-3">
           <div class="col-lg-6">
-          <label class="text-dark-grey">NPI(optional)</label>
+          <label class="text-dark-grey">NPI</label>
           <%= f.text_field :npi, placeholder: 'Type here...',class: 'form-control border border-dark' %>
           </div>
 
           <div class="col-lg-6">
             <!-- new field -->
-            <label class="text-dark-grey">Copy of Certificate(optional)</label>
+            <label class="text-dark-grey">Copy of Certificate</label>
             <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: form_control_classes(danger: @provider.school_certificate.blank? && @provider.persisted?), title: 'Copy of Certificate'%>
             <%= HtmlUtils.generate_view_link file_url: @provider.school_certificate.url %>
           </div>
@@ -195,6 +195,75 @@
         </div>
       </div>
     </div>
+    <!-- CAQH -->
+    <div class="row mb-3">
+      <div class="col-lg-12 mt-3">
+        <h3>CAQH</h3>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH ID</label>
+        <%= f.text_field :caqhid ,placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH Attestation Date</label>
+        <%= f.text_field :caqh_attestation_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-12">
+        <label class="text-dark-grey">CAQH State</label>
+       <%= f.select :caqh_state, options_for_select(states.pluck(:name, :id), @provider.caqh_state), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH PDF</label>
+        <%= f.text_field :caqh_pdf, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH PDF Date Received</label>
+        <%= f.text_field :caqh_pdf_date_received, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH Username</label>
+        <%= f.text_field :caqh_username,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH Password</label>
+        <%= f.text_field :caqh_password,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Current Re-Attestation</label>
+        <%= f.text_field :caqh_current_reattestation_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Re-Attestation must be completed by</label>
+        <%= f.text_field :caqh_reattest_completed_by,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Questions</label>
+        <%= f.text_field :caqh_question, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Answer</label>
+        <%= f.text_field :caqh_answer,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-12">
+        <label class="text-dark-grey">CAQH Notes</label>
+        <%= f.text_area :caqh_notes, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    </div>
+    <!-- CAQH -->
      <div class="row mb-3 mt-2">
       <%= HtmlUtils.radio_toggle name: 'provider[payer_login]',
           label: 'Payer Login',
@@ -216,7 +285,7 @@
         </div>
          </div>
       </div>
-    </div> 
+    </div>
 
     <div class="row mb-5 mt-2">
       <div class="col-lg-12 mt-3">
@@ -372,49 +441,49 @@
       <div class="col-lg-12 mt-1">
         <div class="row d-none" id="admitting_privileges_fields">
           <div class="col-lg-6 mb-3">
-            <label class="text-dark-grey">Name of Admitting Physician/Practice/Clinic/Group(optional)</label>
+            <label class="text-dark-grey">Name of Admitting Physician/Practice/Clinic/Group</label>
             <%= f.text_field :name_admitting_physician, placeholder:'Type here...', class: 'form-control border-dark' %>
           </div>
 
           <div class="col-lg-6 mb-3">
-            <label class="text-dark-grey">Facility Name(optional)</label>
+            <label class="text-dark-grey">Facility Name</label>
             <%= f.text_field :facility_name, placeholder:'Type here...', class: 'form-control border-dark' %>
           </div>
 
           <div class="col-lg-6 mb-3">
-            <label class="text-dark-grey">Facility Location(optional)</label>
+            <label class="text-dark-grey">Facility Location</label>
             <%= f.text_field :facility_location, placeholder:'Type here...', class: 'form-control border-dark' %>
           </div>
 
           <div class="col-lg-6 mb-3">
-            <label class="text-dark-grey">Address Line 1(optional)</label>
+            <label class="text-dark-grey">Address Line 1</label>
             <%= f.text_field :admitting_facility_address_line1, placeholder:'Type here...', class: 'form-control border-dark' %>
           </div>
 
           <div class="col-lg-6 mb-3">
-            <label class="text-dark-grey">Address Line 2(optional)</label>
+            <label class="text-dark-grey">Address Line 2</label>
             <%= f.text_field :admitting_facility_address_line2, placeholder:'Type here...', class: 'form-control border-dark'%>
           </div>
 
           <div class="col-lg-6 mb-3">
-            <label class="text-dark-grey">City(optional)</label>
+            <label class="text-dark-grey">City</label>
             <%= f.text_field :admitting_facility_city, placeholder:'Type here...', class: 'form-control border-dark'%>
           </div>
 
            <div class="col-lg-6 mb-3">
-            <label class="text-dark-grey">State(optional)</label>
+            <label class="text-dark-grey">State</label>
            <%#= f.select :admitting_facility_state, options_for_select(states.pluck(:name, :id), @provider.admitting_facility_state), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
             <div class="search-select state-search-select form-control border border-dark" name="provider[admitting_facility_state]" id="admitting_state">
             </div>
           </div>
 
           <div class="col-lg-6 mb-3">
-            <label class="text-dark-grey">Zip Code(optional)</label>
+            <label class="text-dark-grey">Zip Code</label>
             <%= f.text_field :admitting_facility_zip_code, placeholder:'Type here...', class: 'form-control border-dark'%>
           </div>
 
           <div class="col-lg-12 mb-3">
-            <label class="text-dark-grey">Please explain your admitting arrangements(optional)</label>
+            <label class="text-dark-grey">Please explain your admitting arrangements</label>
             <%= f.text_area :admitting_facility_arrangments, placeholder:'Type here...', class: 'form-control border-dark', rows: '8'%>
           </div>
         </div>
@@ -571,7 +640,7 @@
       <!-- Modals -->
 
     <div class="col-lg-12">
-    
+
     <%= render "providers/js_components/add_remove_association_buttons" %>
     <%= render "providers/js_components/ajax_set_dropdown_options" %>
     <%= render "providers/js_components/deleted_document_logs" %>
@@ -627,7 +696,7 @@
                 var oldName = $(this).attr('name');
                 var newName = 'provider[payer_logins_attributes]['+index_of+'][questions_attributes]['+newId+'][question]';
                 var anewName = 'provider[payer_logins_attributes]['+index_of+'][questions_attributes]['+newId+'][answer]';
-                
+
                 // checks if input is answer field
                 if($(this).hasClass('answer')) {
                   newName = anewName;
