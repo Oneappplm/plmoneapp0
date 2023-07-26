@@ -1,5 +1,5 @@
 class EnrollmentsController < ApplicationController
-	before_action :set_enrollment_group, only: [:edit_group, :delete_group]
+	before_action :set_enrollment_group, only: [:edit_group, :delete_group, :document_deleted_logs, :delete_document]
 	before_action :get_states, only: %i[client_search client_portal virtual_review_committee provider_source all_clients new_dco new_group data_access edit_group]
 	before_action :get_provider_types, only: %i[client_search client_portal virtual_review_committee provider_source provider_enrollment new_group data_access edit_group]
 	before_action :set_pagination_params, only: [:new_user, :edit_user]
@@ -88,6 +88,29 @@ class EnrollmentsController < ApplicationController
 			end
 		end
 		render 'new_group'
+	end
+
+	def document_deleted_logs
+		render json: {
+			results:  @enrollment_group.deleted_document_logs.map {	|log| log.deleted_notes }
+		}
+	end
+
+	def delete_document
+		key = params[:key]
+		note = params[:note]
+		@enrollment_group.send("remove_#{key}!")
+		if @enrollment_group.save!
+			@enrollment_group.deleted_document_logs.create(
+				deleted_by: current_user&.full_name,
+				deleted_at: Time.now,
+				note: note,
+				document_key: key
+			)
+			render json:	{ success: true }
+		else
+			render	json:	{ success: false }
+		end
 	end
 
 	def delete_group

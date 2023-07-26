@@ -1,20 +1,20 @@
 <%= form_for @enrollment_group, :url => {action: action_name} , html: { multipart: true } do |f| %>
-<% if @enrollment_group.errors.any? %>
-   <div id="error_explanation" class="row mb-3">
-      <div class="col-lg-12">
-         <h2><%= pluralize(@enrollment_group.errors.count, "error") %> prohibited this enrollment user from being saved:</h2>
-         <ul>
-            <% @enrollment_group.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
-            <% end %>
-         </ul>
+   <% if @enrollment_group.errors.any? %>
+      <div id="error_explanation" class="row mb-3">
+         <div class="col-lg-12">
+            <h2><%= pluralize(@enrollment_group.errors.count, "error") %> prohibited this enrollment user from being saved:</h2>
+            <ul>
+               <% @enrollment_group.errors.full_messages.each do |message| %>
+               <li><%= message %></li>
+               <% end %>
+            </ul>
+         </div>
       </div>
-   </div>
    <% end %>
    <div class="row mb-3">
       <div class="col-lg-12">
          <h5 class="mb-0">Group Information</h5>
-         <small class="text-black">Please fill out all required fields. Optional fields are marked as (optional).</small>
+         <small class="text-black">Please fill out all required fields. Required fields are marked with *.</small>
       </div>
    </div>
    <div class="row mb-5">
@@ -215,52 +215,48 @@
 	</div>
    <div class="documents">
       <h3>Documents</h3>
-      <button type="button" class="btn btn-xs m-auto text-black" style="background-color: #E9E9E9;font-size: 12px;font-weight: 600;">Deleted logs</button>
+      <%= link_to 'Deleted Logs', 'javascript:void(0);', class: 'btn btn-xs m-auto text-black', style: "background-color: #E9E9E9;font-size: 12px;font-weight: 600;", "data-bs-toggle": 'modal', "data-bs-target": '#deletedLogsModal' %>
       <div class="row my-3">
-         <div class="col-lg-6 mb-2">
-            <!-- <a href="" class="btn bg-alt-grey fw-bold text-primary" target="_blank">Complete W9</a> -->
-            <label class="text-dark-grey">W9 Form, <a href="https://www.irs.gov/pub/irs-pdf/fw9.pdf" target="_blank">download template here.</a></label>
+         <div class="col-lg-6 mb-3">
+            <label class="text-dark-grey">W9 Form, <a href="https://www.irs.gov/pub/irs-pdf/fw9.pdf" target="_blank">download template here</a></label>
             <%= f.file_field :w9_file, class: 'form-control border border-dark' %>
-            <%= HtmlUtils.generate_view_link file_url: @enrollment_group.w9_file.url %>
+            <%= render partial: 'document', locals: { key: 'w9_file', slug: 'w9-form' } %>
          </div>
-         <div class="col-lg-6">
+         <div class="col-lg-6 mb-3">
             <label class="text-dark-grey">CP575 or Proof of TIN</label>
             <%= f.file_field :cp575_file, class: 'form-control border border-dark' %>
-            <%= HtmlUtils.generate_view_link file_url: @enrollment_group.cp575_file.url %>
+            <%= render partial: 'document', locals: { key: 'cp575_file', slug: 'CP575 or Proof of TIN Document' } %>
          </div>
       </div>
       <div class="row my-3">
-         <div class="col-lg-6 mb-2">
-            <!-- <a href="" class="btn bg-alt-grey fw-bold text-primary" target="_blank">Complete W9</a> -->
+         <div class="col-lg-6 mb-3">
             <label class="text-dark-grey">Qualifacts Documents</label>
-            <%= f.file_field :payer_contracts, class: 'form-control border border-dark'%>
-            <%= HtmlUtils.generate_view_link file_url: @enrollment_group.payer_contracts.url %>
+            <%= f.file_field :payer_contracts,class: 'form-control border border-dark' %>
+            <%= render partial: 'document', locals: { key: 'payer_contracts', slug: 'Qualifacts Document' } %>
          </div>
-         <div class="col-lg-6">
+         <div class="col-lg-6 mb-3">
             <label class="text-dark-grey">Other Group Documents</label>
             <%= f.file_field :group_type_documents, class: 'form-control border border-dark' %>
-            <%= HtmlUtils.generate_view_link file_url: @enrollment_group.group_type_documents.url %>
+            <%= render partial: 'document', locals: { key: 'group_type_documents', slug: 'Other Group Document' } %>
          </div>
       </div>
       <div class="row my-3">
-         <div class="col-lg-6 mb-2">
-            <!-- <a href="" class="btn bg-alt-grey fw-bold text-primary" target="_blank">Complete W9</a> -->
+         <div class="col-lg-6 mb-3">
             <label class="text-dark-grey">Liability Insurance</label>
             <%= f.file_field :eft_file, class: 'form-control border border-dark' %>
-            <%= HtmlUtils.generate_view_link file_url: @enrollment_group.eft_file.url %>
+            <%= render partial: 'document', locals: { key: 'eft_file', slug: 'Liability Insurance Document' } %>
          </div>
-         <div class="col-lg-6">
+         <div class="col-lg-6 mb-3">
             <label class="text-dark-grey">Voided Check</label>
             <%= f.file_field :voided_check_file, class: 'form-control border border-dark' %>
-            <%= HtmlUtils.generate_view_link file_url: @enrollment_group.voided_check_file.url %>
+            <%= render partial: 'document', locals: { key: 'voided_check_file', slug: 'Voided Check Document' } %>
          </div>
       </div>
       <div class="row my-3">
-         <div class="col-lg-6 mb-2">
-            <!-- <a href="" class="btn bg-alt-grey fw-bold text-primary" target="_blank">Complete W9</a> -->
+         <div class="col-lg-6 mb-3">
             <label class="text-dark-grey">Articles of Incorporation</label>
             <%= f.file_field :specific_type_file, class: 'form-control border border-dark' %>
-            <%= HtmlUtils.generate_view_link file_url: @enrollment_group.specific_type_file.url %>
+            <%= render partial: 'document', locals: { key: 'specific_type_file', slug: 'Articles of Incorporation Document' } %>
          </div>
       </div>
    </div>
@@ -271,9 +267,53 @@
          </button>
       </div>
    </div>
-   </form>
+ <% end %>
+<div class="modal fade" id="deleteFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered">
+         <div class="modal-content">
+            <div class="modal-body">
+               <div class="">
+                  <div class="modal-title">
+                     <h1 class="mb-2">Delete existing <strong id="documentTitle">W9 Form</strong>?</h1>
+                  </div>
+                  <div class="form-row row">
+                     <div class="col-xl-12">
+                        <label for="">Note</label>
+                        <textarea name="note" id="delete-form-note" cols="30" rows="10" class="form-control"></textarea>
+                     </div>
+                  </div>
+                  <div class="form-row mt-3">
+                     <button id="btnDelete" class="btn btn-manage btn-danger" onclick="deleteDocument(this)" data-enrollmentGroupId="" data-documentholder="" remote="true">Yes</button>
+                     <button id="btnCancel" class="btn btn-card-remove fw-bold text-black" data-bs-dismiss="modal" onclick="clearNote()">No</button>
+                  </div>
+               </div>
+            </div>
+         </div>
    </div>
-<% end %>
+</div>
+<div class="modal fade" id="deletedLogsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+         <div class="modal-body">
+            <div class="">
+               <div class="modal-title border-1 border-bottom mb-2">
+                  <h3>Deleted Logs</h3>
+               </div>
+               <div class="form-row row">
+                  <div id="deleted-logs" class="col-xl-12">
+                     <!-- loading -->
+                     <div class="d-flex justify-content-center">
+                        <div class="spinner-border text-primary" role="status">
+                           <span class="visually-hidden">Loading...</span>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
 
 
 <script>
@@ -353,6 +393,75 @@
     })
   }
 
+   var deleteFormModals = document.querySelectorAll('#deleteFormModal');
+   var deleteButtons = document.querySelectorAll('[data-bs-target="#deleteFormModal"]');
+   var deletedLogsModal = document.getElementById('deletedLogsModal');
+   var documentTitle = document.getElementById('documentTitle');
+   var enrollment_group_id = "<%= @enrollment_group.id %>";
+   deleteButtons.forEach(function (button) {
+      button.addEventListener('click', function (event) {
+         var enrollmentGroupId = button.getAttribute('data-enrollmentGroupId');
+         var documentholder = button.getAttribute('data-documentholder');
+         var key = button.getAttribute('data-key');
+         var title = button.getAttribute('data-title');
+         btnDelete.setAttribute('data-enrollmentGroupId', enrollmentGroupId);
+         btnDelete.setAttribute('data-documentholder', documentholder);
+         btnDelete.setAttribute('data-key', key);
+         documentTitle.innerHTML = title;
+      });
+   });
+
+   deleteFormModals.forEach(function (modal) {
+      modal.addEventListener('show.bs.modal', function () {
+         btnDelete.setAttribute('data-enrollmentGroupId', '');
+         btnDelete.setAttribute('data-documentholder', '');
+         btnDelete.setAttribute('data-key', '');
+         documentTitle.innerHTML = '';
+      });
+   });
+
+   deletedLogsModal.addEventListener('show.bs.modal', function(){
+      $.get("<%= document_deleted_logs_enrollments_path %>", { authenticity_token: csrfToken, id: enrollment_group_id }, function(data){
+         var results = data['results'];
+         var html = '';
+         //  make a ul list of deleted logs
+         results.forEach(function(result){
+            html += '<p style="color: red; margin: 0;">' + result + '</p>';
+         });
+         // put it on ul tag
+         $('#deleted-logs').html(html);
+      });
+   });
+   // close modal
+
+
+   function deleteDocument(btn){
+      var note = $('#delete-form-note').val();
+      if(note == ''){
+         alert('Please enter note');
+         return false;
+      }
+
+      var enrollmentGroupId = $(btn).data('enrollmentGroupId');
+      var documentholder = $(btn).data('documentholder');
+      var key = $(btn).data('key');
+
+      $('.loading-overlay').show();
+      $.ajax({
+      url: '<%= delete_document_enrollments_path %>',
+      method: 'POST',
+      data: { authenticity_token: csrfToken, note: note, id: enrollment_group_id, key: key },
+      success: function(data) {
+        $('#' + documentholder).html('<span class="text-muted">No File Uploaded</span>');
+         $('.loading-overlay').hide();
+         location.reload();
+      }
+    })
+   }
+
+   function clearNote(){
+      $('#delete-form-note').val('');
+   }
 </script>
 
 <style>

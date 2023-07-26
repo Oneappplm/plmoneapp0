@@ -12,6 +12,7 @@ class EnrollmentGroup < ApplicationRecord
   has_many :dcos, class_name: 'GroupDco', dependent: :destroy
   has_many :details, class_name: 'EnrollmentGroupsDetail'
   has_many :contact_personnels, class_name: 'EnrollmentGroupsContactDetail'
+  has_many :deleted_document_logs, class_name: 'EnrollmentGroupDeletedDocLog', dependent: :destroy
 
   accepts_nested_attributes_for :contact_personnels, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank

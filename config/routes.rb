@@ -131,6 +131,8 @@ Rails.application.routes.draw do
       get :groups
       get :new_group, path: 'new-group'
       post :new_group, path: 'new-group'
+      get :document_deleted_logs
+      post :delete_document
       resources :groups do
         post :get_dcos
         resources :dcos
