@@ -4,18 +4,16 @@
 <%= form_for @provider, html: { multipart: true, id: 'provider-form' } do |f| %>
   <% if @provider.errors.any? %>
     <div id="error_explanation" class="row mb-3">
-          <div class="col-lg-12">
-              <h2><%= pluralize(@provider.errors.count, "error") %> prohibited this provider from being saved:</h2>
-
-              <ul>
-                  <% @provider.errors.full_messages.each do |message| %>
-                      <li><%= message %></li>
-                  <% end %>
-              </ul>
-          </div>
+      <div class="col-lg-12">
+        <h2><%= pluralize(@provider.errors.count, "error") %> prohibited this provider from being saved:</h2>
+        <ul>
+          <% @provider.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
     </div>
   <% end %>
-
     <div class="row mb-3">
       <div class="col-lg-4">
         <label class="text-dark-grey">First Name </label>
@@ -148,11 +146,6 @@
         </div>
         <div class="row mt-0 mb-3">
           <div class="col-lg-6">
-          <label class="text-dark-grey">NPI</label>
-          <%= f.text_field :npi, placeholder: 'Type here...',class: 'form-control border border-dark' %>
-          </div>
-
-          <div class="col-lg-6">
             <!-- new field -->
             <label class="text-dark-grey">Copy of Certificate</label>
             <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: form_control_classes(danger: @provider.school_certificate.blank? && @provider.persisted?), title: 'Copy of Certificate'%>
@@ -177,21 +170,25 @@
         </div>
       </div>
       <div class="row mb-3 mt-2">
-      <div class="col-lg-6">
-        <label class="text-dark-grey">Specialty (can be multiple)</label>
-        <%= HtmlUtils.multi_select_dropdown name: 'provider[specialty]', id: 'provider_specialty'%>
-        <%#= f.collection_select :specialty, specialties, :bcbs, :bcbs, { prompt: 'Select Option' }, { class: 'form-control border border-dark' } %>
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Specialty (can be multiple)</label>
+          <%= HtmlUtils.multi_select_dropdown name: 'provider[specialty]', id: 'provider_specialty'%>
+          <%#= f.collection_select :specialty, specialties, :bcbs, :bcbs, { prompt: 'Select Option' }, { class: 'form-control border border-dark' } %>
+        </div>
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Provider Effective Date</label>
+          <%= f.text_field :provider_effective_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+        </div>
       </div>
-      <div class="col-lg-6">
-        <label class="text-dark-grey">Provider Effective Date</label>
-        <%= f.text_field :provider_effective_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
-      </div>
-    </div>
 
       <div class="row mb-3 mt-2">
         <div class="col-lg-6">
-           <label>Board Certified</label>
-        <%= f.select :board_certified, options_for_select(yes_or_no_options, @provider.board_certified), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
+          <label>Board Certified</label>
+          <%= f.select :board_certified, options_for_select(yes_or_no_options, @provider.board_certified), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
+        </div>
+        <div class="col-lg-6">
+          <label class="text-dark-grey">NPI Number (optional)</label>
+          <%= f.text_field :npi, placeholder: 'Type here...',class: 'form-control border border-dark' %>
         </div>
       </div>
     </div>
@@ -382,13 +379,13 @@
       </div>
       <div class="col-lg-6">
       <!-- new field -->
-      <label class="text-dark-grey">Client</label>
+      <label class="text-dark-grey">Group</label>
       <%= f.select :enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, {class: form_select_classes(danger: @provider.enrollment_group_id.blank? && @provider.persisted?), data: {show: 'provider_dco_div'}}  %>
       </div>
       <div class="col-lg-6 <%= @provider.no_group? ? 'd-none' : '' %>" id="provider_dco_div">
-      <!-- new field -->
-      <label class="text-dark-grey">DCO/Practice Location</label>
-      <%= f.select :dco, options_for_select(group_dcos.pluck(:dco_name, :id), @provider.dco), {prompt: 'Select option'}, {:class => 'form-select border border-dark'}  %>
+        <!-- new field -->
+        <label class="text-dark-grey">Location</label>
+        <%= f.select :dco, options_for_select(group_dcos.pluck(:dco_name, :id), @provider.dco), {prompt: 'Select option'}, {:class => 'form-select border border-dark'}  %>
       </div>
     </div>
 
