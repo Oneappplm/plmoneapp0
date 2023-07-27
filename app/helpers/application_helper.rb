@@ -32,8 +32,8 @@ module ApplicationHelper
 		page =	page || controller_name
 		if ['dashboard'].include?(controller_name)
 			'overview'
-		elsif ['providers'].include?(controller_name)
-			if ['overview', 'index'].include?(action_name)
+		elsif ['providers', 'auto_verifies', 'logs'].include?(controller_name)
+			if ['overview', 'index', 'show'].include?(action_name)
 				'enrollment_tracking'
 			else
 			'provider_app'
