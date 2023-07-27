@@ -16,16 +16,16 @@
   <% end %>
     <div class="row mb-3">
       <div class="col-lg-4">
-        <label class="text-dark-grey">First Name </label>
-        <%= f.text_field :first_name, class: form_control_classes(danger: @provider.first_name.blank? && @provider.persisted?), placeholder: 'Type here...' %>
+        <label class="text-dark-grey">First Name <span class="text-red">*</span></label>
+        <%= f.text_field :first_name, class: form_control_classes(danger: @provider.first_name.blank? && @provider.persisted?), placeholder: 'Type here...', required: true %>
       </div>
       <div class="col-lg-2">
         <label class="text-dark-grey">Middle Name</label>
         <%= f.text_field :middle_name, class: 'form-control border border-dark', placeholder: 'Type here...' %>
       </div>
       <div class="col-lg-4">
-        <label class="text-dark-grey">Last Name </label>
-        <%= f.text_field :last_name, class: form_control_classes(danger: @provider.last_name.blank? && @provider.persisted?), placeholder: 'Type here...' %>
+        <label class="text-dark-grey">Last Name <span class="text-red">*</span></label>
+        <%= f.text_field :last_name, class: form_control_classes(danger: @provider.last_name.blank? && @provider.persisted?), placeholder: 'Type here...', required: true %>
       </div>
       <div class="col-lg-2">
         <label class="text-dark-grey">Suffix</label>
@@ -38,21 +38,21 @@
         <%= f.select :gender, options_for_select(['Male', 'Female', 'Non Binary'], @provider.gender), { prompt: 'Gender' }, { class: 'form-select border border-dark' } %>
       </div>
       <div class="col-lg-4">
-        <label class="text-dark-grey">SSN </label>
-        <%= f.text_field :ssn, class: form_control_classes(danger: @provider.ssn.blank? && @provider.persisted?), placeholder: 'Type here...' %>
+        <label class="text-dark-grey">SSN <span class="text-red">*</span></label>
+        <%= f.text_field :ssn, class: form_control_classes(danger: @provider.ssn.blank? && @provider.persisted?), placeholder: 'Type here...', required: true %>
       </div>
       <div class="col-lg-4">
-        <label class="text-dark-grey">Date of Birth </label>
-        <%= f.text_field :birth_date, placeholder: 'MM-DD-YYYY', class: form_control_classes(danger: @provider.birth_state.blank? && @provider.persisted?), onfocus: "(this.type = 'date')" %>
+        <label class="text-dark-grey">Date of Birth <span class="text-red">*</span></label>
+        <%= f.text_field :birth_date, placeholder: 'MM-DD-YYYY', class: form_control_classes(danger: @provider.birth_date.blank? && @provider.persisted?), onfocus: "(this.type = 'date')", required: true %>
       </div>
       </div>
     <div class="row mb-3">
       <div class="col-lg-4">
-        <label class="text-dark-grey">Birth City </label>
-        <%= f.text_field :birth_city, class: form_control_classes(danger: @provider.birth_city.blank? && @provider.persisted?), placeholder: 'Type here...' %>
+        <label class="text-dark-grey">Birth City <span class="text-red">*</span></label>
+        <%= f.text_field :birth_city, class: form_control_classes(danger: @provider.birth_city.blank? && @provider.persisted?), placeholder: 'Type here...', required: true %>
       </div>
       <div class="col-lg-4">
-        <label class="text-dark-grey">Birth State</label>
+        <label class="text-dark-grey">Birth State <span class="text-red">*</span></label>
         <%#= f.select :birth_state, options_for_select(states.map{|m| ["#{m.name} - #{m.alpha_code}", m.id]}, @provider.birth_state), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
        <div class="search-select state-search-select form-control border border-dark" name="provider[birth_state]" id="birth_state">
       </div>
@@ -68,8 +68,8 @@
     <div class="row mb-3">
       <div class="col-lg-6">
         <!-- new field -->
-        <label class="text-dark-grey">Address Line 1</label>
-        <%= f.text_field :address_line_1, placeholder: 'Type here...', class: form_control_classes(danger: @provider.address_line_1.blank? && @provider.persisted?) %>
+        <label class="text-dark-grey">Address Line 1 <span class="text-red">*</span></label>
+        <%= f.text_field :address_line_1, placeholder: 'Type here...', class: form_control_classes(danger: @provider.address_line_1.blank? && @provider.persisted?), required: true %>
       </div>
       <div class="col-lg-6">
         <!-- new field -->
@@ -80,12 +80,12 @@
     <div class="row mb-3">
       <div class="col-lg-6">
         <!-- new field -->
-        <label class="text-dark-grey">City</label>
-        <%= f.text_field :city, placeholder: 'Type here...', class: form_control_classes(danger: @provider.city.blank? && @provider.persisted?) %>
+        <label class="text-dark-grey">City <span class="text-red">*</span></label>
+        <%= f.text_field :city, placeholder: 'Type here...', class: form_control_classes(danger: @provider.city.blank? && @provider.persisted?), required: true %>
       </div>
       <div class="col-lg-6">
         <!-- new field -->
-        <label class="text-dark-grey">State</label>
+        <label class="text-dark-grey">State <span class="text-red">*</span></label>
         <%#= f.select :state_id, options_for_select(states.pluck(:name, :id), @provider.state_id), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
         <div class="search-select state-search-select form-control border border-dark" name="provider[state_id]" id="home_address_state">
         </div>
@@ -94,8 +94,8 @@
       <div class="row mb-3">
       <div class="col-lg-6">
         <!-- new field -->
-        <label class="text-dark-grey">Zipcode</label>
-        <%= f.text_field :zip_code, placeholder: 'Type here...', class: form_control_classes(danger: @provider.zip_code.blank? && @provider.persisted?) %>
+        <label class="text-dark-grey">Zipcode <span class="text-red">*</span></label>
+        <%= f.text_field :zip_code, placeholder: 'Type here...', class: form_control_classes(danger: @provider.zip_code.blank? && @provider.persisted?), required: true %>
       </div>
     </div>
     <div class="row mb-3">
@@ -147,8 +147,8 @@
         <div class="row mt-0 mb-3">
           <div class="col-lg-6">
             <!-- new field -->
-            <label class="text-dark-grey">Copy of Certificate</label>
-            <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: form_control_classes(danger: @provider.school_certificate.blank? && @provider.persisted?), title: 'Copy of Certificate'%>
+            <label class="text-dark-grey">Copy of Certificate <span class="text-red">*</span></label>
+            <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: form_control_classes(danger: @provider.school_certificate.blank? && @provider.persisted?), title: 'Copy of Certificate', required: true %>
             <%= HtmlUtils.generate_view_link file_url: @provider.school_certificate.url %>
           </div>
         </div>
@@ -160,18 +160,18 @@
       </div>
       <div class="row mb-3">
         <div class="col-lg-6">
-          <label class="text-dark-grey">Practitioner Type (can be multiple)</label>
+          <label class="text-dark-grey">Practitioner Type (can be multiple) <span class="text-red">*</span></label>
           <%= HtmlUtils.multi_select_dropdown name: 'provider[practitioner_type]', id: 'provider_practitioner_type'%>
           <%#= f.collection_select :practitioner_type, provider_types, :fch, :fch, { prompt: 'Select Option' }, { class: 'form-control border border-dark', required: true } %>
         </div>
         <div class="col-lg-6">
-          <label class="text-dark-grey">Taxonomy</label>
-          <%= f.text_field :taxonomy, placeholder: 'Type here...',class: form_control_classes(danger: @provider.taxonomy.blank? && @provider.persisted?) %>
+          <label class="text-dark-grey">Taxonomy <span class="text-red">*</span></label>
+          <%= f.text_field :taxonomy, placeholder: 'Type here...',class: form_control_classes(danger: @provider.taxonomy.blank? && @provider.persisted?), required: true %>
         </div>
       </div>
       <div class="row mb-3 mt-2">
         <div class="col-lg-6">
-          <label class="text-dark-grey">Specialty (can be multiple)</label>
+          <label class="text-dark-grey">Specialty (can be multiple) <span class="text-red">*</span></label>
           <%= HtmlUtils.multi_select_dropdown name: 'provider[specialty]', id: 'provider_specialty'%>
           <%#= f.collection_select :specialty, specialties, :bcbs, :bcbs, { prompt: 'Select Option' }, { class: 'form-control border border-dark' } %>
         </div>
@@ -379,8 +379,8 @@
       </div>
       <div class="col-lg-6">
       <!-- new field -->
-      <label class="text-dark-grey">Group</label>
-      <%= f.select :enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, {class: form_select_classes(danger: @provider.enrollment_group_id.blank? && @provider.persisted?), data: {show: 'provider_dco_div'}}  %>
+      <label class="text-dark-grey">Group <span class="text-red">*</span></label>
+      <%= f.select :enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, {class: form_select_classes(danger: @provider.enrollment_group_id.blank? && @provider.persisted?), data: {show: 'provider_dco_div'}, required: true } %>
       </div>
       <div class="col-lg-6 <%= @provider.no_group? ? 'd-none' : '' %>" id="provider_dco_div">
         <!-- new field -->
@@ -644,6 +644,33 @@
 
     <script>
       $(document).ready(function() {
+        $('#provider-form').on('submit', function(e) {
+          var birth_state = $("input[name='provider[birth_state]']").val();
+          var home_state = $("input[name='provider[state_id]']").val();
+          var practitioner_type = $("input[name='provider[practitioner_type]']").val();
+          var specialty = $("input[name='provider[specialty]']").val();
+          if(!birth_state) {
+            e.preventDefault();
+            document.querySelector('#birth_state').focus();
+            document.querySelector('#birth_state').open();
+            return  false;
+          } else if(!home_state) {
+            e.preventDefault();
+            document.querySelector('#home_address_state').focus();
+            document.querySelector('#home_address_state').open();
+            return  false;
+          } else if(!practitioner_type) {
+            e.preventDefault();
+            document.querySelector('#provider_practitioner_type').focus();
+            document.querySelector('#provider_practitioner_type').open();
+            return  false;
+          } else if(!specialty) {
+            e.preventDefault();
+            document.querySelector('#provider_specialty').focus();
+            document.querySelector('#provider_specialty').open();
+            return  false;
+          }
+        })
         var dco = "<%= @provider.dco %>";
        setTimeout(function() { $('#provider_enrollment_group_id').trigger('change'); }, 500);
         setTimeout(function() {
