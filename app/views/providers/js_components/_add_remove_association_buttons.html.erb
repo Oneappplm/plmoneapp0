@@ -114,6 +114,18 @@
               var deaLicensesFields = $("#dea_licenses .field");
               var newDeaLicense = deaLicensesFields.last().clone();
               var newId = new Date().getTime();
+
+              var dea_state_id = "provider_dea_licenses_attributes_" + newId + "_state_id";
+              alert(dea_state_id);
+
+              newDeaLicense.find("[id^='provider_dea_licenses_attributes_']").each(function() {
+                var oldId = $(this).attr("id");
+                var newIdValue = oldId.replace(/\d+/, newId);
+                $(this).attr("id", newIdValue);
+                $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
+                $(this).val('');
+              });
+
               newDeaLicense.html(newDeaLicense.html().replace(/dea_licenses_attributes\]\[\d+\]/g, "dea_licenses_attributes][" + newId + "]"));
               $("#np_licenses .fields").append(newDeaLicense);
               addDeaLicensesCount += 1;
@@ -121,6 +133,16 @@
               newDeaLicense.find('.remove-dynamic-fields').attr('data-id', addDeaLicensesCount);
               newDeaLicense.attr('data-id', addDeaLicensesCount);
               $("#dea_licenses .fields").append(newDeaLicense);
+
+
+            setTimeout(function(){
+              $.get('<%= provider_states_multi_select_data_path %>', function(data){
+                 VirtualSelect.init({ele: '#' + dea_state_id, search: true });
+                 document.querySelector('#' + dea_state_id).setOptions(data['result']);
+                 document.querySelector('#' + dea_state_id).setValue(data['value']);
+              });
+           }, 500);
+
           });
 
           $("#dea_licenses").on("click", ".remove-dynamic-fields", function() {

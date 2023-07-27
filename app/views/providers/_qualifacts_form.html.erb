@@ -148,7 +148,12 @@
           <div class="col-lg-6">
             <!-- new field -->
             <label class="text-dark-grey">Copy of Certificate <span class="text-red">*</span></label>
+            <!-- Had to add condition here since on edit it still requires an upload even though I already uploaded a file before. -->
+            <% if @provider.school_certificate.url.nil? %>
             <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: form_control_classes(danger: @provider.school_certificate.blank? && @provider.persisted?), title: 'Copy of Certificate', required: true %>
+            <% else %>
+            <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: form_control_classes(danger: @provider.school_certificate.blank? && @provider.persisted?), title: 'Copy of Certificate'%>
+            <% end %>
             <%= HtmlUtils.generate_view_link file_url: @provider.school_certificate.url %>
           </div>
         </div>
@@ -705,6 +710,20 @@
           }, 1000);
         });
 
+        $('.dea-state').each(function(){
+          var id = $(this).attr('id');
+          var value = $(this).data('value');
+
+          setTimeout(function(){
+             $.get('<%= provider_states_multi_select_data_path %>', function(data){
+                VirtualSelect.init({ele: '#' + id, search: true });
+                document.querySelector('#' + id).setOptions(data['result']);
+                document.querySelector('#' + id).setValue(value);
+             });
+          }, 1000);
+        });
+
+
 
          $(document).on('click','#questions-fields .add_questions',function() {
             var index_of = $(this).data('index');
@@ -751,8 +770,6 @@
             $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
             $(this).val('');
          });
-
-
 
 
          setTimeout(function(){
