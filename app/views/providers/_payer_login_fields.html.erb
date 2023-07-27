@@ -5,7 +5,9 @@
       <div class="row mb-3">
           <div class="col-lg-6">
             <label class="text-dark-grey">Payer</label>
-             <%= f.text_field :enrollment_payer , class: 'form-control border-dark', placeholder: 'Type here...'%>
+             <%#= f.text_field :enrollment_payer , class: 'form-control border-dark w-100', placeholder: 'Type here...'%>
+            <%= f.text_field :enrollment_payer , class: 'form-control border-dark', placeholder: 'Type here...'%>
+
           </div>
           <div class="col-lg-6">
             <label class="text-dark-grey">State</label>
@@ -24,6 +26,7 @@
       </div>
       <div id="questions-fields">
         <div class="q-fields">
+          <% f.object.questions.build if f.object.questions.blank? %>
           <%= f.fields_for :questions do |questions| %>
               <%= render 'question_fields', q: questions, idx: index_of_object %>
           <% end %>
