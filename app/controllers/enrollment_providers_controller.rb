@@ -20,13 +20,11 @@ class EnrollmentProvidersController < ApplicationController
 
 	def create
 		@enrollment_provider = EnrollmentProvider.new(enrollment_provider_params)
-		#binding.break
 		@enrollment_provider.enrolled_by = current_user&.full_name
 		if @enrollment_provider.save
 			@enrollment_provider.update_columns(
 				provider_id: params[:provider_id],
-				outreach_type:	params[:outreach_type],
-				enrollment_payer: params[:enrollment_payer]
+				outreach_type:	params[:outreach_type]
 			)
 			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
 			redirect_to redirect_url, notice: 'Enrollment Provider has been successfully created.'
@@ -39,10 +37,8 @@ class EnrollmentProvidersController < ApplicationController
 		if @enrollment_provider.update(enrollment_provider_params)
 			@enrollment_provider.update_columns(
 				provider_id: params[:provider_id],
-				outreach_type:	params[:outreach_type],
-				enrollment_payer: params[:enrollment_payer]
+				outreach_type:	params[:outreach_type]
 			)
-			#binding.break
 			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
 			redirect_to redirect_url, notice: 'Enrollment Provider has been successfully updated.'
 		else
