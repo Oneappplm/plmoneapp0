@@ -125,17 +125,14 @@
 
 <script>
    $(document).ready(function () {
-      $(document).on("click", ".remove-dynamic-fields", function() {
-            $(this).closest('.field').remove();
-      });
 
       $("#details").on("click", ".add_association", function () {
          var detailsFields = $("#details .field");
          var newEnrollmentdetails = detailsFields.last().clone();
          var lastId = detailsFields.length - 1;
          var newId = lastId + 1;
-         var id = "enroll_group_details_attributes_" + newId + "_enrollment_payer";
-         var id = "enroll_group_details_attributes_" + newId + "_state_id";
+         //var enrollment_payer_id = "enroll_group_details_attributes_" + newId + "_enrollment_payer";
+         var payer_state_id = "enroll_group_details_attributes_" + newId + "_payer_state";
 
          // Update the IDs in the cloned HTML content
          newEnrollmentdetails.find("[id^='enroll_group_details_attributes_']").each(function() {
@@ -143,13 +140,19 @@
             var newIdValue = oldId.replace(/\d+/, newId);
             $(this).attr("id", newIdValue);
             $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
+            $(this).val('');
          });
 
          setTimeout(function(){
-            $.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
-               VirtualSelect.init({ele: '#' + id, search: true }); // initialze virtual select first
-               document.querySelector('#' + id).setOptions(data['result']); // other alternative for initializing collection data
-               document.querySelector('#' + id).setValue(value); // other alternative for setting the value
+            //$.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
+               //VirtualSelect.init({ele: '#' + enrollment_payer_id, search: true }); // initialze virtual select first
+              // document.querySelector('#' + enrollment_payer_id).setOptions(data['result']); // other alternative for initializing collection data
+               //document.querySelector('#' + enrollment_payer_id).setValue(value); // other alternative for setting the value
+           // });
+             $.get('<%= states_multi_select_data_path %>', function(data){
+               VirtualSelect.init({ele: '#' + payer_state_id, search: true });
+               document.querySelector('#' + payer_state_id).setOptions(data['result']);
+               document.querySelector('#' + payer_state_id).setValue(value);
             });
          }, 500);
 
