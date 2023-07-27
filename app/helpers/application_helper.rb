@@ -154,7 +154,7 @@ module ApplicationHelper
 
   def current_logo
    @current_logo ||= if current_setting.qualifacts?
-      'qualifacts-logo.png'
+      'qualifacts-logo.svg'
     else
       'plm-logo-3.png'
     end
