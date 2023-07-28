@@ -585,7 +585,7 @@
     </div>
     <div class="row">
       <div class="col-lg-12 d-flex justify-content-end">
-        <button type="submit" class="btn btn-primary btn-md">Submit</button>
+        <button id="btn-provider-form-submit"  type="submit" class="btn btn-primary btn-md">Submit</button>
       </div>
     </div>
 <% end %>
@@ -650,33 +650,44 @@
 
     <script>
       $(document).ready(function() {
-        $('#provider-form').on('submit', function(e) {
-          var birth_state = $("input[name='provider[birth_state]']").val();
-          var home_state = $("input[name='provider[state_id]']").val();
-          var practitioner_type = $("input[name='provider[practitioner_type]']").val();
-          var specialty = $("input[name='provider[specialty]']").val();
-          if(!birth_state) {
-            e.preventDefault();
-            document.querySelector('#birth_state').focus();
-            document.querySelector('#birth_state').open();
-            return  false;
-          } else if(!home_state) {
-            e.preventDefault();
-            document.querySelector('#home_address_state').focus();
-            document.querySelector('#home_address_state').open();
-            return  false;
-          } else if(!practitioner_type) {
-            e.preventDefault();
-            document.querySelector('#provider_practitioner_type').focus();
-            document.querySelector('#provider_practitioner_type').open();
-            return  false;
-          } else if(!specialty) {
-            e.preventDefault();
-            document.querySelector('#provider_specialty').focus();
-            document.querySelector('#provider_specialty').open();
-            return  false;
-          }
-        })
+
+        // force to invalidate all required fields
+        $('#btn-provider-form-submit').on('click', function(e) {
+          $('input[required], select[required], textarea[required]').each(function() {
+            $(this).removeAttr('required');
+          })
+        });
+
+        // kindly ask rave about this behavior. need to allow to save the form without validation even required fields are enabled
+        // $('#provider-form').on('submit', function(e) {
+        //   var birth_state = $("input[name='provider[birth_state]']").val();
+        //   var home_state = $("input[name='provider[state_id]']").val();
+        //   var practitioner_type = $("input[name='provider[practitioner_type]']").val();
+        //   var specialty = $("input[name='provider[specialty]']").val();
+        //   if(!birth_state) {
+        //     e.preventDefault();
+        //     document.querySelector('#birth_state').focus();
+        //     document.querySelector('#birth_state').open();
+        //     return  false;
+        //   } else if(!home_state) {
+        //     e.preventDefault();
+        //     document.querySelector('#home_address_state').focus();
+        //     document.querySelector('#home_address_state').open();
+        //     return  false;
+        //   } else if(!practitioner_type) {
+        //     e.preventDefault();
+        //     document.querySelector('#provider_practitioner_type').focus();
+        //     document.querySelector('#provider_practitioner_type').open();
+        //     return  false;
+        //   } else if(!specialty) {
+        //     e.preventDefault();
+        //     document.querySelector('#provider_specialty').focus();
+        //     document.querySelector('#provider_specialty').open();
+        //     return  false;
+        //   }
+        // })
+
+
         var dco = "<%= @provider.dco %>";
        setTimeout(function() { $('#provider_enrollment_group_id').trigger('change'); }, 500);
         setTimeout(function() {
