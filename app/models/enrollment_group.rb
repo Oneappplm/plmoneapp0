@@ -17,7 +17,7 @@ class EnrollmentGroup < ApplicationRecord
   accepts_nested_attributes_for :contact_personnels, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank
 
-  validates_presence_of :group_name, :group_code, :office_address, :city, :state, :zip_code
+  # validates_presence_of :group_name, :group_code, :office_address, :city, :state, :zip_code
 
   def dco_count_display
     "#{dcos.size} clients"

@@ -262,7 +262,7 @@
    </div>
    <div class="row">
       <div class="col-lg-12 d-flex justify-content-end">
-         <button type="submit" class="btn btn-primary btn-md">
+         <button id="btn-group-submit" type="submit" class="btn btn-primary btn-md">
          <%= action_name == 'edit_group' ? 'Update Group' : 'Add Group' %>
          </button>
       </div>
@@ -318,6 +318,13 @@
 
 <script>
    var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+   $('#btn-group-submit').on('click', function(e) {
+      $('input[required], select[required], textarea[required]').each(function() {
+         $(this).removeAttr('required');
+      })
+   });
+
    $("#contacts-info").on("click", ".add_association", function () {
       var detailsFields = $("#contacts-info .field");
       var newEnrollmentdetails = detailsFields.last().clone();
