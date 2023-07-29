@@ -154,7 +154,25 @@
     <% if notice or alert%>
     <div class="px-3 mt-3">
       <% if notice %>
-        <p class="alert alert-success"><%= notice %></p>
+        <div id="alert-container">
+    <p class="alert alert-success alert-dismissible"><%= notice %></p>
+    </div>
+
+    <% content_for :js do %>
+    <script>
+    // Function to fade out the alert after login
+      document.addEventListener("DOMContentLoaded", function() {
+        function fadeOutAlert() {
+          $("#alert-container").fadeOut(3000, function() {
+            $(this).remove();
+          });
+        }
+        // Call the fadeOutAlert function after 3 seconds
+        setTimeout(fadeOutAlert, 3000);
+      });
+    </script>
+   
+     <% end %>
       <% end %>
 
       <% if alert %>
