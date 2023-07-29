@@ -16,6 +16,7 @@ module HtmlUtils
     options[:tohide] ||= ''
     options[:hidden_field] ||= false
     options[:data] ||= current_provider_source.finder(options[:name])
+    options[:data_value] ||= 'no'
 
 		toggle = <<-HTML
 			<div class="#{ options[:container_class] }">
@@ -28,7 +29,7 @@ module HtmlUtils
 
     if options[:hidden_field]
       toggle += <<-HTML
-        <input type="hidden" id="#{ options[:name] }" name="#{ options[:name] }" value="#{ options[:data]&.data_value || 'no' }">
+        <input type="hidden" id="#{ options[:name] }" name="#{ options[:name] }" value="#{ options[:data]&.data_value || options[:data_value] }">
       HTML
     end
 
@@ -66,10 +67,10 @@ module HtmlUtils
     options[:label] ||= ''
     options[:multiple] ||= false
     options[:name] ||= ''
-  
+
     value = options[:value]
-  
-    
+
+
     dropdown_class = ['form-select', 'border']
     if value.nil?
       dropdown_class << 'border-dark'
@@ -78,12 +79,12 @@ module HtmlUtils
     else
       dropdown_class << 'border-dark'
     end
-  
+
     option = <<-HTML
       <label class="text-dark-grey">#{options[:label]}</label>
       <div class="#{options[:multiple] ? 'multi' : 'single'}-select multi-select-#{options[:name]} #{dropdown_class.join(' ')}" name="#{options[:name]}" id="#{options[:name]}" placeholder="#{options[:label]}" ></div>
     HTML
-  
+
     option.html_safe
   end
 
