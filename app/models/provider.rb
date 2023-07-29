@@ -292,4 +292,10 @@ class Provider < ApplicationRecord
   def is_payer_login?
     self.payer_login == 'yes'
   end
+
+  def admitting_state
+    State.find_by(id: self.admitting_facility_state)&.name
+  rescue
+    ''
+  end
 end

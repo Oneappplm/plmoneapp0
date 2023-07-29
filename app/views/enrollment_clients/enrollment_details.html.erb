@@ -13,7 +13,7 @@
            </a>
         </div>
       <div class="w-100 collapsible" id="provider_enrollment_<%= detail.id%>">
-        <div class="row">
+        <div class="row mb-3">
           <div class="col-lg-2">
             <label>Enrollment Type</label>
             <p class="text-black fw-semibold"><%= detail.enrollment_type %></p>
@@ -35,6 +35,44 @@
             <p class="text-black fw-semibold"><%= detail.comment %></p>
           </div>
         </div>
+        <% if detail.enrollment_status == 'approved'%>
+          <div class="row mb-3">
+            <div class="col-lg-2">
+              <label>Effective Date</label>
+              <p class="text-black fw-semibold"><%= detail.enrollment_effective_date&.strftime('%B %d, %Y') rescue nil %></p>
+            </div>
+            <div class="col-lg-2">
+              <label>Association Start Date</label>
+              <p class="text-black fw-semibold"><%= detail.association_start_date&.strftime('%B %d, %Y')  rescue nil %></p>
+            </div>
+            <div class="col-lg-2">
+              <label>Business End Date</label>
+              <p class="text-black fw-semibold"><%= detail.business_end_date&.strftime('%B %d, %Y') rescue nil %></p>
+            </div>
+            <div class="col-lg-2">
+              <label>Association End Date</label>
+              <p class="text-black fw-semibold"><%= detail.association_end_date&.strftime('%B %d, %Y') rescue nil %></p>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-lg-2">
+              <label>Revalidation Status</label>
+              <p class="text-black fw-semibold"><%= detail.revalidation_status rescue nil %></p>
+            </div>
+            <div class="col-lg-2">
+              <label>Revalidation Date</label>
+              <p class="text-black fw-semibold"><%= detail.revalidation_date&.strftime('%B %d, %Y') rescue nil %></p>
+            </div>
+            <div class="col-lg-2">
+              <label>Revalidation Due Date</label>
+              <p class="text-black fw-semibold"><%= detail.revalidation_due_date&.strftime('%B %d, %Y') rescue nil %></p>
+            </div>
+            <div class="col-lg-2">
+              <label>Line of Business</label>
+              <p class="text-black fw-semibold"><%= detail.line_of_business rescue nil %></p>
+            </div>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>

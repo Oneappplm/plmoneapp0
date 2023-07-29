@@ -392,7 +392,8 @@ module ApplicationHelper
       'Driver’s License',
       'License Registered State',
       'CAQH App Copy','Curriculum Vitae (CV)',
-      'Telehealth License Copy'
+      'Telehealth License Copy',
+      'Copy of Certificate'
     ]
   end
 
