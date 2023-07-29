@@ -1,7 +1,6 @@
 class EnrollGroupsController < ApplicationController
 	before_action :set_enroll_group, only: [:edit, :update, :destroy, :show]
   before_action :set_enroll_groups, only: [:index, :show]
-	before_action :set_enrollment_groups, only: [:new, :edit]
 	def index
 	end
 
@@ -61,17 +60,6 @@ class EnrollGroupsController < ApplicationController
   end
 
 	protected
-
-	def set_enrollment_groups
-		if action_name == "new"
-			@enrollment_groups = EnrollmentGroup.includes(:enroll_group).where(enroll_group: { id: nil })
-		elsif action_name == "edit"
-			@enrollment_groups = EnrollmentGroup.where("NOT EXISTS (SELECT 1 FROM enroll_groups WHERE enroll_groups.group_id = enrollment_groups.id AND enrollment_groups.id <> #{@enroll_group.group_id})")
-		else
-			@enrollment_groups = EnrollmentGroup.all
-		end
-	end
-
 	def set_enroll_group
 		@enroll_group = EnrollGroup.find(params[:id])
 	end

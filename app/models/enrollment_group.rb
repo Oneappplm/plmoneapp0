@@ -8,10 +8,10 @@ class EnrollmentGroup < ApplicationRecord
   mount_uploader :voided_check_file, DocumentUploader
   mount_uploader :specific_type_file, DocumentUploader
 
-  has_many :details, class_name: 'EnrollmentGroupsDetail'
+
   has_many :dcos, class_name: 'GroupDco', dependent: :destroy
+  has_many :details, class_name: 'EnrollmentGroupsDetail'
   has_many :contact_personnels, class_name: 'EnrollmentGroupsContactDetail'
-  has_one :enroll_group, class_name: 'EnrollGroup', foreign_key: "group_id", dependent: :destroy
   has_many :deleted_document_logs, class_name: 'EnrollmentGroupDeletedDocLog', dependent: :destroy
 
   accepts_nested_attributes_for :contact_personnels, allow_destroy: true, reject_if: :all_blank
