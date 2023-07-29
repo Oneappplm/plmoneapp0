@@ -67,6 +67,7 @@
          <div class="row">
             <div id="details">
                <div class="fields">
+                  <% @index = 0 %>
                   <%= f.fields_for :details do |details| %>
                   <%= render 'details_fields', f: details %>
                   <% end %>
@@ -96,7 +97,7 @@
     $('.enrollment-payor').each(function(){
       var id = $(this).attr('id');
       var value = $(this).data('value');
-      
+
       setTimeout(function(){
          $.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
             VirtualSelect.init({ele: '#' + id, search: true });
@@ -111,7 +112,7 @@
     $('.payor-state').each(function(){
       var id = $(this).attr('id');
       var value = $(this).data('value');
-      
+
       setTimeout(function(){
          $.get('<%= states_multi_select_data_path %>', function(data){
             VirtualSelect.init({ele: '#' + id, search: true });
@@ -131,7 +132,7 @@
          var detailsFields = $("#details .field");
          var newEnrollmentdetails = detailsFields.last().clone();
          var lastId = detailsFields.length - 1;
-         var newId = lastId + 1;
+         var newId = new Date().getTime();
          //var enrollment_payer_id = "enroll_group_details_attributes_" + newId + "_enrollment_payer";
          var payer_state_id = "enroll_group_details_attributes_" + newId + "_payer_state";
 
@@ -144,6 +145,38 @@
             $(this).val('');
          });
 
+         newEnrollmentdetails.find('div.toggle-container').each(function(){
+            $(this).attr('id', $(this).attr('id').replace(/\d+/, newId));
+         });
+
+         // find input with name _destroy
+         newEnrollmentdetails.find('input[type="hidden"]').each(function(){
+            if($(this).attr('name').includes('_destroy')){
+               $(this).attr('name', $(this).attr('name').replace(/\d+/, newId));
+            }
+         });
+
+         newEnrollmentdetails.find('button.btn-toggle').each(function(){
+            $(this).attr('data-tochange', $(this).data('tochange').replace(/\d+/, newId));
+            $(this).attr('data-toshow', $(this).data('toshow').replace(/\d+/, newId));
+
+            // find closest element input with type="hidden"
+            var hidden_input = $(this).parent().parent().find('input[type="hidden"]');
+            hidden_input.attr('id', hidden_input.attr('id').replace(/\d+/, newId));
+            hidden_input.attr('name', hidden_input.attr('name').replace(/\d+/, newId));
+
+            $(this).on('click', function(){
+               if($(this).hasClass('to-change-value')) {
+                  var to_change = $(this).data('tochange').replace(/\d+/, newId);
+                  var to_show = $(this).data('toshow').replace(/\d+/, newId);
+                  $(this).toggleClass('active');
+                  $(this).hasClass('active') ? $('input[name="'+to_change+'"]').val('yes') : $('input[name="'+to_change+'"]').val('no');
+                  $('#' + to_show).toggleClass('d-none');
+               }
+            });
+         });
+
+
          setTimeout(function(){
             //$.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
                //VirtualSelect.init({ele: '#' + enrollment_payer_id, search: true }); // initialze virtual select first
@@ -153,12 +186,19 @@
              $.get('<%= states_multi_select_data_path %>', function(data){
                VirtualSelect.init({ele: '#' + payer_state_id, search: true });
                document.querySelector('#' + payer_state_id).setOptions(data['result']);
-               document.querySelector('#' + payer_state_id).setValue(value);
+               // document.querySelector('#' + payer_state_id).setValue(value);
             });
          }, 500);
 
          $("#details .fields").append(newEnrollmentdetails);
       });
+
+      // $('.btn-toggle').on('click',function(e){
+      //    if($(this).hasClass('to-change-value')) {
+      //       var to_change = $(this).data('tochange');
+      //       $(this).hasClass('active') ? $('input[name="'+to_change+'"]').val('yes') : $('input[name="'+to_change+'"]').val('no');
+      //    }
+      // });
 
 
       // $(document).on('change', '.multi-enrollment-status', function () {
@@ -176,7 +216,7 @@
       //       showHideDetailFields($(this), '.application-submitted-field', 'hide')
       //    }
       // })
-      
+
 
 
       $(document).on('change', '.select-show', function () {

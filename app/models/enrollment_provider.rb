@@ -50,15 +50,15 @@ class EnrollmentProvider < ApplicationRecord
 	def provider_name
 		if self.outreach_type.present?
 			if self.outreach_type == "provider-from-enrollment"
-				Provider.find(self.provider_id)&.provider_name
+				Provider.find_by(id: self.provider_id)&.provider_name
 			else
-				ProviderSource.find(self.provider_id)&.provider_name
+				ProviderSource.find_by(id: self.provider_id)&.provider_name
 			end
 		else
 			provider =	if Provider.exists?(id: self.provider_id)
-				Provider.find(self.provider_id)&.provider_name
+				Provider.find_by(id: self.provider_id)&.provider_name
 			elsif ProviderSource.exists?(id: self.provider_id)
-				ProviderSource.find(self.provider_id)&.provider_name
+				ProviderSource.find_by(id: self.provider_id)&.provider_name
 			else
 				"N/A"
 			end
