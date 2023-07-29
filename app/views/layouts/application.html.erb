@@ -170,18 +170,35 @@
 
   <main id="content" role="main" class="main">
     <% if notice or alert%>
-    <div class="px-3 mt-3">
+    <div class="px-3 mt-3" id="noti-container" >
       <% if notice %>
-        <p class="alert alert-success"><%= notice %></p>
+        <p class="alert alert-success alert-dismissible"><%= notice %></p>
       <% end %>
 
       <% if alert %>
-        <p class="alert alert-danger"><%= alert %></p>
+        <p class="alert alert-danger alert-dismissible"><%= alert %></p>
       <% end %>
     </div>
     <% end %>
     <%= yield %>
-    <%#= render "global_components/footer"%> <!-- not needed for now no footer in design -->
+    
+    <% content_for :js do %>
+    <script>
+        // fade out after 3sec.
+        document.addEventListener("DOMContentLoaded", function() {
+          function fadeOutMessage(messageContainerId) {
+            $("#" + messageContainerId).fadeOut(3000, function() {
+              $(this).remove();
+            });
+          }
+
+          setTimeout(function() {
+            fadeOutMessage("noti-container");
+          }, 3000);
+        });
+    </script>
+   <% end %>    
+   <%#= render "global_components/footer"%> <!-- not needed for now no footer in design -->
   </main>
 
   <div class="loading-overlay">
