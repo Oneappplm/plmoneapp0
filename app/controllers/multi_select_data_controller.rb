@@ -71,11 +71,25 @@ class MultiSelectDataController < ApplicationController
 		enrollment_provider = EnrollmentProvider.find_by(id: enrollment_provider_id)
 		outreach_type = params[:outreach_type]
 		if outreach_type == 'provider-from-provider-app'
-			send_result ProviderSource.all.map	{ |provider_source| { label: provider_source.provider_name, value: provider_source.id } }, selected_provider: enrollment_provider&.provider_id
+			if params[:without_enrollments].present? && params[:without_enrollments] == "true"
+				if params[:action_name] == "new" || (params[:action_name] == "edit" && !enrollment_provider&.provider_id.present?)
+					send_result ProviderSource.where("NOT EXISTS (SELECT 1 FROM enrollment_providers WHERE enrollment_providers.provider_id = provider_sources.id AND enrollment_providers.outreach_type = 'provider-from-provider-app')").map	{ |provider_source| { label: provider_source.provider_name, value: provider_source.id } }, selected_provider: enrollment_provider&.provider_id
+				else
+					send_result ProviderSource.where("NOT EXISTS (SELECT 1 FROM enrollment_providers WHERE enrollment_providers.provider_id = provider_sources.id AND enrollment_providers.outreach_type = 'provider-from-provider-app' AND provider_sources.id <> #{enrollment_provider.provider_id})").map	{ |provider_source| { label: provider_source.provider_name, value: provider_source.id } }, selected_provider: enrollment_provider&.provider_id
+				end
+			else
+				send_result ProviderSource.all.map	{ |provider_source| { label: provider_source.provider_name, value: provider_source.id } }, selected_provider: enrollment_provider&.provider_id
+			end
 		elsif outreach_type == 'provider-from-enrollment'
+			if params[:without_enrollments].present? && params[:without_enrollments] == "true"
+				if params[:action_name] == "new" || (params[:action_name] == "edit" && !enrollment_provider&.provider_id.present?)
+					send_result Provider.where("NOT EXISTS (SELECT 1 FROM enrollment_providers WHERE enrollment_providers.provider_id = providers.id AND enrollment_providers.outreach_type = 'provider-from-enrollment')").map { |provider| { label: provider.provider_name, value: provider.id } }, selected_provider: enrollment_provider&.provider_id
+				else
+					send_result Provider.where("NOT EXISTS (SELECT 1 FROM enrollment_providers WHERE enrollment_providers.provider_id = providers.id AND enrollment_providers.outreach_type = 'provider-from-enrollment' AND providers.id <> #{enrollment_provider.provider_id})").map { |provider| { label: provider.provider_name, value: provider.id } }, selected_provider: enrollment_provider&.provider_id
+				end
+			else
 				send_result Provider.all.map { |provider| { label: provider.provider_name, value: provider.id } }, selected_provider: enrollment_provider&.provider_id
-		elsif params[:without_enrollments].present?
-				send_result Provider.includes(:enrollment_provider).where(enrollment_providers: { id: nil}).map { |provider| { label: provider.provider_name, value: provider.id } }, selected_provider: enrollment_provider&.provider_id
+			end
 		else
 			send_result Provider.all.map { |provider| { label: provider.provider_name, value: provider.id } }, selected_provider: enrollment_provider&.provider_id
 		end

@@ -64,7 +64,7 @@ class EnrollGroupsController < ApplicationController
 	protected
 
 	def set_enrollment_groups
-		if action_name == "new"
+		if action_name == "new" || (action_name == "edit" && !@enroll_group&.group_id.present?)
 			@enrollment_groups = EnrollmentGroup.includes(:enroll_group).where(enroll_group: { id: nil })
 		elsif action_name == "edit"
 			@enrollment_groups = EnrollmentGroup.where("NOT EXISTS (SELECT 1 FROM enroll_groups WHERE enroll_groups.group_id = enrollment_groups.id AND enrollment_groups.id <> #{@enroll_group&.group_id || 0})")
