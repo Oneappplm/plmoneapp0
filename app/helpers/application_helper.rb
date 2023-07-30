@@ -411,6 +411,13 @@ module ApplicationHelper
 			classes.join(' ')
 	end
 
+	def search_select_classes(options = {})
+    classes = ['search-select', 'state-search-select', 'form-control']
+    classes << 'border-danger' if options[:danger]
+    classes << 'border-dark' unless options[:danger]
+    classes.join(' ')
+  end
+
 	def payor_submission_types
 		[
 			['Paper','paper'],
