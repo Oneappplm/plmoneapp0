@@ -35,23 +35,37 @@
             <p class="text-black fw-semibold"><%= detail.comment %></p>
           </div>
         </div>
-        <% if detail.enrollment_status == 'approved'%>
+
+        <% if ['application-submitted'].include?(detail.enrollment_status)%>
+          <div class="row mb-3">
+            <div class="col-lg-2">
+              <label>Association Start Date</label>
+              <p class="text-black fw-semibold"><%= detail.association_start_date&.to_date&.strftime('%B %d, %Y')  rescue nil %></p>
+            </div>
+
+            <div class="col-lg-2">
+              <label>Enrollment Tracking ID</label>
+              <p class="text-black fw-semibold"><%= detail&.enrollment_tracking_id  rescue nil %></p>
+            </div>
+          </div>
+        <% end %>
+        <% if ['approved'].include?(detail.enrollment_status) %>
           <div class="row mb-3">
             <div class="col-lg-2">
               <label>Effective Date</label>
-              <p class="text-black fw-semibold"><%= detail.enrollment_effective_date&.strftime('%B %d, %Y') rescue nil %></p>
+              <p class="text-black fw-semibold"><%= detail.enrollment_effective_date&.to_date&.strftime('%B %d, %Y') rescue nil %></p>
             </div>
             <div class="col-lg-2">
               <label>Association Start Date</label>
-              <p class="text-black fw-semibold"><%= detail.association_start_date&.strftime('%B %d, %Y')  rescue nil %></p>
+              <p class="text-black fw-semibold"><%= detail.association_start_date&.to_date&.strftime('%B %d, %Y')  rescue nil %></p>
             </div>
             <div class="col-lg-2">
               <label>Business End Date</label>
-              <p class="text-black fw-semibold"><%= detail.business_end_date&.strftime('%B %d, %Y') rescue nil %></p>
+              <p class="text-black fw-semibold"><%= detail.business_end_date&.to_date&.strftime('%B %d, %Y') rescue nil %></p>
             </div>
             <div class="col-lg-2">
               <label>Association End Date</label>
-              <p class="text-black fw-semibold"><%= detail.association_end_date&.strftime('%B %d, %Y') rescue nil %></p>
+              <p class="text-black fw-semibold"><%= detail.association_end_date&.to_date&.strftime('%B %d, %Y') rescue nil %></p>
             </div>
           </div>
           <div class="row mb-3">
