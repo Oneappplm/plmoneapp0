@@ -298,4 +298,10 @@ class Provider < ApplicationRecord
   rescue
     ''
   end
+
+  def caqh_state_name
+    State.find_by(id: self.caqh_state)&.name
+  rescue
+    ''
+  end
 end

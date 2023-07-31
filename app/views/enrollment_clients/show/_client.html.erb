@@ -1,4 +1,5 @@
 <% client = @provider.client %>
+<h1><%= client.class.name %>-<%= client.id %></h1>
 <div class="row mb-3">
    <div class="col-lg-12 card p-3">
       <div class="w-100 d-flex justify-content-between">
@@ -40,107 +41,18 @@
       </div>
       <% if client %>
       <h3 class="text-primary">Location</h3>
-          <% client&.dcos&.each do |dco|%>
-            <!--   <div class="row mb-1">
-                 <div class="col-lg-6">
-                    <label>Group Name</label>
-                    <p class="text-black fw-semibold"><%#= dco&.state %></p>
-                 </div>
-                 <div class="col-lg-6">
-                    <label>Address</label>
-                    <p class="text-black fw-semibold"><%#= dco&.dco_zipcode %></p>
-                 </div>
-              </div> -->
-           <!--    <div class="row mb-1">
-                 <div class="col-lg-6">
-                    <label>City</label>
-                    <p class="text-black fw-semibold"><%#= dco&.dco_city %></p>
-                 </div>
-                 <div class="col-lg-6">
-                    <label>State</label>
-                    <p class="text-black fw-semibold"><%#= dco&.state %></p>
-                 </div>
-              </div> -->
-             <!--  <div class="row mb-1">
-                 <div class="col-lg-6">
-                    <label>County</label>
-                    <p class="text-black fw-semibold"><%#= dco&.county %></p>
-                 </div>
-                 <div class="col-lg-6">
-                    <label>Zip Code</label>
-                    <p class="text-black fw-semibold"><%#= dco&.dco_zipcode %></p>
-                 </div>
-              </div> -->
+          <% client.dcos.each do |dco|%>
               <div class="row mb-1">
-                 <div class="col-lg-6">
-                    <label>Location Phone</label>
-                    <p class="text-black fw-semibold"><%#= dco&.service_location_phone_number %></p>
-                 </div>
-                 <div class="col-lg-6">
-                    <label>Location Fax</label>
-                    <p class="text-black fw-semibold"><%#= dco&.service_location_fax_number %></p>
-                 </div>
-              </div>
-              <!-- <div class="row mb-1">
-                 <div class="col-lg-6">
-                    <label>Panel Status to New Patients</label>
-                    <p class="text-black fw-semibold"><%#= dco&.panel_status_to_new_patients %></p>
-                 </div>
-                 <div class="col-lg-6">
-                    <label>Panel Age Limits</label>
-                    <p class="text-black fw-semibold"><%#= dco&.panel_age_limit %></p>
-                 </div>
-              </div> -->
-             <!--  <div class="row mb-1">
-                 <div class="col-lg-6">
-                    <label>Include in Directory?</label>
-                    <p class="text-black fw-semibold"><%#= dco&.include_in_directory&.upcase %></p>
-                 </div>
-                 <div class="col-lg-6">
-                    <label>Is this location an inpatient facility?</label>
-                    <p class="text-black fw-semibold"><%#= dco&.inpatient_facility&.upcase %></p>
-                 </div>
-              </div> -->
-              <div class="row mb-1">
-                 <div class="col-lg-6">
-                    <label>Is this location a clinic?</label>
-                    <p class="text-black fw-semibold"><%#= dco&.is_clinic&.upcase %></p>
-                 </div>
                  <div class="col-lg-6">
                     <label>Does this location offer Telehealth service?</label>
-                    <p class="text-black fw-semibold"><%#= dco&.telehealth_provider&.upcase %></p>
+                    <p class="text-black fw-semibold"><%= dco&.telehealth_provider&.upcase %></p>
+                 </div>
+                 <div class="col-lg-6">
+                    <label>Telehealth video conferencing technology used</label>
+                    <p class="text-black fw-semibold"><%= dco&.telehealth_video_conferencing_technology rescue nil %></p>
                  </div>
               </div>
-           <!--    <div class="row mb-1">
-                 <div class="col-lg-6">
-                    <label>Website</label>
-                    <p class="text-black fw-semibold"><%#= dco&.website rescue nil %></p>
-                 </div>
-                 <div class="col-lg-6">
-                    <label>TAX ID</label>
-                    <p class="text-black fw-semibold"><%#= dco&.tax_id rescue nil %></p>
-                 </div>
-              </div> -->
-        <!--       <div class="row mb-1">
-                 <div class="col-lg-6">
-                    <label>Facility Billing NPI</label>
-                    <p class="text-black fw-semibold"></p>
-                 </div>
-                 <div class="col-lg-6">
-                    <label>MN Medicaid Number</label>
-                    <p class="text-black fw-semibold"></p>
-                 </div>
-              </div> -->
-              <!-- <div class="row mb-1">
-                 <div class="col-lg-6">
-                    <label>WI Medicaid Number</label>
-                    <p class="text-black fw-semibold"></p>
-                 </div>
-                 <div class="col-lg-6">
-                    <label>Medicare ID PTAN</label>
-                    <p class="text-black fw-semibold"></p>
-                 </div>
-              </div> -->
+              <hr>
           <% end %>
         <% end %>
     </div>
