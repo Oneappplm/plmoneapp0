@@ -11,11 +11,13 @@ class EnrollmentGroup < ApplicationRecord
   has_many :details, class_name: 'EnrollmentGroupsDetail'
   has_many :dcos, class_name: 'GroupDco', dependent: :destroy
   has_many :contact_personnels, class_name: 'EnrollmentGroupsContactDetail'
+  has_many :qualifacts_contacts, class_name: 'GroupContact', dependent: :destroy
   has_one :enroll_group, class_name: 'EnrollGroup', foreign_key: "group_id", dependent: :destroy
   has_many :deleted_document_logs, class_name: 'EnrollmentGroupDeletedDocLog', dependent: :destroy
 
-  accepts_nested_attributes_for :contact_personnels, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :qualifacts_contacts, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :contact_personnels, allow_destroy: true, reject_if: :all_blank
 
   # validates_presence_of :group_name, :group_code, :office_address, :city, :state, :zip_code
 

@@ -68,6 +68,7 @@ class EnrollmentsController < ApplicationController
 			@enrollment_group = EnrollmentGroup.new
 			@enrollment_group.contact_personnels.build
 			@enrollment_group.details.build
+			@enrollment_group.qualifacts_contacts.build if current_setting.qualifacts? && !@enrollment_group.qualifacts_contacts.present?
 		end
 	end
 
@@ -81,6 +82,8 @@ class EnrollmentsController < ApplicationController
 		if @enrollment_group.details.blank?
 			@enrollment_group.details.build
 		end
+
+		@enrollment_group.qualifacts_contacts.build if current_setting.qualifacts? && !@enrollment_group.qualifacts_contacts.present?
 
 		if	request.patch?
 			if @enrollment_group.update(group_params)
@@ -195,7 +198,8 @@ class EnrollmentsController < ApplicationController
 					contact_personnels_attributes: [:id, :group_personnel_name, :group_personnel_email, :group_personnel_phone_number, :group_personnel_fax_number, :group_personnel_position,
 						:_destroy],
 					details_attributes: [:id, :individual_ownership_first_name, :individual_ownership_middle_name, :email_address, :individual_ownership_last_name,:individual_ownership_title, :individual_ownership_ssn, :individual_ownership_dob, :individual_ownership_percent_of_ownership, :individual_ownership_effective_date, :individual_ownership_control_date, :roles,
-					:_destroy]
+					:_destroy],
+					qualifacts_contacts_attributes: [:id, :department, :name, :role, :email, :phone, :_destroy]
 			)
 		end
 

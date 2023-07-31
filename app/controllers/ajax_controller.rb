@@ -14,8 +14,8 @@ class AjaxController < ApplicationController
       ProviderRnLicense.delete(id)
     elsif model == 'group_dco_schedules'
       GroupDcoSchedule.delete(id)
-    elsif model == 'group_dco_qualifacts_contacts'
-      GroupDcoContact.delete(id)
+    elsif model == 'qualifacts_contacts'
+      GroupContact.delete(id)
     elsif model == 'group_dco_provider_outreach_info'
       GroupDcoProviderOutreachInformation.delete(id)
     elsif model == 'dea_licenses'

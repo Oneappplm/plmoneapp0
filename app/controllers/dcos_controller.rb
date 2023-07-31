@@ -11,14 +11,12 @@ class DcosController < ApplicationController
 		@dco = @enrollment_group.dcos.new
 		@dco.schedules.build if !@dco.schedules.present?
 		@dco.provider_outreach_info.build if !@dco.provider_outreach_info.present?
-		@dco.group_dco_contacts.build if current_setting.qualifacts? && !@dco.group_dco_contacts.present?
 		@dco.old_location_addresses.build if !@dco.old_location_addresses.present?
 	end
 
 	def edit
 		@dco.schedules.build if !@dco.schedules.present?
 		@dco.provider_outreach_info.build if !@dco.provider_outreach_info.present?
-		@dco.group_dco_contacts.build if current_setting.qualifacts? && !@dco.group_dco_contacts.present?
 		@dco.old_location_addresses.build if !@dco.old_location_addresses.present?
 	end
 
@@ -29,7 +27,6 @@ class DcosController < ApplicationController
 		else
 			@dco.schedules.build if !@dco.schedules.present?
 			@dco.provider_outreach_info.build if !@dco.provider_outreach_info.present?
-			@dco.group_dco_contacts.build if current_setting.qualifacts? && !@dco.group_dco_contacts.present?
 			render :new
 		end
 	end
@@ -40,7 +37,6 @@ class DcosController < ApplicationController
 		else
 			@dco.schedules.build if !@dco.schedules.present?
 			@dco.provider_outreach_info.build if !@dco.provider_outreach_info.present?
-			@dco.group_dco_contacts.build if current_setting.qualifacts? && !@dco.group_dco_contacts.present?
 			render :edit
 		end
 	end
@@ -67,8 +63,7 @@ class DcosController < ApplicationController
 			:is_gender_affirming_treatment, :panel_size, :medicare_authorized_official, :collab_npi, :collab_name,
 			old_location_addresses_attributes: [:id, :old_address, :old_city, :old_state, :old_county, :old_zipcode, :is_old_location_primary, :_destroy],
 			schedules_attributes: [:id, :day, :start_time, :end_time, :_destroy],
-			provider_outreach_info_attributes: [:id, :name, :email, :phone, :fax, :position, :_destroy],
-			group_dco_contacts_attributes: [:id, :department, :name, :role, :email, :phone, :_destroy]
+			provider_outreach_info_attributes: [:id, :name, :email, :phone, :fax, :position, :_destroy]
 		)
 	end
 

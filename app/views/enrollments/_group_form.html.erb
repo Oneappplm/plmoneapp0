@@ -213,6 +213,21 @@
 			</div>
 		</div>
 	</div>
+   <div class="row field mb-3 p-2 border border-2">
+		<%= render partial: "global_components/collapsible_sidebar_header", locals: { title: 'Qualifacts Contact List', collapse_name: 'contacts_list', text_position: 'text-start'}%>
+		<div class="collapsible" style="<%= current_user&.is_card_open?('contacts_list') ? '' : 'display: none;' %>">
+			<div id="qualifacts-contacts">
+				<div class="fields field mb-3">
+					<%= f.fields_for :qualifacts_contacts do |qualifacts_contact_fields| %>
+						<%= render 'contact_list', f: qualifacts_contact_fields %>
+					<% end %>
+				</div>
+				<div class="links mt-2 text-center">
+					<button type="button" class="add_association btn btn-xs btn-primary m-auto">Add New</button>
+				</div>
+			</div>
+		</div>
+	</div>
    <div class="documents">
       <h3>Documents</h3>
       <%= link_to 'Deleted Logs', 'javascript:void(0);', class: 'btn btn-xs m-auto text-black', style: "background-color: #E9E9E9;font-size: 12px;font-weight: 600;", "data-bs-toggle": 'modal', "data-bs-target": '#deletedLogsModal' %>
@@ -370,6 +385,33 @@
         getSelectedProviderTypes(group_id);
       }
       getProviderTypes();
+
+      // qualifacts-contacts
+      $("#qualifacts-contacts").on("click", ".add_association", function() {
+         var qualifactsContactsFields = $("#qualifacts-contacts .field .contact_list_container");
+         var qualifactsContact = qualifactsContactsFields.last().clone();
+         var newId = new Date().getTime();
+         qualifactsContact.html(qualifactsContact.html().replace(/qualifacts_contacts_attributes\]\[\d+\]/g, "qualifacts_contacts_attributes][" + newId + "]"));
+         $("#qualifacts-contacts .fields").append(qualifactsContact);
+
+         $(qualifactsContact).find("input").each(function() {
+            $(this).val("")
+         });
+
+         qualifactsContact.find('.remove-dynamic-fields').attr('data-id', newId);
+         qualifactsContact.attr('data-id', newId);
+         $("#qualifacts-contacts .fields").append(qualifactsContact);
+      });
+      $("#qualifacts-contacts").on("click", ".remove-dynamic-fields", function() {
+         var field = document.getElementsByClassName("contact_list_container");
+         qualifactsContactsField = $(this).attr("data-id");
+         var qualifactsContactsFields = $('.contact_list_container[data-id='+qualifactsContactsField+']');
+         if(field.length > 1) {
+            var id = $(this).data('id');
+            var model = $(this).data('model');
+            deleteDynamicAttr(id,model,$(this));
+         }
+      });
   })
 
   function getSelectedProviderTypes(group_id) {
