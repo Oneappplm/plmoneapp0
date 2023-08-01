@@ -156,6 +156,14 @@
             }
          });
 
+         // find button with remove-dynamic-fields class
+         newEnrollmentdetails.find('button.remove-dynamic-fields').each(function(){
+            if($(this).css('display') !== 'none'){
+               var parentQuestionFields = $(this).closest('.question-field');
+               parentQuestionFields.remove();
+            }
+         });
+
          newEnrollmentdetails.find('button.btn-toggle').each(function(){
             $(this).attr('data-tochange', $(this).data('tochange').replace(/\d+/, newId));
             $(this).attr('data-toshow', $(this).data('toshow').replace(/\d+/, newId));
@@ -177,12 +185,9 @@
          });
 
 
+
+
          setTimeout(function(){
-            //$.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
-               //VirtualSelect.init({ele: '#' + enrollment_payer_id, search: true }); // initialze virtual select first
-              // document.querySelector('#' + enrollment_payer_id).setOptions(data['result']); // other alternative for initializing collection data
-               //document.querySelector('#' + enrollment_payer_id).setValue(value); // other alternative for setting the value
-           // });
              $.get('<%= states_multi_select_data_path %>', function(data){
                VirtualSelect.init({ele: '#' + payer_state_id, search: true });
                document.querySelector('#' + payer_state_id).setOptions(data['result']);
@@ -191,33 +196,8 @@
          }, 500);
 
          $("#details .fields").append(newEnrollmentdetails);
+
       });
-
-      // $('.btn-toggle').on('click',function(e){
-      //    if($(this).hasClass('to-change-value')) {
-      //       var to_change = $(this).data('tochange');
-      //       $(this).hasClass('active') ? $('input[name="'+to_change+'"]').val('yes') : $('input[name="'+to_change+'"]').val('no');
-      //    }
-      // });
-
-
-      // $(document).on('change', '.multi-enrollment-status', function () {
-      //    var status = $(this).val();
-      //    if (status == 'approved') {
-
-      //       showHideDetailFields($(this), '.application-submitted-field', 'hide')
-      //       showHideDetailFields($(this), '.revalidation-fields', 'show')
-      //    } else if (status == 'application-submitted') {
-
-      //       showHideDetailFields($(this), '.revalidation-fields', 'hide')
-      //       showHideDetailFields($(this), '.application-submitted-field', 'show')
-      //    } else {
-      //       showHideDetailFields($(this), '.revalidation-fields', 'hide')
-      //       showHideDetailFields($(this), '.application-submitted-field', 'hide')
-      //    }
-      // })
-
-
 
       $(document).on('change', '.select-show', function () {
          var revalidated = $(this).val();
@@ -280,6 +260,53 @@ function getEnrollmentPayers() {
 }
 </script>
 
+<script>
+
+$(document).ready(function () {
+  // Hide the delete button for the first element on page load
+  // find all .questions and find all .remove-dynamic-fields and hide first
+   $('.questions').each(function(){
+      $(this).find('.remove-dynamic-fields').first().hide();
+   });
+});
+
+ // Function to add new nested fields
+ function addQuestions(btn){
+
+   var parentQuestions =  $(btn).closest('.questions');
+   var parentQuestionFields = $(btn).closest('.question-fields').first();
+   var questionField = $(parentQuestionFields).find('.question-field').last().clone();
+   var newIndex = $(parentQuestions).find('.question-field').length;
+
+   questionField.find('input[type="text"][name*="[questions_attributes]"]').each(function () {
+      var name = $(this).attr('name').replace(/\[questions_attributes\]\[\d+\]/g, '[questions_attributes][' + newIndex + ']');
+      var id = $(this).attr('id').replace(/\[questions_attributes\]\[\d+\]/g, '[questions_attributes][' + newIndex + ']');
+
+      $(this).attr('name', name);
+      $(this).attr('id', id);
+      $(this).val(''); // Clear input values for the new fields
+   });
+
+
+   questionField.find('.remove-dynamic-fields').show();
+
+   // console.log(questionField)
+   parentQuestionFields.append(questionField);
+   // parentQuestions.append(parentQuestionFields);
+ }
+
+ // Function to remove a nested field
+ function deleteQuestions(btn){
+   var parentQuestions =  $(btn).closest('.questions');
+   var parentQuestionFields = $(btn).closest('.question-fields .question-field');
+   // find closest checkbox _destroy and toggle it
+   var checkbox = $(parentQuestionFields).find('input[type="checkbox"][name*="[questions_attributes]"]');
+   checkbox.prop('checked', !checkbox.prop('checked'));
+   $(parentQuestionFields).fadeOut();
+
+ }
+
+</script>
 <style>
   .multi-select {
     padding: 0;

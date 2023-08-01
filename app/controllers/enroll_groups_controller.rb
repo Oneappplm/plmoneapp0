@@ -113,7 +113,7 @@ class EnrollGroupsController < ApplicationController
 						:application_status, :payor_type, :medicare_tricare, :payor_name,
 						:payor_phone, :payor_submission_type, :payor_email, :payor_link, :payor_username, :password,
 						:payor_question, :payor_answer, :portal_admin, :enrollment_link, :portal_username, :portal_password,  :portal_admin_email, :portal_admin_name, :caqh_payer, :eft, :era, :client_notes, :notes, :upload_payor_file, :_destroy,
-						questions_attributes: [:id, :secret_question, :answer]
+						questions_attributes: [:id, :secret_question, :answer, :_destroy]
 					],
 	)
 	end
