@@ -81,9 +81,9 @@ class DcosController < ApplicationController
 
   def set_dcos
     @dcos = if params[:dco_search].present?
-      @enrollment_group.dcos.search(params[:dco_search]).paginate(per_page: 10, page: params[:page] || 1)
+      @enrollment_group.dcos.search(params[:dco_search]).order("dco_name ASC").paginate(per_page: 10, page: params[:page] || 1)
     else
-      @enrollment_group.dcos.paginate(per_page: 10, page: params[:page] || 1)
+      @enrollment_group.dcos.order("dco_name ASC").paginate(per_page: 10, page: params[:page] || 1)
     end
   end
 end

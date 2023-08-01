@@ -26,15 +26,27 @@
               <p class="mb-2"><strong>Panel Status to New Patients:</strong> <%= @dco&.panel_status_to_new_patients %></p>
               <p class="mb-2"><strong>Panel Age Limits:</strong> <%= @dco&.panel_age_limit %></p>
               <p class="mb-2"><strong>Include in Directory?</strong> <%= @dco&.include_in_directory %></p>
-              <h5 class="font-bold mb-0 text-dark-grey fw-semibold text-center py-1">Old Address</h5>
-              <p class="mb-2"><strong>Address:</strong> <%= @dco&.old_address %></p>
-              <p class="mb-2"><strong>City:</strong> <%= @dco&.old_city %></p>
-              <p class="mb-2"><strong>State:</strong> <%= @dco&.old_state %></p>
-              <p class="mb-2"><strong>County:</strong> <%= @dco&.old_county %></p>
-              <p class="mb-2"><strong>Zip Code:</strong> <%= @dco&.old_zipcode %></p>
             </div>
         </div>
       </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card rounded shadow-lg p-1 px-3 mb-3">
+        <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Old Address', collapse_name: 'old_address' }%>
+        <div class="collapsible" style="<%= current_user&.is_card_open?('old_address') ? '' : 'display: none;' %>">
+        <% @dco.old_location_addresses.each_with_index do |old_location, indx| %>
+          <div class="mb-2 <%= "border-bottom-dash" if indx < @dco.old_location_addresses.length - 1 %>">
+            <p class="mb-2"><strong>Address:</strong> <%= old_location&.old_address %></p>
+            <p class="mb-2"><strong>City:</strong> <%= old_location&.old_city %></p>
+            <p class="mb-2"><strong>State:</strong> <%= old_location&.old_state %></p>
+            <p class="mb-2"><strong>County:</strong> <%= old_location&.old_county %></p>
+            <p class="mb-2"><strong>Zip Code:</strong> <%= old_location.old_zipcode %></p>
+          </div>
+        <% end %>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="row">
       <div class="col-lg-12">
@@ -53,24 +65,6 @@
           </div>
         </div>
       </div>
-  </div>
-  <div class="row">
-    <div class="col-lg-12">
-      <div class="card rounded shadow-lg p-1 px-3 mb-3">
-        <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Service Contact List', collapse_name: 'dco_outreach' }%>
-        <div class="collapsible" style="<%= current_user&.is_card_open?('dco_outreach') ? '' : 'display: none;' %>">
-        <% @dco.provider_outreach_info.each do |dco| %>
-        <div class="mb-4">
-          <p class="mb-2"><strong>Name:</strong> <%= dco&.name %></p>
-          <p class="mb-2"><strong>Email:</strong> <%= dco&.email %> </p>
-          <p class="mb-2"><strong>Phone Number:</strong> <%= dco&.phone %></p>
-          <p class="mb-2"><strong>Fax Number:</strong> <%= dco&.fax %></p>
-          <p class="mb-2"><strong>Role:</strong> <%= dco&.position %></p>
-        </div>
-        <% end %>
-        </div>
-      </div>
-    </div>
   </div>
   <div class="row">
     <div class="col-lg-12">
@@ -103,8 +97,8 @@
         <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Collaborating/Supervising', collapse_name: 'dco_collab_fields' }%>
         <div class="collapsible" style="<%= current_user&.is_card_open?('dco_collab_fields') ? '' : 'display: none;' %>">
           <div class="text-left mt-3">
-            <p class="mb-2"><strong>Name</strong> <%= @dco&.collab_name %></p>
-            <p class="mb-2"><strong>NPI</strong> <%= @dco&.collab_npi %></p>
+            <p class="mb-2"><strong>Name: </strong> <%= @dco&.collab_name %></p>
+            <p class="mb-2"><strong>NPI: </strong> <%= @dco&.collab_npi %></p>
           </div>
         </div>
       </div>
