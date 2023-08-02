@@ -3,7 +3,6 @@ class EnrollGroupsDetail < ApplicationRecord
   # has_secure_password
   before_create :hash_password
 
-
   has_many :questions, class_name: 'EnrollGroupsDetailsQuestion', dependent: :destroy
   accepts_nested_attributes_for :questions, allow_destroy: true
 
@@ -24,7 +23,6 @@ class EnrollGroupsDetail < ApplicationRecord
   scope :meridian, -> {where(enrollment_payer: 'meridian')}
   scope :priority_health, -> {where(enrollment_payer: 'priority_health')}
   scope :medicaid, -> {where(enrollment_payer: 'medicaid')}
-  
 
   private
 
