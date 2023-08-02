@@ -41,6 +41,9 @@ class ProvidersController < ApplicationController
           end
         end
      end
+
+     ProvidersMissingFieldSubmissionNotification.with(submitted_fields: @submitted_fields, provider_full_name: @provider.fullname, provider_id: @provider.id).deliver(User.agents) if submission
+
     redirect_to enrollment_client_path(@provider, mode: 'notifications'), notice: 'Provider was successfully updated.'
   end
 
@@ -48,6 +51,13 @@ class ProvidersController < ApplicationController
     if @provider.update(provider_params)
 			@provider.update updated_by: current_user&.full_name
 			if params[:from_notifications].present?
+        submission = @provider.create_missing_field_submission
+        if submission
+          params[:provider].each do |key,value|
+            submission.create_missing_field_submission_data(key,key, 'upload') if !key.include?('_attributes') && key != 'id'
+          end
+          ProvidersMissingFieldSubmissionNotification.with(submitted_fields: @submitted_fields, provider_full_name: @provider.fullname, provider_id: @provider.id).deliver(User.agents)
+        end
         redirect_to enrollment_client_path(@provider, mode: 'notifications'), notice: 'Provider was successfully updated.'
       else
         redirect_to providers_path, notice: 'Provider was successfully updated.'

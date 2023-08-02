@@ -69,6 +69,7 @@ Rails.application.routes.draw do
   post 'get-provider-specialties', to: 'ajax#get_provider_specialties'
   post 'update-timeline', to: 'ajax#update_timeline'
   get 'get-states-with-id', to: 'ajax#get_states_with_id'
+  post 'mark-notification-read', to: 'ajax#mark_notification_read'
 
   resources :provider_sources do
     collection do
@@ -77,6 +78,8 @@ Rails.application.routes.draw do
       post :get_progress
     end
   end
+
+  resources :notifications, only: [:index]
 
   resources :missing_field_submissions
 

@@ -19,11 +19,33 @@ class ProvidersMissingFieldSubmissionsData < ApplicationRecord
     return ''
   end
 
+  def get_document_title(key)
+    required_documents.each do |title_list|
+     return title_list[0] if title_list.include?(key)
+    end
+    return ''
+  end
+
   def get_attribute_title(key)
     required_state_licenses_field_titles.each do |title_list|
      return title_list[0] if title_list.include?(key)
     end
     return ''
+  end
+
+  def required_documents
+    [
+     ['State License Copy', 'state_license_copy_file'],
+     ['DEA Copy', 'dea_copy_file'],
+     ['W9 Form', 'w9_form_file' ],
+     ['Certificate of Insurance', 'certificate_insurance_file'],
+     ['Drivers License', 'drivers_license_file' ],
+     ['License Registered State', 'board_certification_file' ],
+     ['CAQH App Copy', 'caqh_app_copy_file' ],
+     ['Curriculum Vitae (CV)', 'cv_file' ],
+     ['Telehealth License Copy', 'telehealth_license_copy_file'],
+     ['Copy of Certificate', 'school_certificate']
+   ]
   end
 
   # needed on notification page http://localhost:3000/enrollment-clients/:id?mode=notifications

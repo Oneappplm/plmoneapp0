@@ -283,6 +283,12 @@ class AjaxController < ApplicationController
     head :ok
   end
 
+  def mark_notification_read
+    notification = Notification.find(params[:notification_id])
+    notification.mark_as_read!
+    head :ok
+  end
+
   protected
 
   def group_dco_notes_params

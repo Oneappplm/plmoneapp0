@@ -13,6 +13,8 @@
           <div class="form-group mb-2">
             <% title = if field.data_attribute.nil?
               field.get_title(field.data_key)
+            elsif field.data_attribute == 'upload'
+              field.get_document_title(field.data_key)
             else
               field.get_attribute_title(field.data_key)
             end
@@ -25,7 +27,18 @@
             end
             %>
             <label><%= title %></label>
-            <input type="" name="" disabled value="<%= value %>" class="form-control">
+            <% if field.data_attribute == 'upload'%>
+            <a href="<%= @provider&.send(field.data_key)&.url  rescue 'javascript:void(0);' %>" target="_blank" class="text-dark-grey">
+            <div class="card p-2">
+              <div class="d-flex justify-content-between">
+                <%= title %>
+                <i class="bi bi-eye"></i>
+              </div>
+              </div>
+            </a>
+            <% else %>
+              <input type="" name="" disabled value="<%= value %>" class="form-control">
+            <% end %>
           </div>
         <% end %>
       <% end %>

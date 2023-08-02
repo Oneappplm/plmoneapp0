@@ -1,5 +1,6 @@
-class ProvidersMissingFieldSubmission < ApplicationRecord
+  class ProvidersMissingFieldSubmission < ApplicationRecord
   belongs_to :provider
+  # has_noticed_notifications
 
   scope :pending, -> { where(status: 'pending') }
 

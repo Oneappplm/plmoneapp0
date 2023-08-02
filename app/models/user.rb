@@ -48,10 +48,13 @@ class User < ApplicationRecord
   scope :from_enrollment, -> { where(from_source: 'enrollment')}
   scope :not_admin, -> { where.not(user_role: ['super_administrator', 'administrator']) }
   scope :admins, -> { where(user_role: 'administrator') }
+  scope :agents, -> { where(user_role: 'agent') }
+
   # Ex:- scope :active, -> {where(:active => true)}
 
   has_many :sidebar_preferences, class_name: "UserSidebarPreference"
   has_many :roles, class_name: "RoleBasedAccess", foreign_key: "role", primary_key: "user_role"
+  has_many :notifications, as: :recipient
 
   class << self
     def set_user_sidebar_preferences
