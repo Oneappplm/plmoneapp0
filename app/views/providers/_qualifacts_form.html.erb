@@ -156,7 +156,10 @@
             <% else %>
             <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: form_control_classes(danger: @provider.school_certificate.blank? && @provider.persisted?), title: 'Copy of Certificate'%>
             <% end %>
+
+            <% if !@provider.pending_submitted_documents.include?('school_certificate')%>
             <%= HtmlUtils.generate_view_link file_url: @provider.school_certificate.url %>
+            <% end %>
           </div>
         </div>
       </div>
@@ -549,47 +552,48 @@
       <div class="col-lg-6 mb-3">
         <label>State License Copy</label>
         <%= f.file_field :state_license_copy_file, placeholder: 'State License Copy', class: 'form-control border border-dark' %>
-        <%= render partial: 'document', locals: { key: 'state_license_copy_file', slug: 'state-license-copy' } %>
+        <!-- Added if here to not show document if there is a pending submission for this file and for other as well -->
+        <%= render partial: 'document', locals: { key: 'state_license_copy_file', slug: 'state-license-copy' } if !@provider.pending_submitted_documents.include?('state_license_copy_file') %>
       </div>
       <div class="col-lg-6 mb-3">
         <label>DEA Copy</label>
         <%= f.file_field :dea_copy_file, placeholder: 'DEA Copy', class: 'form-control border border-dark' %>
-        <%= render partial: 'document', locals: { key: 'dea_copy_file', slug: 'dea-copy' } %>
+        <%= render partial: 'document', locals: { key: 'dea_copy_file', slug: 'dea-copy' } if !@provider.pending_submitted_documents.include?('dea_copy_file') %>
       </div>
       <div class="col-lg-6 mb-3">
         <label>W9 Form, <a href="https://www.irs.gov/pub/irs-pdf/fw9.pdf" target="_blank">download template here</a></label>
         <%= f.file_field :w9_form_file, placeholder: 'W9 Form', class: 'form-control border border-dark' %>
-        <%= render partial: 'document', locals: { key: 'w9_form_file', slug: 'w9-form' } %>
+        <%= render partial: 'document', locals: { key: 'w9_form_file', slug: 'w9-form' } if !@provider.pending_submitted_documents.include?('w9_form_file') %>
       </div>
       <div class="col-lg-6 mb-3">
         <label>Certificate of Insurance</label>
         <%= f.file_field :certificate_insurance_file, placeholder: 'Certificate of Insurance', class: 'form-control border border-dark' %>
-        <%= render partial: 'document', locals: { key: 'certificate_insurance_file', slug: 'certificate-insurance' } %>
+        <%= render partial: 'document', locals: { key: 'certificate_insurance_file', slug: 'certificate-insurance' } if !@provider.pending_submitted_documents.include?('certificate_insurance_file') %>
       </div>
       <div class="col-lg-6 mb-3">
         <label>Drivers License</label>
         <%= f.file_field :drivers_license_file, placeholder: 'Drivers License', class: 'form-control border border-dark' %>
-        <%= render partial: 'document', locals: { key: 'drivers_license_file', slug: 'drivers-license' } %>
+        <%= render partial: 'document', locals: { key: 'drivers_license_file', slug: 'drivers-license' } if !@provider.pending_submitted_documents.include?('drivers_license_file') %>
       </div>
       <div class="col-lg-6">
         <label>Board Certification</label>
         <%= f.file_field :board_certification_file, placeholder: 'Board Certification', class: 'form-control border border-dark' %>
-        <%= render partial: 'document', locals: { key: 'board_certification_file', slug: 'board-certification' } %>
+        <%= render partial: 'document', locals: { key: 'board_certification_file', slug: 'board-certification' } if !@provider.pending_submitted_documents.include?('board_certification_file') %>
       </div>
       <div class="col-lg-6 mb-3">
         <label>CAQH App Copy</label>
           <%= f.file_field :caqh_app_copy_file, placeholder: 'CAQH App Copy', class: 'form-control border border-dark' %>
-          <%= render partial: 'document', locals: { key: 'caqh_app_copy_file', slug: 'caqh-app-copy' } %>
+          <%= render partial: 'document', locals: { key: 'caqh_app_copy_file', slug: 'caqh-app-copy' } if !@provider.pending_submitted_documents.include?('caqh_app_copy_file')%>
       </div>
       <div class="col-lg-6 mb-3">
         <label>Curriculum Vitae (CV)</label>
         <%= f.file_field :cv_file, placeholder: 'Curriculum Vitae (CV)', class: 'form-control border border-dark' %>
-        <%= render partial: 'document', locals: { key: 'cv_file', slug: 'curriculum-vitae' } %>
+        <%= render partial: 'document', locals: { key: 'cv_file', slug: 'curriculum-vitae' } if !@provider.pending_submitted_documents.include?('cv_file') %>
       </div>
         <div class="col-lg-6 mb-3">
         <label>Telehealth License Copy</label>
           <%= f.file_field :telehealth_license_copy_file, placeholder: 'Telehealth License Copy', class: 'form-control border border-dark' %>
-          <%= render partial: 'document', locals: { key: 'telehealth_license_copy_file', slug: 'telehealth-license-copy' } %>
+          <%= render partial: 'document', locals: { key: 'telehealth_license_copy_file', slug: 'telehealth-license-copy' } if !@provider.pending_submitted_documents.include?('telehealth_license_copy_file') %>
       </div>
     </div>
     <div class="row">

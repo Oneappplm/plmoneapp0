@@ -248,7 +248,7 @@
                     <div class="text-left text-dark-grey d-flex flex-column">
                     <% docs.each do |doc|%>
                     <label class="text-dark-grey mb-2">
-                      <% if  @provider.doc_submitted(doc[1])%>
+                      <% if  @provider.doc_submitted(doc[1]) && !@provider.pending_submitted_documents.include?(doc[1])%>
                         <input type="checkbox" name="" checked>
                       <% else %>
                         <input type="checkbox" name="">
@@ -372,11 +372,11 @@ $(document).ready(function() {
   }
 
   $('.missing-fields-submitted-btn').on('click',function(){
-    CompleteMissingFields($(this).data('submission'));
+    CompleteMissingFields($(this).data('submission'),$(this));
   });
 
 
-  function CompleteMissingFields(submission_id) {
+  function CompleteMissingFields(submission_id,btn) {
     $.ajax({
       url: '/missing_field_submissions/'+submission_id,
       method: 'PUT',
@@ -384,11 +384,11 @@ $(document).ready(function() {
       success: function(data) {
         var status = data['status']
         if(status == 'done') {
-          $('.submission-msg').removeClass('d-none');
+          btn.parent().find('.submission-msg').removeClass('d-none');
           setTimeout(function(){
-            $('.submission-msg').addClass('d-none');
+            btn.parent().find('.submission-msg').addClass('d-none');
           },3000)
-          $('.missing-fields-submitted-btn').remove();
+          btn.remove();
         }
       }
 

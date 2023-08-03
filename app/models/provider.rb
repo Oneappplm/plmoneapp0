@@ -304,4 +304,10 @@ class Provider < ApplicationRecord
   rescue
     ''
   end
+
+  def pending_submitted_documents
+    self.missing_field_submissions.pending.map{|m| m.data.where(data_attribute: 'upload').pluck(:data_key)}.reject(&:empty?).flatten
+  rescue
+    []
+  end
 end
