@@ -15,6 +15,18 @@
     </div>
   <% end %>
     <div class="row mb-3">
+    <div class="col-lg-6">
+        <label class="text-dark-grey">Status</label>
+        <%= f.select :status, options_for_select(provider_statuses, @provider.status), {prompt: 'Select Option'}, {class: 'form-select provider-status border border-dark'}  %>
+    </div>
+     <div class="col-lg-6">
+    <div class="row mb-3 status-inactive-field <%= f.object.status == 'inactive' ? '' : 'd-none'%>">
+            <label class="text-dark-grey">Work End Date</label>
+            <%= f.text_field :end_date, placeholder: 'Type here...', onfocus: "(this.type = 'date')", class: 'form-control border border-dark' %>
+    </div>
+    </div>
+    </div>
+    <div class="row mb-3">
       <div class="col-lg-4">
         <label class="text-dark-grey">First Name <span class="text-red">*</span></label>
         <%= f.text_field :first_name, class: form_control_classes(danger: @provider.first_name.blank? && @provider.persisted?), placeholder: 'Type here...', required: true %>
@@ -47,21 +59,16 @@
       </div>
       </div>
     <div class="row mb-3">
-      <div class="col-lg-4">
+      <div class="col-lg-6">
         <label class="text-dark-grey">Birth City <span class="text-red">*</span></label>
         <%= f.text_field :birth_city, class: form_control_classes(danger: @provider.birth_city.blank? && @provider.persisted?), placeholder: 'Type here...', required: true %>
       </div>
-      <div class="col-lg-4">
+      <div class="col-lg-6">
         <label class="text-dark-grey">Birth State <span class="text-red">*</span></label>
         <%#= f.select :birth_state, options_for_select(states.map{|m| ["#{m.name} - #{m.alpha_code}", m.id]}, @provider.birth_state), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}
          <div class="search-select state-search-select form-control border border-dark" name="provider[birth_state]" id="birth_state">  %>
         <div class="<%= search_select_classes({ danger: @provider.birth_state.blank? && @provider.persisted? }) %>" name="provider[birth_state]" id="birth_state">
       </div>
-      </div>
-      <!-- new field -->
-      <div class="col-lg-4">
-        <label class="text-dark-grey">Status</label>
-        <%= f.select :status, options_for_select(provider_statuses, @provider.status), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
       </div>
     </div>
 
@@ -126,35 +133,28 @@
         <div class="row mb-3">
           <div class="col-lg-6">
             <!-- new field -->
-          <label class="text-dark-grey">Medical School Name</label>
+          <label class="text-dark-grey">School Name</label>
             <%= f.text_field :medical_school_name,  placeholder: 'Type here...',class: 'form-control border border-dark'%>
           </div>
           <div class="col-lg-6">
             <!-- new field -->
-          <label class="text-dark-grey">Medical School Address</label>
-            <%= f.text_field :medical_school_address,  placeholder: 'Type here...', class: 'form-control border border-dark'%>
+            <label class="text-dark-grey">Do you have a medical license?(optional) </label>
+            <%= f.select :medical_license, options_for_select(yes_or_no_options, @provider.medical_license), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
           </div>
         </div>
         <div class="row mb-2">
           <div class="col-lg-6">
-            <label class="text-dark-grey">Graduation Date</label>
+            <label class="text-dark-grey">Graduation Date(optional)</label>
             <%= f.text_field :graduation_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
           </div>
           <div class="col-lg-6">
             <!-- new field -->
-            <label class="text-dark-grey">Do you have a medical license? </label>
-            <%= f.select :medical_license, options_for_select(yes_or_no_options, @provider.medical_license), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
-          </div>
-        </div>
-        <div class="row mt-0 mb-3">
-          <div class="col-lg-6">
-            <!-- new field -->
-            <label class="text-dark-grey">Copy of Certificate <span class="text-red">*</span></label>
+            <label class="text-dark-grey">Copy of Certificate(optional)</label>
             <!-- Had to add condition here since on edit it still requires an upload even though I already uploaded a file before. -->
             <% if @provider.school_certificate.url.nil? %>
-            <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: form_control_classes(danger: @provider.school_certificate.blank? && @provider.persisted?), title: 'Copy of Certificate', required: true %>
+            <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: 'form-control border border-dark', title: 'Copy of Certificate', required: true %>
             <% else %>
-            <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: form_control_classes(danger: @provider.school_certificate.blank? && @provider.persisted?), title: 'Copy of Certificate'%>
+            <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: 'form-control border border-dark', title: 'Copy of Certificate'%>
             <% end %>
 
             <% if !@provider.pending_submitted_documents.include?('school_certificate')%>
@@ -309,7 +309,7 @@
     </div>
      <div class="row mb-5 mt-2">
       <div class="col-lg-12 mt-3">
-        <h3>RN License</h3>
+        <h3>Registered Nurse License</h3>
       </div>
       <div id="rn_licenses">
           <div class="fields">
@@ -321,7 +321,7 @@
     </div>
     <div class="row mb-5 mt-2">
       <div class="col-lg-12 mt-3">
-        <h3>CNP License</h3>
+        <h3>Certified Nurse Practitioner License</h3>
       </div>
       <div id="cnp_licenses">
           <div class="fields">
@@ -335,26 +335,25 @@
      <div class="row mb-2">
 		<div class="col-lg-6">
       <label class="text-dark-grey">State License Number <span class="text-red">*</span></label>
-			<%= f.text_field :license_state_number, placeholder: 'Type here...', class: form_control_classes(danger: @provider.license_state_number.blank? && @provider.persisted?), required: true %>
+			<%= f.text_field :license_state_number, placeholder: 'Type here...', class: form_control_classes(danger: @provider.license_number.blank? && @provider.persisted?), required: true %>
 		</div>
 		<div class="col-lg-6">
       <label class="text-dark-grey">License Effective Date <span class="text-red">*</span></label>
-			<%= f.text_field :license_state_effective_date, placeholder: 'MM-DD-YYYY', class: form_control_classes(danger: @provider.license_state_effective_date.blank? && @provider.persisted?), onfocus: "(this.type = 'date')", required: true %>
+			<%= f.text_field :license_state_effective_date, placeholder: 'MM-DD-YYYY', class: form_control_classes(danger: @provider.license_effective_date.blank? && @provider.persisted?), onfocus: "(this.type = 'date')", required: true %>
 		</div>
     <div class="col-lg-6">
       <label class="text-dark-grey">License Registration State <span class="text-red">*</span></label>
-      <div class="<%= search_select_classes({ danger: @provider.license_state_id.blank? && @provider.persisted? }) %>" name="provider[license_state_id]" id="license_state_id">
-      </div>
-    </div>  
+      <%= f.select :license_state_id, options_for_select([]), { prompt: 'State' }, {:class => 'form-select border border-dark state-select single-select',  data: { value: f.object.state_id } }  %>
+    </div>
 		<div class="col-lg-6">
       <label class="text-dark-grey">License Expiration Date <span class="text-red">*</span></label>
-			<%= f.text_field :license_state_expiration_date, placeholder: 'MM-DD-YYYY', class: form_control_classes(danger: @provider.license_state_expiration_date.blank? && @provider.persisted?), onfocus: "(this.type = 'date')", required: true %>
+			<%= f.text_field :license_state_expiration_date, placeholder: 'MM-DD-YYYY', class: form_control_classes(danger: @provider.license_expiration_date.blank? && @provider.persisted?), onfocus: "(this.type = 'date')", required: true %>
 		</div>
     </div>  
 
     <div class="row mb-3 mt-2">
       <div class="col-lg-12 mt-3">
-        <h3>PA License</h3>
+        <h3>Physician Assistant</h3>
       </div>
       <div id="pa_licenses">
          <div class="fields">
@@ -367,7 +366,7 @@
 
     <div class="row mb-3 mt-2">
       <div class="col-lg-12 mt-3">
-        <h3>NP License</h3>
+        <h3>Nurse Practitioner</h3>
       </div>
       <div id="np_licenses">
           <div class="fields">
@@ -505,19 +504,6 @@
       </div>
     </div>
     <hr>
-
-    <div class="row mb-3">
-      <div class="col-lg-6">
-          <!-- new field -->
-          <label class="text-dark-grey">Are you employed by other groups or facilities?</label>
-          <%= f.select :employed_by_other, options_for_select([['Yes','yes'],['No','no']], @provider.employed_by_other), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
-      </div>
-      <div class="col-lg-6">
-        <!-- new field -->
-        <label class="text-dark-grey">Have you gone recently through revalidation with any payor?</label>
-      <%= f.select :revalidation, options_for_select([['Yes','yes'],['No','no']], @provider.revalidation), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
-      </div>
-    </div>
     <div class="row mb-5">
       <div class="col-lg-6">
         <!-- new field -->
@@ -747,6 +733,23 @@
              });
           }, 1000);
         });
+
+
+        $(document).on('change', '.provider-status', function () {
+         var status = $(this).val();
+         if (status == 'inactive') {
+            showHideDetailFields($(this), '.status-inactive-field', 'show')
+         } else {
+            showHideDetailFields($(this), '.status-inactive-field', 'hide')
+         }
+      })
+
+        function showHideDetailFields(dropDown, divClass, mode) {
+          if (mode == 'show')
+              dropDown.parent().parent().parent().find(divClass).removeClass('d-none');
+          else
+              dropDown.parent().parent().parent().find(divClass).addClass('d-none');
+        }
 
 
 

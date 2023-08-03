@@ -175,6 +175,7 @@ end
 					:board_certified,
 					:medical_license,
 					:status,
+					:end_date,
 					:payer_login,
 					:license_state_number,
 					:license_state_effective_date,
