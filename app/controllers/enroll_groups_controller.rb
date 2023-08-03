@@ -13,13 +13,11 @@ class EnrollGroupsController < ApplicationController
 	end
 
 	def edit
-    # had to add this condition to prvent details fields from duplicating
-				# render json: @enroll_group.details.map{|d| d if d.id.blank?} and return
-    if @enroll_group.details.blank?
+   if @enroll_group.details.blank?
      details = @enroll_group.details.build
      details.questions.build
    end
-  end
+ end
 
 	def create
 		@enroll_group = EnrollGroup.new(enroll_group_params)
