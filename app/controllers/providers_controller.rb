@@ -1,6 +1,7 @@
 class ProvidersController < ApplicationController
 	before_action :set_provider, only: [:show, :edit, :update, :destroy, :update_from_notifications]
-	def index
+	before_action :set_overview_details, only: [:overview]
+  def index
 			@providers = if params[:user_search].present?
 						Provider.search(params[:user_search]).paginate(per_page: 10, page: params[:page] || 1)
 				else
@@ -137,6 +138,11 @@ end
     @provider.ins_policies.build if @provider.ins_policies.blank?
     payer_login = @provider.payer_logins.build if @provider.payer_logins.blank?
     payer_login.questions.build if payer_login
+  end
+
+  def set_overview_details
+    @providers_with_missing_details ||= Provider.with_missing_required_fields.count
+    @providers_with_missing_documents ||= Provider.with_missing_required_docs.count
   end
 
 	def provider_params

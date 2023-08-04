@@ -1,0 +1,74 @@
+<div class="row mb-2 g-2">
+  <div class="col-lg-4">
+    <div class="card p-2 rounded-15 pale-green ps-3 pb-0" style="min-height: 112px;">
+      <h5 class="text-black text-left">All Providers</h5>
+      <div class="w-100 d-flex d-flex align-items-end">
+         <h1 style="font-size: 40px;" class="text-black mt-2">
+            <%= Provider.count %>
+        </h1>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card p-2 rounded-15 pale-green ps-3 pb-0" style="min-height: 112px;">
+      <h5 class="text-black text-left">All Groups</h5>
+      <div class="w-100 d-flex d-flex align-items-end">
+         <h1 style="font-size: 40px;" class="text-black mt-2">
+             <%= EnrollmentGroup.count %>
+        </h1>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card p-2 rounded-15 pale-green ps-3 pb-0 position-relative" style="min-height: 112px;">
+      <select class="dco-select position-absolute bg-transparent fw-semibold text-right pe-1" style="right: 1%;text-align: right;">
+        <option value="all">All</option>
+        <% enrollment_group_options.each do |group|%>
+          <option value="<%= group[1]%>"><%= group[0]%></option>
+        <% end %>
+      </select>
+      <h5 class="text-black text-left">Group's DCO</h5>
+      <div class="w-100 d-flex d-flex align-items-end">
+         <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
+            <%= GroupDco.count %>
+        </h1>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row mb-3 g-2">
+  <div class="col-lg-4">
+    <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
+      <h5 class="text-black text-left" id="enrollment_card_header">Pending Provider Enrollments</h5>
+      <div class="w-100 d-flex d-flex align-items-end">
+         <h1 style="font-size: 40px;" class="text-black mt-2" >
+            <%= EnrollmentProvider.pending.count %>
+        </h1>
+      </div>
+      <div class="position-absolute pending-dot-nav d-flex gap-2">
+        <a href="javascript:void(0);" class="circle d-block pending-dot-nav-active" data-model="pending-provider"></a>
+        <a href="javascript:void(0);" class="circle d-block pending-dot-nav-inactive" data-model="pending-client"></a>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card p-2 rounded-15 pale-green ps-3 pb-0" style="min-height: 112px;">
+      <h5 class="text-black text-left">Completed Enrollments</h5>
+      <div class="w-100 d-flex d-flex align-items-end">
+         <h1 style="font-size: 40px;" class="text-black mt-2">
+           <%= EnrollmentProvider.completed.count %>
+        </h1>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card p-2 rounded-15 pale-green ps-3 pb-0" style="min-height: 112px;">
+      <h5 class="text-black text-left">Scheduled for Callbacks</h5>
+      <div class="w-100 d-flex d-flex align-items-end">
+         <h1 style="font-size: 40px;" class="text-black mt-2">
+            <%= EnrollmentProvider.callback.count %>
+        </h1>
+      </div>
+    </div>
+  </div>
+</div>

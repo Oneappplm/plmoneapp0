@@ -41,6 +41,7 @@
       <% if client %>
       <h3 class="text-primary">Location</h3>
           <% client.dcos.each do |dco|%>
+          <% if doc&.id == @provider&.dco&.to_i%>
               <div class="row mb-1">
                  <div class="col-lg-6">
                     <label>Primary Location Name</label>
@@ -121,8 +122,7 @@
                     <p class="text-black fw-semibold"><%= dco&.telehealth_video_conferencing_technology rescue nil %></p>
                  </div>
               </div>
-              <%= '<hr>'.html_safe if client&.dcos && client&.dcos&.count > 1  rescue nil %>
-
+              <% end %>
           <% end %>
         <% end %>
     </div>

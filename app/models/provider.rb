@@ -5,11 +5,16 @@ class Provider < ApplicationRecord
                           'first_name', 'last_name', 'birth_date',
                           'birth_city', 'birth_state', 'address_line_1',
                           'ssn','city','state_id','zip_code','practitioner_type',
-                          'taxonomy','specialty', 'enrollment_group_id',
+                          'taxonomy','specialty', 'enrollment_group_id'
+                        ]
+  REQUIRED_DOCUMENTS = [
                           'state_license_copy_file', 'dea_copy_file', 'w9_form_file',
                           'certificate_insurance_file', 'drivers_license_file', 'board_certification_file',
-                          'caqh_app_copy_file', 'telehealth_license_copy_file', 'school_certificate'
-                        ]
+                          'caqh_app_copy_file', 'telehealth_license_copy_file', 'school_certificate', 'cv_file'
+                       ]
+
+  ALL_REQUIRED_FIELDS = REQUIRED_ATTRIBUTES + REQUIRED_DOCUMENTS
+
   REQUIRED_LICENSE_ATTRIBUTES = ['license_number', 'license_effective_date', 'license_expiration_date', 'state_id']
 
 	pg_search_scope :search,
@@ -83,11 +88,15 @@ class Provider < ApplicationRecord
   scope :male, -> { where(gender: 'Male') }
   scope :female, -> { where(gender: 'Female') }
   scope :non_binary, -> { where(gender: 'Non Binary') }
+  scope :active, -> { where(status: 'active') }
+  scope :inactive, -> { where(status: 'inactive') }
+
+
 
    def self.with_missing_required_attributes
     joins("LEFT JOIN provider_licenses ON providers.id = provider_licenses.provider_id")
       .where(
-        REQUIRED_ATTRIBUTES.map { |attr| "providers.#{attr} IS NULL" }.join(' OR ')
+        ALL_REQUIRED_FIELDS.map { |attr| "providers.#{attr} IS NULL" }.join(' OR ')
       )
   end
   # had to separate this since if I combine them in the query above it's not giving proper results
@@ -126,6 +135,16 @@ class Provider < ApplicationRecord
         ssn: params[:ssn],
         dco: params[:provider_dco]
       }
+    end
+
+    def with_missing_required_fields
+      query_conditions = REQUIRED_ATTRIBUTES.map { |field| "#{field} IS NULL" }.join(' OR ')
+      Provider.where(query_conditions)
+    end
+
+    def with_missing_required_docs
+      query_conditions = REQUIRED_DOCUMENTS.map { |field| "#{field} IS NULL" }.join(' OR ')
+      Provider.where(query_conditions)
     end
   end
 
