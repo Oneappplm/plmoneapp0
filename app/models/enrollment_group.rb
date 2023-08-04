@@ -21,6 +21,8 @@ class EnrollmentGroup < ApplicationRecord
 
   # validates_presence_of :group_name, :group_code, :office_address, :city, :state, :zip_code
 
+  default_scope { order(:group_name) }
+
   def dco_count_display
     "#{dcos.size} clients"
   end

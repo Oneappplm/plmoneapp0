@@ -9,6 +9,17 @@
       <div class="w-100 collapsible" id="provider_info">
          <div class="row mb-1">
             <div class="col-lg-6">
+               <label>Status</label>
+               <p class="text-black fw-semibold"><%= @provider.status %></p>
+            </div>
+            <div class="col-lg-6">
+               <label>Work End Date</label>
+               <p class="text-black fw-semibold"><%= @provider&.end_date&.to_date&.strftime('%B %d, %Y') rescue nil %></p>
+            </div>
+         </div>
+
+         <div class="row mb-1">
+            <div class="col-lg-6">
                <label>Name</label>
                <p class="text-black fw-semibold"><%= @provider.fullname %></p>
             </div>
@@ -41,10 +52,6 @@
             <div class="col-lg-6">
                <label>Birth State</label>
                <p class="text-black fw-semibold"><%= @provider&.selected_birth_state&.name %></p>
-            </div>
-            <div class="col-lg-6">
-               <label>Status</label>
-               <p class="text-black fw-semibold"><%= @provider.status %></p>
             </div>
          </div>
          <div class="row mb-1">
@@ -88,9 +95,14 @@
             </div>
          </div>
          <div class="row mb-1">
-            <div class="col-lg-6">
+<!--             <div class="col-lg-6">
                <label>Medical School Address</label>
-               <p class="text-black fw-semibold"><%= @provider.medical_school_address %></p>
+               <p class="text-black fw-semibold"><%#= @provider.medical_school_address %></p>
+            </div> -->
+
+            <div class="col-lg-6">
+               <label>Do you have a medical license?</label>
+               <p class="text-black fw-semibold"><%= @provider.medical_license&.upcase %></p>
             </div>
             <div class="col-lg-6">
                <label>Graduation Date</label>
@@ -98,9 +110,10 @@
             </div>
          </div>
          <div class="row mb-1">
+
             <div class="col-lg-6">
-               <label>Do you have a medical license?</label>
-               <p class="text-black fw-semibold"><%= @provider.medical_license&.upcase %></p>
+               <label>Taxonomy Code</label>
+               <p class="text-black fw-semibold"><%= @provider.taxonomy %></p>
             </div>
             <div class="col-lg-6">
                <label>Practitioner Type</label>
@@ -108,9 +121,12 @@
             </div>
          </div>
          <div class="row mb-1">
+
             <div class="col-lg-6">
-               <label>Taxonomy Code</label>
-               <p class="text-black fw-semibold"><%= @provider.taxonomy %></p>
+               <label>Provider Type Effective Date</label>
+               <p class="text-black fw-semibold">
+                 <%= @provider&.provider_effective_date&.strftime('%B %d, %Y') %>
+               </p>
             </div>
             <div class="col-lg-6">
                <label>Specialty</label>
@@ -119,21 +135,19 @@
          </div>
          <div class="row mb-1">
             <div class="col-lg-6">
-               <label>Provider Type Effective Date</label>
-               <p class="text-black fw-semibold">
-                 <%= @provider&.provider_effective_date&.strftime('%B %d, %Y') %>
-               </p>
+               <label>Hire date of provider seeing patients</label>
+               <p class="text-black fw-semibold"><%= @provider.provider_hire_date_seeing_patient&.strftime('%B %d, %Y') %></p>
             </div>
             <div class="col-lg-6">
                <label>Board Certified</label>
                <p class="text-black fw-semibold"><%= @provider.board_certified ? 'YES' : 'NO' %></p>
             </div>
          </div>
-         <div class="row mb-1">
+         <div class="row mb-1"><!-- 
             <div class="col-lg-6">
-               <label>Hire date of provider seeing patients</label>
-               <p class="text-black fw-semibold"><%= @provider.provider_hire_date_seeing_patient&.strftime('%B %d, %Y') %></p>
-            </div>
+               <label>Are you employed by other groups or facilities?</label>
+               <p class="text-black fw-semibold"><%#= @provider.employed_by_other&.upcase %></p>
+            </div> -->
             <div class="col-lg-6">
                <label>Effective date of provider seeing patients</label>
                <p class="text-black fw-semibold"><%= @provider.effective_date_seeing_patient&.strftime('%B %d, %Y') %></p>
@@ -141,20 +155,24 @@
          </div>
          <div class="row mb-1">
             <div class="col-lg-6">
-               <label>Are you employed by other groups or facilities?</label>
-               <p class="text-black fw-semibold"><%= @provider.employed_by_other&.upcase %></p>
-            </div>
-            <div class="col-lg-6">
-               <label>Have you gone recently through revalidation with any payer?</label>
-               <p class="text-black fw-semibold"><%= @provider.revalidation&.upcase %></p>
-            </div>
-         </div>
-         <div class="row mb-1">
-            <div class="col-lg-6">
                <label>Does the provider require to work under a supervising licensed psychologist?</label>
                <p class="text-black fw-semibold"><%= @provider.supervised_by_psychologist&.upcase %></p>
             </div>
+<!--             <div class="col-lg-6">
+               <label>Have you gone recently through revalidation with any payer?</label>
+               <p class="text-black fw-semibold"><%#= @provider.revalidation&.upcase %></p>
+            </div> -->
          </div>
+        <div class="row mb-1">
+          <div class="col-lg-6">
+              <label>SSN</label>
+              <p class="text-black fw-semibold"><%= @provider&.ssn %></p>
+          </div>
+          <div class="col-lg-6">
+              <label>NPI</label>
+              <p class="text-black fw-semibold"><%= @provider&.npi %></p>
+          </div>
+        </div>
          <h3 class="text-primary">Primary Service Location</h3>
          <% @provider.service_locations.each do |service_location|%>
          <div class="row mb-1">

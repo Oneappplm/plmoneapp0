@@ -65,7 +65,9 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def set_providers
-    @providers = Provider.search_by_params(params).paginate(per_page: 50, page: params[:page] || 1)
+    @providers = Provider.joins(:group).order('enrollment_groups.group_name, providers.id')
+    @providers = @providers.search_by_params(params).paginate(per_page: 50, page: params[:page] || 1)
+    # @providers = Provider.search_by_params(params).paginate(per_page: 50, page: params[:page] || 1)
   end
 
   def set_incomplete_providers
