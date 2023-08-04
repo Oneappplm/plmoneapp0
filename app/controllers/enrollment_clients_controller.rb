@@ -1,7 +1,7 @@
 class EnrollmentClientsController < ApplicationController
-  before_action :set_providers, only: [:index, :download_documents, :show, :reports, :notifications]
+  before_action :set_providers, only: [:index, :download_documents, :show, :reports, :notifications, :dashboard]
   before_action :set_provider, only: [:show]
-  before_action :set_incomplete_providers, only: [:show, :index, :reports, :notifications]
+  before_action :set_incomplete_providers, only: [:show, :index, :reports, :notifications, :dashboard]
   def index; end
 
   def show
@@ -53,6 +53,11 @@ class EnrollmentClientsController < ApplicationController
     end
   end
 
+  def dashboard
+    @providers_with_missing_details ||= Provider.with_missing_required_fields.count
+    @providers_with_missing_documents ||= Provider.with_missing_required_docs.count
+  end
+
   protected
 
   def set_provider
@@ -66,4 +71,5 @@ class EnrollmentClientsController < ApplicationController
   def set_incomplete_providers
     @incomplete_providers ||= Provider.search_by_params(params).with_missing_required_attributes.paginate(per_page: 50, page: params[:page] || 1)
   end
+
 end

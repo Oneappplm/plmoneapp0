@@ -158,6 +158,7 @@ Rails.application.routes.draw do
       get :download_documents
       get :reports
       get :notifications
+      get :dashboard
     end
   end
 
