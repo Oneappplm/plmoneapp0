@@ -110,7 +110,7 @@ class EnrollGroupsController < ApplicationController
 						:id, :payer_state, :group_number, :enrollment_payer, :payer, :effective_date, :revalidation_date,
 						:application_status, :payor_type, :medicare_tricare, :payor_name,
 						:payor_phone, :payor_submission_type, :payor_email, :payor_link, :payor_username, :password,
-						:payor_question, :payor_answer, :portal_admin, :enrollment_link, :portal_username, :portal_password,  :portal_admin_email, :portal_admin_name, :caqh_payer, :eft, :era, :client_notes, :notes, :upload_payor_file, :_destroy,
+						:payor_question, :payor_answer, :portal_admin, :enrollment_link, :portal_username, :portal_password,  :portal_admin_email, :portal_admin_name, :caqh_payer, :eft, :era, :client_notes, :notes, :_destroy, {upload_payor_file: []},
 						questions_attributes: [:id, :secret_question, :answer, :_destroy]
 					],
 	)

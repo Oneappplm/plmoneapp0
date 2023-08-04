@@ -6,7 +6,7 @@ class EnrollGroupsDetail < ApplicationRecord
   has_many :questions, class_name: 'EnrollGroupsDetailsQuestion', dependent: :destroy
   accepts_nested_attributes_for :questions, allow_destroy: true
 
-  mount_uploader :upload_payor_file, DocumentUploader
+  mount_uploaders :upload_payor_file, DocumentUploader
 
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
   scope :submitted, -> { where(enrollment_status: 'application-submitted') }

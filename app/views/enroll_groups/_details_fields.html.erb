@@ -168,8 +168,11 @@
   <div class="row mb-3">
     <div class="col-lg-12">
       <label >Upload</label>
-      <%= f.file_field :upload_payor_file, class: 'form-control' %>
-      <%= HtmlUtils.generate_view_link file_url: f.object.upload_payor_file.url %>
+      <%= f.file_field :upload_payor_file, class: 'form-control', multiple: true %>
+      <% f.object.upload_payor_file.each do |file| %>
+        <%= f.hidden_field :upload_payor_file, multiple: true, value: file.identifier %>
+        <%= HtmlUtils.generate_view_link file_url: file.url %>
+      <% end %>
     </div>
   </div>
 
