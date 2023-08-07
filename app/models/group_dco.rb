@@ -6,6 +6,8 @@ class GroupDco < ApplicationRecord
             tsearch: {any_word: true}
           }
 
+  default_scope { order(:dco_name)}
+
 	belongs_to :enrollment_group
   has_many :schedules, class_name: 'GroupDcoSchedule', dependent: :destroy
   has_many :provider_outreach_info, class_name: 'GroupDcoProviderOutreachInformation', dependent: :destroy
