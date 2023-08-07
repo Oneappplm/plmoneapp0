@@ -944,12 +944,15 @@ $('#enroll_group_group_id').on('change',function() {
 })
 $('#provider_enrollment_group_id').on('change',function(){
         var id = $(this).val();
+        var get_names = '';
+        get_names = $(this).data('fetchname');
+
         var url = '/enrollments/groups/'+id+'/get_dcos';
         if(id != '') {
           $.ajax({
             url: url,
             type: 'POST',
-            data: { authenticity_token: csrfToken },
+            data: { authenticity_token: csrfToken, get_name: get_names },
             success: function(data) {
               var practice_locations = data['practice_locations'];
               if(practice_locations.length != 0) {
