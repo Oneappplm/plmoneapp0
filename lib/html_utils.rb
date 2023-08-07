@@ -124,10 +124,14 @@ module HtmlUtils
    options[:file_url] ||= nil
    options[:link_class] ||= 'btn btn-outline-primary btn-sm py-1 mt-2 fw-semibold'
    options[:link_title] ||= 'View Uploaded file'
+   options[:remove_icon] ||= false
 
    html = if options[:file_url].present?
       <<-HTML
-        <a href="#{ options[:file_url] }" target="_blank" class="#{ options[:link_class] }">#{ options[:link_title] }</a>
+        <a href="#{ options[:file_url] }" target="_blank" class="#{ options[:link_class] }">
+          #{ options[:link_title] }
+          #{ if options[:remove_icon] then '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" onclick="removeFile(this, event)" stroke="currentColor" style="height: 15px; color: red; margin-left: 4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>' end }
+        </a>
       HTML
    else
       <<-HTML

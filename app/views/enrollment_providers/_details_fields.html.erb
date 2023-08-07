@@ -105,13 +105,17 @@
   </div>
 
   <div class="row mb-3">
-    <div class="col-lg-12">
+    <div class="col-lg-12 ">
       <label >Upload</label>
       <%= f.file_field :upload_payor_file, class: 'form-control', multiple: true %>
-      <% f.object.upload_payor_file.each do |file| %>
-        <%= f.hidden_field :upload_payor_file, multiple: true, value: file.identifier %>
-        <%= HtmlUtils.generate_view_link file_url: file.url, link_title: file.identifier %>
-      <% end %>
+      <div class="d-flex gap-2">
+        <% f.object.upload_payor_file.each do |file| %>
+        <div class="upload-payor-file">
+          <%= f.hidden_field :upload_payor_file, multiple: true, value: file.identifier %>
+          <%= HtmlUtils.generate_view_link file_url: file.url, link_title: file.identifier, remove_icon: true %>
+        </div>
+        <% end %>
+      </div>
     </div>
   </div>
 
