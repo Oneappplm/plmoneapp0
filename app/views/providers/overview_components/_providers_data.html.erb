@@ -3,7 +3,7 @@
     <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
       <h5 class="text-black text-left">All Providers</h5>
       <div class="w-100 d-flex d-flex align-items-end">
-         <h1 style="font-size: 40px;" class="text-black mt-2">
+         <h1 style="font-size: 40px;" class="text-black mt-2" id="provider_count_container">
             <%= Provider.count %>
         </h1>
       </div>
@@ -11,6 +11,12 @@
   </div>
   <div class="col-lg-3">
     <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
+      <select class="enrollment-group-select position-absolute bg-transparent fw-semibold text-right pe-1" style="right: 1%;text-align: right;">
+        <option value="all">All</option>
+        <% enrollment_group_options.each do |group|%>
+          <option value="<%= group[1]%>"><%= group[0]%></option>
+        <% end %>
+      </select>
       <h5 class="text-black text-left">All Groups</h5>
       <div class="w-100 d-flex d-flex align-items-end">
          <h1 style="font-size: 40px;" class="text-black mt-2">
@@ -21,12 +27,9 @@
   </div>
   <div class="col-lg-3">
     <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
-      <select class="dco-select position-absolute bg-transparent fw-semibold text-right pe-1" style="right: 1%;text-align: right;">
-        <option value="all">All</option>
-        <% enrollment_group_options.each do |group|%>
-          <option value="<%= group[1]%>"><%= group[0]%></option>
-        <% end %>
-      </select>
+      <div id="dco_select_container">
+        <%= render "providers/overview_components/group_dco_dropdown"%>
+      </div>
       <h5 class="text-black text-left">Group's Location</h5>
       <div class="w-100 d-flex d-flex align-items-end">
          <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
@@ -38,7 +41,6 @@
 
   <div class="col-lg-3">
     <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
-     
       <h5 class="text-black text-left">Providers with Missing Documents</h5>
       <div class="w-100 d-flex d-flex align-items-end">
          <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
@@ -81,7 +83,7 @@
       </div>
     </div>
   </div>
-  
+
   <div class="col-lg-3">
     <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
       <h5 class="text-black text-left">Processing</h5>
@@ -127,7 +129,7 @@
       </div>
     </div>
   </div>
-  
+
   <div class="col-lg-3">
     <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
       <h5 class="text-black text-left">Not Eligible</h5>

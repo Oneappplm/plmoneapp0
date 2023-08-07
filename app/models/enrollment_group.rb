@@ -10,6 +10,7 @@ class EnrollmentGroup < ApplicationRecord
 
   has_many :details, class_name: 'EnrollmentGroupsDetail'
   has_many :dcos, class_name: 'GroupDco', dependent: :destroy
+  has_many :providers, class_name: 'Provider', dependent: :destroy
   has_many :contact_personnels, class_name: 'EnrollmentGroupsContactDetail'
   has_many :qualifacts_contacts, class_name: 'GroupContact', dependent: :destroy
   has_one :enroll_group, class_name: 'EnrollGroup', foreign_key: "group_id", dependent: :destroy
