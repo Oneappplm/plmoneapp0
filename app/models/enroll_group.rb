@@ -1,5 +1,7 @@
 class EnrollGroup < ApplicationRecord
 	include PgSearch::Model
+  include RemovePayorFiles
+
 	pg_search_scope :search,
           against: self.column_names,
           using: {

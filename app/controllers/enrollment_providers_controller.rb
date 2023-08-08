@@ -34,7 +34,11 @@ class EnrollmentProvidersController < ApplicationController
 	end
 
 	def update
-		if @enrollment_provider.update(enrollment_provider_params)
+
+		@enrollment_provider.assign_attributes(enrollment_provider_params)
+		@enrollment_provider.remove_upload_payor_files! # remove upload payor files if not present, for handling all files deletion
+
+		if @enrollment_provider.save(validate: false)
 			@enrollment_provider.update_columns(
 				provider_id: params[:provider_id],
 				outreach_type:	params[:outreach_type]

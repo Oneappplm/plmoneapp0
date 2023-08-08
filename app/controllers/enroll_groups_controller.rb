@@ -34,6 +34,7 @@ class EnrollGroupsController < ApplicationController
 
 	def update
 		@enroll_group.assign_attributes(enroll_group_params)
+		@enroll_group.remove_upload_payor_files! # remove upload payor files if not present, for handling all files deletion
 
 		if @enroll_group.save(validate: false)
 			@enroll_group.update_columns(payer: params[:payer])
