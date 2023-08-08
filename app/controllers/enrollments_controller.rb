@@ -73,6 +73,7 @@ class EnrollmentsController < ApplicationController
 	end
 
 	def edit_group
+		@view_only = params[:view_only] ||	false
 		@enrollment_group = EnrollmentGroup.find params[:id]
 
 		if @enrollment_group.contact_personnels.blank?
