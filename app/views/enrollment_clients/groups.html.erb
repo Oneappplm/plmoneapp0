@@ -1,0 +1,49 @@
+<div class="content container-fluid">
+	<%= render "enrollment_clients_nav"%>
+<div class="row">
+	<% if @enrollment_groups.size != 0 %>
+	<table class="table table table-striped table-bordered table-responsive">
+		<thead>
+					<tr>
+									<th scope="col" class="bg-primary text-white" width="10%">
+										<div class="form-check">
+											<div class="align-items-center">
+												<input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
+											</div>
+										</div>
+									</th>
+									<th scope="col" class="bg-primary text-white">Group</th>
+									<th scope="col" class="bg-primary text-white">Taxonomy Code</th>
+									<th scope="col" class="bg-primary text-white">State</th>
+									<th scope="col" class="bg-primary text-white">Number of Location</th>
+					</tr>
+	</thead>
+	<tbody>
+		<% @enrollment_groups.each do |enrollment_group| %>
+			<tr>
+				<td>
+					<div class="form-check">
+						<div class="align-items-center">
+							<input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
+						</div>
+					</div>
+				</td>
+				<td>
+					<%= link_to enrollment_group.group_name, view_group_enrollment_clients_path(group_id: enrollment_group.id) %>
+				</td>
+				<td>
+					<%= enrollment_group.group_code %>
+				</td>
+				<td>
+					<%= enrollment_group.state %>
+				</td>
+				<td>
+					<%= enrollment_group.dco_count_display %>
+				</td>
+			</tr>
+		<% end %>
+	</tbody>
+	</table>
+	<% end %>
+</div>
+</div>

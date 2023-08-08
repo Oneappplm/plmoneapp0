@@ -58,6 +58,28 @@ class EnrollmentClientsController < ApplicationController
     @providers_with_missing_documents ||= Provider.with_missing_required_docs.count
   end
 
+  def groups
+    @enrollment_groups = EnrollmentGroup.all
+  end
+
+  def view_group
+    @states = State.all
+    @view_only = true
+		@enrollment_group = EnrollmentGroup.find params[:group_id]
+
+		if @enrollment_group.contact_personnels.blank?
+			@enrollment_group.contact_personnels.build
+		end
+
+		if @enrollment_group.details.blank?
+			@enrollment_group.details.build
+		end
+
+		@enrollment_group.qualifacts_contacts.build if current_setting.qualifacts? && !@enrollment_group.qualifacts_contacts.present?
+
+		render 'enrollments/new_group'
+  end
+
   protected
 
   def set_provider

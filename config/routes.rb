@@ -159,6 +159,8 @@ Rails.application.routes.draw do
       get :reports
       get :notifications
       get :dashboard
+      get :groups
+      get :view_group
     end
   end
 
