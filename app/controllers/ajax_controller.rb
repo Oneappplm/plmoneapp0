@@ -40,6 +40,14 @@ class AjaxController < ApplicationController
     render json: { html: render_to_string(partial: 'dcos/qualifacts/group_dco_note', locals: { group_dco_note: @group_dco_note }).html_safe }
   end
 
+  def create_roles
+    @role = Role.create(roles_params)
+    render json: {
+      'name' => @role.name,
+      'slug' => @role.slug
+    }
+  end
+
   def create_enrollment_comment
     @comment = EnrollmentComment.create(comment_params)
     render json: { html: render_to_string(partial: 'comments/comment', locals: { comment: @comment }).html_safe }
@@ -115,6 +123,13 @@ class AjaxController < ApplicationController
     # render json: provider_types and return
     render json: {
       'provider_types' => provider_types
+    }
+  end
+
+  def get_enrollment_groups
+    enrollment_groups = EnrollmentGroup.all.map { |m| { label: m.group_name, value: m.id} }
+    render json: {
+      'enrollment_groups' => enrollment_groups
     }
   end
 
@@ -300,7 +315,11 @@ class AjaxController < ApplicationController
       :title, :description, :group_dco_id
     )
   end
-
+  def roles_params
+    params.require(:data).permit(
+      :name
+    )
+  end
   def comment_params
     params.require(:data).permit(
       :enrollment_provider_id, :enroll_group_id,

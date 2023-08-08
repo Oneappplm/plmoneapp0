@@ -1,7 +1,8 @@
 class UsersController < ApplicationController
-  	# layout "application", only: %i[new edit show all_users organization_users]
- before_action :get_states, only: %i[edit create new show all_users organization_profile ]
+	# layout "application", only: %i[new edit show all_users organization_users]
+	before_action :get_states, only: %i[edit create new show all_users organization_profile]
 	before_action :set_user, only: %i[edit update show]
+	before_action :set_groups, only: %i[edit create new show all_users organization_profile index update]
 
 	def index
 		@user = User.new
@@ -14,15 +15,17 @@ class UsersController < ApplicationController
 	end
 
 	def create
-
-		@user = User.new(user_params)
-		@user.temporary_password = user_params[:password]
-		@user.temporary_password_confirmation = user_params[:password_confirmation]
-
+		enrollment_group_ids = user_params.delete(:enrollment_group_ids)&.split(",")
+		updated_params = user_params.except(:enrollment_group_ids)
+		if enrollment_group_ids.present? && enrollment_group_ids.length > 0
+			users_enrollment_group_attributes = enrollment_group_ids.map { |id| { enrollment_group_id: id, _destroy: false }}
+			updated_params = user_params.merge!({ users_enrollment_groups_attributes: users_enrollment_group_attributes })
+		end
+		@user = User.new(updated_params.except(:enrollment_group_ids))
 		if @user.save
 			redirect_to users_path, notice: 'User has been successfully created.'
 		else
-			render :new
+			render :index
 		end
 	end
 
@@ -31,10 +34,25 @@ class UsersController < ApplicationController
 	end
 
 	def update
-		if @user.update(user_params)
+		enrollment_group_ids = user_params.delete(:enrollment_group_ids)&.split(",").map(&:to_i)
+		updated_params = user_params
+		if enrollment_group_ids.present? && enrollment_group_ids.length > 0
+			# remove unchecked enrollment_groups
+			@user.users_enrollment_groups.where.not(enrollment_group_id: enrollment_group_ids).destroy_all
+			existing_enrollment_group_ids = @user.users_enrollment_groups&.pluck(:enrollment_group_id)
+			add_enrollment_groups_ids = enrollment_group_ids - existing_enrollment_group_ids
+			users_enrollment_group_attributes = add_enrollment_groups_ids.map { |id| { enrollment_group_id: id, _destroy: false }}
+			if users_enrollment_group_attributes.present?
+				updated_params = updated_params.merge!({ users_enrollment_groups_attributes: users_enrollment_group_attributes })
+			end
+		else
+			@user.users_enrollment_groups.destroy_all
+		end
+
+		if @user.update(updated_params.except(:enrollment_group_ids))
 			redirect_to users_path, notice: 'User has been successfully updated.'
 		else
-			render :edit
+			render :index
 		end
 	end
 
@@ -68,16 +86,21 @@ class UsersController < ApplicationController
   	@states = State.all
   end
 
-		def user_params
-			params.require(:user).permit(
-				:first_name, :middle_name, :last_name, :suffix,
-				:email, :password, :password_confirmation,
-				:following_request, :user_type, :status, :user_role,
-				:temporary_password, :temporary_password_confirmation, :title
-			)
-		end
+	def set_groups
+		@enrollment_groups = EnrollmentGroup.all
+	end
 
-		def set_user
-			@user = User.find(params[:id])
-		end
+	def user_params
+		params.require(:user).permit(
+			:first_name, :middle_name, :last_name, :suffix,
+			:enrollment_group_id, :email, :password, :password_confirmation,
+			:following_request, :user_type, :status, :user_role,
+			:temporary_password, :temporary_password_confirmation, :title,
+			:enrollment_group_ids
+		)
+	end
+
+	def set_user
+		@user = User.find(params[:id])
+	end
 end

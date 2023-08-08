@@ -33,7 +33,8 @@ class User < ApplicationRecord
 
   validates :first_name, presence: true,  on: :create
   validates :last_name, presence: true, on: :create
-  validate :password_match
+  # temporarily commented to cater only using temporary password
+  # validate :password_match
 
   with_options :on => :create, if: :from_source_enrollment? do |user|
     # user.validates_presence_of :status
@@ -42,6 +43,7 @@ class User < ApplicationRecord
     # user.validates_confirmation_of :password
   end
 
+  before_validation :set_temporary_password_as_password
   after_create :set_sidebar_preferences
   before_create :generate_api_token
 
@@ -55,6 +57,10 @@ class User < ApplicationRecord
   has_many :sidebar_preferences, class_name: "UserSidebarPreference"
   has_many :roles, class_name: "RoleBasedAccess", foreign_key: "role", primary_key: "user_role"
   has_many :notifications, as: :recipient
+  has_many :users_enrollment_groups
+  has_many :enrollment_groups, through: :users_enrollment_groups
+
+  accepts_nested_attributes_for :users_enrollment_groups, allow_destroy: true, reject_if: :all_blank
 
   class << self
     def set_user_sidebar_preferences
@@ -122,9 +128,10 @@ class User < ApplicationRecord
 
   def role = user_role&.titleize
 
-  def password_match
-    errors.add(:password_confirmation, "must match the password") unless temporary_password == password_confirmation
-  end
+  # temporarily commented to cater only using temporary password
+  # def password_match
+  #   errors.add(:password_confirmation, "must match the password") unless temporary_password == password_confirmation
+  # end
 
   def from_source_enrollment?
     from_source.present? && from_source == 'enrollment'
@@ -154,6 +161,12 @@ class User < ApplicationRecord
     self.api_token = loop do
       random_token = SecureRandom.urlsafe_base64(32)
       break random_token unless User.exists?(api_token: random_token)
+    end
+  end
+
+  def set_temporary_password_as_password
+    if self.temporary_password_changed?
+      self.password = self.temporary_password
     end
   end
 
