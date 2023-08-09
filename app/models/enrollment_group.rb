@@ -27,7 +27,7 @@ class EnrollmentGroup < ApplicationRecord
   default_scope { order(:group_name) }
 
   def dco_count_display
-    "#{dcos.size} clients"
+    "#{dcos.size} Location(s)"
   end
 
   def selected_provider_types

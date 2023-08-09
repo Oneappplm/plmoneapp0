@@ -1,54 +1,53 @@
 <div class="content container-fluid">
-	<%= render "enrollment_clients_nav"%>
-<div class="row">
-	<% if @enrollment_groups.size != 0 %>
-	<table class="table table table-striped table-bordered table-responsive">
-		<thead>
-					<tr>
-									<th scope="col" class="bg-primary text-white" width="10%">
-										<div class="form-check">
-											<div class="align-items-center">
-												<input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
-											</div>
-										</div>
-									</th>
-                  <th scope="col" class="bg-primary text-white">Flatform</th>
-									<th scope="col" class="bg-primary text-white">Group</th>
-									<th scope="col" class="bg-primary text-white">Taxonomy Code</th>
-									<th scope="col" class="bg-primary text-white">State</th>
-									<th scope="col" class="bg-primary text-white">Number of Location</th>
-                  <th scope="col" class="bg-primary text-white">Number of Providers</th>
-
-					</tr>
-	</thead>
-	<tbody>
-		<% @enrollment_groups.each do |enrollment_group| %>
-			<tr>
-				<td>
-					<div class="form-check">
-						<div class="align-items-center">
-							<input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
-						</div>
-					</div>
-				</td>
-        <td><%= link_to "#{enrollment_group.blank? ? '' : enrollment_group&.flatform}", enrollment_group_path(enrollment_group), class: 'text-dark-grey' rescue nil %></td>
-				<td>
-					<%= link_to enrollment_group.group_name, enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
-				</td>
-				<td>
-					<%= link_to enrollment_group.group_code, enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
-				</td>
-				<td>
-					<%= link_to "#{enrollment_group.state.blank? ? '' : enrollment_group.state}", enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
-				</td>
-				<td>
-					<%= link_to enrollment_group.dco_count_display,enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
-				</td>
-        <td><%= link_to "#{enrollment_group&.providers&.count} Provider(s)", enrollment_group_path(enrollment_group), class: 'text-dark-grey' rescue "0 Provider(s)" %></td>
-			</tr>
-		<% end %>
-	</tbody>
-	</table>
-	<% end %>
-</div>
+  <%= render "enrollment_clients_nav"%>
+  <div class="row">
+    <% if @enrollment_groups.size != 0 %>
+    <table class="table table table-striped table-bordered table-responsive">
+      <thead>
+        <tr>
+          <th scope="col" class="bg-primary text-white">
+            <div class="form-check">
+              <div class="align-items-center">
+                <input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
+              </div>
+            </div>
+          </th>
+          <th scope="col" class="bg-primary text-white">Platform</th>
+          <th scope="col" class="bg-primary text-white">Group</th>
+          <th scope="col" class="bg-primary text-white">Taxonomy Code</th>
+          <th scope="col" class="bg-primary text-white">State</th>
+          <th scope="col" class="bg-primary text-white">Number of Location</th>
+          <th scope="col" class="bg-primary text-white">Number of Providers</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @enrollment_groups.each do |enrollment_group| %>
+          <tr>
+            <td>
+              <div class="form-check">
+                <div class="align-items-center">
+                  <input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
+                </div>
+              </div>
+            </td>
+            <td><%= flatforms.detect{|flatform| flatform.last == enrollment_group&.flatform }.first rescue nil %></td>
+            <td>
+              <%= link_to enrollment_group.group_name, enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
+            </td>
+            <td>
+              <%= link_to enrollment_group.group_code, enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
+            </td>
+            <td>
+              <%= link_to "#{enrollment_group.state.blank? ? '' : enrollment_group.state}", enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
+            </td>
+            <td>
+              <%= link_to enrollment_group.dco_count_display,enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
+            </td>
+            <td><%= link_to "#{enrollment_group&.providers&.count} Provider(s)", enrollment_group_path(enrollment_group), class: 'text-dark-grey' rescue "0 Provider(s)" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+      </table>
+    <% end %>
+  </div>
 </div>
