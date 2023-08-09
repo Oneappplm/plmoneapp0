@@ -425,6 +425,14 @@ module ApplicationHelper
 		]
 	end
 
+	def flatforms
+		[
+			[' Credible','credible'],
+			['CareLogic','carelogic'],
+			['Insync','insync']
+		]
+	end
+
 	def medicare_tricare_parties
 		[
 			['Yes-Medicare','yes-medicare'],
