@@ -81,6 +81,11 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :enrollment_groups, path: 'enrollment-groups' do
+    get :documents
+    get :locations
+  end
+
   resources :notifications, only: [:index]
 
   resources :missing_field_submissions

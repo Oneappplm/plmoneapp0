@@ -15,7 +15,8 @@ class RoleBasedAccess < ApplicationRecord
 		:manage_practitioners,
 		:work_ticklers,
     :enrollment_clients,
-    :notifications
+    :notifications,
+    :enrollment_groups
 	]
 	CRUD = [:create, :read, :update, :delete]
 

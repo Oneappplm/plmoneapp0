@@ -1,0 +1,16 @@
+<div class="content container-fluid">
+  <%= render "nav"%>
+  <% @enrollment_group.upload_documents.each do |doc|%>
+   <% if !@enrollment_group.send(doc[0]).url.blank? %>
+     <div class="row mb-3">
+       <div class="col-lg-12 card p-3">
+          <a href="<%= @enrollment_group.send(doc[0]).url %>" target="_blank">
+          <div class="w-100 d-flex justify-content-between">
+             <h3 class="text-primary m-0"><%= doc[1]%></h3>
+          </div>
+          </a>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>

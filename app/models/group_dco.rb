@@ -28,4 +28,8 @@ class GroupDco < ApplicationRecord
   def number_of_provider_outreach_info
     errors.add(:base, "Should have at least one service contact") if provider_outreach_info.length == 0 && Setting.take.qualifacts?
   end
+
+  def providers
+    Provider.where(dco: self.id)
+  end
 end

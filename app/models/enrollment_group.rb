@@ -33,4 +33,16 @@ class EnrollmentGroup < ApplicationRecord
   def selected_provider_types
      self.provider_type ? self.provider_type.split(',') : nil
   end
+
+  def upload_documents
+    [ ['ownership_file', 'Multiple Ownership'],
+      ['w9_file', 'W9 Form'],
+      ['cp575_file', 'CP575 or Proof of TIN'],
+      ['payer_contracts', 'Qualifacts Documents'],
+      ['group_type_documents', 'Other Group Documents'],
+      ['voided_check_file', 'Voided Check'],
+      ['specific_type_file', 'Articles of Incorporation'],
+      ['eft_file', 'Liability Insurance']
+    ]
+  end
 end
