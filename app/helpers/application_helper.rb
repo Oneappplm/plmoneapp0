@@ -411,7 +411,15 @@ module ApplicationHelper
 	end
 
 	def search_select_classes(options = {})
-    classes = ['search-select', 'state-search-select', 'form-control', 'state-select', 'single-select']
+    classes = ['search-select', 'state-search-select', 'form-control']
+    classes << 'border-danger' if options[:danger]
+    classes << 'border-dark' unless options[:danger]
+    classes.join(' ')
+  end
+
+	#had to add this method to avoid conflict on other state dropdown
+	def single_search_classes(options = {})
+    classes = ['state-select', 'single-select', 'form-control']
     classes << 'border-danger' if options[:danger]
     classes << 'border-dark' unless options[:danger]
     classes.join(' ')
