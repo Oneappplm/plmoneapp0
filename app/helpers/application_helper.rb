@@ -453,4 +453,25 @@ module ApplicationHelper
 	def hide_show_card card_name
 		current_user&.is_card_open?(card_name) ? '' : 'display: none;' rescue ''
 	end
+
+	def application_status_count status
+		case status
+		when 'application-submitted'
+			EnrollGroupsDetail.submitted.count + EnrollmentProvidersDetail.submitted.count
+		when 'application-not-submitted'
+			EnrollGroupsDetail.not_submitted.count + EnrollmentProvidersDetail.not_submitted.count
+		when 'processing'
+			EnrollGroupsDetail.processing.count + EnrollmentProvidersDetail.processing.count
+		when 'approved'
+			EnrollGroupsDetail.approved.count + EnrollmentProvidersDetail.approved.count
+		when 'denied'
+			EnrollGroupsDetail.denied.count + EnrollmentProvidersDetail.denied.count
+		when 'terminated'
+			EnrollGroupsDetail.terminated.count + EnrollmentProvidersDetail.terminated.count
+		when 'not_eligible'
+			EnrollGroupsDetail.not_eligible.count + EnrollmentProvidersDetail.not_eligible.count
+		else
+			0
+		end
+	end
 end

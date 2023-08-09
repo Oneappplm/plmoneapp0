@@ -9,13 +9,13 @@ class EnrollGroupsDetail < ApplicationRecord
   mount_uploaders :upload_payor_file, DocumentUploader
 
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
-  scope :submitted, -> { where(enrollment_status: 'application-submitted') }
-  scope :not_submitted, -> { where(enrollment_status: 'application-not-submitted') }
-  scope :processing, -> { where(enrollment_status: 'processing') }
-  scope :approved, -> { where(enrollment_status: 'approved') }
-  scope :denied, -> { where(enrollment_status: 'denied') }
-  scope :terminated, -> { where(enrollment_status: 'terminated') }
-  scope :not_eligible, -> { where(enrollment_status: 'not_eligible') }
+  scope :submitted, -> { where(application_status: 'application-submitted') }
+  scope :not_submitted, -> { where(application_status: 'application-not-submitted') }
+  scope :processing, -> { where(application_status: 'processing') }
+  scope :approved, -> { where(application_status: 'approved') }
+  scope :denied, -> { where(application_status: 'denied') }
+  scope :terminated, -> { where(application_status: 'terminated') }
+  scope :not_eligible, -> { where(application_status: 'not_eligible') }
 
   scope :aetna, -> {where(enrollment_payer: 'aetna')}
   scope :amerihealth, -> {where(enrollment_payer: 'amerihealth')}
