@@ -83,7 +83,7 @@ Rails.application.routes.draw do
 
   resources :enrollment_groups, path: 'enrollment-groups' do
     get :documents
-    get :locations
+    resources :locations
   end
 
   resources :notifications, only: [:index]
