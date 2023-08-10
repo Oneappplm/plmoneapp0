@@ -53,6 +53,7 @@ class Provider < ApplicationRecord
   # made it like this to prepare if needed to be multiple
   has_many :pa_licenses, class_name: 'ProviderPaLicense', dependent: :destroy
   has_many :dea_licenses, class_name: 'ProviderDeaLicense', dependent: :destroy
+  has_many :cds_licenses, class_name: 'ProviderCdsLicense', dependent: :destroy
   has_many :mn_licenses, class_name: 'ProviderMnLicense', dependent: :destroy
   has_many :mccs, class_name: 'ProviderMcc', dependent: :destroy
   has_many :mn_medicaids, class_name: 'ProviderMnMedicaid', dependent: :destroy
@@ -73,6 +74,7 @@ class Provider < ApplicationRecord
   accepts_nested_attributes_for :service_locations, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :pa_licenses, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :dea_licenses, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :cds_licenses, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :mn_licenses, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :mccs, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :mn_medicaids, allow_destroy: true, reject_if: :all_blank
