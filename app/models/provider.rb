@@ -93,6 +93,7 @@ class Provider < ApplicationRecord
   scope :active, -> { where(status: 'active') }
   scope :inactive, -> { where(status: 'inactive') }
 
+  after_create :create_enrollment_provider
 
 
    def self.with_missing_required_attributes
@@ -330,5 +331,11 @@ class Provider < ApplicationRecord
     self.missing_field_submissions.pending.map{|m| m.data.where(data_attribute: 'upload').pluck(:data_key)}.reject(&:empty?).flatten
   rescue
     []
+  end
+
+  def send_welcome_letter
+    return unless self.email_address.present?
+
+    PlmMailer.with(email: self.email_address).welcome_letter.deliver_now
   end
 end
