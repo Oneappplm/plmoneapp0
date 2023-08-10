@@ -93,7 +93,7 @@ class Provider < ApplicationRecord
   scope :active, -> { where(status: 'active') }
   scope :inactive, -> { where(status: 'inactive') }
 
-  after_create :create_enrollment_provider
+  after_create :send_welcome_letter
 
 
    def self.with_missing_required_attributes
