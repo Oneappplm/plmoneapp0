@@ -336,6 +336,6 @@ class Provider < ApplicationRecord
   def send_welcome_letter
     return unless self.email_address.present?
 
-    PlmMailer.with(email: self.email_address, filename: 'welcome-letter-new-provider-v1.docx').welcome_letter.deliver_now
+    PlmMailer.with(email: self.email_address, attachments: ['welcome-letter-new-provider.docx']).welcome_letter.deliver_now
   end
 end
