@@ -2,18 +2,32 @@
 <% @provider.np_licenses.each do |np_license|%>
 <div class="row mb-1">
    <div class="col-lg-6">
-      <label>PA License Number</label>
+      <label>NP License Number</label>
       <p class="text-black fw-semibold"><%= np_license&.np_license_number %></p>
    </div>
    <div class="col-lg-6">
-      <label>PA License Effective Date</label>
+      <label>NP Original License Issue Date</label>
       <p class="text-black fw-semibold"><%= np_license&.np_license_effective_date&.strftime('%B %d, %Y') %></p>
    </div>
 </div>
 <div class="row mb-1">
    <div class="col-lg-6">
-      <label>Pa License Expiration Date</label>
+      <label>NP License State</label>
+      <p class="text-black fw-semibold"><%= np_license&.state&.name %></p>
+   </div>
+   <div class="col-lg-6">
+      <label>NP License Renewal (Current Effective) Date</label>
+      <p class="text-black fw-semibold"><%= np_license&.np_license_renewal_effective_date&.strftime('%B %d, %Y') %></p>
+   </div>
+</div>
+<div class="row mb-1">
+   <div class="col-lg-6">
+      <label>NP License Expiration Date</label>
       <p class="text-black fw-semibold"><%= np_license&.np_license_expiration_date&.strftime('%B %d, %Y') %></p>
+   </div>
+   <div class="col-lg-6">
+      <label>Explain if you do not have NP License Number(required if no NP Number)</label>
+      <p class="text-black fw-semibold"><%= np_license&.no_np_license %></p>
    </div>
 </div>
 <% end %>

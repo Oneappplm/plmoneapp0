@@ -1,0 +1,55 @@
+<div class="row mb-3">
+   <div class="col-lg-12 card p-3">
+      <div class="w-100 d-flex justify-content-between">
+         <h3 class="text-primary"><%= title %></h3>
+         <a href="javascript:void(0);" class="text-black fw-semibold collapsible-trigger" data-collapse="payer_login_card_<%= payer_login.id %>">
+         <i class="bi bi-sort-up rotate-180" style="font-size: 18px;"></i>
+         </a>
+      </div>
+        <div class="w-100 collapsible" id="payer_login_card_<%= payer_login.id %>">
+          <div class="row mb-1">
+            <div class="col-lg-6">
+                <label>Payer</label>
+                <p class="text-black fw-semibold"><%= payer_login&.enrollment_payer %></p>
+            </div>
+            <div class="col-lg-6">
+                <label>State</label>
+                <p class="text-black fw-semibold"><%= payer_login&.state rescue nil %></p>
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-lg-6">
+                <label>Username</label>
+                <p class="text-black fw-semibold"><%= payer_login&.username rescue nil %></p>
+            </div>
+            <div class="col-lg-6">
+                <label>Password</label>
+                <p class="text-black fw-semibold"><%= payer_login&.password rescue nil %></p>
+            </div>
+          </div>
+          <% payer_login&.questions.each_with_index do |question, idx|%>
+          <% count = payer_login.questions.size > 1 ? (idx+1) : ''%>
+          <div class="row mb-1">
+            <div class="col-lg-6">
+                <label>Security Question <%= count %></label>
+                <p class="text-black fw-semibold"><%= question&.question %></p>
+            </div>
+            <div class="col-lg-6">
+                <label>Security Question <%= count %></label>
+                <p class="text-black fw-semibold"><%= question&.answer %></p>
+            </div>
+          </div>
+          <% end %>
+          <div class="row mb-1">
+            <div class="col-lg-6">
+                <label>Notes</label>
+                <p class="text-black fw-semibold"><%= payer_login&.notes rescue nil %></p>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+
+
+

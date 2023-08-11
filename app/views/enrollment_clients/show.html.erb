@@ -2,7 +2,12 @@
    <%= render "enrollment_clients/nav"%>
    <%= render "enrollment_clients/show/provider_info"%>
    <%= render "enrollment_clients/show/caqh_card"%>
+
+   <% @provider.payer_logins.each_with_index do |payer_login, idx|%>
+     <%= render partial: "enrollment_clients/show/payer_login_card", locals: {title: "#{@provider.payer_logins.size > 1 ? ('Payer Login ' + (idx+1).to_s) : 'Payer Login' }", payer_login: payer_login} %>
+   <% end %>
    <%= render "enrollment_clients/show/licenses"%>
+   <%= render "enrollment_clients/show/licenses/liability"%>
    <%= render "enrollment_clients/show/client"%>
 
 </div>

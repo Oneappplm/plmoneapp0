@@ -1,0 +1,43 @@
+<h3 class="text-primary">Controlled Dangerous Substance Registration Number</h3>
+
+<% @provider.cds_licenses.each do |cds|%>
+<div class="row mb-1">
+   <div class="col-lg-6">
+      <label>CDS Registration Number</label>
+      <p class="text-black fw-semibold"><%= cds&.cds_license_number %></p>
+   </div>
+   <div class="col-lg-6">
+      <label>CDS Registration Original License Issue Date</label>
+      <p class="text-black fw-semibold"><%= cds&.cds_license_issue_date&.strftime('%B %d, %Y') %></p>
+   </div>
+</div>
+<div class="row mb-1">
+   <div class="col-lg-6">
+      <label>CDS Registration State</label>
+      <p class="text-black fw-semibold"><%= cds&.state&.name %></p>
+   </div>
+   <div class="col-lg-6">
+      <label>CDS Registration Expiration Date</label>
+      <p class="text-black fw-semibold"><%= cds&.cds_license_expiration_date&.strftime('%B %d, %Y') %></p>
+   </div>
+</div>
+<div class="row mb-1">
+   <div class="col-lg-6">
+      <label>CDS Registration Renewal (Current Effective) Date</label>
+      <p class="text-black fw-semibold"><%= cds&.cds_renewal_effective_date&.strftime('%B %d, %Y') %></p>
+   </div>
+   <div class="col-lg-6">
+      <label>Explain if you do not have CDS Registration Number(required if no CDS Number)</label>
+      <p class="text-black fw-semibold"><%= cds&.no_cds_license%></p>
+   </div>
+</div>
+<% end %>
+
+
+<% if @provider.cds_licenses.blank? %>
+<div class="row mb-1">
+   <div class="col-lg-12">
+      <label>No DEA License record to show</label>
+   </div>
+</div>
+<% end %>

@@ -1,0 +1,39 @@
+<h3 class="text-primary">Advance Practice Registered Nurse License</h3>
+<% @provider.cnp_licenses.each do |cnp|%>
+<div class="row mb-1">
+   <div class="col-lg-6">
+      <label>APRN License Number</label>
+      <p class="text-black fw-semibold"><%= cnp.cnp_license_number%></p>
+   </div>
+   <div class="col-lg-6">
+      <label>APRN Original License Issue Date</label>
+      <p class="text-black fw-semibold"><%= cnp.effective_date&.strftime('%B %d, %Y')%></p>
+   </div>
+   <div class="col-lg-6">
+      <label>APRN License State</label>
+      <p class="text-black fw-semibold">
+        <%= cnp.state&.name rescue nil %>
+      </p>
+   </div>
+   <div class="col-lg-6">
+      <label>APRN License Renewal (Current Effective) Date</label>
+      <p class="text-black fw-semibold"><%= cnp.cnp_license_renewal_effective_date&.strftime('%B %d, %Y')%></p>
+   </div>
+   <div class="col-lg-6">
+      <label>APRN License Expiration Date</label>
+      <p class="text-black fw-semibold"><%= cnp.expiration_date&.strftime('%B %d, %Y')%></p>
+   </div>
+   <div class="col-lg-6">
+      <label>Explain if you do not have APRN License Number(required if no APRN Number)</label>
+      <p class="text-black fw-semibold"><%= cnp.no_cnp_license%></p>
+   </div>
+</div>
+<% end %>
+
+<% if @provider.cnp_licenses.blank? %>
+<div class="row mb-1">
+   <div class="col-lg-12">
+      <label>No ARPN License record to show</label>
+   </div>
+</div>
+<% end %>
