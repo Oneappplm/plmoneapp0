@@ -127,26 +127,61 @@
 
     <div class="row-mb-5">
       <div class="col-lg-12 mb-2">
-        <h3 class="mt-5 mb-2">Medical School/Education</h3>
+        <h3 class="mt-5 mb-2">Professional/Medical School</h3>
       </div>
       <div class="col-lg-12">
         <div class="row mb-3">
-          <div class="col-lg-6">
+          <div class="col-lg-6 mb-3">
             <!-- new field -->
-          <label class="text-dark-grey">School Name</label>
+          <label class="text-dark-grey">Name of U.S./Canadian School</label>
             <%= f.text_field :medical_school_name,  placeholder: 'Type here...',class: 'form-control border border-dark'%>
           </div>
-          <div class="col-lg-6">
+          <div class="col-lg-6 mb-3">
             <!-- new field -->
-            <label class="text-dark-grey">Do you have a medical license? </label>
+          <label class="text-dark-grey">Address</label>
+            <%= f.text_field :prof_medical_school_address, placeholder: 'Type here...',class: 'form-control border border-dark'%>
+          </div>
+          <div class="col-lg-6 mb-3">
+            <!-- new field -->
+          <label class="text-dark-grey">City</label>
+            <%= f.text_field :prof_medical_school_city, placeholder: 'Type here...',class: 'form-control border border-dark'%>
+          </div>
+          <div class="col-lg-6 mb-3">
+            <!-- new field -->
+          <label class="text-dark-grey">State</label>
+             <div class="search-select state-search-select form-control border border-dark" name="provider[prof_medical_school_state_id]" id="prof_medical_school_state_id">
+             </div>
+          </div>
+          <div class="col-lg-6 mb-3">
+            <!-- new field -->
+          <label class="text-dark-grey">Country</label>
+            <%= f.text_field :prof_medical_school_country, placeholder: 'Type here...',class: 'form-control border border-dark'%>
+          </div>
+          <div class="col-lg-6 mb-3">
+            <!-- new field -->
+          <label class="text-dark-grey">Zip Code</label>
+            <%= f.text_field :prof_medical_school_zipcode, placeholder: 'Type here...',class: 'form-control border border-dark'%>
+          </div>
+          <div class="col-lg-6 mb-3">
+            <!-- new field -->
+          <label class="text-dark-grey">Start Date</label>
+            <%= f.text_field :prof_medical_start_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+          </div>
+           <div class="col-lg-6 mb-3">
+            <label class="text-dark-grey">End(Graduation) Date</label>
+            <%= f.text_field :graduation_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+          </div>
+           <div class="col-lg-6 mb-3">
+            <label class="text-dark-grey">Degree Awarded</label>
+            <%= f.text_field :prof_medical_school_degree_awarded, placeholder: 'Type here...',class: 'form-control border border-dark'%>
+          </div>
+          <div class="col-lg-6 mb-3">
+            <!-- new field -->
+            <label class="text-dark-grey">Did you complete your graduate education at this school? </label>
             <%= f.select :medical_license, options_for_select(yes_or_no_options, @provider.medical_license), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
           </div>
         </div>
         <div class="row mb-2">
-          <div class="col-lg-6">
-            <label class="text-dark-grey">Graduation Date</label>
-            <%= f.text_field :graduation_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
-          </div>
           <div class="col-lg-6">
             <!-- new field -->
             <label class="text-dark-grey">Copy of Certificate</label>
@@ -190,15 +225,41 @@
           <%= f.text_field :provider_effective_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
         </div>
       </div>
-
       <div class="row mb-3 mt-2">
-        <div class="col-lg-6">
-          <label>Board Certified</label>
-          <%= f.select :board_certified, options_for_select(yes_or_no_options, @provider.board_certified), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
-        </div>
         <div class="col-lg-6">
           <label class="text-dark-grey">NPI Number</label>
           <%= f.text_field :npi, placeholder: 'Type here...',class: 'form-control border border-dark' %>
+        </div>
+      </div>
+    </div>
+    <div class="row-mb-5">
+      <div class="col-lg-12 mb-2">
+          <h3 class="mt-5 mb-2">Board Certifications</h3>
+      </div>
+      <div class="row mb-3">
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Board Name</span></label>
+          <%= f.select :board_name, options_for_select(['Select Option'], @provider.suffix), { prompt: '' }, { class: 'form-select border border-dark' } %>
+        </div>
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Certification Number</span></label>
+          <%= f.text_field :board_certificate_number, placeholder: 'Type here...',class: 'form-control border border-dark' %>
+        </div>
+      </div>
+      <div class="row mb-3 mt-2">
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Effective Date </span></label>
+          <%= f.text_field :board_effective_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+        </div>
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Re-certification Date</label>
+          <%= f.text_field :board_recertification_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+        </div>
+      </div>
+      <div class="row mb-3 mt-2">
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Expiration Date</label>
+          <%= f.text_field :board_expiration_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
         </div>
       </div>
     </div>
@@ -213,7 +274,8 @@
       </div>
       <div class="col-lg-6">
         <label class="text-dark-grey">CAQH State</label>
-       <%= f.select :caqh_state, options_for_select(states.pluck(:name, :id), @provider.caqh_state), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
+       <div class="search-select state-search-select form-control border border-dark" name="provider[caqh_state]" id="caqh_state">
+        </div>
       </div>
     </div>
    <div class="row mb-3">
@@ -391,7 +453,8 @@
       </div>
     </div>
 
-    <div class="row mb-3 mt-2">
+   <!--
+   <div class="row mb-3 mt-2">
       <div class="col-lg-12 mt-3">
         <h3>INS Policy</h3>
       </div>
@@ -402,7 +465,88 @@
             <% end %>
           </div>
       </div>
+    </div> 
+    -->
+    <div class="row mb-3">
+      <div class="col-lg-12 mt-3">
+        <h3>Professional Liability Insurance</h3>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Carrier or Self-Insured Name</label>
+        <%= f.text_field  :prof_liability_carrier_name, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Self-Insured?</label>
+       <%= f.select  :prof_liability_self_insured, options_for_select([['Yes','yes'],['No','no']], @provider.prof_liability_self_insured), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
+      </div>
     </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Address</label>
+        <%= f.text_field :prof_liability_address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">City</label>
+        <%= f.text_field :prof_liability_city,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">State</label>
+        <div class="search-select state-search-select form-control border border-dark" name="provider[prof_liability_state_id]" id="prof_liability_state_id">
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Zip Code</label>
+        <%= f.text_field :prof_liability_zipcode,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Original Effective Date</label>
+        <%= f.text_field :prof_liability_orig_effective_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Effective Date</label>
+        <%= f.text_field :prof_liability_effective_date,  placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Expiration Date</label>
+        <%= f.text_field :prof_liability_expiration_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Type of Coverage</label>
+        <%= f.select :prof_liability_coverage_type, options_for_select([['Individual','individual'],['Shared','shared']], @provider.prof_liability_coverage_type), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
+    </div>
+    </div>
+    <div class="row mb-3">
+     <div class="col-lg-6">
+        <label class="text-dark-grey">Do you have unlimited coverage with this insurance carrier?</label>
+        <%= f.select :prof_liability_unlimited_coverage, options_for_select([['Yes','yes'],['No','no']], @provider.prof_liability_unlimited_coverage), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
+    </div>
+     <div class="col-lg-6">
+        <label class="text-dark-grey">Policy includes tail coverage?</label>
+        <%= f.select :prof_liability_tail_coverage, options_for_select([['Yes','yes'],['No','no']], @provider.prof_liability_tail_coverage), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
+    </div>
+    </div>
+    <div class="row mb-3">
+     <div class="col-lg-6">
+        <label class="text-dark-grey">Amount of coverage per occurence (must be at least $1,000,000/$3,000,000)</label>
+        <%= f.text_field :prof_liability_coverage_amount, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+    </div>
+     <div class="col-lg-6">
+        <label class="text-dark-grey">Amount of coverage aggregate (must be at least $1,000,000/$3,000,000)</label>
+        <%= f.text_field :prof_liability_coverage_amount_aggregate, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+    </div>
+    </div>
+     <div class="row mb-3">
+     <div class="col-lg-6">
+        <label class="text-dark-grey">Policy Number</label>
+        <%= f.text_field :prof_liability_policy_number, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+    </div>
+     </div>
 
      <div class="row mb-3 mt-3">
      <div class="col-lg-12 mt-3">
