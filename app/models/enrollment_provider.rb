@@ -33,14 +33,9 @@ class EnrollmentProvider < ApplicationRecord
 	scope :assigned, -> { where(status: 'assigned') }
 	scope :terminated, -> { where(status: 'terminated') }
 	scope :unassigned, -> { where(status: 'unassigned') }
-  scope :processing, -> { where(status: 'processing') }
-  scope :denied, -> { where(status: 'denied') }
-  scope :not_eligible, -> { where(status: 'not-eligible') }
-
-
-
-
-
+	scope :processing, -> { where(status: 'processing') }
+	scope :denied, -> { where(status: 'denied') }
+	scope :not_eligible, -> { where(status: 'not-eligible') }
 	scope :this_month, -> { where(created_at: DateTime.now.beginning_of_month..DateTime.now.end_of_month) }
 	scope :today, -> { where(created_at: DateTime.now) }
 	scope :this_week, -> { where(created_at: DateTime.now.beginning_of_week..DateTime.now.end_of_month) }
