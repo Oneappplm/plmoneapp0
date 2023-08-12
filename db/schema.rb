@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_12_133606) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -231,6 +231,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.string "payer_state"
     t.string "payor_submission_type"
     t.string "payor_link"
+    t.string "portal_username"
+    t.string "portal_password"
+    t.json "upload_payor_file"
     t.index ["enroll_group_id"], name: "index_enroll_groups_details_on_enroll_group_id"
   end
 
@@ -254,6 +257,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.index ["enrollment_provider_id"], name: "index_enrollment_comments_on_enrollment_provider_id"
     t.index ["provider_id"], name: "index_enrollment_comments_on_provider_id"
     t.index ["user_id"], name: "index_enrollment_comments_on_user_id"
+  end
+
+  create_table "enrollment_group_deleted_doc_logs", force: :cascade do |t|
+    t.bigint "enrollment_group_id", null: false
+    t.string "document_key"
+    t.string "title"
+    t.string "note"
+    t.string "deleted_by"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enrollment_group_id"], name: "index_enrollment_group_deleted_doc_logs_on_enrollment_group_id"
   end
 
   create_table "enrollment_groups", force: :cascade do |t|
@@ -299,6 +314,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.string "group_type_documents"
     t.string "eft_file"
     t.string "voided_check_file"
+    t.string "flatform"
   end
 
   create_table "enrollment_groups_contact_details", force: :cascade do |t|
@@ -378,6 +394,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.integer "user_id"
     t.string "outreach_type"
     t.string "enrolled_by"
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "last_name"
+    t.string "suffix"
+    t.string "telephone_number"
+    t.string "email_address"
   end
 
   create_table "enrollment_providers_details", force: :cascade do |t|
@@ -408,6 +430,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.string "provider_id"
     t.string "group_id"
     t.string "payer_state"
+    t.json "upload_payor_file"
     t.index ["enrollment_provider_id"], name: "index_enrollment_providers_details_on_enrollment_provider_id"
   end
 
@@ -419,7 +442,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.index ["enrollment_providers_detail_id"], name: "index_epd_logs_on_enrollment_providers_detail_id"
   end
 
-  create_table "group_dco_contacts", force: :cascade do |t|
+  create_table "group_contacts", force: :cascade do |t|
     t.bigint "group_dco_id"
     t.string "department"
     t.string "name"
@@ -428,7 +451,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.string "email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["group_dco_id"], name: "index_group_dco_contacts_on_group_dco_id"
+    t.bigint "enrollment_group_id"
+    t.index ["enrollment_group_id"], name: "index_group_contacts_on_enrollment_group_id"
+    t.index ["group_dco_id"], name: "index_group_contacts_on_group_dco_id"
   end
 
   create_table "group_dco_notes", force: :cascade do |t|
@@ -565,6 +590,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.string "recipient_type", null: false
+    t.bigint "recipient_id", null: false
+    t.string "type", null: false
+    t.jsonb "params"
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["read_at"], name: "index_notifications_on_read_at"
+    t.index ["recipient_type", "recipient_id"], name: "index_notifications_on_recipient"
+  end
+
   create_table "practice_types", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -583,6 +620,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "provider_cds_licenses", force: :cascade do |t|
+    t.bigint "provider_id"
+    t.string "cds_license_number"
+    t.string "no_cds_license"
+    t.integer "state_id"
+    t.datetime "cds_license_issue_date"
+    t.datetime "cds_license_expiration_date"
+    t.datetime "cds_renewal_effective_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_cds_licenses_on_provider_id"
+  end
+
   create_table "provider_cnp_licenses", force: :cascade do |t|
     t.bigint "provider_id"
     t.string "cnp_license_number"
@@ -590,6 +640,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.datetime "expiration_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "cnp_license_renewal_effective_date"
+    t.string "no_cnp_license"
+    t.integer "state_id"
     t.index ["provider_id"], name: "index_provider_cnp_licenses_on_provider_id"
   end
 
@@ -601,6 +654,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.datetime "dea_license_expiration_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "dea_license_renewal_effective_date"
+    t.string "no_dea_license"
     t.index ["provider_id"], name: "index_provider_dea_licenses_on_provider_id"
   end
 
@@ -634,6 +689,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "state_id"
+    t.string "license_state_renewal_date"
+    t.string "no_state_license"
     t.index ["provider_id"], name: "index_provider_licenses_on_provider_id"
   end
 
@@ -703,6 +760,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.date "np_license_expiration_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "np_license_renewal_effective_date"
+    t.string "no_np_license"
+    t.integer "state_id"
     t.index ["provider_id"], name: "index_provider_np_licenses_on_provider_id"
   end
 
@@ -713,6 +773,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.datetime "pa_license_expiration_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "pa_license_renewal_effective_date"
+    t.string "no_pa_license"
+    t.integer "state_id"
     t.index ["provider_id"], name: "index_provider_pa_licenses_on_provider_id"
   end
 
@@ -723,6 +786,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.date "rn_license_expiration_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "rn_license_renewal_effective_date"
+    t.string "no_rn_license"
+    t.integer "state_id"
     t.index ["provider_id"], name: "index_provider_rn_licenses_on_provider_id"
   end
 
@@ -929,6 +995,40 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.string "caqh_answer"
     t.string "caqh_notes"
     t.integer "licensed_registered_state_id"
+    t.string "payer_login", default: "no"
+    t.string "license_state_number"
+    t.string "license_state_effective_date"
+    t.string "license_state_id"
+    t.string "license_state_expiration_date"
+    t.string "end_date"
+    t.string "board_name"
+    t.string "board_certificate_number"
+    t.date "board_effective_date"
+    t.date "board_recertification_date"
+    t.date "board_expiration_date"
+    t.string "prof_medical_school_name"
+    t.string "prof_medical_school_address"
+    t.string "prof_medical_school_city"
+    t.integer "prof_medical_school_state_id"
+    t.string "prof_medical_school_country"
+    t.string "prof_medical_school_zipcode"
+    t.date "prof_medical_start_date"
+    t.string "prof_medical_school_degree_awarded"
+    t.string "prof_liability_carrier_name"
+    t.string "prof_liability_self_insured"
+    t.string "prof_liability_address"
+    t.string "prof_liability_city"
+    t.integer "prof_liability_state_id"
+    t.string "prof_liability_zipcode"
+    t.date "prof_liability_orig_effective_date"
+    t.date "prof_liability_effective_date"
+    t.date "prof_liability_expiration_date"
+    t.string "prof_liability_coverage_type"
+    t.string "prof_liability_unlimited_coverage"
+    t.string "prof_liability_tail_coverage"
+    t.string "prof_liability_coverage_amount"
+    t.string "prof_liability_coverage_amount_aggregate"
+    t.string "prof_liability_policy_number"
   end
 
   create_table "providers_missing_field_submissions", force: :cascade do |t|
@@ -945,6 +1045,27 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.string "data_attribute"
     t.string "data_key"
     t.string "data_value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "providers_payer_logins", force: :cascade do |t|
+    t.bigint "provider_id"
+    t.string "enrollment_payer"
+    t.integer "state_id"
+    t.string "username"
+    t.string "password"
+    t.string "password_digest"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_providers_payer_logins_on_provider_id"
+  end
+
+  create_table "providers_payer_logins_questions", force: :cascade do |t|
+    t.integer "providers_payer_login_id"
+    t.string "question"
+    t.string "answer"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -1090,6 +1211,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "users_enrollment_groups", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "enrollment_group_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enrollment_group_id"], name: "index_users_enrollment_groups_on_enrollment_group_id"
+    t.index ["user_id"], name: "index_users_enrollment_groups_on_user_id"
+  end
+
   create_table "virtual_review_committees", force: :cascade do |t|
     t.string "provider_name"
     t.string "provider_type"
@@ -1163,7 +1293,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_25_025450) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "enrollment_group_deleted_doc_logs", "enrollment_groups"
   add_foreign_key "epd_logs", "enrollment_providers_details"
+  add_foreign_key "group_contacts", "enrollment_groups"
   add_foreign_key "group_dco_old_location_addresses", "group_dcos"
   add_foreign_key "group_dcos", "enrollment_groups"
   add_foreign_key "provider_deleted_document_logs", "providers"
