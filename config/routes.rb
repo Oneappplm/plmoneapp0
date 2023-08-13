@@ -81,8 +81,9 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :enrollment_groups, path: 'enrollMent-groups' do
+  resources :alt_enrollment_groups, path: 'alt-enrollment-groups' do
     get :documents
+    get :enrollments
     resources :locations
   end
 

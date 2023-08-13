@@ -34,4 +34,10 @@ class EnrollGroup < ApplicationRecord
   def create_client_provider_enrollment
     ClientProviderEnrollment.create(enrollable: self)
   end
+
+  def state
+    State.find_by(id: self.state_id)
+  rescue
+    nil
+  end
 end

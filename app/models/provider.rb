@@ -237,6 +237,12 @@ class Provider < ApplicationRecord
     nil
   end
 
+  def prof_liability_state
+    State.find(self.prof_liability_state_id)
+  rescue
+    nil
+  end
+
   def required_documents
     [
      ['State License Copy', 'state_license_copy_file'],

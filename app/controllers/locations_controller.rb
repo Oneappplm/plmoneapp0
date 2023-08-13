@@ -8,7 +8,7 @@ class LocationsController < ApplicationController
   private
 
   def get_enrollment_group
-    @enrollment_group = EnrollmentGroup.find(params[:enrollment_group_id])
+    @enrollment_group = EnrollmentGroup.find(params[:alt_enrollment_group_id])
   end
 
   def set_location

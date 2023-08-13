@@ -26,6 +26,12 @@ class EnrollGroupsDetail < ApplicationRecord
   scope :priority_health, -> {where(enrollment_payer: 'priority_health')}
   scope :medicaid, -> {where(enrollment_payer: 'medicaid')}
 
+  def state
+    State.find_by(id: self.state_id)
+  rescue
+    nil
+  end
+
   private
 
   # not sure when this will be used but had to encrypt password nonetheless
