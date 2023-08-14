@@ -2,11 +2,11 @@ class ProvidersController < ApplicationController
 	before_action :set_provider, only: [:show, :edit, :update, :destroy, :update_from_notifications]
 	before_action :set_overview_details, only: [:overview]
   def index
-			@providers = if params[:user_search].present?
-						Provider.search(params[:user_search]).paginate(per_page: 10, page: params[:page] || 1)
-				else
-						Provider.paginate(per_page: 10, page: params[:page] || 1)
-				end
+		@providers = if params[:user_search].present?
+			Provider.search(params[:user_search]).paginate(per_page: 10, page: params[:page] || 1)
+		else
+			Provider.paginate(per_page: 10, page: params[:page] || 1)
+		end
 	end
 
 	def new
@@ -22,14 +22,14 @@ class ProvidersController < ApplicationController
   end
 
 	def create
-			@provider = Provider.new(provider_params)
-			@provider.encoded_by = current_user&.full_name
-			if @provider.save
-					redirect_to providers_path
-			else
-				 build_associations
-					render :new
-			end
+		@provider = Provider.new(provider_params)
+		@provider.encoded_by = current_user&.full_name
+		if @provider.save
+			redirect_to providers_path
+		else
+			build_associations
+			render :new
+		end
 	end
 
   def update_from_notifications
@@ -167,7 +167,9 @@ end
 					:dea_number,
 					:dea_license_effective_date,
 					:dea_license_expiration_date,
+					# dco is to be removed
 					:dco,
+					:dcos,
 					:dco_file,
 					:enrollment_group_id,
 					:board_name,

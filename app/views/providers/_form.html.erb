@@ -289,12 +289,12 @@
       <div class="col-lg-6">
       <!-- new field -->
       <label class="text-dark-grey">Client <span class="text-red">*</span></label>
-      <%= f.select :enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, {:class => "#{form_select_classes(danger: @provider.enrollment_group_id.blank? && @provider.persisted?)} select-with-show", data: {show: 'provider_dco_div'}, required: true }  %>
+      <%= f.select :enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, {:id => "provider_dcos_select", :class => "#{form_select_classes(danger: @provider.enrollment_group_id.blank? && @provider.persisted?)} select-with-show", data: {show: 'provider_dco_div'}, required: true }  %>
       </div>
       <div class="col-lg-6 <%= @provider.no_group? ? 'd-none' : '' %>" id="provider_dco_div">
       <!-- new field -->
       <label class="text-dark-grey">DCO/Practice Location</label>
-      <%= f.select :dco, options_for_select(group_dcos.pluck(:dco_name, :id), @provider.dco), {prompt: 'Select option'}, {:class => 'form-select border border-dark'}  %>
+        <%= HtmlUtils.multi_select_dropdown name: 'provider[dcos]', id: 'dcos_id'%>
       </div>
     </div>
 
@@ -559,14 +559,28 @@ $(document).ready(function() {
       return  false;
     }
   })
-  var dco = "<%= @provider.dco %>";
+  var selected_dcos  = stringArrayModifier('<%= @provider.dcos.split(",") %>');
+  $('#provider_dcos_select').on('change',function(){
+    var id = $(this).val();
+    $.ajax({
+      url: '<%= get_group_locations_path %>',
+      type: 'get',
+      data: { authenticity_token: csrfToken, group_id: id },
+      success: function(data) {
+        VirtualSelect.init({
+          ele: '#dcos_id',
+          multiple: true,
+          showSelectedOptionsFirst: true,
+        });
+        document.querySelector('#dcos_id').setOptions(data['practice_locations'])
+        document.querySelector('#dcos_id').setValue(selected_dcos);
+      }
+    })
+  });
 
-  setTimeout(function() { $('#provider_enrollment_group_id').trigger('change'); }, 500);
-  setTimeout(function() {
-    if(dco != ''){
-        $('#provider_dco option[value="' + dco + '"]').prop('selected', true);
-    }
-  }, 1500);
+  if('<%= @provider.persisted? %>' == 'true') {
+    $('#provider_dcos_select').trigger( "change" );
+  }
 
     // taxonomies
     $("#taxonomies").on("click", ".add_association", function() {
@@ -832,7 +846,14 @@ function clearNote(){
 </script>
 
 <style>
-  .multi-select {
+  .multi-select, .search-select, .single-select {
+    padding: 0;
+      width: 100%;
+      max-width: 1000px;
+  }
+  .single-select {
+    width: 100%;
+    max-width: 1000px;
     padding: 0;
   }
 </style>

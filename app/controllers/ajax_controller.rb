@@ -126,6 +126,14 @@ class AjaxController < ApplicationController
     }
   end
 
+  def get_enrollment_group_locations
+    enrollment_group = EnrollmentGroup.find_by(id: params[:group_id])
+    dcos = enrollment_group.dcos.map { |m| { label: m.dco_name, value: m.id} }
+    render json: {
+      "practice_locations" => dcos
+    }
+  end
+
   def get_enrollment_groups
     enrollment_groups = EnrollmentGroup.all.map { |m| { label: m.group_name, value: m.id} }
     render json: {

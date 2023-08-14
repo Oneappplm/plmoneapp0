@@ -178,25 +178,28 @@
           </div>
 
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
-          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Location', collapse_name: 'practice'}%>
-          <div class="collapsible" style="<%= current_user&.is_card_open?('practice') ? '' : 'display: none;' %>">
-            <p class="mb-1"><strong>Name:</strong> <%= @provider.group_dco&.dco_name %> </p>
-            <p class="mb-1"><strong>Address:</strong> <%= @provider.group_dco&.dco_address %> </p>
-            <p class="mb-1"><strong>City:</strong> <%= @provider.group_dco&.dco_city %> </p>
-            <p class="mb-1"><strong>State:</strong> <%= @provider.group_dco&.state %> </p>
-            <p class="mb-1"><strong>Zip Code:</strong> <%= @provider.group_dco&.dco_zipcode %> </p>
-            <p class="mb-1"><strong>County:</strong> <%= @provider.group_dco&.county %> </p>
-            <p class="mb-1"><strong>Service Location Phone:</strong> <%= @provider.group_dco&.service_location_phone_number %>  </p>
-            <p class="mb-1"><strong>Service Location Fax:</strong> <%= @provider.group_dco&.service_location_fax_number %>  </p>
-            <p class="mb-1"><strong>Panel Status to New Patients:</strong> <%= @provider.group_dco&.panel_status_to_new_patients %>  </p>
-            <p class="mb-1"><strong>Panel Age Limit:</strong> <%= @provider.group_dco&.panel_age_limit %>  </p>
-            <p class="mb-1"><strong>Include in Directory?</strong> <%= @provider.group_dco&.include_in_directory %> </p>
-            <p class="mb-1"><strong>Is this location an inpatient facility?</strong> <%= @provider.group_dco&.inpatient_facility %>  </p>
-            <p class="mb-1"><strong>Is this location a clinic?</strong> <%= @provider.group_dco&.is_clinic %> </p>
-            <p class="mb-1"><strong>Are Telehealth services provided?</strong> <%= @provider.group_dco&.telehealth_provider %> </p>
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Location', collapse_name: 'location'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('location') ? '' : 'display: none;' %>">
+              <% @provider.group_dcos.each_with_index do |dco,index| %>
+                <div class="mb-2 <%= "border-bottom-dash" if index < @provider.group_dcos.length - 1 %>">
+                  <p class="mb-1"><strong>Name:</strong> <%= dco&.dco_name %> </p>
+                  <p class="mb-1"><strong>Address:</strong> <%= dco&.dco_address %> </p>
+                  <p class="mb-1"><strong>City:</strong> <%= dco&.dco_city %> </p>
+                  <p class="mb-1"><strong>State:</strong> <%= dco&.state %> </p>
+                  <p class="mb-1"><strong>Zip Code:</strong> <%= dco&.dco_zipcode %> </p>
+                  <p class="mb-1"><strong>County:</strong> <%= dco&.county %> </p>
+                  <p class="mb-1"><strong>Service Location Phone:</strong> <%= dco&.service_location_phone_number %>  </p>
+                  <p class="mb-1"><strong>Service Location Fax:</strong> <%= dco&.service_location_fax_number %>  </p>
+                  <p class="mb-1"><strong>Panel Status to New Patients:</strong> <%= dco&.panel_status_to_new_patients %>  </p>
+                  <p class="mb-1"><strong>Panel Age Limit:</strong> <%= dco&.panel_age_limit %>  </p>
+                  <p class="mb-1"><strong>Include in Directory?</strong> <%= dco&.include_in_directory %> </p>
+                  <p class="mb-1"><strong>Is this location an inpatient facility?</strong> <%= dco&.inpatient_facility %>  </p>
+                  <p class="mb-1"><strong>Is this location a clinic?</strong> <%= dco&.is_clinic %> </p>
+                  <p class="mb-1"><strong>Are Telehealth services provided?</strong> <%= dco&.telehealth_provider %> </p>
+                </div>
+              <% end %>
+            </div>
           </div>
-          </div>
-
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
           <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Primary Service Location', collapse_name: 'service_location'}%>
           <div class="collapsible" style="<%= current_user&.is_card_open?('service_location') ? '' : 'display: none;' %>">

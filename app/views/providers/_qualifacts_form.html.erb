@@ -555,12 +555,12 @@
       <div class="col-lg-6">
       <!-- new field -->
       <label class="text-dark-grey">Group <span class="text-red">*</span></label>
-      <%= f.select :enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, {class: "#{form_select_classes(danger: @provider.enrollment_group_id.blank? && @provider.persisted?)} select-with-show", data: {show: 'provider_dco_div'}, required: true } %>
+      <%= f.select :enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, { id: "provider_dcos_select", class: "#{form_select_classes(danger: @provider.enrollment_group_id.blank? && @provider.persisted?)} select-with-show", data: {show: 'provider_dco_div'}, required: true } %>
       </div>
       <div class="col-lg-6 <%= @provider.no_group? ? 'd-none' : '' %>" id="provider_dco_div">
         <!-- new field -->
         <label class="text-dark-grey">Location</label>
-        <%= f.select :dco, options_for_select(group_dcos.pluck(:dco_name, :id), @provider.dco), {prompt: 'Select option'}, {:class => 'form-select border border-dark'}  %>
+        <%= HtmlUtils.multi_select_dropdown name: 'provider[dcos]', id: 'dcos_id'%>
       </div>
     </div>
 
@@ -807,7 +807,29 @@
 
     <script>
       $(document).ready(function() {
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+        var selected_dcos  = stringArrayModifier('<%= @provider.dcos.split(",") %>');
 
+        $('#provider_dcos_select').on('change',function(){
+          var id = $(this).val();
+          $.ajax({
+            url: '<%= get_group_locations_path %>',
+            type: 'get',
+            data: { authenticity_token: csrfToken, group_id: id },
+            success: function(data) {
+              VirtualSelect.init({
+                ele: '#dcos_id',
+                multiple: true,
+                showSelectedOptionsFirst: true,
+              });
+              document.querySelector('#dcos_id').setOptions(data['practice_locations'])
+              document.querySelector('#dcos_id').setValue(selected_dcos);
+            }
+          })
+        });
+        if('<%= @provider.persisted? %>' == 'true') {
+          $('#provider_dcos_select').trigger( "change" );
+        }
         // force to invalidate all required fields
         $('#btn-provider-form-submit').on('click', function(e) {
           $('input[required], select[required], textarea[required]').each(function() {
@@ -843,15 +865,6 @@
         //     return  false;
         //   }
         // })
-
-
-        var dco = "<%= @provider.dco %>";
-       setTimeout(function() { $('#provider_enrollment_group_id').trigger('change'); }, 500);
-        setTimeout(function() {
-          if(dco != ''){
-              $('#provider_dco option[value="' + dco + '"]').prop('selected', true);
-          }
-        }, 1500);
 
          $('.enrollment-payer').each(function(){
           var id = $(this).attr('id');
@@ -1000,12 +1013,17 @@
       }
       });
     </script>
-    <% end %>
+  <% end %>
 
-    <style type="text/css">
-      .multi-select, .search-select, .single-select {
-        padding: 0;
-         width: 100%;
-         max-width: 1000px;
-      }
-    </style>
+<style type="text/css">
+  .multi-select, .search-select, .single-select {
+    padding: 0;
+      width: 100%;
+      max-width: 1000px;
+  }
+  .single-select {
+    width: 100%;
+    max-width: 1000px;
+    padding: 0;
+  }
+</style>

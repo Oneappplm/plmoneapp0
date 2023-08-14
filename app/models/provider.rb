@@ -40,6 +40,7 @@ class Provider < ApplicationRecord
 
 
   belongs_to :group, class_name: 'EnrollmentGroup', foreign_key: 'enrollment_group_id', optional: true
+  # relationhsip to be removed - update: provider can have many group_dcos
   belongs_to :group_dco, class_name: 'GroupDco', foreign_key: 'dco', optional: true
   belongs_to :state, class_name: 'State', foreign_key: 'state_id', required: false
 
@@ -343,5 +344,9 @@ class Provider < ApplicationRecord
     return unless self.email_address.present?
 
     PlmMailer.with(email: self.email_address, attachments: ['welcome-letter-new-provider.docx']).welcome_letter.deliver_now
+  end
+
+  def group_dcos
+    GroupDco.where(id: self.dcos.split(",")) rescue []
   end
 end
