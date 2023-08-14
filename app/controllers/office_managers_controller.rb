@@ -58,14 +58,18 @@ class OfficeManagersController < ApplicationController
   def send_invite
     provider = ProviderSource.find(params[:id])
 
-    if provider.email_address.blank?
-      flash[:alert] = 'Email is required.'
-    else
-      User.invite!(email: provider.email_address, user_role: 'office_manager')
-      provider.increment!(:invitation_count)
-      provider.update(invitation_sent_at: Time.now)
-      flash[:notice] = 'Invitation sent successfully.'
-    end
+    User.invite!(
+      email: provider.email_address,
+      user_role: 'office_manager',
+      email_subject: params[:subject],
+      email_message: params[:message],
+      email_cc: params[:email_cc]
+    )
+
+    provider.increment!(:invitation_count)
+    provider.update(invitation_sent_at: Time.now)
+
+    flash[:notice] = 'Invitation sent successfully.'
   end
 
   protected

@@ -119,7 +119,10 @@
                             <% if provider.user.present? && provider.user.invitation_accepted? %>
                                 <%= link_to 'Manage Application', manage_applications_office_manager_path(provider), class: 'btn btn-manage btn-primary' %>
                             <% else %>
-                                <%= link_to 'Send Invite', 'javascript::void(0);', class: 'btn btn-manage btn-purple mt-2', onclick: "sendInvite(this)", data: { providerid: provider.id } %>
+                            <!-- <button class="btn btn-manage btn-purple mt-2" data-bs-toggle="modal" data-bs-target="#sendSingleInviteModal">
+                                Send Invite
+                            </button> -->
+                                <%= link_to 'Send Invite', 'javascript::void(0);', class: 'btn btn-manage btn-purple mt-2', onclick: "sendInvite(this)", data: { providerid: provider.id, emailaddress: provider.email_address  } %>
                             <% end%>
 
                             <%= button_to 'Remove', remove_provider_office_manager_path(provider), class: 'btn btn-manage btn-danger mt-2 delete-button', data: {confirm: 'Are you sure?'} %>
@@ -166,30 +169,30 @@
                                     <!-- <div class="col-xl-6">
                                         <label for="">Sender Name *</label>
                                         <input type="text" name="sender_name" class="form-control" placeholder="">
-                                    </div> -->
+                                    </div> > -->
                                     <div class="col-xl-12">
                                         <label for="">Email To *</label>
-                                        <input type="email" name="email_to" class="form-control" placeholder="">
+                                        <input type="email" name="email_to" class="form-control" placeholder="" readonly>
                                     </div>
                                 </div>
                                 <div class="form-row row">
-                                    <!-- <div class="col-xl-12">
+                                   <div class="col-xl-12">
                                         <label for="">Subject *</label>
                                         <input type="text" name="subject" class="form-control" placeholder="">
-                                    </div> -->
-                                    <!-- <div class="col-xl-6">
+                                    </div>
+                                    <div class="col-xl-12">
                                         <label for="">Email CC</label>
                                         <input type="text" name="email_cc" class="form-control" placeholder="">
-                                    </div> -->
+                                    </div>
                                 </div>
                                 <div class="form-row row">
-                                    <!-- <div class="col-xl-12">
+                                    <div class="col-xl-12">
                                         <label for="">Message *</label>
                                         <textarea name="message" id="" class="form-control" cols="30" rows="5"></textarea>
-                                    </div> -->
+                                    </div>
                                 </div>
-                                <!-- <h6 class="note-heading mt-4">Invite link which will be added by the system</h6>
-                                <p class="note">You are invited to connect to Office Manager account on (link of the website). To agree to designate him/her as your office manager, please click the link. Please do not close your browser until the page completely loads, which may take some time. If you do not wish to accept the invitation, please disregard this message. <a href="">[Click to open link]</a> </p> -->
+                               <h6 class="note-heading mt-4">Invite link which will be added by the system</h6>
+                                <p class="note">You are invited to connect to Office Manager account on (link of the website). To agree to designate him/her as your office manager, please click the link. Please do not close your browser until the page completely loads, which may take some time. If you do not wish to accept the invitation, please disregard this message. <a href="">[Click to open link]</a> </p>
                                 <div class="form-row mt-3">
                                     <button class="btn btn-manage btn-primary" onclick="sendInvitation()">Send</button>
                                     <button class="btn btn-card-remove fw-bold text-black" data-bs-dismiss="modal">Cancel</button>
@@ -201,7 +204,7 @@
             </div>
 
             <!-- Send Single Invite Modal -->
-            <div class="modal fade sendSingleInviteModal" id="" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade " id="sendSingleInviteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-body">
@@ -210,35 +213,36 @@
                                     <h6 class="">Send Email Invitation</h6>
                                 </div>
                                 <div class="form-row row">
-                                    <div class="col-xl-6">
+                                    <!-- <div class="col-xl-6">
                                         <label for="">Sender Name</label>
                                         <input type="text" class="form-control" placeholder="">
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <label for="">Email To</label>
-                                        <input type="text" class="form-control" placeholder="">
-                                    </div>
-                                </div>
-                                <div class="form-row row">
-                                    <div class="col-xl-6">
-                                        <label for="">Subject</label>
-                                        <input type="text" class="form-control" placeholder="">
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <label for="">Email CC</label>
-                                        <input type="text" class="form-control" placeholder="">
+                                    </div> -->
+                                    <div class="col-xl-12">
+                                        <label for="">Email To *</label>
+                                        <input type="text" name="sim_email_to" class="form-control" placeholder="" readonly required>
                                     </div>
                                 </div>
                                 <div class="form-row row">
                                     <div class="col-xl-12">
-                                        <label for="">Message</label>
-                                        <textarea name="" id="" class="form-control" cols="30" rows="5"></textarea>
+                                        <label for="">Subject *</label>
+                                        <input type="text" name="sim_subject" class="form-control" placeholder="" required>
+                                    </div>
+                                    <div class="col-xl-12">
+                                        <label for="">Email CC</label>
+                                        <input type="text" name="sim_email_cc" class="form-control" placeholder="">
                                     </div>
                                 </div>
-                                <h6 class="note-heading mt-4">Invite link which will be added by the system</h6>
-                                <p class="note">You are invited to connect to Office Manager account on (link of the website). To agree to designate him/her as your office manager, please click the link. Please do not close your browser until the page completely loads, which may take some time. If you do not wish to accept the invitation, please disregard this message. <a href="">[Click to open link]</a> </p>
+                                <div class="form-row row">
+                                    <div class="col-xl-12">
+                                        <label for="">Message *</label>
+                                        <textarea name="sim_message" id="" class="form-control" required cols="30" rows="12"><%= "You are invited to connect to Office Manager account on (link of the website).\n\nTo agree to designate him/her as your office manager, please click the link. \n\nPlease do not close your browser until the page completely loads, which may take some time. \n\nIf you do not wish to accept the invitation, please disregard this message.".html_safe %>
+                                        </textarea>
+                                    </div>
+                                </div>
+                                <!-- <h6 class="note-heading mt-4">Invite link which will be added by the system</h6>
+                                <p class="note">You are invited to connect to Office Manager account on (link of the website). To agree to designate him/her as your office manager, please click the link. Please do not close your browser until the page completely loads, which may take some time. If you do not wish to accept the invitation, please disregard this message. <a href="">[Click to open link]</a> </p> -->
                                 <div class="form-row mt-3">
-                                    <button class="btn btn-manage btn-primary">Send</button>
+                                    <button id="btnSendSingleInvitation" class="btn btn-manage btn-primary" onclick="sendSingleInvitationNow(this)" data-providerid="">Send</button>
                                     <button class="btn btn-card-remove fw-bold text-black" data-bs-dismiss="modal">Cancel</button>
                                 </div>
                             </div>
@@ -425,23 +429,48 @@
      });
 
      function sendInvite(link){
+        // show modal
+        $('#sendSingleInviteModal').modal('show');
+        var email_address = $(link).data('emailaddress');
         var provider_id = $(link).data('providerid');
-        // send_invite_office_manager_path(provider)
-        // send_invite_office_managers
+        $('input[name="sim_email_to"]').val(email_address);
+        $('#btnSendSingleInvitation').attr('data-providerid', provider_id);
+     }
+
+     function sendSingleInvitationNow(btn){
+        var email_to = $('input[name="sim_email_to"]').val();
+        var subject = $('input[name="sim_subject"]').val();
+        var email_cc = $('input[name="sim_email_cc"]').val();
+        var message = $('textarea[name="sim_message"]').val();
+
+        // add alert if email_to, subject and message are blank; use one line condition
+        if (email_to === '' || subject === '' || message === '') {
+            alert('Please fill in all required fields.');
+            return;
+        }
+
+        var provider_id = $(btn).data('providerid');
+
         $.ajax({
             url: "<%= send_invite_office_managers_path %>",
             method: 'POST',
             data: {
                 authenticity_token: $('meta[name="csrf-token"]').attr('content'),
-                id: provider_id
+                id: provider_id,
+                email_to: email_to,
+                subject: subject,
+                email_cc: email_cc,
+                message: message
             },
             beforeSend: function() {
-                // Show the loading button
-                $('.loading-overlay').show(); //
+             // Show the loading button
+             $('.loading-overlay').show(); //
             },
             success: function(data) {
-                $('html, body').animate({scrollTop: 0}, 'fast');
-                location.reload();
+             $('#sendSingleInviteModal').modal('hide');
+             $('.loading-overlay').hide(); //
+             $('html, body').animate({scrollTop: 0}, 'fast');
+             setTimeout(function() { location.reload(); }, 1000);
             }
         });
      }

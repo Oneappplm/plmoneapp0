@@ -62,6 +62,8 @@ class User < ApplicationRecord
 
   accepts_nested_attributes_for :users_enrollment_groups, allow_destroy: true, reject_if: :all_blank
 
+  attr_accessor :email_cc, :email_subject, :email_message
+
   class << self
     def set_user_sidebar_preferences
       User.all.each do |user|
