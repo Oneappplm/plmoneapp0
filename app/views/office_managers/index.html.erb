@@ -41,14 +41,16 @@
                             <i class='bx bx-plus' ></i>
                             Add Provider
                         </button>
-                        <button class="btn btn-primary btn-xs" data-bs-toggle="modal" data-bs-target="#sendInviteModal">
+
+                        <%= link_to 'javascript:void(0)', class: 'btn btn-primary btn-xs', onclick: "sendBulkInvites(this)" do %>
                             <i class='bx bxs-paper-plane' ></i>
                             Send Invites
-                        </button>
-                        <button id="btn-bulk-remove-providers" class="btn btn-danger btn-xs delete-button" data-confirm="Are you sure?">
+                        <% end %>
+
+                        <%= link_to 'javascript:void(0)', class: 'btn btn-danger btn-xs', onclick: 'deleteProviders(this)' do %>
                             <i class="bx bx-trash"></i>
-                            Remove Provider
-                        </button>
+                            Remove Providers
+                        <% end %>
                     </div>
                 </div>
                 <div class="row result-controls mb-4">
@@ -119,7 +121,7 @@
                             <% if provider.user.present? && provider.user.invitation_accepted? %>
                                 <%= link_to 'Manage Application', manage_applications_office_manager_path(provider), class: 'btn btn-manage btn-primary' %>
                             <% else %>
-                            <!-- <button class="btn btn-manage btn-purple mt-2" data-bs-toggle="modal" data-bs-target="#sendSingleInviteModal">
+                            <!-- <button class="btn btn-manage btn-purple mt-2" data-bs-toggle="modal" data-bs-target="#sendInviteModal">
                                 Send Invite
                             </button> -->
                                 <%= link_to 'Send Invite', 'javascript::void(0);', class: 'btn btn-manage btn-purple mt-2', onclick: "sendInvite(this)", data: { providerid: provider.id, emailaddress: provider.email_address  } %>
@@ -154,63 +156,13 @@
             </div>
             <hr>
 
-
-            <!-- Send Invite Modal -->
-            <div class="modal fade" id="sendInviteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            <div class="">
-                                <div class="modal-title">
-                                    <h1 class="mb-2">Send Email Invitation</h1>
-                                    <!-- <p>Providers: 17 selected</p> -->
-                                </div>
-                                <div class="form-row row">
-                                    <!-- <div class="col-xl-6">
-                                        <label for="">Sender Name *</label>
-                                        <input type="text" name="sender_name" class="form-control" placeholder="">
-                                    </div> > -->
-                                    <div class="col-xl-12">
-                                        <label for="">Email To *</label>
-                                        <input type="email" name="email_to" class="form-control" placeholder="" readonly>
-                                    </div>
-                                </div>
-                                <div class="form-row row">
-                                   <div class="col-xl-12">
-                                        <label for="">Subject *</label>
-                                        <input type="text" name="subject" class="form-control" placeholder="">
-                                    </div>
-                                    <div class="col-xl-12">
-                                        <label for="">Email CC</label>
-                                        <input type="text" name="email_cc" class="form-control" placeholder="">
-                                    </div>
-                                </div>
-                                <div class="form-row row">
-                                    <div class="col-xl-12">
-                                        <label for="">Message *</label>
-                                        <textarea name="message" id="" class="form-control" cols="30" rows="5"></textarea>
-                                    </div>
-                                </div>
-                               <h6 class="note-heading mt-4">Invite link which will be added by the system</h6>
-                                <p class="note">You are invited to connect to Office Manager account on (link of the website). To agree to designate him/her as your office manager, please click the link. Please do not close your browser until the page completely loads, which may take some time. If you do not wish to accept the invitation, please disregard this message. <a href="">[Click to open link]</a> </p>
-                                <div class="form-row mt-3">
-                                    <button class="btn btn-manage btn-primary" onclick="sendInvitation()">Send</button>
-                                    <button class="btn btn-card-remove fw-bold text-black" data-bs-dismiss="modal">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Send Single Invite Modal -->
-            <div class="modal fade " id="sendSingleInviteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade " id="sendInviteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-body">
                             <div class="content">
                                 <div class="modal-title">
-                                    <h6 class="">Send Email Invitation</h6>
+                                    <h6 class="header-email">Send Email Invitation</h6>
                                 </div>
                                 <div class="form-row row">
                                     <!-- <div class="col-xl-6">
@@ -218,7 +170,8 @@
                                         <input type="text" class="form-control" placeholder="">
                                     </div> -->
                                     <div class="col-xl-12">
-                                        <label for="">Email To *</label>
+                                        <label for="">Email To * </label>
+                                        <h5 class="providers-selected hide"></h5>
                                         <input type="text" name="sim_email_to" class="form-control" placeholder="" readonly required>
                                     </div>
                                 </div>
@@ -242,7 +195,7 @@
                                 <!-- <h6 class="note-heading mt-4">Invite link which will be added by the system</h6>
                                 <p class="note">You are invited to connect to Office Manager account on (link of the website). To agree to designate him/her as your office manager, please click the link. Please do not close your browser until the page completely loads, which may take some time. If you do not wish to accept the invitation, please disregard this message. <a href="">[Click to open link]</a> </p> -->
                                 <div class="form-row mt-3">
-                                    <button id="btnSendSingleInvitation" class="btn btn-manage btn-primary" onclick="sendSingleInvitationNow(this)" data-providerid="">Send</button>
+                                    <button id="btnSendSingleInvitation" class="btn btn-manage btn-primary" onclick="sendSingleInvitationNow(this)" data-providerid="" data-mode="">Send</button>
                                     <button class="btn btn-card-remove fw-bold text-black" data-bs-dismiss="modal">Cancel</button>
                                 </div>
                             </div>
@@ -393,19 +346,28 @@
     </div>
 
     <script>
-     $(document).ready(function() {
-        $('#btn-bulk-remove-providers').click(function() {
-            var checkedValues = []; // Array to store checked values
+     function deleteProviders(link){
+        var checkedValues = []; // Array to store checked values
 
-            // Select all checked checkboxes with class "myCheckbox"
-            var checkedCheckboxes = $(".form-check-input:checked");
+        // Select all checked checkboxes with class "myCheckbox"
+        var checkedCheckboxes = $(".form-check-input:checked");
 
-            // Loop through each checked checkbox
-            checkedCheckboxes.each(function() {
-                var value = $(this).val();
-                checkedValues.push(value); // Add value to the array
-            });
+        // Loop through each checked checkbox
+        checkedCheckboxes.each(function() {
+            var value = $(this).val();
+            checkedValues.push(value); // Add value to the array
+        });
 
+        var providerids = checkedValues.join(',');
+
+        // alert if no provider is selected
+        if (checkedValues.length === 0) {
+            alert('Please select at least one provider.');
+            return;
+        }
+
+        // add confirm alert
+        if(confirm('Are you sure you want to delete providers?')){
             $.ajax({
                 url: "<%= bulk_remove_providers_office_managers_path %>",
                 method: 'POST',
@@ -422,32 +384,77 @@
                     location.reload();
                 }
             });
+        }
+     }
 
-            // Log the array of checked values
-            // console.log("Checked values: ", checkedValues);
+     function sendBulkInvites(link){
+        var checkedValues = []; // Array to store checked values
+
+        // Select all checked checkboxes with class "myCheckbox"
+        var checkedCheckboxes = $(".form-check-input:checked");
+
+        // Loop through each checked checkbox
+        checkedCheckboxes.each(function() {
+            var value = $(this).val();
+            checkedValues.push(value); // Add value to the array
         });
-     });
+        var providerids = checkedValues.join(',');
+
+        // alert if no provider is selected
+        if (checkedValues.length === 0) {
+            alert('Please select at least one provider.');
+            return;
+        }
+
+        // show modal
+        $('#sendInviteModal').modal('show');
+        // hide email to field
+        $('input[name="sim_email_to"]').hide();
+        $('.providers-selected').text('Providers: ' + checkedValues.length + ' selected');
+        $('.header-email').text('Send Multiple Email Invitation');
+        $('input[name="sim_subject"]').val('');
+        $('input[name="sim_email_cc"]').val('');
+        $('#btnSendSingleInvitation').attr('data-mode', 'bulk-invites');
+        $('#btnSendSingleInvitation').attr('data-providerid', providerids);
+
+
+     }
 
      function sendInvite(link){
         // show modal
-        $('#sendSingleInviteModal').modal('show');
+        $('#sendInviteModal').modal('show');
+        $('.header-email').text('Send Email Invitation');
+        $('input[name="sim_email_to"]').show();
+        $('input[name="sim_subject"]').val('');
+        $('input[name="sim_email_cc"]').val('');
+
         var email_address = $(link).data('emailaddress');
         var provider_id = $(link).data('providerid');
         $('input[name="sim_email_to"]').val(email_address);
         $('#btnSendSingleInvitation').attr('data-providerid', provider_id);
+        $('#btnSendSingleInvitation').attr('data-mode', 'single-invite');
      }
 
      function sendSingleInvitationNow(btn){
+        var mode = $(btn).data('mode');
         var email_to = $('input[name="sim_email_to"]').val();
         var subject = $('input[name="sim_subject"]').val();
         var email_cc = $('input[name="sim_email_cc"]').val();
         var message = $('textarea[name="sim_message"]').val();
 
         // add alert if email_to, subject and message are blank; use one line condition
-        if (email_to === '' || subject === '' || message === '') {
-            alert('Please fill in all required fields.');
-            return;
+        if (mode === 'single-invite') {
+            if (email_to === '' || subject === '' || message === '') {
+                alert('Please fill in all required fields.');
+                return;
+            }
+        }else if(mode === 'bulk-invites'){
+            if (subject === '' || message === '') {
+                alert('Please fill in all required fields.');
+                return;
+            }
         }
+
 
         var provider_id = $(btn).data('providerid');
 
@@ -460,14 +467,15 @@
                 email_to: email_to,
                 subject: subject,
                 email_cc: email_cc,
-                message: message
+                message: message,
+                mode: mode
             },
             beforeSend: function() {
              // Show the loading button
              $('.loading-overlay').show(); //
             },
             success: function(data) {
-             $('#sendSingleInviteModal').modal('hide');
+             $('#sendInviteModal').modal('hide');
              $('.loading-overlay').hide(); //
              $('html, body').animate({scrollTop: 0}, 'fast');
              setTimeout(function() { location.reload(); }, 1000);

@@ -56,7 +56,21 @@ class OfficeManagersController < ApplicationController
   end
 
   def send_invite
-    provider = ProviderSource.find(params[:id])
+    mode = params[:mode]
+    if mode == 'single-invite'
+      send_email_to_provider params[:id]
+    elsif mode == 'bulk-invites'
+      providerids = params[:id].split(',')
+      providerids.each do |provider_id|
+        send_email_to_provider provider_id
+      end
+    end
+    flash[:notice] = 'Invitation sent successfully.'
+  end
+
+  def send_email_to_provider provider_id
+    provider = ProviderSource.find_by(id: provider_id)
+    return unless provider.present?
 
     User.invite!(
       email: provider.email_address,
@@ -68,8 +82,6 @@ class OfficeManagersController < ApplicationController
 
     provider.increment!(:invitation_count)
     provider.update(invitation_sent_at: Time.now)
-
-    flash[:notice] = 'Invitation sent successfully.'
   end
 
   protected
