@@ -67,6 +67,7 @@ class Provider < ApplicationRecord
   has_many :deleted_document_logs, class_name: 'ProviderDeletedDocumentLog', dependent: :destroy
   has_many :missing_field_submissions, class_name: 'ProvidersMissingFieldSubmission',dependent: :destroy
   has_many :payer_logins, class_name: 'ProvidersPayerLogin', dependent: :destroy
+  has_many :enrollments, class_name: 'EnrollmentProvider', dependent: :destroy
 
   # accepts_nested_attributes_for :taxonomies, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :licenses, allow_destroy: true, reject_if: :all_blank
@@ -128,12 +129,12 @@ class Provider < ApplicationRecord
     end
 
     def client_portal_conditions(params)
-      {
+      { 
         status: params[:status],
         enrollment_group_id: params[:provider_enrollment_group_id],
-        first_name: params[:first_name],
-        middle_name: params[:middle_name],
-        last_name: params[:last_name],
+        first_name: params[:first_name]&.titleize,
+        middle_name: params[:middle_name]&.titleize,
+        last_name: params[:last_name]&.titleize,
         practitioner_type: (params[:practitioner_type].split(',') rescue ''),
         npi: params[:npi],
         ssn: params[:ssn],
@@ -149,6 +150,14 @@ class Provider < ApplicationRecord
     def with_missing_required_docs
       query_conditions = REQUIRED_DOCUMENTS.map { |field| "#{field} IS NULL" }.join(' OR ')
       Provider.where(query_conditions)
+    end
+
+    def format_names
+      Provider.all.each do |provider|
+        provider.update_attribute("first_name", provider&.first_name&.strip)
+        provider.update_attribute("last_name", provider&.last_name&.strip)
+        provider.update_attribute("middle_name", provider&.middle_name&.strip)
+      end
     end
   end
 
@@ -166,9 +175,9 @@ class Provider < ApplicationRecord
     missing_field_submissions.find_by(data_key: field, provider_id: self.id, data_attribute: attribute)
   end
 
-  def enrollments
-    EnrollmentProvider.where(provider_id: self.id)
-  end
+  # def enrollments
+  #   EnrollmentProvider.where(provider_id: self.id)
+  # end
 
   def no_group?
     self.enrollment_group_id.nil? && self.dco.nil?

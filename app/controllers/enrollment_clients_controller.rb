@@ -87,9 +87,24 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def set_providers
-    @providers = Provider.joins(:group).order('enrollment_groups.group_name, providers.id')
-    @providers = @providers.search_by_params(params).paginate(per_page: 50, page: params[:page] || 1)
+   @providers = Provider.joins(:group).order('enrollment_groups.group_name, providers.id')
+    @providers = @providers.search_by_params(params)
+
+    # render json: params and return
+
+
+    # this will need refactoring just went with this for now for hotfix
+    if !params[:enrollment_status].blank?
+    # render json: params and return
+      status_ids = EnrollmentProvidersDetail.where(enrollment_status: params[:enrollment_status]).pluck(:enrollment_provider_id)
+      provider_ids = @providers.joins(enrollments: :details)
+                                       .where(enrollment_providers: { id: status_ids }).pluck(:id)
+      @providers = Provider.where(id: provider_ids)
+    end
+
+    @providers = @providers.paginate(per_page: 50, page: params[:page] || 1)
     # @providers = Provider.search_by_params(params).paginate(per_page: 50, page: params[:page] || 1)
+
   end
 
   def set_incomplete_providers

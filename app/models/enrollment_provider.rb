@@ -2,7 +2,7 @@ class EnrollmentProvider < ApplicationRecord
 	include PgSearch::Model
 	include RemovePayorFiles
 
-	pg_search_scope :search,
+  pg_search_scope :search,
           against: self.column_names,
           using: {
             tsearch: {any_word: true}
@@ -44,7 +44,7 @@ class EnrollmentProvider < ApplicationRecord
 
 	has_one :client_provider_enrollment, as: :enrollable, dependent: :destroy
 	has_many :details, class_name: 'EnrollmentProvidersDetail', dependent: :destroy
- has_many :comments, class_name: 'EnrollmentComment', dependent: :destroy
+  has_many :comments, class_name: 'EnrollmentComment', dependent: :destroy
 
 	accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank
 

@@ -1,5 +1,5 @@
 class EnrollmentProvidersDetail < ApplicationRecord
-  belongs_to :enrollment_provider
+  belongs_to :enrollment_provider, optional: true
   mount_uploaders :upload_payor_file, DocumentUploader
 
   scope :submitted, -> { where(enrollment_status: 'application-submitted') }
