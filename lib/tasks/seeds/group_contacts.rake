@@ -1,5 +1,7 @@
 namespace :group_contacts	do
 	desc "populate enrollment_group_id"
+  task :seed_data => :environment do
+	end
 
 	task :populate_enrollment_group_id	=> :environment do
 		GroupContact.all.each do |group_contact|
