@@ -40,6 +40,10 @@
             </div> -->
          <div class="row mb-1">
             <div class="col-lg-6">
+               <label>SSN</label>
+               <p class="text-black fw-semibold"><%= @provider&.ssn %></p>
+            </div>
+            <div class="col-lg-6">
                <label>Date of Birth</label>
                <p class="text-black fw-semibold"><%= @provider&.birth_date&.strftime('%B %d, %Y') %></p>
             </div>
@@ -90,34 +94,18 @@
                <p class="text-black fw-semibold"><%= @provider.email_address %></p>
             </div>
             <div class="col-lg-6">
-               <label>Medical School Name</label>
-               <p class="text-black fw-semibold"><%= @provider.medical_school_name %></p>
+               <label>Practitioner Type</label>
+               <p class="text-black fw-semibold"><%= @provider.practitioner_type %></p>
             </div>
          </div>
          <div class="row mb-1">
-<!--             <div class="col-lg-6">
-               <label>Medical School Address</label>
-               <p class="text-black fw-semibold"><%#= @provider.medical_school_address %></p>
-            </div> -->
-
-            <div class="col-lg-6">
-               <label>Do you have a medical license?</label>
-               <p class="text-black fw-semibold"><%= @provider.medical_license&.upcase %></p>
-            </div>
-            <div class="col-lg-6">
-               <label>Graduation Date</label>
-               <p class="text-black fw-semibold"><%= @provider.graduation_date&.strftime('%B %d, %Y') %></p>
-            </div>
-         </div>
-         <div class="row mb-1">
-
             <div class="col-lg-6">
                <label>Taxonomy Code</label>
                <p class="text-black fw-semibold"><%= @provider.taxonomy %></p>
             </div>
             <div class="col-lg-6">
-               <label>Practitioner Type</label>
-               <p class="text-black fw-semibold"><%= @provider.practitioner_type %></p>
+               <label>Specialty</label>
+               <p class="text-black fw-semibold"><%= @provider.specialty %></p>
             </div>
          </div>
          <div class="row mb-1">
@@ -129,18 +117,8 @@
                </p>
             </div>
             <div class="col-lg-6">
-               <label>Specialty</label>
-               <p class="text-black fw-semibold"><%= @provider.specialty %></p>
-            </div>
-         </div>
-         <div class="row mb-1">
-            <div class="col-lg-6">
-               <label>Hire date of provider seeing patients</label>
-               <p class="text-black fw-semibold"><%= @provider.provider_hire_date_seeing_patient&.strftime('%B %d, %Y') %></p>
-            </div>
-            <div class="col-lg-6">
-               <label>Board Certified</label>
-               <p class="text-black fw-semibold"><%= @provider.board_certified ? 'YES' : 'NO' %></p>
+               <label>Effective date of provider seeing patients</label>
+               <p class="text-black fw-semibold"><%= @provider.effective_date_seeing_patient&.strftime('%B %d, %Y') %></p>
             </div>
          </div>
          <div class="row mb-1"><!-- 
@@ -149,8 +127,8 @@
                <p class="text-black fw-semibold"><%#= @provider.employed_by_other&.upcase %></p>
             </div> -->
             <div class="col-lg-6">
-               <label>Effective date of provider seeing patients</label>
-               <p class="text-black fw-semibold"><%= @provider.effective_date_seeing_patient&.strftime('%B %d, %Y') %></p>
+               <label>Hire date of provider seeing patients</label>
+               <p class="text-black fw-semibold"><%= @provider.provider_hire_date_seeing_patient&.strftime('%B %d, %Y') %></p>
             </div>
          </div>
          <div class="row mb-1">
@@ -165,121 +143,10 @@
          </div>
         <div class="row mb-1">
           <div class="col-lg-6">
-              <label>SSN</label>
-              <p class="text-black fw-semibold"><%= @provider&.ssn %></p>
-          </div>
-          <div class="col-lg-6">
               <label>NPI</label>
               <p class="text-black fw-semibold"><%= @provider&.npi %></p>
           </div>
         </div>
-         <h3 class="text-primary">Primary Service Location</h3>
-         <% @provider.service_locations.each do |service_location|%>
-         <div class="row mb-1">
-            <div class="col-lg-6">
-               <label>Non-office Service Area</label>
-               <p class="text-black fw-semibold"><%= service_location&.state%></p>
-            </div>
-            <div class="col-lg-6">
-               <label>Apps/Intake Phone</label>
-               <p class="text-black fw-semibold"><%= service_location.primary_service_location_apps %></p>
-            </div>
-         </div>
-         <div class="row mb-1">
-            <div class="col-lg-6">
-               <label>Zip Code</label>
-               <p class="text-black fw-semibold"><%= service_location.primary_service_zip_code %></p>
-            </div>
-            <div class="col-lg-6">
-               <label>Office Email Address</label>
-               <p class="text-black fw-semibold"><%= service_location.primary_service_office_email %></p>
-            </div>
-         </div>
-         <div class="row mb-1">
-            <div class="col-lg-6">
-               <label>Fax</label>
-               <p class="text-black fw-semibold"><%= service_location.primary_service_fax %></p>
-            </div>
-            <div class="col-lg-6">
-               <label>Office Website</label>
-               <p class="text-black fw-semibold"><%= service_location.primary_service_office_website %></p>
-            </div>
-         </div>
-         <div class="row mb-1">
-            <div class="col-lg-6">
-               <label>Crisis Phone</label>
-               <p class="text-black fw-semibold"><%= service_location.primary_service_crisis_phone %></p>
-            </div>
-            <div class="col-lg-6">
-               <label>Other Phone/Pager</label>
-               <p class="text-black fw-semibold"><%= service_location.primary_service_location_other_phone %></p>
-            </div>
-         </div>
-         <div class="row mb-1">
-            <div class="col-lg-6">
-               <label>Self Service Appt Scheduling Available</label>
-               <p class="text-black fw-semibold"><%= service_location.primary_service_appt_scheduling == '1' ? 'YES' : 'NO' %></p>
-            </div>
-            <div class="col-lg-6">
-               <label>Qualified Medical Interpreter Language</label>
-               <p class="text-black fw-semibold"><%= service_location.primary_service_interpreter_language %></p>
-            </div>
-         </div>
-         <div class="row mb-1">
-            <div class="col-lg-6">
-               <label>Telehealth Only State/District</label>
-               <p class="text-black fw-semibold"><%= service_location.primary_service_telehealth_only_state %></p>
-            </div>
-         </div>
-         <% end %>
-         <!-- end of service location -->
-         <h3 class="text-primary">Admitting Privileges</h3>
-         <div class="row mb-1">
-            <div class="col-lg-6">
-               <label>Admitting Physician/Practice/Clinic/Group</label>
-               <p class="text-black fw-semibold"><%= @provider.name_admitting_physician %></p>
-            </div>
-            <div class="col-lg-6">
-               <label>Facility Name</label>
-               <p class="text-black fw-semibold"><%= @provider.facility_name %></p>
-            </div>
-         </div>
-         <div class="row mb-1">
-            <div class="col-lg-6">
-               <label>Facility Location</label>
-               <p class="text-black fw-semibold"><%= @provider.facility_location %></p>
-            </div>
-            <div class="col-lg-6">
-               <label>Address Line 1</label>
-               <p class="text-black fw-semibold"><%= @provider.admitting_facility_address_line1 %></p>
-            </div>
-         </div>
-         <div class="row mb-1">
-            <div class="col-lg-6">
-               <label>Address Line 2</label>
-               <p class="text-black fw-semibold"><%= @provider.admitting_facility_address_line2 %></p>
-            </div>
-            <div class="col-lg-6">
-               <label>City</label>
-               <p class="text-black fw-semibold"><%= @provider.admitting_facility_city %></p>
-            </div>
-         </div>
-         <div class="row mb-1">
-            <div class="col-lg-6">
-               <label>State</label>
-               <p class="text-black fw-semibold"><%= @provider.admitting_state %></p>
-            </div>
-            <div class="col-lg-6">
-               <label>Zip Code</label>
-               <p class="text-black fw-semibold"><%= @provider.admitting_facility_zip_code %></p>
-            </div>
-         </div>
-         <div class="row mb-1">
-            <div class="col-lg-6">
-               <label>Admitting Arrangements</label>
-               <p class="text-black fw-semibold"><%= @provider.admitting_facility_arrangments %></p>
-            </div>
-         </div>
       </div>
    </div>
 </div>

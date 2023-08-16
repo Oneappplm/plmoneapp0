@@ -1,5 +1,6 @@
 <div class="row mb-3 g-2">
   <div class="col-lg-3">
+  <%= link_to enrollment_clients_path, :class => "button" do %>
     <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
       <h5 class="text-black text-left">All Providers</h5>
       <div class="w-100 d-flex d-flex align-items-end">
@@ -8,157 +9,185 @@
         </h1>
       </div>
     </div>
+  <% end %>
   </div>
   <div class="col-lg-3">
-    <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
-      <select class="enrollment-group-select position-absolute bg-transparent fw-semibold text-right pe-1" style="right: 1%;text-align: right;">
-        <option value="all">All</option>
-        <% enrollment_group_options.each do |group|%>
-          <option value="<%= group[1]%>"><%= group[0]%></option>
+      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
+        <select class="enrollment-group-select position-absolute bg-transparent fw-semibold text-right pe-1" style="right: 1%;text-align: right;">
+          <option value="all">All</option>
+          <% enrollment_group_options.each do |group|%>
+            <option value="<%= group[1]%>"><%= group[0]%></option>
+          <% end %>
+        </select>
+        <%= link_to groups_enrollment_clients_path, :class => "button" do %>
+          <h5 class="text-black text-left">All Groups</h5>
+          <div class="w-100 d-flex d-flex align-items-end">
+            <h1 style="font-size: 40px;" class="text-black mt-2">
+                <%= EnrollmentGroup.count %>
+            </h1>
+          </div>
         <% end %>
-      </select>
-      <h5 class="text-black text-left">All Groups</h5>
-      <div class="w-100 d-flex d-flex align-items-end">
-         <h1 style="font-size: 40px;" class="text-black mt-2">
-             <%= EnrollmentGroup.count %>
-        </h1>
+
       </div>
-    </div>
   </div>
   <div class="col-lg-3">
-    <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
-      <div id="dco_select_container">
-        <%= render "providers/overview_components/group_dco_dropdown"%>
+    <%= link_to "javascript:void()", :class => "button", :id => "group_locations_link_to" do %>
+      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
+        <%# <div id="dco_select_container"> %>
+          <%#render "providers/overview_components/group_dco_dropdown"%>
+        <%# </div> %>
+          <h5 class="text-black text-left">Group's Location</h5>
+          <div class="w-100 d-flex d-flex align-items-end">
+            <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
+                <%= GroupDco.count %>
+            </h1>
+          </div>
       </div>
-      <h5 class="text-black text-left">Group's Location</h5>
-      <div class="w-100 d-flex d-flex align-items-end">
-         <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
-            <%= GroupDco.count %>
-        </h1>
-      </div>
-    </div>
+    <% end %>
   </div>
 
   <div class="col-lg-3">
-    <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
-      <h5 class="text-black text-left">Providers with Missing Documents</h5>
-      <div class="w-100 d-flex d-flex align-items-end">
-         <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
-            <%= @providers_with_missing_documents %>
-        </h1>
+    <%= link_to notifications_enrollment_clients_path, :class => "button" do %>
+      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
+        <h5 class="text-black text-left">Providers with Missing Documents</h5>
+        <div class="w-100 d-flex d-flex align-items-end">
+          <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
+              <%= @providers_with_missing_documents %>
+          </h1>
+        </div>
       </div>
-    </div>
+    <% end %>
   </div>
 </div>
 <div class="row mb-3 g-2">
   <div class="col-lg-3">
-    <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
-      <h5 class="text-black text-left">Providers with Missing Details</h5>
-      <div class="w-100 d-flex d-flex align-items-end">
-         <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
-            <%= @providers_with_missing_details %>
-        </h1>
+    <%= link_to notifications_enrollment_clients_path, :class => "button" do %>
+      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
+        <h5 class="text-black text-left">Providers with Missing Details</h5>
+        <div class="w-100 d-flex d-flex align-items-end">
+          <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
+              <%= @providers_with_missing_details %>
+          </h1>
+        </div>
       </div>
-    </div>
-  </div>
-  <div class="col-lg-3">
-    <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
-      <h5 class="text-black text-left">Application Not Submitted</h5>
-      <div class="w-100 d-flex d-flex align-items-end">
-         <h1 style="font-size: 40px;" class="text-black mt-2">
-           <%= application_status_count 'not_submitted' %>
-        </h1>
-      </div>
-    </div>
-  </div>
-
-
-  <div class="col-lg-3">
-    <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
-      <h5 class="text-black text-left" id="enrollment_card_header">Application Submitted</h5>
-      <div class="w-100 d-flex d-flex align-items-end">
-         <h1 style="font-size: 40px;" class="text-black mt-2" >
-          <%= application_status_count 'submitted' %>
-        </h1>
-      </div>
-    </div>
+    <% end %>
   </div>
 
   <div class="col-lg-3">
-    <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
-      <h5 class="text-black text-left">Processing</h5>
-      <div class="w-100 d-flex d-flex align-items-end">
-         <h1 style="font-size: 40px;" class="text-black mt-2">
-            <%= application_status_count 'processing' %>
-        </h1>
+    <%= link_to enrollment_clients_path(enrollment_status: 'application-not-submitted'), :class => "button" do %>
+      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
+        <h5 class="text-black text-left">Application Not Submitted</h5>
+        <div class="w-100 d-flex d-flex align-items-end">
+          <h1 style="font-size: 40px;" class="text-black mt-2">
+            <%= application_status_count 'not_submitted' %>
+          </h1>
+        </div>
       </div>
-    </div>
+    <% end %>
+  </div>
+
+  <div class="col-lg-3">
+    <%= link_to enrollment_clients_path(enrollment_status: 'application-submitted'), :class => "button" do %>
+      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
+        <h5 class="text-black text-left" id="enrollment_card_header">Application Submitted</h5>
+        <div class="w-100 d-flex d-flex align-items-end">
+          <h1 style="font-size: 40px;" class="text-black mt-2" >
+            <%= application_status_count 'submitted' %>
+          </h1>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-lg-3">
+    <%= link_to enrollment_clients_path(enrollment_status: 'processing'), :class => "button" do %>
+      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
+        <h5 class="text-black text-left">Processing</h5>
+        <div class="w-100 d-flex d-flex align-items-end">
+          <h1 style="font-size: 40px;" class="text-black mt-2">
+              <%= application_status_count 'processing' %>
+          </h1>
+        </div>
+      </div>
+    <% end %>
   </div>
 </div>
 <div class="row mb-3 g-2">
   <div class="col-lg-3">
-    <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
-      <h5 class="text-black text-left">Approved</h5>
-      <div class="w-100 d-flex d-flex align-items-end">
-         <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
-          <%= application_status_count 'approved' %>
-        </h1>
+    <%= link_to enrollment_clients_path(enrollment_status: 'approved'), :class => "button" do %>
+      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
+        <h5 class="text-black text-left">Approved</h5>
+        <div class="w-100 d-flex d-flex align-items-end">
+          <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
+            <%= application_status_count 'approved' %>
+          </h1>
+        </div>
       </div>
-    </div>
+    <% end %>
   </div>
   <div class="col-lg-3">
-    <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
-      <h5 class="text-black text-left">Denied</h5>
-      <div class="w-100 d-flex d-flex align-items-end">
-         <h1 style="font-size: 40px;" class="text-black mt-2">
-           <%= application_status_count 'denied' %>
-        </h1>
+    <%= link_to enrollment_clients_path(enrollment_status: 'denied'), :class => "button" do %>
+      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
+        <h5 class="text-black text-left">Denied</h5>
+        <div class="w-100 d-flex d-flex align-items-end">
+          <h1 style="font-size: 40px;" class="text-black mt-2">
+            <%= application_status_count 'denied' %>
+          </h1>
+        </div>
       </div>
-    </div>
+    <% end %>
   </div>
 
 
   <div class="col-lg-3">
-    <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
-      <h5 class="text-black text-left" id="enrollment_card_header">Terminated</h5>
-      <div class="w-100 d-flex d-flex align-items-end">
-         <h1 style="font-size: 40px;" class="text-black mt-2" >
-          <%= application_status_count 'terminated' %>
-        </h1>
+    <%= link_to enrollment_clients_path(enrollment_status: 'terminated'), :class => "button" do %>
+      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
+        <h5 class="text-black text-left" id="enrollment_card_header">Terminated</h5>
+        <div class="w-100 d-flex d-flex align-items-end">
+          <h1 style="font-size: 40px;" class="text-black mt-2" >
+            <%= application_status_count 'terminated' %>
+          </h1>
+        </div>
       </div>
-    </div>
+    <% end %>
   </div>
 
   <div class="col-lg-3">
-    <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
-      <h5 class="text-black text-left">Not Eligible</h5>
-      <div class="w-100 d-flex d-flex align-items-end">
-         <h1 style="font-size: 40px;" class="text-black mt-2">
-          <%= application_status_count 'not_eligible' %>
-        </h1>
+    <%= link_to enrollment_clients_path(enrollment_status: 'not-eligible'), :class => "button" do %>
+      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
+        <h5 class="text-black text-left">Not Eligible</h5>
+        <div class="w-100 d-flex d-flex align-items-end">
+          <h1 style="font-size: 40px;" class="text-black mt-2">
+            <%= application_status_count 'not_eligible' %>
+          </h1>
+        </div>
       </div>
-    </div>
+    <% end %>
   </div>
 </div>
 <div class="row mb-3 g-2">
   <div class="col-lg-3">
-    <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
-      <h5 class="text-black text-left">Active Providers</h5>
-      <div class="w-100 d-flex d-flex align-items-end">
-         <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
-            <%= Provider.active.count %>
-        </h1>
+    <%= link_to enrollment_clients_path(status: 'active'), :class => "button" do %>
+      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
+        <h5 class="text-black text-left">Active Providers</h5>
+        <div class="w-100 d-flex d-flex align-items-end">
+          <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
+              <%= Provider.active.count %>
+          </h1>
+        </div>
       </div>
-    </div>
+    <% end %>
   </div>
   <div class="col-lg-3">
-    <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
-      <h5 class="text-black text-left">Inactive Providers</h5>
-      <div class="w-100 d-flex d-flex align-items-end">
-         <h1 style="font-size: 40px;" class="text-black mt-2">
-           <%= Provider.inactive.count %>
-        </h1>
+    <%= link_to enrollment_clients_path(status: 'inactive'), :class => "button" do %>
+      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
+        <h5 class="text-black text-left">Inactive Providers</h5>
+        <div class="w-100 d-flex d-flex align-items-end">
+          <h1 style="font-size: 40px;" class="text-black mt-2">
+            <%= Provider.inactive.count %>
+          </h1>
+        </div>
       </div>
-    </div>
+    <% end %>
   </div>
 </div>

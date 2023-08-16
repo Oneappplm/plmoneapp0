@@ -435,7 +435,7 @@ module ApplicationHelper
 
 	def flatforms
 		[
-			[' Credible','credible'],
+			['Credible','credible'],
 			['CareLogic','carelogic'],
 			['Insync','insync']
 		]

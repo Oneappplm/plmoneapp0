@@ -43,7 +43,7 @@ class Provider < ApplicationRecord
   # relationhsip to be removed - update: provider can have many group_dcos
   belongs_to :group_dco, class_name: 'GroupDco', foreign_key: 'dco', optional: true
   belongs_to :state, class_name: 'State', foreign_key: 'state_id', required: false
-
+  belongs_to :prof_medical_school_state, class_name: 'State', foreign_key: 'prof_medical_school_state_id', required: false
   has_many :taxonomies, class_name: 'ProviderTaxonomy', dependent: :destroy
   has_one :licenses , class_name: 'ProviderLicense', dependent: :destroy
   has_one :enrollment_provider , class_name: 'EnrollmentProvider', dependent: :destroy

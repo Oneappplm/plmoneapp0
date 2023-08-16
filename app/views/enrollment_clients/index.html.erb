@@ -1,3 +1,6 @@
+<% content_for :js do %>
+  <%= render "providers/js_components/string_array_modifier"%>
+<% end %>
 <style>
    .vscomp-ele{
       max-width: inherit;
@@ -15,11 +18,11 @@
                   <div class="row mt-3">
                      <div class="col-xl-4">
                         <label for="">Enrollment Status</label>
-                        <%= select_tag('enrollment_status', options_for_select(enrollment_status), class: 'form-select', prompt: 'Select option')%>
+                        <%= select_tag('enrollment_status', options_for_select(enrollment_status, params[:enrollment_status]), class: 'form-select', prompt: 'Select option')%>
                      </div>
                      <div class="col-xl-4">
                         <label for="">Group</label>
-                        <%= select_tag('provider_enrollment_group_id', options_for_select(groups.pluck(:group_name, :id)), class: 'form-select', prompt: 'Select option', id: 'provider_enrollment_group_id')%>
+                        <%= select_tag('provider_enrollment_group_id', options_for_select(groups.pluck(:group_name, :id), params[:provider_enrollment_group_id]), class: 'form-select', prompt: 'Select option', id: 'provider_enrollment_group_id')%>
                      </div>
                      <div class="col-xl-4">
                         <label for="">Location</label>
@@ -30,15 +33,15 @@
                   <div class="row mt-3">
                      <div class="col-xl-4">
                         <label for="">First Name</label>
-                        <input type="text" name="first_name" id="first_name" class="form-control" placeholder="Type here...">
+                        <input type="text" name="first_name" value="<%=params[:first_name] %>" id="first_name" class="form-control" placeholder="Type here...">
                      </div>
                      <div class="col-xl-4">
                         <label for="">Middle Name</label>
-                        <input type="text" name="middle_name" id="middle_name" class="form-control" placeholder="Type here...">
+                        <input type="text" name="middle_name" value="<%=params[:middle_name] %>" id="middle_name" class="form-control" placeholder="Type here...">
                      </div>
                      <div class="col-xl-4">
                         <label for="">Last Name</label>
-                        <input type="text" name="last_name" id="last_name" class="form-control" placeholder="Type here...">
+                        <input type="text" name="last_name" value="<%=params[:last_name] %>" id="last_name" class="form-control" placeholder="Type here...">
                      </div>
                   </div>
                   <div class="row mt-3">
@@ -48,11 +51,11 @@
                      </div>
                      <div class="col-xl-4">
                         <label for="">NPI</label>
-                        <input type="text" name="npi" id="npi" class="form-control" placeholder="Type here...">
+                        <input type="text" name="npi" value="<%=params[:npi] %>" id="npi" class="form-control" placeholder="Type here...">
                      </div>
                      <div class="col-xl-4">
                         <label for="">Provider Status</label>
-                        <%= select_tag('status', options_for_select(provider_statuses), class: 'form-control',  prompt: 'Select option')%>
+                        <%= select_tag('status', options_for_select(provider_statuses, params[:status]), class: 'form-control',  prompt: 'Select option')%>
                      </div>
                   </div>
                   <div class="d-flex justify-content-center mt-4">
@@ -82,19 +85,23 @@
 <script>
   $(document).ready(function(){
     var csrfToken = $('meta[name="csrf-token"]').attr('content');
-
+      if('<%= params[:provider_enrollment_group_id].present? %>' == 'true') {
+         $('#provider_enrollment_group_id').trigger('change');
+      }
+      var selected_practitioner_types= stringArrayModifier('<%= params[:practitioner_type]&.split(",") %>');
       function getProviderTypes() {
           $.ajax({
             url: '<%= get_provider_types_path %>',
             method: 'GET',
             data: { authenticity_token: csrfToken },
             success: function(data) {
-              VirtualSelect.init({
+               VirtualSelect.init({
                   options: data['provider_types'],
                   ele: '#practitioner_type',
                   multiple: true,
-                  showSelectedOptionsFirst: true
-              });
+                  showSelectedOptionsFirst: true,
+                  selectedValue: selected_practitioner_types
+               });
             }
           })
       }

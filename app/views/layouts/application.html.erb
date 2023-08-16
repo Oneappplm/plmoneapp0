@@ -959,10 +959,12 @@ $('#provider_enrollment_group_id').on('change',function(){
             success: function(data) {
               var practice_locations = data['practice_locations'];
               if(practice_locations.length != 0) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const selected_practice_location = urlParams.get('dco_name');
                 $('#provider_dco').empty();
                 $('#provider_dco').append('<option value="">Practice Location</option>');
                 for (var i = 0; i < practice_locations.length ; i++) {
-                  $('#provider_dco').append('<option value="'+practice_locations[i][0]+'">'+practice_locations[i][1]+'</option>');
+                  $('#provider_dco').append('<option' + (Number(selected_practice_location) == practice_locations[i][0] ? ' selected=selected' : '') +' value="'+practice_locations[i][0]+'">'+practice_locations[i][1]+'</option>');
                 }
                 $('#provider_dco_div').removeClass('d-none');
               }else{
