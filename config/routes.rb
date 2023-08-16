@@ -110,6 +110,7 @@ Rails.application.routes.draw do
   end
 
   resource :practice_locations
+  resource :client_organizations
 
 
   resources :time_lines, path: 'time-lines'

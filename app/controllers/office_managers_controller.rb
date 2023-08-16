@@ -1,16 +1,23 @@
 class OfficeManagersController < ApplicationController
   before_action :set_provider, only: [:manage_applications, :send_invite, :remove_provider]
   before_action :set_current_provider, only: [:credentialing_application, :view_summary, :re_attest_application]
+  before_action :set_client_organizations, only: [:show]
   def index
     if params[:template].present?
       if params[:template] == 'manage_practice'
         @locations = PracticeLocation.all
+        @client_organizations = ClientOrganization.all
       end
       render params[:template]
     else
       clean_empty_providers
       @providers = ProviderSource.unscoped.order(created_at: :asc).paginate(page: params[:page], per_page: 12)
     end
+  end
+
+  def show
+    @client_organizations = ClientOrganization.all
+    @client_organization = ClientOrganization.find(params[:id])
   end
 
   def clean_empty_providers
@@ -88,6 +95,10 @@ class OfficeManagersController < ApplicationController
   end
 
   protected
+  def set_client_organizations
+    @client_organization = ClientOrganization.find(params[:id])
+  end
+
   def set_provider
     @provider = ProviderSource.find(params[:id])
   end
