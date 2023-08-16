@@ -349,6 +349,16 @@ class Provider < ApplicationRecord
     []
   end
 
+  def submitted_missing_fields
+    if self.missing_field_submissions
+      self.missing_field_submissions.map{|m| m.data.map{|d| d.data_key}}.flatten.uniq
+    else
+      []
+    end
+  rescue
+    []
+  end
+
   def send_welcome_letter
     return unless self.email_address.present?
 

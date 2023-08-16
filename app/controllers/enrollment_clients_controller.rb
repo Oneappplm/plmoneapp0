@@ -6,6 +6,10 @@ class EnrollmentClientsController < ApplicationController
 
   def show
     if params[:mode].present?
+        if @provider
+          @show_missing_fields = @provider.show_missing_fields?
+          @provider.build_licenses if @provider.licenses.nil?
+        end
       render params[:mode]
     end
   end
@@ -13,8 +17,6 @@ class EnrollmentClientsController < ApplicationController
   def reports;end
 
   def notifications
-
-
     @provider = if params[:provider_id]
       Provider.find(params[:provider_id])
     else

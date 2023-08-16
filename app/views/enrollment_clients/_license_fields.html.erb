@@ -1,29 +1,29 @@
  <div class="row field licenses-field mb-2" data-id=0>
-    <% if f.object.license_number.nil? %>
+    <% if f.object.license_number.nil? && !@provider.submitted_missing_fields.include?('license_number') %>
       <div class="col-lg-12">
         <label class="text-dark-grey">State License Number</label>
-        <%= f.text_field :license_number, placeholder: 'Type here...', class: 'form-control border border-dark mb-3', required: true %>
+        <%= f.text_field :license_number, placeholder: 'Type here...', class: 'form-control border border-dark mb-3' %>
       </div>
     <% end %>
 
-    <% if f.object.license_effective_date.nil? %>
+    <% if f.object.license_effective_date.nil? && !@provider.submitted_missing_fields.include?('license_effective_date') %>
       <div class="col-lg-12">
         <label class="text-dark-grey">License Effective Date</label>
-        <%= f.text_field :license_effective_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark mb-3', onfocus: "(this.type = 'date')", required: true %>
+        <%= f.text_field :license_effective_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark mb-3', onfocus: "(this.type = 'date')" %>
       </div>
     <% end %>
 
-    <% if f.object.state_id.nil? %>
+    <% if f.object.state_id.nil? && !@provider.submitted_missing_fields.include?('state_id')%>
       <div class="col-lg-12">
         <label class="text-dark-grey">License Registration State</label>
-        <%= f.select :state_id, options_for_select(states.pluck(:name, :id), f.object.state_id), { prompt: 'Select option' }, { class: 'form-select border-dark mb-3 state_dropdown', required: true } %>
+        <%= f.select :state_id, options_for_select(states.pluck(:name, :id), f.object.state_id), { prompt: 'Select option' }, { class: 'form-select border-dark mb-3 state_dropdown' } %>
       </div>
     <% end %>
 
-    <% if f.object.license_expiration_date.nil? %>
+    <% if f.object.license_expiration_date.nil? && !@provider.submitted_missing_fields.include?('license_expiration_date') %>
       <div class="col-lg-12">
         <label class="text-dark-grey">License Expiration Date</label>
-        <%= f.text_field :license_expiration_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')", required: true %>
+        <%= f.text_field :license_expiration_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')"%>
       </div>
     <% end %>
 </div>

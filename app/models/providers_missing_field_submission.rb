@@ -12,14 +12,14 @@
 
   def update_provider_fields
     provider = Provider.find(self.provider_id)
+    license = ProviderLicense.find_or_create_by(provider_id: provider.id)
     if data
       data.each do |field|
         if field.data_attribute.nil?
           provider.update_attribute(field.data_key, field.data_value)
         else
           if field.data_attribute == 'licenses_attributes'
-            license = ProviderLicense.find_by(provider_id: provider.id)
-            license.update_attribute(field.data_key, field.data_value.to_i)
+            license.update_attribute(field.data_key, field.data_value)
           end
         end
       end

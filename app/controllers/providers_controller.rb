@@ -35,10 +35,10 @@ class ProvidersController < ApplicationController
   def update_from_notifications
     submission = @provider.create_missing_field_submission
     params[:provider].each do |key, value|
-        submission.create_missing_field_submission_data(key,value) if !key.include?('_attributes') && key != 'id'
+        submission.create_missing_field_submission_data(key,value) if !key.include?('_attributes') && key != 'id' && !value.blank?
         if key.include?('_attributes')
           params[:provider][key.to_sym].each do |key2,value2|
-            submission.create_missing_field_submission_data(key2,value2,key) if key2 != 'id'
+            submission.create_missing_field_submission_data(key2,value2,key) if key2 != 'id' && !value2.blank?
           end
         end
      end

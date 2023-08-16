@@ -4,7 +4,7 @@
           <%= form_for @provider, url: provider_update_from_notifications_path(@provider) , method: :put do |f|%>
           <%= hidden_field_tag :from_notifications, 'true'%>
             <% @provider&.required_fields.each do |field|%>
-              <% if @provider&.send(field[1]).nil? or @provider&.send(field[1]).blank? %>
+              <% if (@provider&.send(field[1]).nil? or @provider&.send(field[1]).blank?) && !@provider.submitted_missing_fields.include?(field[1])  %>
                 <div class="form-group mb-2">
                   <label class="text-dark-grey"><%= field[0]%></label>
                   <% if ['state_dropdown'].include?(field[2])%>
