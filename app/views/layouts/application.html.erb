@@ -207,9 +207,12 @@
 
   <script>
     // show loader when search button is clicked
-		$('input[type="submit"]').click(function() {
-			$('.loading-overlay').show();
-		});
+    // and don't have class 'no-loader'
+    $('form').submit(function() {
+      if(!$(this).hasClass('no-loader')) {
+        $('.loading-overlay').show();
+      }
+    });
   </script>
 
   <%= render 'external/tawkto' %>

@@ -3,6 +3,9 @@ class OfficeManagersController < ApplicationController
   before_action :set_current_provider, only: [:credentialing_application, :view_summary, :re_attest_application]
   def index
     if params[:template].present?
+      if params[:template] == 'manage_practice'
+        @locations = PracticeLocation.all
+      end
       render params[:template]
     else
       clean_empty_providers

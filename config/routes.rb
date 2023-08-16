@@ -109,6 +109,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resource :practice_locations
+
 
   resources :time_lines, path: 'time-lines'
   resources :manage_clients, path: 'manage-clients'
