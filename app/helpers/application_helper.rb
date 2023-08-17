@@ -84,6 +84,10 @@ module ApplicationHelper
 		nil
 	end
 
+	def current_client_organization
+		current_client_organization = ClientOrganization.take || ClientOrganization.new
+	end
+
 	def find_role page
 		current_user&.roles.find_by(page: page) rescue	nil
 	end
