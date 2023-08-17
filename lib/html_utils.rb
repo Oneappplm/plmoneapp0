@@ -46,16 +46,17 @@ module HtmlUtils
     options[:value_on] ||= 'yes'
     options[:value_off] ||= 'no'
     options[:to_show] ||= ''
+    options[:required] ||= false
 
     option = <<-HTML
       <label class="#{ options[:label_class] }"> #{ options[:label] } </label>
       <div class="#{ options[:container_class] }">
           <span>
-          <input type="radio" value="#{ options[:value_on] }" name="#{ options[:name] }" required>
+          <input type="radio" value="#{ options[:value_on] }" name="#{ options[:name] }" #{ options[:required] ? 'required' : '' } >
           <span>#{ options[:value_on].upcase }</span>
           </span>
           <span>
-          <input type="radio" value="#{ options[:value_off] }" name="#{ options[:name] }" required>
+          <input type="radio" value="#{ options[:value_off] }" name="#{ options[:name] }" #{ options[:required] ? 'required' : '' } >
           <span>#{ options[:value_off].upcase }</span>
           </span>
         </div>

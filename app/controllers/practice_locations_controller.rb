@@ -1,4 +1,5 @@
 class PracticeLocationsController < ApplicationController
+  before_action :set_practice_location, only: [:destroy]
 
   def create
     # render json: params and return
@@ -8,7 +9,21 @@ class PracticeLocationsController < ApplicationController
     end
   end
 
-  private
+  def destroy
+    if @practice_location.destroy
+      if request.xhr?
+        flash[:notice] = 'Location successfully removed.'
+        render json: { success: true }
+      else
+        redirect_to request.referrer, notice: 'Location successfully removed.'
+      end
+    end
+  end
+
+  protected
+  def set_practice_location
+    @practice_location = PracticeLocation.find(params[:id])
+  end
 
   def practice_location_params
     params.require(:practice_location).permit(:location, :legal_name, :address1, :address2,

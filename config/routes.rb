@@ -110,7 +110,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resource :practice_locations
+  resources :practice_locations
   resource :client_organizations
 
 
