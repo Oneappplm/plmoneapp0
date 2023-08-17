@@ -478,4 +478,20 @@ module ApplicationHelper
 			0
 		end
 	end
+
+  def enrollment_types
+    [
+      ['Add','add'],
+      ['Initial','Initial'],
+      ['Recred/Reval','recred'],
+      ['Not part on contract','not_part_on_contract']
+    ]
+  end
+
+  def get_enrollment_type(selected_enrollment_type)
+    enrollment_types.each do |e|
+      return e[0] if e[1] == selected_enrollment_type
+    end
+    selected_enrollment_type
+  end
 end
