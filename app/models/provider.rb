@@ -89,6 +89,7 @@ class Provider < ApplicationRecord
 
   scope :selected_first, -> { order(selected: :desc) }
   default_scope { where(api_token: nil) }
+  default_scope { order(:last_name) }
   scope :male, -> { where(gender: 'Male') }
   scope :female, -> { where(gender: 'Female') }
   scope :non_binary, -> { where(gender: 'Non Binary') }

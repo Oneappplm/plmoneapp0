@@ -30,6 +30,7 @@ class GroupDco < ApplicationRecord
   end
 
   def providers
-    Provider.where(dco: self.id)
+    # Provider.where(dco: self.id)
+    Provider.where("dcos LIKE ? OR dcos LIKE ? OR dcos = ?", "#{self.id},%", "%,#{self.id}", "#{self.id}")
   end
 end

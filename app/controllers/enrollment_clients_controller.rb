@@ -89,11 +89,7 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def set_providers
-   @providers = Provider.joins(:group).order('enrollment_groups.group_name, providers.id')
-    @providers = @providers.search_by_params(params)
-
-    # render json: params and return
-
+    @providers = Provider.search_by_params(params).paginate(per_page: 50, page: params[:page] || 1)
 
     # this will need refactoring just went with this for now for hotfix
     if !params[:enrollment_status].blank?
