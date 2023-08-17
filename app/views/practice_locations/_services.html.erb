@@ -1,22 +1,6 @@
 <div class="form-row row">
 	<div class="col-xl-12">
-					<label for="">Do you provide laboratory services at this location?</label>
-					<div class="d-flex align-items-center gap-3">
-									<div class="d-flex align-items-center gap-3">
-										<div class="form-check">
-											<%= f.radio_button :laboratory_services, 'yes', class: 'form-check-input', id: 'inter-yes'%>
-											<label class="form-check-label wrp" for="inter-yes">
-											Yes
-											</label>
-										</div>
-										<div class="form-check">
-											<%= f.radio_button :laboratory_services, 'no', class: 'form-check-input', id: 'inter-no'%>
-											<label class="form-check-label" for="inter-no">
-											No
-											</label>
-										</div>
-      								</div>
-					 </div>
+			<%= HtmlUtils.radio_options name: 'practice_location[laboratory_services]', label: 'Do you provide laboratory services at this location?', to_show: 'laboratory-wrp' %>
 	</div>
 </div>
 <div class="form-row row" id="laboratory-wrp">
@@ -27,26 +11,10 @@
 </div>
 <div class="form-row row">
 	<div class="col-xl-12">
-					<label for="">Does this location have a CLIA Waiver?</label>
-					<div class="d-flex align-items-center gap-3">
-									<div class="d-flex align-items-center gap-3">
-										<div class="form-check">
-											<%= f.radio_button :clia_waiver, 'yes', class: 'form-check-input', id: 'inter-yes'%>
-											<label class="form-check-label wrp" for="inter-yes">
-											Yes
-											</label>
-										</div>
-										<div class="form-check">
-											<%= f.radio_button :clia_waiver, 'no', class: 'form-check-input', id: 'inter-no'%>
-											<label class="form-check-label" for="inter-no">
-											No
-											</label>
-										</div>
-      								</div>
-					 </div>
+		<%= HtmlUtils.radio_options name: 'practice_location[clia_waiver]', label: 'Does this location have a CLIA Waiver?', to_show: 'clia-wrp' %>
 	</div>
 </div>
-<div class="form-row row CLIA-wrp">
+<div class="form-row row" id="clia-wrp">
 	<div class="col-xl-6">
 					<label for="">CLIA Waiver Number</label>
 					<%= f.text_field :clia_waiver_wrp, class: 'form-control', placeholder: 'Type here...'%>
@@ -58,26 +26,10 @@
 </div>
 <div class="form-row row">
 	<div class="col-xl-12">
-					<label for="">Does this location have a CLIA Certificate?</label>
-					<div class="d-flex align-items-center gap-3">
-									<div class="d-flex align-items-center gap-3">
-										<div class="form-check">
-											<%= f.radio_button :clia_certificate, 'yes', class: 'form-check-input', id: 'inter-yes'%>
-											<label class="form-check-label wrp" for="inter-yes">
-											Yes
-											</label>
-										</div>
-										<div class="form-check">
-											<%= f.radio_button :clia_certificate, 'no', class: 'form-check-input', id: 'inter-no'%>
-											<label class="form-check-label" for="inter-no">
-											No
-											</label>
-										</div>
-      								</div>
-					 </div>
+		<%= HtmlUtils.radio_options name: 'practice_location[clia_certificate]', label: 'Does this location have a CLIA Certificate?', to_show: 'certificate-wrp' %>
 	</div>
 </div>
-<div class="form-row row certificate-wrp">
+<div class="form-row row" id="certificate-wrp">
 	<div class="col-xl-6">
 					<label for="">CLIA Certificate Number</label>
 					<%= f.text_field :clia_certificate_wrp, class: 'form-control', placeholder: 'Type here...'%>
@@ -89,65 +41,29 @@
 </div>
 <div class="form-row row">
 	<div class="col-xl-12">
-					<label for="">Do you provide radiology services at this location?</label>
-					<div class="d-flex align-items-center gap-3">
-									<div class="d-flex align-items-center gap-3">
-										<div class="form-check">
-											<%= f.radio_button :radiology_services, 'yes', class: 'form-check-input', id: 'inter-yes'%>
-											<label class="form-check-label wrp" for="inter-yes">
-											Yes
-											</label>
-										</div>
-										<div class="form-check">
-											<%= f.radio_button :radiology_services, 'no', class: 'form-check-input', id: 'inter-no'%>
-											<label class="form-check-label" for="inter-no">
-											No
-											</label>
-										</div>
-      								</div>
-					 </div>
+		<%= HtmlUtils.radio_options name: 'practice_location[radiology_services]', label: 'Do you provide radiology services at this location?', to_show: 'radiology-wrp' %>
 	</div>
 </div>
-<div class="form-row row radiology-wrp">
+<div class="form-row row" id="radiology-wrp">
 	<div class="col-xl-12">
 					<label for="">Please list all X-ray certifications:</label>
 					<%= f.select :radiology_services_xray, options_for_select([]), { prompt: 'Select option' }, {:class => 'form-select'}  %>
 	</div>
-</div>
-<div class="form-row row radiology-wrp">
 	<div class="col-xl-12">
-					<label for="">FDA/Radiology (Mammography) Certification Number for this location:</label>
-					<%= f.text_field :radiology_services_fda, class: 'form-control', placeholder: 'Type here...'%>
+		<label for="">FDA/Radiology (Mammography) Certification Number for this location:</label>
+		<%= f.text_field :radiology_services_fda, class: 'form-control', placeholder: 'Type here...'%>
 	</div>
-</div>
-<div class="form-row row radiology-wrp">
 	<div class="col-xl-12">
-					<label for="">Please select all services offered at this location:</label>
-					<%= f.select :anesthesia_administered, options_for_select([]), { prompt: 'Select option' }, {:class => 'form-select'}  %>
+		<label for="">Please select all services offered at this location:</label>
+		<%= f.select :anesthesia_administered, options_for_select([]), { prompt: 'Select option' }, {:class => 'form-select'}  %>
 	</div>
 </div>
 <div class="form-row row">
 	<div class="col-xl-12">
-					<label for="">Is anesthesia administered at this location?</label>
-					<div class="d-flex align-items-center gap-3">
-									<div class="d-flex align-items-center gap-3">
-										<div class="form-check">
-											<%= f.radio_button :anesthesia_administered, 'yes', class: 'form-check-input', id: 'inter-yes'%>
-											<label class="form-check-label wrp" for="inter-yes">
-											Yes
-											</label>
-										</div>
-										<div class="form-check">
-											<%= f.radio_button :anesthesia_administered, 'no', class: 'form-check-input', id: 'inter-no'%>
-											<label class="form-check-label" for="inter-no">
-											No
-											</label>
-										</div>
-      								</div>
-					 </div>
+			<%= HtmlUtils.radio_options name: 'practice_location[anesthesia_administered]', label: 'Is anesthesia administered at this location?', to_show: 'anesthesia-wrp' %>
 	</div>
 </div>
-<div class="form-row row anesthesia-wrp">
+<div class="form-row row" id="anesthesia-wrp">
 	<div class="col-xl-12">
 					<label for="">Please list any additional procedures provided at this location (including surgical procedures)</label>
 					<%= f.text_area :additional_procedures, class: 'form-control', rows: '3' %>

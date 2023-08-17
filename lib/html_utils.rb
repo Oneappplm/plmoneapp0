@@ -45,6 +45,7 @@ module HtmlUtils
 		options[:label] ||= ''
     options[:value_on] ||= 'yes'
     options[:value_off] ||= 'no'
+    options[:to_show] ||= ''
 
     option = <<-HTML
       <label class="#{ options[:label_class] }"> #{ options[:label] } </label>
@@ -59,6 +60,26 @@ module HtmlUtils
           </span>
         </div>
     HTML
+
+    if options[:to_show].present?
+      option += <<-HTML
+        <script>
+          $(document).ready(function(){
+            $('input[name="#{ options[:name] }"]').change(function(){
+              var value = $(this).val();
+
+              if(value == '#{ options[:value_on] }'){
+                $('##{ options[:to_show] }').show();
+              }else{
+                $('##{ options[:to_show] }').hide();
+              }
+            });
+
+            $('input[name="#{ options[:name] }"]').trigger('change');
+          });
+        </script>
+      HTML
+    end
 
     option.html_safe
   end

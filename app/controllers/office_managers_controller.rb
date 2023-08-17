@@ -5,8 +5,11 @@ class OfficeManagersController < ApplicationController
   def index
     if params[:template].present?
       if params[:template] == 'manage_practice'
-        @locations = PracticeLocation.all
-        @client_organizations = ClientOrganization.all
+        @locations = if params[:search].present?
+          PracticeLocation.search(params[:search]).paginate(per_page: 10, page: params[:page] || 1)
+        else
+          PracticeLocation.paginate(per_page: 10, page: params[:page] || 1)
+        end
       end
       render params[:template]
     else
