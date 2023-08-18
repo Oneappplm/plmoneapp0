@@ -14,4 +14,8 @@
    <%= render "enrollment_clients/show/licenses/liability"%>
    <%= render "enrollment_clients/show/client"%>
 
+   <% @provider&.group_dcos&.each_with_index do |dco,idx| %>
+     <%= render partial: "enrollment_clients/show/group_dco", locals: {title: "#{@provider&.group_dcos&.size > 1 ? ('Location ' + (idx+1).to_s) : 'Location' }", dco: dco} %>
+   <% end %>
+
 </div>
