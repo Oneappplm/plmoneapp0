@@ -115,8 +115,8 @@ class Provider < ApplicationRecord
 
   class << self
     def search_by_params(params)
-      return all if client_portal_conditions(params).values.all?(&:blank?)
-
+      return all if client_portal_conditions(params).values.all?(&:blank?) && client_name_conditions(params).values.all?(&:blank?)
+      
       results = if params[:practitioner_type].present?
         practitioner_types = params[:practitioner_type].split(',').map(&:strip).reject(&:blank?)
         conditions = practitioner_types.map { |type| "practitioner_type ILIKE ?" }
@@ -124,22 +124,47 @@ class Provider < ApplicationRecord
 
         where(client_portal_conditions(params.except(:practitioner_type)).reject { |k, v| v.blank? }.compact)
           .where(conditions.join(" OR "), *wildcards)
+      elsif params[:first_name].present? or params[:last_name].present? or params[:middle_name].present?
+        # need to refactor this in the future
+        name_conditions = []
+        if params[:first_name].present?
+          name_conditions << " first_name ILIKE '%#{params[:first_name]}%'"
+        end
+
+        if params[:last_name].present?
+          name_conditions << " last_name ILIKE '%#{params[:last_name]}%'"
+        end
+
+        if params[:middle_name].present?
+          name_conditions << " middle_name ILIKE '%#{params[:middle_name]}%'"
+        end
+        query = if name_conditions.count > 1
+          name_conditions.join(" OR ")
+        else
+          name_conditions.join("")
+        end
+        where(query)
       else
         where(client_portal_conditions(params).reject { |k, v| v.blank? }.compact)
       end
     end
 
     def client_portal_conditions(params)
-      { 
+      {
         status: params[:status],
         enrollment_group_id: params[:provider_enrollment_group_id],
-        first_name: params[:first_name]&.titleize,
-        middle_name: params[:middle_name]&.titleize,
-        last_name: params[:last_name]&.titleize,
         practitioner_type: (params[:practitioner_type].split(',') rescue ''),
         npi: params[:npi],
         ssn: params[:ssn],
         dco: params[:provider_dco]
+      }
+    end
+
+    def client_name_conditions(params)
+      {
+        first_name: params[:first_name],
+        last_name: params[:last_name],
+        middle_name: params[:middle_name]
       }
     end
 
