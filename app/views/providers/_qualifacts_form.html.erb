@@ -239,7 +239,7 @@
       <div class="row mb-3">
         <div class="col-lg-6">
           <label class="text-dark-grey">Board Name</span></label>
-          <%= f.select :board_name, options_for_select(['Select Option'], @provider.suffix), { prompt: '' }, { class: 'form-select border border-dark' } %>
+          <%= f.select :board_name, options_for_select([]), { prompt: 'Board Name' }, {:class => 'form-select border border-dark single-select board-name',  data: { value: f.object.board_name } }  %>
         </div>
         <div class="col-lg-6">
           <label class="text-dark-grey">Certification Number</span></label>
@@ -355,6 +355,11 @@
               <%= render 'dea_license_fields', f: dea_license_fields %>
             <% end %>
           </div>
+          <div class="row">
+                  <div class="col-lg-12 text-start">
+                        <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add DEA License </button>
+                  </div>
+           </div>
       </div>
     </div>
     <div class="row mb-5 mt-2">
@@ -366,6 +371,11 @@
             <%= f.fields_for :cds_licenses do |cds_license_fields| %>
               <%= render 'cds_license_fields', f: cds_license_fields %>
             <% end %>
+          </div>
+          <div class="row">
+                  <div class="col-lg-12 text-start">
+                        <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add CDS License </button>
+                  </div>
           </div>
       </div>
     </div>
@@ -379,6 +389,11 @@
               <%= render 'rn_license_fields', f: rn_license_fields %>
             <% end %>
           </div>
+        <div class="row">
+                  <div class="col-lg-12 text-start">
+                        <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add RN License </button>
+                  </div>
+          </div>
       </div>
     </div>
     <div class="row mb-5 mt-2">
@@ -390,6 +405,11 @@
             <%= f.fields_for :cnp_licenses do |cnp_license_fields| %>
               <%= render 'cnp_license_fields', f: cnp_license_fields %>
             <% end %>
+          </div>
+          <div class="row">
+                  <div class="col-lg-12 text-start">
+                        <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add APRN License </button>
+                  </div>
           </div>
       </div>
     </div>
@@ -404,6 +424,11 @@
             <%= f.fields_for :licenses do | license_fields| %>
               <%= render 'license_fields', f: license_fields %>
             <% end %>
+          </div>
+          <div class="row">
+                  <div class="col-lg-12 text-start">
+                        <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add State License </button>
+                  </div>
           </div>
       </div>
     </div>
@@ -437,6 +462,11 @@
               <%= render 'pa_license_fields', f: pa_license_fields %>
             <% end %>
          </div>
+         <div class="row">
+                  <div class="col-lg-12 text-start">
+                        <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add PA License </button>
+                  </div>
+          </div>
       </div>
     </div>
 
@@ -449,6 +479,11 @@
             <%= f.fields_for :np_licenses do |np_license_fields| %>
               <%= render 'np_license_fields', f: np_license_fields %>
             <% end %>
+          </div>
+          <div class="row">
+                  <div class="col-lg-12 text-start">
+                        <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add NP License </button>
+                  </div>
           </div>
       </div>
     </div>
@@ -805,6 +840,139 @@
     <%= render "providers/js_components/ajax_set_dropdown_options" %>
     <%= render "providers/js_components/deleted_document_logs" %>
 
+    <%= content_for :js do %>
+      <script>
+        $(document).ready(function(){
+          $('.board-name').each(function(){
+            var id = $(this).attr('id');
+            var value = $(this).data('value');
+
+            setTimeout(function(){
+              $.get('<%= board_names_multi_select_data_path %>', function(data){
+                  VirtualSelect.init({ele: '#' + id, search: true });
+                  document.querySelector('#' + id).setOptions(data['result']);
+                  document.querySelector('#' + id).setValue(value);
+              });
+            }, 1000);
+          });
+
+        });
+
+        $(document).ready(function(){
+          $('.dea-state').each(function(){
+          var id = $(this).attr('id');
+          var value = $(this).data('value');
+
+          setTimeout(function(){
+             $.get('<%= provider_states_multi_select_data_path %>', function(data){
+                VirtualSelect.init({ele: '#' + id, search: true });
+                document.querySelector('#' + id).setOptions(data['result']);
+                document.querySelector('#' + id).setValue(value);
+             });
+          }, 1000);
+        });
+
+        });
+
+          $(document).ready(function(){
+          $('.cds-state').each(function(){
+          var id = $(this).attr('id');
+          var value = $(this).data('value');
+
+          setTimeout(function(){
+             $.get('<%= provider_states_multi_select_data_path %>', function(data){
+                VirtualSelect.init({ele: '#' + id, search: true });
+                document.querySelector('#' + id).setOptions(data['result']);
+                document.querySelector('#' + id).setValue(value);
+             });
+          }, 1000);
+        });
+
+         });
+
+          $(document).ready(function(){
+          $('.rn-state').each(function(){
+          var id = $(this).attr('id');
+          var value = $(this).data('value');
+
+          setTimeout(function(){
+             $.get('<%= provider_states_multi_select_data_path %>', function(data){
+                VirtualSelect.init({ele: '#' + id, search: true });
+                document.querySelector('#' + id).setOptions(data['result']);
+                document.querySelector('#' + id).setValue(value);
+             });
+          }, 1000);
+        });
+
+         });
+
+          $(document).ready(function(){
+          $('.aprn-state').each(function(){
+          var id = $(this).attr('id');
+          var value = $(this).data('value');
+
+          setTimeout(function(){
+             $.get('<%= provider_states_multi_select_data_path %>', function(data){
+                VirtualSelect.init({ele: '#' + id, search: true });
+                document.querySelector('#' + id).setOptions(data['result']);
+                document.querySelector('#' + id).setValue(value);
+             });
+          }, 1000);
+        });
+
+         });
+        
+        $(document).ready(function(){
+        $('.license-state').each(function(){
+          var id = $(this).attr('id');
+          var value = $(this).data('value');
+
+          setTimeout(function(){
+             $.get('<%= provider_states_multi_select_data_path %>', function(data){
+                VirtualSelect.init({ele: '#' + id, search: true });
+                document.querySelector('#' + id).setOptions(data['result']);
+                document.querySelector('#' + id).setValue(value);
+             });
+          }, 1000);
+        });
+
+         });
+
+        $(document).ready(function(){
+        $('.np-state').each(function(){
+          var id = $(this).attr('id');
+          var value = $(this).data('value');
+
+          setTimeout(function(){
+             $.get('<%= provider_states_multi_select_data_path %>', function(data){
+                VirtualSelect.init({ele: '#' + id, search: true });
+                document.querySelector('#' + id).setOptions(data['result']);
+                document.querySelector('#' + id).setValue(value);
+             });
+          }, 1000);
+        });
+
+         });
+
+        $(document).ready(function(){
+        $('.pa-state').each(function(){
+          var id = $(this).attr('id');
+          var value = $(this).data('value');
+
+          setTimeout(function(){
+             $.get('<%= provider_states_multi_select_data_path %>', function(data){
+                VirtualSelect.init({ele: '#' + id, search: true });
+                document.querySelector('#' + id).setOptions(data['result']);
+                document.querySelector('#' + id).setValue(value);
+             });
+          }, 1000);
+        });
+
+         });
+
+      </script>
+    <% end %>
+
     <script>
       $(document).ready(function() {
         var csrfToken = $('meta[name="csrf-token"]').attr('content');
@@ -970,7 +1138,6 @@
             $(this).val('');
          });
 
-
          setTimeout(function(){
             $.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
                VirtualSelect.init({ele: '#' + enrollment_payer_id, search: true }); // initialze virtual select first
@@ -987,6 +1154,210 @@
 
           $("#payer_login_form .fields").append(newEnrollmentdetails);
         })
+
+         //DEA License
+         $(document).ready(function () {
+        $("#dea_licenses").on("click", ".add_association", function () {
+         var detailsFields = $("#dea_licenses .field");
+         var newEnrollmentdetails = detailsFields.last().clone();
+         var lastId = detailsFields.length - 1;
+         var newId = lastId + 1;
+         var dea_state_id = "provider_dea_licenses_attributes_" + newId + "_state_id";
+
+           newEnrollmentdetails.find("[id^='provider_dea_licenses_attributes_']").each(function() {
+            var oldId = $(this).attr("id");
+            var newIdValue = oldId.replace(/\d+/, newId);
+            $(this).attr("id", newIdValue);
+            $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
+            $(this).val('');
+         });
+         setTimeout(function(){
+
+            $.get('<%= provider_states_multi_select_data_path %>', function(data){
+               VirtualSelect.init({ele: '#' + dea_state_id, search: true });
+               document.querySelector('#' + dea_state_id).setOptions(data['result']);
+               document.querySelector('#' + dea_state_id).setValue(value);
+            });
+         }, 1000);
+         
+          $(this).closest("#dea_licenses .fields").append(newEnrollmentdetails);
+         })
+        });
+
+        //CSD License
+         $(document).ready(function () {
+         $("#cds_licenses").on("click", ".add_association", function () {
+         var detailsFields = $("#cds_licenses .field");
+         var newEnrollmentdetails = detailsFields.last().clone();
+         var lastId = detailsFields.length - 1;
+         var newId = lastId + 1;
+         var cds_state_id = "provider_cds_licenses_attributes_" + newId + "_state_id";
+
+           newEnrollmentdetails.find("[id^='provider_cds_licenses_attributes_']").each(function() {
+            var oldId = $(this).attr("id");
+            var newIdValue = oldId.replace(/\d+/, newId);
+            $(this).attr("id", newIdValue);
+            $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
+            $(this).val('');
+         });
+         setTimeout(function(){
+
+            $.get('<%= provider_states_multi_select_data_path %>', function(data){
+               VirtualSelect.init({ele: '#' + cds_state_id, search: true });
+               document.querySelector('#' + cds_state_id).setOptions(data['result']);
+               document.querySelector('#' + cds_state_id).setValue(value);
+            });
+         }, 1000);
+         
+          $("#cds_licenses .fields").append(newEnrollmentdetails);
+         })
+        });
+
+         //RN License
+          $(document).ready(function () {
+         $("#rn_licenses").on("click", ".add_association", function () {
+         var detailsFields = $("#rn_licenses .field");
+         var newEnrollmentdetails = detailsFields.last().clone();
+         var lastId = detailsFields.length - 1;
+         var newId = lastId + 1;
+         var rn_state_id = "provider_rn_licenses_attributes_" + newId + "_state_id";
+
+          newEnrollmentdetails.find("[id^='provider_rn_licenses_attributes_']").each(function() {
+            var oldId = $(this).attr("id");
+            var newIdValue = oldId.replace(/\d+/, newId);
+            $(this).attr("id", newIdValue);
+            $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
+            $(this).val('');
+         });
+            
+         setTimeout(function(){
+
+            $.get('<%= states_multi_select_data_path %>', function(data){
+               VirtualSelect.init({ele: '#' + rn_state_id, search: true });
+               document.querySelector('#' + rn_state_id).setOptions(data['result']);
+               document.querySelector('#' + rn_state_id).setValue(value);
+            });
+         }, 1000);
+         
+          $("#rn_licenses .fields").append(newEnrollmentdetails);
+         })
+        });
+
+          //APRN License
+           $(document).ready(function () {
+         $("#cnp_licenses").on("click", ".add_association", function () {
+         var detailsFields = $("#cnp_licenses .field");
+         var newEnrollmentdetails = detailsFields.last().clone();
+         var lastId = detailsFields.length - 1;
+         var newId = lastId + 1;
+         var cnp_state_id = "provider_cnp_licenses_attributes_" + newId + "_state_id";
+
+           newEnrollmentdetails.find("[id^='provider_cnp_licenses_attributes_']").each(function() {
+            var oldId = $(this).attr("id");
+            var newIdValue = oldId.replace(/\d+/, newId);
+            $(this).attr("id", newIdValue);
+            $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
+            $(this).val('');
+         });
+         setTimeout(function(){
+
+            $.get('<%= provider_states_multi_select_data_path %>', function(data){
+               VirtualSelect.init({ele: '#' + cnp_state_id, search: true });
+               document.querySelector('#' + cnp_state_id).setOptions(data['result']);
+               document.querySelector('#' + cnp_state_id).setValue(value);
+            });
+         }, 1000);
+         
+          $("#cnp_licenses .fields").append(newEnrollmentdetails);
+         })
+          });
+
+         //State License
+          $(document).ready(function () {
+         $("#licenses").on("click", ".add_association", function () {
+         var detailsFields = $("#licenses .field");
+         var newEnrollmentdetails = detailsFields.last().clone();
+         var lastId = detailsFields.length - 1;
+         var newId = lastId + 1;
+         var license_state_id = "provider_licenses_attributes_" + newId + "_state_id";
+
+           newEnrollmentdetails.find("[id^='provider_licenses_attributes_']").each(function() {
+            var oldId = $(this).attr("id");
+            var newIdValue = oldId.replace(/\d+/, newId);
+            $(this).attr("id", newIdValue);
+            $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
+            $(this).val('');
+         });
+         setTimeout(function(){
+
+            $.get('<%= provider_states_multi_select_data_path %>', function(data){
+               VirtualSelect.init({ele: '#' + license_state_id, search: true });
+               document.querySelector('#' + license_state_id).setOptions(data['result']);
+               document.querySelector('#' + license_state_id).setValue(value);
+            });
+         }, 1000);
+         
+          $("#licenses .fields").append(newEnrollmentdetails);
+         })
+          });
+
+        //PA License
+         $(document).ready(function () {
+         $("#pa_licenses").on("click", ".add_association", function () {
+         var detailsFields = $("#pa_licenses .field");
+         var newEnrollmentdetails = detailsFields.last().clone();
+         var lastId = detailsFields.length - 1;
+         var newId = lastId + 1;
+         var pa_state_id = "provider_licenses_attributes_" + newId + "_state_id";
+
+           newEnrollmentdetails.find("[id^='provider_pa_licenses_attributes_']").each(function() {
+            var oldId = $(this).attr("id");
+            var newIdValue = oldId.replace(/\d+/, newId);
+            $(this).attr("id", newIdValue);
+            $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
+            $(this).val('');
+         });
+         setTimeout(function(){
+
+            $.get('<%= provider_states_multi_select_data_path %>', function(data){
+               VirtualSelect.init({ele: '#' + pa_state_id, search: true });
+               document.querySelector('#' + pa_state_id).setOptions(data['result']);
+               document.querySelector('#' + pa_state_id).setValue(value);
+            });
+         }, 1000);
+         
+          $("#pa_licenses .fields").append(newEnrollmentdetails);
+         })
+          });
+
+         //NP License
+          $(document).ready(function () {
+         $("#np_licenses").on("click", ".add_association", function () {
+         var detailsFields = $("#np_licenses .field");
+         var newEnrollmentdetails = detailsFields.last().clone();
+         var lastId = detailsFields.length - 1;
+         var newId = lastId + 1;
+         var np_state_id = "provider_np_licenses_attributes_" + newId + "_state_id";
+
+           newEnrollmentdetails.find("[id^='provider_np_licenses_attributes_']").each(function() {
+            var oldId = $(this).attr("id");
+            var newIdValue = oldId.replace(/\d+/, newId);
+            $(this).attr("id", newIdValue);
+            $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
+            $(this).val('');
+         });
+         setTimeout(function(){
+
+            $.get('<%= provider_states_multi_select_data_path %>', function(data){
+               VirtualSelect.init({ele: '#' + np_state_id, search: true });
+               document.querySelector('#' + np_state_id).setOptions(data['result']);
+               document.querySelector('#' + np_state_id).setValue(value);
+            });
+         }, 1000);
+         
+          $("#np_licenses .fields").append(newEnrollmentdetails);
+         })
+          });
 
 
         $(document).on('click','.remove-question',function(){
@@ -1011,8 +1382,8 @@
           }
         })
       }
-      });
-    </script>
+    });
+  </script>
   <% end %>
 
 <style type="text/css">
