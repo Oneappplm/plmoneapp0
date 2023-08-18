@@ -2,7 +2,9 @@
   <%= render "nav"%>
   <% @enroll_groups.each do |enroll_group|%>
   <% title = enroll_group.details.last.enrollment_payer || '' %>
-    <%= render partial: "enroll_group_card", locals: {title: title, enroll_group: enroll_group}%>
+  <% enroll_group&.details.each do |detail|%>
+    <%= render partial: "enroll_group_card", locals: {title: detail&.enrollment_payer, detail: detail, enroll_group: enroll_group}%>
+  <% end %>
   <% end %>
  </div>
  

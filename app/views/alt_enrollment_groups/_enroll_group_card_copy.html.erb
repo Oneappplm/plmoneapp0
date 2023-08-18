@@ -1,0 +1,159 @@
+<div class="row mb-3">
+   <div class="col-lg-12 card p-3">
+      <div class="w-100 d-flex justify-content-between">
+         <h3 class="text-primary"><%= title %></h3>
+         <a href="javascript:void(0);" class="text-black fw-semibold collapsible-trigger" data-collapse="enroll_group_<%= enroll_group.id%>">
+         <i class="bi bi-sort-up rotate-180" style="font-size: 18px;"></i>
+         </a>
+      </div>
+        <div class="w-100 collapsible" id="enroll_group_<%= enroll_group.id%>">
+          <div class="row mb-1">
+            <div class="col-lg-6">
+                <label>Name of person who can answer questions related to enrollment for the group</label>
+                <p class="text-black fw-semibold"><%= enroll_group&.full_name %></p>
+            </div>
+            <div class="col-lg-3">
+                <label>Telephone Number</label>
+                <p class="text-black fw-semibold"><%= enroll_group&.telephone_number %></p>
+            </div>
+            <div class="col-lg-3">
+                <label>Email Address</label>
+                <p class="text-black fw-semibold"><%= enroll_group&.email %></p>
+            </div>
+          </div>
+          <% if enroll_group.details %>
+              <div class="row detail>
+                <div class="col-lg-2">
+                    <label>State</label>
+                    <p class="text-black fw-semibold"><%= payor&.state&.name %></p>
+                </div>
+                <div class="col-lg-2">
+                    <label>Group Number</label>
+                    <p class="text-black fw-semibold"><%= payor&.group_number %></p>
+                </div>
+                <div class="col-lg-2">
+                    <label>Effective Date</label>
+                    <p class="text-black fw-semibold"><%= payor&.effective_date&.to_date&.strftime('%B %d, %Y') rescue nil %></p>
+                </div>
+                <div class="col-lg-2">
+                    <label>Revalidation Date</label>
+                    <p class="text-black fw-semibold"><%= payor&.revalidation_date&.to_date&.strftime('%B %d, %Y') rescue nil %></p>
+                </div>
+                <div class="col-lg-2">
+                    <label>Application Status</label>
+                    <p class="text-black fw-semibold"><%= payor&.application_status&.titleize %></p>
+                </div>
+                <div class="col-lg-2">
+                    <label>Lines of Service</label>
+                    <p class="text-black fw-semibold"><%= payor&.payor_type %></p>
+                </div>
+              </div>
+              <div class="row detail>
+                <div class="col-lg-2">
+                    <label>Participating with Medicare and Tricare</label>
+                    <p class="text-black fw-semibold"><%= payor&.medicare_tricare&.titleize %></p>
+                </div>
+                <div class="col-lg-2">
+                    <label>Is this a CAQH Payer</label>
+                    <p class="text-black fw-semibold"><%= payor&.caqh_payer&.titleize %></p>
+                </div>
+                <div class="col-lg-2">
+                    <label>EFT</label>
+                    <p class="text-black fw-semibold"><%= payor&.eft&.titleize %></p>
+                </div>
+                <div class="col-lg-2">
+                    <label>ERA</label>
+                    <p class="text-black fw-semibold"><%= payor&.era&.titleize %></p>
+                </div>
+              </div>
+              <h3 class="text-primary">Payor Contact Details</h3>
+              <div class="row detail>
+                <div class="col-lg-2">
+                    <label>Name</label>
+                    <p class="text-black fw-semibold"><%= payor&.payor_name %></p>
+                </div>
+                <div class="col-lg-2">
+                    <label>Phone Number</label>
+                    <p class="text-black fw-semibold"><%= payor&.payor_phone %></p>
+                </div>
+                <div class="col-lg-2">
+                    <label>Email Address</label>
+                    <p class="text-black fw-semibold"><%= payor&.payor_email %></p>
+                </div>
+                <div class="col-lg-4">
+                    <label>Type of Enrollment Submission</label>
+                    <p class="text-black fw-semibold"><%= payor&.payor_submission_type&.titleize %></p>
+                </div>
+              </div>
+              <% if detail.enrollment_link %>
+                <h3 class="text-primary">Enrollment Portal</h3>
+                <div class="row detail>
+                    <div class="col-lg-2">
+                        <label>Link</label>
+                        <p class="text-black fw-semibold"><%= payor&.payor_link %></p>
+                    </div>
+                    <div class="col-lg-2">
+                        <label>Username</label>
+                        <p class="text-black fw-semibold"><%= payor&.payor_username %></p>
+                    </div>
+                    <div class="col-lg-2">
+                        <label>Password</label>
+                        <p class="text-black fw-semibold"><%= payor&.password %></p>
+                    </div>
+                </div>
+              <% end %>
+              <% if detail.portal_admin %>
+                <h3 class="text-primary">Portal Administrator</h3>
+                <div class="row detail>
+                    <div class="col-lg-2">
+                        <label>Administrator Name</label>
+                        <p class="text-black fw-semibold"><%= payor&.portal_admin_name %></p>
+                    </div>
+                    <div class="col-lg-2">
+                        <label>Username</label>
+                        <p class="text-black fw-semibold"><%= payor&.portal_username %></p>
+                    </div>
+                    <div class="col-lg-2">
+                        <label>Password</label>
+                        <p class="text-black fw-semibold"><%= payor&.portal_password %></p>
+                    </div>
+                </div>
+                <% if detail.questions%>
+                  <% detail.questions.each_with_index do |question,idx|%>
+                    <% qtitle = detail.questions.size > 1 ? "#{idx+1}" : ''%>
+                    <div class="row mb-1">
+                      <div class="col-lg-2">
+                          <label>Security Question <%= qtitle %></label>
+                          <p class="text-black fw-semibold"><%= question&.secret_question %></p>
+                      </div>
+                      <div class="col-lg-2">
+                          <label>Security Password <%= qtitle %></label>
+                          <p class="text-black fw-semibold"><%= question&.answer %></p>
+                      </div>
+                    </div>
+                  <% end %>
+                <% end %>
+              <% end %>
+              <div class="row mb-1">
+                <div class="col-lg-2">
+                    <label>Client Notes</label>
+                    <p class="text-black fw-semibold"><%= detail&.client_notes %></p>
+                </div>
+                <div class="col-lg-2">
+                    <label>Notes</label>
+                    <p class="text-black fw-semibold"><%= detail&.notes %></p>
+                </div>
+              </div>
+              <div class="d-flex gap-2">
+                <% if !detail.upload_payor_file.blank? %>
+                  <% detail.upload_payor_file.each do |upload|%>
+                  <!-- <div class="col-lg-2"> -->
+                      <a href="<%= upload.url %>" class="btn btn-sm btn-outline-primary"><%= upload&.file&.basename rescue nil %> </a>
+                  <!-- </div> -->
+                  <% end %>
+                <% end %>
+              </div>
+          <% end %>
+        </div>
+      </div>
+  </div>
