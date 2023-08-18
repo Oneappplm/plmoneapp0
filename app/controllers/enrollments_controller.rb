@@ -53,7 +53,11 @@ class EnrollmentsController < ApplicationController
 
 	#GROUP
 	def groups
-		@enrollment_groups = EnrollmentGroup.all
+		if current_user.administrator?
+      @enrollment_groups = EnrollmentGroup.all
+    else
+      @enrollment_groups = current_user.enrollment_groups
+    end
 		render "enrollments/groups/index"
 	end
 

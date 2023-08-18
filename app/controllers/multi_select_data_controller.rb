@@ -83,12 +83,18 @@ class MultiSelectDataController < ApplicationController
 		elsif outreach_type == 'provider-from-enrollment'
 			if params[:without_enrollments].present? && params[:without_enrollments] == "true"
 				if params[:action_name] == "new" || (params[:action_name] == "edit" && !enrollment_provider&.provider_id.present?)
-					send_result Provider.where("NOT EXISTS (SELECT 1 FROM enrollment_providers WHERE enrollment_providers.provider_id = providers.id AND enrollment_providers.outreach_type = 'provider-from-enrollment')").map { |provider| { label: provider.provider_name, value: provider.id } }, selected_provider: enrollment_provider&.provider_id
+					@providers = Provider.where("NOT EXISTS (SELECT 1 FROM enrollment_providers WHERE enrollment_providers.provider_id = providers.id AND enrollment_providers.outreach_type = 'provider-from-enrollment')")
 				else
-					send_result Provider.where("NOT EXISTS (SELECT 1 FROM enrollment_providers WHERE enrollment_providers.provider_id = providers.id AND enrollment_providers.outreach_type = 'provider-from-enrollment' AND providers.id <> #{enrollment_provider.provider_id})").map { |provider| { label: provider.provider_name, value: provider.id } }, selected_provider: enrollment_provider&.provider_id
+					@providers = Provider.where("NOT EXISTS (SELECT 1 FROM enrollment_providers WHERE enrollment_providers.provider_id = providers.id AND enrollment_providers.outreach_type = 'provider-from-enrollment' AND providers.id <> #{enrollment_provider.provider_id})")
 				end
 			else
-				send_result Provider.all.map { |provider| { label: provider.provider_name, value: provider.id } }, selected_provider: enrollment_provider&.provider_id
+				@providers = Provider.all
+			end
+
+			if !current_user.administrator?
+				send_result @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id)).map { |provider| { label: provider.provider_name, value: provider.id } }, selected_provider: enrollment_provider&.provider_id
+			else
+				send_result @providers.map { |provider| { label: provider.provider_name, value: provider.id } }, selected_provider: enrollment_provider&.provider_id
 			end
 		else
 			send_result Provider.all.map { |provider| { label: provider.provider_name, value: provider.id } }, selected_provider: enrollment_provider&.provider_id

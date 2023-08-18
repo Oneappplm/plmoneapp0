@@ -70,6 +70,9 @@ class EnrollGroupsController < ApplicationController
 		else
 			@enrollment_groups = EnrollmentGroup.all
 		end
+		if !current_user.administrator?
+			@enrollment_groups = @enrollment_groups.where(id: current_user.enrollment_groups.pluck(:id))
+		end
 	rescue
 		@enrollment_groups = EnrollmentGroup.all
 	end

@@ -2,11 +2,15 @@ class ProvidersController < ApplicationController
 	before_action :set_provider, only: [:show, :edit, :update, :destroy, :update_from_notifications]
 	before_action :set_overview_details, only: [:overview]
   def index
-		@providers = if params[:user_search].present?
-			Provider.search(params[:user_search]).paginate(per_page: 10, page: params[:page] || 1)
+		if params[:user_search].present?
+			@providers = Provider.search(params[:user_search])
 		else
-			Provider.paginate(per_page: 10, page: params[:page] || 1)
+			@providers = Provider.all
 		end
+		if !@current_user.administrator?
+			@providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
+		end
+		@providers = @providers.paginate(per_page: 10, page: params[:page] || 1)
 	end
 
 	def new
@@ -142,8 +146,13 @@ end
   end
 
   def set_overview_details
-    @providers_with_missing_details ||= Provider.with_missing_required_fields.count
-    @providers_with_missing_documents ||= Provider.with_missing_required_docs.count
+    if current_user.administrator?
+      @providers_with_missing_details ||= Provider.with_missing_required_fields.count
+      @providers_with_missing_documents ||= Provider.with_missing_required_docs.count
+    else
+      @providers_with_missing_details ||= Provider.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id)).with_missing_required_fields.count
+      @providers_with_missing_documents ||= Provider.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id)).with_missing_required_docs.count
+    end
   end
 
 	def provider_params

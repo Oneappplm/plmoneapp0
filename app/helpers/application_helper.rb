@@ -209,7 +209,11 @@ module ApplicationHelper
 	end
 
   def groups
-    @groups ||= EnrollmentGroup.all
+		if current_user.administrator?
+    	@groups ||= EnrollmentGroup.all
+		else
+			@groups ||= current_user.enrollment_groups
+		end
   end
 
 	def group_dcos
@@ -307,7 +311,11 @@ module ApplicationHelper
 	end
 
   def enrollment_group_options
-    EnrollmentGroup.all.pluck(:group_name, :id)
+		if current_user.administrator?
+    	EnrollmentGroup.all.pluck(:group_name, :id)
+		else
+			current_user.enrollment_groups&.pluck(:group_name, :id)
+		end
   end
 
   def enrollment_payer

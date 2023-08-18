@@ -5,7 +5,11 @@
       <h5 class="text-black text-left">All Providers</h5>
       <div class="w-100 d-flex d-flex align-items-end">
          <h1 style="font-size: 40px;" class="text-black mt-2" id="provider_count_container">
+          <% if current_user.administrator?%>
             <%= Provider.count %>
+          <%else%>
+            <%= Provider.where(enrollment_group_id: current_user.enrollment_groups&.pluck(:id))&.count%>
+          <%end%>
         </h1>
       </div>
     </div>
@@ -23,7 +27,11 @@
           <h5 class="text-black text-left">All Groups</h5>
           <div class="w-100 d-flex d-flex align-items-end">
             <h1 style="font-size: 40px;" class="text-black mt-2">
+              <% if current_user.administrator? %>
                 <%= EnrollmentGroup.count %>
+              <% else %>
+                <%= current_user.enrollment_groups&.count%>
+              <% end %>
             </h1>
           </div>
         <% end %>
@@ -39,7 +47,11 @@
           <h5 class="text-black text-left">Group's Location</h5>
           <div class="w-100 d-flex d-flex align-items-end">
             <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
+              <% if current_user.administrator?%>
                 <%= GroupDco.count %>
+              <%else%>
+                <%= GroupDco.where(enrollment_group_id: current_user.enrollment_groups&.pluck(:id))&.count%>
+              <%end%>
             </h1>
           </div>
       </div>

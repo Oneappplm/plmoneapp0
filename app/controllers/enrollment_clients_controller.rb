@@ -56,12 +56,21 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def dashboard
-    @providers_with_missing_details ||= Provider.with_missing_required_fields.count
-    @providers_with_missing_documents ||= Provider.with_missing_required_docs.count
+    if current_user.administrator?
+      @providers_with_missing_details ||= Provider.with_missing_required_fields.count
+      @providers_with_missing_documents ||= Provider.with_missing_required_docs.count
+    else
+      @providers_with_missing_details ||= Provider.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id)).with_missing_required_fields.count
+      @providers_with_missing_documents ||= Provider.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id)).with_missing_required_docs.count
+    end
   end
 
   def groups
-    @enrollment_groups = EnrollmentGroup.all
+    if current_user.administrator?
+      @enrollment_groups = EnrollmentGroup.all
+    else
+      @enrollment_groups = current_user.enrollment_groups
+    end
   end
 
   def view_group
@@ -89,7 +98,7 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def set_providers
-    @providers = Provider.search_by_params(params).paginate(per_page: 50, page: params[:page] || 1)
+    @providers = Provider.search_by_params(params)
 
     # this will need refactoring just went with this for now for hotfix
     if !params[:enrollment_status].blank?
@@ -100,13 +109,20 @@ class EnrollmentClientsController < ApplicationController
       @providers = Provider.where(id: provider_ids)
     end
 
+    if !current_user.administrator?
+      @providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
+    end
+
     @providers = @providers.paginate(per_page: 50, page: params[:page] || 1)
     # @providers = Provider.search_by_params(params).paginate(per_page: 50, page: params[:page] || 1)
-
   end
 
   def set_incomplete_providers
-    @incomplete_providers ||= Provider.search_by_params(params).with_missing_required_attributes.paginate(per_page: 50, page: params[:page] || 1)
+    @incomplete_providers = Provider.search_by_params(params).with_missing_required_attributes
+    if !current_user.administrator?
+      @incomplete_providers = @incomplete_providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
+    end
+    @incomplete_providers = @incomplete_providers.paginate(per_page: 50, page: params[:page] || 1)
   end
 
 end

@@ -56,10 +56,15 @@ class AjaxController < ApplicationController
   def get_group_dcos
     id = params[:group_id]
     group = EnrollmentGroup.find_by(id: id) if params[:group_id] != 'all'
-    group_dcos = ( params[:group_id] != 'all' ? group.dcos : GroupDco.all )
-    provider_count = ( params[:group_id] != 'all' ? group.providers.count : Provider.count )
-    group_dco_count =  group_dcos.count
-
+    group_dcos = ( params[:group_id] != 'all' ? group.dcos : GroupDco )
+    providers = ( params[:group_id] != 'all' ? group.providers : Provider )
+    if current_user.administrator?
+      group_dco_count =  group_dcos.count
+      provider_count = providers.count
+    else
+      group_dco_count =  group_dcos.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id)).count
+      provider_count = providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id)).count
+    end
     render json: {
       'group_dco_count' => group_dco_count,
       'provider_count' => provider_count,
@@ -135,7 +140,11 @@ class AjaxController < ApplicationController
   end
 
   def get_enrollment_groups
-    enrollment_groups = EnrollmentGroup.all.map { |m| { label: m.group_name, value: m.id} }
+    if current_user.administrator?
+      enrollment_groups = EnrollmentGroup.all.map { |m| { label: m.group_name, value: m.id} }
+    else
+      enrollment_groups = current_user.enrollment_groups.map { |m| { label: m.group_name, value: m.id} }
+    end
     render json: {
       'enrollment_groups' => enrollment_groups
     }
