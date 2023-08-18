@@ -9,6 +9,13 @@ class ClientProviderEnrollment < ApplicationRecord
         enrollable_type_condition = "WHERE cpe.enrollable_type = '#{params[:enrollable_type]}'"
       end
 
+      if params[:enrollment_group_ids].present?
+        enrollment_group_ids_condition = " AND (emg.id IN (#{params[:enrollment_group_ids].map{|s| "'#{s.to_s}'"}.join(',')}) AND cpe.enrollable_type = 'EnrollGroup') 
+                                           OR (p.enrollment_group_id IN (#{params[:enrollment_group_ids].map{|s| "'#{s.to_s}'"}.join(',')}) AND cpe.enrollable_type = 'EnrollmentProvider'
+                                                AND ep.outreach_type = 'provider-from-enrollment')
+                                           OR (ep.outreach_type = 'provider-from-provider-app')"
+      end
+
       if params[:search_keyword].present?
         keyword_condition = " WHERE (LOWER(cpe_inner.group_name) LIKE LOWER(:state) AND cpe.enrollable_type = 'EnrollGroup') OR
                                     ((LOWER(cpe_inner.provider_full_name) LIKE LOWER(:state) OR LOWER(cpe_inner.provider_partial_name) LIKE LOWER(:state)
@@ -36,7 +43,7 @@ class ClientProviderEnrollment < ApplicationRecord
                               LEFT JOIN providers p ON p.id = ep.provider_id AND ep.outreach_type = 'provider-from-enrollment'
                               LEFT JOIN provider_sources ps ON ps.id = ep.provider_id AND ep.outreach_type = 'provider-from-provider-app'
                               LEFT JOIN provider_source_data psd ON ps.id = psd.provider_source_id AND (psd.data_key = 'first_name' OR psd.data_key = 'last_name')
-                              #{enrollable_type_condition}
+                              #{enrollable_type_condition} #{enrollment_group_ids_condition}
                               GROUP BY cpe.id, ep.outreach_type, p.first_name, p.middle_name, p.last_name, emg.group_name, p.ssn, p.npi) as cpe_inner ON cpe_inner.id = cpe.id
                               #{keyword_condition}
                               ORDER BY name ASC NULLS LAST"

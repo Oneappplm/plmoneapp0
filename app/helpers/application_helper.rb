@@ -467,21 +467,28 @@ module ApplicationHelper
 	end
 
 	def application_status_count status
+		if current_user.administrator?
+			@enroll_group_details = EnrollGroupsDetail
+			@enrollment_provider_details = EnrollmentProvidersDetail
+		else
+			@enroll_group_details = EnrollGroupsDetail.includes(:enroll_group).where(enroll_group: { group_id: current_user.enrollment_groups.pluck(:id)})
+			@enrollment_provider_details = EnrollmentProvidersDetail.includes(enrollment_provider: :provider).where(provider: {enrollment_group_id: current_user.enrollment_groups.pluck(:id)})
+		end
 		case status
 		when 'application-submitted'
-			EnrollGroupsDetail.submitted.count + EnrollmentProvidersDetail.submitted.count
+			@enroll_group_details.submitted.count + @enrollment_provider_details.submitted.count
 		when 'application-not-submitted'
-			EnrollGroupsDetail.not_submitted.count + EnrollmentProvidersDetail.not_submitted.count
+			@enroll_group_details.not_submitted.count + @enrollment_provider_details.not_submitted.count
 		when 'processing'
-			EnrollGroupsDetail.processing.count + EnrollmentProvidersDetail.processing.count
+			@enroll_group_details.processing.count + @enrollment_provider_details.processing.count
 		when 'approved'
-			EnrollGroupsDetail.approved.count + EnrollmentProvidersDetail.approved.count
+			@enroll_group_details.approved.count + @enrollment_provider_details.approved.count
 		when 'denied'
-			EnrollGroupsDetail.denied.count + EnrollmentProvidersDetail.denied.count
+			@enroll_group_details.denied.count + @enrollment_provider_details.denied.count
 		when 'terminated'
-			EnrollGroupsDetail.terminated.count + EnrollmentProvidersDetail.terminated.count
+			@enroll_group_details.terminated.count + @enrollment_provider_details.terminated.count
 		when 'not_eligible'
-			EnrollGroupsDetail.not_eligible.count + EnrollmentProvidersDetail.not_eligible.count
+			@enroll_group_details.not_eligible.count + @enrollment_provider_details.not_eligible.count
 		else
 			0
 		end

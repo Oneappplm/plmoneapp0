@@ -83,6 +83,9 @@ end
 
   def show
     @providers = Provider.all
+		if !@current_user.administrator?
+			@providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
+		end
     @provider = Provider.find(params[:id])
     @comment = EnrollmentComment.new
     @comment.provider = @provider
