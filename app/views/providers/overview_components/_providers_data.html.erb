@@ -184,7 +184,11 @@
         <h5 class="text-black text-left">Active Providers</h5>
         <div class="w-100 d-flex d-flex align-items-end">
           <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
+            <% if current_user.administrator? %>
               <%= Provider.active.count %>
+            <%else%>
+              <%= Provider.where(enrollment_group_id: current_user.enrollment_groups&.pluck(:id)).active&.count %>
+            <%end%>
           </h1>
         </div>
       </div>
@@ -196,7 +200,11 @@
         <h5 class="text-black text-left">Inactive Providers</h5>
         <div class="w-100 d-flex d-flex align-items-end">
           <h1 style="font-size: 40px;" class="text-black mt-2">
-            <%= Provider.inactive.count %>
+            <% if current_user.administrator? %>
+              <%= Provider.inactive.count %>
+            <%else%>
+              <%= Provider.where(enrollment_group_id: current_user.enrollment_groups&.pluck(:id)).inactive&.count %>
+            <%end%>
           </h1>
         </div>
       </div>
