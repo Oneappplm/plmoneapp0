@@ -239,7 +239,7 @@
       <div class="row mb-3">
         <div class="col-lg-6">
           <label class="text-dark-grey">Board Name</span></label>
-          <%= f.select :board_name, options_for_select(['Select Option'], @provider.suffix), { prompt: '' }, { class: 'form-select border border-dark' } %>
+           <%= f.select :board_name, options_for_select([]), { prompt: 'Board Name' }, {:class => 'form-select border border-dark single-select board-name',  data: { value: f.object.board_name } }  %>
         </div>
         <div class="col-lg-6">
           <label class="text-dark-grey">Certification Number</span></label>
@@ -903,6 +903,22 @@
                 document.querySelector('#' + id).setValue(value);
              });
           }, 1000);
+        });
+
+        $(document).ready(function(){
+          $('.board-name').each(function(){
+            var id = $(this).attr('id');
+            var value = $(this).data('value');
+
+            setTimeout(function(){
+              $.get('<%= board_names_multi_select_data_path %>', function(data){
+                  VirtualSelect.init({ele: '#' + id, search: true });
+                  document.querySelector('#' + id).setOptions(data['result']);
+                  document.querySelector('#' + id).setValue(value);
+              });
+            }, 1000);
+          });
+
         });
 
 

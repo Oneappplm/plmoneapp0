@@ -72,7 +72,7 @@ class EnrollmentsController < ApplicationController
 			@enrollment_group = EnrollmentGroup.new
 			@enrollment_group.contact_personnels.build
 			@enrollment_group.details.build
-			@enrollment_group.service_locations.build
+			#@enrollment_group.service_locations.build
 			@enrollment_group.qualifacts_contacts.build if current_setting.qualifacts? && !@enrollment_group.qualifacts_contacts.present?
 		end
 	end
@@ -89,9 +89,9 @@ class EnrollmentsController < ApplicationController
 			@enrollment_group.details.build
 		end
 
-		if @enrollment_group.service_locations.blank?
-			@enrollment_group.service_locations.build 
-		end
+		#if @enrollment_group.service_locations.blank?
+			#@enrollment_group.service_locations.build 
+		#end
 
 		@enrollment_group.qualifacts_contacts.build if current_setting.qualifacts? && !@enrollment_group.qualifacts_contacts.present?
 

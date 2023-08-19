@@ -15,14 +15,14 @@ class EnrollmentGroup < ApplicationRecord
   has_many :qualifacts_contacts, class_name: 'GroupContact', dependent: :destroy
   has_one :enroll_group, class_name: 'EnrollGroup', foreign_key: "group_id", dependent: :destroy
   has_many :deleted_document_logs, class_name: 'EnrollmentGroupDeletedDocLog', dependent: :destroy
-  has_many :service_locations , class_name: 'EnrollmentGroupsSvcLocation', dependent: :destroy
+  #has_many :service_locations , class_name: 'EnrollmentGroupsSvcLocation', dependent: :destroy
   has_many :users_enrollment_groups
   has_many :users, through: :users_enrollment_groups
 
   accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :qualifacts_contacts, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :contact_personnels, allow_destroy: true, reject_if: :all_blank
-  accepts_nested_attributes_for :service_locations, allow_destroy: true, reject_if: :all_blank
+  #accepts_nested_attributes_for :service_locations, allow_destroy: true, reject_if: :all_blank
 
   # validates_presence_of :group_name, :group_code, :office_address, :city, :state, :zip_code
 
