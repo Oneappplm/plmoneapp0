@@ -1,7 +1,8 @@
 class EnrollmentClientsController < ApplicationController
-  before_action :set_providers, only: [:index, :download_documents, :show, :reports, :notifications, :dashboard]
+  before_action :set_providers, only: [:index, :download_documents, :show, :reports, :dashboard]
   before_action :set_provider, only: [:show]
   before_action :set_incomplete_providers, only: [:show, :index, :reports, :notifications, :dashboard]
+
   def index; end
 
   def show
@@ -12,6 +13,7 @@ class EnrollmentClientsController < ApplicationController
         end
       render params[:mode]
     end
+    set_comment
   end
 
   def reports;end
@@ -27,6 +29,7 @@ class EnrollmentClientsController < ApplicationController
       @show_missing_fields = @provider.show_missing_fields?
       @provider.build_licenses if @provider.licenses.nil?
     end
+    set_comment
   end
 
   def providers_to_csv
@@ -67,9 +70,9 @@ class EnrollmentClientsController < ApplicationController
 
   def groups
     if current_user.administrator?
-      @enrollment_groups = EnrollmentGroup.all
+      @enrollment_groups = EnrollmentGroup.search_by_params(params)
     else
-      @enrollment_groups = current_user.enrollment_groups
+      @enrollment_groups = current_user.enrollment_groups.search_by_params(params)
     end
   end
 
@@ -119,10 +122,23 @@ class EnrollmentClientsController < ApplicationController
 
   def set_incomplete_providers
     @incomplete_providers = Provider.search_by_params(params).with_missing_required_attributes
+    if params[:name].present?
+      @incomplete_providers = @incomplete_providers.search_name(params[:name])
+    end
+
+    if params[:missing_field].present?
+      @incomplete_providers = @incomplete_providers.filter_by_missing_field(params[:missing_field])
+    end
+
     if !current_user.administrator?
       @incomplete_providers = @incomplete_providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
     end
     @incomplete_providers = @incomplete_providers.paginate(per_page: 50, page: params[:page] || 1)
   end
 
+  def set_comment
+    @comment = EnrollmentComment.new
+    @comment.provider = @provider
+    @comment.user = current_user
+  end
 end

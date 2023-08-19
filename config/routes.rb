@@ -276,6 +276,7 @@ Rails.application.routes.draw do
       get :enrollment_payers
       get :provider_states, path: 'provider-states'
       get :board_names
+      get :group_states, path: 'group-states'
       # add more here
     end
   end

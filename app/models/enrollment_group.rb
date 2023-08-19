@@ -28,6 +28,32 @@ class EnrollmentGroup < ApplicationRecord
 
   default_scope { order(:group_name) }
 
+
+  class << self
+    def search_by_params(params)
+      return all if params_conditions(params).values.all?(&:blank?) && params[:group_name].blank?
+
+      results = if params[:state].present? or params[:flatform].present?
+        where(params_conditions(params).reject { |k, v| v.blank? }.compact)
+      else
+        all
+      end
+
+      results = if params[:group_name].present?
+        results.where("group_name ILIKE '%#{params[:group_name]}%'")
+      else
+        results
+      end
+    end
+
+    def params_conditions(params)
+      {
+        state: params[:state],
+        flatform: params[:flatform]
+      }
+    end
+  end
+
   def dco_count_display
     "#{dcos.size} Location(s)"
   end

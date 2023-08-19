@@ -26,6 +26,10 @@ class MultiSelectDataController < ApplicationController
     end
   end
 
+  def group_states
+    send_result State.all.map{ |state| { label: "#{state.name} - #{state.alpha_code}", value: state.name } }
+  end
+
 	def provider_types
 		send_result ProviderType.all.map{|ptype| { label: ptype.fch, value: ptype.fch} }
 	end

@@ -185,6 +185,15 @@ class Provider < ApplicationRecord
         provider.update_attribute("middle_name", provider&.middle_name&.strip)
       end
     end
+
+    # no differentiation beetween first_name last_name middle_name
+    def search_name(searched_name)
+      where("first_name ILIKE :name OR last_name ILIKE :name OR middle_name ILIKE :name", name: "%#{searched_name}%")
+    end
+
+    def filter_by_missing_field(field)
+      where("#{field}": nil)
+    end
   end
 
   def provider_name = "#{first_name} #{middle_name} #{last_name}"

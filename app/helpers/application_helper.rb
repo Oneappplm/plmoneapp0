@@ -487,7 +487,7 @@ module ApplicationHelper
 			@enroll_group_details.denied.count + @enrollment_provider_details.denied.count
 		when 'terminated'
 			@enroll_group_details.terminated.count + @enrollment_provider_details.terminated.count
-		when 'not_eligible'
+		when 'not-eligible'
 			@enroll_group_details.not_eligible.count + @enrollment_provider_details.not_eligible.count
 		else
 			0
@@ -508,5 +508,34 @@ module ApplicationHelper
       return e[0] if e[1] == selected_enrollment_type
     end
     selected_enrollment_type
+  end
+
+  def provider_all_required_fields
+    [
+      ['First Name', 'first_name'],
+      ['Last Name', 'last_name'],
+      ['SSN', 'ssn'],
+      ['Date of birth', 'birth_date'],
+      ['Birth City', 'birth_city'],
+      ['Birth State', 'birth_state'],
+      ['Address Line 1', 'address_line_1'],
+      ['City', 'city','text_field'],
+      ['State','state_id'],
+      ['Zip Code', 'zip_code'],
+      ['Practitioner Type', 'practitioner_type'],
+      ['Taxonomy', 'taxonomy'],
+      ['Specialty', 'specialty'],
+      ['Client','enrollment_group_id'],
+      ['State License Copy', 'state_license_copy_file'],
+      ['DEA Copy', 'dea_copy_file'],
+      ['W9 Form', 'w9_form_file' ],
+      ['Certificate of Insurance', 'certificate_insurance_file'],
+      ['Drivers License', 'drivers_license_file' ],
+      ['License Registered State', 'board_certification_file' ],
+      ['CAQH App Copy', 'caqh_app_copy_file' ],
+      ['Curriculum Vitae (CV)', 'cv_file' ],
+      ['Telehealth License Copy', 'telehealth_license_copy_file'],
+      ['Copy of Certificate', 'school_certificate']
+    ]
   end
 end

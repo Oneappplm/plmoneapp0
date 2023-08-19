@@ -8,10 +8,36 @@
   <%= render "enrollment_clients_nav"%>
   <div class="row">
     <div class="col-xl-8">
+      <div class="row">
+      <div class="col-xl-12">
+         <div class="card card-payer">
+            <div class="card-body">
+              <%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |f| %>
+                  <h5>Search</h5>
+
+                  <div class="row mt-3">
+                     <div class="col-xl-6">
+                        <label for="">Name</label>
+                        <input type="text" name="name" value="<%=params[:name] %>" id="name" class="form-control" placeholder="Type here...">
+                     </div>
+                     <div class="col-xl-6">
+                        <label for="">Filter</label>
+                        <%= select_tag('missing_field', options_for_select(provider_all_required_fields, params[:field]), class: 'form-control',  prompt: 'Select option')%>
+                  </div>
+                  <div class="d-flex justify-content-center mt-4">
+                     <button class="btn btn-primary py-1">Submit</button>
+                  </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
       <div class="table-wpr">
         <%= render "providers_table"%>
       </div>
     </div>
+    <% if @provider %>
     <div class="col-xl-4">
       <%= render partial: "enrollment_clients/show/missing_documents"%>
       <% if @show_missing_fields %>
@@ -20,7 +46,28 @@
       <% if !@provider.missing_field_submissions.blank? %>
         <%= render partial: "enrollment_clients/show/submitted_required_fields"%>
       <% end %>
+
+
+          <div class="card rounded shadow-lg p-1 px-3 mb-3 pb-5">
+          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Comments', collapse_name: 'comments'}%>
+            <div id="comments-list">
+              <% @provider.comments.each do |comment|%>
+                <% if comment.persisted? %>
+                  <%= render partial: 'comments/comment', locals: {comment: comment}%>
+                <% end %>
+              <% end %>
+            </div>
+            <%= render partial: 'comments/form_ajax', comment: @comment %>
+          </div>
     </div>
+    <% else %>
+    <div class="col-xl-4">
+        <div class="card rounded shadow-lg py-2 px-3 mb-3">
+          <h2 class="text-center my-2">No provider info found</h2>
+
+        </div>
+    </div>
+    <% end %>
   </div>
 </div>
 
@@ -35,22 +82,25 @@
         var dropdown_id = $(this).attr('id');
         $.get('<%= provider_states_multi_select_data_path %>', function(data){
           VirtualSelect.init({ele: '#'+dropdown_id, search: true }); // initialze virtual select first
-          document.querySelector('#'+dropdown_id).setOptions(data['result']); // other alternative for initializing collection data
+          if($('#'+dropdown_id).length)
+            document.querySelector('#'+dropdown_id).setOptions(data['result']); // other alternative for initializing collection data
         });
       })
 
        $.get('<%= specialties_multi_select_data_path %>', function(data){
           VirtualSelect.init({ele: '#missing_provider_specialty', search: true, multiple: true }); // initialze virtual select first
-          document.querySelector('#missing_provider_specialty').setOptions(data['result']); // other alternative for initializing collection data
+          if($('#missing_provider_specialty').length)
+            document.querySelector('#missing_provider_specialty').setOptions(data['result']); // other alternative for initializing collection data
         });
 
         $.get('<%= provider_types_multi_select_data_path %>', function(data){
           VirtualSelect.init({ele: '#provider_practitioner_type', search: true, multiple: true }); // initialze virtual select first
-          document.querySelector('#provider_practitioner_type').setOptions(data['result']); // other alternative for initializing collection data
+          if($('#provider_practitioner_type').length)
+            document.querySelector('#provider_practitioner_type').setOptions(data['result']); // other alternative for initializing collection data
         });
       }, 500);
 
-    // 
+    //
 
     $('#provider_enrollment_group_id').on('change',function(){
         var id = $(this).val();
