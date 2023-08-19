@@ -72,6 +72,7 @@ class EnrollmentsController < ApplicationController
 			@enrollment_group = EnrollmentGroup.new
 			@enrollment_group.contact_personnels.build
 			@enrollment_group.details.build
+			@enrollment_group.service_locations.build
 			@enrollment_group.qualifacts_contacts.build if current_setting.qualifacts? && !@enrollment_group.qualifacts_contacts.present?
 		end
 	end
@@ -86,6 +87,10 @@ class EnrollmentsController < ApplicationController
 
 		if @enrollment_group.details.blank?
 			@enrollment_group.details.build
+		end
+
+		if @enrollment_group.service_locations.blank?
+			@enrollment_group.service_locations.build 
 		end
 
 		@enrollment_group.qualifacts_contacts.build if current_setting.qualifacts? && !@enrollment_group.qualifacts_contacts.present?
@@ -201,10 +206,18 @@ class EnrollmentsController < ApplicationController
           :roles,
           :voided_check_file,
 					:flatform,
+					:w9_signed_date, 
+					:w9_sign_date_expiration, 
+					:void_check_signed_date,
+					:void_check_date_expiration, 
+					:bank_letter_signed_date,
+					:bank_letter_date_expiration,
+					:telehealth_providers,
 					contact_personnels_attributes: [:id, :group_personnel_name, :group_personnel_email, :group_personnel_phone_number, :group_personnel_fax_number, :group_personnel_position,
 						:_destroy],
 					details_attributes: [:id, :individual_ownership_first_name, :individual_ownership_middle_name, :email_address, :individual_ownership_last_name,:individual_ownership_title, :individual_ownership_ssn, :individual_ownership_dob, :individual_ownership_percent_of_ownership, :individual_ownership_effective_date, :individual_ownership_control_date, :roles,
 					:_destroy],
+					service_locations_attributes: [:id, :primary_service_non_office_area, :primary_service_location_apps, :primary_service_zip_code, :primary_service_office_email, :primary_service_fax, :primary_service_office_website, :primary_service_crisis_phone, :primary_service_location_other_phone, :primary_service_appt_scheduling, :primary_service_interpreter_language, :primary_service_telehealth_only_state],
 					qualifacts_contacts_attributes: [:id, :department, :name, :role, :email, :phone, :_destroy]
 			)
 		end
