@@ -114,6 +114,10 @@ class MultiSelectDataController < ApplicationController
       send_result EnrollmentPayer.all.map { |m| { label: m.name, value: m.name } }
     end
   end
+
+	def board_names
+		send_result	BoardName.all.map{|board| { label: board.name, value: board.name} }
+	end
 	# add more methods here
 
 	private
