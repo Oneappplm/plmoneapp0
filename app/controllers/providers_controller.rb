@@ -3,14 +3,14 @@ class ProvidersController < ApplicationController
 	before_action :set_overview_details, only: [:overview]
   def index
 		if params[:user_search].present?
-			@providers = Provider.search(params[:user_search])
+			@providers = Provider.unscoped.select("NULLIF(first_name, '') as f, NULLIF(last_name, '') as l,NULLIF(middle_name, '') as m, *").search(params[:user_search])
 		else
-			@providers = Provider.all
+			@providers = Provider.unscoped.select("NULLIF(first_name, '') as f, NULLIF(last_name, '') as l,NULLIF(middle_name, '') as m, *").all
 		end
 		if !@current_user.administrator?
 			@providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
 		end
-		@providers = @providers.paginate(per_page: 10, page: params[:page] || 1)
+		@providers = @providers.reorder("f asc NULLS last", "m asc NULLS last", "l asc NULLS last").paginate(per_page: 10, page: params[:page] || 1)
 	end
 
 	def new
