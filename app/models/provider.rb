@@ -192,7 +192,7 @@ class Provider < ApplicationRecord
     end
 
     def filter_by_missing_field(field)
-      where("#{field}": nil)
+      where("#{field} is NULL OR #{field} = ''")
     end
   end
 
