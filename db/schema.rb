@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_14_181106) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_19_123936) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -55,6 +55,23 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_14_181106) do
     t.datetime "started_at"
     t.index ["user_id"], name: "index_ahoy_visits_on_user_id"
     t.index ["visit_token"], name: "index_ahoy_visits_on_visit_token", unique: true
+  end
+
+  create_table "client_organizations", force: :cascade do |t|
+    t.string "organization_name"
+    t.string "organization_type"
+    t.string "organization_npi"
+    t.string "organization_address_1"
+    t.string "organization_address_2"
+    t.string "organization_city"
+    t.integer "organization_state_id"
+    t.string "organization_zipcode"
+    t.string "organization_phone_number"
+    t.string "organization_fax_number"
+    t.string "organization_dba_name"
+    t.string "organization_tax_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "client_provider_enrollments", force: :cascade do |t|
@@ -546,6 +563,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_14_181106) do
     t.index ["enrollment_group_id"], name: "index_group_dcos_on_enrollment_group_id"
   end
 
+  create_table "group_engage_providers", force: :cascade do |t|
+    t.integer "practice_location_id"
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "last_name"
+    t.datetime "date_of_birth"
+    t.string "email_address"
+    t.string "ssn"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "health_plans", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -908,6 +937,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_14_181106) do
     t.datetime "updated_at", null: false
     t.integer "invitation_count", default: 0
     t.datetime "invitation_sent_at"
+    t.integer "practice_location_id"
+    t.integer "group_engage_provider_id"
   end
 
   create_table "provider_taxonomies", force: :cascade do |t|
@@ -1120,6 +1151,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_14_181106) do
     t.string "prof_liability_coverage_amount"
     t.string "prof_liability_coverage_amount_aggregate"
     t.string "prof_liability_policy_number"
+    t.string "dcos", default: "f"
   end
 
   create_table "providers_missing_field_submissions", force: :cascade do |t|

@@ -1,4 +1,4 @@
-class PracticeLocation < ApplicationRecord
+class GroupEngageProvider < ApplicationRecord
 	include PgSearch::Model
 	pg_search_scope :search,
                   against: self.column_names,
@@ -6,8 +6,9 @@ class PracticeLocation < ApplicationRecord
                     tsearch: {any_word: true}
                   }
 
-  has_many :provider_sources
-  has_many :group_engage_providers
+	belongs_to :practice_location, optional: true
+	has_one :provider_source
 
-	def address = "#{address1} #{address2}"
+	validates_uniqueness_of :email_address, :ssn
+
 end

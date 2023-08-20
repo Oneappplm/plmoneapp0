@@ -111,6 +111,14 @@ Rails.application.routes.draw do
   end
 
   resources :practice_locations
+  resources :group_engage_providers, path: 'group-engage-providers' do
+    member do
+      post :add_to_roster
+    end
+    collection do
+      get :search
+    end
+  end
   resource :client_organizations
 
 

@@ -14,7 +14,11 @@ class OfficeManagersController < ApplicationController
       render params[:template]
     else
       clean_empty_providers
-      @providers = ProviderSource.unscoped.order(created_at: :asc).paginate(page: params[:page], per_page: 12)
+      if params[:practice_location_id].present? && params[:practice_location_id] == 'All Location'
+        redirect_to office_managers_path
+      end
+
+      @providers = ProviderSource.unscoped.where(practice_location_id:  params[:practice_location_id]).order(created_at: :asc).paginate(page: params[:page], per_page: 12)
     end
   end
 

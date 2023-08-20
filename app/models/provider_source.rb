@@ -1,6 +1,8 @@
 class ProviderSource < ApplicationRecord
 	has_many :data, class_name: 'ProviderSourceData',	inverse_of: :provider_source, dependent: :destroy
 	has_many	:documents, class_name: 'ProviderSourceDocument', inverse_of: :provider_source, dependent: :destroy
+  belongs_to :practice_location, optional: true
+  belongs_to :group_engage_provider, optional: true
 	scope :current, ->{ find_by(current_provider_source: true) }
 	default_scope {	order(current_provider_source: :desc) }
 
@@ -455,6 +457,26 @@ class ProviderSource < ApplicationRecord
     end
     arr.count(false)
   end
+
+  def add_to_roster group_engage_provider
+		['first_name', 'middle_name', 'last_name', 'date_of_birth', 'email_address', 'ssn'].each	do |column|
+			data_key = filtered_data_key(column)
+			data_value = group_engage_provider.send(column)
+
+			add_data(data_key, data_value) if data_value.present?
+		end
+  end
+
+  def filtered_data_key column
+		case column
+		when 'data_of_birth'
+			'ps-dob'
+		when 'ssn'
+			'social-security-number'
+		else
+			column
+		end
+	end
 
   private
 

@@ -93,3 +93,4 @@ gem "ahoy_matey" # https://github.com/ankane/ahoy'gem 'device_detector'
 gem 'device_detector' # https://github.com/podigee/device_detector
 gem "recaptcha" # https://github.com/ambethia/recaptcha
 gem "noticed", "~> 1.6"
+gem 'draper' # https://github.com/drapergem/draper

@@ -25,20 +25,27 @@
                 <div class="row mb-3">
                     <div class="col-xl-5">
                          <label for="filter-select">Location</label>
-                        <div class="form-wrp">
-                            <%= select_tag('location_filter_select', options_for_select(PracticeLocation.all.map{|m| [m.location, m.id]}.prepend("All Location")), class: 'form-control',  id: 'filter-select')%>
+                        <div class="d-flex align-items-center gap-2">
+                            <%= form_with url: request.url, method: :get, html: { class: ''} do |form| %>
+                                <%= form.select :practice_location_id, options_for_select(PracticeLocation.all.map{|m| [m.location, m.id]}.prepend("All Location"), params[:practice_location_id]), {}, {:class => 'form-select w-100',  onchange: 'this.form.submit();'}  %>
+                            <% end %>
+                            <% select_tag('location_filter_select', options_for_select(PracticeLocation.all.map{|m| [m.location, m.id]}.prepend("All Location"), params[:practice_location_id]), class: 'form-control',  id: 'filter-select', onchange: 'this.form.submit();')%>
                             <!--  data-bs-toggle="modal" data-bs-target="#removeLocationModal" -->
-                            <button class="btn btn-danger btn-xs" id="remove-location">
-                                <i class="bx bx-trash"></i>
-                                Remove Location
-                            </button>
+                            <% if params[:practice_location_id].present? %>
+                                <button class="btn btn-danger btn-xs" id="remove-location">
+                                    <i class="bx bx-trash"></i>
+                                    Remove Location
+                                </button>
+                            <% end %>
                         </div>
                     </div>
                     <div class="col-xl-7 button-wpr">
+                        <% if params[:practice_location_id].present? %>
                         <button class="btn btn-primary btn-xs" id="add-provider" data-bs-toggle="modal" data-bs-target="#addProviderModal">
                             <i class='bx bx-plus' ></i>
                             Add Provider
                         </button>
+                        <% end %>
 
                         <%= link_to 'javascript:void(0)', class: 'btn btn-primary btn-xs', onclick: "sendBulkInvites(this)" do %>
                             <i class='bx bxs-paper-plane' ></i>
@@ -222,119 +229,106 @@
 
             <!-- Add Provider Modal -->
             <div class="modal fade" id="addProviderModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-dialog modal-xl modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-body">
-                            <div class="content">
+                            <div class="">
                                 <div class="modal-title">
                                     <h6 class="">Add New Provider</h6>
-                                    <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                                    <button class="btn btn-cancel" data-bs-dismiss="modal">
+                                        <!-- close icon large -->
+
+                                        <i class="bx bx-x-circle text-red"></i>
+                                    </button>
                                 </div>
                                 <div class="form-row row">
                                     <div class="col-xl-4">
                                         <label for="">First Name</label>
-                                        <input type="text" class="form-control" placeholder="">
+                                        <input type="text" class="form-control form-field" placeholder="" name="first_name">
                                     </div>
                                     <div class="col-xl-4">
                                         <label for="">Middle Name</label>
-                                        <input type="text" class="form-control" placeholder="">
+                                        <input type="text" class="form-control form-field" placeholder="" name="middle_name">
                                     </div>
                                     <div class="col-xl-4">
                                         <label for="">Last Name</label>
-                                        <input type="text" class="form-control" placeholder="">
+                                        <input type="text" class="form-control form-field" placeholder="" name="last_name">
                                     </div>
                                 </div>
                                 <div class="form-row row">
                                     <div class="col-xl-3">
                                         <label for="">Date of Birth</label>
-                                        <input type="date" class="form-control" placeholder="">
+                                        <input type="date" class="form-control form-field" placeholder="" name="date_of_birth">
                                     </div>
                                     <div class="col-xl-5">
                                         <label for="">Email</label>
-                                        <input type="text" class="form-control" placeholder="">
+                                        <input type="text" class="form-control form-field" placeholder="" name="email">
                                     </div>
                                     <div class="col-xl-4">
                                         <label for="">SSN</label>
-                                        <input type="text" class="form-control" placeholder="">
+                                        <input type="text" class="form-control form-field" placeholder="" name="ssn">
                                     </div>
                                 </div>
-                                <div class="add-note mt-4">
-                                    <h6>Note:</h6>
-                                    <ul>
-                                        <li>Enter required fields and click "Search Provider" button.</li>
-                                        <li>If the provider is located, click "Add to Roster". An invitation will be emailed to the provider.</li>
-                                        <li>When the provider accepts the invitation, the office manager will be able to manage the practitioner.</li>
-                                        <li>If the provider is not located, click "Add Provider" in the search box. This will generate an email to the email address provided.</li>
-                                        <li>The provider will receive an email providing the opportunity to link the provider's account with the office manager or to create a new provider account.</li>
-                                    </ul>
-                                </div>
+
                                 <div class="row result-controls mt-3">
-                                    <div class="col-xl-6 filter-result">
+                                    <!-- <div class="col-xl-6 filter-result">
                                         <h6 class="">Search result: 2 existing providers</h6>
-                                    </div>
+                                    </div> -->
                                     <div class="col-xl-6">
-                                        <div class="table-controls">
-                                            <button class="btn btn-sm btn-primary">
+                                        <div class="">
+                                            <button id="btn-search-provider" class="btn btn-sm btn-primary">
                                                 <i class="bx bx-search"></i>
                                                 Search Provider
                                             </button>
-                                            <button class="btn btn-sm btn-primary">
+                                            <button id="btn-add-provider" class="btn btn-sm btn-primary">
                                                 <i class='bx bx-plus' ></i>
                                                 Add Provider
+                                            </button>
+                                            <!-- button close -->
+                                            <button class="btn btn-sm btn-warning" data-bs-dismiss="modal">
+                                                Close
                                             </button>
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
-                            <div class="dark">
+                            <!-- <div class="dark">
                                 <div class="content">
                                     <div class="modal-title">
                                         <h6 class="text-white">Add Existing Provider to Roster</h6>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="content">
-                                <table class="table">
+                            </div> -->
+                            <p class="alert alert-success alert-dismissible mt-4 d-none"></p>
+                            <p class="alert alert-danger alert-dismissible mt-4 d-none"></p>
+
+                            <div id="group-engage-table-holder" class="d-none">
+                                <table id="group-engage-table" class="custom-table mt-4">
                                     <thead>
                                         <tr>
-                                            <th scope="col" class="text-white">ID</th>
-                                            <th scope="col" class="text-white">First Name</th>
-                                            <th scope="col" class="text-white">Middle Name</th>
-                                            <th scope="col" class="text-white">Last Name</th>
-                                            <th scope="col" class="text-white">SSN</th>
-                                            <th scope="col" class="text-white">Project</th>
-                                            <th scope="col" class="text-white"></th>
+                                            <th  class="text-white"></th>
+                                            <th  class="text-white">First Name</th>
+                                            <th  class="text-white">Middle Name</th>
+                                            <th  class="text-white">Last Name</th>
+                                            <th  class="text-white">Birth Date</th>
+                                            <th  class="text-white">SSN</th>
+                                            <th  class="text-white">Email</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>109411</td>
-                                            <td>Denise</td>
-                                            <td>Flores</td>
-                                            <td>Atienza</td>
-                                            <td>000-00-1234</td>
-                                            <td>Healthways</td>
-                                            <td>
-                                                <button class="btn-plus">
-                                                    <i class='bx bxs-plus-circle'></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>109411</td>
-                                            <td>Denise</td>
-                                            <td>Moreno</td>
-                                            <td>Flores</td>
-                                            <td>000-00-1244</td>
-                                            <td>SVHS</td>
-                                            <td>
-                                                <button class="btn-plus">
-                                                    <i class='bx bxs-plus-circle'></i>
-                                                </button>
-                                            </td>
-                                        </tr>
                                     </tbody>
                                 </table>
+                            </div>
+                            <div class="add-note mt-4">
+                                <h6>Tips:</h6>
+                                <ul>
+                                    <li>Enter required fields and click "Search Provider" button.</li>
+                                    <li>If the provider is located, click "Add to Roster". An invitation will be emailed to the provider.</li>
+                                    <li>When the provider accepts the invitation, the office manager will be able to manage the practitioner.</li>
+                                    <li>If the provider is not located, click "Add Provider" in the search box. This will generate an email to the email address provided.</li>
+                                    <li>The provider will receive an email providing the opportunity to link the provider's account with the office manager or to create a new provider account.</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -345,6 +339,12 @@
 
     <script>
      $(document).ready(function(){
+        // reload page when modal is closed
+        $('#addProviderModal').on('hidden.bs.modal', function () {
+            location.reload();
+        });
+
+
         $('#remove-location').on('click', function(){
             // get selected text of filter-select
             var location = $('#filter-select option:selected').text();
@@ -354,16 +354,174 @@
             $('.remove-location-button-yes').attr('data-locationid', location_id);
             $('#removeLocationModal').modal('show');
         });
+
+        $('#btn-search-provider').on('click', function(){
+            var first_name = $('input[name="first_name"]').val();
+            var middle_name = $('input[name="middle_name"]').val();
+            var last_name = $('input[name="last_name"]').val();
+            var date_of_birth = $('input[name="date_of_birth"]').val();
+            var email = $('input[name="email"]').val();
+            var ssn = $('input[name="ssn"]').val();
+            var location_id = $('#practice_location_id option:selected').val();
+
+            // alert if all are blank
+            if (first_name === '' && middle_name === '' && last_name === '' && date_of_birth === '' && email === '' && ssn === '') {
+                alert('Please fill in at least one field.');
+                return;
+            }
+
+            // get ajax for searching
+            $.ajax({
+                url: "<%= search_group_engage_providers_path %>",
+                method: 'GET',
+                data: {
+                    authenticity_token: $('meta[name="csrf-token"]').attr('content'),
+                    group_engage_provider: {
+                        first_name: first_name,
+                        middle_name: middle_name,
+                        last_name: last_name,
+                        date_of_birth: date_of_birth,
+                        email_address: email,
+                        ssn: ssn,
+                        practice_location_id: location_id
+                    }
+                },
+                beforeSend: function() {
+                 // Show the loading button
+                //  $('.loading-overlay').show(); //
+                },
+                success: function(data) {
+                    var providers = data['providers'];
+                    // clear table
+                    $('#group-engage-table tbody').html('');
+                    $.each(providers, function(index, provider){
+                        var add_to_roster_link = '<a href="javascript:void(0);" class="btn-plus" onclick="addToRoster(this)" data-groupengageproviderid="' + provider.id + '"><i class="bx bxs-plus-circle"></i> Add To Roster</a>';
+                        var table_row = '<tr><td>' + add_to_roster_link + '</td><td>' + provider.first_name + '</td><td>' + provider.middle_name + '</td><td>' + provider.last_name + '</td><td>' + provider.date_of_birth + '</td><td>' + provider.ssn + '</td><td>' + provider.email_address + '</td></tr>';
+                        // append table row to table
+
+                        $('#group-engage-table tbody').append(table_row);
+                    });
+                    $('#group-engage-table-holder').removeClass('d-none');
+
+                    //  $('#addProviderModal').modal('hide');
+                    // $('.loading-overlay').hide(); //
+
+
+                    // var add_to_roster_link = '<a href="javascript:void(0);" class="btn-plus" onclick="addToRoster(this)" data-groupengageproviderid="' + group_engage_provider.id + '"><i class="bx bxs-plus-circle"></i> Add To Roster</a>';
+                    // var table_row = '<tr><td>' + add_to_roster_link + '</td><td>' + group_engage_provider.first_name + '</td><td>' + group_engage_provider.middle_name + '</td><td>' + group_engage_provider.last_name + '</td><td>' + group_engage_provider.date_of_birth + '</td><td>' + group_engage_provider.ssn + '</td><td>' + group_engage_provider.email_address + '</td></tr>';
+                    // // append table row to table
+                    // $('#group-engage-table tbody').append(table_row);
+                },
+                error: function(xhr, status, error) {
+                 $('.loading-overlay').hide();
+                 alert(xhr.responseText);
+                }
+            });
+        });
+
+        $('#btn-add-provider').on('click', function(){
+            var first_name = $('input[name="first_name"]').val();
+            var middle_name = $('input[name="middle_name"]').val();
+            var last_name = $('input[name="last_name"]').val();
+            var date_of_birth = $('input[name="date_of_birth"]').val();
+            var email = $('input[name="email"]').val();
+            var ssn = $('input[name="ssn"]').val();
+            var location_id = $('#practice_location_id option:selected').val();
+
+            // alert if all are blank
+            if (first_name === '' && middle_name === '' && last_name === '' && date_of_birth === '' && email === '' && ssn === '') {
+                alert('Please fill in at least one field.');
+                return;
+            }
+
+            // post ajax
+            $.ajax({
+                url: "<%= group_engage_providers_path %>",
+                method: 'POST',
+                data: {
+                    authenticity_token: $('meta[name="csrf-token"]').attr('content'),
+                    group_engage_provider: {
+                        first_name: first_name,
+                        middle_name: middle_name,
+                        last_name: last_name,
+                        date_of_birth: date_of_birth,
+                        email_address: email,
+                        ssn: ssn,
+                        practice_location_id: location_id
+                    }
+                },
+                beforeSend: function() {
+                 // Show the loading button
+                 $('.loading-overlay').show(); //
+                },
+                success: function(data) {
+                 var group_engage_provider = data['group_engage_provider'];
+                 var message = data['message'];
+                 var add_to_roster_link = '<a href="javascript:void(0);" class="btn-plus" onclick="addToRoster(this)" data-groupengageproviderid="' + group_engage_provider.id + '"><i class="bx bxs-plus-circle"></i> Add To Roster</a>';
+                 var table_row = '<tr><td>' + add_to_roster_link + '</td><td>' + group_engage_provider.first_name + '</td><td>' + group_engage_provider.middle_name + '</td><td>' + group_engage_provider.last_name + '</td><td>' + group_engage_provider.date_of_birth + '</td><td>' + group_engage_provider.ssn + '</td><td>' + group_engage_provider.email_address + '</td></tr>';
+
+                 $('.loading-overlay').hide(); //
+                 $('#group-engage-table-holder').removeClass('d-none');
+                 $('#group-engage-table tbody').append(table_row);
+
+                 showSuccessMessage(message);
+                },
+                error: function(xhr, status, error) {
+                 showErrorMessage(xhr.responseText);
+                }
+            });
+        });
      });
+
+     function addToRoster(link){
+        var group_engage_provider_id = $(link).data('groupengageproviderid');
+        var practice_location_id = $('#practice_location_id option:selected').val();
+        $.ajax({
+            url: "/group-engage-providers/" + group_engage_provider_id + "/add_to_roster",
+            method: 'POST',
+            data: {
+                authenticity_token: $('meta[name="csrf-token"]').attr('content'),
+                practice_location_id: practice_location_id
+            },
+            beforeSend: function() {
+             // Show the loading button
+             $('.loading-overlay').show();
+            },
+            success: function(data) {
+             var message = data['message'];
+             showSuccessMessage(message);
+            },
+            error: function(xhr, status, error) {
+             $('.loading-overlay').hide();
+             showErrorMessage(xhr.responseText);
+            }
+        });
+     }
+
+     function showSuccessMessage(message){
+      $('.loading-overlay').hide();
+      $('.alert-success').text(message);
+      $('.alert-success').removeClass('d-none');
+
+      setTimeout(function() {
+       $('.alert-success').text('');
+       $('.alert-success').addClass('d-none');
+      }, 3000);
+     }
+
+     function showErrorMessage(message){
+      $('.loading-overlay').hide();
+      $('.alert-danger').text(message);
+      $('.alert-danger').removeClass('d-none');
+
+      setTimeout(function() {
+       $('.alert-danger').text('');
+       $('.alert-danger').addClass('d-none');
+      }, 3000);
+     }
 
      function removeLocation(btn){
         var location_id = $(btn).data('locationid');
-        // set post ajax request
-        // $.delete("/practice_locations/" + location_id, function(data){
-        //     // reload the page
-        //     // location.reload();
-        // });
-        // alert("/practice_locations/" + location_id)
         $.ajax({
             url: "/practice_locations/" + location_id,
             method: 'DELETE',
