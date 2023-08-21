@@ -87,7 +87,7 @@ class UsersController < ApplicationController
   end
 
 	def set_groups
-		if current_user.administrator?
+		if current_user.administrator? || current_user.super_administrator?
       @enrollment_groups = EnrollmentGroup.all
     else
       @enrollment_groups = current_user.enrollment_groups

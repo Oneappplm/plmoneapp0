@@ -209,7 +209,7 @@ module ApplicationHelper
 	end
 
   def groups
-		if current_user.administrator?
+		if current_user.administrator? || current_user.super_administrator?
     	@groups ||= EnrollmentGroup.all
 		else
 			@groups ||= current_user.enrollment_groups
@@ -311,7 +311,7 @@ module ApplicationHelper
 	end
 
   def enrollment_group_options
-		if current_user.administrator?
+		if current_user.administrator? || current_user.super_administrator?
     	EnrollmentGroup.all.pluck(:group_name, :id)
 		else
 			current_user.enrollment_groups&.pluck(:group_name, :id)
@@ -467,7 +467,7 @@ module ApplicationHelper
 	end
 
 	def application_status_count status
-		if current_user.administrator?
+		if current_user.administrator? || current_user.super_administrator?
 			@enroll_group_details = EnrollGroupsDetail
 			@enrollment_provider_details = EnrollmentProvidersDetail
 		else
