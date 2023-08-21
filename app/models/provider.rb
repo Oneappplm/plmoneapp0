@@ -192,7 +192,11 @@ class Provider < ApplicationRecord
     end
 
     def filter_by_missing_field(field)
-      where("#{field} is NULL OR #{field} = ''")
+      if ['state_id', 'birth_date', 'enrollment_group_id', 'zip_code'].include?(field)
+        where("#{field}": nil)
+      else
+        where("#{field} is NULL OR #{field} = ''")
+      end
     end
   end
 

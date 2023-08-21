@@ -130,7 +130,7 @@ class EnrollmentClientsController < ApplicationController
       @incomplete_providers = @incomplete_providers.filter_by_missing_field(params[:missing_field])
     end
 
-    if !current_user.administrator?
+    if current_user.administrator?
       @incomplete_providers = @incomplete_providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
     end
     @incomplete_providers = @incomplete_providers.paginate(per_page: 50, page: params[:page] || 1)
