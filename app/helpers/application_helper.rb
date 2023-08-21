@@ -525,7 +525,7 @@ module ApplicationHelper
       ['Practitioner Type', 'practitioner_type'],
       ['Taxonomy', 'taxonomy'],
       ['Specialty', 'specialty'],
-      ['Client','enrollment_group_id'],
+      ['Group','enrollment_group_id'],
       ['State License Copy', 'state_license_copy_file'],
       ['DEA Copy', 'dea_copy_file'],
       ['W9 Form', 'w9_form_file' ],
