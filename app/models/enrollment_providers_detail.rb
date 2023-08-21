@@ -8,7 +8,7 @@ class EnrollmentProvidersDetail < ApplicationRecord
   scope :approved, -> { where(enrollment_status: 'approved') }
   scope :denied, -> { where(enrollment_status: 'denied') }
   scope :terminated, -> { where(enrollment_status: 'terminated') }
-  scope :not_eligible, -> { where(enrollment_status: 'not_eligible') }
+  scope :not_eligible, -> { where(enrollment_status: 'not-eligible') }
 
   scope :aetna, -> {where(enrollment_payer: 'aetna')}
   scope :amerihealth, -> {where(enrollment_payer: 'amerihealth')}

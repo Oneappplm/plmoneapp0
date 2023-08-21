@@ -15,7 +15,7 @@ class EnrollGroupsDetail < ApplicationRecord
   scope :approved, -> { where(application_status: 'approved') }
   scope :denied, -> { where(application_status: 'denied') }
   scope :terminated, -> { where(application_status: 'terminated') }
-  scope :not_eligible, -> { where(application_status: 'not_eligible') }
+  scope :not_eligible, -> { where(application_status: 'not-eligible') }
 
   scope :aetna, -> {where(enrollment_payer: 'aetna')}
   scope :amerihealth, -> {where(enrollment_payer: 'amerihealth')}
