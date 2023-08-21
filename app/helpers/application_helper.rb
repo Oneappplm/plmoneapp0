@@ -519,7 +519,7 @@ module ApplicationHelper
       ['Birth City', 'birth_city'],
       ['Birth State', 'birth_state'],
       ['Address Line 1', 'address_line_1'],
-      ['City', 'city','text_field'],
+      ['City', 'city'],
       ['State','state_id'],
       ['Zip Code', 'zip_code'],
       ['Practitioner Type', 'practitioner_type'],
