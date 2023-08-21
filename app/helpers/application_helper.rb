@@ -487,7 +487,7 @@ module ApplicationHelper
 			@enroll_group_details.denied.count + @enrollment_provider_details.denied.count
 		when 'terminated'
 			@enroll_group_details.terminated.count + @enrollment_provider_details.terminated.count
-		when ['not-eligible','not_eligible']
+		when 'not-eligible'
 			@enroll_group_details.not_eligible.count + @enrollment_provider_details.not_eligible.count
 		else
 			0
