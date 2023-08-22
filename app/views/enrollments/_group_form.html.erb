@@ -1,3 +1,6 @@
+<% content_for :js do %>
+  <%= render "enrollments/js_components/string_array_modifier"%>
+<% end %>
 <%= form_for @enrollment_group, :url => {action: action_name} , html: { multipart: true } do |f| %>
    <% if @enrollment_group.errors.any? %>
       <div id="error_explanation" class="row mb-3">
@@ -184,7 +187,7 @@
          </div>
          <div class="col-lg-6">
             <label class="text-dark-grey">Which of the following provider types do you employ?</label>
-            <div class="multi-select form-control border border-dark" name="enrollment_group[provider_type]"></div>
+            <div class="multi-select provider-type form-control border border-dark" name="enrollment_group[provider_type]" id="provider_practitioner_type"></div>
          </div>
       </div>
    </div>
@@ -278,7 +281,93 @@
          <%= f.text_field :bank_letter_date_expiration, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', onfocus: "(this.type = 'date')" %>
       </div>
    </div>
-   
+
+
+   <div class="row">
+          <div class="col-lg-6">
+            <!-- new field -->
+            <%= HtmlUtils.radio_toggle name: 'enrollment_group[telehealth_providers]',
+                    label: 'Are you a Telehealth Provider?',
+                    container_class: 'd-flex align-items-center my-3',
+                    toshow: 'service_locations_fields'
+                  %>
+          <%= f.hidden_field :telehealth_providers %>
+          </div>
+          <div class="row mb-1">
+            <div id="service_locations">
+               <div class="row d-none" id="service_locations_fields">
+                  <div class="fields">
+                    <%= f.fields_for :service_locations do |service_location_fields| %>
+                      <%= render 'service_location_fields', f: service_location_fields %>
+                    <% end %>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <!-- new field -->
+        <%= HtmlUtils.radio_toggle name: 'enrollment_group[admitting_privileges]',
+                label: 'Admitting Privileges?',
+                container_class: 'd-flex align-items-center my-3',
+                toshow: 'admitting_privileges_fields'
+              %>
+      <%= f.hidden_field :admitting_privileges %>
+      </div>
+      <div class="col-lg-12 mt-1">
+        <div class="row d-none" id="admitting_privileges_fields">
+          <div class="col-lg-6 mb-3">
+            <label class="text-dark-grey">Name of Admitting Physician/Practice/Clinic/Group</label>
+            <%= f.text_field :name_admitting_physician, placeholder:'Type here...', class: 'form-control border-dark' %>
+          </div>
+
+          <div class="col-lg-6 mb-3">
+            <label class="text-dark-grey">Facility Name</label>
+            <%= f.text_field :facility_name, placeholder:'Type here...', class: 'form-control border-dark' %>
+          </div>
+
+          <div class="col-lg-6 mb-3">
+            <label class="text-dark-grey">Facility Location</label>
+            <%= f.text_field :facility_location, placeholder:'Type here...', class: 'form-control border-dark' %>
+          </div>
+
+          <div class="col-lg-6 mb-3">
+            <label class="text-dark-grey">Address Line 1</label>
+            <%= f.text_field :admitting_facility_address_line1, placeholder:'Type here...', class: 'form-control border-dark' %>
+          </div>
+
+          <div class="col-lg-6 mb-3">
+            <label class="text-dark-grey">Address Line 2</label>
+            <%= f.text_field :admitting_facility_address_line2, placeholder:'Type here...', class: 'form-control border-dark'%>
+          </div>
+
+          <div class="col-lg-6 mb-3">
+            <label class="text-dark-grey">City</label>
+            <%= f.text_field :admitting_facility_city, placeholder:'Type here...', class: 'form-control border-dark'%>
+          </div>
+
+           <div class="col-lg-6 mb-3">
+            <label class="text-dark-grey">State</label>
+           <%#= f.select :admitting_facility_state, options_for_select(states.pluck(:name, :id), @provider.admitting_facility_state), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
+            <div class="search-select state-search-select form-control border border-dark" name="enrollment_group[admitting_facility_state]" id="admitting_state">
+            </div>
+          </div>
+
+          <div class="col-lg-6 mb-3">
+            <label class="text-dark-grey">Zip Code</label>
+            <%= f.text_field :admitting_facility_zip_code, placeholder:'Type here...', class: 'form-control border-dark'%>
+          </div>
+
+          <div class="col-lg-12 mb-3">
+            <label class="text-dark-grey">Please explain your admitting arrangements</label>
+            <%= f.text_area :admitting_facility_arrangments, placeholder:'Type here...', class: 'form-control border-dark', rows: '8'%>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
 
    <div class="documents">
       <h3>Documents</h3>
@@ -388,6 +477,9 @@
 </div>
 
 
+ <%= render "enrollments/js_components/add_remove_association_buttons" %>
+ <%= render "enrollments/js_components/ajax_set_dropdown_options" %>
+
 <script>
    var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
@@ -491,7 +583,7 @@
       success: function(data) {
         VirtualSelect.init({
             options: data['provider_types'],
-            ele: '.multi-select',
+            ele: '#provider_practitioner_type',
             multiple: true,
             showSelectedOptionsFirst: true,
             selectedValue: selected_provider_types
@@ -571,9 +663,17 @@
    }
 </script>
 
-<style>
-  .multi-select {
+<style type="text/css">
+  .multi-select, .search-select, .single-select {
+    padding: 0;
+      width: 100%;
+      max-width: 1000px;
+  }
+  .single-select {
+    width: 100%;
+    max-width: 1000px;
     padding: 0;
   }
 </style>
+
 

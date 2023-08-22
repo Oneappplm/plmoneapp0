@@ -72,7 +72,7 @@ class EnrollmentsController < ApplicationController
 			@enrollment_group = EnrollmentGroup.new
 			@enrollment_group.contact_personnels.build
 			@enrollment_group.details.build
-			#@enrollment_group.service_locations.build
+			@enrollment_group.service_locations.build
 			@enrollment_group.qualifacts_contacts.build if current_setting.qualifacts? && !@enrollment_group.qualifacts_contacts.present?
 		end
 	end
@@ -89,9 +89,9 @@ class EnrollmentsController < ApplicationController
 			@enrollment_group.details.build
 		end
 
-		#if @enrollment_group.service_locations.blank?
-			#@enrollment_group.service_locations.build 
-		#end
+		if @enrollment_group.service_locations.blank?
+			@enrollment_group.service_locations.build 
+		end
 
 		@enrollment_group.qualifacts_contacts.build if current_setting.qualifacts? && !@enrollment_group.qualifacts_contacts.present?
 
@@ -213,6 +213,16 @@ class EnrollmentsController < ApplicationController
 					:bank_letter_signed_date,
 					:bank_letter_date_expiration,
 					:telehealth_providers,
+					:admitting_privileges,
+					:name_admitting_physician,
+					:facility_location,
+					:facility_name, 
+					:admitting_facility_address_line1, 
+					:admitting_facility_address_line2, 
+					:admitting_facility_city, 
+					:admitting_facility_state, 
+					:admitting_facility_zip_code, 
+					:admitting_facility_arrangments,
 					contact_personnels_attributes: [:id, :group_personnel_name, :group_personnel_email, :group_personnel_phone_number, :group_personnel_fax_number, :group_personnel_position,
 						:_destroy],
 					details_attributes: [:id, :individual_ownership_first_name, :individual_ownership_middle_name, :email_address, :individual_ownership_last_name,:individual_ownership_title, :individual_ownership_ssn, :individual_ownership_dob, :individual_ownership_percent_of_ownership, :individual_ownership_effective_date, :individual_ownership_control_date, :roles,
