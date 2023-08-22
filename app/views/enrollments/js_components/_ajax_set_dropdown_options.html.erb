@@ -1,0 +1,93 @@
+<script>
+  $(document).ready(function(){
+
+       // variables here
+       var csrfToken = $('meta[name="csrf-token"]').attr('content');
+       var admitting_facility_state = '<%= @enrollment_group.admitting_facility_state %>';
+       getStates();
+       getLanguages();
+       getStatesOptions();
+       getNonOfficeServiceLocationStates();
+
+      
+      var languages = [];
+      function getLanguages() {
+          $.ajax({
+            url: '<%= get_languages_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              languages = data['languages'];
+              VirtualSelect.init({
+                  options: data['languages'],
+                  ele: '.medical-interpreter-dropdown',
+                  multiple: true,
+              });
+            }
+          })
+      }
+      var states = [];
+      function getStates() {
+          $.ajax({
+            url: '<%= get_states_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              states = data['states']
+              VirtualSelect.init({
+                  options: data['states'],
+                  ele: '.telehealth-states',
+                  multiple: true,
+              });
+            }
+          })
+      }
+
+
+      function getNonOfficeServiceLocationStates() {
+          $.ajax({
+            url: '<%= get_states_with_id_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              states = data['states']
+              VirtualSelect.init({
+                  options: data['states'],
+                  ele: '.non-office-service-location',
+                  search: true
+              });
+            }
+          })
+      }
+
+     function getStatesOptions() {
+       $.ajax({
+        url: '<%= get_states_with_id_path %>',
+        method: 'GET',
+        data: { authenticity_token: csrfToken },
+        success: function(data) {
+          states = data['states']
+          setStateDropdowns(states);
+        }
+      })
+     }
+
+
+     function setStateDropdowns(states) {
+
+
+     var selected_states = [admitting_facility_state]
+     var state_dropdowns = ['#admitting_state'];
+
+      for(var i = 0; i < state_dropdowns.length; i++ ) {
+          VirtualSelect.init({
+            options: states,
+            ele: state_dropdowns[i],
+            search: true,
+            showSelectedOptionsFirst: true,
+            selectedValue: selected_states[i]
+          });
+      }
+     }
+  })
+</script>
