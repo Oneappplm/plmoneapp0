@@ -44,6 +44,17 @@ class Import::ProviderTypesService < ApplicationService
 						ProviderType.find_or_create_by(fch: sheet[0])
 					end
 				end
+			elsif version == 3
+				ProviderType.destroy_all
+				data.each_with_index do |sheet, index|
+					if index > 0
+						next if sheet.compact.size == 0
+
+						fch = "#{sheet[1]} - #{sheet[0]}"
+
+						ProviderType.find_or_create_by(fch: fch)
+					end
+				end
 			end
 
 		end
