@@ -1,0 +1,82 @@
+<script>
+  $(document).ready(function(){
+          // telehealth providers
+          $("#service_locations").on("click", ".add_association", function() {
+              var serviceLocationsFields = $("#service_locations .field");
+              var newServiceLocation = serviceLocationsFields.last().clone();
+              var newId = new Date().getTime();
+              newServiceLocation.html(newServiceLocation.html().replace(/service_locations_attributes\]\[\d+\]/g, "service_locations_attributes][" + newId + "]"));
+              $("#service_locations .fields").append(newServiceLocation);
+
+              var languageDropdown = $('[name="enrollment_group[service_locations_attributes]['+newId+'][primary_service_interpreter_language]]"]');
+              languageDropdown.attr('id',("language_"+newId));
+              setLanguages(languageDropdown.attr('id'));
+
+              var statesDropdown = $('[name="enrollment_group[service_locations_attributes]['+newId+'][primary_service_telehealth_only_state]]"]');
+              statesDropdown.attr('id',("states_"+newId));
+
+              setStates(statesDropdown.attr('id'));
+              var nonOfficeDropdown = $('[name="enrollment_group[service_locations_attributes]['+newId+'][primary_service_non_office_area]"]');
+              nonOfficeDropdown.attr('id',("non_office_service_location_"+newId));
+
+              setNonOfficeServiceLocation(nonOfficeDropdown.attr('id'));
+
+          });
+
+          $("#service_locations").on("click", ".remove-dynamic-fields", function() {
+            var serviceLocationFields = document.getElementsByClassName("primary-service-location-field");
+            if(serviceLocationFields.length > 1) {
+              serviceLocationFields[0].remove();
+            }
+          });
+
+
+
+      function setLanguages(dropdown_id) {
+          var id = dropdown_id;
+          $.ajax({
+            url: '<%= get_languages_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              VirtualSelect.init({
+                  options: data['languages'],
+                  ele: '#'+id,
+                  multiple: true,
+              });
+            }
+          })
+      }
+
+      function setStates(dropdown_id) {
+          var id = dropdown_id;
+          $.ajax({
+            url: '<%= get_states_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              VirtualSelect.init({
+                  options: data['states'],
+                  ele: '#'+id,
+                  multiple: true,
+              });
+            }
+          })
+      }
+
+      function setNonOfficeServiceLocation(dropdown_id) {
+        var id = dropdown_id;
+          $.ajax({
+            url: '<%= get_states_with_id_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              VirtualSelect.init({
+                  options: data['states'],
+                  ele: '#'+id
+              });
+            }
+          })
+      }
+  })
+</script>

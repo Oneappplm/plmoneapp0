@@ -1,4 +1,4 @@
-<% index_of_object = f.object.provider.service_location_ids.index(f.object.id) rescue 0 %>
+<% index_of_object = f.object.enrollment_group.service_location_ids.index(f.object.id) rescue 0 %>
 <div class="field card p-3 py-3 mb-3 primary-service-location-field">
 				<h5>Primary Service Location</h5>
 				<div class="row mb-3">
@@ -6,7 +6,7 @@
 						<label class="text-dark-grey">Non-Office Service Area </label>
 						<%#= f.select :primary_service_non_office_area, options_for_select(states.pluck(:name, :id),  f.object.primary_service_non_office_area), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
 
-            <div class="search-select <%= f.object.id ? ('edit-non-office-service-'+index_of_object.to_s) : 'non-office-service-location'%> form-control border border-dark" name="provider[service_locations_attributes][<%= index_of_object%>][primary_service_non_office_area]">
+            <div class="search-select <%= f.object.id ? ('edit-non-office-service-'+index_of_object.to_s) : 'non-office-service-location'%> form-control border border-dark" name="enrollment_group[service_locations_attributes][<%= index_of_object%>][primary_service_non_office_area]">
             <!--  -->
 						</div>
           </div>
@@ -54,14 +54,24 @@
 				<div class="row mb-3">
 					<div class="col-lg-6">
 						<label class="text-dark-grey">Qualified Medical Interpreter Language (can be multiple)</label>
-          <%= HtmlUtils.multi_select_dropdown name: "provider[service_locations_attributes][#{index_of_object}][primary_service_interpreter_language]]", id: "provider_service_locations_attributes_#{index_of_object}_primary_service_interpreter_language", classes: "#{f.object.id ? ('edit-interpreter-dropdown-'+index_of_object.to_s) : 'medical-interpreter-dropdown'}"%>
+         <%= HtmlUtils.multi_select_dropdown name: "enrollment_group[service_locations_attributes][#{index_of_object}][primary_service_interpreter_language]]", id: "enrollment_group_service_locations_attributes_#{index_of_object}_primary_service_interpreter_language", classes: "#{f.object.id ? ('edit-interpreter-dropdown-'+index_of_object.to_s) : 'medical-interpreter-dropdown'}"%>
 					</div>
 					<div class="col-lg-6">
 						<label class="text-dark-grey">Telehealth Only State/District (can be multiple)</label>
-          <%= HtmlUtils.multi_select_dropdown name: "provider[service_locations_attributes][#{index_of_object}][primary_service_telehealth_only_state]]", id: "primary_service_telehealth_only_state#{index_of_object}_primary_service_telehealth_only_state", classes: "#{f.object.id ? ('edit-telehealth-states-'+index_of_object.to_s) : 'telehealth-states'}"%>
+          <%= HtmlUtils.multi_select_dropdown name: "enrollment_group[service_locations_attributes][#{index_of_object}][primary_service_telehealth_only_state]]", id: "primary_service_telehealth_only_state#{index_of_object}_primary_service_telehealth_only_state", classes: "#{f.object.id ? ('edit-telehealth-states-'+index_of_object.to_s) : 'telehealth-states'}"%>
 					</div>
 				</div>
 				<hr>
+
+      <div class="row">
+						<div class="col-lg-7 d-flex justify-content-end">
+							<button type="button" class="add_association btn btn-primary btn-s" > <i class="bi bi-plus-circle-fill"></i> 	Add Additional Service Location </button>
+						</div>
+						<div class="col-md-5 d-flex justify-content-end">
+								<button type="button" class="btn btn-danger remove-dynamic-fields" data-model="np_licenses" data-id="<%= f.object.id %>" > <i class="bi bi-trash-fill"></i></button>
+							</a>
+						</div>
+				</div>
 </div>
 
 <% chosen_languages = f.object.selected_languages %>
