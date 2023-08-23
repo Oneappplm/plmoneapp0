@@ -90,4 +90,8 @@ class EnrollmentProvider < ApplicationRecord
 	def create_client_provider_enrollment
     ClientProviderEnrollment.create(enrollable: self)
   end
+
+  def full_name
+    "#{self.first_name} #{self.last_name} #{self.suffix}"
+  end
 end
