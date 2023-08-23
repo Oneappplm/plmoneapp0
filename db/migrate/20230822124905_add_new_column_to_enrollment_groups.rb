@@ -1,4 +1,4 @@
-class AddNewFieldsToEnrollmentGroups < ActiveRecord::Migration[7.0]
+class AddNewColumnToEnrollmentGroups < ActiveRecord::Migration[7.0]
   def change
     add_column :enrollment_groups, :telehealth_providers, :string
     add_column :enrollment_groups, :admitting_privileges, :string
