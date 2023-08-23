@@ -10,9 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_23_064425) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
 
   create_table "ahoy_events", force: :cascade do |t|
@@ -333,6 +332,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.string "cp575_file"
     t.string "specific_type_file"
     t.string "ownership_file"
+    t.string "group_personnel_name"
+    t.string "group_personnel_email"
+    t.string "group_personnel_phone_number"
+    t.string "group_personnel_fax_number"
+    t.string "group_personnel_position"
     t.string "payer_contracts"
     t.string "group_type_documents"
     t.string "eft_file"
@@ -344,6 +348,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.date "void_check_date_expiration"
     t.date "bank_letter_signed_date"
     t.date "bank_letter_date_expiration"
+    t.string "telehealth_providers"
+    t.string "admitting_privileges"
+    t.string "name_admitting_physician"
+    t.string "facility_location"
+    t.string "facility_name"
+    t.string "admitting_facility_address_line1"
+    t.string "admitting_facility_address_line2"
+    t.string "admitting_facility_city"
+    t.string "admitting_facility_state"
+    t.string "admitting_facility_zip_code"
+    t.string "admitting_facility_arrangments"
   end
 
   create_table "enrollment_groups_contact_details", force: :cascade do |t|
@@ -374,6 +389,24 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.string "roles"
     t.string "email_address"
     t.index ["enrollment_group_id"], name: "index_enrollment_groups_details_on_enrollment_group_id"
+  end
+
+  create_table "enrollment_groups_svc_locations", force: :cascade do |t|
+    t.bigint "enrollment_group_id"
+    t.string "primary_service_non_office_area"
+    t.string "primary_service_location_apps"
+    t.string "primary_service_zip_code"
+    t.string "primary_service_office_email"
+    t.string "primary_service_fax"
+    t.string "primary_service_office_website"
+    t.string "primary_service_crisis_phone"
+    t.string "primary_service_location_other_phone"
+    t.string "primary_service_appt_scheduling"
+    t.string "primary_service_interpreter_language"
+    t.string "primary_service_telehealth_only_state"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enrollment_group_id"], name: "index_enrollment_groups_svc_locations_on_enrollment_group_id"
   end
 
   create_table "enrollment_payers", force: :cascade do |t|
@@ -469,6 +502,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["enrollment_providers_detail_id"], name: "index_epd_logs_on_enrollment_providers_detail_id"
+  end
+
+  create_table "ethnicities", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "group_contacts", force: :cascade do |t|
@@ -631,6 +670,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "marital_statuses", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "notifications", force: :cascade do |t|
     t.string "recipient_type", null: false
     t.bigint "recipient_id", null: false
@@ -641,6 +686,26 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.datetime "updated_at", null: false
     t.index ["read_at"], name: "index_notifications_on_read_at"
     t.index ["recipient_type", "recipient_id"], name: "index_notifications_on_recipient"
+  end
+
+  create_table "office_managers", force: :cascade do |t|
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "last_name"
+    t.string "suffix"
+    t.string "birth_date"
+    t.string "user_name"
+    t.string "password"
+    t.string "user_role"
+    t.string "email"
+    t.string "confirm_email"
+    t.string "email_confirmation"
+    t.string "security_question"
+    t.string "security_password"
+    t.string "organization"
+    t.string "practice_location"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "practice_locations", force: :cascade do |t|
@@ -786,7 +851,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.datetime "dea_license_expiration_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "dea_license_renewal_effective_date"
+    t.datetime "dea_license_renewal_effective_date"
     t.string "no_dea_license"
     t.index ["provider_id"], name: "index_provider_dea_licenses_on_provider_id"
   end
@@ -905,6 +970,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.datetime "pa_license_expiration_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "np_license_renewal_effective_date"
     t.datetime "pa_license_renewal_effective_date"
     t.string "no_pa_license"
     t.integer "state_id"
@@ -918,7 +984,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.date "rn_license_expiration_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "rn_license_renewal_effective_date"
+    t.datetime "rn_license_renewal_effective_date"
     t.string "no_rn_license"
     t.integer "state_id"
     t.index ["provider_id"], name: "index_provider_rn_licenses_on_provider_id"
