@@ -28,7 +28,12 @@
       </div>
     </div>
   </div>
-   <% enrollment&.details.each do |detail|%>
+  <% if params[:enrollment_status].present? %>
+    <% details = enrollment&.details.where(enrollment_status: params[:enrollment_status])%>
+  <% else %>
+    <% details = enrollment&.details %>
+  <% end %>
+   <% details.each do |detail|%>
    <% if detail %>
    <div class="row mb-3">
      <div class="col-lg-12 card p-3">

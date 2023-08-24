@@ -32,6 +32,12 @@ class EnrollGroupsDetail < ApplicationRecord
     nil
   end
 
+  def payer_state_name
+    State.find_by(alpha_code: self.payer_state)&.name
+  rescue
+    nil
+  end
+
   private
 
   # not sure when this will be used but had to encrypt password nonetheless

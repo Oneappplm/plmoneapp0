@@ -22,7 +22,8 @@
         <%= render partial: "enrollment_clients/show/selected_provider" %>
       <% end %>
       <% providers.each do |provider| %>
-      <% url = (action_name == 'notifications' ? notifications_enrollment_clients_path(provider_id: provider.id) : enrollment_client_path(provider) ) %>
+      <% extra_params = params[:enrollment_status].present? ? { enrollment_status: params[:enrollment_status] } : {}%>
+      <% url = (action_name == 'notifications' ? notifications_enrollment_clients_path(provider_id: provider.id) : enrollment_client_path(provider, params: extra_params) ) %>
       <% if @provider&.id != provider.id%>
       <tr>
          <td class="">
