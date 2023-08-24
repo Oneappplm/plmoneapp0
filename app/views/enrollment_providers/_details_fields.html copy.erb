@@ -94,16 +94,21 @@
       <%= f.text_field :payor_password, placeholder: 'Type here...', class: 'form-control border border-dark' %>
     </div>
   </div>
-
-  <div class="questions">
-    <div class="question-fields">
-      <%
-        f.object.questions.build if f.object.questions.blank?
-      %>
-      <%= f.fields_for :questions do |questions| %>
-          <%= render 'questions_fields', q: questions %>
-      <% end %>
-    </div>
+  <div id="questions-holder" class="row">
+    <%= f.fields_for :questions do |epd_question_fields| %>
+      <!-- Fields for EpdQuestion -->
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Question</label>
+        <%= epd_question_fields.text_field :question, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Answer</label>
+        <%= epd_question_fields.text_field :answer, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    <% end %>
+  </div>
+  <div class="col-lg-12 mt-2">
+    <button type="button" class="btn btn-primary add-question">Add Question</button>
   </div>
 
   <div class="row mb-2 mt-2">

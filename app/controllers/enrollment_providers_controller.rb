@@ -6,7 +6,7 @@ class EnrollmentProvidersController < ApplicationController
 
 	def new
 		@enrollment_provider = EnrollmentProvider.new(outreach_type: 'provider-from-enrollment')
-  @enrollment_provider.details.build
+		@enrollment_provider.details.build.questions.build
 	end
 
 	def edit
@@ -110,15 +110,18 @@ class EnrollmentProvidersController < ApplicationController
 			:suffix,
 			:telephone_number,
 			:email_address,
-      details_attributes: [:id, :start_date, :due_date,
-                           :enrollment_payer, :enrollment_type, :enrollment_status, :payer_state,
-                           :approved_date, :revalidation_date, :revalidation_due_date,
-                           :comment, :ptan_number, :provider_ptan, :group_ptan,
-                           :enrollment_tracking_id, :enrollment_effective_date,
-                           :association_start_date, :business_end_date, :association_end_date,
-                           :line_of_business, :revalidation_status, :cpt_code, :descriptor,
-                           :provider_id, :group_id, :upload_payor_file, :_destroy, {upload_payor_file: []} ],
-
+   details_attributes: [
+				:id, :start_date, :due_date,
+				:enrollment_payer, :enrollment_type, :enrollment_status, :payer_state,
+				:approved_date, :revalidation_date, :revalidation_due_date,
+				:comment, :ptan_number, :provider_ptan, :group_ptan,
+				:enrollment_tracking_id, :enrollment_effective_date,
+				:association_start_date, :business_end_date, :association_end_date,
+				:line_of_business, :revalidation_status, :cpt_code, :descriptor,
+				:provider_id, :group_id, :upload_payor_file, :_destroy, {upload_payor_file: []},
+				:payor_username, :payor_password,
+				questions_attributes: [:id ,:question, :answer, :_destroy]
+			],
 		)
 	end
 

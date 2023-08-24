@@ -217,6 +217,21 @@
             });
          }, 500);
 
+          // find input with name _destroy
+          newEnrollmentdetails.find('input[type="hidden"]').each(function(){
+            if($(this).attr('name').includes('_destroy')){
+               $(this).attr('name', $(this).attr('name').replace(/\d+/, newId));
+            }
+         });
+
+         // find button with remove-dynamic-fields class
+         newEnrollmentdetails.find('button.remove-dynamic-fields').each(function(){
+            if($(this).css('display') !== 'none'){
+               var parentQuestionFields = $(this).closest('.question-field');
+               parentQuestionFields.remove();
+            }
+         });
+
          $("#details .fields").append(newEnrollmentdetails);
          newEnrollmentdetails.find('.application-status-history-log').remove();
          newEnrollmentdetails.find('.multi-enrollment-status').trigger('change');
@@ -343,10 +358,78 @@
 
    $(document).ready(function(){
       $('#enrollmentTrackingPayerModal').on('hidden.bs.modal', function () {
-         console.log('asdasd')
          location.reload();
       })
    })
+</script>
+
+<script>
+//    $(document).ready(function() {
+//     $('.add-question').click(function(e) {
+//       e.preventDefault();
+//       var newId = new Date().getTime();
+
+//       var newRow = $('<div class="col-lg-6">\
+//           <label class="text-dark-grey">Question</label>\
+//           <input placeholder="Type here..." class="form-control border border-dark" type="text" name="enrollment_provider[details_attributes][0][questions_attributes]['+ newId +'][question]">\
+//         </div>\
+//         <div class="col-lg-6">\
+//           <label class="text-dark-grey">Answer</label>\
+//           <input placeholder="Type here..." class="form-control border border-dark" type="text" name="enrollment_provider[details_attributes][0][questions_attributes]['+ newId +'][answer]">\
+//         </div>').hide();
+
+//       $('#questions-holder').append(newRow);
+//       newRow.slideDown();
+//     });
+//   });
+</script>
+
+<script>
+
+$(document).ready(function () {
+// Hide the delete button for the first element on page load
+// find all .questions and find all .remove-dynamic-fields and hide first
+   $('.questions').each(function(){
+      $(this).find('.remove-dynamic-fields').first().hide();
+   });
+});
+   // Function to add new nested fields
+ function addQuestions(btn){
+
+   var parentQuestions =  $(btn).closest('.questions');
+   var parentQuestionFields = $(btn).closest('.question-fields').first();
+   var questionField = $(parentQuestionFields).find('.question-field').last().clone();
+   var newIndex = $(parentQuestions).find('.question-field').length;
+
+   questionField.css('display', 'block');
+   questionField.find('input[type="text"][name*="[questions_attributes]"]').each(function () {
+      var name = $(this).attr('name').replace(/\[questions_attributes\]\[\d+\]/g, '[questions_attributes][' + newIndex + ']');
+      var id = $(this).attr('id').replace(/\[questions_attributes\]\[\d+\]/g, '[questions_attributes][' + newIndex + ']');
+
+      $(this).attr('name', name);
+      $(this).attr('id', id);
+      $(this).val(''); // Clear input values for the new fields
+   });
+
+
+   questionField.find('.remove-dynamic-fields').show();
+
+   // console.log(questionField)
+   parentQuestionFields.append(questionField);
+   // parentQuestions.append(parentQuestionFields);
+ }
+
+ // Function to remove a nested field
+ function deleteQuestions(btn){
+   var parentQuestions =  $(btn).closest('.questions');
+   var parentQuestionFields = $(btn).closest('.question-fields .question-field');
+   // find closest checkbox _destroy and toggle it
+   var checkbox = $(parentQuestionFields).find('input[type="checkbox"][name*="[questions_attributes]"]');
+   checkbox.prop('checked', !checkbox.prop('checked'));
+   $(parentQuestionFields).fadeOut();
+
+ }
+
 </script>
 
 <style>

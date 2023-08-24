@@ -20,6 +20,9 @@ class EnrollmentProvidersDetail < ApplicationRecord
   scope :medicaid, -> {where(enrollment_payer: 'medicaid')}
 
   has_many :application_status_logs, class_name: 'EpdLog', dependent: :destroy
+  has_many :questions, class_name: 'EpdQuestion', dependent: :destroy
+
+  accepts_nested_attributes_for :questions, allow_destroy: true, reject_if: :all_blank
 
   after_save :create_application_status_log, if: :saved_change_to_enrollment_status?
 
