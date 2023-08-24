@@ -110,7 +110,7 @@ class EnrollmentProvidersController < ApplicationController
 			:suffix,
 			:telephone_number,
 			:email_address,
-      :details_attributes [:id, :start_date, :due_date,
+      details_attributes: [:id, :start_date, :due_date,
                            :enrollment_payer, :enrollment_type, :enrollment_status, :payer_state,
                            :approved_date, :revalidation_date, :revalidation_due_date,
                            :comment, :ptan_number, :provider_ptan, :group_ptan,
