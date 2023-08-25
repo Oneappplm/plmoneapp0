@@ -42,8 +42,11 @@
                   <%# end %> -->
                   <!-- <div class="d-flex justify-content-center align-items-center text-center"> -->
                      <div>
-                     <%= invisible_recaptcha_tags text: 'Sign in', class: 'btn btn-primary btn-lg py-3 px-5 fs-6' %>
-                      <% f.submit "Sign in", class: 'btn btn-primary btn-lg py-3 px-5 fs-6'%>
+                     <% if Rails.env.production? %>
+                        <%= invisible_recaptcha_tags text: 'Sign in', class: 'btn btn-primary btn-lg py-3 px-5 fs-6' %>
+                     <% else %>
+                        <%= f.submit "Sign in", class: 'btn btn-primary btn-lg py-3 px-5 fs-6'%>
+                     <% end %>
                      </div>
                   <!-- </div> -->
                </div>
