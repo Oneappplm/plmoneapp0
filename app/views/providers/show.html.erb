@@ -49,7 +49,9 @@
             </div>
             <h3 class="font-bold mb-0 text-center my-3"><%= @provider.provider_name %></h3>
             <div class="text-left mt-3">
+              <p class="mb-1"><strong>Status:</strong> <%= @provider.status %></p>
               <p class="mb-1"><strong>Gender:</strong> <%= @provider.gender %></p>
+              <p class="mb-1"><strong>SSN:</strong> <%= @provider.ssn %></p>
               <p class="mb-1"><strong>Date of Birth:</strong> <%= @provider.birth_date %></p>
               <p class="mb-1"><strong>Birth City:</strong> <%= @provider&.birth_city %></p>
               <p class="mb-1"><strong>Birth State:</strong> <%= State.find_by(id: @provider&.birth_state.to_i)&.name %></p>
@@ -58,31 +60,78 @@
               <p class="mb-1"><strong>Address 1:</strong> <%= @provider&.address_line_1 %></p>
               <p class="mb-1"><strong>Address 2:</strong> <%= @provider&.address_line_2 %></p>
               <p class="mb-1"><strong>City:</strong> <%= @provider&.city %></p>
-              <p class="mb-1"><strong>Zip code:</strong> <%= @provider&.zip_code %></p>
               <p class="mb-1"><strong>State:</strong> <%= @provider&.state&.name %></p>
+              <p class="mb-1"><strong>Zip code:</strong> <%= @provider&.zip_code %></p>
               <p class="mb-1"><strong>Phone Number:</strong> <%= @provider&.telephone_number %></p>
-              <p class="mb-1"><strong>Ext:</strong> <%= @provider&.ext %></p>
               <p class="mb-1"><strong>Email:</strong> <%= @provider&.email_address %></p>
+            </div>
+          </div>
 
-              <h5 class="mt-2 text-center">Medical School/Education</h5>
-              <p class="mb-1"><strong>School Name:</strong> <%= @provider.medical_school_name %> </p>
-              <p class="mb-1"><strong>School Address:</strong> <%= @provider.medical_school_address %> </p>
-              <p class="mb-1"><strong>Graducation Date:</strong> <%= @provider&.graduation_date %></p>
+            <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Professional/Medical School', collapse_name: 'prof_medical_school'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('prof_medical_school') ? '' : 'display: none;' %>">
+              <p class="mb-1"><strong>Name of U.S./Canadian School:</strong> <%= @provider.medical_school_name %> </p>
+              <p class="mb-1"><strong>Address:</strong> <%= @provider.medical_school_address %> </p>
+              <p class="mb-1"><strong>City:</strong> <%= @provider&.prof_medical_school_city %></p>
+              <p class="mb-1"><strong>State:</strong> <%= @provider&.prof_medical_school_state_id %></p>
+              <p class="mb-1"><strong>Country:</strong> <%= @provider&.prof_medical_school_country %></p>
+              <p class="mb-1"><strong>Zip Code:</strong> <%= @provider&.prof_medical_school_zipcode %></p>
+              <p class="mb-1"><strong>Start Date:</strong> <%= @provider&.prof_medical_start_date %></p>
+              <p class="mb-1"><strong>End (Graduation) Date:</strong> <%= @provider&.graduation_date %></p>
+              <p class="mb-1"><strong>Degree Awarded:</strong> <%= @provider&.prof_medical_school_degree_awarded %></p>
+              <p class="mb-1"><strong>Did you complete your graduate education at this school?</strong> <%= @provider&.medical_license %></p>
+              <hr>
+            </div>
+          </div>
 
-              <h5 class="mt-2 text-center">Practitioner Type Details</h5>
+          <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Practitioner Type Details', collapse_name: 'prac_type_details'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('prac_type_details') ? '' : 'display: none;' %>">
               <p class="mb-1"><strong>Practitioner Type:</strong> <%= @provider.practitioner_type %></p>
+              <p class="mb-1"><strong>Taxonomy Code:</strong> <%= @provider&.taxonomy %></p>
+              <p class="mb-1"><strong>Specialty:</strong> <%= @provider&.specialty %></p>
+              <p class="mb-1"><strong>Provider Effective Date:</strong> <%= @provider&.provider_effective_date %></p>
+              <p class="mb-1"><strong>NPI Number:</strong> <%= @provider&.npi %></p>
+              <hr>
+            </div>
+          </div>
 
-              <p class="mb-1"><strong>Taxonomy Code :</strong> <%= @provider&.taxonomy %></p>
-              <p class="mb-1"><strong>Specialty :</strong> <%= @provider&.specialty %></p>
+          <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Board Certifications', collapse_name: 'board_certifications'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('board_certifications') ? '' : 'display: none;' %>">
+              <p class="mb-1"><strong>Practitioner Type:</strong> <%= @provider.board_name %></p>
+              <p class="mb-1"><strong>Taxonomy Code:</strong> <%= @provider&.board_certification_number %></p>
+              <p class="mb-1"><strong>Specialty:</strong> <%= @provider&.board_effective_date %></p>
+              <p class="mb-1"><strong>Provider Effective Date:</strong> <%= @provider&.board_recertification_date %></p>
+              <p class="mb-1"><strong>NPI Number:</strong> <%= @provider&.board_expiration_date %></p>
+              <hr>
+            </div>
+          </div>
+
+          <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'CAQH', collapse_name: 'caqh_fields'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('caqh_fields') ? '' : 'display: none;' %>">
+              <p class="mb-1"><strong>CAQH ID:</strong> <%= @provider.caqhid %></p>
+              <p class="mb-1"><strong>CAQH State:</strong> <%= @provider&.caqh_state %></p>
+              <p class="mb-1"><strong>CAQH Username:</strong> <%= @provider&.caqh_username %></p>
+              <p class="mb-1"><strong>CAQH Password:</strong> <%= @provider&.caqh_password %></p>
+              <p class="mb-1"><strong>Current Re-Attestation:</strong> <%= @provider&.caqh_current_reattestation_date %></p>
+              <p class="mb-1"><strong>Re-Attestation must be completed by:</strong> <%= @provider&.caqh_reattest_completed_by %></p>
+              <p class="mb-1"><strong>Questions:</strong> <%= @provider&.caqh_question %></p>
+              <p class="mb-1"><strong>Answer:</strong> <%= @provider&.caqh_answer %></p>
+              <p class="mb-1"><strong>CAQH PDF Date Received:</strong> <%= @provider&.caqh_pdf_date_received %></p>
+              <p class="mb-1"><strong>CAQH Notes:</strong> <%= @provider&.caqh_notes %></p>
+              <hr>
             </div>
           </div>
 
 
+
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
-            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Payer Login Details', collapse_name: 'payer_login_details'}%>
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Credentialing Platform', collapse_name: 'payer_login_details'}%>
             <div class="collapsible" style="<%= current_user&.is_card_open?('payer_login_details') ? '' : 'display: none;' %>">
               <% @provider&.payer_logins&.each do |payer|%>
-              <p class="mb-1"><strong>Payer:</strong> <%= payer&.enrollment_payer %></p>
+              <p class="mb-1"><strong>Payor:</strong> <%= payer&.enrollment_payer %></p>
               <p class="mb-1"><strong>State:</strong> <%= payer&.state %></p>
               <p class="mb-1"><strong>Username:</strong> <%= payer&.username %></p>
               <p class="mb-1"><strong>Password:</strong> <%= payer&.password %></p>
@@ -90,86 +139,151 @@
                 <p class="mb-1"><strong>Security Question <%= idx + 1 %>:</strong> <%= question&.question %></p>
                 <p class="mb-1"><strong>Security Password <%= idx + 1 %>:</strong> <%= question&.answer %></p>
               <% end %>
-              <p class="mb-1"><strong>State:</strong> <%= payer&.notes %></p>
+              <p class="mb-1"><strong>Notes:</strong> <%= payer&.notes %></p>
               <hr>
               <% end %>
 
             </div>
           </div>
 
-
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
-          <%= render partial: "global_components/collapsible_sidebar_header", locals: { title: 'Licenses & Numbers', collapse_name: 'licenses'}%>
-          <div class="collapsible" style="<%= current_user&.is_card_open?('licenses') ? '' : 'display: none;' %>">
-            <p class="mb-1"><strong>SSN:</strong> <%= @provider.ssn%></p>
-            <p class="mb-1"><strong>NPI:</strong> <%= @provider.npi%></p>
-            <% if !current_setting.qualifacts? %>
-              <p class="mb-1"><strong>Medicare Number:</strong> <%= @provider&.medicare_provider_number %> </p>
-              <p class="mb-1"><strong>Medicaid Number:</strong> <%= @provider&.medicaid_provider_number %></p>
-              <p class="mb-1"><strong>Tricare Number:</strong> <%= @provider&.tricare_provider_number %> </p>
-            <% end %>
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'DEA Registration', collapse_name: 'dea_licenses'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('dea_licenses') ? '' : 'display: none;' %>">
+              <% @provider&.dea_licenses&.each do |dea_license|%>
+              <p class="mb-1"><strong>DEA Registration Number:</strong> <%= dea_license&.dea_license_number %></p>
+              <p class="mb-1"><strong>DEA Registration Original License Issue Date:</strong> <%= dea_license&.dea_license_effective_date %></p>
+              <p class="mb-1"><strong>DEA Registration State:</strong> <%= dea_license&.state_id %></p>
+              <p class="mb-1"><strong>DEA Registration Expiration Date:</strong> <%= dea_license&.dea_license_expiration_date %></p>
+              <p class="mb-1"><strong>DEA Registration Renewal Date:</strong> <%= dea_license&.dea_license_renewal_effective_date %></p>
+              <p class="mb-1"><strong>Explain if you do not have a DEA Registration Number:</strong> <%= dea_license&.no_dea_license %></p>
+              <hr>
+              <% end %>
 
-              <h5 class="text-center my-3">State License</h5>
-              <p class="mb-1"><strong>State License Number:</strong> <%= @provider&.licenses&.license_number %></p>
-              <p class="mb-1"><strong>State License Effective Date:</strong> <%= @provider&.licenses&.license_effective_date %></p>
-              <p class="mb-1"><strong>State License Expiration Date:</strong> <%= @provider&.licenses&.license_expiration_date %></p>
-              <p class="mb-1"><strong>License Registration State:</strong>  <%= State.find_by(id: @provider&.licenses&.state_id)&.name %> </p>
-
-            <h5 class="text-center my-3">PA License</h5>
-              <% @provider&.pa_licenses.each_with_index do |pa_license,idx|%>
-                <% pa_license_effective_date = pa_license.pa_license_effective_date.blank? ? '' : pa_license.pa_license_effective_date
-                pa_license_expiration_date = pa_license.pa_license_expiration_date.blank? ? '' : pa_license.pa_license_expiration_date %>
-              <p class="mb-1"><strong>PA License Number:</strong> <%= pa_license.pa_license_number %></p>
-              <p class="mb-1"><strong>PA Effective Date:</strong> <%= Time.zone.parse(pa_license_effective_date.to_s)&.strftime('%Y-%m-%d') %></p>
-              <p class="mb-1"><strong>PA Expiration Date:</strong> <%= Time.zone.parse(pa_license_expiration_date.to_s)&.strftime('%Y-%m-%d') %></p>
-            <% end %>
-              <h5 class="text-center my-3">NP License</h5>
-            <% @provider&.np_licenses.each_with_index do |license,idx|%>
-              <p class="mb-1"><strong>NP License:</strong> <%= license&.np_license_number %></p>
-              <p class="mb-1"><strong>NP Effective Date:</strong> <%= license&.np_license_effective_date %></p>
-              <p class="mb-1"><strong>NP Expiration Date:</strong> <%= license&.np_license_expiration_date %></p>
-              <% if @provider&.np_licenses.length % 2 == 0 %> </br> <% end %>
-            <% end %>
-
-              <h5 class="text-center my-3">RN License</h5>
-            <% @provider&.rn_licenses.each_with_index do |license,idx|%>
-              <p class="mb-1"><strong>RN License:</strong> <%= license&.rn_license_number %></p>
-              <p class="mb-1"><strong>RN Effective Date:</strong> <%= license&.rn_license_effective_date %></p>
-              <p class="mb-1"><strong>RN Expiration Date:</strong> <%= license&.rn_license_expiration_date %></p>
-              <% if @provider&.np_licenses.length % 2 == 0 %> </br> <% end %>
-            <% end %>
-
-            <h5 class="text-center my-3">DEA License</h5>
-            <% @provider&.dea_licenses.each_with_index do |dea_license,idx|%>
-              <% dea_license_effective_date = dea_license.dea_license_effective_date.blank? ? '' : dea_license.dea_license_effective_date
-              dea_license_expiration_date = dea_license.dea_license_expiration_date.blank? ? '' : dea_license.dea_license_expiration_date %>
-              <p class="mb-1"><strong>DEA Number:</strong> <%= dea_license.dea_license_number%></p>
-              <p class="mb-1"><strong>DEA Registration State:</strong><%= State.find_by(id: dea_license.state_id.to_i)&.name %></p>
-              <p class="mb-1"><strong>DEA License Effective Date:</strong> <%= Time.zone.parse(dea_license_effective_date.to_s)&.strftime('%Y-%m-%d')%></p>
-              <p class="mb-1"><strong>DEA License Expiration Date:</strong> <%= Time.zone.parse(dea_license_expiration_date.to_s)&.strftime('%Y-%m-%d')%></p>
-              <% if @provider&.dea_licenses.length % 2 == 0 %> </br> <% end %>
-            <% end %>
-            <% if !current_setting.qualifacts? %>
-              <h5 class="text-center my-3">CAQH</h5>
-              <p class="mb-1"><strong>CAQH ID:</strong> <%= @provider.caqhid %></p>
-              <p class="mb-1"><strong>CAQH Attestation Date:</strong> <%= @provider.caqh_attestation_date %></p>
-              <p class="mb-1"><strong>CAQH PDF Date Received:</strong> <%= @provider&.caqh_pdf_date_received %></p>
-              <p class="mb-1"><strong>CAQH Username:</strong> <%= @provider.caqh_username %></p>
-              <p class="mb-1"><strong>CAQH Password:</strong> <%= @provider.caqh_password %></p>
-              <p class="mb-1"><strong>CAQH State:</strong> <%= State.find_by(id: @provider.caqh_state.to_i)&.name %></p>
-            <% end %>
-
-            <h5 class="text-center my-3">Telehealth</h5>
-            <p class="mb-1"><strong>Telehealth Number:</strong> <%= @provider.telehealth_license_number %> </p>
-            <p class="mb-1"><strong>License Registered State:</strong><%= State.find_by(id: @provider.licensed_registered_state_id.to_i)&.name %></p>
             </div>
           </div>
 
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Controlled Dangerous Substance', collapse_name: 'cds_licenses'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('cds_licenses') ? '' : 'display: none;' %>">
+              <% @provider&.cds_licenses&.each do |cds_license|%>
+              <p class="mb-1"><strong>CDS Registration Number:</strong> <%= cds_license&.cds_license_number %></p>
+              <p class="mb-1"><strong>CDS Registration Original License Issue Date:</strong> <%= cds_license&.cds_license_issue_date %></p>
+              <p class="mb-1"><strong>CDS Registration State:</strong> <%= cds_license&.state_id %></p>
+              <p class="mb-1"><strong>CDS Registration Expiration Date:</strong> <%= cds_license&.cds_license_expiration_date %></p>
+              <p class="mb-1"><strong>CDS Registration Renewal Date:</strong> <%= cds_license&.cds_renewal_effective_date %></p>
+              <p class="mb-1"><strong>Explain if you do not have a CDS Registration Number:</strong> <%= cds_license&.no_cds_license %></p>
+              <hr>
+              <% end %>
+
+            </div>
+          </div>
+
+          <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Registered Nurse License', collapse_name: 'rn_licenses'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('rn_licenses') ? '' : 'display: none;' %>">
+              <% @provider&.rn_licenses&.each do |rn_license|%>
+              <p class="mb-1"><strong>RN License Number:</strong> <%= rn_license&.rn_license_number %></p>
+              <p class="mb-1"><strong>RN Original License Issue Date:</strong> <%= rn_license&.rn_license_effective_date %></p>
+              <p class="mb-1"><strong>RN License State:</strong> <%= rn_license&.state_id %></p>
+              <p class="mb-1"><strong>RN License Expiration Date:</strong> <%= rn_license&.rn_license_renewal_effective_date %></p>
+              <p class="mb-1"><strong>RN License Renewal Date:</strong> <%= rn_license&.rn_license_expiration_date %></p>
+              <p class="mb-1"><strong>Explain if you do not have a RN License Number:</strong> <%= rn_license&.no_rn_license %></p>
+              <hr>
+              <% end %>
+
+            </div>
+          </div>
+
+          <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Advance Practice Registered Nurse', collapse_name: 'aprn_licenses'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('aprn_licenses') ? '' : 'display: none;' %>">
+              <% @provider&.cnp_licenses&.each do |aprn_license|%>
+              <p class="mb-1"><strong>APRN License Number:</strong> <%= aprn_license&.cnp_license_number %></p>
+              <p class="mb-1"><strong>APRN Original License Issue Date:</strong> <%= aprn_license&.effective_date %></p>
+              <p class="mb-1"><strong>APRN License State:</strong> <%= aprn_license&.state_id %></p>
+              <p class="mb-1"><strong>APRN License Expiration Date:</strong> <%= aprn_license&.cnp_license_renewal_effective_date %></p>
+              <p class="mb-1"><strong>APRN License Renewal Date:</strong> <%= aprn_license&.expiration_date %></p>
+              <p class="mb-1"><strong>Explain if you do not have a APRN License Number:</strong> <%= aprn_license&.no_cnp_license %></p>
+              <hr>
+              <% end %>
+
+            </div>
+          </div>
+
+          <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'State License', collapse_name: 'state_licenses'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('state_licenses') ? '' : 'display: none;' %>">
+              <p class="mb-1"><strong>State License Number:</strong> <%= @provider&.licenses&.license_number %></p>
+              <p class="mb-1"><strong>State License Issue Date:</strong> <%= @provider&.licenses&.license_effective_date %></p>
+              <p class="mb-1"><strong>State License Registration State:</strong> <%= State.find_by(id: @provider&.licenses&.state_id)&.name %></p>
+              <p class="mb-1"><strong>State License Expiration Date:</strong> <%= @provider&.licenses&.license_expiration_date %></p>
+              <p class="mb-1"><strong>State License Renewal Date:</strong> <%= @provider&.licenses&.license_state_renewal_date %></p>
+              <p class="mb-1"><strong>Explain if you do not have a PA License Number:</strong>  <%= @provider&.licenses&.no_state_license %> </p>
+            </div>
+          </div>
+
+          
+
+          <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Physician Assistant License', collapse_name: 'pa_licenses'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('pa_licenses') ? '' : 'display: none;' %>">
+              <% @provider&.pa_licenses&.each do |pa_license|%>
+              <p class="mb-1"><strong>PA License Number:</strong> <%= pa_license&.pa_license_number %></p>
+              
+              <p class="mb-1"><strong>PA License State:</strong> <%= pa_license&.state_id %></p>
+              <p class="mb-1"><strong>PA License Expiration Date:</strong> <%= pa_license&.pa_license_renewal_effective_date %></p>
+              <p class="mb-1"><strong>PA License Renewal Date:</strong> <%= pa_license&.pa_license_expiration_date %></p>
+              <p class="mb-1"><strong>Explain if you do not have a PA License Number:</strong> <%= pa_license&.no_pa_license %></p>
+              <hr>
+              <% end %>
+
+            </div>
+          </div>
+
+          <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Nurse Practitioner License', collapse_name: 'np_licenses'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('np_licenses') ? '' : 'display: none;' %>">
+              <% @provider&.np_licenses&.each do |np_license|%>
+              <p class="mb-1"><strong>NP License Number:</strong> <%= np_license&.np_license_number %></p>
+              <p class="mb-1"><strong>NP Original License Issue Date:</strong> <%= np_license&.np_license_effective_date %></p>
+              <p class="mb-1"><strong>NP License State:</strong> <%= np_license&.state_id %></p>
+              <p class="mb-1"><strong>NP License Expiration Date:</strong> <%= np_license&.np_license_renewal_effective_date %></p>
+              <p class="mb-1"><strong>NP License Renewal Date:</strong> <%= np_license&.np_license_expiration_date %></p>
+              <p class="mb-1"><strong>Explain if you do not have a NP License Number:</strong> <%= np_license&.no_np_license %></p>
+              <hr>
+              <% end %>
+
+            </div>
+          </div>
+
+           <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Professional Liability Insurance', collapse_name: 'prof_liability_insurance'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('prof_liability_insurance') ? '' : 'display: none;' %>">
+              <p class="mb-1"><strong>Carrier or Self-Insured Name:</strong> <%= @provider.prof_liability_carrier_name %></p>
+              <p class="mb-1"><strong>Self-Insured?</strong> <%= @provider&.prof_liability_self_insured %></p>
+              <p class="mb-1"><strong>Address:</strong> <%= @provider&.prof_liability_address %></p>
+              <p class="mb-1"><strong>City:</strong> <%= @provider&.prof_liability_city %></p>
+              <p class="mb-1"><strong>State:</strong> <%= @provider&.prof_liability_state_id %></p>
+              <p class="mb-1"><strong>Zip Code:</strong> <%= @provider&.prof_liability_zipcode %></p>
+              <p class="mb-1"><strong>Original Effective Date:</strong> <%= @provider&.prof_liability_orig_effective_date %></p>
+              <p class="mb-1"><strong>Original Effective Date:</strong> <%= @provider&.prof_liability_effective_date %></p>
+              <p class="mb-1"><strong>Expiration Date:</strong> <%= @provider&.prof_liability_expiration_date %></p>
+              <p class="mb-1"><strong>Type of Coverage:</strong> <%= @provider&.prof_liability_coverage_type %></p>
+              <p class="mb-1"><strong>Do you have unlimited coverage with this insurance carrier?</strong> <%= @provider&.prof_liability_unlimited_coverage %></p>
+              <p class="mb-1"><strong>Policy includes tail coverage?</strong> <%= @provider&.prof_liability_tail_coverage %></p>
+              <p class="mb-1"><strong>Amount of coverage per occurence:</strong> <%= @provider&.prof_liability_coverage_amount %></p>
+              <p class="mb-1"><strong>Amount of coverage aggregate:</strong> <%= @provider&.prof_liability_coverage_amount_aggregate %></p>
+              <p class="mb-1"><strong>Policy Number:</strong> <%= @provider&.prof_liability_policy_number %></p>
+              <hr>
+            </div>
+          </div>
+
+
+          <div class="card rounded shadow-lg p-1 px-3 mb-3">
           <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Group', collapse_name: 'client'}%>
           <div class="collapsible" style="<%= current_user&.is_card_open?('group') ? '' : 'display: none;' %>">
-            <p class="mb-1"><strong>Client Name:</strong> <%= @provider.group&.group_name %></p>
-            <p class="mb-1"><strong>Client Code:</strong> <%= @provider.group&.group_code %></p>
+            <p class="mb-1"><strong>Group Name:</strong> <%= @provider.group&.group_name %></p>
+            <p class="mb-1"><strong>Taxonomy Code Code:</strong> <%= @provider.group&.group_code %></p>
             <p class="mb-1"><strong>Office Address:</strong> <%= @provider.group&.office_address %></p>
             <p class="mb-1"><strong>City:</strong> <%= @provider.group&.city %></p>
             <p class="mb-1"><strong>State:</strong> <%= @provider.group&.state %></p>
@@ -186,60 +300,28 @@
                   <p class="mb-1"><strong>Address:</strong> <%= dco&.dco_address %> </p>
                   <p class="mb-1"><strong>City:</strong> <%= dco&.dco_city %> </p>
                   <p class="mb-1"><strong>State:</strong> <%= dco&.state %> </p>
+                   <p class="mb-1"><strong>County:</strong> <%= dco&.county %> </p>
                   <p class="mb-1"><strong>Zip Code:</strong> <%= dco&.dco_zipcode %> </p>
-                  <p class="mb-1"><strong>County:</strong> <%= dco&.county %> </p>
-                  <p class="mb-1"><strong>Service Location Phone:</strong> <%= dco&.service_location_phone_number %>  </p>
-                  <p class="mb-1"><strong>Service Location Fax:</strong> <%= dco&.service_location_fax_number %>  </p>
-                  <p class="mb-1"><strong>Panel Status to New Patients:</strong> <%= dco&.panel_status_to_new_patients %>  </p>
-                  <p class="mb-1"><strong>Panel Age Limit:</strong> <%= dco&.panel_age_limit %>  </p>
-                  <p class="mb-1"><strong>Include in Directory?</strong> <%= dco&.include_in_directory %> </p>
-                  <p class="mb-1"><strong>Is this location an inpatient facility?</strong> <%= dco&.inpatient_facility %>  </p>
-                  <p class="mb-1"><strong>Is this location a clinic?</strong> <%= dco&.is_clinic %> </p>
-                  <p class="mb-1"><strong>Are Telehealth services provided?</strong> <%= dco&.telehealth_provider %> </p>
                 </div>
               <% end %>
             </div>
           </div>
+
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
-          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Primary Service Location', collapse_name: 'service_location'}%>
-          <div class="collapsible" style="<%= current_user&.is_card_open?('service_location') ? '' : 'display: none;' %>">
-            <% @provider&.service_locations.each_with_index do |service_location,idx|%>
-              <p class="mb-1"><strong>Non-Office Service Area:</strong> <%= service_location.state %> </p>
-              <p class="mb-1"><strong>Apps/Intake Phone:</strong> <%= service_location.primary_service_location_apps %> </p>
-              <p class="mb-1"><strong>Zip Code:</strong> <%= service_location.primary_service_zip_code %> </p>
-              <p class="mb-1"><strong>Office Email Address:</strong> <%= service_location.primary_service_office_email %> </p>
-              <p class="mb-1"><strong>Fax:</strong> <%= service_location.primary_service_fax %>  </p>
-              <p class="mb-1"><strong>Office Website:</strong> <%= service_location.primary_service_office_website %> </p>
-              <p class="mb-1"><strong>Crisis Phone:</strong> <%= service_location.primary_service_crisis_phone %>  </p>
-              <p class="mb-1"><strong>Other Phone/Pager:</strong> <%= service_location.primary_service_location_other_phone %> </p>
-              <p class="mb-1"><strong>Self Service Appt Scheduling Available:</strong> <%= service_location.primary_service_non_office_area %> </p>
-              <p class="mb-1"><strong>Qualified Medical Interpreter Language:</strong> <%= service_location.primary_service_interpreter_language %> </p>
-              <p class="mb-1"><strong>Telehealth Only State/District:</strong> <%= service_location.primary_service_telehealth_only_state %> </p>
-              <% if @provider&.service_locations.length % 2 %> </br> <% end %>
-            <% end %>
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Practice Information', collapse_name: 'practice_info'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('practice_info') ? '' : 'display: none;' %>">
+                  <p class="mb-1"><strong>Hire date of provider seeing patients:</strong> <%= @provider&.provider_hire_date_seeing_patient %> </p>
+                  <p class="mb-1"><strong>Effective date of provider seeing patients:</strong> <%= @provider&.effective_date_seeing_patient %> </p>
+                  <p class="mb-1"><strong>Does the provider require to work under a supervising licensed psychologist?</strong> <%= @provider&.supervised_by_psychologist %> </p>
             </div>
           </div>
 
-            <div class="card rounded shadow-lg p-1 px-3 mb-3">
-          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Others', collapse_name: 'other'}%>
-          <div class="collapsible" style="<%= current_user&.is_card_open?('other') ? '' : 'display: none;' %>">
-            <p class="mb-1"><strong>Hire date of provider seeing patients:</strong><%= @provider&.provider_hire_date_seeing_patient %> </p>
-            <p class="mb-1"><strong>Effective date of provider seeing patients:</strong> <%= @provider&.effective_date_seeing_patient %> </p>
-            <p class="mb-1"><strong>Are you employed by other groups or facilities:</strong> <%= @provider&.employed_by_other %>  </p>
-            <p class="mb-1"><strong>Have you gone recently through revalidation with any payor:</strong> <%= @provider&.revalidation %>  </p>
-            <p class="mb-1"><strong>Does the provider require to work under a supervising licensed psychologist:</strong> <%= @provider&.supervised_by_psychologist %>  </p>
-
-              <h5 class="text-center my-3">Admitting Privileges</h5>
-            <p class="mb-1"><strong>Admitting Physician/Practice/Clinic/Group:</strong> <%= @provider&.name_admitting_physician %>  </p>
-            <p class="mb-1"><strong>Facility Name:</strong> <%= @provider&.facility_name %> </p>
-            <p class="mb-1"><strong>Facility Location:</strong> <%= @provider&.facility_location %> </p>
-            <p class="mb-1"><strong>Address Line 1:</strong> <%= @provider&.admitting_facility_address_line1 %> </p>
-            <p class="mb-1"><strong>Address Line 2:</strong>  <%= @provider&.admitting_facility_address_line1 %> </p>
-            <p class="mb-1"><strong>City:</strong> <%= @provider&.admitting_facility_city %> </p>
-            <p class="mb-1"><strong>State:</strong> <%= State.find_by(id: @provider&.admitting_facility_state.to_i)&.name %> </p>
-            <p class="mb-1"><strong>Zip Code:</strong> <%= @provider&.admitting_facility_zip_code %>  </p>
-            <p class="mb-1"><strong>Admitting Arrangements:</strong> <%= @provider&.admitting_facility_arrangments %> </p>
-          </div>
+          <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Telehealth', collapse_name: 'telehealth'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('telehealth') ? '' : 'display: none;' %>">
+                  <p class="mb-1"><strong>Telehealth License Number:</strong> <%= @provider&.telehealth_license_number %> </p>
+                  <p class="mb-1"><strong>License Registered State:</strong> <%= @provider&.licensed_registered_state_id %> </p>
+            </div>
           </div>
 
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
@@ -282,7 +364,7 @@
           </div>
 
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
-              <h5 class="mt-2 text-center">Enrollments</h5>
+              <h5 class="mt-2 text-center">Payer Enrollment Details</h5>
               <% @provider.enrollment_provider&.details&.each_with_index do |detail,idx|%>
                 <div class="card rounded shadow-lg p-1 px-3 mb-3">
                   <%= render partial: "global_components/collapsible_sidebar_header", locals: { title: detail.enrollment_payer&.titleize, collapse_name: "#{detail.enrollment_payer&.underscore}_payer", text_position: 'text-start' }%>
@@ -294,8 +376,6 @@
                       <p class="mb-2"><strong>Application Status:</strong> <%= detail&.enrollment_status&.titleize %></p>
                       <% if detail&.enrollment_status == "approved" %>
                         <p class="mb-2"><strong>Effective Date:</strong> <%= DateTime.parse(detail&.enrollment_effective_date)&.strftime('%B %d, %Y') rescue nil %></p>
-                        <p class="mb-2"><strong>Association Start Date:</strong> <%= DateTime.parse(detail&.association_start_date)&.strftime('%B %d, %Y') rescue nil %></p>
-                        <p class="mb-2"><strong>Association End Date:</strong> <%= DateTime.parse(detail&.association_end_date)&.strftime('%B %d, %Y')  rescue nil %></p>
                         <p class="mb-2"><strong>Business End Date:</strong> <%= DateTime.parse(detail&.business_end_date)&.strftime('%B %d, %Y')  rescue nil %></p>
                         <p class="mb-2"><strong>Revalidation Status:</strong> <%= detail&.revalidation_status %></p>
                         <p class="mb-2"><strong>Revalidation Date:</strong> <%= detail&.revalidation_date&.strftime('%B %d, %Y') rescue nil %></p>
@@ -316,6 +396,17 @@
           <% if (@provider.has_missing_required_fields? or @provider.has_missing_state_licenses_fields?) %>
           <%= render "enrollment_clients/show/provider_missing_fields"%>
           <% end %>
+
+          <%
+=begin%>
+ <div class="card rounded shadow-lg p-1 px-3 mb-3">
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Missing Documents', collapse_name: 'missing_docs'}%>
+            <div class="collapsible" style="<%= current_user&.is_card_open?('missing_docs') ? '' : 'display: none;' %>">
+            </div>
+          </div> 
+<%
+=end%>
+
           <div class="card rounded shadow-lg p-1 px-3 mb-3 pb-5">
           <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Comments', collapse_name: 'comments'}%>
             <div id="comments-list">
