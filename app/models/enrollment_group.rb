@@ -73,4 +73,10 @@ class EnrollmentGroup < ApplicationRecord
       ['eft_file', 'Liability Insurance']
     ]
   end
+
+  def admitting_state
+    State.find_by(id: self.admitting_facility_state)
+  rescue
+    nil
+  end
 end
