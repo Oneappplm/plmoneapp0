@@ -1,0 +1,39 @@
+<div class="container" style="height: 100vh;">
+	<div class="row d-flex justify-content-center align-items-center pt-3">
+				<div class="col-lg-5 my-3">
+							<div class="card px-5">
+										<div class="card-body">
+													<div class="d-flex justify-content-start my-3">
+																<h3>OTP CODE</h3>
+													</div>
+													<%= form_with url: request.url, method: :post, html: { id: 'client-provider-enrollment-form', class: "form_search_with_icon mb-2" } do |form| %>
+													<% if flash[:notice] %>
+													<div id="error_explanation" data-turbo-cache="false">
+																<small class="text-success">
+																			<%= flash[:notice] %>
+																</small>
+													</div>
+													<% end %>
+													<% if flash[:alert] %>
+													<div id="error_explanation" data-turbo-cache="false">
+																<small class="text-danger">
+																			<%= flash[:alert] %>
+																</small>
+													</div>
+													<% end %>
+														<div class="">
+																<input type="text" name="otp_code" value="" class="form-control" placeholder="Enter OTP CODE" >
+																<i class="bi bi-search"></i>
+														</div>
+														<input type="hidden" name="otp_token" value=<%= @otp_token %> >
+														<div class="d-flex justify-content-center mt-4">
+															<button class="btn btn-primary py-1">Submit</button>
+													</div>
+												<% end %>
+
+										</div>
+							</div>
+				</div>
+	</div>
+</div>
+

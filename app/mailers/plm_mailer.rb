@@ -12,6 +12,13 @@ class PlmMailer < ApplicationMailer
 		mail(to: email, from: from, subject: @timeline.title)
 	end
 
+	def send_otp_code_mail
+		@email = params[:email]
+		@otp_code	= params[:otp_code]
+
+		mail(to: @email, from: from, subject: "PLM Health's One App OTP Code")
+	end
+
 	def welcome_letter
 		email = params[:email]
 		file_attachments = params[:attachments]

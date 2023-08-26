@@ -188,6 +188,40 @@ class User < ApplicationRecord
    end
   end
 
+  def generate_otp_code_and_expiration
+    self.otp_code = loop do
+      random_otp_code= SecureRandom.hex(3)
+      break random_otp_code unless User.exists?(otp_code: random_otp_code)
+    end
+    self.otp_token = loop do
+      random_otp_token = SecureRandom.hex(3)
+      break random_otp_token unless User.exists?(otp_token: random_otp_token)
+    end
+    self.otp_code_expires_at = Time.now + 5.minutes
+    self.save
+  end
+
+  def expired_otp_code?
+    return true if self.otp_code_expires_at.blank?
+
+    self.otp_code_expires_at < Time.now
+  end
+
+  def reset_opt
+    self.otp_code = nil
+    self.otp_token = nil
+    self.otp_code_expires_at = nil
+    self.save
+  end
+
+  def valid_otp? otp_code
+    self.otp_code == otp_code
+  end
+
+  def send_otp_code
+    PlmMailer.with(email: self.email, otp_code: self.otp_code).send_otp_code_mail.deliver_now
+  end
+
   private
 
   def set_sidebar_preferences

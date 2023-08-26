@@ -296,6 +296,13 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :otps do
+    member do
+      get :request_opt_code
+      post :request_opt_code
+    end
+  end
+
   namespace :api do
     namespace :v1 do
       resources :providers, only: [:index, :create]
