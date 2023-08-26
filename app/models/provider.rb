@@ -98,13 +98,24 @@ class Provider < ApplicationRecord
 
   after_create :send_welcome_letter
 
-
-   def self.with_missing_required_attributes
+  # this is for all required fields including uploads
+  def self.with_missing_required_attributes
     joins("LEFT JOIN provider_licenses ON providers.id = provider_licenses.provider_id")
       .where(
         ALL_REQUIRED_FIELDS.map { |attr| "providers.#{attr} IS NULL" }.join(' OR ')
       )
   end
+
+  # Used to filter with missing fields(not upload) only
+  def self.with_missing_field_fields
+    where(REQUIRED_ATTRIBUTES.map{|attr| "providers.#{attr} IS NULL" }.join(' OR '))
+  end
+
+  # Used to filter with missing documents(uploads only) only
+  def self.with_missing_documents
+    where(REQUIRED_DOCUMENTS.map{|attr| "providers.#{attr} IS NULL" }.join(' OR '))
+  end
+
   # had to separate this since if I combine them in the query above it's not giving proper results
   def self.with_missing_license_attributes
     joins("LEFT JOIN provider_licenses ON providers.id = provider_licenses.provider_id")

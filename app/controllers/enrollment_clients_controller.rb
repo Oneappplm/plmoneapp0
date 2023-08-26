@@ -127,7 +127,9 @@ class EnrollmentClientsController < ApplicationController
     end
 
     if params[:missing_field].present?
-      @incomplete_providers = @incomplete_providers.filter_by_missing_field(params[:missing_field])
+      # @incomplete_providers = @incomplete_providers.filter_by_missing_field(params[:missing_field])
+    
+      @incomplete_providers = (params[:missing_field]  == 'missing_documents' ? @incomplete_providers.with_missing_documents : @incomplete_providers.with_missing_field_fields)
     end
 
     if !current_user.administrator? && !current_user.super_administrator?
