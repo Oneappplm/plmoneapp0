@@ -209,7 +209,7 @@ module ApplicationHelper
 	end
 
   def groups
-		if current_user.administrator? || current_user.super_administrator?
+		if current_user.can_access_all_groups? || current_user.super_administrator?
     	@groups ||= EnrollmentGroup.all
 		else
 			@groups ||= current_user.enrollment_groups
@@ -281,6 +281,21 @@ module ApplicationHelper
     ]
   end
 
+	def provider_generate_report_options
+		[
+			['All Providers','all'],
+      ['Active Providers','active'],
+      ['Inactive Providers','inactive'],
+      ['Application Not Submitted','application-not-submitted'],
+      ['Application Submitted','application-submitted'],
+      ['Processing','processing'],
+			['Approved','approved'],
+			['Denied','denied'],
+			['Terminated','terminated'],
+			['Not Eligible','not-eligible']
+    ]
+	end
+
   def days_options
     [
       ['Sunday','S'],
@@ -311,7 +326,7 @@ module ApplicationHelper
 	end
 
   def enrollment_group_options
-		if current_user.administrator? || current_user.super_administrator?
+		if current_user.can_access_all_groups? || current_user.super_administrator?
     	EnrollmentGroup.all.pluck(:group_name, :id)
 		else
 			current_user.enrollment_groups&.pluck(:group_name, :id)
@@ -467,7 +482,7 @@ module ApplicationHelper
 	end
 
 	def application_status_count status
-		if current_user.administrator? || current_user.super_administrator?
+		if current_user.can_access_all_groups? || current_user.super_administrator?
 			@enroll_group_details = EnrollGroupsDetail
 			@enrollment_provider_details = EnrollmentProvidersDetail
 		else

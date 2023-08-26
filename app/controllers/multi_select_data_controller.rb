@@ -95,7 +95,7 @@ class MultiSelectDataController < ApplicationController
 				@providers = Provider.all
 			end
 
-			if !current_user.administrator? && !current_user.super_administrator?
+			if !current_user.can_access_all_groups? && !current_user.super_administrator?
 				send_result @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id)).map { |provider| { label: provider.provider_name, value: provider.id } }, selected_provider: enrollment_provider&.provider_id
 			else
 				send_result @providers.map { |provider| { label: provider.provider_name, value: provider.id } }, selected_provider: enrollment_provider&.provider_id

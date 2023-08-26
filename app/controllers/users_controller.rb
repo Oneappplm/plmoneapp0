@@ -87,7 +87,7 @@ class UsersController < ApplicationController
   end
 
 	def set_groups
-		if current_user.administrator? || current_user.super_administrator?
+		if current_user.can_access_all_groups? || current_user.super_administrator?
       @enrollment_groups = EnrollmentGroup.all
     else
       @enrollment_groups = current_user.enrollment_groups
@@ -96,7 +96,7 @@ class UsersController < ApplicationController
 
 	def user_params
 		params.require(:user).permit(
-			:first_name, :middle_name, :last_name, :suffix,
+			:first_name, :middle_name, :last_name, :suffix, :can_access_all_groups,
 			:enrollment_group_id, :email, :password, :password_confirmation,
 			:following_request, :user_type, :status, :user_role,
 			:temporary_password, :temporary_password_confirmation, :title,

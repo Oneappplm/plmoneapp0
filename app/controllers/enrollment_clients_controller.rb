@@ -59,7 +59,7 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def dashboard
-    if current_user.administrator? || current_user.super_administrator?
+    if current_user.can_access_all_groups? || current_user.super_administrator?
       @providers_with_missing_details ||= Provider.with_missing_required_fields.count
       @providers_with_missing_documents ||= Provider.with_missing_required_docs.count
     else
@@ -69,7 +69,7 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def groups
-    if current_user.administrator? || current_user.super_administrator?
+    if current_user.can_access_all_groups? || current_user.super_administrator?
       @enrollment_groups = EnrollmentGroup.search_by_params(params)
     else
       @enrollment_groups = current_user.enrollment_groups.search_by_params(params)
@@ -112,7 +112,7 @@ class EnrollmentClientsController < ApplicationController
       @providers = Provider.where(id: provider_ids)
     end
 
-    if !current_user.administrator? && !current_user.super_administrator?
+    if !current_user.can_access_all_groups? && !current_user.super_administrator?
       @providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
     end
 
@@ -128,11 +128,11 @@ class EnrollmentClientsController < ApplicationController
 
     if params[:missing_field].present?
       # @incomplete_providers = @incomplete_providers.filter_by_missing_field(params[:missing_field])
-    
+
       @incomplete_providers = (params[:missing_field]  == 'missing_documents' ? @incomplete_providers.with_missing_documents : @incomplete_providers.with_missing_field_fields)
     end
 
-    if !current_user.administrator? && !current_user.super_administrator?
+    if !current_user.can_access_all_groups? && !current_user.super_administrator?
       @incomplete_providers = @incomplete_providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
     end
     @incomplete_providers = @incomplete_providers.paginate(per_page: 50, page: params[:page] || 1)

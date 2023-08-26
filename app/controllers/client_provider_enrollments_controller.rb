@@ -13,7 +13,7 @@ class ClientProviderEnrollmentsController < ApplicationController
 		@client_provider_enrollment = ClientProviderEnrollment.find(params[:id])
 	end
   def set_client_provider_enrollments
-    if !current_user.administrator? && !current_user.super_administrator?
+    if !current_user.can_access_all_groups? && !current_user.super_administrator?
       params[:enrollment_group_ids] = current_user.enrollment_groups.pluck(:id)
     end
 		@client_provider_enrollments = ClientProviderEnrollment.search_by_params(params)
