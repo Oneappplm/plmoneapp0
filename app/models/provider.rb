@@ -287,7 +287,7 @@ class Provider < ApplicationRecord
   end
 
   def formatted_phone
-    "#{self.ext} #{self.telephone_number}"
+    "(#{self.ext}) #{self.telephone_number}"
     rescue nil
   end
 
