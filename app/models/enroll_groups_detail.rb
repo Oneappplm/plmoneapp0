@@ -4,7 +4,9 @@ class EnrollGroupsDetail < ApplicationRecord
   before_create :hash_password
 
   has_many :questions, class_name: 'EnrollGroupsDetailsQuestion', dependent: :destroy
+  has_many :application_status_logs, class_name: 'EgdLog', dependent: :destroy
   accepts_nested_attributes_for :questions, allow_destroy: true
+  after_save :create_application_status_log, if: :saved_change_to_application_status?
 
   mount_uploaders :upload_payor_file, DocumentUploader
 
@@ -43,5 +45,8 @@ class EnrollGroupsDetail < ApplicationRecord
   # not sure when this will be used but had to encrypt password nonetheless
   def hash_password
     self.password_digest = BCrypt::Password.create(password)
+  end
+  def create_application_status_log
+    self.application_status_logs.create(status: self.application_status)
   end
 end
