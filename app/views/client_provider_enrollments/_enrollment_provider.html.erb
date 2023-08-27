@@ -27,23 +27,23 @@
             <div class="collapsible" style="<%= current_user&.is_card_open?("#{detail.enrollment_payer&.underscore}_payer") ? '' : 'display: none;' %>">
               <div class="text-left mt-2 text-dark">
                 <p class="mb-2"><strong>Enrollment Payer:</strong> <%= detail.enrollment_payer&.titleize %></p>
-                <p class="mb-2"><strong>Enrollment Type:</strong> <%= detail.enrollment_type %></p>
+                <p class="mb-2"><strong>Enrollment Type:</strong> <%= detail.enrollment_type&.titleize %></p>
                 <p class="mb-2"><strong>Application Status:</strong> <%= detail&.enrollment_status&.titleize %></p>
                 <p class="mb-2"><strong>State:</strong> <%= State.find_by(alpha_code: detail&.payer_state)&.name %></p>
                 <p class="mb-2"><strong>Provider ID:</strong> <%= detail&.provider_id %> </p>
                 <% if detail&.enrollment_status == "approved" %>
-                <p class="mb-2"><strong>Effective Date:</strong> <%= detail.enrollment_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
+                <p class="mb-2"><strong>Effective Date:</strong> <%= detail.enrollment_effective_date %></p>
                 <p class="mb-2"><strong>Revalidation Status:</strong> <%= detail.revalidation_status&.titleize %></p>
                 <p class="mb-2"><strong>Revalidation Date:</strong> <%= detail.revalidation_date&.strftime('%m-%d-%Y') rescue nil %></p>
-                <p class="mb-2"><strong>Revalidation Due Date:</strong> <%= detail.revalidation_due_dat&.strftime('%m-%d-%Y') rescue nil %></p>
+                <p class="mb-2"><strong>Revalidation Due Date:</strong> <%= detail.revalidation_due_date&.strftime('%m-%d-%Y') rescue nil %></p>
                 <p class="mb-2"><strong>Line of Business:</strong> <%= detail.line_of_business&.titleize %></p>
                 <% elsif detail&.enrollment_status == "application-submitted" %>
                  <p class="mb-2"><strong>Start Date:</strong> <%= detail.start_date&.strftime('%m-%d-%Y') rescue nil %></p>
                 <p class="mb-2"><strong>Enrollment Tracking ID:</strong> <%= detail.enrollment_tracking_id%></p>
                 <% elsif detail&.enrollment_status == "processing" %>
-                 <p class="mb-2"><strong>Processing Date:</strong> <%= detail.processing_date_date&.strftime('%m-%d-%Y') rescue nil %></p>
+                 <p class="mb-2"><strong>Processing Date:</strong> <%= detail.processing_date %></p>
                 <% elsif detail&.enrollment_status == "terminated" %>
-                 <p class="mb-2"><strong>Terminated Date:</strong> <%= detail.terminated_date&.strftime('%m-%d-%Y') rescue nil %></p>
+                 <p class="mb-2"><strong>Terminated Date:</strong> <%= detail.terminated_date %></p>
                 <% end %>
                 
                 <h5 class="mt-2 text-center">Payor Login</h5>
