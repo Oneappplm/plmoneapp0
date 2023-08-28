@@ -222,6 +222,19 @@ class User < ApplicationRecord
     PlmMailer.with(email: self.email, otp_code: self.otp_code).send_otp_code_mail.deliver_now
   end
 
+  def expired_logout_on_close?
+    return false unless last_logout_on_close
+
+    last_logout_on_close&.utc < 10.seconds.ago
+  end
+
+  def reset_logout_on_close
+    update_columns(
+      logout_on_close: false,
+      last_logout_on_close: nil
+    )
+  end
+
   private
 
   def set_sidebar_preferences

@@ -11,6 +11,8 @@ class ApplicationController < ActionController::Base
 	before_action :configure_permitted_parameters, if: :devise_controller?
   # exceptions for track_event are mostly ajax requests
   before_action :track_event
+  before_action :force_logout_on_close_if_expired, except: [:logout_on_close]
+
 	include ApplicationHelper
 
 	protected
@@ -31,6 +33,18 @@ class ApplicationController < ActionController::Base
 
   def track_event
     ahoy.track "Visited page", visit_properties unless request.xhr?
+  end
+
+  def force_logout_on_close_if_expired
+    if current_user.present?
+      if current_user.logout_on_close? && current_user.expired_logout_on_close?
+        current_user.reset_logout_on_close
+        sign_out(current_user)
+        redirect_to new_user_session_path, alert: "Your session has expired. Please sign in again." and return
+      else
+        current_user.reset_logout_on_close
+      end
+    end
   end
 
   private

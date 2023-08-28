@@ -1102,5 +1102,17 @@ $('#provider_enrollment_group_id').on('change',function(){
     }
   }
 </script>
+<script>
+  window.addEventListener("beforeunload", function() {
+    // post  /users/logout_on_close
+    // fetch('/logout-on-close', { method: 'POST', authenticity_token: $('meta[name="csrf-token"]').attr('content')});
+    $.post('/logout-on-close')
+  });
+
+  // set timeout in 10 seconds to update logout on close to verify if the user still on the page
+  setTimeout(function(){
+    $.post('/logout-on-close', { logout_on_close: false })
+  }, 10000);
+</script>
 </body>
 </html>

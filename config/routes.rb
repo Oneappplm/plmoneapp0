@@ -73,6 +73,7 @@ Rails.application.routes.draw do
   post 'update-timeline', to: 'ajax#update_timeline'
   get 'get-states-with-id', to: 'ajax#get_states_with_id'
   post 'mark-notification-read', to: 'ajax#mark_notification_read'
+  post 'logout-on-close', to: 'ajax#logout_on_close'
 
   resources :provider_sources do
     collection do

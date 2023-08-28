@@ -1,4 +1,5 @@
 class AjaxController < ApplicationController
+  skip_before_action :verify_authenticity_token, only: [:logout_on_close]
 
   def delete_record
     # render json: params and return
@@ -323,6 +324,18 @@ class AjaxController < ApplicationController
     notification = Notification.find(params[:notification_id])
     notification.mark_as_read!
     head :ok
+  end
+
+  def logout_on_close
+    if current_user.present?
+      logout_on_close = params[:logout_on_close] || true
+      current_user.update_attribute('logout_on_close', logout_on_close)
+      if logout_on_close
+        current_user.update_attribute('last_logout_on_close', Time.now)
+      else
+        current_user.update_attribute('last_logout_on_close', nil)
+      end
+    end
   end
 
   protected
