@@ -45,7 +45,7 @@ class Provider < ApplicationRecord
   belongs_to :state, class_name: 'State', foreign_key: 'state_id', required: false
   belongs_to :prof_medical_school_state, class_name: 'State', foreign_key: 'prof_medical_school_state_id', required: false
   has_many :taxonomies, class_name: 'ProviderTaxonomy', dependent: :destroy
-  has_one :licenses , class_name: 'ProviderLicense', dependent: :destroy
+  has_many :licenses , class_name: 'ProviderLicense', dependent: :destroy
   has_one :enrollment_provider , class_name: 'EnrollmentProvider', dependent: :destroy
   has_many :np_licenses , class_name: 'ProviderNpLicense', dependent: :destroy
   has_many :rn_licenses , class_name: 'ProviderRnLicense', dependent: :destroy
