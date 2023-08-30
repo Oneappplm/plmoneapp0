@@ -14,18 +14,60 @@
       </div>
     </div>
   <% end %>
+
+  <div class="row-mb-5">
+      <div class="row mb-3">
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Notification of New Provider</span></label>
+           <%= f.text_field :new_provider_notification, placeholder: 'MM-DD-YYYY',class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+        </div>
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Start Date</span></label>
+          <%= f.text_field :notification_start_date, placeholder: 'MM-DD-YYYY',class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+        </div>
+      </div>
+      <div class="row mb-3 mt-2">
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Welcome Letter Sent </span></label>
+          <%= f.text_field :welcome_letter_sent, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+        </div>
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Notification to begin submitting Enrollment</label>
+          <%= f.text_field :notification_enrollment_submit, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+        </div>
+      </div>
+      <div class="row mb-3 mt-2">
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Services</label>
+          <%= f.select :notification_services, options_for_select([],@provider.notification_services), {prompt: 'Select Option'}, {class: 'form-select provider-status border border-dark'}  %>
+        </div>
+      </div>
+       <div class="row mb-3">
+      <div class="col-lg-6">
+          <label class="text-dark-grey">Status</label>
+          <%= f.select :status, options_for_select(provider_statuses, @provider.status), {prompt: 'Select Option'}, {class: 'form-select provider-status border border-dark'}  %>
+      </div>
+      <div class="col-lg-6">
+      <div class="row mb-3 my-1 status-inactive-field <%= f.object.status == 'inactive-termed' ? '' : 'd-none'%>">
+              <label class="text-dark-grey">Work End Date</label>
+              <%= f.text_field :end_date, placeholder: 'MM-DD-YYYY', onfocus: "(this.type = 'date')", class: 'form-control border border-dark' %>
+      </div>
+      </div>
+    </div>
     <div class="row mb-3">
-    <div class="col-lg-6">
-        <label class="text-dark-grey">Status</label>
-        <%= f.select :status, options_for_select(provider_statuses, @provider.status), {prompt: 'Select Option'}, {class: 'form-select provider-status border border-dark'}  %>
+					<div class="col-lg-12 mb-2 d-flex justify-content-start">
+						<%= f.check_box :send_welcome_letter %>
+						<%= f.label :send_welcome_letter, "Send Welcome Letter to provider's email?", class: 'mx-2 text-dark-grey' %>
+					</div>
+				</div>
     </div>
-     <div class="col-lg-6">
-    <div class="row mb-3 status-inactive-field <%= f.object.status == 'inactive' ? '' : 'd-none'%>">
-            <label class="text-dark-grey">Work End Date</label>
-            <%= f.text_field :end_date, placeholder: 'Type here...', onfocus: "(this.type = 'date')", class: 'form-control border border-dark' %>
-    </div>
-    </div>
-    </div>
+
+    <div class="row mb-3">
+		<div class="col-lg-12">
+			<h3 class="mb-0">Practitioner Personal Information</h3>
+			<small class="text-black">Please fill out all required fields. Required fields are marked with <span class="text-red">*</span>.</small>
+		</div>
+	  </div>
     <div class="row mb-3">
       <div class="col-lg-4">
         <label class="text-dark-grey">First Name <span class="text-red">*</span></label>
@@ -136,50 +178,20 @@
           <label class="text-dark-grey">Name of U.S./Canadian School</label>
             <%= f.text_field :medical_school_name,  placeholder: 'Type here...',class: 'form-control border border-dark'%>
           </div>
-          <div class="col-lg-6 mb-3">
-            <!-- new field -->
-          <label class="text-dark-grey">Address</label>
-            <%= f.text_field :prof_medical_school_address, placeholder: 'Type here...',class: 'form-control border border-dark'%>
-          </div>
-          <div class="col-lg-6 mb-3">
-            <!-- new field -->
-          <label class="text-dark-grey">City</label>
-            <%= f.text_field :prof_medical_school_city, placeholder: 'Type here...',class: 'form-control border border-dark'%>
-          </div>
-          <div class="col-lg-6 mb-3">
-            <!-- new field -->
-          <label class="text-dark-grey">State</label>
-             <div class="search-select state-search-select form-control border border-dark" name="provider[prof_medical_school_state_id]" id="prof_medical_school_state_id">
-             </div>
-          </div>
-          <div class="col-lg-6 mb-3">
-            <!-- new field -->
-          <label class="text-dark-grey">Country</label>
-            <%= f.text_field :prof_medical_school_country, placeholder: 'Type here...',class: 'form-control border border-dark'%>
-          </div>
-          <div class="col-lg-6 mb-3">
-            <!-- new field -->
-          <label class="text-dark-grey">Zip Code</label>
-            <%= f.text_field :prof_medical_school_zipcode, placeholder: 'Type here...',class: 'form-control border border-dark'%>
-          </div>
-          <div class="col-lg-6 mb-3">
+          <div class="col-lg-6 ">
             <!-- new field -->
           <label class="text-dark-grey">Start Date</label>
             <%= f.text_field :prof_medical_start_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
           </div>
-           <div class="col-lg-6 mb-3">
+          <div class="col-lg-6">
+              <label class="text-dark-grey">Degree Awarded</label>
+              <%= f.text_field :prof_medical_school_degree_awarded, placeholder: 'Type here...',class: 'form-control border border-dark'%>
+           </div>
+           <div class="col-lg-6">
             <label class="text-dark-grey">End(Graduation) Date</label>
             <%= f.text_field :graduation_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
           </div>
-           <div class="col-lg-6 mb-3">
-            <label class="text-dark-grey">Degree Awarded</label>
-            <%= f.text_field :prof_medical_school_degree_awarded, placeholder: 'Type here...',class: 'form-control border border-dark'%>
-          </div>
-          <div class="col-lg-6 mb-3">
-            <!-- new field -->
-            <label class="text-dark-grey">Did you complete your graduate education at this school? </label>
-            <%= f.select :medical_license, options_for_select(yes_or_no_options, @provider.medical_license), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
-          </div>
+          
         </div>
         <div class="row mb-2">
           <div class="col-lg-6">
@@ -196,6 +208,11 @@
             <%= HtmlUtils.generate_view_link file_url: @provider.school_certificate.url %>
             <% end %>
           </div>
+          <div class="col-lg-6 mb-3">
+            <!-- new field -->
+            <label class="text-dark-grey">Did you complete your graduate education at this school? </label>
+            <%= f.select :medical_license, options_for_select(yes_or_no_options, @provider.medical_license), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
+         </div>
         </div>
       </div>
     </div>
@@ -345,7 +362,7 @@
       </div>
     </div>
 
-    <div class="row mb-5 mt-2">
+     <div class="row mb-5 mt-2">
       <div class="col-lg-12 mt-3">
         <h3>DEA Registration</h3>
       </div>
@@ -381,9 +398,11 @@
           </div>
       </div>
     </div>
-    <div class="row mb-5 mt-2">
+
+     <div class="row mb-5 mt-2">
       <div class="col-lg-12 mt-3">
         <h3>Advance Practice Registered Nurse License</h3>
+        <h5> (also applies for NP, ANP, CRNA, CNS, CNM, and CNP) </h5>
       </div>
       <div id="cnp_licenses">
           <div class="fields">
@@ -408,6 +427,7 @@
       </div>
     </div>
 
+
     <!-- <div class="row mb-2">
 		<div class="col-lg-6">
       <label class="text-dark-grey">State License Number <span class="text-red">*</span></label>
@@ -427,7 +447,7 @@
 		</div>
     </div>  -->
 
-    <div class="row mb-3 mt-2">
+   <!-- <div class="row mb-3 mt-2">
       <div class="col-lg-12 mt-3">
         <h3>Physician Assistant License</h3>
       </div>
@@ -451,7 +471,7 @@
             <% end %>
           </div>
       </div>
-    </div>
+    </div>  -->
 
    <!--
    <div class="row mb-3 mt-2">
@@ -932,7 +952,7 @@
 
         $(document).on('change', '.provider-status', function () {
          var status = $(this).val();
-         if (status == 'inactive') {
+         if (status == 'inactive-termed') {
             showHideDetailFields($(this), '.status-inactive-field', 'show')
          } else {
             showHideDetailFields($(this), '.status-inactive-field', 'hide')
