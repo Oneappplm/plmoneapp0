@@ -299,8 +299,8 @@ Rails.application.routes.draw do
 
   resources :otps do
     member do
-      get :request_opt_code
-      post :request_opt_code
+      get :request_otp_code
+      post :request_otp_code
     end
   end
 

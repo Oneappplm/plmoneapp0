@@ -1,6 +1,6 @@
 class OtpsController < ActionController::Base
 	layout	'authentication'
-	def request_opt_code
+	def request_otp_code
 		@otp_token	= params[:id]
 		@user 					= User.find_by(otp_token: @otp_token)
 		if @user.present? && @user.expired_otp_code?
@@ -15,7 +15,7 @@ class OtpsController < ActionController::Base
 				user.reset_opt
 				redirect_to root_path, notice: 'Signed in successfully.' and return
 			else
-				redirect_to 	request_opt_code_otp_path(otp_token), alert: "Invalid OTP Code. Please try again." and return
+				redirect_to 	request_otp_code_otp_path(otp_token), alert: "Invalid  One Time Password (OTP) Code. Please try again." and return
 			end
 
 		end

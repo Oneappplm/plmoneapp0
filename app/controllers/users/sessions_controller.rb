@@ -6,7 +6,7 @@ class Users::SessionsController < Devise::SessionsController
       if Rails.env.production?
         current_user.generate_otp_code_and_expiration
         current_user.send_otp_code
-        redirect_url = request_opt_code_otp_path(current_user.otp_token)
+        redirect_url = request_otp_code_otp_path(current_user.otp_token)
         sign_out(resource_name)
         redirect_to redirect_url, notice: "An OTP Code has been sent to your email. Please check your email." and return
       else
