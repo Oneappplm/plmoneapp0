@@ -165,9 +165,19 @@ class EnrollmentsController < ApplicationController
 				 :city,
 				 :state,
 				 :zip_code,
+				 #to be deleted
 				 :phone_number,
+				 #to be deleted
 				 :ext,
+				 #to be deleted
 				 :fax_number,
+				 :billing_contact_name,
+				 :billing_contact_email,
+				 :billing_contact_number,
+				 :remmitance_contact_name,
+				 :remmitance_contact_email,
+				 :remmitance_contact_number,
+				 :qualifacts_contract_effective_date,
 				 :group_personnel_name,
 				 :group_personnel_email,
 				 :group_personnel_phone_number,
