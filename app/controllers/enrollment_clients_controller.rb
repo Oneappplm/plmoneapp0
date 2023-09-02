@@ -9,7 +9,7 @@ class EnrollmentClientsController < ApplicationController
     if params[:mode].present?
         if @provider
           @show_missing_fields = @provider.show_missing_fields?
-          @provider.build_licenses if @provider.licenses.nil?
+          @provider.licenses if @provider.licenses.nil?
         end
       render params[:mode]
     end
@@ -27,7 +27,7 @@ class EnrollmentClientsController < ApplicationController
 
     if @provider
       @show_missing_fields = @provider.show_missing_fields?
-      @provider.build_licenses if @provider.licenses.nil?
+      @provider.licenses if @provider.licenses.nil?
     end
     set_comment
   end

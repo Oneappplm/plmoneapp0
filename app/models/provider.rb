@@ -45,7 +45,7 @@ class Provider < ApplicationRecord
   belongs_to :state, class_name: 'State', foreign_key: 'state_id', required: false
   belongs_to :prof_medical_school_state, class_name: 'State', foreign_key: 'prof_medical_school_state_id', required: false
   has_many :taxonomies, class_name: 'ProviderTaxonomy', dependent: :destroy
-  has_many :licenses , class_name: 'ProviderLicense', dependent: :destroy
+  has_many :licenses, class_name: 'ProviderLicense', dependent: :destroy
   has_one :enrollment_provider , class_name: 'EnrollmentProvider', dependent: :destroy
   has_many :np_licenses , class_name: 'ProviderNpLicense', dependent: :destroy
   has_many :rn_licenses , class_name: 'ProviderRnLicense', dependent: :destroy
@@ -362,9 +362,14 @@ class Provider < ApplicationRecord
   end
 
   def has_missing_state_licenses_fields?
-    licenses_required_fields = ['license_number','license_effective_date', 'license_expiration_date', 'state_id']
-    licenses_required_fields.each do |field|
-      return true if licenses.send(field).nil? or licenses.send(field).blank?
+    if @provider && @provider.licenses.present?
+      licenses_required_fields = ['license_number', 'license_effective_date', 'license_expiration_date', 'state_id']
+      
+      @provider.licenses.each do |license|
+        licenses_required_fields.each do |field|
+          return true if license.send(field).nil? || license.send(field).blank?
+        end
+      end
     end
     return false
   end

@@ -212,44 +212,13 @@
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
             <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'State License', collapse_name: 'state_licenses'}%>
             <div class="collapsible" style="<%= current_user&.is_card_open?('state_licenses') ? '' : 'display: none;' %>">
-              <p class="mb-1"><strong>State License Number:</strong> <%= @provider&.licenses&.license_number %></p>
-              <p class="mb-1"><strong>State License Issue Date:</strong> <%= @provider&.licenses&.license_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>State License Registration State:</strong> <%= State.find_by(id: @provider&.licenses&.state_id)&.name %></p>
-              <p class="mb-1"><strong>State License Expiration Date:</strong> <%= @provider&.licenses&.license_expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>State License Renewal Date:</strong> <%= @provider&.licenses&.license_state_renewal_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>Explain if you do not have a PA License Number:</strong>  <%= @provider&.licenses&.no_state_license %> </p>
-            </div>
-          </div>
-
-          
-
-          <div class="card rounded shadow-lg p-1 px-3 mb-3">
-            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Physician Assistant License', collapse_name: 'pa_licenses'}%>
-            <div class="collapsible" style="<%= current_user&.is_card_open?('pa_licenses') ? '' : 'display: none;' %>">
-              <% @provider&.pa_licenses&.each do |pa_license|%>
-              <p class="mb-1"><strong>PA License Number:</strong> <%= pa_license&.pa_license_number %></p>
-              
-              <p class="mb-1"><strong>PA License State:</strong> <%= State.find_by(id: pa_license.state_id.to_i)&.name %></p>
-              <p class="mb-1"><strong>PA License Expiration Date:</strong> <%= pa_license&.pa_license_renewal_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>PA License Renewal Date:</strong> <%= pa_license&.pa_license_expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>Explain if you do not have a PA License Number:</strong> <%= pa_license&.no_pa_license&.strftime('%m-%d-%Y') rescue nil %></p>
-              <hr>
-              <% end %>
-
-            </div>
-          </div>
-
-          <div class="card rounded shadow-lg p-1 px-3 mb-3">
-            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Nurse Practitioner License', collapse_name: 'np_licenses'}%>
-            <div class="collapsible" style="<%= current_user&.is_card_open?('np_licenses') ? '' : 'display: none;' %>">
-              <% @provider&.np_licenses&.each do |np_license|%>
-              <p class="mb-1"><strong>State License Number:</strong> <%= @provider&.licenses&.license_number %></p>
-              <p class="mb-1"><strong>NP License Number:</strong> <%= np_license&.np_license_number %></p>
-              <p class="mb-1"><strong>NP Original License Issue Date:</strong> <%= np_license&.np_license_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>NP License State:</strong> <%= State.find_by(id: np_license.state_id.to_i)&.name %></p>
-              <p class="mb-1"><strong>NP License Expiration Date:</strong> <%= np_license&.np_license_renewal_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>NP License Renewal Date:</strong> <%= np_license&.np_license_expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>Explain if you do not have a NP License Number:</strong> <%= np_license&.no_np_license %></p>
+              <% @provider&.licenses&.each do |state_license|%>
+              <p class="mb-1"><strong>State License Number:</strong> <%= state_license&.license_number %></p>
+              <p class="mb-1"><strong>State License Issue Date:</strong> <%= state_license&.license_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strongState License Registration State:</strong> <%= State.find_by(id: state_license.state_id.to_i)&.name %></p>
+              <p class="mb-1"><strong>State License Expiration Date:</strong> <%= state_license&.license_expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>State License Renewal Date:</strong> <%= state_license&.license_state_renewal_date&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>Explain if you do not have a State License Number:</strong> <%= state_license&.no_state_license %></p>
               <hr>
               <% end %>
 
