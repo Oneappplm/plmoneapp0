@@ -281,6 +281,17 @@ module ApplicationHelper
     ]
   end
 
+	def provider_notification_services
+		[
+			['Practice/Provider Setups', 'provider_setup'],
+			['Monthly Monitoring', 'monthly_monitoring'],
+			['Facility Enrollments/Maintenance', 'facility_maintenance'],
+			['Provider Enrollments/Maintenance', 'provider_maintenance'],
+			['FBI Checks', 'fbi_checks'],
+			['Hospital Org PSV', 'hospital_org']
+		]
+	end
+
 	def provider_generate_report_options
 		[
 			['All Providers','all'],
