@@ -11,7 +11,7 @@
                 </div>
               <% end %>
             <% end %>
-            <% if @provider.has_missing_state_licenses_fields? %>
+            <% if !@provider&.licenses&.any?(&:persisted?) || @provider.has_missing_state_licenses_fields? %>
               <%= render "enrollment_clients/show/provider_missing_licenses_field"%>
             <% end %>
             <div class="form-group mt-3">
