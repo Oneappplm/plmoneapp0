@@ -33,4 +33,8 @@ class GroupDco < ApplicationRecord
     # Provider.where(dco: self.id)
     Provider.where("dcos LIKE ? OR dcos LIKE ? OR dcos = ?", "#{self.id},%", "%,#{self.id}", "#{self.id}")
   end
+
+  def primary_location
+    self.is_primary_location ? "Yes" : "No"
+  end
 end

@@ -1,37 +1,35 @@
 <div class="content container-fluid">
   <%= render "nav"%>
   <% @enroll_groups.each do |enroll_group|%>
-  <% title = enroll_group.details.last.enrollment_payer || '' %>
-  <% enroll_group&.details.each do |detail|%>
-     <div class="row mb-3">
-       <div class="col-lg-12 card p-3">
-          <div class="w-100 d-flex justify-content-between">
-             <h3 class="text-primary">Name of person who can answer questions related to enrollment of provider</h3>
-             <a href="javascript:void(0);" class="text-black fw-semibold collapsible-trigger" data-collapse="provider_enrollment_contact">
-             <i class="bi bi-sort-up rotate-180" style="font-size: 18px;"></i>
-             </a>
+  <div class="row mb-3">
+    <div class="col-lg-12 card p-3">
+      <div class="w-100 d-flex justify-content-between">
+          <h3 class="text-primary">Name of person who can answer questions related to enrollment of the group</h3>
+          <a href="javascript:void(0);" class="text-black fw-semibold collapsible-trigger" data-collapse="provider_enrollment_contact">
+          <i class="bi bi-sort-up rotate-180" style="font-size: 18px;"></i>
+          </a>
+      </div>
+      <div class="w-100 collapsible" id="provider_enrollment_contact">
+        <div class="row mb-3">
+          <div class="col-lg-2">
+            <label>Name</label>
+            <p class="text-black fw-semibold"><%= enroll_group&.full_name %></p>
           </div>
-        <div class="w-100 collapsible" id="provider_enrollment_contact">
-          <div class="row mb-3">
-            <div class="col-lg-2">
-              <label>Name</label>
-              <p class="text-black fw-semibold"><%= @enroll_group&.full_name %></p>
-            </div>
-            <div class="col-lg-2">
-              <label>Telephone Number</label>
-              <p class="text-black fw-semibold"><%= @enroll_group&.telephone_number %></p>
-            </div>
-            <div class="col-lg-2">
-              <label>Email Address</label>
-              <p class="text-black fw-semibold"><%= @enroll_group&.email %></p>
-            </div>
+          <div class="col-lg-2">
+            <label>Telephone Number</label>
+            <p class="text-black fw-semibold"><%= enroll_group&.telephone_number %></p>
+          </div>
+          <div class="col-lg-2">
+            <label>Email Address</label>
+            <p class="text-black fw-semibold"><%= enroll_group&.email %></p>
+          </div>
         </div>
       </div>
     </div>
   </div>
-
+  <% title = enroll_group.details.last.enrollment_payer || '' %>
+  <% enroll_group&.details.each do |detail|%>
     <%= render partial: "enroll_group_card", locals: {title: detail&.enrollment_payer, detail: detail, enroll_group: enroll_group}%>
   <% end %>
   <% end %>
  </div>
- 

@@ -53,7 +53,7 @@ class DcosController < ApplicationController
 	def dco_params
 		params.require(:group_dco).permit(
 			:client, :dco_name, :dco_address,
-			:dco_city, :state, :dco_zipcode, :county,
+			:dco_city, :state, :dco_zipcode, :county, :is_primary_location,
 			:service_location_phone_number, :service_location_fax_number,
 			:panel_status_to_new_patients, :panel_age_limit, :include_in_directory,
 			:dco_provider_name, :dco_provider_email, :dco_provider_phone_number,
@@ -81,7 +81,7 @@ class DcosController < ApplicationController
 
   def set_dcos
     @dcos = if params[:dco_search].present?
-      @enrollment_group.dcos.search(params[:dco_search]).order("dco_name ASC").paginate(per_page: 10, page: params[:page] || 1)
+      @enrollment_group.dcos.where("dco_name LIKE ?", "%#{params[:dco_search]}%").order("dco_name ASC").paginate(per_page: 10, page: params[:page] || 1)
     else
       @enrollment_group.dcos.order("dco_name ASC").paginate(per_page: 10, page: params[:page] || 1)
     end

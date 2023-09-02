@@ -41,6 +41,59 @@
    </div>
    <div class="row mb-3">
       <div class="col-lg-12">
+         <%= HtmlUtils.radio_toggle name: 'enrollment_group[another_business_name]',
+            label: 'Do you have another business name?',
+            toshow: 'other_name'
+            %>
+         <%= f.hidden_field :another_business_name %>
+      </div>
+   </div>
+   <div class="<%= @enrollment_group.another_business_name == 'yes' ? '' : 'd-none'%>" id="other_name">
+      <div class="row mb-3">
+         <div class="col-lg-6">
+            <label class="text-dark-grey">Other Business Name</label>
+            <%= f.text_field :other_business_name, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+         </div>
+         <div class="col-lg-6">
+            <label class="text-dark-grey">Business Type</label>
+            <%= f.select :other_business_type, options_for_select(['Former Business Name', 'DBA', 'Other'], f.object.other_business_type), { prompt: 'Select option' }, { class: 'form-select border border-dark' } %>
+         </div>
+      </div>
+   </div>
+   <div class="row mb-3">
+      <div class="row mb-3">
+         <div class="col-lg-6">
+            <label class="text-dark-grey">Group NPI <span class="text-danger">*</span></label>
+            <%= f.text_field :npi_digit_type, class: form_control_classes(danger: @enrollment_group.npi_digit_type.blank? && @enrollment_group.persisted?), required: true, placeholder: 'Type here...' %>
+         </div>
+         <div class="col-lg-6">
+            <label class="text-dark-grey">Group TIN <span class="text-danger">*</span></label>
+            <%= f.text_field :tin_digit, class: form_control_classes(danger: @enrollment_group.tin_digit.blank? && @enrollment_group.persisted?), required: true, placeholder: 'Type here...' %>
+         </div>
+      </div>
+      <div class="row mb-3">
+         <div class="col-lg-6">
+            <label class="text-dark-grey">Group Type (Tax Classification) <span class="text-danger">*</span></label>
+            <%= f.select :specify_type_of_group, options_for_select([
+               'LLC', 'Partnership', 'Incorporated', 'Other(Specify)'
+               ], f.object.specify_type_of_group), { prompt: 'Select option' }, { class: form_select_classes(danger: @enrollment_group.specify_type_of_group.blank? && @enrollment_group.persisted?), id: 'group_type_select', required: true } %>
+         </div>
+      </div>
+      <div class="row mb-3">
+         <div class="col-lg-6">
+            <label class="text-dark-grey">Group Specialty (Is the group Single or Multi Specialty, choose one) <span class="text-danger">*</span></label>
+            <%= f.select :npi_digit_type_group, options_for_select([
+         'Multi-Specialty Group- 193200000X', 'Single Specialty Group-193400000X'
+         ], f.object.npi_digit_type_group), { prompt: 'Select option' }, { class: form_select_classes(danger: @enrollment_group.npi_digit_type_group.blank? && @enrollment_group.persisted?), id: 'group_type_select', required: true } %>
+         </div>
+         <div class="col-lg-6">
+            <label class="text-dark-grey">Which of the following provider types do you employ?</label>
+            <div class="multi-select provider-type form-control border border-dark" name="enrollment_group[provider_type]" id="provider_practitioner_type"></div>
+         </div>
+      </div>
+   </div>
+   <div class="row mb-3">
+      <div class="col-lg-12">
          <h5 class="mb-0">Administration Office Address</h5>
       </div>
    </div>
@@ -161,59 +214,6 @@
 			</div>
 		</div>
 	</div>
-   <div class="row mb-3">
-      <div class="col-lg-12">
-         <%= HtmlUtils.radio_toggle name: 'enrollment_group[another_business_name]',
-            label: 'Do you have another business name?',
-            toshow: 'other_name'
-            %>
-         <%= f.hidden_field :another_business_name %>
-      </div>
-   </div>
-   <div class="<%= @enrollment_group.another_business_name == 'yes' ? '' : 'd-none'%>" id="other_name">
-      <div class="row mb-3">
-         <div class="col-lg-6">
-            <label class="text-dark-grey">Other Business Name</label>
-            <%= f.text_field :other_business_name, class: 'form-control border border-dark', placeholder: 'Type here...' %>
-         </div>
-         <div class="col-lg-6">
-            <label class="text-dark-grey">Business Type</label>
-            <%= f.select :other_business_type, options_for_select(['Former Business Name', 'DBA', 'Other'], f.object.other_business_type), { prompt: 'Select option' }, { class: 'form-select border border-dark' } %>
-         </div>
-      </div>
-   </div>
-   <div class="row mb-3">
-      <div class="row mb-3">
-         <div class="col-lg-6">
-            <label class="text-dark-grey">Group NPI <span class="text-danger">*</span></label>
-            <%= f.text_field :npi_digit_type, class: form_control_classes(danger: @enrollment_group.npi_digit_type.blank? && @enrollment_group.persisted?), required: true, placeholder: 'Type here...' %>
-         </div>
-         <div class="col-lg-6">
-            <label class="text-dark-grey">Group TIN <span class="text-danger">*</span></label>
-            <%= f.text_field :tin_digit, class: form_control_classes(danger: @enrollment_group.tin_digit.blank? && @enrollment_group.persisted?), required: true, placeholder: 'Type here...' %>
-         </div>
-      </div>
-      <div class="row mb-3">
-         <div class="col-lg-6">
-            <label class="text-dark-grey">Group Type (Tax Classification) <span class="text-danger">*</span></label>
-            <%= f.select :specify_type_of_group, options_for_select([
-               'LLC', 'Partnership', 'Incorporated', 'Other(Specify)'
-               ], f.object.specify_type_of_group), { prompt: 'Select option' }, { class: form_select_classes(danger: @enrollment_group.specify_type_of_group.blank? && @enrollment_group.persisted?), id: 'group_type_select', required: true } %>
-         </div>
-      </div>
-      <div class="row mb-3">
-         <div class="col-lg-6">
-            <label class="text-dark-grey">Group Specialty (Is the group Single or Multi Specialty, choose one) <span class="text-danger">*</span></label>
-            <%= f.select :npi_digit_type_group, options_for_select([
-         'Multi-Specialty Group- 193200000X', 'Single Specialty Group-193400000X'
-         ], f.object.npi_digit_type_group), { prompt: 'Select option' }, { class: form_select_classes(danger: @enrollment_group.npi_digit_type_group.blank? && @enrollment_group.persisted?), id: 'group_type_select', required: true } %>
-         </div>
-         <div class="col-lg-6">
-            <label class="text-dark-grey">Which of the following provider types do you employ?</label>
-            <div class="multi-select provider-type form-control border border-dark" name="enrollment_group[provider_type]" id="provider_practitioner_type"></div>
-         </div>
-      </div>
-   </div>
    <div class="row mb-3">
       <div class="col-lg-12">
          <h5 class="mb-0">Multiple Ownership</h5>

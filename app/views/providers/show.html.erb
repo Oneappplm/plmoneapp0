@@ -212,17 +212,18 @@
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
             <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'State License', collapse_name: 'state_licenses'}%>
             <div class="collapsible" style="<%= current_user&.is_card_open?('state_licenses') ? '' : 'display: none;' %>">
-              <p class="mb-1"><strong>State License Number:</strong> <%= @provider&.licenses&.license_number %></p>
-              <p class="mb-1"><strong>State License Issue Date:</strong> <%= @provider&.licenses&.license_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>State License Registration State:</strong> <%= State.find_by(id: @provider&.licenses&.state_id)&.name %></p>
-              <p class="mb-1"><strong>State License Expiration Date:</strong> <%= @provider&.licenses&.license_expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>State License Renewal Date:</strong> <%= @provider&.licenses&.license_state_renewal_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>Explain if you do not have a PA License Number:</strong>  <%= @provider&.licenses&.no_state_license %> </p>
+              <% @provider&.licenses.each_with_index do |license, indx|%>
+                <div class="mb-2 <%= "border-bottom-dash" if indx < @provider&.licenses.length - 1 %>">
+                  <p class="mb-1"><strong>State License Number:</strong> <%= license&.license_number %></p>
+                  <p class="mb-1"><strong>State License Issue Date:</strong> <%= license&.license_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
+                  <p class="mb-1"><strong>State License Registration State:</strong> <%= State.find_by(id: license&.state_id)&.name %></p>
+                  <p class="mb-1"><strong>State License Expiration Date:</strong> <%= license&.license_expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
+                  <p class="mb-1"><strong>State License Renewal Date:</strong> <%= license&.license_state_renewal_date&.strftime('%m-%d-%Y') rescue nil %></p>
+                  <p class="mb-1"><strong>Explain if you do not have a PA License Number:</strong>  <%= license&.no_state_license %> </p>
+                </div>
+              <% end %>
             </div>
           </div>
-
-          
-
           <div class="card rounded shadow-lg p-1 px-3 mb-3">
             <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Physician Assistant License', collapse_name: 'pa_licenses'}%>
             <div class="collapsible" style="<%= current_user&.is_card_open?('pa_licenses') ? '' : 'display: none;' %>">

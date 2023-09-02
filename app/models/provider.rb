@@ -363,8 +363,10 @@ class Provider < ApplicationRecord
 
   def has_missing_state_licenses_fields?
     licenses_required_fields = ['license_number','license_effective_date', 'license_expiration_date', 'state_id']
-    licenses_required_fields.each do |field|
-      return true if licenses.send(field).nil? or licenses.send(field).blank?
+    licenses.each do |license|
+      licenses_required_fields.each do |field|
+        return true if license.send(field).nil? or license.send(field).blank? or !license.persisted?
+      end
     end
     return false
   end

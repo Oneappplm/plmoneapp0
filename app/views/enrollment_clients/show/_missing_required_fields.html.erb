@@ -29,9 +29,11 @@
                 </div>
               <% end %>
             <% end %>
-            <% if !@provider&.licenses&.persisted? or @provider.has_missing_state_licenses_fields? %>
-            <%= f.fields_for :licenses do |license_fields| %>
-                <%= render 'enrollment_clients/license_fields', f: license_fields %>
+            <% @provider&.licenses.each do |license|%>
+              <% if !license.persisted? or @provider.has_missing_state_licenses_fields? %>
+              <%= f.fields_for :licenses do |license_fields| %>
+                  <%= render 'enrollment_clients/license_fields', f: license_fields %>
+                <% end %>
               <% end %>
             <% end %>
             <div class="form-group mt-3">
