@@ -343,7 +343,8 @@ class Provider < ApplicationRecord
       ['State License Number', 'license_number', 'text_field'],
       ['License Effective Date', 'license_effective_date', 'date_field'],
       ['License Registration State', 'state_id', 'state_dropdown'],
-      ['License Expiration Date', 'license_expiration_date', 'date_field']
+      ['License Expiration Date', 'license_expiration_date', 'date_field'],
+      ['License Type', 'license_type', 'text_field']
     ]
   end
 
@@ -362,7 +363,7 @@ class Provider < ApplicationRecord
   end
 
   def has_missing_state_licenses_fields?
-    licenses_required_fields = ['license_number','license_effective_date', 'license_expiration_date', 'state_id']
+    licenses_required_fields = ['license_number','license_effective_date', 'license_expiration_date', 'state_id', 'license_type']
     licenses.each do |license|
       licenses_required_fields.each do |field|
         return true if license.send(field).nil? or license.send(field).blank? or !license.persisted?

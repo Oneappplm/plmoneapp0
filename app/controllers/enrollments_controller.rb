@@ -159,6 +159,13 @@ class EnrollmentsController < ApplicationController
 
 		def group_params
 			params.require(:enrollment_group).permit(
+				 :new_group_notification,
+				 :noti_group_start_date,
+				 :noti_welcome_letter_sent,
+				 :notification_enrollment_submit_group,
+				 :noti_group_services,
+				 :noti_status,
+				 :noti_work_end_date,
 				 :group_name,
 				 :group_code,
 				 :office_address,
