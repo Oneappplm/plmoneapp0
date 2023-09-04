@@ -33,6 +33,7 @@ class Provider < ApplicationRecord
   mount_uploader :caqh_app_copy_file, DocumentUploader
   mount_uploader :cv_file, DocumentUploader
   mount_uploader :telehealth_license_copy_file, DocumentUploader
+  mount_uploaders :welcome_letter_attachments, DocumentUploader
 
 
   # validates_format_of :telephone_number, with: /\A\d{3}-\d{4}\z/, message: "should be in the format xxx-xxxx"
@@ -127,7 +128,7 @@ class Provider < ApplicationRecord
   class << self
     def search_by_params(params)
       return all if client_portal_conditions(params).values.all?(&:blank?) && client_name_conditions(params).values.all?(&:blank?)
-      
+
       results = if params[:practitioner_type].present?
         practitioner_types = params[:practitioner_type].split(',').map(&:strip).reject(&:blank?)
         conditions = practitioner_types.map { |type| "practitioner_type ILIKE ?" }
@@ -413,9 +414,20 @@ class Provider < ApplicationRecord
   end
 
   def send_welcome_letter
-    return unless self.email_address.present?
+    return unless self.email_address.present? && self.welcome_letter_status?
 
-    PlmMailer.with(email: self.email_address, attachments: ['welcome-letter-new-provider.docx']).welcome_letter.deliver_now
+    attachments = []
+
+    if welcome_letter_attachments.present?
+      attachments = welcome_letter_attachments.map{|a| a.url}
+    end
+
+    PlmMailer.with(
+      email: email_address,
+      subject:welcome_letter_subject,
+      body: welcome_letter_message,
+      attachments: attachments
+    ).welcome_letter.deliver_later
   end
 
   def group_dcos

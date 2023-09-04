@@ -1,6 +1,7 @@
 class ProvidersController < ApplicationController
 	before_action :set_provider, only: [:show, :edit, :update, :destroy, :update_from_notifications]
 	before_action :set_overview_details, only: [:overview]
+
   def index
 		if params[:user_search].present?
 			@providers = Provider.unscoped.select("NULLIF(first_name, '') as f, NULLIF(last_name, '') as l,NULLIF(middle_name, '') as m, *").search(params[:user_search])
@@ -27,6 +28,7 @@ class ProvidersController < ApplicationController
 
 	def create
 		@provider = Provider.new(provider_params)
+		# render json: @provider and return
 		@provider.encoded_by = current_user&.full_name
 		if @provider.save
 			redirect_to providers_path
@@ -202,13 +204,13 @@ end
 					:prof_liability_address,
 					:prof_liability_city,
 					:prof_liability_state_id,
-					:prof_liability_zipcode, 
+					:prof_liability_zipcode,
 					:prof_liability_orig_effective_date,
 					:prof_liability_effective_date,
 					:prof_liability_expiration_date,
 					:prof_liability_coverage_type,
 					:prof_liability_unlimited_coverage,
-					:prof_liability_tail_coverage, 
+					:prof_liability_tail_coverage,
 					:prof_liability_coverage_amount,
 					:prof_liability_coverage_amount_aggregate,
 					:prof_liability_policy_number,
@@ -237,29 +239,29 @@ end
 					:telehealth_license_number, :board_certification_number, :dea_registration_state, :pa_license_effective_date, :pa_license_expiration_date, :name_admitting_physician,
 					:facility_location, :facility_name, :admitting_facility_address_line1, :admitting_facility_address_line2, :admitting_facility_city, :admitting_facility_state, :admitting_facility_zip_code, :admitting_facility_arrangments, :state_license_copy_file, :dea_copy_file, :w9_form_file, :certificate_insurance_file, :drivers_license_file, :board_certification_file, :caqh_app_copy_file, :cv_file, :telehealth_license_copy_file,
 					:new_provider_notification,
-					:notification_start_date, 
-					:welcome_letter_sent, 
-					:notification_enrollment_submit, 
-					:notification_services, 
-					:send_welcome_letter, 
+					:notification_start_date,
+					:welcome_letter_sent,
+					:notification_enrollment_submit,
+					:notification_services,
+					:send_welcome_letter,
+					:welcome_letter_status, :welcome_letter_subject, :welcome_letter_message, {welcome_letter_attachments: []},
 					#taxonomies_attributes: [:id, :taxonomy_code, :specialty, :_destroy],
 					licenses_attributes: [:id, :license_number, :license_effective_date, :license_expiration_date, :state_id, :license_state_renewal_date, :no_state_license, :license_type, :_destroy],
 					np_licenses_attributes: [:id, :np_license_number, :state_id, :np_license_effective_date, :np_license_expiration_date, :np_license_renewal_effective_date, :no_np_license, :_destroy],
 					rn_licenses_attributes: [:id, :rn_license_number, :state_id, :rn_license_effective_date, :rn_license_expiration_date, :rn_license_renewal_effective_date, :no_rn_license, :_destroy],
 					service_locations_attributes: [:id, :primary_service_non_office_area, :primary_service_location_apps, :primary_service_zip_code, :primary_service_office_email, :primary_service_fax, :primary_service_office_website, :primary_service_crisis_phone, :primary_service_location_other_phone, :primary_service_appt_scheduling, :primary_service_interpreter_language, :primary_service_telehealth_only_state],
-          pa_licenses_attributes: [:id, :pa_license_number, :state_id, :pa_license_effective_date, :pa_license_expiration_date, :pa_license_rcleaenewal_effective_date, :no_pa_license, :_destroy],
-          dea_licenses_attributes: [:id, :dea_license_number, :dea_license_effective_date, :dea_license_expiration_date, :dea_license_renewal_effective_date, :state_id, :no_dea_license,  :_destroy],
-          cds_licenses_attributes: [:id, :cds_license_number, :state_id, :cds_license_issue_date, :cds_license_expiration_date, :cds_renewal_effective_date, :no_cds_license, :_destroy],
+					pa_licenses_attributes: [:id, :pa_license_number, :state_id, :pa_license_effective_date, :pa_license_expiration_date, :pa_license_rcleaenewal_effective_date, :no_pa_license, :_destroy],
+					dea_licenses_attributes: [:id, :dea_license_number, :dea_license_effective_date, :dea_license_expiration_date, :dea_license_renewal_effective_date, :state_id, :no_dea_license,  :_destroy],
+					cds_licenses_attributes: [:id, :cds_license_number, :state_id, :cds_license_issue_date, :cds_license_expiration_date, :cds_renewal_effective_date, :no_cds_license, :_destroy],
 					mn_licenses_attributes: [:id, :mn_license_number, :mn_license_expiration_date, :_destroy],
-          mccs_attributes: [:id, :mcc_username, :password, :mcc_electronic_signature_code, :_destroy],
-          mn_medicaids_attributes: [:id, :mn_medicaid_number, :mn_medicaid_username, :password, :question, :answer, :_destroy],
-          medicaids_attributes: [:id, :effective_date, :reval_date, :notes, :_destroy],
-          wi_medicaids_attributes: [:id, :wi_medicaid, :wi_medicaid_username, :password, :question, :answer, :notes, :_destroy],
-          medicares_attributes: [:id, :ptan_number, :medicare_username, :password, :question, :answer, :effective_date, :reval_date, :notes, :_destroy],
-          cnp_licenses_attributes: [:id, :cnp_license_number, :state_id, :effective_date, :expiration_date, :cnp_license_renewal_effective_date, :no_cnp_license, :_destroy],
-          ins_policies_attributes: [:id, :ins_policy_number, :effective_date, :expiration_date, :_destroy],
-          payer_logins_attributes: [:id, :enrollment_payer, :username, :password, :state_id, :notes, :_destroy,
-          questions_attributes: [:id, :question, :answer]],
+					mccs_attributes: [:id, :mcc_username, :password, :mcc_electronic_signature_code, :_destroy],
+					mn_medicaids_attributes: [:id, :mn_medicaid_number, :mn_medicaid_username, :password, :question, :answer, :_destroy],
+					medicaids_attributes: [:id, :effective_date, :reval_date, :notes, :_destroy],
+					wi_medicaids_attributes: [:id, :wi_medicaid, :wi_medicaid_username, :password, :question, :answer, :notes, :_destroy],
+					medicares_attributes: [:id, :ptan_number, :medicare_username, :password, :question, :answer, :effective_date, :reval_date, :notes, :_destroy],
+					cnp_licenses_attributes: [:id, :cnp_license_number, :state_id, :effective_date, :expiration_date, :cnp_license_renewal_effective_date, :no_cnp_license, :_destroy],
+					ins_policies_attributes: [:id, :ins_policy_number, :effective_date, :expiration_date, :_destroy],
+					payer_logins_attributes: [:id, :enrollment_payer, :username, :password, :state_id, :notes, :_destroy, questions_attributes: [:id, :question, :answer]],
 			)
 	end
 end
