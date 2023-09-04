@@ -307,16 +307,17 @@ module ApplicationHelper
 
 	def provider_generate_report_options
 		[
-			['All Providers','all'],
-      ['Active Providers','active'],
-      ['Inactive Providers','inactive'],
-      ['Application Not Submitted','application-not-submitted'],
-      ['Application Submitted','application-submitted'],
-      ['Processing','processing'],
-			['Approved','approved'],
-			['Denied','denied'],
-			['Terminated','terminated'],
-			['Not Eligible','not-eligible']
+			['Provider Submitted Enrollment','provider_submitted_enrollment'],
+      ['Group Enrollment','group_enrollment'],
+      ['Missing Items Report','missing_items_report'],
+      ['License Report','license_report'],
+      ['DEA','dea'],
+      ['SAM','sam'],
+			['CAQH','caqh'],
+			['OIG','oig'],
+			['Liability','liability'],
+			['Revalidation','revalidation'],
+			['Enrollment Details Report', 'enrollment_details_report']
     ]
 	end
 
@@ -451,7 +452,7 @@ module ApplicationHelper
       'DEA Copy', 'W9 Form',
       'Certificate of Insurance',
       'Driver’s License',
-      'License Registered State',
+      'Board Certification',
       'CAQH App Copy','Curriculum Vitae (CV)',
       'Telehealth License Copy',
       'Copy of Certificate'

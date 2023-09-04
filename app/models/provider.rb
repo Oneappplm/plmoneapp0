@@ -95,7 +95,7 @@ class Provider < ApplicationRecord
   scope :female, -> { where(gender: 'Female') }
   scope :non_binary, -> { where(gender: 'Non Binary') }
   scope :active, -> { where(status: 'active') }
-  scope :inactive, -> { where(status: 'inactive') }
+  scope :inactive, -> { where(status: 'inactive-termed') }
 
   after_create :send_welcome_letter
 
@@ -293,7 +293,7 @@ class Provider < ApplicationRecord
   end
 
   def licensed_registered_state
-    State.find(self.birth_state)
+    State.find(self.licensed_registered_state_id)
   rescue
     nil
   end
