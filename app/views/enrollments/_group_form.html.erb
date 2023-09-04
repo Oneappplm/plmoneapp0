@@ -15,6 +15,47 @@
          </div>
       </div>
    <% end %>
+
+   <div class="row-mb-5">
+   <div class="row mb-3">
+     <div class="col-lg-6">
+       <label class="text-dark-grey">Notification of New Group</span></label>
+        <%= f.text_field :new_group_notification, placeholder: 'MM-DD-YYYY',class: 'form-control border border-dark',  onfocus: "(this.type = 'date')" %>
+     </div>
+     <div class="col-lg-6">
+       <label class="text-dark-grey">Start Date</span></label>
+       <%= f.text_field :noti_group_start_date, placeholder: 'MM-DD-YYYY',class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+     </div>
+   </div>
+   <div class="row mb-3 mt-2">
+     <div class="col-lg-6">
+       <label class="text-dark-grey">Welcome Letter Sent </span></label>
+       <%= f.text_field :noti_welcome_letter_sent, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+     </div>
+     <div class="col-lg-6">
+       <label class="text-dark-grey">Notification to begin submitting Enrollment</label>
+       <%= f.text_field :notification_enrollment_submit_group, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+     </div>
+   </div>
+   <div class="row mb-3 mt-2">
+     <div class="col-lg-6">
+       <label class="text-dark-grey">Services</label>
+       <%= f.select :noti_group_services, options_for_select(group_notification_services,@enrollment_group.noti_group_services), {prompt: 'Select Option'}, {class: 'form-select provider-status border border-dark'}  %>
+     </div>
+   </div>
+    <div class="row mb-3">
+   <div class="col-lg-6">
+       <label class="text-dark-grey">Status</label>
+       <%= f.select :noti_status, options_for_select(group_statuses, @enrollment_group.noti_status), {prompt: 'Select Option'}, {class: 'form-select provider-status border border-dark'}  %>
+   </div>
+   <div class="col-lg-6">
+   <div class="row mb-3 my-1 status-inactive-field <%= f.object.noti_status == 'inactive-termed' ? '' : 'd-none'%>">
+           <label class="text-dark-grey">Work End Date</label>
+           <%= f.text_field :noti_work_end_date, placeholder: 'MM-DD-YYYY', onfocus: "(this.type = 'date')", class: 'form-control border border-dark' %>
+   </div>
+   </div>
+ </div>
+
    <div class="row mb-3">
       <div class="col-lg-12">
          <h5 class="mb-0">Group Information</h5>
@@ -540,6 +581,22 @@
          $("#details-info .fields").append(newEnrollmentdetails);
 
     });
+
+    $(document).on('change', '.provider-status', function () {
+         var status = $(this).val();
+         if (status == 'inactive-termed') {
+            showHideDetailFields($(this), '.status-inactive-field', 'show')
+         } else {
+            showHideDetailFields($(this), '.status-inactive-field', 'hide')
+         }
+      })
+
+        function showHideDetailFields(dropDown, divClass, mode) {
+          if (mode == 'show')
+              dropDown.parent().parent().parent().find(divClass).removeClass('d-none');
+          else
+              dropDown.parent().parent().parent().find(divClass).addClass('d-none');
+        }
 
   $('#group_type_picker').on('change',function(){
     $(this).val() == 'other' ? changeToInput() : '';

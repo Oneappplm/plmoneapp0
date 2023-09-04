@@ -292,6 +292,19 @@ module ApplicationHelper
 		]
 	end
 
+	def group_notification_services
+		[
+			['Practice/Provider Setups', 'provider_setup'],
+			['Monthly Monitoring', 'monthly_monitoring'],
+			['Facility Enrollments/Maintenance', 'facility_maintenance'],
+			['Provider Enrollments/Maintenance', 'provider_maintenance'],
+			['FBI Checks', 'fbi_checks'],
+			['Hospital Org PSV', 'hospital_org']
+		]
+	end
+
+
+
 	def provider_generate_report_options
 		[
 			['All Providers','all'],
@@ -406,6 +419,15 @@ module ApplicationHelper
 				['Pending','pending'],
 		]
 		end
+
+		def group_statuses
+			[
+				['Active','active'],
+				['Active/Not Enrolled','active-not-enrolled'],
+				['Inactive/Termed','inactive-termed'],
+				['Pending','pending'],
+		]
+		end		
 
   def time_line_class(status)
     cls = "danger"
