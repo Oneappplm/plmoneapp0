@@ -1,20 +1,28 @@
 <!--
-	step[0] = title
-	step[1] = status
-	step[2] = link
- -->
-<div class="d-flex align-items-center gap-1">
-	<% steps.each_with_index do |step,idx| %>
-	<a href="<%= step[2]%>" class="d-flex align-items-center">
-		<span class="wizard_step <%= step[1] == 'active' ? 'bg-primary' : 'bg-secondary'%>"><small class="fw-semibold">
-		<!-- <i class="bi bi-check"></i> -->
-		<%= step[1] != 'finished' ? "#{idx + 1}" : '<i class="bi bi-check"></i>'.html_safe %>
-		</small></span>
-		<small class="ms-2 text-center <%= step[1] == 'active fw-semibold' ? 'text-dark' : 'text-dark-grey fw-semibold'%>"><%= step[0]%></small>
-	</a>
-	<!-- no separator if only 1 item and if last item don't add separator -->
-		<% if steps.size != 1 && idx != (steps.size - 1)%>
-		<span class="wizard_separator bg-secondary"></span>
-		<% end %>
-	<% end %>
+   step[0] = title
+   step[1] = status
+   step[2] = link
+   step[3] = progress method in provider_source model if has any
+   -->
+<div class="d-flex align-items-center gap-1 mb-3">
+   <% steps.each_with_index do |step,idx| %>
+   <div class="d-flex flex-column align-items-baseline position-relative">
+      <div class="d-flex align-items-center gap-1">
+         <a href="<%= step[2]%>" class="d-flex align-items-center">
+            <span class="wizard_step <%= step[1] == 'active' ? 'bg-primary' : 'bg-secondary'%>">
+               <small class="fw-semibold">
+                  <!-- <i class="bi bi-check"></i> -->
+                  <%= step[1] != 'finished' ? "#{idx + 1}" : '<i class="bi bi-check"></i>'.html_safe %>
+               </small>
+            </span>
+            <small class="ms-2 text-center <%= step[1] == 'active fw-semibold' ? 'text-dark' : 'text-dark-grey fw-semibold'%>"><%= step[0]%>
+            </small>
+         </a>
+         <!-- no separator if only 1 item and if last item don't add separator -->
+         <% if steps.size != 1 && idx != (steps.size - 1)%>
+         <span class="wizard_separator bg-secondary"></span>
+         <% end %>
+      </div>
+   </div>
+   <% end %>
 </div>

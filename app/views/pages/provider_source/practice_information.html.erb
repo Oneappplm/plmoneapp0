@@ -19,13 +19,15 @@
 				 		</div>
 					</div>
 				</div>
-				<%= render partial: "provider_source_components/progress_bar", locals: {percent: 0}%>
-				<% steps = [['Credentialing Contact','active', custom_provider_source_path(page: 'practice_information')],
-							['Practice Location','inactive', custom_provider_source_path(page: 'practice_location')],
+				<%#= render partial: "provider_source_components/progress_bar", locals: {percent: 0}%>
+				<% steps = [['Credentialing Contact','active', custom_provider_source_path(page: 'practice_information'), 'credentialing_contact_progress'],
+							['Practice Location','inactive', custom_provider_source_path(page: 'practice_location'), 'practice_location_progress_v2'],
 							# ['Employment Gap','active', custom_provider_source_path(page: 'employment_gap')],
-							['Covering Colleagues','inactive', custom_provider_source_path(page: 'covering_colleagues')],
-							['Unique Circumstances','inactive', custom_provider_source_path(page: 'unique_circumstances')],
+							['Covering Colleagues','inactive', custom_provider_source_path(page: 'covering_colleagues'), 'covering_colleagues_progress'],
+							['Unique Circumstances','inactive', custom_provider_source_path(page: 'unique_circumstances'), 'unique_circumstances_progress'],
 				]%>
+        
+        <%= render partial: "provider_source_components/progress_bar", locals: { steps: steps }%>
 				<%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
 				<div class="col-lg-12 my-3">
 					<div class="alert alert-info alert-light-blue">
