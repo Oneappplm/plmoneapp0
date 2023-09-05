@@ -1,121 +1,161 @@
 <div class="content container-fluid">
   <%= render "enrollment_clients/nav"%>
   <% if @provider.enrollments%>
-   <% @provider&.enrollments.each do |enrollment|%>
-     <div class="row mb-3">
-       <div class="col-lg-12 card p-3">
+    <% @provider&.enrollments.each do |enrollment|%>
+      <div class="row mb-3">
+        <div class="col-lg-12 card p-3">
           <div class="w-100 d-flex justify-content-between">
-             <h3 class="text-primary">Name of person who can answer questions related to enrollment of provider</h3>
-             <a href="javascript:void(0);" class="text-black fw-semibold collapsible-trigger" data-collapse="provider_enrollment_contact">
-             <i class="bi bi-sort-up rotate-180" style="font-size: 18px;"></i>
-             </a>
+            <h3 class="text-primary">Name of person who can answer questions related to enrollment of provider</h3>
+            <a href="javascript:void(0);" class="text-black fw-semibold collapsible-trigger" data-collapse="provider_enrollment_contact">
+            <i class="bi bi-sort-up rotate-180" style="font-size: 18px;"></i>
+            </a>
           </div>
-        <div class="w-100 collapsible" id="provider_enrollment_contact">
-          <div class="row mb-3">
-            <div class="col-lg-2">
-              <label>Name</label>
-              <p class="text-black fw-semibold"><%= enrollment&.full_name %></p>
+          <div class="w-100 collapsible" id="provider_enrollment_contact">
+            <div class="row mb-3">
+              <div class="col-lg-2">
+                <label>Name</label>
+                <p class="text-black fw-semibold"><%= enrollment&.full_name %></p>
+              </div>
+              <div class="col-lg-2">
+                <label>Telephone Number</label>
+                <p class="text-black fw-semibold"><%= enrollment&.telephone_number %></p>
+              </div>
+              <div class="col-lg-2">
+                <label>Email Address</label>
+                <p class="text-black fw-semibold"><%= enrollment&.email_address %></p>
+              </div>
             </div>
-            <div class="col-lg-2">
-              <label>Telephone Number</label>
-              <p class="text-black fw-semibold"><%= enrollment&.telephone_number %></p>
-            </div>
-            <div class="col-lg-2">
-              <label>Email Address</label>
-              <p class="text-black fw-semibold"><%= enrollment&.email_address %></p>
-            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-  <% if params[:enrollment_status].present? %>
-    <% details = enrollment&.details.where(enrollment_status: params[:enrollment_status])%>
-  <% else %>
-    <% details = enrollment&.details %>
-  <% end %>
-   <% details.each do |detail|%>
-   <% if detail %>
-   <div class="row mb-3">
-     <div class="col-lg-12 card p-3">
-        <div class="w-100 d-flex justify-content-between">
-           <h3 class="text-primary"><%= detail.enrollment_payer %></h3>
-           <a href="javascript:void(0);" class="text-black fw-semibold collapsible-trigger" data-collapse="provider_enrollment_<%= detail.id%>">
-           <i class="bi bi-sort-up rotate-180" style="font-size: 18px;"></i>
-           </a>
-        </div>
-      <div class="w-100 collapsible" id="provider_enrollment_<%= detail.id%>">
-        <div class="row mb-3">
-          <div class="col-lg-2">
-            <label>Enrollment Type</label>
-            <p class="text-black fw-semibold"><%= get_enrollment_type(detail.enrollment_type) %></p>
-          </div>
-          <div class="col-lg-2">
-            <label>Application Status</label>
-            <p class="text-black fw-semibold"><%= detail.enrollment_status&.titleize %></p>
-          </div>
-          <div class="col-lg-2">
-            <label>Provider ID</label>
-            <p class="text-black fw-semibold"><%= detail.provider_id %></p>
-          </div>
-          <div class="col-lg-2">
-            <label>Notes</label>
-            <p class="text-black fw-semibold"><%= detail.comment %></p>
-          </div>
-        </div>
-
-        <% if ['application-submitted'].include?(detail.enrollment_status)%>
+      <% if params[:enrollment_status].present? %>
+        <% details = enrollment&.details.where(enrollment_status: params[:enrollment_status])%>
+      <% else %>
+        <% details = enrollment&.details %>
+      <% end %>
+      <% details.each do |detail|%>
+        <% if detail %>
           <div class="row mb-3">
-            <div class="col-lg-2">
-              <label>Enrollment Tracking ID</label>
-              <p class="text-black fw-semibold"><%= detail&.enrollment_tracking_id  rescue nil %></p>
-            </div>
-          </div>
-        <% end %>
-        <% if ['approved'].include?(detail.enrollment_status) %>
-          <div class="row mb-3">
-            <div class="col-lg-2">
-              <label>Effective Date</label>
-              <p class="text-black fw-semibold"><%= detail.enrollment_effective_date&.to_date&.strftime('%B %d, %Y') rescue nil %></p>
-            </div>
-            <div class="col-lg-2">
-              <label>Revalidation Status</label>
-              <p class="text-black fw-semibold"><%= detail.revalidation_status rescue nil %></p>
-            </div>
-            <div class="col-lg-2">
-              <label>Revalidation Date</label>
-              <p class="text-black fw-semibold"><%= detail.revalidation_date&.strftime('%B %d, %Y') rescue nil %></p>
-            </div>
-            <div class="col-lg-2">
-              <label>Revalidation Due Date</label>
-              <p class="text-black fw-semibold"><%= detail.revalidation_due_date&.strftime('%B %d, %Y') rescue nil %></p>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-lg-2">
-              <label>Line of Business</label>
-              <p class="text-black fw-semibold"><%= detail.line_of_business rescue nil %></p>
-            </div>
-          </div>
-        <% end %>
-
-        <div class="row mb-3">
-            <div class="col-lg-12">
-              <div class="d-flex gap-2">
-                <% if !detail.upload_payor_file.blank? %>
-                  <% detail.upload_payor_file.each do |upload|%>
-                  <!-- <div class="col-lg-2"> -->
-                      <a href="<%= upload.url %>" class="btn btn-sm btn-outline-primary"><%= upload&.file&.basename rescue nil %> </a>
-                  <!-- </div> -->
+            <div class="col-lg-12 card p-3">
+                <div class="w-100 d-flex justify-content-between">
+                  <h3 class="text-primary"><%= detail.enrollment_payer %></h3>
+                  <a href="javascript:void(0);" class="text-black fw-semibold collapsible-trigger" data-collapse="provider_enrollment_<%= detail.id%>">
+                  <i class="bi bi-sort-up rotate-180" style="font-size: 18px;"></i>
+                  </a>
+                </div>
+              <div class="w-100 collapsible" id="provider_enrollment_<%= detail.id%>">
+                <div class="row mb-3">
+                  <div class="col-lg-2">
+                    <label>Enrollment Type</label>
+                    <p class="text-black fw-semibold"><%= get_enrollment_type(detail.enrollment_type) %></p>
+                  </div>
+                  <div class="col-lg-2">
+                    <label>Application Status</label>
+                    <p class="text-black fw-semibold"><%= detail.enrollment_status&.titleize %></p>
+                  </div>
+                  <div class="col-lg-2">
+                    <label>State</label>
+                    <p class="text-black fw-semibold"><%= State.find_by(alpha_code: detail.payer_state).name %></p>
+                  </div>
+                  <div class="col-lg-2">
+                    <label>Provider ID</label>
+                    <p class="text-black fw-semibold"><%= detail.provider_id %></p>
+                  </div>
+                  <% if ['application-submitted'].include?(detail.enrollment_status)%>
+                    <div class="col-lg-2">
+                      <label>Start Date</label>
+                      <p class="text-black fw-semibold"><%= detail&.start_date&.strftime('%B %d, %Y')  rescue nil %></p>
+                    </div>
+                    <div class="col-lg-2">
+                      <label>Enrollment Tracking ID</label>
+                      <p class="text-black fw-semibold"><%= detail&.enrollment_tracking_id rescue nil %></p>
+                    </div>
                   <% end %>
+                  <% if ['processing'].include?(detail.enrollment_status)%>
+                    <div class="col-lg-2">
+                      <label>Processing Date</label>
+                      <p class="text-black fw-semibold"><%= DateTime.parse(detail&.processing_date).strftime('%B %d, %Y') rescue nil %></p>
+                    </div>
+                  <% end %>
+                  <% if ['approved'].include?(detail.enrollment_status) %>
+                    <div class="col-lg-2">
+                      <label>Effective Date</label>
+                      <p class="text-black fw-semibold"><%= detail.enrollment_effective_date&.to_date&.strftime('%B %d, %Y') rescue nil %></p>
+                    </div>
+                  <% end %>
+                  <% if ['terminated'].include?(detail.enrollment_status) %>
+                    <div class="col-lg-2">
+                      <label>Terminated Date</label>
+                      <p class="text-black fw-semibold"><%= detail.terminated_date&.to_date&.strftime('%B %d, %Y') rescue nil %></p>
+                    </div>
+                  <% end %>
+                </div>
+                <% if ['approved'].include?(detail.enrollment_status) %>
+                  <div class="row mb-3">
+                    <div class="col-lg-2">
+                      <label>Revalidation Status</label>
+                      <p class="text-black fw-semibold"><%= detail.revalidation_status rescue nil %></p>
+                    </div>
+                    <div class="col-lg-2">
+                      <label>Revalidation Date</label>
+                      <p class="text-black fw-semibold"><%= detail.revalidation_date&.strftime('%B %d, %Y') rescue nil %></p>
+                    </div>
+                    <div class="col-lg-2">
+                      <label>Revalidation Due Date</label>
+                      <p class="text-black fw-semibold"><%= detail.revalidation_due_date&.strftime('%B %d, %Y') rescue nil %></p>
+                    </div>
+                    <div class="col-lg-2">
+                      <label>Line of Business</label>
+                      <p class="text-black fw-semibold"><%= detail.line_of_business rescue nil %></p>
+                    </div>
+                  </div>
+                <% end %>
+                <% if !['terminated'].include?(detail.enrollment_status) %>
+                  <div class="row mb-3">
+                    <div class="col-lg-2">
+                      <label>Username</label>
+                      <p class="text-black fw-semibold"><%= detail.payor_username %></p>
+                    </div>
+                    <div class="col-lg-2">
+                      <label>Password</label>
+                      <p class="text-black fw-semibold"><%= detail.payor_password %></p>
+                    </div>
+                  </div>
+                  <% detail.questions.each_with_index do |question, indx| %>
+                    <div class="row mb-3">
+                      <div class="col-lg-2">
+                        <label>Question <%= indx + 1 %></label>
+                        <p class="text-black fw-semibold"><%= question.question %></p>
+                      </div>
+                      <div class="col-lg-2">
+                        <label>Answer <%= indx + 1%></label>
+                        <p class="text-black fw-semibold"><%= question.answer %></p>
+                      </div>
+                    </div>
+                  <% end %>
+                  <div class="col-lg-2">
+                    <label>Notes</label>
+                    <p class="text-black fw-semibold"><%= detail.comment %></p>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-lg-12">
+                      <div class="d-flex gap-2">
+                        <% if !detail.upload_payor_file.blank? %>
+                          <% detail.upload_payor_file.each do |upload|%>
+                          <!-- <div class="col-lg-2"> -->
+                              <a href="<%= upload.url %>" class="btn btn-sm btn-outline-primary"><%= upload&.file&.basename rescue nil %> </a>
+                          <!-- </div> -->
+                          <% end %>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
                 <% end %>
               </div>
             </div>
           </div>
-      </div>
-    </div>
-  </div>
-  <% end %>
-  <% end %>
-  <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
   <% end %>
  </div>
