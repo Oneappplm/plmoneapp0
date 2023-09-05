@@ -397,27 +397,51 @@
       </div>
     </div>
 
-    <div class="row mb-5 mt-2">
-        <div class="col-lg-12 mt-3">
-        <h3>DEA Registration</h3>
-         </div>
-      <div id="dea_licenses">
-          <div class="fields">
-            <%= f.fields_for :dea_licenses do |dea_license_fields| %>
-              <%= render 'dea_license_fields', f: dea_license_fields %>
-            <% end %>
+   <div class="row mb-5 mt-2">
+      <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
+        <div class="d-flex gap-2">
+          <div class="form-row  d-flex align-items-center">
+            <h3>DEA Registration</h3>
           </div>
-          <div class="row mt-2">
-                  <div class="col-lg-12 text-start">
-                        <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add DEA License </button>
-                  </div>
-           </div>
+          <div class="form-row  d-flex align-items-center gap-1">
+            <%= f.check_box :dea_not_applicable, id:'no-dea' %>
+            <%= f.label :dea_not_applicable, "N/A", class: 'text-dark-grey' %>
+          </div>
+        </div>
+      </div>  
+      <div class="form-row  d-flex align-items-start">
+        <%= f.text_area :dea_explain,  placeholder: 'Explain if you do not have DEA Registration Number (required if no DEA Number)', class: 'form-control border border-dark', rows: '8', id: 'dea-explain'%>
       </div>
-    </div>
+      <div id="dea_licenses"%>
+        <div class="fields">
+          <%= f.fields_for :dea_licenses do |dea_license_fields| %>
+            <%= render 'dea_license_fields', f: dea_license_fields %>
+          <% end %>
+        </div>
+        <div class="row mt-2">
+          <div class="col-lg-12 text-start">
+            <button type="button" class="add_association py-1 btn btn-primary"> <i class="bi bi-plus-circle-fill"></i> Add DEA License </button>
+          </div>
+        </div>
+      </div>
+   </div>
+
+
 
      <div class="row mb-5 mt-2">
-      <div class="col-lg-12 mt-3">
-        <h3>Controlled Dangerous Substance Registration Number</h3>
+     <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
+        <div class="d-flex gap-2">
+          <div class="form-row  d-flex align-items-center">
+            <h3>Controlled Dangerous Substance Registration Number</h3>
+          </div>
+          <div class="form-row  d-flex align-items-center gap-1">
+            <%= f.check_box :cds_not_applicable, id:'no-cds' %>
+            <%= f.label :cds_not_applicable, "N/A", class: 'text-dark-grey' %>
+          </div>
+        </div>
+      </div>  
+      <div class="form-row  d-flex align-items-start">
+        <%= f.text_area :cds_explain,  placeholder: 'Explain if you do not have CDS Registration Number(required if no CDS Number)', class: 'form-control border border-dark', rows: '8', id: 'cds-explain'%>
       </div>
       <div id="cds_licenses">
           <div class="fields">
@@ -434,8 +458,19 @@
     </div>
 
      <div class="row mb-5 mt-2">
-      <div class="col-lg-12 mt-3">
-        <h3>Registered Nurse License</h3>
+     <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
+        <div class="d-flex gap-2">
+          <div class="form-row  d-flex align-items-center">
+            <h3>Registered Nurse License</h3>
+          </div>
+          <div class="form-row  d-flex align-items-center gap-1">
+            <%= f.check_box :rn_not_applicable, id:'no-rn' %>
+            <%= f.label :rn_not_applicable, "N/A", class: 'text-dark-grey' %>
+          </div>
+        </div>
+      </div>
+      <div class="form-row  d-flex align-items-start">
+        <%= f.text_area :cds_explain,  placeholder: 'Explain if you do not have RN License Number(required if no RN Number)', class: 'form-control border border-dark', rows: '8', id: 'rn-explain'%>
       </div>
       <div id="rn_licenses">
           <div class="fields">
@@ -452,9 +487,22 @@
     </div>
 
      <div class="row mb-5 mt-2">
-      <div class="col-lg-12 mt-3">
-        <h3>Advance Practice Registered Nurse License</h3>
-        <h5> (also applies for NP, ANP, CRNA, CNS, CNM, and CNP) </h5>
+     <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
+        <div class="d-flex gap-2">
+          <div class="form-row  d-flex align-items-center">
+          <h3>Advance Practice Registered Nurse License</h3>
+          </div>
+          <div class="form-row  d-flex align-items-center gap-1">
+            <%= f.check_box :aprn_not_applicable, id:'no-aprn' %>
+            <%= f.label :aprn_not_applicable, "N/A", class: 'mx-0 text-dark-grey' %>
+          </div>
+        </div>
+      </div>
+      <div class="form-row align-items-center">
+          <h6> (also applies for NP, ANP, CRNA, CNS, CNM, and CNP) </h6>
+      </div>
+       <div class="form-row  d-flex align-items-start">
+        <%= f.text_area :cnp_explain,  placeholder: 'Explain if you do not have APRN License Number(required if no APRN Number)', class: 'form-control border border-dark', rows: '8', id: 'cnp-explain'%>
       </div>
       <div id="cnp_licenses">
           <div class="fields">
@@ -471,9 +519,18 @@
     </div>
 
      <div class="row mb-5 mt-2">
-      <div class="col-lg-12 mt-3">
-        <h3>State License</h3>
-      </div>
+     <div class="d-flex gap-2">
+          <div class="form-row  d-flex align-items-center">
+            <h3>State License</h3>
+          </div>
+          <div class="form-row  d-flex align-items-center gap-1">
+            <%= f.check_box :state_not_applicable, id:'no-state' %>
+            <%= f.label :state_not_applicable, "N/A", class: 'text-dark-grey' %>
+          </div>
+        </div>
+        <div class="form-row  d-flex align-items-start">
+        <%= f.text_area :license_explain,  placeholder: 'Explain if you do not have State License Number(required if no State Number)', class: 'form-control border border-dark', rows: '8', id: 'license-explain'%>
+        </div>
       <div id="licenses">
           <div class="fields">
             <%= f.fields_for :licenses do | license_fields| %>
@@ -488,65 +545,6 @@
       </div>
     </div>
 
-    <!-- <div class="row mb-2">
-		<div class="col-lg-6">
-      <label class="text-dark-grey">State License Number <span class="text-red">*</span></label>
-			<%= f.text_field :license_state_number, placeholder: 'Type here...', class: form_control_classes(danger: @provider.license_state_number.blank? && @provider.persisted?), required: true %>
-		</div>
-		<div class="col-lg-6">
-      <label class="text-dark-grey">License Effective Date <span class="text-red">*</span></label>
-			<%= f.text_field :license_state_effective_date, placeholder: 'MM-DD-YYYY', class: form_control_classes(danger: @provider.license_state_effective_date.blank? && @provider.persisted?), onfocus: "(this.type = 'date')", required: true %>
-		</div>
-    <div class="col-lg-6">
-      <label class="text-dark-grey">License Registration State <span class="text-red">*</span></label>
-      <%= f.select :license_state_id, options_for_select([]), { prompt: 'State' }, {:class => single_search_classes({ danger: @provider.license_state_id.blank? && @provider.persisted? }),  data: { value: f.object.license_state_id } }  %>
-    </div>
-		<div class="col-lg-6">
-      <label class="text-dark-grey">License Expiration Date <span class="text-red">*</span></label>
-			<%= f.text_field :license_state_expiration_date, placeholder: 'MM-DD-YYYY', class: form_control_classes(danger: @provider.license_state_expiration_date.blank? && @provider.persisted?), onfocus: "(this.type = 'date')", required: true %>
-		</div>
-    </div>  -->
-
-   <!-- <div class="row mb-3 mt-2">
-      <div class="col-lg-12 mt-3">
-        <h3>Physician Assistant License</h3>
-      </div>
-      <div id="pa_licenses">
-         <div class="fields">
-            <%= f.fields_for :pa_licenses do |pa_license_fields| %>
-              <%= render 'pa_license_fields', f: pa_license_fields %>
-            <% end %>
-         </div>
-      </div>
-    </div>
-
-    <div class="row mb-3 mt-2">
-      <div class="col-lg-12 mt-3">
-        <h3>Nurse Practitioner License</h3>
-      </div>
-      <div id="np_licenses">
-          <div class="fields">
-            <%= f.fields_for :np_licenses do |np_license_fields| %>
-              <%= render 'np_license_fields', f: np_license_fields %>
-            <% end %>
-          </div>
-      </div>
-    </div>  -->
-
-   <!--
-   <div class="row mb-3 mt-2">
-      <div class="col-lg-12 mt-3">
-        <h3>INS Policy</h3>
-      </div>
-      <div id="ins_policies">
-          <div class="fields">
-            <%= f.fields_for :ins_policies do |ins_policy| %>
-              <%= render 'ins_policy_fields', f: ins_policy %>
-            <% end %>
-          </div>
-      </div>
-    </div>
-    -->
     <div class="row mb-3">
       <div class="col-lg-12 mt-3">
         <h3>Professional Liability Insurance</h3>
@@ -1024,8 +1022,7 @@
           });
 
         });
-
-
+       
         $(document).on('change', '.provider-status', function () {
          var status = $(this).val();
          if (status == 'inactive-termed') {
@@ -1041,8 +1038,7 @@
           else
               dropDown.parent().parent().parent().find(divClass).addClass('d-none');
         }
-
-
+  
 
          $(document).on('click','#questions-fields .add_questions',function() {
             var index_of = $(this).data('index');

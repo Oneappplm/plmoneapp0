@@ -7,10 +7,12 @@
       <label class="text-dark-grey">State License Issue Date <span class="text-red">*</span></label>
 			<%= f.text_field :license_effective_date, placeholder: 'MM-DD-YYYY', class: form_control_classes(danger: f.object.license_effective_date.blank? && @provider.persisted? ), onfocus: "(this.type = 'date')", required: true %>
 		</div>
-    <div class="col-lg-6 mb-3 mt-2">
-      <label class="text-dark-grey">State License State <span class="text-red">*</span></label>
-      <%= f.select :state_id, options_for_select([]), { prompt: 'State' }, {:class => single_search_classes({ danger: f.object.state_id.blank? && @provider.persisted? }),  data: { value: f.object.state_id } }  %>
+
+    <div class="col-lg-6">
+        <label class="text-dark-grey">State Registration State</label>
+        <%= f.select :state_id, options_for_select([]), { prompt: 'State' }, { class: single_search_classes(danger: f.object.license_effective_date.blank? && @provider.persisted?), data: { value: f.object.state_id } } %>
     </div>
+
     <!-- <div class="col-lg-6">
       <label class="text-dark-grey">License Registration State <span class="text-red">*</span></label>
       <%= f.select :state_id, options_for_select([]), { prompt: 'State' }, {:class => 'form-select border border-dark state-select single-select',  data: { value: f.object.state_id } }  %>
@@ -24,11 +26,6 @@
       <label class="text-dark-grey">State License Renewal(Current Effective) Date <span class="text-red">*</span></label>
 			<%= f.text_field :license_state_renewal_date, placeholder: 'MM-DD-YYYY', class: form_control_classes(danger: f.object.license_expiration_date.blank? && @provider.persisted? ), onfocus: "(this.type = 'date')", required: true %>
 		</div>
-
-    <div class="col-lg-6">
-      <label class="text-dark-grey">Explain if you do not have State License Number(required if no State Number) </label>
-      <%= f.text_field :no_state_license, placeholder: 'Type here...', class: 'form-control border border-dark mb-3' %>
-    </div>
 
     <div class="col-lg-6">
       <label class="text-dark-grey">License Type </label>

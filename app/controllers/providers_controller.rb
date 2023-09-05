@@ -1,7 +1,6 @@
 class ProvidersController < ApplicationController
 	before_action :set_provider, only: [:show, :edit, :update, :destroy, :update_from_notifications]
 	before_action :set_overview_details, only: [:overview]
-
   def index
 		if params[:user_search].present?
 			@providers = Provider.unscoped.select("NULLIF(first_name, '') as f, NULLIF(last_name, '') as l,NULLIF(middle_name, '') as m, *").search(params[:user_search])
@@ -20,7 +19,7 @@ class ProvidersController < ApplicationController
 	end
 
 	def edit
-		build_associations
+	 build_associations
 	end
 
   def overview
@@ -133,25 +132,26 @@ end
 
 	def build_associations
     # to jayson added if condition here to prevent extra build of attr fields on edit
-		# @provider.taxonomies.build if @provider.taxonomies.blank?
-		@provider.licenses.build if @provider.licenses.blank?
-  	@provider.np_licenses.build if @provider.np_licenses.blank?
+	# @provider.taxonomies.build if @provider.taxonomies.blank?
+	# @provider.mn_licenses.build if @provider.mn_licenses.blank?
+    # @provider.mccs.build if @provider.mccs.blank?
+    # @provider.mn_medicaids.build if @provider.mn_medicaids.blank?
+    # @provider.medicaids.build if @provider.medicaids.blank?
+  	# @provider.wi_medicaids.build if @provider.wi_medicaids.blank?
+    # @provider.medicares.build if @provider.medicares.blank?
+	# @provider.ins_policies.build if @provider.ins_policies.blank?
+	# @provider.np_licenses.build if @provider.np_licenses.blank?
+	@provider.dea_licenses.build if @provider.dea_licenses.blank?
+	@provider.licenses.build if @provider.licenses.blank?
   	@provider.rn_licenses.build if @provider.rn_licenses.blank?
   	@provider.service_locations.build if @provider.service_locations.blank?
     @provider.pa_licenses.build if @provider.pa_licenses.blank?
-    @provider.dea_licenses.build if @provider.dea_licenses.blank?
-    @provider.mn_licenses.build if @provider.mn_licenses.blank?
-    @provider.mccs.build if @provider.mccs.blank?
-    @provider.mn_medicaids.build if @provider.mn_medicaids.blank?
-    @provider.medicaids.build if @provider.medicaids.blank?
-    @provider.wi_medicaids.build if @provider.wi_medicaids.blank?
-    @provider.medicares.build if @provider.medicares.blank?
     @provider.cnp_licenses.build if @provider.cnp_licenses.blank?
-    @provider.ins_policies.build if @provider.ins_policies.blank?
-		@provider.cds_licenses.build if @provider.cds_licenses.blank?
+	@provider.cds_licenses.build if @provider.cds_licenses.blank?
     payer_login = @provider.payer_logins.build if @provider.payer_logins.blank?
     payer_login.questions.build if payer_login
   end
+	
 
   def set_overview_details
     if current_user.can_access_all_groups? || current_user.super_administrator?
@@ -247,7 +247,17 @@ end
 					:notification_enrollment_submit,
 					:notification_services,
 					:send_welcome_letter,
-					:welcome_letter_status, :welcome_letter_subject, :welcome_letter_message, :check_welcome_letter, :check_co_caqh, :check_mn_caqh_state_release_form, :check_mn_caqh_authorization_form, :check_caqh_standard_authorization, {welcome_letter_attachments: []},
+					:dea_not_applicable,
+					:cds_not_applicable,
+					:rn_not_applicable,
+					:aprn_not_applicable,
+					:state_not_applicable,
+					:dea_explain,
+					:cds_explain,
+					:rn_explain,
+					:cnp_explain,
+					:license_explain,
+					:welcome_letter_status, :welcome_letter_subject, :welcome_letter_message, {welcome_letter_attachments: []},
 					#taxonomies_attributes: [:id, :taxonomy_code, :specialty, :_destroy],
 					licenses_attributes: [:id, :license_number, :license_effective_date, :license_expiration_date, :state_id, :license_state_renewal_date, :no_state_license, :license_type, :_destroy],
 					np_licenses_attributes: [:id, :np_license_number, :state_id, :np_license_effective_date, :np_license_expiration_date, :np_license_renewal_effective_date, :no_np_license, :_destroy],
