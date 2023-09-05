@@ -94,7 +94,7 @@ module HtmlUtils
     value = options[:value]
 
 
-    dropdown_class = ['form-select', 'border']
+    dropdown_class = ['form-select']
     if value.nil?
       dropdown_class << 'border-dark'
     elsif value.to_s.strip.blank?

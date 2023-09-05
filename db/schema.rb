@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_13_123333) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_25_074755) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -380,32 +380,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_13_123333) do
     t.string "admitting_facility_state"
     t.string "admitting_facility_zip_code"
     t.string "admitting_facility_arrangments"
-    t.string "remmitance_contact_name"
-    t.string "remmitance_contact_number"
-    t.string "remmitance_contact_email"
-    t.string "billing_contact_name"
-    t.string "billing_contact_number"
-    t.string "billing_contact_email"
-    t.datetime "qualifacts_contract_effective_date"
-    t.date "new_group_notification"
-    t.date "noti_group_start_date"
-    t.date "noti_welcome_letter_sent"
-    t.date "notification_enrollment_submit_group"
-    t.string "noti_group_services"
-    t.string "noti_status"
-    t.date "noti_work_end_date"
-    t.string "group_note"
-    t.boolean "welcome_letter_status", default: false
-    t.string "welcome_letter_subject"
-    t.text "welcome_letter_message"
-    t.json "welcome_letter_attachments"
-    t.boolean "check_welcome_letter", default: false
-    t.boolean "check_co_caqh", default: false
-    t.boolean "check_mn_caqh_state_release_form", default: false
-    t.boolean "check_mn_caqh_authorization_form", default: false
-    t.boolean "check_caqh_standard_authorization", default: false
-    t.string "billing_address_autofill"
-    t.string "remittance_address_autofill"
   end
 
   create_table "enrollment_groups_contact_details", force: :cascade do |t|
@@ -436,6 +410,24 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_13_123333) do
     t.string "roles"
     t.string "email_address"
     t.index ["enrollment_group_id"], name: "index_enrollment_groups_details_on_enrollment_group_id"
+  end
+
+  create_table "enrollment_groups_svc_locations", force: :cascade do |t|
+    t.bigint "enrollment_group_id"
+    t.string "primary_service_non_office_area"
+    t.string "primary_service_location_apps"
+    t.string "primary_service_zip_code"
+    t.string "primary_service_office_email"
+    t.string "primary_service_fax"
+    t.string "primary_service_office_website"
+    t.string "primary_service_crisis_phone"
+    t.string "primary_service_location_other_phone"
+    t.string "primary_service_appt_scheduling"
+    t.string "primary_service_interpreter_language"
+    t.string "primary_service_telehealth_only_state"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enrollment_group_id"], name: "index_enrollment_groups_svc_locations_on_enrollment_group_id"
   end
 
   create_table "enrollment_payers", force: :cascade do |t|
@@ -737,75 +729,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_13_123333) do
     t.string "languages_speak"
     t.string "languages_write"
     t.string "interpreters_available"
-    t.string "contact_first_name"
-    t.string "contact_middle_name"
-    t.string "contact_last_name"
-    t.string "contact_suffix"
-    t.string "contact_title"
-    t.string "contact_phone_number"
-    t.string "contact_ext"
-    t.string "contact_fax_number"
-    t.string "contact_email"
-    t.time "monday_time_start"
-    t.time "monday_time_end"
-    t.boolean "monday_split_day"
-    t.boolean "monday_closed"
-    t.time "tuesday_time_start"
-    t.time "tuesday_time_end"
-    t.boolean "tuesday_split_day"
-    t.boolean "tuesday_closed"
-    t.time "wednesday_time_start"
-    t.time "wednesday_time_end"
-    t.boolean "wednesday_split_day"
-    t.boolean "wednesday_closed"
-    t.time "thursday_time_start"
-    t.time "thursday_time_end"
-    t.boolean "thursday_split_day"
-    t.boolean "thursday_closed"
-    t.time "friday_time_start"
-    t.time "friday_time_end"
-    t.boolean "friday_split_day"
-    t.boolean "friday_closed"
-    t.time "saturday_time_start"
-    t.time "saturday_time_end"
-    t.boolean "saturday_split_day"
-    t.boolean "saturday_closed"
-    t.time "sunday_time_start"
-    t.time "sunday_time_end"
-    t.boolean "sunday_split_day"
-    t.boolean "sunday_closed"
-    t.string "comment"
-    t.string "telephone_coverage"
-    t.string "telephone_coverage_type"
-    t.string "telephone_number_after_hours"
-    t.string "telephone_number_ext"
-    t.string "pa_practice_status"
-    t.string "pa_by_health_plan"
-    t.string "pa_limitations"
-    t.string "pa_gender_limitations"
-    t.integer "pa_minimum_age"
-    t.integer "pa_maximum_age"
-    t.boolean "pa_min_max_not_applicable"
-    t.string "pa_other_limitations"
-    t.string "ada_accessibility"
-    t.string "ada_wrp"
-    t.string "disabled_other_services"
-    t.string "disabled_other_services_wrp"
-    t.string "public_transportation"
-    t.string "public_transportation_wrp"
-    t.string "laboratory_services"
-    t.string "laboratory_services_wrp"
-    t.string "clia_waiver"
-    t.string "clia_waiver_wrp"
-    t.string "clia_waiver_expiration_date"
-    t.string "clia_certificate"
-    t.string "clia_certificate_wrp"
-    t.string "clia_certificate_expiration_date"
-    t.string "radiology_services"
-    t.string "radiology_services_xray"
-    t.string "radiology_services_fda"
-    t.string "anesthesia_administered"
-    t.string "additional_procedures"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -1452,11 +1375,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_13_123333) do
     t.string "otp_token"
     t.string "otp_code"
     t.datetime "otp_code_expires_at"
-    t.boolean "logout_on_close", default: false
-    t.datetime "last_logout_on_close"
-    t.boolean "can_access_all_groups"
-    t.boolean "is_provider_account"
-    t.string "accessible_provider"
     t.index ["api_token"], name: "index_users_on_api_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true

@@ -8,11 +8,13 @@
 			<div class="row border border-4 p-3">
 				<div class="col-lg-12">
 					<%= render partial: "provider_source_components/header_title", locals: {title: "Professional IDs", icon: 'bi-person-badge-fill'}%>
-					<%= render partial: "provider_source_components/progress_bar", locals: {percent: (@provider.professional_ids_progress)}%>
-               <% steps = [['Registration IDs','finished', custom_provider_source_path(page: 'professional_ids')],
-                     ['Licensure','finished', custom_provider_source_path(page: 'licensure')],
-                     ['Other IDs and Cerfifications','active', custom_provider_source_path(page: 'other_ids')],
+					<%#= render partial: "provider_source_components/progress_bar", locals: {percent: (@provider.professional_ids_progress)}%>
+               <% steps = [['Registration IDs','finished', custom_provider_source_path(page: 'professional_ids'), 'registration_ids_progress'],
+                     ['Licensure','finished', custom_provider_source_path(page: 'licensure'), 'licensure_progress'],
+                     ['Other IDs and Cerfifications','active', custom_provider_source_path(page: 'other_ids'), 'other_ids_certifications_progress'],
             ]%>
+
+        <%= render partial: "provider_source_components/progress_bar", locals: { steps: steps }%>
             <%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
 				</div>
 				<div class="col-lg-12 card py-3 my-3">
@@ -25,18 +27,18 @@
 					</div>
 					<div class="d-flex align-items-center my-3">
 								<%= HtmlUtils.radio_toggle name: 'medicare_field',
-									label: 'Are you a participating Medicare provider? *',
+									label: 'Are you a participating Medicare provider? <span class="text-danger"> *</span>',
 									toshow: 'medicare_fields_test',
 									hidden_field: true
 								%>
 					</div>
 					<div class="row <%= toggle_hide('medicare_field')%>" id="medicare_fields_test">
 						<div class="col-lg-6">
-							<label class="text-dark-grey">Medicare Number *</label>
+							<label class="text-dark-grey">Medicare Number <span class="text-danger">*</span></label>
 							<input type="text" name="participating_medicare_number" required class="form-control border-dark">
 						</div>
 						<div class="col-lg-6">
-							<%= HtmlUtils::dropdown name: 'participating_medicare_state', label: 'Medicare State *' %>
+							<%= HtmlUtils::dropdown name: 'participating_medicare_state', label: 'Medicare State <span class="text-danger"> *</span>' %>
 						</div>
 					</div>
 				</div>
@@ -44,17 +46,17 @@
 					<h4 class="fw-semibold text-secondary">Medicaid</h4>
 					<div class="d-flex align-items-center my-3">
 							<%= HtmlUtils.radio_toggle name: 'medicaid_field',
-									label: 'Are you a participating Medicaid provider? *',
+									label: 'Are you a participating Medicaid provider? <span class="text-danger"> *</span>',
 									toshow: 'medicaid_fields',
 									hidden_field: true
 								%>
 					</div>
 					<div class="row <%=toggle_hide('medicaid_field')%> " id="medicaid_fields">
 						<div class="col-lg-6">
-							<%= HtmlUtils::dropdown name: 'participating_medicaid_state', label: 'Medicaid State *' %>
+							<%= HtmlUtils::dropdown name: 'participating_medicaid_state', label: 'Medicaid State <span class="text-danger"> *</span>' %>
 						</div>
 						<div class="col-lg-6">
-							<label class="text-dark-grey">Medicaid Number *</label>
+							<label class="text-dark-grey">Medicaid Number <span class="text-danger">*</span></label>
 							<input type="text" name="participating_medicaid_number" required class="form-control border-dark medicaid-number">
 							<label class="text-dark-grey">
 								<input type="checkbox" name="participating_medicaid_no_number" id="participating-medicaid-no-number">
@@ -100,7 +102,7 @@
 					</div>
 					<div class="row <%=toggle_hide('other_cert_field')%>" id="other_cert_fields">
 						<div class="col-lg-12 mb-3">
-							<label class="text-dark-grey">Certification Type *</label>
+							<label class="text-dark-grey">Certification Type <span class="text-danger">*</span></label>
 							<input type="text" class="form-control border-dark" name="other_certification_type" required>
 						</div>
 						<div class="col-lg-6 mb-3">
@@ -116,7 +118,7 @@
 							<input type="text" name="other_certification_issue_date" required class="form-control border-dark" placeholder="MM/DD/YYYY" onfocus="(this.type = 'date')">
 						</div>
 						<div class="col-lg-6 mb-3">
-							<label class="text-dark-grey">Expiration Date *</label>
+							<label class="text-dark-grey">Expiration Date <span class="text-danger">*</span></label>
 							<input type="text" name="other_certification_expiration_date" required class="form-control border-dark other-cert-expire" placeholder="MM/DD/YYYY" onfocus="(this.type = 'date')">
 							<label class="text-dark-grey">
 								<input type="checkbox" name="other_certification_not_expire" id="other-certification-not-expire">

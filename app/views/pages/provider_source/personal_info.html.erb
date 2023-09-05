@@ -18,14 +18,16 @@
                   </div>
                </div>
             </div>
-            <%= render partial: "provider_source_components/progress_bar", locals: {percent: (@provider.general_information_progress)}%>
-            <% steps = [['NAME AND HOME ADDRESS','finished', custom_provider_source_path], ['PERSONAL INFORMATION', 'active', custom_provider_source_path(page: 'personal_info')]]%>
+            <%#= render partial: "provider_source_components/progress_bar", locals: {percent: (@provider.general_information_progress)}%>
+            <% steps = [['NAME AND HOME ADDRESS','finished', custom_provider_source_path, 'home_and_address_progress'], ['PERSONAL INFORMATION', 'active', custom_provider_source_path(page: 'personal_info'), 'personal_info_progress']]%>
+
+        <%= render partial: "provider_source_components/progress_bar", locals: { steps: steps }%>
             <%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
             <div class="col-lg-12 my-3">
                <form>
                   <div class="row mb-3">
                      <div class="col-lg-6">
-                        <label class="text-dark-grey">Gender*</label>
+                        <label class="text-dark-grey">Gender<span class="text-danger">*</span></label>
                         <select name="ps-gender" class="form-select border-dark">
                            <option value="male">Male</option>
                            <option value="female">Female</option>
@@ -34,13 +36,13 @@
                         </select>
                      </div>
                      <div class="col-lg-6">
-                        <label class="text-dark-grey">Date for Birth*</label>
+                        <label class="text-dark-grey">Date for Birth<span class="text-danger">*</span></label>
                         <input name="ps-dob" type="date" class="form-control border-dark" name="">
                      </div>
                   </div>
                   <div class="row mb-3">
                      <div class="col-lg-6">
-                        <label class="text-dark-grey">Citizenship*</label>
+                        <label class="text-dark-grey">Citizenship<span class="text-danger">*</span></label>
                         <div class="single-select multi-select-ps-citizenship form-select border-dark" name="ps-citizenship" id="ps-citizenship" placeholder="Citizenship* "></div>
                      </div>
                      <div class="col-lg-6">
@@ -64,14 +66,14 @@
                         </div>
                      </div>
                      <div class="col-lg-12 d-none" id="ps-ssn-holder">
-                        <label class="text-dark-grey">Social Security Number*</label>
+                        <label class="text-dark-grey">Social Security Number<span class="text-danger">*</span></label>
                         <input type="text" name="social-security-number" id="social-security-number" class="form-control border-dark">
                      </div>
                   </div>
                   <hr>
                   <div class="row mb-3">
                      <div class="d-flex justify-content-between ">
-                        <label class="text-dark-grey">Do you have a legal right to reside in the United States?*</label>
+                        <label class="text-dark-grey">Do you have a legal right to reside in the United States?<span class="text-danger">*</span></label>
                         <div class="d-flex me-4 gap-2">
                            <span>
                            <input type="radio" value="yes" name="reside-on-us">
@@ -86,7 +88,7 @@
                   </div>
                   <div class="row mb-3">
                      <div class="d-flex justify-content-between ">
-                        <label class="text-dark-grey">Do you have a legal right to work in the United States*</label>
+                        <label class="text-dark-grey">Do you have a legal right to work in the United States<span class="text-danger">*</span></label>
                         <div class="d-flex me-4 gap-2">
                            <span>
                            <input type="radio" value="yes" name="work-on-us">
@@ -101,7 +103,7 @@
                   </div>
                   <div class="row mb-3">
                      <div class="d-flex justify-content-between ">
-                        <label class="text-dark-grey">Do you hold a permanent work permit?*</label>
+                        <label class="text-dark-grey">Do you hold a permanent work permit?<span class="text-danger">*</span></label>
                         <div class="d-flex me-4 gap-2">
                            <span>
                            <input type="radio" value="yes" name="permanent-work-permit">
@@ -155,17 +157,17 @@
                   </div>
                   <div class="row my-3">
                      <div class="col-lg-12">
-                        <%= HtmlUtils::dropdown name: 'languages-you-speak', label: 'Please select all the languages you speak *', multiple: true %>
+                        <%= HtmlUtils::dropdown name: 'languages-you-speak', label: 'Please select all the languages you speak <span class="text-danger">*</span>', multiple: true %>
                      </div>
                   </div>
                   <div class="row my-3">
                      <div class="col-lg-12">
-                        <%= HtmlUtils::dropdown name: 'languages-you-write', label: 'Please select all the languages you write *', multiple: true %>
+                        <%= HtmlUtils::dropdown name: 'languages-you-write', label: 'Please select all the languages you write <span class="text-danger">*</span>', multiple: true %>
                      </div>
                   </div>
                   <div class="row mb-3">
                      <div class="col-lg-6">
-                        <label class="text-dark-grey">Ethnicity*</label>
+                        <label class="text-dark-grey">Ethnicity<span class="text-danger"> *</span></label>
                         <select class="form-control border-dark" required name="ethnicity">
                            <option value=""></option>
                            <option value="American Indian/Alaska Native American">American Indian/Alaska Native American</option>

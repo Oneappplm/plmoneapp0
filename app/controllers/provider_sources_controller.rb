@@ -2,8 +2,11 @@ class ProviderSourcesController < ApplicationController
 	before_action :set_current_provider_source_and_redirect_to_edit_page, only: [:edit]
 	before_action :create_provider_source_and_redirect_to_edit_page, only: [:new]
 
-	def new; end
-	def edit; end
+	def new
+    render json: params and return
+  end
+
+  def edit; end
 
 	def destroy
 		@provider_source = ProviderSource.find(params[:id])

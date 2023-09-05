@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+  #!/usr/bin/env ruby
 
 puts `git checkout master && git pull origin master --rebase`
 puts `git fetch origin hvhs-app && git checkout hvhs-app && git rebase master && git push	origin hvhs-app -f`
