@@ -16,6 +16,14 @@
       </div>
    <% end %>
 
+
+  <div class="row mb-3">
+      <div class="col-lg-12">
+        <label class="text-dark-grey">Notes</label>
+        <%= f.text_area :group_note, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+  </div>
+
    <div class="row-mb-5">
    <div class="row mb-3">
      <div class="col-lg-6">
@@ -40,13 +48,13 @@
    <div class="row mb-3 mt-2">
      <div class="col-lg-6">
        <label class="text-dark-grey">Services</label>
-       <%= f.select :noti_group_services, options_for_select(group_notification_services,@enrollment_group.noti_group_services), {prompt: 'Select Option'}, {class: 'form-select provider-status border border-dark'}  %>
+       <%= f.select :noti_group_services, options_for_select(group_notification_services,@enrollment_group.noti_group_services), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
      </div>
    </div>
     <div class="row mb-3">
    <div class="col-lg-6">
        <label class="text-dark-grey">Status</label>
-       <%= f.select :noti_status, options_for_select(group_statuses, @enrollment_group.noti_status), {prompt: 'Select Option'}, {class: 'form-select provider-status border border-dark'}  %>
+       <%= f.select :noti_status, options_for_select(group_statuses, @enrollment_group.noti_status), {prompt: 'Select Option'}, {class: 'form-select group-status border border-dark'}  %>
    </div>
    <div class="col-lg-6">
    <div class="row mb-3 my-1 status-inactive-field <%= f.object.noti_status == 'inactive-termed' ? '' : 'd-none'%>">
@@ -582,7 +590,7 @@
 
     });
 
-    $(document).on('change', '.provider-status', function () {
+    $(document).on('change', '.group-status', function () {
          var status = $(this).val();
          if (status == 'inactive-termed') {
             showHideDetailFields($(this), '.status-inactive-field', 'show')
