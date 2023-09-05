@@ -148,6 +148,131 @@
          })
           });
 
+         //DEA checkbox disable function
+          $(document).ready(function() {
+            function updateButtonState() { // Function to update elements based on the checkbox state
+               var isChecked = $("#no-dea").is(":checked");
+               var dea_state = "provider_dea_licenses_attributes_0_state_id";
+               var virtualSelect = VirtualSelect.init({ele: '#' + dea_state, search: true }); // Initialize VirtualSelect once on page load
+              
+              if (isChecked) { // Disable or enable the select element based on the checkbox state
+                $("#dea_licenses").prop("hidden", true);
+                $("#dea_licenses :input").prop("hidden", true);
+                virtualSelect.disable();
+                $("#dea-explain").prop("hidden", false);
+              } else { // Enable the dea-explain field (regardless of the checkbox state)
+                $("#dea_licenses").prop("hidden", false);
+                $("#dea_licenses :input").prop("hidden", false);
+                virtualSelect.enable();
+                $("#dea-explain").prop("hidden", true);
+              }
+            }
+
+            // Listen for changes on the checkbox
+            $("#no-dea").change(updateButtonState);
+
+            // Update the button state on page load
+            updateButtonState();
+          });
+
+           //CDS checkbox disable function
+          $(document).ready(function() {
+            function updateButtonState() {
+               var isChecked = $("#no-cds").is(":checked");
+               var cds_state = "provider_cds_licenses_attributes_0_state_id";
+               var virtualSelect = VirtualSelect.init({ele: '#' + cds_state, search: true }); 
+              if (isChecked) {
+                $("#cds_licenses").prop("hidden", true);
+                $("#cds_licenses :input").prop("hidden", true);
+                virtualSelect.disable();
+                $("#cds-explain").prop("hidden", false);
+              } else {
+                $("#cds_licenses").prop("hidden", false);
+                $("#cds_licenses :input").prop("hidden", false);
+                virtualSelect.enable();
+                $("#cds-explain").prop("hidden", true);
+              }
+            }
+
+            $("#no-cds").change(updateButtonState);
+
+            updateButtonState();
+          });
+
+          //RN checkbox disable function
+          $(document).ready(function() {
+            function updateButtonState() {
+               var isChecked = $("#no-rn").is(":checked");
+               var rn_state = "provider_rn_licenses_attributes_0_state_id";
+               var virtualSelect = VirtualSelect.init({ele: '#' + rn_state, search: true }); 
+              if (isChecked) {
+                $("#rn_licenses").prop("hidden", true);
+                $("#rn_licenses :input").prop("hidden", true);
+                virtualSelect.disable();
+                $("#rn-explain").prop("hidden", false);
+              } else {
+                $("#rn_licenses").prop("hidden", false);
+                $("#rn_licenses :input").prop("hidden", false);
+                virtualSelect.enable();
+                $("#rn-explain").prop("hidden", true);
+              }
+            }
+
+            $("#no-rn").change(updateButtonState);
+
+            updateButtonState();
+          });
+
+          //APRN checkbox disable function
+          $(document).ready(function() {
+            function updateButtonState() {
+               var isChecked = $("#no-aprn").is(":checked");
+               var aprn_state = "provider_cnp_licenses_attributes_0_state_id";
+               var virtualSelect = VirtualSelect.init({ele: '#' + aprn_state, search: true }); 
+               
+              if (isChecked) {
+                $("#cnp_licenses").prop("hidden", true);
+                $("#cnp_licenses :input").prop("hidden", true);
+                virtualSelect.disable();
+                $("#cnp-explain").prop("hidden", false);
+              } else {
+                $("#cnp_licenses").prop("hidden", false);
+                $("#cnp_licenses :input").prop("hidden", false);
+                virtualSelect.enable();
+                 $("#cnp-explain").prop("hidden", true);
+              }
+            }
+
+            $("#no-aprn").change(updateButtonState);
+
+            updateButtonState();
+          });
+
+          //State License checkbox disable function
+         $(document).ready(function() {
+            function updateButtonState() {
+               var isChecked = $("#no-state").is(":checked");
+               var license_state = "provider_licenses_attributes_0_state_id";
+               var virtualSelect = VirtualSelect.init({ele: '#' + license_state, search: true }); 
+               
+              if (isChecked) {
+                $("#licenses").prop("hidden", true);
+                $("#licenses :input").prop("hidden", true);
+                virtualSelect.disable();
+                $("#license-explain").prop("hidden", false);
+              } else {
+                $("#licenses").prop("hidden", false);
+                $("#licenses :input").prop("hidden", false);
+                virtualSelect.enable();
+                $("#license-explain").prop("hidden", true);
+              }
+            }
+
+            $("#no-state").change(updateButtonState);
+
+            updateButtonState();
+          });
+
           $(document).on("click", ".delete-license", function() {
 
               var model = $(this).data('model');
