@@ -1,20 +1,19 @@
-<h1>Hello <%= @email %>,</h1>
 <% if @message.blank? %>
+<h1>Hello <%= @email %>,</h1>
 <p>
 	Please provide the requested information per the attached Welcome Letter and Checklist. Once the information is received at Qualifacts someone from the Credentialing Team will reach out to you if any information is missing or if we have questions.
 </p>
 <p>
 	We look forward to working with you, and should you have any questions, please do not hesitate to contact us at credentialing@qualifacts.com.
 </p>
-<% else %>
-<p>
-	<%= @message %>
-</p>
-<% end %>
-
 <br>
 <p>
 	Thank you, <br>
 	The Qualifacts Credentialing Team <br> <br>
-	<%= image_tag attachments['logo.png'].url,  style: "height: 90px; width: 200px;" %>
 </p>
+<% else %>
+<p style="white-space: pre-line">
+	<%= raw @message.html_safe %>
+</p>
+<% end %>
+<%= image_tag attachments['logo.png'].url,  style: "height: 90px; width: 200px;" %>

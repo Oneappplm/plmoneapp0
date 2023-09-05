@@ -23,7 +23,7 @@ class PlmMailer < ApplicationMailer
 		@email = params[:email]
 		file_attachments = params[:attachments]
 		subject	= params[:subject] || "PLM Health's One App Greetings"
-		@message	= params[:message]
+		@message	= params[:body]
 
 		file_attachments.each do |filename|
 			if filename.include? "https"

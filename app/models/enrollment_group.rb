@@ -7,6 +7,7 @@ class EnrollmentGroup < ApplicationRecord
   mount_uploader :eft_file, DocumentUploader
   mount_uploader :voided_check_file, DocumentUploader
   mount_uploader :specific_type_file, DocumentUploader
+  mount_uploaders :welcome_letter_attachments, DocumentUploader
 
   has_many :details, class_name: 'EnrollmentGroupsDetail'
   has_many :dcos, class_name: 'GroupDco', dependent: :destroy
@@ -27,7 +28,6 @@ class EnrollmentGroup < ApplicationRecord
   # validates_presence_of :group_name, :group_code, :office_address, :city, :state, :zip_code
 
   default_scope { order(:group_name) }
-
 
   class << self
     def search_by_params(params)
