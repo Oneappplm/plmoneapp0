@@ -140,6 +140,34 @@ class AjaxController < ApplicationController
     }
   end
 
+  def get_provider_notification_services
+    notification_services = [
+			['Practice/Provider Setups', 'provider_setup'],
+			['Monthly Monitoring', 'monthly_monitoring'],
+			['Facility Enrollments/Maintenance', 'facility_maintenance'],
+			['Provider Enrollments/Maintenance', 'provider_maintenance'],
+			['FBI Checks', 'fbi_checks'],
+			['Hospital Org PSV', 'hospital_org']
+		].map { |m| { label: m[0], value: m[1]} }
+    render json: {
+      'notification_services' => notification_services
+    }
+  end
+
+  def get_group_notification_services
+    notification_services = [
+			['Practice/Provider Setups', 'provider_setup'],
+			['Monthly Monitoring', 'monthly_monitoring'],
+			['Facility Enrollments/Maintenance', 'facility_maintenance'],
+			['Provider Enrollments/Maintenance', 'provider_maintenance'],
+			['FBI Checks', 'fbi_checks'],
+			['Hospital Org PSV', 'hospital_org']
+		].map { |m| { label: m[0], value: m[1]} }
+    render json: {
+      'notification_services' => notification_services
+    }
+  end
+
   def get_enrollment_groups
     if current_user&.can_access_all_groups || current_user&.super_administrator?
       enrollment_groups = EnrollmentGroup.all.map { |m| { label: m.group_name, value: m.id} }

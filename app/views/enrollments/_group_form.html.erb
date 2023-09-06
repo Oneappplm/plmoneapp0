@@ -47,8 +47,8 @@
    </div>
    <div class="row mb-3 mt-2">
      <div class="col-lg-6">
-       <label class="text-dark-grey">Services</label>
-       <%= f.select :noti_group_services, options_for_select(group_notification_services,@enrollment_group.noti_group_services), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
+      <label class="text-dark-grey">Services</label>
+      <%= HtmlUtils.multi_select_dropdown name: 'enrollment_group[noti_group_services]', id: 'noti_group_services'%>
      </div>
    </div>
     <div class="row mb-3">
@@ -640,8 +640,26 @@
   }
   var provider_types = [];
   var selected_provider_types = [];
-  $(document).ready(function() {
+   $(document).ready(function() {
       var action_name = "<%= action_name %>";
+
+      var selected_notification_services  = stringArrayModifier('<%= @enrollment_group.noti_group_services.split(",") %>');
+
+      $.ajax({
+         url: '<%= get_group_notification_services_path %>',
+         type: 'get',
+         data: { authenticity_token: csrfToken },
+         success: function(data) {
+         VirtualSelect.init({
+            ele: '#noti_group_services',
+            multiple: true,
+            showSelectedOptionsFirst: true
+         });
+         document.querySelector('#noti_group_services').setOptions(data['notification_services'])
+         document.querySelector('#noti_group_services').setValue(selected_notification_services);
+         }
+      })
+
       if(action_name == 'edit_group'){
         var group_id = '<%= @enrollment_group.id %>';
         getSelectedProviderTypes(group_id);

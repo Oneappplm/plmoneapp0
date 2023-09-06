@@ -42,6 +42,8 @@ Rails.application.routes.draw do
   get 'get-provider-types', to: 'ajax#get_provider_types'
   get 'get-enrollment-groups', to: 'ajax#get_enrollment_groups'
   get 'get-group-locations', to: 'ajax#get_enrollment_group_locations'
+  get 'get-provider-notification-services', to: 'ajax#get_provider_notification_services'
+  get 'get-group-notification-services', to: 'ajax#get_group_notification_services'
   post 'get-selected-provider-types', to: 'ajax#get_selected_provider_types'
   post 'get-selected-practitioner-types', to: 'ajax#get_selected_practitioner_types'
   get 'get-ps-provider-types', to: 'ajax#get_ps_provider_types'
