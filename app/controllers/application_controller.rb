@@ -11,7 +11,8 @@ class ApplicationController < ActionController::Base
 	before_action :configure_permitted_parameters, if: :devise_controller?
   # exceptions for track_event are mostly ajax requests
   before_action :track_event
-  before_action :force_logout_on_close_if_expired, except: [:logout_on_close]
+
+  # before_action :force_logout_on_close_if_expired, except: [:logout_on_close] # TODO: uncomment this line
 
 	include ApplicationHelper
 
