@@ -100,7 +100,7 @@ class UsersController < ApplicationController
 			:enrollment_group_id, :email, :password, :password_confirmation,
 			:following_request, :user_type, :status, :user_role,
 			:temporary_password, :temporary_password_confirmation, :title,
-			:enrollment_group_ids
+			:enrollment_group_ids, :accessible_provider, :is_provider_account
 		)
 	end
 

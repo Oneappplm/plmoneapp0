@@ -110,47 +110,45 @@
                     </div>
                   </div>
                 <% end %>
-                <% if !['terminated'].include?(detail.enrollment_status) %>
-                  <div class="row mb-3">
-                    <div class="col-lg-2">
-                      <label>Username</label>
-                      <p class="text-black fw-semibold"><%= detail.payor_username %></p>
-                    </div>
-                    <div class="col-lg-2">
-                      <label>Password</label>
-                      <p class="text-black fw-semibold"><%= detail.payor_password %></p>
-                    </div>
-                  </div>
-                  <% detail.questions.each_with_index do |question, indx| %>
-                    <div class="row mb-3">
-                      <div class="col-lg-2">
-                        <label>Question <%= indx + 1 %></label>
-                        <p class="text-black fw-semibold"><%= question.question %></p>
-                      </div>
-                      <div class="col-lg-2">
-                        <label>Answer <%= indx + 1%></label>
-                        <p class="text-black fw-semibold"><%= question.answer %></p>
-                      </div>
-                    </div>
-                  <% end %>
+                <div class="row mb-3">
                   <div class="col-lg-2">
-                    <label>Notes</label>
-                    <p class="text-black fw-semibold"><%= detail.comment %></p>
+                    <label>Username</label>
+                    <p class="text-black fw-semibold"><%= detail.payor_username %></p>
                   </div>
+                  <div class="col-lg-2">
+                    <label>Password</label>
+                    <p class="text-black fw-semibold"><%= detail.payor_password %></p>
+                  </div>
+                </div>
+                <% detail.questions.each_with_index do |question, indx| %>
                   <div class="row mb-3">
-                    <div class="col-lg-12">
-                      <div class="d-flex gap-2">
-                        <% if !detail.upload_payor_file.blank? %>
-                          <% detail.upload_payor_file.each do |upload|%>
-                          <!-- <div class="col-lg-2"> -->
-                              <a href="<%= upload.url %>" class="btn btn-sm btn-outline-primary"><%= upload&.file&.basename rescue nil %> </a>
-                          <!-- </div> -->
-                          <% end %>
-                        <% end %>
-                      </div>
+                    <div class="col-lg-2">
+                      <label>Question <%= indx + 1 %></label>
+                      <p class="text-black fw-semibold"><%= question.question %></p>
+                    </div>
+                    <div class="col-lg-2">
+                      <label>Answer <%= indx + 1%></label>
+                      <p class="text-black fw-semibold"><%= question.answer %></p>
                     </div>
                   </div>
                 <% end %>
+                <div class="col-lg-2">
+                  <label>Notes</label>
+                  <p class="text-black fw-semibold"><%= detail.comment %></p>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-lg-12">
+                    <div class="d-flex gap-2">
+                      <% if !detail.upload_payor_file.blank? %>
+                        <% detail.upload_payor_file.each do |upload|%>
+                        <!-- <div class="col-lg-2"> -->
+                            <a href="<%= upload.url %>" class="btn btn-sm btn-outline-primary"><%= upload&.file&.basename rescue nil %> </a>
+                        <!-- </div> -->
+                        <% end %>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

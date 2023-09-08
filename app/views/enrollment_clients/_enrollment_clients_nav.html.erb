@@ -1,10 +1,14 @@
 <div class="col-xl-12 mb-3">
     <div class="d-flex justify-content-end gap-2">
-    <a href="<%= dashboard_enrollment_clients_path %>" class="btn border-0 <%= action_name == 'dashboard' ? 'btn-primary text-white fw-semibold' : 'btn-secondary text-black bg-alt-grey'%>">Dashboard</a>
-    <a href="<%= groups_enrollment_clients_path %>" class="btn border-0 <%= ['groups', 'view_group'].include?(action_name) ? 'btn-primary text-white fw-semibold' : 'btn-secondary text-black bg-alt-grey'%>">
-    Groups</a>
+    <% if !current_user.is_provider_account %>
+      <a href="<%= dashboard_enrollment_clients_path %>" class="btn border-0 <%= action_name == 'dashboard' ? 'btn-primary text-white fw-semibold' : 'btn-secondary text-black bg-alt-grey'%>">Dashboard</a>
+      <a href="<%= groups_enrollment_clients_path %>" class="btn border-0 <%= ['groups', 'view_group'].include?(action_name) ? 'btn-primary text-white fw-semibold' : 'btn-secondary text-black bg-alt-grey'%>">
+      Groups</a>
+    <% end %>
     <a href="<%= enrollment_clients_path %>" class="btn border-0 <%= action_name == 'index' ? 'btn-primary text-white fw-semibold' : 'btn-secondary text-black bg-alt-grey'%>">Provider Data</a>
-    <a href="<%= reports_enrollment_clients_path %>" class="btn border-0 <%= action_name == 'reports' ? 'btn-primary text-white fw-semibold' : 'btn-secondary text-black bg-alt-grey'%>">Reports</a>
+    <% if !current_user.is_provider_account %>
+      <a href="<%= reports_enrollment_clients_path %>" class="btn border-0 <%= action_name == 'reports' ? 'btn-primary text-white fw-semibold' : 'btn-secondary text-black bg-alt-grey'%>">Reports</a>
+    <% end %>
     <% if !@incomplete_providers.blank? %>
       <a href="<%= notifications_enrollment_clients_path %>" class="btn border-0 <%= action_name == 'notifications' ? 'btn-primary text-white fw-semibold' : 'btn-secondary text-black bg-alt-grey'%>">Notifications</a>
     <% end %>

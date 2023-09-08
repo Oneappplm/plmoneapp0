@@ -75,6 +75,23 @@
 						<%= f.text_field :temporary_password, value: @user.temporary_password, class: 'form-control border border-dark', placeholder: 'Type here...' %>
 					</div>
 				</div>
+				<div class="row mb-3">
+					<div class="col-lg-6">
+						<div class="form-check form-switch">
+						<%= f.check_box :is_provider_account, class:"form-check-input optional",
+									id: "busy-mode-toggle",
+									checked: f.object.is_provider_account ? true : false,
+									type: "checkbox" %>
+            	<label class="text-dark-grey">Provider Account</label>
+						</div>
+					</div>
+				</div>
+				<div class="row mb-3">
+					<div class="col-lg-6">
+						<label class="text-dark-grey">Provider Name</label>
+						<%= f.select :accessible_provider, options_for_select(Provider.all.map{ |p| ["#{p.provider_name}", p.id]}, f.object.accessible_provider), { prompt: 'Select Option' }, class: 'form-select border border-dark optional', placeholder: 'Role' %>
+					</div>
+				</div>
 				<div class="row">
 					<div class="col-lg-12 d-flex justify-content-end gap-2">
 						<button type="submit" class="d-flex btn btn-primary btn-md">
