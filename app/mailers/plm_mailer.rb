@@ -22,14 +22,18 @@ class PlmMailer < ApplicationMailer
 	def welcome_letter
 		@email = params[:email]
 		file_attachments = params[:attachments]
-		subject	= params[:subject] || "PLM Health's One App Greetings"
+		subject	= params[:subject] || "Request for Credentialing Documentation"
 		@message	= params[:body]
 
 		file_attachments.each do |filename|
 			if filename.include? "https"
 				attachments.inline[filename] = open(URI.open(filename)).read
 			else
-				attachments.inline[filename] = File.read(File.join(Rails.root, 'lib', 'data', 'attachments', filename))
+				if params[:folder_name].present?
+					attachments.inline[filename] = File.read(File.join(Rails.root, 'lib', 'data', 'attachments', params[:folder_name], filename))
+				else
+					attachments.inline[filename] = File.read(File.join(Rails.root, 'lib', 'data', 'attachments', filename))
+				end
 			end
 		end
 

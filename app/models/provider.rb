@@ -422,9 +422,36 @@ class Provider < ApplicationRecord
       attachments = welcome_letter_attachments.map{|a| a.url}
     end
 
+    attachments << "Welcome Letter Existing Providers v3_Rebranded.docx" if check_welcome_letter
+    attachments << "CO CAQH Authorization-Attestation and Release Forms.pdf" if check_co_caqh
+    attachments << "MN CAQH State Release Form.pdf" if check_mn_caqh_state_release_form
+    attachments << "MN CAQH Authorization Form.pdf" if check_mn_caqh_authorization_form
+    attachments << "CAQH Standard Authorization.pdf" if check_caqh_standard_authorization
+
     PlmMailer.with(
       email: email_address,
-      subject:welcome_letter_subject,
+      subject: welcome_letter_subject,
+      body: welcome_letter_message,
+      attachments: attachments,
+      folder_name: 'provider'
+    ).welcome_letter.deliver_later
+
+
+    # attachments
+  end
+
+  def send_welcome_letter_old
+    return unless self.email_address.present? && self.welcome_letter_status?
+
+    attachments = []
+
+    if welcome_letter_attachments.present?
+      attachments = welcome_letter_attachments.map{|a| a.url}
+    end
+
+    PlmMailer.with(
+      email: email_address,
+      subject: welcome_letter_subject,
       body: welcome_letter_message,
       attachments: attachments
     ).welcome_letter.deliver_later

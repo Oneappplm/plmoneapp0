@@ -244,7 +244,7 @@ end
 					:notification_enrollment_submit,
 					:notification_services,
 					:send_welcome_letter,
-					:welcome_letter_status, :welcome_letter_subject, :welcome_letter_message, {welcome_letter_attachments: []},
+					:welcome_letter_status, :welcome_letter_subject, :welcome_letter_message, :check_welcome_letter, :check_co_caqh, :check_mn_caqh_state_release_form, :check_mn_caqh_authorization_form, :check_caqh_standard_authorization, {welcome_letter_attachments: []},
 					#taxonomies_attributes: [:id, :taxonomy_code, :specialty, :_destroy],
 					licenses_attributes: [:id, :license_number, :license_effective_date, :license_expiration_date, :state_id, :license_state_renewal_date, :no_state_license, :license_type, :_destroy],
 					np_licenses_attributes: [:id, :np_license_number, :state_id, :np_license_effective_date, :np_license_expiration_date, :np_license_renewal_effective_date, :no_np_license, :_destroy],
