@@ -99,7 +99,7 @@
             <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Board Certifications', collapse_name: 'board_certifications'}%>
             <div class="collapsible" style="<%= current_user&.is_card_open?('board_certifications') ? '' : 'display: none;' %>">
               <p class="mb-1"><strong>Board Name:</strong> <%= @provider.board_name %></p>
-              <p class="mb-1"><strong>Certification Number:</strong> <%= @provider&.board_certification_number %></p>
+              <p class="mb-1"><strong>Certification Number:</strong> <%= @provider&.board_certificate_number %></p>
               <p class="mb-1"><strong>Effective Date:</strong> <%= @provider&.board_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
               <p class="mb-1"><strong>Re-Certification Date:</strong> <%= @provider&.board_recertification_date&.strftime('%m-%d-%Y') rescue nil %></p>
               <p class="mb-1"><strong>Expiration:</strong> <%= @provider&.board_expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
@@ -153,7 +153,7 @@
               <p class="mb-1"><strong>DEA Registration Original License Issue Date:</strong> <%= dea_license&.dea_license_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
               <p class="mb-1"><strong>DEA Registration State:</strong> <%= State.find_by(id: dea_license.state_id.to_i)&.name rescue nil %></p>
               <p class="mb-1"><strong>DEA Registration Expiration Date:</strong> <%= dea_license&.dea_license_expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>DEA Registration Renewal Date:</strong> <%= dea_license&.dea_license_renewal_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>DEA Registration Renewal Date:</strong> <%= Time.zone.parse(dea_license&.dea_license_renewal_effective_date.to_s)&.strftime('%m-%d-%Y') rescue nil %></p>
               <p class="mb-1"><strong>Explain if you do not have a DEA Registration Number:</strong> <%= dea_license&.no_dea_license %></p>
               <hr>
               <% end %>
@@ -185,7 +185,7 @@
               <p class="mb-1"><strong>RN Original License Issue Date:</strong> <%= rn_license&.rn_license_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
               <p class="mb-1"><strong>RN License State:</strong> <%= State.find_by(id: rn_license.state_id.to_i)&.name rescue nil %></p>
               <p class="mb-1"><strong>RN License Expiration Date:</strong> <%= rn_license&.rn_license_expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>RN License Renewal Date:</strong> <%= rn_license&.rn_license_renewal_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>RN License Renewal Date:</strong> <%= Time.zone.parse(rn_license&.rn_license_renewal_effective_date.to_s)&.strftime('%m-%d-%Y') rescue nil %></p>
               <p class="mb-1"><strong>Explain if you do not have a RN License Number:</strong> <%= rn_license&.no_rn_license %></p>
               <hr>
               <% end %>
@@ -218,7 +218,7 @@
                   <p class="mb-1"><strong>State License Issue Date:</strong> <%= license&.license_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
                   <p class="mb-1"><strong>State License Registration State:</strong> <%= State.find_by(id: license&.state_id)&.name rescue nil %></p>
                   <p class="mb-1"><strong>State License Expiration Date:</strong> <%= license&.license_expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
-                  <p class="mb-1"><strong>State License Renewal Date:</strong> <%= license&.license_state_renewal_date&.strftime('%m-%d-%Y') rescue nil %></p>
+                  <p class="mb-1"><strong>State License Renewal Date:</strong> <%= Time.zone.parse(license&.license_state_renewal_date.to_s)&.strftime('%m-%d-%Y') rescue nil %></p>
                   <p class="mb-1"><strong>Explain if you do not have a PA License Number:</strong>  <%= license&.no_state_license %> </p>
                 </div>
               <% end %>
@@ -352,8 +352,14 @@
                         <p class="mb-2"><strong>Line of Business:</strong> <%= detail&.line_of_business %></p>
                       <% end %>
                       <p class="mb-2"><strong>Provider ID:</strong> <%= detail&.provider_id %> </p>
-                      <p class="mb-2"><strong>Group ID:</strong> <%= detail&.group_id %> </p>
                       <p class="mb-1"><strong>Notes:</strong> <%= detail&.comment %></p>
+                      <% detail&.application_status_logs.each do |status_log| %>
+                        <div class="row application-status-history-log">
+                          <div class="col-lg-12">
+                            <small><strong><%= status_log.display_summary %></strong></small>
+                          </div>
+                        </div>
+                      <% end %>
                     </div>
                   </div>
                 </div>
