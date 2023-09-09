@@ -1,179 +1,78 @@
 <div class="content container-fluid ps-0">
-  <%= render "provider_source_components/top_buttons"%>
-  <div class="row">
-    <div class="col-lg-3">
-      <%= render "provider_source_components/sub_navbar"%>
-    </div>
-    <div class="col-lg-9">
-      <div class="row border border-4 p-3">
-        <!-- start of form header -->
-        <div class="col-lg-12 mb-3">
-          <div class="d-flex gap-2">
-            <span class="bg-medium-grey circle d-flex justify-content-center align-items-center" style="width: 40px;height: 40px;">
-              <!-- <i class="bi "></i> -->
-              <i class="bi bi-person-plus-fill text-white" style="font-size: 25px;"></i>
-            </span>
-            <div class="d-flex flex-column">
-              <label class="text-dark-grey">Audit</label>
-              <small>Department</small>
-            </div>
-          </div>
-        </div>
-        <%#= render partial: "provider_source_components/progress_bar", locals: {percent: 0}%>
-        <% steps = [['Application Checklist','active', custom_provider_source_path(page: 'audit')],
-              ['Application Documents','inactive', custom_provider_source_path(page: 'application_documents')],
+	<%= render "provider_source_components/top_buttons"%>
+	<div class="row">
+		<div class="col-lg-3">
+			<%= render "provider_source_components/sub_navbar"%>
+		</div>
+		<div class="col-lg-9">
+			<div class="row border border-4 p-3">
+				<!-- start of form header -->
+				<div class="col-lg-12 mb">
+					<div class="d-flex gap-2">
+				 		<span class="bg-medium-grey circle d-flex justify-content-center align-items-center" style="width: 40px;height: 40px;">
+				 			<!-- <i class="bi "></i> -->
+				 			<i class="bi bi-person-plus-fill text-white" style="font-size: 25px;"></i>
+				 		</span>
+				 		<div class="d-flex flex-column">
+				 			<label class="text-dark-grey">Audit</label>
+				 			<small>Department</small>
+				 		</div>
+					</div>
+				</div>
+				<%= render partial: "provider_source_components/progress_bar", locals: {percent: 0}%>
+				<% steps = [['Application Checklist','active', custom_provider_source_path(page: 'audit')],
+							['Application Documents','inactive', custom_provider_source_path(page: 'application_documents')],
 
-        ]%>
-
-        <%#= render partial: "provider_source_components/progress_bar", locals: { steps: steps }%>
-        <%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
-        <div class="col-lg-12 my-3">
-          <div class="alert alert-info alert-light-blue">
-            <i class="bi bi-info-circle" style="font-size: 20px;"></i>
-            <small>The following items must be completed prior to submitting application. Click on the form link to go back to the form. Once on a form, click on edit button when applicable, to populate the required fields.</small>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-lg-12">
+				]%>
+				<%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
+				<div class="col-lg-12 my-3">
+					<div class="alert alert-info alert-light-blue">
+						<i class="bi bi-info-circle" style="font-size: 20px;"></i>
+						<small>The following items must be completed prior to submitting application. Click on the form link to go back to the form. Once on a form, click on edit button when applicable, to populate the required fields.</small>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
             <% if @has_incomplete %>
-             <p style="font-size: 15px;" class="text-danger">Please complete your application in order to Attest.</p>
-           <% else %>
+		         <p style="font-size: 15px;" class="text-danger">Please complete your application in order to Attest.</p>
+					 <% else %>
               <p style="font-size: 15px;" class="text-success">All documents completed you can now attest.</p>
             <% end %>
           </div>
-        </div>
+				</div>
 
         <div class="row mb-3">
           <div class="col-lg-12">
-            <div>
             <p class="my-1" style="font-size: 18px;">
-              <%= @provider&.general_info_completed? ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>General Information</strong>'.html_safe : '<strong>General Information document is required</strong>'.html_safe %>
-            </p>
-            <div style="padding-left: 2rem;">
-              <ul class="list-group">
-                <li>
-                  <a href="<%= custom_provider_source_path %>">Home and Address - <%= @provider.home_and_address_progress %>%</a>
-                </li>
-                <li>
-                  <a href="<%= custom_provider_source_path(page: 'personal_info')%>">Personal Information-<%= @provider.personal_info_progress %>%</a>
-                </li>
-              </ul>
-            </div>
-            </div>
-            <div>
-            <p class="my-1" style="font-size: 18px;">
-              <%= @provider&.professional_ids_completed? ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Profession IDs</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Profession IDs document is required</strong>'.html_safe %>
-            </p>
-            <div style="padding-left: 2rem;">
-              <ul class="list-group">
-                <li>
-                  <a href="<%= custom_provider_source_path(page: 'professional_ids') %>">Registration IDs - <%= @provider.registration_ids_progress%>%</a>
-                </li>
-                <li>
-                  <a href="<%= custom_provider_source_path(page: 'licensure')%>">Licensure - <%= @provider.licensure_progress%>%</a>
-                </li>
-                <li>
-                  <a href="<%= custom_provider_source_path(page: 'other_ids')%>">Other IDs and Cerfifications - <%= @provider.other_ids_certifications_progress%>%</a>
-                </li>
-              </ul>
-            </div>
-            </div>
-            <p class="my-1" style="font-size: 18px;">
-              <%= @provider.health_plans_completed? ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Health Plans</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Health Plans document is required</strong>'.html_safe %>
+              <%= @provider.general_information_progress == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>General Information</strong>'.html_safe : '<strong>General Information document is required</strong>'.html_safe %>
             </p>
             <p class="my-1" style="font-size: 18px;">
-              <%= @provider.speacialties_completed? ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Specialties</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Specialties document is required</strong>'.html_safe %>
-            </p>
-            <div>
-            <p class="my-1" style="font-size: 18px;">
-              <%= @provider.education_and_training_completed? ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Education and Training</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Education and Training document is required</strong>'.html_safe %>
-            </p>
-            <div style="padding-left: 2rem;">
-              <ul class="list-group">
-                <li>
-                  <a href="<%= custom_provider_source_path(page: 'education_training')%>">Education - <%= @provider.education_progress_v2 %>%</a>
-                </li>
-                <li>
-                  <a href="<%= custom_provider_source_path(page: 'training')%>">Training - <%= @provider.training_progress_v2 %>%</a>
-                </li>
-                <li>
-                  <a href="<%= custom_provider_source_path(page: 'teaching_appointments')%>">Teaching Appointments - <%= @provider.teaching_appointments_progress_v2 %>%</a>
-                </li>
-              </ul>
-            </div>
-            </div>
-            <p class="my-1" style="font-size: 18px;">
-              <%= @provider.affiliation_info_completed? ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Healthcare Facilities And Affiliations</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Healthcare Facilities And Affiliations document is required</strong>'.html_safe %>
+              <%= @provider.professional_ids_progress == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Profession IDs</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Profession IDs document is required</strong>'.html_safe %>
             </p>
             <p class="my-1" style="font-size: 18px;">
-              <%= @provider.professional_liability_completed? ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Professional Liability</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Professional Liability document is required</strong>'.html_safe %>
+              <%= @provider.health_plans_progress == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Health Plans</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Health Plans document is required</strong>'.html_safe %>
             </p>
-            <div>
             <p class="my-1" style="font-size: 18px;">
-              <%= @provider.work_history_completed? ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Work History</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Work History document is required</strong>'.html_safe %>
+              <%= @provider.specialties_progress == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Specialties</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Specialties document is required</strong>'.html_safe %>
             </p>
-            <div style="padding-left: 2rem;">
-              <ul class="list-group">
-                <li>
-                  <a href="<%= custom_provider_source_path(page: 'work_history')%>">Military History - <%= @provider.work_history_military_progress %>%</a>
-                </li>
-                <li>
-                  <a href="<%= custom_provider_source_path(page: 'employment')%>">Employment - <%= @provider.work_history_employment_progress %>%</a>
-                </li>
-                <li>
-                  <a href="<%= custom_provider_source_path(page: 'employment_gap')%>">Employment Gap - <%= @provider.work_history_employment_gap_progress %>%</a>
-                </li>
-                <li>
-                  <a href="<%= custom_provider_source_path(page: 'prof_references')%>">Professional References - <%= @provider.professional_references_progress %>%</a>
-                </li>
-                <li>
-                  <a href="<%= custom_provider_source_path(page: 'prof_organization')%>">Professional Organization</a>
-                </li>
-              </ul>
-            </div>
-            </div>
-            <div>
-              
             <p class="my-1" style="font-size: 18px;">
-              <%= @provider.practice_information_completed? ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Practice Location</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Practice Location is required</strong>'.html_safe %>
+              <%= @provider.education_traning_progess == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Education and Training</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Education and Training document is required</strong>'.html_safe %>
             </p>
-            <div style="padding-left: 2rem;">
-              <ul class="list-group">
-                <li>
-                  <a href="<%= custom_provider_source_path(page: 'practice_information')%>">Credentialing Contact - <%= @provider.credentialing_contact_progress %>%</a>
-                </li>
-                <li>
-                  <a href="<%= custom_provider_source_path(page: 'practice_location')%>">Practice Location - <%= @provider.practice_location_progress_v2 %>%</a>
-                  <ul>
-                    <% if @provider.practice_location_general_info_started?%>
-                      <li><a href="<%= custom_provider_source_path(page: 'practice_location', component: 'general_info')%>">General Information</a></li>
-                    <% end %>
-                    <% if @provider.practice_location_contacts_started? %>
-                      <li><a href="<%= custom_provider_source_path(page: 'practice_location', component: 'contacts')%>">Contact</a></li>
-                    <% end %>
-                    <% if @provider.practice_location_midlevel_practitioner_started? %>
-                      <li><a href="<%= custom_provider_source_path(page: 'practice_location', component: 'midlevel_practitioners')%>">Mid-level Practitioners</a></li>
-                    <% end %>
-                    <% if @provider.practice_location_partners_started? %>
-                      <li><a href="<%= custom_provider_source_path(page: 'practice_location', component: 'partners')%>">Partners</a></li>
-                    <% end %>
-                  </ul>
-                </li>
-                <li>
-                  <a href="<%= custom_provider_source_path(page: 'covering_colleagues')%>">Covering Colleagues - <%= @provider.covering_colleagues_progress%>%</a>
-                </li>
-                <li>
-                  <a href="<%= custom_provider_source_path(page: 'unique_circumstances')%>">Unique Circumstances - <%= @provider.unique_circumstances_progress%>%</a>
-                </li>
-              </ul>
-            </div>
-            </div>
             <p class="my-1" style="font-size: 18px;">
-              <%= @provider.disclosure_progress_v2 == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Disclosure</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Disclosure document is required</strong>'.html_safe %>
+              <%= @provider.affiliation_progress == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Healthcare Facilities And Affiliations</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Healthcare Facilities And Affiliations document is required</strong>'.html_safe %>
+            </p>
+            <p class="my-1" style="font-size: 18px;">
+              <%= @provider.professional_liability_progress == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Professional Liability</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Professional Liability document is required</strong>'.html_safe %>
+            </p>
+            <p class="my-1" style="font-size: 18px;">
+              <%= @provider.work_history_progress == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Work History</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Work History document is required</strong>'.html_safe %>
+            </p>
+            <p class="my-1" style="font-size: 18px;">
+              <%= @provider.disclosure_progress == 100 ? '<i class="bi bi-check-square-fill text-success me-2"></i><strong>Disclosure</strong>'.html_safe : '<i class="bi bi-x-circle-fill text-danger me-2"></i><strong>Disclosure document is required</strong>'.html_safe %>
             </p>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
+			</div>
+		</div>
+	</div>
 </div>

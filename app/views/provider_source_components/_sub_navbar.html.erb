@@ -5,65 +5,61 @@
 						<div class="d-flex justify-content-between"><a class="<%= (!params[:page].present? or ['personal_info'].include?(params[:page]))? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path %>">GENERAL INFORMATION</a>
 							<!-- i think icon info will disappear when a info is already filled out -->
 
-              <% if @provider&.general_info_completed? %>
+              <% if @provider&.general_information_progress != 100%>
                 <i class="bi bi-info-circle-fill text-danger"></i>
               <% end %>
 						</div>
 						</li>
 						<li class="list-group-item <%= (['professional_ids','licensure', 'other_ids'].include?(params[:page])) ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0"><div class="d-flex justify-content-between"><a class="<%= (['professional_ids','licensure', 'other_ids'].include?(params[:page]))? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path(page: 'professional_ids') %>">PROFESSIONAL IDS</a>
-              <% if !@provider&.professional_ids_completed? %>
+              <% if @provider&.professional_ids_progress != 100%>
                 <i class="bi bi-info-circle-fill text-danger"></i>
               <% end %>
             </div>
 						</li>
 
 						<li class="list-group-item <%= (['health_plans'].include?(params[:page])) ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0"><div class="d-flex justify-content-between"><a class="<%= (['health_plans'].include?(params[:page]))? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path(page: 'health_plans') %>">HEALTH PLANS	</a>
-              <% if !@provider&.health_plans_completed?%>
+              <% if @provider&.health_plans_progress != 100%>
                 <i class="bi bi-info-circle-fill text-danger"></i>
               <% end %>
             </div>
 						</li>
 
 						<li class="list-group-item <%= (['specialties'].include?(params[:page])) ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0"><div class="d-flex justify-content-between"><a class="<%= (['specialties'].include?(params[:page]))? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path(page: 'specialties') %>">SPECIALTIES</a>
-              <% if !@provider&.speacialties_completed? %>
+              <% if @provider&.specialties_progress != 100%>
                 <i class="bi bi-info-circle-fill text-danger"></i>
               <% end %>
             </div></li>
 
 						<li class="list-group-item <%= (['education_training','training','teaching_appointments'].include?(params[:page])) ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0"><div class="d-flex justify-content-between"><a class="<%= (['education_training','training','teaching_appointments'].include?(params[:page]))? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path(page: 'education_training') %>">EDUCATION AND TRAINING</a>
-              <% if !@provider&.education_and_training_completed?%>
+              <% if @provider&.education_traning_progess != 100%>
                 <i class="bi bi-info-circle-fill text-danger"></i>
               <% end %>
             </div></li>
 
 						<li class="list-group-item <%= (['affiliation_information'].include?(params[:page])) ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0"><div class="d-flex justify-content-between"><a class="<%= (['affiliation_information'].include?(params[:page]))? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path(page: 'affiliation_information')%>">HEALTHCARE FACILITIES AND AFFILIATIONS</a>
-              <% if !@provider&.affiliation_info_completed? %>
+              <% if @provider&.affiliation_progress != 100%>
                 <i class="bi bi-info-circle-fill text-danger"></i>
               <% end %>
               </div></li>
 
 						<li class="list-group-item <%= (['professional_liability'].include?(params[:page])) ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0"><div class="d-flex justify-content-between"><a class="<%= (['professional_liability'].include?(params[:page]))? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path(page: 'professional_liability')%>">PROFESSIONAL LIABILITY</a>
-              <% if !@provider&.professional_liability_completed?%>
+              <% if @provider&.professional_liability_progress != 100%>
                 <i class="bi bi-info-circle-fill text-danger"></i>
               <% end %>
             </div></li>
 
 						<li class="list-group-item <%= (['work_history', 'employment', 'employment_gap', 'prof_references','prof_organization'].include?(params[:page])) ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0"><div class="d-flex justify-content-between"><a class="<%= (['work_history', 'employment', 'employment_gap', 'prof_references','prof_organization'].include?(params[:page]))? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path(page: 'work_history')%>">WORK HISTORY</a>
-              <% if !@provider&.work_history_completed?%>
+              <% if @provider&.work_history_progress != 100%>
                 <i class="bi bi-info-circle-fill text-danger"></i>
               <% end %>
             </div>
           </li>
 
-						<li class="list-group-item <%= (['practice_information','practice_location', 'covering_colleagues', 'unique_circumstances'].include?(params[:page])) ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0"><div class="d-flex justify-content-between"><a class="<%= (['practice_information', 'practice_location' ,'covering_colleagues', 'unique_circumstances'].include?(params[:page]))? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path(page: 'practice_information')%>">PRACTICE INFORMATION</a>
-              <% if !@provider.practice_information_completed? %>
-              <i class="bi bi-info-circle-fill text-danger"></i>
-              <% end %>
-            </div></li>
+						<li class="list-group-item <%= (['practice_information','practice_location', 'covering_colleagues', 'unique_circumstances'].include?(params[:page])) ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0"><div class="d-flex justify-content-between"><a class="<%= (['practice_information', 'practice_location' ,'covering_colleagues', 'unique_circumstances'].include?(params[:page]))? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path(page: 'practice_information')%>">PRACTICE INFORMATION</a><i class="bi bi-info-circle-fill text-danger"></i></div></li>
 
 						<li class="list-group-item <%= (['disclosure'].include?(params[:page])) ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0"><div class="d-flex justify-content-between"><a class="<%= (['disclosure'].include?(params[:page]))? 'text-white' : 'text-black'%>" href="<%= custom_provider_source_path(page: 'disclosure') %>">DISCLOSURE</a>
 
-              <% if @provider&.disclosure_progress_v2 != 100%>
+              <% if @provider&.disclosure_progress != 100%>
                 <i class="bi bi-info-circle-fill text-danger"></i>
               <% end %>
             </div></li>
