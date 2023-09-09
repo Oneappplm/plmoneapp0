@@ -1,4 +1,9 @@
 class ProviderDeaLicense < ApplicationRecord
   belongs_to :provider
-  belongs_to :state
+  
+  def state
+    State.find_by(id: self.state_id)
+  rescue
+    nil
+  end
 end
