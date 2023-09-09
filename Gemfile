@@ -95,3 +95,4 @@ gem "recaptcha" # https://github.com/ambethia/recaptcha
 gem "noticed", "~> 1.6"
 gem 'draper' # https://github.com/drapergem/draper
 gem "figaro" # https://github.com/laserlemon/figaro
+gem 'exception_notification' # https://github.com/smartinez87/exception_notification
