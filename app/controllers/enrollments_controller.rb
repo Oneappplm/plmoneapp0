@@ -241,7 +241,7 @@ class EnrollmentsController < ApplicationController
 					:admitting_facility_state,
 					:admitting_facility_zip_code,
 					:admitting_facility_arrangments,
-					:welcome_letter_status, :welcome_letter_subject, :welcome_letter_message, {welcome_letter_attachments: []},
+					:welcome_letter_status, :welcome_letter_subject, :welcome_letter_message, :check_welcome_letter, :check_co_caqh, :check_mn_caqh_state_release_form, :check_mn_caqh_authorization_form, :check_caqh_standard_authorization, {welcome_letter_attachments: []},
 					contact_personnels_attributes: [:id, :group_personnel_name, :group_personnel_email, :group_personnel_phone_number, :group_personnel_fax_number, :group_personnel_position,
 						:_destroy],
 					details_attributes: [:id, :individual_ownership_first_name, :individual_ownership_middle_name, :email_address, :individual_ownership_last_name,:individual_ownership_title, :individual_ownership_ssn, :individual_ownership_dob, :individual_ownership_percent_of_ownership, :individual_ownership_effective_date, :individual_ownership_control_date, :roles,
