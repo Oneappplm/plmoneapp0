@@ -66,7 +66,7 @@ class Provider < ApplicationRecord
   has_many :ins_policies, class_name: 'ProviderInsPolicy', dependent: :destroy
   has_many :time_lines, class_name: 'ProvidersTimeLine', dependent: :destroy
   has_many :deleted_document_logs, class_name: 'ProviderDeletedDocumentLog', dependent: :destroy
-  has_many :missing_field_submissions, class_name: 'ProvidersMissingFieldSubmission',dependent: :destroy
+  has_many :missing_field_submissions, class_name: 'ProvidersMissingFieldSubmission', dependent: :destroy
   has_many :payer_logins, class_name: 'ProvidersPayerLogin', dependent: :destroy
   has_many :enrollments, class_name: 'EnrollmentProvider', dependent: :destroy
 

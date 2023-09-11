@@ -98,9 +98,12 @@ end
   end
 
 		def document_deleted_logs
-			provider = Provider.find(params[:provider_id])
+			provider = Provider.find_by(id: params[:provider_id])
+
+			deleted_notes = provider.present?	? provider.deleted_document_logs.map {	|log| log.deleted_notes } : []
+
 			render json: {
-				results:  provider.deleted_document_logs.map {	|log| log.deleted_notes }
+				results: deleted_notes
 			}
 		end
 
