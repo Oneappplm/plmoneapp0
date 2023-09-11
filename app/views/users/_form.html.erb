@@ -166,7 +166,6 @@
         method: 'POST',
         data: { authenticity_token: csrfToken, data: {name: name} },
         success: function(data) {
-          console.log(data)
           var container = document.getElementById('user_user_role');
           var newElement = document.createElement('option')
 					newElement.setAttribute("value", data.slug);
@@ -174,6 +173,7 @@
           container.appendChild(newElement)
           form.elements.namedItem("name").value = ""
 					$('#cancel-add-role').click();
+          $('.loading-overlay').css('display',"none");
         }
       })
     }
