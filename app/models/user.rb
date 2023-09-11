@@ -124,7 +124,7 @@ class User < ApplicationRecord
       when 'administrator'
         ['super_administrator']
       else
-        []
+        ['encoder','calls_agent','agent']
     end
   end
 
