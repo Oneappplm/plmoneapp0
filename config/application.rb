@@ -41,8 +41,8 @@ module PlmhealthoneApp
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.default_url_options = { host: 'plmhealth.net' }
     config.action_mailer.smtp_settings = {
-      :address              => "smtp.elasticemail.com",
-      :port                 => 2525,
+      :address              => Figaro.env.smtp_address,
+      :port                 => Figaro.env.smtp_port,
       :user_name            => Figaro.env.smtp_email,
       :password             => Figaro.env.smtp_password,
       :authentication       => "plain",
