@@ -34,11 +34,18 @@ class Provider < ApplicationRecord
   mount_uploader :cv_file, DocumentUploader
   mount_uploader :telehealth_license_copy_file, DocumentUploader
   mount_uploaders :welcome_letter_attachments, DocumentUploader
-
+  mount_uploaders :state_license_copies, DocumentUploader
+  mount_uploaders :dea_copies, DocumentUploader
+  mount_uploaders :w9_form_copies, DocumentUploader
+  mount_uploaders :certificate_insurance_copies, DocumentUploader
+  mount_uploaders :driver_license_copies, DocumentUploader
+  mount_uploaders :board_certification_copies, DocumentUploader
+  mount_uploaders :caqh_app_copies, DocumentUploader
+  mount_uploaders :cv_copies, DocumentUploader
+  mount_uploaders :telehealth_license_copies, DocumentUploader
 
   # validates_format_of :telephone_number, with: /\A\d{3}-\d{4}\z/, message: "should be in the format xxx-xxxx"
   # validates_format_of :ext, with: /\A\d{2}\z/, message: "should be in the format xx"
-
 
   belongs_to :group, class_name: 'EnrollmentGroup', foreign_key: 'enrollment_group_id', optional: true
   # relationhsip to be removed - update: provider can have many group_dcos
@@ -459,5 +466,41 @@ class Provider < ApplicationRecord
 
   def group_dcos
     GroupDco.where(id: self.dcos.split(",")) rescue []
+  end
+
+  def remove_state_license_copies
+    remove_state_license_copies! unless state_license_copies.present?
+  end
+
+  def remove_dea_copies
+    remove_dea_copies! unless dea_copies.present?
+  end
+
+  def remove_w9_form_copies
+    remove_w9_form_copies! unless w9_form_copies.present?
+  end
+
+  def remove_certificate_insurance_copies
+    remove_certificate_insurance_copies! unless certificate_insurance_copies.present?
+  end
+
+  def remove_driver_license_copies
+    remove_driver_license_copies! unless driver_license_copies.present?
+  end
+
+  def remove_board_certification_copies
+    remove_board_certification_copies! unless board_certification_copies.present?
+  end
+
+  def remove_caqh_app_copies
+    remove_caqh_app_copies! unless caqh_app_copies.present?
+  end
+
+  def remove_cv_copies
+    remove_cv_copies! unless cv_copies.present?
+  end
+
+  def remove_telehealth_license_copies
+    remove_telehealth_license_copies! unless telehealth_license_copies.present?
   end
 end
