@@ -10,6 +10,7 @@ class ProvidersController < ApplicationController
 		if !current_user.can_access_all_groups? && !current_user.super_administrator?
 			@providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
 		end
+
 		@providers = @providers.reorder("f asc NULLS last", "m asc NULLS last", "l asc NULLS last").paginate(per_page: 10, page: params[:page] || 1)
 	end
 
@@ -54,7 +55,18 @@ class ProvidersController < ApplicationController
   end
 
 	def update
-    if @provider.update(provider_params)
+		@provider.assign_attributes(provider_params)
+		@provider.remove_state_license_copies
+		@provider.remove_dea_copies
+		@provider.remove_w9_form_copies
+		@provider.remove_certificate_insurance_copies
+		@provider.remove_driver_license_copies
+		@provider.remove_board_certification_copies
+		@provider.remove_caqh_app_copies
+		@provider.remove_cv_copies
+		@provider.remove_telehealth_license_copies
+
+  if @provider.save(validate: false)
 			@provider.update updated_by: current_user&.full_name
 			if params[:from_notifications].present?
         submission = @provider.create_missing_field_submission
@@ -151,7 +163,7 @@ end
     payer_login = @provider.payer_logins.build if @provider.payer_logins.blank?
     payer_login.questions.build if payer_login
   end
-	
+
 
   def set_overview_details
     if current_user.can_access_all_groups? || current_user.super_administrator?
@@ -257,7 +269,8 @@ end
 					:rn_explain,
 					:cnp_explain,
 					:license_explain,
-					:welcome_letter_status, :welcome_letter_subject, :welcome_letter_message, {welcome_letter_attachments: []},
+					:welcome_letter_status, :welcome_letter_subject, :welcome_letter_message, :check_welcome_letter, :check_co_caqh, :check_mn_caqh_state_release_form, :check_mn_caqh_authorization_form, :check_caqh_standard_authorization,
+					{ welcome_letter_attachments: [], state_license_copies: [], dea_copies: [], w9_form_copies: [], certificate_insurance_copies: [], driver_license_copies: [], board_certification_copies: [], caqh_app_copies: [], cv_copies: [], telehealth_license_copies: [] },
 					#taxonomies_attributes: [:id, :taxonomy_code, :specialty, :_destroy],
 					licenses_attributes: [:id, :license_number, :license_effective_date, :license_expiration_date, :state_id, :license_state_renewal_date, :no_state_license, :license_type, :_destroy],
 					np_licenses_attributes: [:id, :np_license_number, :state_id, :np_license_effective_date, :np_license_expiration_date, :np_license_renewal_effective_date, :no_np_license, :_destroy],
@@ -274,7 +287,7 @@ end
 					medicares_attributes: [:id, :ptan_number, :medicare_username, :password, :question, :answer, :effective_date, :reval_date, :notes, :_destroy],
 					cnp_licenses_attributes: [:id, :cnp_license_number, :state_id, :effective_date, :expiration_date, :cnp_license_renewal_effective_date, :no_cnp_license, :_destroy],
 					ins_policies_attributes: [:id, :ins_policy_number, :effective_date, :expiration_date, :_destroy],
-					payer_logins_attributes: [:id, :enrollment_payer, :username, :password, :state_id, :notes, :_destroy, questions_attributes: [:id, :question, :answer]],
+					payer_logins_attributes: [:id, :enrollment_payer, :username, :password, :state_id, :notes, :_destroy, questions_attributes: [:id, :question, :answer]]
 			)
 	end
 end

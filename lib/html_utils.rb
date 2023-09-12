@@ -282,4 +282,58 @@ module HtmlUtils
     multi_select.html_safe
   end
 
+  def multiple_file_uploads **options
+    return unless options[:model].present?
+
+    options[:input_field_name] ||= ''
+    options[:input_model_name] ||= options[:model].class.name.downcase
+    options[:input_field_label] ||= options[:input_field_name].titleize
+    options[:input_field_placeholder] ||= options[:input_field_label]
+    options[:input_field_css_class] ||= 'form-control border border-dark'
+    options[:anchor_link] ||= nil
+    options[:anchor_target] ||= '_blank'
+    options[:anchor_label] ||= 'download template here'
+
+    input_file_name = "#{ options[:input_model_name] }[#{ options[:input_field_name] }][]"
+
+    html = <<-HTML
+        <label>
+          #{ options[:input_field_label] }
+      HTML
+
+    if options[:anchor_link].present?
+      html += <<-HTML
+          <a href="#{ options[:anchor_link] }" target="#{ options[:anchor_target] }">#{ options[:anchor_label] }</a>
+        HTML
+    end
+
+    html += <<-HTML
+        </label>
+        <input name="#{ input_file_name }" type="hidden" value="" autocomplete="off">
+        <input placeholder="#{ options[:input_field_placeholder] }" class="#{ options[:input_field_css_class] }" multiple="multiple" type="file" name="#{ input_file_name }">
+      HTML
+
+    if options[:model].send(options[:input_field_name]).present? && !options[:model].send('pending_submitted_documents').include?(options[:input_field_name])
+      html += <<-HTML
+        <div class="d-flex gap-2">
+      HTML
+      options[:model].send(options[:input_field_name]).each do |file|
+        html += <<-HTML
+          <div class="upload-file">
+            <input multiple="multiple" value="#{ file.identifier }" autocomplete="off" type="hidden" name="#{ input_file_name }">
+            #{ generate_view_link(file_url: file.url, link_title: file.identifier, remove_icon: true) }
+          </div>
+        HTML
+      end
+      html += <<-HTML
+        </div>
+      HTML
+    else
+      html += <<-HTML
+        <span class="text-muted">No File Uploaded</span>
+      HTML
+    end
+
+    html.html_safe
+  end
 end
