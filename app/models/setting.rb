@@ -9,4 +9,5 @@ class Setting < ApplicationRecord
 	def plmhealthoneapp? = client_name == 'plmhealthoneapp'
 	def hvhs? = client_name == 'hvhs'
 	def qualifacts? = client_name == 'qualifacts'
+  def cignahealth? = client_name == 'cignahealth'
 end

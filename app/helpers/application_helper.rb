@@ -159,6 +159,8 @@ module ApplicationHelper
   def current_logo
    @current_logo ||= if current_setting.qualifacts?
       'qualifacts-logo.svg'
+    elsif current_setting.cignahealth?
+      'cigna.png'
     else
       'plm-logo-3.png'
     end
@@ -167,6 +169,8 @@ module ApplicationHelper
   def current_logo_sm
     @current_logo_sm ||= if current_setting.qualifacts?
       'qualifacts-logo-sm.svg'
+    elsif current_setting.cignahealth?
+      ''
     else
       'plm-logo-square.png'
     end
