@@ -81,12 +81,10 @@ class EnrollmentsController < ApplicationController
 		@view_only = params[:view_only] ||	false
 		@enrollment_group = EnrollmentGroup.find params[:id]
 
+		@enrollment_group.details.build if @enrollment_group.details.blank?
+
 		if @enrollment_group.contact_personnels.blank?
 			@enrollment_group.contact_personnels.build
-		end
-
-		if @enrollment_group.details.blank?
-			@enrollment_group.details.build
 		end
 
 		if @enrollment_group.service_locations.blank?
@@ -179,6 +177,8 @@ class EnrollmentsController < ApplicationController
 				 :ext,
 				 #to be deleted
 				 :fax_number,
+				 :billing_address_autofill,
+				 :remittance_address_autofill,
 				 :billing_contact_name,
 				 :billing_contact_email,
 				 :billing_contact_number,

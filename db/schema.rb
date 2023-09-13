@@ -10,9 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_13_123333) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
 
   create_table "ahoy_events", force: :cascade do |t|
@@ -176,6 +175,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "egd_logs", force: :cascade do |t|
+    t.bigint "enroll_groups_detail_id", null: false
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enroll_groups_detail_id"], name: "index_egd_logs_on_enroll_groups_detail_id"
+  end
+
   create_table "enroll_groups", force: :cascade do |t|
     t.string "name"
     t.string "first_name"
@@ -294,6 +301,24 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.index ["enrollment_group_id"], name: "index_enrollment_group_deleted_doc_logs_on_enrollment_group_id"
   end
 
+  create_table "enrollment_group_svc_locations", force: :cascade do |t|
+    t.bigint "enrollment_group_id"
+    t.string "primary_service_non_office_area"
+    t.string "primary_service_location_apps"
+    t.string "primary_service_zip_code"
+    t.string "primary_service_office_email"
+    t.string "primary_service_fax"
+    t.string "primary_service_office_website"
+    t.string "primary_service_crisis_phone"
+    t.string "primary_service_location_other_phone"
+    t.string "primary_service_appt_scheduling"
+    t.string "primary_service_interpreter_language"
+    t.string "primary_service_telehealth_only_state"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enrollment_group_id"], name: "index_enrollment_group_svc_locations_on_enrollment_group_id"
+  end
+
   create_table "enrollment_groups", force: :cascade do |t|
     t.string "group_name"
     t.string "group_code"
@@ -344,6 +369,43 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.date "void_check_date_expiration"
     t.date "bank_letter_signed_date"
     t.date "bank_letter_date_expiration"
+    t.string "telehealth_providers"
+    t.string "admitting_privileges"
+    t.string "name_admitting_physician"
+    t.string "facility_location"
+    t.string "facility_name"
+    t.string "admitting_facility_address_line1"
+    t.string "admitting_facility_address_line2"
+    t.string "admitting_facility_city"
+    t.string "admitting_facility_state"
+    t.string "admitting_facility_zip_code"
+    t.string "admitting_facility_arrangments"
+    t.string "remmitance_contact_name"
+    t.string "remmitance_contact_number"
+    t.string "remmitance_contact_email"
+    t.string "billing_contact_name"
+    t.string "billing_contact_number"
+    t.string "billing_contact_email"
+    t.datetime "qualifacts_contract_effective_date"
+    t.date "new_group_notification"
+    t.date "noti_group_start_date"
+    t.date "noti_welcome_letter_sent"
+    t.date "notification_enrollment_submit_group"
+    t.string "noti_group_services"
+    t.string "noti_status"
+    t.date "noti_work_end_date"
+    t.string "group_note"
+    t.boolean "welcome_letter_status", default: false
+    t.string "welcome_letter_subject"
+    t.text "welcome_letter_message"
+    t.json "welcome_letter_attachments"
+    t.boolean "check_welcome_letter", default: false
+    t.boolean "check_co_caqh", default: false
+    t.boolean "check_mn_caqh_state_release_form", default: false
+    t.boolean "check_mn_caqh_authorization_form", default: false
+    t.boolean "check_caqh_standard_authorization", default: false
+    t.string "billing_address_autofill"
+    t.string "remittance_address_autofill"
   end
 
   create_table "enrollment_groups_contact_details", force: :cascade do |t|
@@ -460,6 +522,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.string "group_id"
     t.string "payer_state"
     t.json "upload_payor_file"
+    t.string "payor_username"
+    t.string "payor_password"
+    t.string "processing_date"
+    t.string "terminated_date"
     t.index ["enrollment_provider_id"], name: "index_enrollment_providers_details_on_enrollment_provider_id"
   end
 
@@ -469,6 +535,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["enrollment_providers_detail_id"], name: "index_epd_logs_on_enrollment_providers_detail_id"
+  end
+
+  create_table "epd_questions", force: :cascade do |t|
+    t.bigint "enrollment_providers_detail_id", null: false
+    t.string "question"
+    t.string "answer"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enrollment_providers_detail_id"], name: "index_epd_questions_on_enrollment_providers_detail_id"
   end
 
   create_table "group_contacts", force: :cascade do |t|
@@ -572,6 +647,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.string "medicare_authorized_official"
     t.string "collab_name"
     t.string "collab_npi"
+    t.boolean "is_primary_location"
     t.index ["enrollment_group_id"], name: "index_group_dcos_on_enrollment_group_id"
   end
 
@@ -823,6 +899,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.integer "state_id"
     t.string "license_state_renewal_date"
     t.string "no_state_license"
+    t.string "license_type"
     t.index ["provider_id"], name: "index_provider_licenses_on_provider_id"
   end
 
@@ -1164,6 +1241,40 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.string "prof_liability_coverage_amount_aggregate"
     t.string "prof_liability_policy_number"
     t.string "dcos", default: "f"
+    t.date "new_provider_notification"
+    t.date "notification_start_date"
+    t.date "welcome_letter_sent"
+    t.date "notification_enrollment_submit"
+    t.string "notification_services"
+    t.date "send_welcome_letter"
+    t.boolean "welcome_letter_status", default: false
+    t.string "welcome_letter_subject"
+    t.text "welcome_letter_message"
+    t.json "welcome_letter_attachments"
+    t.string "dea_not_applicable"
+    t.string "cds_not_applicable"
+    t.string "rn_not_applicable"
+    t.string "aprn_not_applicable"
+    t.string "state_not_applicable"
+    t.string "dea_explain"
+    t.string "cds_explain"
+    t.string "rn_explain"
+    t.string "cnp_explain"
+    t.string "license_explain"
+    t.boolean "check_welcome_letter", default: false
+    t.boolean "check_co_caqh", default: false
+    t.boolean "check_mn_caqh_state_release_form", default: false
+    t.boolean "check_mn_caqh_authorization_form", default: false
+    t.boolean "check_caqh_standard_authorization", default: false
+    t.json "state_license_copies"
+    t.json "dea_copies"
+    t.json "w9_form_copies"
+    t.json "certificate_insurance_copies"
+    t.json "driver_license_copies"
+    t.json "board_certification_copies"
+    t.json "caqh_app_copies"
+    t.json "cv_copies"
+    t.json "telehealth_license_copies"
   end
 
   create_table "providers_missing_field_submissions", force: :cascade do |t|
@@ -1338,6 +1449,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.string "invited_by_type"
     t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
+    t.string "otp_token"
+    t.string "otp_code"
+    t.datetime "otp_code_expires_at"
+    t.boolean "logout_on_close", default: false
+    t.datetime "last_logout_on_close"
+    t.boolean "can_access_all_groups"
+    t.boolean "is_provider_account"
+    t.string "accessible_provider"
     t.index ["api_token"], name: "index_users_on_api_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
@@ -1428,8 +1547,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_003847) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "egd_logs", "enroll_groups_details"
   add_foreign_key "enrollment_group_deleted_doc_logs", "enrollment_groups"
   add_foreign_key "epd_logs", "enrollment_providers_details"
+  add_foreign_key "epd_questions", "enrollment_providers_details"
   add_foreign_key "group_contacts", "enrollment_groups"
   add_foreign_key "group_dco_old_location_addresses", "group_dcos"
   add_foreign_key "group_dcos", "enrollment_groups"
