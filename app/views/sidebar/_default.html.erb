@@ -155,13 +155,14 @@
 															</a>
 														</div>
 													<% end %>
-
-													<div class="nav-item mb-1">
-														<a class="nav-link <%= active_menu('settings') %> <%= active_menu('index') %>" href="<%= settings_path %>" data-placement="left">
-															<i class="bi bi-gear nav-icon"></i>
-															<span class="nav-link-title">Settings</span>
-														</a>
-													</div>
+													<% if current_user&.super_administrator? || current_user&.administrator? %>
+														<div class="nav-item mb-1">
+															<a class="nav-link <%= active_menu('settings') %> <%= active_menu('index') %>" href="<%= settings_path %>" data-placement="left">
+																<i class="bi bi-gear nav-icon"></i>
+																<span class="nav-link-title">Settings</span>
+															</a>
+														</div>
+													<% end %>
 										</div>
 							</div>
 				</div>
