@@ -1,4 +1,6 @@
 class Setting < ApplicationRecord
+	mount_uploader :logo_file, ImageUploader
+
 	class << self
 		def update_setting(params)
 			setting = Setting.take || Setting.new
