@@ -192,23 +192,24 @@
    <div class="row mb-3">
       <div class="col-lg-6">
          <label class="text-dark-grey">Address <span class="text-danger">*</span></label>
-         <%= f.text_field :office_address, class: form_control_classes(danger: @enrollment_group.office_address.blank? && @enrollment_group.persisted?), required: true, placeholder: 'Type here...' %>
+         <%= f.text_field :office_address, class: form_control_classes(danger: @enrollment_group.office_address.blank? && @enrollment_group.persisted?), required: true, placeholder: 'Type here...', id: 'office_address' %>
       </div>
       <div class="col-lg-6">
          <label class="text-dark-grey">City <span class="text-danger">*</span></label>
-         <%= f.text_field :city, class: form_control_classes(danger: @enrollment_group.city.blank? && @enrollment_group.persisted?), required: true, placeholder: 'Type here...' %>
+         <%= f.text_field :city, class: form_control_classes(danger: @enrollment_group.city.blank? && @enrollment_group.persisted?), required: true, placeholder: 'Type here...', id: 'city' %>
       </div>
    </div>
    <div class="row mb-5">
       <div class="col-lg-6">
          <label class="text-dark-grey">State <span class="text-danger">*</span></label>
-         <%= f.collection_select :state, @states, :name, :name, { prompt: 'Select option' }, { class: form_control_classes(danger: @enrollment_group.state.blank? && @enrollment_group.persisted?), required: true } %>
+         <%= f.collection_select :state, @states, :name, :name, { prompt: 'Select option' }, { class: form_select_classes(danger: @enrollment_group.state.blank? && @enrollment_group.persisted?), required: true, id: 'state' } %>
       </div>
       <div class="col-lg-6">
          <label class="text-dark-grey">Zip Code <span class="text-danger">*</span></label>
-         <%= f.text_field :zip_code, class: form_control_classes(danger: @enrollment_group.zip_code.blank? && @enrollment_group.persisted?), required: true, placeholder: 'Type here...' %>
+         <%= f.text_field :zip_code, class: form_control_classes(danger: @enrollment_group.zip_code.blank? && @enrollment_group.persisted?), required: true, placeholder: 'Type here...', id: 'zip_code' %>
       </div>
    </div>
+
    <div class="row mb-3">
       <div class="col-lg-12">
          <h5 class="mb-0">Pay To/Billing Address (where checks are mailed)</h5>
@@ -217,21 +218,21 @@
    <div class="row mb-3">
       <div class="col-lg-6">
          <label class="text-dark-grey">Address or P.O. Box</label>
-         <%= f.text_field :po_box, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+         <%= f.text_field :po_box, class: 'form-control border border-dark', placeholder: 'Type here...', id: 'po_box' %>
       </div>
       <div class="col-lg-6">
          <label class="text-dark-grey">City</label>
-         <%= f.text_field :po_box_city, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+         <%= f.text_field :po_box_city, class: 'form-control border border-dark', placeholder: 'Type here...', id: 'po_box_city' %>
       </div>
    </div>
    <div class="row mb-5">
       <div class="col-lg-6">
          <label class="text-dark-grey">State</label>
-         <%= f.collection_select :po_box_state, @states, :name, :name, { prompt: 'Select option' }, { class: 'form-control border border-dark' } %>
+         <%= f.collection_select :po_box_state, @states, :name, :name, { prompt: 'Select option' }, { class: 'form-select border border-dark', id: 'po_box_state' } %>
       </div>
       <div class="col-lg-6">
          <label class="text-dark-grey">Zip Code</label>
-         <%= f.text_field :po_box_zip_code, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+         <%= f.text_field :po_box_zip_code, class: 'form-control border border-dark', placeholder: 'Type here...', id: 'po_box_zip_code' %>
       </div>
    </div>
    <div class="row mb-5">
@@ -245,11 +246,16 @@
       </div>
    </div>
    <div class="row mb-5">
-      <div class="col-lg-6">
+      <div class="col-lg-6 mb-2">
          <label class="text-dark-grey">Contact Personnel Email Address</label>
          <%= f.email_field :billing_contact_email, class: 'form-control border border-dark', placeholder: 'Type here...' %>
       </div>
+     <div class="form-row d-flex align-items-center gap-1">
+      <%= f.check_box :billing_address_autofill, id: 'billing-admin-autofill' %>
+      <%= f.label :billing_address_autofill, "Same as Administration Office Address", class: 'text-dark-grey' %>
+      </div>
    </div>
+
    <div class="row mb-3">
       <div class="col-lg-12">
          <h5 class="mb-0">Remittance Address (if different from billing address)</h5>
@@ -258,21 +264,21 @@
    <div class="row mb-3">
       <div class="col-lg-6">
          <label class="text-dark-grey">Address or PO Box</label>
-         <%= f.text_field :ca_po_box_address, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+         <%= f.text_field :ca_po_box_address, class: 'form-control border border-dark', placeholder: 'Type here...', id: 'remit-po-box' %>
       </div>
       <div class="col-lg-6">
          <label class="text-dark-grey">City</label>
-         <%= f.text_field :ca_po_box_city, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+         <%= f.text_field :ca_po_box_city, class: 'form-control border border-dark', placeholder: 'Type here...', id: 'remit-city' %>
       </div>
    </div>
    <div class="row mb-3">
       <div class="col-lg-6">
          <label class="text-dark-grey">State</label>
-         <%= f.collection_select :ca_po_box_state, @states, :name, :name, { prompt: 'Select option' }, { class: 'form-control border border-dark' } %>
+         <%= f.collection_select :ca_po_box_state, @states, :name, :name, { prompt: 'Select option' }, { class: 'form-select border border-dark', id: 'remit-state'  } %>
       </div>
       <div class="col-lg-6">
          <label class="text-dark-grey">Zip Code</label>
-         <%= f.text_field :ca_po_box_zip_code, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+         <%= f.text_field :ca_po_box_zip_code, class: 'form-control border border-dark', placeholder: 'Type here...', id: 'remit-zipcode'  %>
       </div>
    </div>
    <div class="row mb-5">
@@ -280,9 +286,13 @@
          <label class="text-dark-grey">Contact Personnel Name</label>
          <%= f.text_field :remmitance_contact_name, class: 'form-control border border-dark', placeholder: 'Type here...' %>
       </div>
-      <div class="col-lg-6">
+      <div class="col-lg-6 mb-2">
          <label class="text-dark-grey">Contact Personnel Phone Number</label>
          <%= f.text_field :remmitance_contact_number, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+      </div>
+       <div class="form-row  d-flex align-items-center gap-1">
+            <%= f.check_box :remittance_address_autofill, id: 'remittance-admin-autofill' %>
+            <%= f.label :remittance_address_autofill, "Same as Administration Office Address", class: 'text-dark-grey' %>
       </div>
    </div>
    <div class="row mb-5">
@@ -641,6 +651,52 @@
             showHideDetailFields($(this), '.status-inactive-field', 'hide')
          }
       })
+
+      //Autofill Billing Address
+      $(document).ready(function () {
+    $('#billing-admin-autofill').click(function () {
+      if ($(this).is(':checked')) {
+        // Copy values from Administration Office Address to Billing Address
+        var adminAddress = $('#office_address').val();
+        var adminCity = $('#city').val();
+        var adminState = $('#state').val();
+        var adminZipCode = $('#zip_code').val();
+
+        $('#po_box').val(adminAddress);
+        $('#po_box_city').val(adminCity);
+        $('#po_box_state').val(adminState);
+        $('#po_box_zip_code').val(adminZipCode);
+      } else {
+        // Clear Billing Address fields if the checkbox is unchecked
+        $('#po_box').val('');
+        $('#po_box_city').val('');
+        $('#po_box_state').val('');
+        $('#po_box_zip_code').val('');
+      }
+    });
+  });
+
+   //Autofill Remittance Address
+   $(document).ready(function () {
+    $('#remittance-admin-autofill').click(function () {
+      if ($(this).is(':checked')) {
+        var adminAddress = $('#office_address').val();
+        var adminCity = $('#city').val();
+        var adminState = $('#state').val();
+        var adminZipCode = $('#zip_code').val();
+
+        $('#remit-po-box').val(adminAddress);
+        $('#remit-city').val(adminCity);
+        $('#remit-state').val(adminState);
+        $('#remit-zipcode').val(adminZipCode);
+      } else {
+        $('#remit-po-box').val('');
+        $('#remit-city').val('');
+        $('#remit-state').val('');
+        $('#remit-zipcode').val('');
+      }
+    });
+  });
 
         function showHideDetailFields(dropDown, divClass, mode) {
           if (mode == 'show')
