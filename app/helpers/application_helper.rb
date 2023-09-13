@@ -157,22 +157,22 @@ module ApplicationHelper
 	end
 
   def current_logo
+			return current_setting.logo_file.url if current_setting.logo_file.present?
+
    @current_logo ||= if current_setting.qualifacts?
-      'qualifacts-logo.svg'
-    elsif current_setting.cignahealth?
-      'cigna.png'
+					asset_path('qualifacts-logo.svg')
     else
-      'plm-logo-3.png'
+					asset_path('plm-logo-3.png')
     end
   end
 
   def current_logo_sm
+			return current_setting.logo_file.url if current_setting.logo_file.present?
+
     @current_logo_sm ||= if current_setting.qualifacts?
-      'qualifacts-logo-sm.svg'
-    elsif current_setting.cignahealth?
-      ''
+						asset_path('qualifacts-logo-sm.svg')
     else
-      'plm-logo-square.png'
+						asset_path('plm-logo-square.png')
     end
   end
 
@@ -432,7 +432,7 @@ module ApplicationHelper
 				['Inactive/Termed','inactive-termed'],
 				['Pending','pending'],
 		]
-		end		
+		end
 
   def time_line_class(status)
     cls = "danger"
