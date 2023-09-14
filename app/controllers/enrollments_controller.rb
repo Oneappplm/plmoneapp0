@@ -3,6 +3,7 @@ class EnrollmentsController < ApplicationController
 	before_action :get_states, only: %i[client_search client_portal virtual_review_committee provider_source all_clients new_dco new_group data_access edit_group]
 	before_action :get_provider_types, only: %i[client_search client_portal virtual_review_committee provider_source provider_enrollment new_group data_access edit_group]
 	before_action :set_pagination_params, only: [:new_user, :edit_user]
+
 	def index
 		@enrollment_group = Group.all
 	end
@@ -53,7 +54,10 @@ class EnrollmentsController < ApplicationController
 
 	#GROUP
 	def groups
-		if current_user.can_access_all_groups? || current_user.super_administrator?
+		search_param = params[:group_search]
+		if search_param.present?
+				@enrollment_groups = EnrollmentGroup.where("group_name LIKE ? OR npi_digit_type LIKE ?", "%#{search_param}%", "%#{search_param}%")
+		elsif current_user.can_access_all_groups? || current_user.super_administrator?
       @enrollment_groups = EnrollmentGroup.all
     else
       @enrollment_groups = current_user.enrollment_groups
@@ -254,5 +258,5 @@ class EnrollmentsController < ApplicationController
 		def set_pagination_params
 			@per_page = params[:per_page] || 100
 			@page = params[:page] || 1
-		end
+		ends
 end

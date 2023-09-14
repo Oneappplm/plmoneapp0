@@ -180,7 +180,7 @@
       <div class="row mb-3">
       <div class="col-lg-6">
         <!-- new field -->
-        <label class="text-dark-grey">Zipcode <span class="text-red">*</span></label>
+        <label class="text-dark-grey">Zipcode (+4 Zip Code) <span class="text-red">*</span></label>
         <%= f.text_field :zip_code, placeholder: 'Type here...', class: form_control_classes(danger: @provider.zip_code.blank? && @provider.persisted?), required: true %>
       </div>
     </div>
@@ -575,7 +575,7 @@
         </div>
       </div>
       <div class="col-lg-6">
-        <label class="text-dark-grey">Zip Code</label>
+        <label class="text-dark-grey">Zip Code (+4 Zip Code)</label>
         <%= f.text_field :prof_liability_zipcode,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
       </div>
     </div>
@@ -949,18 +949,7 @@
         //   }
         // })
 
-         $('.enrollment-payer').each(function(){
-          var id = $(this).attr('id');
-          var value = $(this).data('value');
-
-          setTimeout(function(){
-             $.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
-                VirtualSelect.init({ele: '#' + id, search: true });
-                document.querySelector('#' + id).setOptions(data['result']);
-                document.querySelector('#' + id).setValue(value);
-             });
-          }, 1000);
-        });
+        
 
         $('.payer-state').each(function(){
           var id = $(this).attr('id');
@@ -1055,8 +1044,8 @@
          var newEnrollmentdetails = detailsFields.last().clone();
          var lastId = detailsFields.length - 1;
          var newId = lastId + 1;
-         provider_payer_logins_attributes_0_enrollment_payer
-         var enrollment_payer_id = "provider_payer_logins_attributes_" + newId + "_enrollment_payer";
+       
+        // var enrollment_payer_id = "provider_payer_logins_attributes_" + newId + "_enrollment_payer";
          var payer_state_id = "provider_payer_logins_attributes_" + newId + "_state_id";
 
           newEnrollmentdetails.find("[id^='provider_payer_logins_attributes_']").each(function() {

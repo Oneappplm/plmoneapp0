@@ -1,4 +1,5 @@
 class EnrollmentGroup < ApplicationRecord
+
   mount_uploader :ownership_file, DocumentUploader
   mount_uploader :w9_file, DocumentUploader
   mount_uploader :cp575_file, DocumentUploader
