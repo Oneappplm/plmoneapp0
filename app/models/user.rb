@@ -173,6 +173,7 @@ class User < ApplicationRecord
   end
 
   def default_page
+   return 'enrollment_clients' if is_provider_account?
    return 'overview' if roles.find_by(page: 'overview')&.can_read
 
    pages = []

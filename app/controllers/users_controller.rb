@@ -34,7 +34,7 @@ class UsersController < ApplicationController
 	end
 
 	def update
-		enrollment_group_ids = user_params.delete(:enrollment_group_ids)&.split(",").map(&:to_i)
+		enrollment_group_ids = user_params.delete(:enrollment_group_ids)&.split(",")&.map(&:to_i)
 		updated_params = user_params
 		if enrollment_group_ids.present? && enrollment_group_ids.length > 0
 			# remove unchecked enrollment_groups
@@ -48,6 +48,8 @@ class UsersController < ApplicationController
 		else
 			@user.users_enrollment_groups.destroy_all
 		end
+
+		@user.accessible_provider = nil if user_params[:is_provider_account] == "false"
 
 		if @user.update(updated_params.except(:enrollment_group_ids))
 			redirect_to users_path, notice: 'User has been successfully updated.'

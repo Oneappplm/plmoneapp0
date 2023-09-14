@@ -101,7 +101,13 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def set_providers
-    @providers = Provider.search_by_params(params)
+    @providers = Provider.all
+
+    if current_user.accessible_provider.present?
+      @providers = @providers.where(id: current_user.accessible_provider)
+    end
+
+    @providers = @providers.search_by_params(params)
 
     # this will need refactoring just went with this for now for hotfix
     if !params[:enrollment_status].blank?
@@ -113,7 +119,13 @@ class EnrollmentClientsController < ApplicationController
     end
 
     if !current_user.can_access_all_groups? && !current_user.super_administrator?
-      @providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
+      enrollment_group_filter = current_user.enrollment_groups.present? ? "enrollment_group_id IN (#{current_user.enrollment_groups.pluck(:id).map{|s| "'#{s.to_s}'"}.join(',')})" : nil
+      accessible_provider_filter = current_user.accessible_provider.present? ? "id = #{current_user.accessible_provider}" : nil
+      if enrollment_group_filter.present? && accessible_provider_filter.present?
+        enrollment_group_filter += " OR "
+      end
+
+      @providers = @providers.where("#{enrollment_group_filter}#{accessible_provider_filter}")
     end
 
     @providers = @providers.paginate(per_page: 50, page: params[:page] || 1)
@@ -133,7 +145,13 @@ class EnrollmentClientsController < ApplicationController
     end
 
     if !current_user.can_access_all_groups? && !current_user.super_administrator?
-      @incomplete_providers = @incomplete_providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
+      enrollment_group_filter = current_user.enrollment_groups.present? ? "providers.enrollment_group_id IN (#{current_user.enrollment_groups.pluck(:id).map{|s| "'#{s.to_s}'"}.join(',')})" : nil
+      accessible_provider_filter = current_user.accessible_provider.present? ? "providers.id = #{current_user.accessible_provider}" : nil
+      if enrollment_group_filter.present? && accessible_provider_filter.present?
+        enrollment_group_filter += " OR "
+      end
+
+      @incomplete_providers = @incomplete_providers.where("#{enrollment_group_filter}#{accessible_provider_filter}")
     end
     @incomplete_providers = @incomplete_providers.paginate(per_page: 50, page: params[:page] || 1)
   end

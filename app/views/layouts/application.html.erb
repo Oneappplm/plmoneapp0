@@ -538,7 +538,12 @@
 
     if($(this).hasClass('to-change-value')) {
       var to_change = $(this).data('tochange');
-      $(this).hasClass('active') ? $('input[name="'+to_change+'"]').val('yes') : $('input[name="'+to_change+'"]').val('no');
+      var is_boolean_type = $(this).data('isbooleantype');
+      if(is_boolean_type == true) {
+        $(this).hasClass('active') ? $('input[name="'+to_change+'"]').val(true) : $('input[name="'+to_change+'"]').val(false);
+      } else {
+        $(this).hasClass('active') ? $('input[name="'+to_change+'"]').val('yes') : $('input[name="'+to_change+'"]').val('no');
+      }
     }
   });
 

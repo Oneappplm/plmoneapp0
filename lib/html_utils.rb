@@ -17,10 +17,11 @@ module HtmlUtils
     options[:hidden_field] ||= false
     options[:data] ||= current_provider_source.finder(options[:name])
     options[:data_value] ||= 'no'
+    options[:isbooleantype] ||= false
 
 		toggle = <<-HTML
 			<div class="#{ options[:container_class] }">
-        <button type="button" class="#{ options[:button_class] } #{ options[:data]&.active_class }" data-tochange="#{ options[:name] }" data-toshow="#{ options[:toshow] }" data-toggle="button" aria-pressed="false" autocomplete="off" data-tohide="#{options[:tohide]}">
+        <button type="button" class="#{ options[:button_class] } #{ options[:data]&.active_class }" data-tochange="#{ options[:name] }" data-toshow="#{ options[:toshow] }" data-toggle="button" aria-pressed="false" autocomplete="off" data-tohide="#{options[:tohide]}" data-isbooleantype="#{options[:isbooleantype]}">
           <div class="handle"></div>
         </button>
         <small class="ms-2 fw-semibold text-dark-grey">#{ options[:label] }</small>

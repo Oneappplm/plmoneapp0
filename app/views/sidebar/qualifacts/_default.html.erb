@@ -15,7 +15,7 @@
 							<div class="navbar-vertical-content">
 										<div id="navbarVerticalMenu" class="nav nav-pills nav-vertical card-navbar-nav px-0">
 													<!-- Collapse -->
-													<% if can_view?('enrollment_tracking') && ((current_setting.plmhealthoneapp? || current_setting.qualifacts?)) %>
+													<% if can_view?('enrollment_tracking') && (current_setting.plmhealthoneapp? || current_setting.qualifacts?) && !current_user.is_provider_account %>
 													<div class="nav-item mb-2">
 
 																<a class="nav-link <%= active_menu('providers,enrollment_providers,enroll_groups,client_provider_enrollments,enrollments') %> <%= current_setting.qualifacts? ? active_menu('dcos') : "" %>" href="<%= overview_providers_path %>" data-placement="left">
@@ -25,7 +25,7 @@
 													</div>
 													<% end %>
 
-													<% if can_view?('overview') %>
+													<% if can_view?('overview') && !current_user.is_provider_account %>
 													<div class="nav-item mb-2 nav-item-active">
 																<!-- ph-active -->
 																<a class="nav-link <%= active_menu('dashboard', 'dashboard') %>" href="<%= root_path %>">
@@ -35,7 +35,7 @@
 													</div>
 													<% end %>
 
-                          <% if can_view?('client_portal') && (current_setting.plmhealthoneapp? || current_setting.qualifacts?)%>
+                          <% if can_view?('client_portal') && (current_setting.plmhealthoneapp? || current_setting.qualifacts?) && !current_user.is_provider_account%>
                           <div class="nav-item mb-2">
                                 <div class="d-flex with-submenu align-items-center justify-content-between pe-3 <%= active_menu('pages,users', 'client_portal,virtual_review_committee,data_access,all_users,new') %>">
                                         <a class="nav-link has-submenu" href="javascript:void(0);" data-placement="left" data-submenu="client_submenu">
@@ -81,7 +81,7 @@
                                 </div>
                           </div>
                           <% end %>
-													<% if can_view?('enrollment_clients') && (current_setting.plmhealthoneapp? || current_setting.qualifacts?) %>
+													<% if can_view?('enrollment_clients') && !current_user.is_provider_account && (current_setting.plmhealthoneapp? || current_setting.qualifacts?) %>
 													<div class="nav-item mb-1">
 																<a class="nav-link <%= active_menu('enrollment_clients,alt_enrollment_groups,locations', 'index,dashboard,view_group,groups,show,documents,locations,enrollments,providers') %> <%= active_menu('index') %>" href="<%= dashboard_enrollment_clients_path %>" data-placement="left">
 																			<!-- <i class="bi-receipt nav-icon"></i> -->
@@ -92,7 +92,7 @@
 													</div>
 													<% end %>
 
-													<% if can_view?('provider_app') %>
+													<% if can_view?('provider_app') && !current_user.is_provider_account %>
 													<div class="nav-item mb-2">
 																<a class="nav-link <%= active_menu('provider_app') %>" href="<%= custom_provider_source_path %>" data-placement="left">
 																			<!-- <i class="bi-receipt nav-icon"></i> -->
@@ -102,7 +102,7 @@
 													</div>
 													<% end %>
 
-													<% if can_view?('office_manager') %>
+													<% if can_view?('office_manager') && !current_user.is_provider_account %>
 													<div class="nav-item mb-2">
 																<a class="nav-link <%= active_menu('office_managers', 'index') %>" href="<%= office_managers_path %>" data-placement="left">
 																			<!-- <i class="bi-receipt nav-icon"></i> -->
@@ -112,7 +112,7 @@
 													</div>
 													<% end %>
 
-													<% if can_view?('verification_platform') && current_setting.plmhealthoneapp? || !current_setting.qualifacts? %>
+													<% if can_view?('verification_platform') && (current_setting.plmhealthoneapp? || !current_setting.qualifacts?) && !current_user.is_provider_account%>
 													<div class="nav-item mb-1">
 																<a class="nav-link <%= active_menu('verification_platform', 'index') %> <%= active_menu('manage_tools') %>" href="<%= verification_platform_index_path %>" data-placement="left">
 																			<!-- <i class="bi-receipt nav-icon"></i> -->
@@ -123,7 +123,7 @@
 													</div>
 													<% end %>
 
-													<% if can_view?('plm_sales_tool') %>
+													<% if can_view?('plm_sales_tool') && !current_user.is_provider_account %>
 													<div class="nav-item mb-2">
 																<a class="nav-link <%= active_menu('pages', 'plm_sales_tool') %> d-none" target="_blank" href="<%= plm_sales_tool_path %>" data-placement="left">
 																			<!-- <i class="bi-layers nav-icon"></i> -->
@@ -134,7 +134,7 @@
 													</div>
 													<% end %>
 
-													<% if can_view?('smart_contract') %>
+													<% if can_view?('smart_contract') && !current_user.is_provider_account %>
 													<div class="nav-item mb-2">
 																<a class="nav-link <%= active_menu('pages', 'smart_contract') %> text-muted d-none" href="javascript:void(0);" data-placement="left">
 																			<!-- <i class="bi-layers nav-icon"></i> -->
@@ -146,7 +146,7 @@
 													</div>
 													<% end %>
 
-												<% if (current_user.present? && current_user&.super_administrator? || current_user.present? && current_user.administrator?) && can_view?('settings') %>
+												<% if (current_user.present? && current_user&.super_administrator? || current_user.present? && current_user.administrator?) && can_view?('settings') && !current_user.is_provider_account %>
 													<div class="nav-item mb-1">
 														<a class="nav-link <%= active_menu('role_based_accesses,roles,users') %> <%= active_menu('index') %>" href="<%= users_path %>" data-placement="left">
 															<i class="bi bi-gear nav-icon"></i>
@@ -154,7 +154,7 @@
 														</a>
 													</div>
 												<% end %>
-												<% if current_user&.super_administrator? || current_user&.administrator? %>
+												<% if (current_user&.super_administrator? || current_user&.administrator?) && !current_user.is_provider_account %>
 													<div class="nav-item mb-1">
 														<a class="nav-link <%= active_menu('settings') %> <%= active_menu('index') %>" href="<%= settings_path %>" data-placement="left">
 															<i class="bi bi-gear nav-icon"></i>

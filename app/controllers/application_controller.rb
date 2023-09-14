@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
 	before_action :can_read?, only: [
 		:index, :show, :overview, :client_portal, :provider_source, :plm_sales_tool,
 		:organization_profile, :virtual_review_committee
-	]
+	], :if => :skip_validation_for_enrollment_clients?
 	before_action :can_create?, only: [:new, :create]
 	before_action :can_update?, only: [:edit, :update, :autosave]
 	before_action :can_delete?, only: [:destroy]
@@ -17,6 +17,11 @@ class ApplicationController < ActionController::Base
 	include ApplicationHelper
 
 	protected
+
+  def skip_validation_for_enrollment_clients?
+    !(current_user.is_provider_account && controller_name == "enrollment_clients" && %w[index show].include?(action_name))
+  end
+
 	 def configure_permitted_parameters
     update_params = [:first_name, :last_name, :user_type, :password, :password_confirmation, :current_password]
     devise_parameter_sanitizer.permit(:account_update, keys: update_params)
