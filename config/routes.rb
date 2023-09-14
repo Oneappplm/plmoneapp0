@@ -229,6 +229,7 @@ Rails.application.routes.draw do
     end
   end
 
+
   resources :view_summary
 
   devise_scope :user do
