@@ -258,5 +258,5 @@ class EnrollmentsController < ApplicationController
 		def set_pagination_params
 			@per_page = params[:per_page] || 100
 			@page = params[:page] || 1
-		ends
+		end
 end
