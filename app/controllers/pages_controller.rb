@@ -15,7 +15,7 @@ class PagesController < ApplicationController
 	before_action :get_services, only: %i[provider_source]
 	before_action :get_education_types, only: %i[provider_source]
 	before_action :set_provider
- before_action :has_incomplete_tabs, only: [:provider_source]
+  before_action :has_incomplete_tabs, only: [:provider_source]
 	before_action :redirect_to_default_page, only: [:dashboard]
 
 	layout "public_application", only: %i[terms privacy_policy data_access]
@@ -250,10 +250,10 @@ class PagesController < ApplicationController
 
   def set_provider
 			if !ProviderSource.current.present?
-				ProviderSource.last.update_columns current_provider_source: true
+				ProviderSource.last.update_columns current_provider_source: true, created_by_user: current_user.id
 			end
 
-			@provider = ProviderSource.current.is_a?(Array) ? ProviderSource.current.last : ProviderSource.current
+			@provider = ProviderSource.current.is_a?(Array) ? ProviderSource.current_provider_source_by_current_user.last : ProviderSource.current_provider_source_by_current_user
 		rescue
 			nil
   end

@@ -241,7 +241,7 @@ class User < ApplicationRecord
     if provider? && group_engage_provider.present? && group_engage_provider.provider_source.present?
 			group_engage_provider.provider_source
 		else
-			ProviderSource.find_or_create_by(current_provider_source: true)
+			ProviderSource.find_or_create_by(current_provider_source: true, created_by_user: self.id)
 		end
   end
 

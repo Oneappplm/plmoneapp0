@@ -72,7 +72,13 @@ class ProviderSourcesController < ApplicationController
 
 	def set_current_provider_source_and_redirect_to_edit_page
 		current_provider_source.update(current_provider_source: false)
-		ProviderSource.find(params[:id]).update(current_provider_source: true)
+    provider_source = ProviderSource.find(params[:id])
+
+    if provider_source.created_by_user.nil?
+      ProviderSource.find(params[:id]).update(current_provider_source: true, created_by_user: current_user.id)
+    else
+      ProviderSource.find(params[:id]).update(current_provider_source: true)
+    end
 		redirect_to custom_provider_source_path
 	end
 end

@@ -16,16 +16,20 @@
                   <table class="table table-striped mb-0">
                      <thead>
                         <tr>
-                           <th class="text-white">
+                           <th colspan="1"  class="text-white">
                               <span>Name</span>
                            </th>
-                           <th class="text-white">
+                           <th colspan="1"  class="text-white">
                               <span>Current Provider Source?</span>
                            </th>
-                           <th class="text-white">
+                           <th colspan="1"  class="text-white">
                               <span>States</span>
                            </th>
-                           <th class="text-white">
+
+                           <th colspan="1"  class="text-white">
+                             Added by
+                           </th>
+                           <th colspan="1"  class="text-white">
                               <span>Action</span>
                            </th>
                         </tr>
@@ -36,11 +40,19 @@
                            <td><%= provider_source&.full_name %></td>
                            <td><%= provider_source&.current_provider_source? %></td>
                            <td><%= provider_source&.states %></td>
+
                            <td>
+                             <%= provider_source&.created_by&.full_name %>
+                           </td>
+
+                           <td>
+                            <% if (provider_source.created_by_user == current_user.id) || provider_source.created_by_user.nil? %>
                               <div class="d-flex gap-2">
                                  <%= link_to 'Edit & Set As Current Provider Source', edit_provider_source_path(provider_source), class: 'btn btn-sm btn-primary' %>
                                  <%= button_to 'Delete', provider_source_path(provider_source), method: :delete, class: 'btn btn-sm btn-danger' if !provider_source.current_provider_source %>
                               </div>
+                              <% end %>
+
                            </td>
                         </tr>
                         <% end %>

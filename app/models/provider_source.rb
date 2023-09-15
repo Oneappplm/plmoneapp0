@@ -4,6 +4,8 @@ class ProviderSource < ApplicationRecord
   belongs_to :practice_location, optional: true
   belongs_to :group_engage_provider, optional: true
   scope :current, ->{ find_by(current_provider_source: true) }
+  # this will make it so that every user will have a different current provider source on the provider engage page
+  scope :current_provider_source_by_current_user, ->(user_id) { find_by(created_by_user: user_id, current_provider_source: true) }
   default_scope { order(current_provider_source: :desc) }
 
   # these toggle switches will have default value of "no"
@@ -819,6 +821,12 @@ class ProviderSource < ApplicationRecord
 
   def global_invitation_sent_at
     self.class.where(group_engage_provider_id: group_engage_provider_id).where.not(invitation_sent_at: nil).take.invitation_sent_at
+  rescue
+    nil
+  end
+
+  def created_by
+    User.find_by(id: self.created_by_user)
   rescue
     nil
   end
