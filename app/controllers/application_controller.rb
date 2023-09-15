@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
 	protected
 
   def skip_validation_for_enrollment_clients?
-    !(current_user.is_provider_account && controller_name == "enrollment_clients" && %w[index show].include?(action_name))
+    !(current_user.present? && current_user.is_provider_account && controller_name == "enrollment_clients" && %w[index show].include?(action_name))
   end
 
 	 def configure_permitted_parameters
