@@ -14,11 +14,11 @@ class RoleBasedAccess < ApplicationRecord
 		:manage_clients,
 		:manage_practitioners,
 		:work_ticklers,
-    :enrollment_clients,
-    :notifications,
-    :enrollment_groups,
-    :locations,
-    :alt_enrollment_groups,
+		:enrollment_clients,
+		:notifications,
+		:enrollment_groups,
+		:locations,
+		:alt_enrollment_groups,
 	]
 	CRUD = [:create, :read, :update, :delete]
 

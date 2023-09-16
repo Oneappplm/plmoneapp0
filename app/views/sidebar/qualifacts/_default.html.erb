@@ -92,12 +92,12 @@
 													</div>
 													<% end %>
 
-													<% if can_view?('provider_app') && !current_user.is_provider_account %>
+													<% if can_view?('provider_app') && (current_user.provider? || current_user.administrator? || current_user.super_administrator?) %>
 													<div class="nav-item mb-2">
 																<a class="nav-link <%= active_menu('provider_app') %>" href="<%= custom_provider_source_path %>" data-placement="left">
 																			<!-- <i class="bi-receipt nav-icon"></i> -->
 																			<i class="bi bi-people nav-icon"></i>
-																			<span class="nav-link-title">Provider Engage</span>
+																			<span class="nav-link-title">Provider Engage </span>
 																</a>
 													</div>
 													<% end %>
@@ -154,6 +154,7 @@
 														</a>
 													</div>
 												<% end %>
+
 												<% if (current_user&.super_administrator? || current_user&.administrator?) && !current_user.is_provider_account %>
 													<div class="nav-item mb-1">
 														<a class="nav-link <%= active_menu('settings') %> <%= active_menu('index') %>" href="<%= settings_path %>" data-placement="left">
@@ -162,6 +163,14 @@
 														</a>
 													</div>
 												<% end %>
+
+												<!-- logout -->
+												<div class="nav-item mb-1">
+													<%= button_to destroy_user_session_path, method: :delete, class: 'nav-link w-100 ml-1', data: { placement: 'left' } do %>
+													<i class="bi bi-box-arrow-right nav-icon"></i>
+													<span class="nav-link-title">Logout</span>
+													<% end %>
+												</div>
 										</div>
 							</div>
 				</div>

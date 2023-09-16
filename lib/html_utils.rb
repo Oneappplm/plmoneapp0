@@ -6,6 +6,16 @@ module HtmlUtils
   include Rails.application.routes.url_helpers
 	extend self
 
+  @@current_provider_source = nil
+
+  def set_current_provider_source provider_source
+    @@current_provider_source = provider_source
+  end
+
+  def current_provider_source
+    @@current_provider_source
+  end
+
 	def radio_toggle **options
     options[:active] ||= ''
 		options[:container_class] ||= "d-flex align-items-center"
@@ -15,7 +25,7 @@ module HtmlUtils
 		options[:toshow] ||= ''
     options[:tohide] ||= ''
     options[:hidden_field] ||= false
-    options[:data] ||= current_provider_source.finder(options[:name])
+    options[:data] ||= current_provider_source.finder(options[:name]) rescue nil
     options[:data_value] ||= 'no'
     options[:isbooleantype] ||= false
 

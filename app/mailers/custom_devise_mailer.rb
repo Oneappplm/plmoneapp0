@@ -16,4 +16,9 @@ class CustomDeviseMailer < Devise::Mailer
 
 			end
 	end
+
+	# def reset_password_instructions(record, token, opts = {})
+	# 	attachments.inline['logo.png'] = File.read(File.join(Rails.root, 'public', 'logos', 'qualifacts-logo.png'))
+	# 	super
+	# end
 end

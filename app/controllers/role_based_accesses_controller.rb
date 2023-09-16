@@ -5,6 +5,7 @@ class RoleBasedAccessesController < ApplicationController
 	def index
 		if params[:role_based].present?
 			@role_based = params[:role_based]
+			# render json: @role_based and return
 			RoleBasedAccess.initialize_access(@role_based)
 		end
 	end

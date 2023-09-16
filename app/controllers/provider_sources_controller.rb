@@ -50,7 +50,16 @@ class ProviderSourcesController < ApplicationController
 		data = current_provider_source.data.find_or_create_by(data_key: field_name)
 
 		respond_to do |format|
-				format.json { render json: { value: data&.data_value } }
+				format.json { render json: { value: filtered_value(data&.data_value, field_name) } }
+		end
+	end
+
+	def filtered_value field_value, field_name
+		case field_name
+		when 'ps-dob'
+			field_value.present? ? Date.parse(field_value).strftime('%Y-%m-%d') : ''
+		else
+			field_value
 		end
 	end
 

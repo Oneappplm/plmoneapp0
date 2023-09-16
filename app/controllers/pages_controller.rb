@@ -27,7 +27,8 @@ class PagesController < ApplicationController
 
 	def provider_source
 		@provider_sources = ProviderSource.all
-		@provider = current_provider_source
+		@provider = current_user.provider_source_lookup
+		HtmlUtils.set_current_provider_source(@provider)
 
 		if params[:page].present?
 			render "pages/provider_source/#{params[:page]}", layout: 'provider_source'
@@ -269,6 +270,7 @@ class PagesController < ApplicationController
   end
 
 		def redirect_to_default_page
+			# render json: current_role and return
 			redirect_to_filtered_page(current_user.default_page) if current_user.default_page.present? && current_user.default_page != 'overview'
 			render 'shared/access_denied' and return if current_user.default_page.blank?
 		end
