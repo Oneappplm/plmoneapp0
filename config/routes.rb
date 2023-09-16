@@ -240,6 +240,7 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {
     invitations: 'users/invitations',
     sessions: 'users/sessions',
+    passwords: 'users/passwords',
   }
 
   get 'organization-profile', to: 'users#organization_profile'

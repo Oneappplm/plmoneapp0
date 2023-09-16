@@ -44,8 +44,8 @@ class User < ApplicationRecord
   end
 
   before_validation :set_temporary_password_as_password
-  after_create :set_sidebar_preferences
   before_create :generate_api_token
+  after_create :set_sidebar_preferences
 
   scope :from_enrollment, -> { where(from_source: 'enrollment')}
   scope :not_admin, -> { where.not(user_role: ['super_administrator', 'administrator']) }
@@ -59,6 +59,7 @@ class User < ApplicationRecord
   has_many :notifications, as: :recipient
   has_many :users_enrollment_groups
   has_many :enrollment_groups, through: :users_enrollment_groups
+  has_one :group_engage_provider, dependent: :destroy
 
   accepts_nested_attributes_for :users_enrollment_groups, allow_destroy: true, reject_if: :all_blank
 
@@ -234,6 +235,25 @@ class User < ApplicationRecord
       logout_on_close: false,
       last_logout_on_close: nil
     )
+  end
+
+  def provider_source_lookup
+    if provider? && group_engage_provider.present? && group_engage_provider.provider_source.present?
+			group_engage_provider.provider_source
+		else
+			ProviderSource.find_or_create_by(current_provider_source: true)
+		end
+  end
+
+  def send_invite_and_reset_password_instructions params = {}
+    PlmMailer.with(user: self, token: generate_password_token, params: params).send_invite_and_reset_password_instructions.deliver_now
+  end
+
+  def generate_password_token
+    token, enc = Devise.token_generator.generate(User, :reset_password_token)
+    update_columns(reset_password_token: enc, reset_password_sent_at: Time.now.utc)
+
+    token
   end
 
   private

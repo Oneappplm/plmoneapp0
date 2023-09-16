@@ -109,7 +109,7 @@ module ApplicationHelper
 	end
 
 	def current_provider_source
-		ProviderSource.find_or_create_by(current_provider_source: true)
+		current_user.provider_source_lookup
 	end
 
 	# def active_menu_old cname, aname

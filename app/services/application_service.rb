@@ -64,7 +64,7 @@ class ApplicationService
   def error! e
     {
       status: 'error',
-      message: "An error occurred during scraping: #{e.message}"
+      message: "An error occurred during scraping: #{e.message rescue e}"
     }
   end
 
@@ -92,7 +92,7 @@ class ApplicationService
     extension = File.extname(pdf_path)
     crawl_type = crawler_folder_name.upcase
 
-   
+
   rescue => exception
     WebcrawlerLog.create(
       crawler_type: crawler_folder_name.upcase,
@@ -109,4 +109,6 @@ class ApplicationService
   def crawler_folder_name
     crawler_folder || 'crawler'
   end
+
+  
 end

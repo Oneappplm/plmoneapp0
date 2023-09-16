@@ -8,15 +8,23 @@ class ProviderSource < ApplicationRecord
 
   after_create :set_default_disclosure_answer
 
-  def self.set_provider_source_disclosure_answers
-    ProviderSource.all.each do |ps|
-      DisclosureQuestion.all.each do |q|
-        q_data = ps.data.find_key(q.slug)
-        if q_data
-          ProviderSourceData.create(provider_source_id: ps.id, data_key: q.slug, data_value: 'no')
-        else
-          q_data.update_attribute('data_value', 'no')
+  class << self
+    def set_provider_source_disclosure_answers
+      ProviderSource.all.each do |ps|
+        DisclosureQuestion.all.each do |q|
+          q_data = ps.data.find_key(q.slug)
+          if q_data
+            ProviderSourceData.create(provider_source_id: ps.id, data_key: q.slug, data_value: 'no')
+          else
+            q_data.update_attribute('data_value', 'no')
+          end
         end
+      end
+    end
+
+    def transfer_to_group_engage_providers
+      ProviderSource.find_each do |provider_source|
+        ProviderSource::TransferToGroupEngageProvidersService.call(provider_source)
       end
     end
   end
@@ -478,6 +486,22 @@ class ProviderSource < ApplicationRecord
 		end
 	end
 
+  def send_invite
+    ProviderSource::SendInviteService.call(self)
+  end
+
+  def global_invitation_count
+    self.class.where(group_engage_provider_id: group_engage_provider_id).where.not(invitation_count: [nil, 0]).take.invitation_count
+  rescue
+    0
+  end
+
+  def global_invitation_sent_at
+    self.class.where(group_engage_provider_id: group_engage_provider_id).where.not(invitation_sent_at: nil).take.invitation_sent_at
+  rescue
+    nil
+  end
+
   private
 
   # will set provider source disclosure answer to no as default is needed to calculate percentage of progress
@@ -485,5 +509,9 @@ class ProviderSource < ApplicationRecord
     DisclosureQuestion.all.each do |question|
       ProviderSourceData.find_or_create_by(provider_source_id: self.id, data_key: question.slug, data_value: 'no')
     end
+  end
+
+  def delete_group_engage_provider
+    group_engage_provider.destroy if group_engage_provider.present?
   end
 end

@@ -89,16 +89,7 @@ class OfficeManagersController < ApplicationController
     provider = ProviderSource.find_by(id: provider_id)
     return unless provider.present?
 
-    User.invite!(
-      email: provider.email_address,
-      user_role: 'office_manager',
-      email_subject: params[:subject],
-      email_message: params[:message],
-      email_cc: params[:email_cc]
-    )
-
-    provider.increment!(:invitation_count)
-    provider.update(invitation_sent_at: Time.now)
+    ProviderSource::SendInviteService.call(provider, params)
   end
 
   protected

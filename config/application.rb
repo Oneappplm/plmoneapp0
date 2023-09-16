@@ -39,7 +39,7 @@ module PlmhealthoneApp
 
     # SMTP settings for gmail
     config.action_mailer.delivery_method = :smtp
-    config.action_mailer.default_url_options = { host: 'plmhealth.net' }
+    config.action_mailer.default_url_options = { host: Figaro.env.smtp_host }
     config.action_mailer.smtp_settings = {
       :address              => Figaro.env.smtp_address,
       :port                 => Figaro.env.smtp_port,

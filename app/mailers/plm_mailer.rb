@@ -42,4 +42,15 @@ class PlmMailer < ApplicationMailer
 
 		mail(to: @email, from: from, subject: subject)
 	end
+
+	def send_invite_and_reset_password_instructions
+		@user = params.dig(:user)
+		@token = params.dig(:token)
+		@email = params.dig(:params, :email_to)
+		email_cc = params.dig(:params, :email_cc)
+		subject = params.dig(:params, :subject) || 'Invitation Instructions'
+		@message = params.dig(:params, :message)
+
+		mail(to: @email, from: from, subject: subject, cc: email_cc)
+	end
 end
