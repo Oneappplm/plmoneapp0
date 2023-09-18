@@ -12,6 +12,7 @@ class GroupEngageProvider::CreateUserService < GroupEngageProvider::BaseService
 	def call
 		if user.save
   	user.send_reset_password_instructions
+			user.update_columns(password_change_status_via_invite: 'pending')
 			group_engage_provider.update(user_id: user.id)
 		else
 			error!(user.errors.full_messages.join(', '))
