@@ -1,4 +1,4 @@
-<% roles = f.object&.roles&.split(",") %>
+<% index_of_object = f.object.enrollment_group.details_ids.index(f.object.id) rescue 0 %>
 <div class="field mb-3 p-3 py-3 border-dash border-1">
 	<div class="row mb-3">
 		<div class="col-lg-3">
@@ -38,71 +38,64 @@
 			<%= f.email_field :email_address, class: 'form-control border border-dark', placeholder: 'Type here...' %>
 		</div>
 	</div>
-	<div class="row mb-1 mt-3">
-		<div class="col-lg-5 text-start row">
-			<div class="col-lg-12">
-				<h5 class="fst-italic">Note: Add both dates if applicable.</h5>
-			</div>
-			<div class="col-lg-12 row">
+	<div class="row mb-3 mt-3">
+			  <div class="col-lg-6">
+				  <h5 class="fst-italic">Note: Add both dates if applicable.</h5>
+				</div>
 				<div class="col-lg-6">
+				  <h5 class="fst-italic">Roles:</h5>
+				</div>
+
+				<div class="col-lg-3">
 					<label class="text-dark-grey">Effective Date of Ownership:</label>
 					<%= f.text_field :individual_ownership_effective_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
 				</div>
-				<div class="col-lg-6">
+				<div class="col-lg-3">
 					<label class="text-dark-grey">Acquired Managing Control Date:</label>
 					<%= f.text_field :individual_ownership_control_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
 				</div>
-			</div>
-		</div>
-		<div class="col-lg-7">
-			<h5 class="fst-italic">Select all that apply</h5>
-			<div class="">
-				<%= f.hidden_field :roles, class: 'hid-roles' %>
-				<!-- <input type="hidden" class="hid-roles" name=""> -->
-				<span class="mx-3">
-					<input type="checkbox" class="role-cb" name="" value="Director or Officer" <%= roles&.include?("Director or Officer") ? "checked" : ""%>>
-					Director or Officer
-				</span>
-				<span class="mx-3">
-					<input type="checkbox" class="role-cb" name="" value="DO Delegated Official" <%= roles&.include?("DO Delegated Official") ? "checked" : ""%>>
-					DO Delegated Official
-				</span>
-				<span class="mx-3">
-					<input type="checkbox" class="role-cb" name="" value="Managing Employee" <%= roles&.include?("Managing Employee") ? "checked" : ""%>>
-					Managing Employee
-				</span>
-				<span class="mx-3">
-					<input type="checkbox" class="role-cb" name="" value="AO Authorized Official" <%= roles&.include?("AO Authorized Official") ? "checked" : ""%>>
-					AO Authorized Official
-				</span>
-				<span class="mx-3">
-					<input type="checkbox" class="role-cb" name="" value="Partner" <%= roles&.include?("Partner") ? "checked" : ""%>>
-					Partner
-				</span>
-				<span class="mx-3">
-					<input type="checkbox" class="role-cb" name="" value="W2 Employee" <%= roles&.include?("W2 Employee") ? "checked" : ""%>>
-					W2 Employee
-				</span>
-				<span class="mx-3">
-					<input type="checkbox" class="role-cb" name="" value="PECOS AO Authorized Official" <%= roles&.include?("PECOS AO Authorized Official") ? "checked" : ""%>>
-					PECOS AO Authorized Official
-				</span>
-				<span class="mx-3">
-					<input type="checkbox" class="role-cb" name="" value="PECOS AM Access Manager" <%= roles&.include?("PECOS AM Access Manager") ? "checked" : ""%>>
-					PECOS AM Access Manager
-				</span>
-			</div>
-		</div>
-	</div>
+				 <div class="col-lg-6">
+						<label class="text-dark-grey">Select all that apply: </label>
+         		<%= HtmlUtils.multi_select_dropdown name: "enrollment_group[details_attributes][#{index_of_object}][group_role]]", id: "group_role_#{index_of_object}_group_role", classes: "#{f.object.id ? ('edit-role-dropdown-'+index_of_object.to_s) : 'ownership-role-dropdown'}"%>
+				</div>
+	 </div>
 	<div class="row">
 		<div class="col-lg-12 d-flex justify-content-end">
 			<%= f.check_box :_destroy %>
 			<%= f.label :_destroy, "Remove", class: 'mx-2 text-dark-grey' %>
 		</div>
 	</div>
-				<%
-=begin%>
- <hr class="divider" style="border: none; height: 0.5px; background-color: #808080; width: 95%; margin: 20px auto;">
-<%
-=end%>
 </div>
+
+<% chosen_group_roles = f.object.selected_group_roles %>
+
+<script>
+  $(document).ready(function() {
+   var group_roles = '<%= chosen_group_roles %>';
+   var selected_group_roles  = stringArrayModifier(group_roles);
+   var group_roles_dropdown = '.edit-role-dropdown-'+'<%= index_of_object.to_s %>';
+  
+  function getDetailsGroupRoles() {
+          $.ajax({
+            url: '<%= get_group_roles_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              VirtualSelect.init({
+                  options: data['group_roles'],
+                  ele: group_roles_dropdown,
+                  multiple: true,
+                  showSelectedOptionsFirst: true,
+                  selectedValue: selected_group_roles
+              });
+			 document.querySelector(group_roles_dropdown).setOptions(data['group_roles'])
+         	 document.querySelector(group_roles_dropdown).setValue(selected_group_roles);
+            }
+          })
+      }
+
+    setTimeout(getDetailsGroupRoles(),3000);
+
+  })
+
+</script>

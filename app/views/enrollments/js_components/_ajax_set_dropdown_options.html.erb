@@ -8,6 +8,7 @@
        getLanguages();
        getStatesOptions();
        getNonOfficeServiceLocationStates();
+       getGroupRoles()
 
 
       var languages = [];
@@ -37,6 +38,23 @@
               VirtualSelect.init({
                   options: data['states'],
                   ele: '.telehealth-states',
+                  multiple: true,
+              });
+            }
+          })
+      }
+
+      var group_roles = [];
+      function getGroupRoles() {
+          $.ajax({
+            url: '<%= get_group_roles_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              group_roles = data['group_roles'];
+              VirtualSelect.init({
+                  options: data['group_roles'],
+                  ele: '.ownership-role-dropdown',
                   multiple: true,
               });
             }
@@ -89,5 +107,5 @@
           });
       }
      }
-  })
+    })
 </script>

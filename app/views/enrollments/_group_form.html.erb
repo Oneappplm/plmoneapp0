@@ -614,6 +614,7 @@
       })
    });
 
+
    $("#contacts-info").on("click", ".add_association", function () {
       var detailsFields = $("#contacts-info .field");
       var newEnrollmentdetails = detailsFields.last().clone();
@@ -621,28 +622,7 @@
       newEnrollmentdetails.html(newEnrollmentdetails.html().replace(/contact_personnels_attributes\]\[\d+\]/g, "contact_personnels_attributes][" + newId + "]"));
       $("#contacts-info .fields").append(newEnrollmentdetails);
     });
-    var selected_roles = "";
-    $(document).on('change', '.role-cb',function() {
-      var hiddenValues = [];
-      $('.role-cb').each(function() {
-      if ($(this).is(':checked')) {
-        hiddenValues.push($(this).val());
-      }
-     });
-      var $hidden_role = $(this).parent().parent().find('.hid-roles');
-      $hidden_role.val(hiddenValues.join(','));
-
-    })
-
-	 $("#details-info").on("click", ".add_association", function () {
-         var detailsFields = $("#details-info .field");
-         var newEnrollmentdetails = detailsFields.last().clone();
-         var newId = new Date().getTime();
-         newEnrollmentdetails.html(newEnrollmentdetails.html().replace(/details_attributes\]\[\d+\]/g, "details_attributes][" + newId + "]"));
-         $("#details-info .fields").append(newEnrollmentdetails);
-
-    });
-
+	
     $(document).on('change', '.group-status', function () {
          var status = $(this).val();
          if (status == 'inactive-termed') {
@@ -869,15 +849,10 @@
 </script>
 
 <style type="text/css">
-  .multi-select, .search-select, .single-select {
+  .multi-select, .search-select, .single-select .group_role {
     padding: 0;
       width: 100%;
       max-width: 1000px;
-  }
-  .single-select {
-    width: 100%;
-    max-width: 1000px;
-    padding: 0;
   }
 </style>
 

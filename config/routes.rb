@@ -73,6 +73,8 @@ Rails.application.routes.draw do
   post 'get-provider-practitioner-types', to: 'ajax#get_provider_practitioner_types'
   post 'get-provider-specialties', to: 'ajax#get_provider_specialties'
   post 'update-timeline', to: 'ajax#update_timeline'
+  get 'get-group-roles', to: 'ajax#get_group_roles'
+  post 'get-selected-group-roles', to: 'ajax#get_selected_group_roles'
   get 'get-states-with-id', to: 'ajax#get_states_with_id'
   post 'mark-notification-read', to: 'ajax#mark_notification_read'
   post 'logout-on-close', to: 'ajax#logout_on_close'
