@@ -85,7 +85,9 @@ class EnrollmentsController < ApplicationController
 		@view_only = params[:view_only] ||	false
 		@enrollment_group = EnrollmentGroup.find params[:id]
 
-		@enrollment_group.details.build if @enrollment_group.details.blank?
+		if @enrollment_group.details.blank?
+			@enrollment_group.details.build
+		end
 
 		if @enrollment_group.contact_personnels.blank?
 			@enrollment_group.contact_personnels.build
@@ -248,7 +250,7 @@ class EnrollmentsController < ApplicationController
 					:welcome_letter_status, :welcome_letter_subject, :welcome_letter_message, :check_welcome_letter, :check_co_caqh, :check_mn_caqh_state_release_form, :check_mn_caqh_authorization_form, :check_caqh_standard_authorization, {welcome_letter_attachments: []},
 					contact_personnels_attributes: [:id, :group_personnel_name, :group_personnel_email, :group_personnel_phone_number, :group_personnel_fax_number, :group_personnel_position,
 						:_destroy],
-					details_attributes: [:id, :individual_ownership_first_name, :individual_ownership_middle_name, :email_address, :individual_ownership_last_name,:individual_ownership_title, :individual_ownership_ssn, :individual_ownership_dob, :individual_ownership_percent_of_ownership, :individual_ownership_effective_date, :individual_ownership_control_date, :roles,
+					details_attributes: [:id, :individual_ownership_first_name, :individual_ownership_middle_name, :email_address, :individual_ownership_last_name,:individual_ownership_title, :individual_ownership_ssn, :individual_ownership_dob, :individual_ownership_percent_of_ownership, :individual_ownership_effective_date, :individual_ownership_control_date, :group_role,
 					:_destroy],
 					service_locations_attributes: [:id, :primary_service_non_office_area, :primary_service_location_apps, :primary_service_zip_code, :primary_service_office_email, :primary_service_fax, :primary_service_office_website, :primary_service_crisis_phone, :primary_service_location_other_phone, :primary_service_appt_scheduling, :primary_service_interpreter_language, :primary_service_telehealth_only_state],
 					qualifacts_contacts_attributes: [:id, :department, :name, :role, :email, :phone, :_destroy]

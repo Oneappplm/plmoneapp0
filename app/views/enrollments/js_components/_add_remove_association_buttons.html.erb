@@ -1,4 +1,35 @@
 <script>
+   $(document).ready(function(){
+     $("#details-info").on("click", ".add_association", function () {
+         var detailsFields = $("#details-info .field");
+         var newEnrollmentdetails = detailsFields.last().clone();
+         var newId = new Date().getTime();
+         newEnrollmentdetails.html(newEnrollmentdetails.html().replace(/details_attributes\]\[\d+\]/g, "details_attributes][" + newId + "]"));
+         $("#details-info .fields").append(newEnrollmentdetails);
+
+          var roleDropdown = $('[name="enrollment_group[details_attributes]['+newId+'][group_role]]"]');
+              roleDropdown.attr('id',("group_roles_"+newId));
+              setGroupRole(roleDropdown.attr('id'));
+
+          });
+          
+     function setGroupRole(dropdown_id) {
+          var id = dropdown_id;
+          $.ajax({
+            url: '<%= get_group_roles_path %>',
+            method: 'GET',
+            data: { authenticity_token: csrfToken },
+            success: function(data) {
+              VirtualSelect.init({
+                  options: data['group_roles'],
+                  ele: '#'+id,
+                  multiple: true,
+              });
+            }
+          })
+       }
+
+    })
   $(document).ready(function(){
           // telehealth providers
           $("#service_locations").on("click", ".add_association", function() {
@@ -14,8 +45,8 @@
 
               var statesDropdown = $('[name="enrollment_group[service_locations_attributes]['+newId+'][primary_service_telehealth_only_state]]"]');
               statesDropdown.attr('id',("states_"+newId));
-
               setStates(statesDropdown.attr('id'));
+
               var nonOfficeDropdown = $('[name="enrollment_group[service_locations_attributes]['+newId+'][primary_service_non_office_area]"]');
               nonOfficeDropdown.attr('id',("non_office_service_location_"+newId));
 
@@ -29,7 +60,6 @@
               serviceLocationFields[0].remove();
             }
           });
-
 
 
       function setLanguages(dropdown_id) {

@@ -341,6 +341,13 @@ class AjaxController < ApplicationController
     }
   end
 
+  def get_group_roles
+    group_roles = GroupRole.all.map{|m| { label: m.name, value: m.name} }
+    render json: {
+      'group_roles' => group_roles
+    }
+  end   
+
   def update_timeline
     timeline_id = params[:timeline_id]
     timeline = ProvidersTimeLine.find(timeline_id)
