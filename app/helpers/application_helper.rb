@@ -29,9 +29,12 @@ module ApplicationHelper
 	end
 
 	def translate_page(page = nil)
+		prev = Rails.application.routes.recognize_path(request.referrer)
 		page =	page || controller_name
 		if ['dashboard'].include?(controller_name)
 			'overview'
+		elsif ['auto_verifies'].include?(controller_name) && prev[:controller] != "providers"
+			'verification_platform'
 		elsif ['providers', 'auto_verifies', 'logs'].include?(controller_name)
 			if ['overview', 'index', 'show'].include?(action_name)
 				'enrollment_tracking'
