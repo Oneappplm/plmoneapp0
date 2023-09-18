@@ -8,6 +8,7 @@ class GroupEngageProvider < ApplicationRecord
 
 	belongs_to :practice_location, optional: true
 	belongs_to :user, optional: true
+	has_one :provider_source
 	has_many	:provider_sources,	dependent: :destroy
 
 	validates_presence_of :first_name, :last_name, :email_address, :ssn
