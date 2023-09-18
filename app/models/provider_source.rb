@@ -837,6 +837,7 @@ class ProviderSource < ApplicationRecord
     # **** by default all toggle switches are always NO
     REQUIRED_TOGGLE_SWITCHES_FIELDS.each do |toggle|
       ProviderSourceData.find_or_create_by(provider_source_id: self.id, data_key: toggle, data_value: 'no')
+    end
   end
 
   def delete_group_engage_provider
