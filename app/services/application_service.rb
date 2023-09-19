@@ -31,16 +31,16 @@ class ApplicationService
   end
 
   def crawler
-    # if Rails.env.development?
-		# 	options = Selenium::WebDriver::Chrome::Options.new
-		# else
-		# 	Selenium::WebDriver::Chrome.path = ENV.fetch('GOOGLE_CHROME_BIN', nil)
-		# 	options = Selenium::WebDriver::Chrome::Options.new(
-		# 			prefs: { 'profile.default_content_setting_values.notifications': 2 },
-		# 			binary: ENV.fetch('GOOGLE_CHROME_SHIM', nil)
-		# 	)
-		# end
-    options = Selenium::WebDriver::Chrome::Options.new
+    if Rails.env.development?
+			options = Selenium::WebDriver::Chrome::Options.new
+		else
+			Selenium::WebDriver::Chrome.path = ENV.fetch('GOOGLE_CHROME_BIN', nil)
+			options = Selenium::WebDriver::Chrome::Options.new(
+					prefs: { 'profile.default_content_setting_values.notifications': 2 },
+					binary: ENV.fetch('GOOGLE_CHROME_SHIM', nil)
+			)
+		end
+
     # uncomment the following line to run headless else comment it out to run in browser
 		options.add_argument('--headless')
 
@@ -110,5 +110,5 @@ class ApplicationService
     crawler_folder || 'crawler'
   end
 
-
+  
 end
