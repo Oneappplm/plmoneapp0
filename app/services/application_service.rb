@@ -34,6 +34,7 @@ class ApplicationService
     if Rails.env.development?
 			options = Selenium::WebDriver::Chrome::Options.new
 		else
+      Webdrivers::Chromedriver.required_version = '117.0.5938.88'
 			Selenium::WebDriver::Chrome.path = ENV.fetch('GOOGLE_CHROME_BIN', nil)
 			options = Selenium::WebDriver::Chrome::Options.new(
 					prefs: { 'profile.default_content_setting_values.notifications': 2 },
@@ -110,5 +111,5 @@ class ApplicationService
     crawler_folder || 'crawler'
   end
 
-  
+
 end
