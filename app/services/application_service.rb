@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'selenium-webdriver'
-require 'webdrivers'
 
 class ApplicationService
   SCREENSHOT_FILENAME = 'screenshot.png'
