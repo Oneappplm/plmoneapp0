@@ -2,12 +2,9 @@ module DynamicRolesInitializer
  extend ActiveSupport::Concern
 
 	included do
-		roles = 	self.pluck(:user_role).uniq + Role.all.map{|role| role.name.strip.parameterize.gsub('-','_') }.uniq
-
-		roles.uniq.each do |role|
-			define_method "#{role}?" do
-				user_role == role
-			end
+		def method_missing(method_name, *args, &block)
+				role_name = method_name.to_s.chomp("?") # Remove trailing "?" if present
+				role.downcase == role_name.downcase
 		end
 	end
 end
