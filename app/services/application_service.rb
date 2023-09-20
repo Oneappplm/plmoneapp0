@@ -34,12 +34,20 @@ class ApplicationService
     if Rails.env.development?
 			options = Selenium::WebDriver::Chrome::Options.new
 		else
+      # for heroku server
+      # Webdrivers::Chromedriver.required_version = '117.0.5938.88'
+			# Selenium::WebDriver::Chrome.path = ENV.fetch('GOOGLE_CHROME_BIN', nil)
+			# options = Selenium::WebDriver::Chrome::Options.new(
+			# 		prefs: { 'profile.default_content_setting_values.notifications': 2 },
+			# 		binary: ENV.fetch('GOOGLE_CHROME_SHIM', nil)
+			# )
+
+      # for vps server
       Webdrivers::Chromedriver.required_version = '117.0.5938.88'
-			Selenium::WebDriver::Chrome.path = ENV.fetch('GOOGLE_CHROME_BIN', nil)
-			options = Selenium::WebDriver::Chrome::Options.new(
-					prefs: { 'profile.default_content_setting_values.notifications': 2 },
-					binary: ENV.fetch('GOOGLE_CHROME_SHIM', nil)
-			)
+      options = Selenium::WebDriver::Chrome::Options.new(
+        prefs: { 'profile.default_content_setting_values.notifications': 2 },
+        binary: '/usr/bin/google-chrome'  # Use the correct path to Chrome
+      )
 		end
 
     # uncomment the following line to run headless else comment it out to run in browser
