@@ -19,6 +19,7 @@ class EnrollmentProvidersDetail < ApplicationRecord
   scope :priority_health, -> {where(enrollment_payer: 'priority_health')}
   scope :medicaid, -> {where(enrollment_payer: 'medicaid')}
 
+  belongs_to :enrollment_provider
   has_many :application_status_logs, class_name: 'EpdLog', dependent: :destroy
   has_many :questions, class_name: 'EpdQuestion', dependent: :destroy
 

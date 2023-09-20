@@ -314,17 +314,17 @@ module ApplicationHelper
 
 	def provider_generate_report_options
 		[
-			['Provider Submitted Enrollment','provider_submitted_enrollment'],
-      ['Group Enrollment','group_enrollment'],
-      ['Missing Items Report','missing_items_report'],
-      ['License Report','license_report'],
-      ['DEA','dea'],
-      ['SAM','sam'],
-			['CAQH','caqh'],
-			['OIG','oig'],
-			['Liability','liability'],
-			['Revalidation','revalidation'],
-			['Enrollment Details Report', 'enrollment_details_report']
+			['Provider Submitted Enrollment','provider_submitted_enrollments'],
+      ['Group Enrollment','group_submitted_enrollments'],
+      ['Missing Items Report(coming soon)','missing_items_report'],
+      ['License Report(coming soon)','license_report'],
+      ['DEA(coming soon)','dea'],
+      ['SAM(coming soon)','sam'],
+			['CAQH(coming soon)','caqh'],
+			['OIG(coming soon)','oig'],
+			['Liability(coming soon)','liability'],
+			['Revalidation(coming soon)','revalidation'],
+			['Enrollment Details Report(coming soon)', 'enrollment_details_report']
     ]
 	end
 

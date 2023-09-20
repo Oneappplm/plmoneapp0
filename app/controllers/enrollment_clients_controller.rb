@@ -58,6 +58,13 @@ class EnrollmentClientsController < ApplicationController
     end
   end
 
+  def download_documents
+    @month = DateTime.parse(params[:month]&.split("-").join("/"))
+    respond_to do |format|
+      format.csv { send_data eval("#{params[:template]}_to_csv"), filename: "#{params[:template]&.dasherize}-#{params[:month]}.csv" }
+    end
+  end
+
   def dashboard
     if current_user.can_access_all_groups? || current_user.super_administrator?
       @providers_with_missing_details ||= Provider.with_missing_required_fields.count
@@ -160,5 +167,43 @@ class EnrollmentClientsController < ApplicationController
     @comment = EnrollmentComment.new
     @comment.provider = @provider
     @comment.user = current_user
+  end
+
+  def provider_submitted_enrollments_to_csv
+    enrollment_details = EnrollmentProvidersDetail.includes(:application_status_logs).where(enrollment_status: 'application-submitted').where(application_status_logs: { created_at: @month.beginning_of_month..@month.end_of_month })
+    CSV.generate(headers: true) do |csv|
+      csv << ["Platform", "Group Name", "Providers First Name", "Providers Last Name", "Practitioner Type", "NPI", "Payor", "Enrollment Tracking ID", "Submission Date"]
+
+      enrollment_details.each do |enrollment_detail|
+        csv << [
+          enrollment_detail.enrollment_provider&.provider&.group&.flatform&.titleize,
+          enrollment_detail.enrollment_provider&.provider&.group&.group_name,
+          enrollment_detail.enrollment_provider&.provider&.first_name,
+          enrollment_detail.enrollment_provider&.provider&.last_name,
+          enrollment_detail.enrollment_provider&.provider&.practitioner_type,
+          enrollment_detail.enrollment_provider&.provider&.npi,
+          enrollment_detail.enrollment_payer,
+          enrollment_detail.enrollment_tracking_id,
+          enrollment_detail.application_status_logs&.where(status: 'application-submitted').where(created_at: @month.beginning_of_month..@month.end_of_month)&.last&.created_at&.strftime('%m/%d/%Y')
+        ]
+      end
+    end
+  end
+
+  def group_submitted_enrollments_to_csv
+    enrollment_details = EnrollGroupsDetail.includes(:application_status_logs).where(application_status: 'application-submitted').where(application_status_logs: { created_at: @month.beginning_of_month..@month.end_of_month })
+    CSV.generate(headers: true) do |csv|
+      csv << ["Platform", "Group Name", "NPI", "Payor", "Enrollment Tracking ID", "Submission Date"]
+      enrollment_details.each do |enrollment_detail|
+        csv << [
+          enrollment_detail.enroll_group&.group&.flatform&.titleize,
+          enrollment_detail.enroll_group&.group&.group_name,
+          enrollment_detail.enroll_group&.group&.npi_digit_type,
+          enrollment_detail.enrollment_payer,
+          "",
+          enrollment_detail.application_status_logs&.where(status: 'application-submitted').where(created_at: @month.beginning_of_month..@month.end_of_month)&.last&.created_at&.strftime('%m/%d/%Y')
+        ]
+      end
+    end
   end
 end
