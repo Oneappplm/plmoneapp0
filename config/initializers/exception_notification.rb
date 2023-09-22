@@ -19,14 +19,14 @@ ExceptionNotification.configure do |config|
   # Notifiers =================================================================
 
   # Email notifier sends notifications by email.
-  config.add_notifier :email, {
-    email_prefix: '[PLMHEALTH ERROR] ',
-    sender_address: %{"PLMHEALTH Notifier" <#{Figaro.env.smtp_email}>},
-    exception_recipients: %w{jaysonpresto.iprog21@gmail.com niuram.z3@gmail.com pikot08@gmail.com wisegeek00007@gmail.com},
-    :error_grouping => true,
-    :sections => %w[data request session backtrace],
-    :background_sections => %w[data backtrace]
-  }
+  # config.add_notifier :email, {
+  #   email_prefix: '[PLMHEALTH ERROR] ',
+  #   sender_address: %{"PLMHEALTH Notifier" <#{Figaro.env.smtp_email}>},
+  #   exception_recipients: %w{jaysonpresto.iprog21@gmail.com niuram.z3@gmail.com pikot08@gmail.com wisegeek00007@gmail.com},
+  #   :error_grouping => true,
+  #   :sections => %w[data request session backtrace],
+  #   :background_sections => %w[data backtrace]
+  # }
 
   # Campfire notifier sends notifications to your Campfire room. Requires 'tinder' gem.
   # config.add_notifier :campfire, {
