@@ -357,6 +357,10 @@ module ApplicationHelper
 			ProviderSourceData.find_by(data_key: data_key)&.hide_class
 	end
 
+  def toggle_hide_current_provider_source data_key, current_provider_source
+      ProviderSourceData.find_by(data_key: data_key, provider_source_id: current_provider_source.id)&.hide_class
+  end
+
   def enrollment_group_options
 		if current_user.can_access_all_groups? || current_user.super_administrator?
     	EnrollmentGroup.all.pluck(:group_name, :id)

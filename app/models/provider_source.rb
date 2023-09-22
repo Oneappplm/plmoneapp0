@@ -108,7 +108,7 @@ class ProviderSource < ApplicationRecord
         'first_name', 'last_name', 'degree_titles',
         'state_of_practice', 'primary-practioner-type',
         'gi-country', 'address_line_1', 'city', 'ps-state',
-        'telephone', 'email_address'
+        'telephone', 'email_address', 'zipcode'
       ]
 
       filled_up_fields = fetch_many(fields_no_prerequisites)&.pluck(:data_value).compact.reject(&:empty?).count
@@ -175,7 +175,7 @@ class ProviderSource < ApplicationRecord
 
   def professional_ids_progress_registration_fields
     ['registration_number','registration_specialty','registration_issuing_board',
-      'registration_address_1', 'registration_zipcode', 'registration_issue_date'
+      'registration_address_1', 'registration_zipcode', 'registration_issue_date', 'registration_issue_state'
     ]
   end
 

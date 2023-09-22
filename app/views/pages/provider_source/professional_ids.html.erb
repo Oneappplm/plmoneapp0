@@ -21,34 +21,57 @@
 				<div class="col-lg-12 card py-3 my-3">
 					<h4 class="fw-semibold text-secondary">NPI ID</h4>
 					<div class="form-group">
+<<<<<<< HEAD
 						<label class="text-dark-grey">NPI Number</label>
 						<input type="text" name="npi_number" class="form-control border-dark" placeholder="NPI Number">
+=======
+						<label class="text-dark-grey">National Practitioner Identification (NPI) Number (e.g. 10 digits, 1234567890, Individual NPI only)</label>
+						<input type="text" name="npi_number" class="form-control border-dark">
+>>>>>>> Update toggle to cradio buttons and some text changes
 					</div>
 				</div>
 				<div class="col-lg-12 card py-3 mb-3">
 					<h4 class="fw-semibold text-secondary">DEA</h4>
-					<div class="d-flex align-items-center my-3">
-									<%= HtmlUtils.radio_toggle name: 'has_dea_registration_number',
+					<div class="d-flex gap-2 align-items-center my-3">
+									<%#= HtmlUtils.radio_toggle name: 'has_dea_registration_number',
 										label: 'Do/Did you have a DEA Registration Number <span class="text-danger"> *</span>',
 										toshow: 'dea_form',
 										hidden_field: true
 								%>
+                <div class="d-flex gap-2">
+                  <input type="radio" name="has_dea_registration_number" class="radio-with-form" data-form='dea_form' value="no" >
+                  <span>NO</span>
+                </div>  
+
+                <div  class="d-flex gap-2">
+                  <input type="radio" name="has_dea_registration_number" class="radio-with-form" data-form='dea_form' value="yes" checked='checked'>
+                  <span>YES</span>
+                </div>
 					</div>
-					<div class="<%= toggle_hide('has_dea_registration_number') %>" id="dea_form">
+					<div class="<%= toggle_hide_current_provider_source('has_dea_registration_number', @provider) %>" id="dea_form">
 						<%= render partial: 'provider_source_components/dea_form'%>
 					</div>
 				</div>
 				<div class="col-lg-12 card py-3 mb-3">
 					<h4 class="fw-semibold text-secondary mb-3">CDS</h4>
-					<div class="d-flex align-items-center my-3">
-              <%= HtmlUtils.radio_toggle name: 'has_cds_registration_number',
+					<div class="d-flex align-items-center my-3 gap-2">
+              <%#= HtmlUtils.radio_toggle name: 'has_cds_registration_number',
                 label: 'Do/Did you have a CDS Registration Number? <span class="text-danger"> *</span>',
                 toshow: 'cds_form',
                 hidden_field: true
               %>
+                <div class="d-flex gap-2">
+                  <input type="radio" name="has_cds_registration_number" class="radio-with-form" data-form='cds_form' value="no">
+                  <span>NO</span>
+                </div>  
+
+                <div  class="d-flex gap-2">
+                  <input type="radio" name="has_cds_registration_number" class="radio-with-form" data-form='cds_form' value="yes">
+                  <span>YES</span>
+                </div>
 					</div>
 
-				   <div class="<%= toggle_hide('has_cds_registration_number')%>" id="cds_form">
+				   <div class="<%= toggle_hide_current_provider_source('has_cds_registration_number',@provider)%>" id="cds_form">
 						<%= render partial: 'provider_source_components/cds_form'%>
 					</div>
 
@@ -91,16 +114,25 @@
 					</div>
 				</div> -->
 
-				<div class="col-lg-12 card py-3 mb-3">
+				<div class="col-lg-12 card py-3 mb-3 ">
 					<h4 class="fw-semibold text-secondary">Registration</h4>
-					<div class="d-flex align-items-center my-3">
-							<%= HtmlUtils.radio_toggle name: 'registration_id_form',
+					<div class="d-flex align-items-center my-3 gap-2" >
+							<%#= HtmlUtils.radio_toggle name: 'registration_id_form',
 								label: 'Do/Did you have a registration number related to your practicing specialty? <span class="text-danger"> *</span>',
 								toshow: 'registration_ids_form',
 								hidden_field: true
 							%>
+                <div class="d-flex gap-2">
+                  <input type="radio" name="registration_id_form" class="radio-with-form" data-form='registration_ids_form' value="no">
+                  <span>NO</span>
+                </div> 
+
+                <div  class="d-flex gap-2">
+                  <input type="radio" name="registration_id_form" class="radio-with-form" data-form='registration_ids_form' value="yes">
+                  <span>YES</span>
+                </div>
 					</div>
-					<div class="<%= toggle_hide('registration_id_form') %>" id="registration_ids_form">
+					<div class="<%= toggle_hide_current_provider_source('registration_id_form', @provider) %>" id="registration_ids_form">
 						<%= render partial: 'provider_source_components/prof_registration_form'%>
 					</div>
 				</div>
