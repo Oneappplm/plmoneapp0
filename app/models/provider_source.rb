@@ -125,7 +125,7 @@ class ProviderSource < ApplicationRecord
     fields_no_prerequisites = [
       'ps-gender', 'ps-dob', 'ps-citizenship', 'reside-on-us', 'work-on-us',
       'permanent-work-permit', 'languages-you-speak', 'languages-you-write',
-      'ethnicity'
+      'ethnicity', 'social-security-number'
     ]
 
     filled_up_fields = fetch_many(fields_no_prerequisites)&.pluck(:data_value).compact.reject(&:empty?).count
@@ -211,8 +211,8 @@ class ProviderSource < ApplicationRecord
 
   def other_ids_certifications_progress
     percentage = 0
-    prerequisites = ['medicare_field', 'medicaid_field', 'other_cert_field']
-    with_prerequisites = ['other_ids_certifications_progress_medicare_fields', 'other_ids_certifications_progress_medicaid_fields', 'other_ids_certifications_progress_other_fields']
+    prerequisites = ['medicare_field', 'medicaid_field', 'caqh_fields', 'other_cert_field' ]
+    with_prerequisites = ['other_ids_certifications_progress_medicare_fields', 'other_ids_certifications_progress_medicaid_fields', 'other_ids_certifications_progress_other_fields', 'other_ids_certifications_progress_caqh_fields' ]
     values = fetch_many(prerequisites)&.pluck(:data_value)
 
     percentage = if values.include?('yes')
@@ -242,6 +242,10 @@ class ProviderSource < ApplicationRecord
 
   def other_ids_certifications_progress_other_fields
     ['other_certification_type', 'other_certification_expiration_date']
+  end
+
+  def other_ids_certifications_progress_caqh_fields
+    ['caqh_number']
   end
 
   def professional_ids_completed?

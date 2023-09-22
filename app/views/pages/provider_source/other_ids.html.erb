@@ -21,7 +21,7 @@
 					<h4 class="fw-semibold text-secondary">Medicare</h4>
 					<div class="d-flex align-items-center my-3">
 								<%= HtmlUtils.radio_toggle name: 'other_id_voluntarily_medicare',
-								label: 'Have you ever voluntarily opted for Medicare?',
+								label: 'Have you ever voluntarily opted out for Medicare?',
 								hidden_field: true
 								%>
 					</div>
@@ -35,7 +35,7 @@
 					<div class="row <%= toggle_hide('medicare_field')%>" id="medicare_fields_test">
 						<div class="col-lg-6">
 							<label class="text-dark-grey">Medicare Number <span class="text-danger">*</span></label>
-							<input type="text" name="participating_medicare_number" required class="form-control border-dark">
+							<input type="text" name="participating_medicare_number" required class="form-control border-dark" placeholder="Medicare Number">
 						</div>
 						<div class="col-lg-6">
 							<%= HtmlUtils::dropdown name: 'participating_medicare_state', label: 'Medicare State <span class="text-danger"> *</span>' %>
@@ -57,7 +57,7 @@
 						</div>
 						<div class="col-lg-6">
 							<label class="text-dark-grey">Medicaid Number <span class="text-danger">*</span></label>
-							<input type="text" name="participating_medicaid_number" required class="form-control border-dark medicaid-number">
+							<input type="text" name="participating_medicaid_number" required class="form-control border-dark medicaid-number" placeholder="Medicaid Number">
 							<label class="text-dark-grey">
 								<input type="checkbox" name="participating_medicaid_no_number" id="participating-medicaid-no-number">
 								<strong>I don't have a number</strong>
@@ -66,26 +66,48 @@
 					</div>
 				</div>
 				<div class="col-lg-12 card py-3 mb-3">
+					<h4 class="fw-semibold text-secondary">CAQH <span class="text-danger">*</span></h4>
+					<div class="d-flex align-items-center my-3">
+							<%= HtmlUtils.radio_toggle name: 'caqh_field',
+									label: 'Do you have CAQH ID? <span class="text-danger"> *</span>',
+									toshow: 'caqh_fields',
+									hidden_field: true
+								%>
+					</div>
+					<div class="row <%=toggle_hide('caqh_field')%> " id="caqh_fields">
+						<div class="col-lg-6">
+							<label class="text-dark-grey">CAQH Number </label>
+							<input type="text" name="caqh_number" required class="form-control border-dark caqh-number" placeholder="CAQH Number">
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-12 card py-3 mb-3">
 					<h4 class="fw-semibold text-secondary mb-3">Other IDs</h4>
 					<div class="row mb-2">
 						<div class="col-lg-6">
 							<div class="form-group">
-								<label class="text-dark-grey">TRICARE Provider Number </label>
+								<label class="text-dark-grey">TRICARE Provider Number (assigned by TRICARE, a government agency dedicated to provider healthcare for military personnel) </label>
 								<input type="text" name="tricare-provider-name" placeholder="TRICARE Provider Number" class="form-control border-dark">
 							</div>
 						</div>
 						<div class="col-lg-6">
 							<div class="form-group">
-								<label class="text-dark-grey">USLME Number </label>
-								<input type="text" name="usmle-number" placeholder="USMLE Number" class="form-control border-dark">
+								<label class="text-dark-grey">USLME Number (without hyphens) (assigned by the United States Medical Licensing Examination) </label>
+								<input type="text" name="usmle-number" placeholder="USLME Number" class="form-control border-dark">
 							</div>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-lg-6">
 							<div class="form-group">
-								<label class="text-dark-grey">Workers Compensation Number </label>
+								<label class="text-dark-grey">Workers Compensation Number (assigned by the United States Department of Labor) </label>
 								<input type="text" name="workers-compensastion-number" placeholder="Workers Compensation Number" class="form-control border-dark">
+							</div>
+						</div>
+						<div class="col-lg-6 mt-3">
+							<div class="form-group">
+								<label class="text-dark-grey">CHAMPS ID Number </label>
+								<input type="text" name="champs-id-number" placeholder="CHAMPS ID Number" class="form-control border-dark">
 							</div>
 						</div>
 					</div>
@@ -103,18 +125,18 @@
 					<div class="row <%=toggle_hide('other_cert_field')%>" id="other_cert_fields">
 						<div class="col-lg-12 mb-3">
 							<label class="text-dark-grey">Certification Type <span class="text-danger">*</span></label>
-							<input type="text" class="form-control border-dark" name="other_certification_type" required>
+							<input type="text" class="form-control border-dark" name="other_certification_type" placeholder="Certification Type" required>
 						</div>
 						<div class="col-lg-6 mb-3">
-							<%= HtmlUtils::dropdown name: 'other_certification_state', label: 'State' %>
+							<label class="text-dark-grey">Certification Number <span class="text-danger">*</span></label>
+							<input type="text" class="form-control border-dark" name="other_certification_number" placeholder="Certification Number">
 						</div>
 						<div class="col-lg-6 mb-3">
-							<label class="text-dark-grey">Certification Number</label>
-							<input type="text" class="form-control border-dark" name="other_certification_number">
+							<%= HtmlUtils::dropdown name: 'other_certification_state', label: 'State <span class="text-danger">*</span>'  %>
 						</div>
 
 						<div class="col-lg-6 mb-3">
-							<label class="text-dark-grey">Issue Date</label>
+							<label class="text-dark-grey">Issue Date <span class="text-danger">*</span></label>
 							<input type="text" name="other_certification_issue_date" required class="form-control border-dark" placeholder="MM/DD/YYYY" onfocus="(this.type = 'date')">
 						</div>
 						<div class="col-lg-6 mb-3">
