@@ -14,25 +14,58 @@
                      ['Other IDs and Cerfifications','active', custom_provider_source_path(page: 'other_ids'), 'other_ids_certifications_progress'],
             ]%>
 
-        <%= render partial: "provider_source_components/progress_bar", locals: { steps: steps }%>
-            <%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
+					<%= render partial: "provider_source_components/progress_bar", locals: { steps: steps }%>
+						<%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
 				</div>
-				<div class="col-lg-12 card py-3 my-3">
+				<div class="col-lg-12 card p-3 mb-3">
 					<h4 class="fw-semibold text-secondary">Medicare</h4>
-					<div class="d-flex align-items-center my-3">
-								<%= HtmlUtils.radio_toggle name: 'other_id_voluntarily_medicare',
+					 	<div class="row mb-3 mt-3">
+						   <div class="col-lg-12">
+								<div class="d-flex justify-content-between">
+									<%= HtmlUtils.radio_options name: 'other_id_voluntarily_medicare', label: 'Have you ever voluntarily opted out for Medicare?' %>
+								</div>
+							</div>
+								<!--<%= HtmlUtils.radio_toggle name: 'other_id_voluntarily_medicare',
 								label: 'Have you ever voluntarily opted out for Medicare?',
 								hidden_field: true
-								%>
-					</div>
-					<div class="d-flex align-items-center my-3">
+								%> -->
+						</div>	
+
+					    <div class="row mb-3">
+   							<div class="col-lg-12">
+								<div class="d-flex justify-content-between gap-0">
+								 	<label class="text-dark-grey">Are you a participating Medicare provider? <span class="text-danger"> *</span></label>
+									<div class="d-flex me-4 gap-2">
+										<div class="gap-2">
+										  	<input type="radio" name="medicare_field" class="medicare-radio" value="yes" checked='checked'>
+										  <span>YES</span>
+										</div>  
+										<div  class="gap-2">
+											<input type="radio" name="medicare_field" class="medicare-radio"  value="no" >
+											<span>NO</span>
+										</div>
+									</div>
+								</div>
+							</div>	
+						</div>		
+								<div class="row" id="medicare_fields_test" class="d-none">
+									<div class="col-lg-6">
+										<label class="text-dark-grey">Medicare Number <span class="text-danger">*</span></label>
+										<input type="text" name="participating_medicare_number" required class="form-control border-dark" placeholder="Medicare Number">
+									</div>
+									<div class="col-lg-6">
+										<%= HtmlUtils::dropdown name: 'participating_medicare_state', label: 'Medicare State <span class="text-danger"> *</span>' %>
+									</div>
+								</div>
+					<!-- <div class="d-flex align-items-center my-3">
 								<%= HtmlUtils.radio_toggle name: 'medicare_field',
 									label: 'Are you a participating Medicare provider? <span class="text-danger"> *</span>',
 									toshow: 'medicare_fields_test',
 									hidden_field: true
 								%>
-					</div>
-					<div class="row <%= toggle_hide('medicare_field')%>" id="medicare_fields_test">
+					</div> -->			
+					
+					<!-- <div class="row <%= toggle_hide('medicare_field')%>" id="medicare_fields_test">
 						<div class="col-lg-6">
 							<label class="text-dark-grey">Medicare Number <span class="text-danger">*</span></label>
 							<input type="text" name="participating_medicare_number" required class="form-control border-dark" placeholder="Medicare Number">
@@ -40,9 +73,44 @@
 						<div class="col-lg-6">
 							<%= HtmlUtils::dropdown name: 'participating_medicare_state', label: 'Medicare State <span class="text-danger"> *</span>' %>
 						</div>
-					</div>
+					</div> -->
 				</div>
-				<div class="col-lg-12 card py-3 mb-3">
+				<div class="col-lg-12 card p-3 mb-3">
+					<h4 class="fw-semibold text-secondary">Medicaid</h4>
+				    	<div class="row mb-3">
+   							<div class="col-lg-12">
+								<div class="d-flex justify-content-between">
+								 	<label class="text-dark-grey">Are you a participating Medicaid provider? <span class="text-danger"> *</span></label>
+									<div class="d-flex me-4 gap-2">
+										<div class="gap-2">
+										 <input type="radio" name="medicaid_field" class="medicaid-radio" value="yes" checked='checked'>
+										  <span>YES</span>
+										</div>  
+										<div  class="gap-2">
+											 <input type="radio" name="medicaid_field" class="medicaid-radio"  value="no" >
+											<span>NO</span>
+										</div>
+									</div>
+								</div>
+							</div>	
+						</div>		
+								<div class="row" id="medicaid_fields" class="d-none">
+									<div class="col-lg-6">
+										<%= HtmlUtils::dropdown name: 'participating_medicaid_state', label: 'Medicaid State <span class="text-danger"> *</span>' %>
+									</div>
+									<div class="col-lg-6">
+										<label class="text-dark-grey">Medicaid Number <span class="text-danger">*</span></label>
+										<div class="mb-2">
+											<input type="text" name="participating_medicaid_number" required class="form-control border-dark medicaid-number" placeholder="Medicaid Number">
+										</div>
+										<label class="text-dark-grey">
+											<input type="checkbox" name="participating_medicaid_no_number" id="participating-medicaid-no-number">
+											<strong>I don't have a number</strong>
+										</label>
+									</div>
+								</div>
+				</div>				
+				<!--<div class="col-lg-12 card py-3 mb-3">
 					<h4 class="fw-semibold text-secondary">Medicaid</h4>
 					<div class="d-flex align-items-center my-3">
 							<%= HtmlUtils.radio_toggle name: 'medicaid_field',
@@ -64,8 +132,35 @@
 							</label>
 						</div>
 					</div>
-				</div>
-				<div class="col-lg-12 card py-3 mb-3">
+				</div> -->
+				<div class="col-lg-12 card p-3 mb-3">
+					<h4 class="fw-semibold text-secondary">CAQH</h4>
+				    	<div class="row mb-3">
+   							<div class="col-lg-12">
+								<div class="d-flex justify-content-between">
+								 	<label class="text-dark-grey">Do you have CAQH ID? <span class="text-danger"> *</span></label>
+									<div class="d-flex me-4 gap-2">
+										<div class="gap-2">
+										 <input type="radio" name="caqh_field" class="caqh-radio" value="yes" checked='checked'>
+										  <span>YES</span>
+										</div>  
+										<div  class="gap-2">
+											 <input type="radio" name="caqh_field" class="caqh-radio"  value="no" >
+											<span>NO</span>
+										</div>
+									</div>
+								</div>
+							</div>	
+						</div>		
+								<div class="row" id="caqh_fields" class="d-none">
+									<div class="col-lg-6">
+										<label class="text-dark-grey">CAQH Number </label>
+										<input type="text" name="caqh_number" required class="form-control border-dark caqh-number" placeholder="CAQH Number">
+									</div>
+								</div>
+				</div>		
+
+			<!--	<div class="col-lg-12 card py-3 mb-3">
 					<h4 class="fw-semibold text-secondary">CAQH <span class="text-danger">*</span></h4>
 					<div class="d-flex align-items-center my-3">
 							<%= HtmlUtils.radio_toggle name: 'caqh_field',
@@ -80,7 +175,7 @@
 							<input type="text" name="caqh_number" required class="form-control border-dark caqh-number" placeholder="CAQH Number">
 						</div>
 					</div>
-				</div>
+				</div> -->
 				<div class="col-lg-12 card py-3 mb-3">
 					<h4 class="fw-semibold text-secondary mb-3">Other IDs</h4>
 					<div class="row mb-2">
@@ -113,7 +208,54 @@
 					</div>
 				</div>
 
-				<div class="col-lg-12 card py-3 mb-3">
+				<div class="col-lg-12 card p-3 mb-3">
+					<h4 class="fw-semibold text-secondary">Other Certifications</h4>
+				    	<div class="row mb-3">
+   							<div class="col-lg-12">
+								<div class="d-flex justify-content-between">
+								 	<label class="text-dark-grey">Do you hold any other non-specialty related certifications? (e.g., ACLS, BLS, ATLS, CPR, PALS, NALS, Fluoroscopy, Radiography, etc.)</label>
+									<div class="d-flex me-4 gap-2">
+										<div class="gap-2">
+										 <input type="radio" name="other_cert_field" class="other-cert-radio" value="yes" checked='checked'>
+										  <span>YES</span>
+										</div>  
+										<div  class="gap-2">
+											 <input type="radio" name="other_cert_field" class="other-cert-radio"  value="no" >
+											<span>NO</span>
+										</div>
+									</div>
+								</div>
+							</div>	
+						</div>		
+								<div class="row" id="other_cert_fields" class="d-none">
+										<div class="col-lg-12 mb-3">
+											<label class="text-dark-grey">Certification Type <span class="text-danger">*</span></label>
+											<input type="text" class="form-control border-dark" name="other_certification_type" placeholder="Certification Type" required>
+										</div>
+										<div class="col-lg-6 mb-3">
+											<label class="text-dark-grey">Certification Number <span class="text-danger">*</span></label>
+											<input type="text" class="form-control border-dark" name="other_certification_number" placeholder="Certification Number">
+										</div>
+										<div class="col-lg-6 mb-3">
+											<%= HtmlUtils::dropdown name: 'other_certification_state', label: 'State <span class="text-danger">*</span>'  %>
+										</div>
+
+										<div class="col-lg-6 mb-3">
+											<label class="text-dark-grey">Issue Date <span class="text-danger">*</span></label>
+											<input type="text" name="other_certification_issue_date" required class="form-control border-dark" placeholder="MM/DD/YYYY" onfocus="(this.type = 'date')">
+										</div>
+										<div class="col-lg-6 mb-3">
+											<label class="text-dark-grey">Expiration Date <span class="text-danger">*</span></label>
+											<input type="text" name="other_certification_expiration_date" required class="form-control border-dark other-cert-expire" placeholder="MM/DD/YYYY" onfocus="(this.type = 'date')">
+											<label class="text-dark-grey">
+												<input type="checkbox" name="other_certification_not_expire" id="other-certification-not-expire">
+												<strong>Does not expire</strong>
+											</label>
+										</div>
+								</div>
+				</div>	
+
+			<!-- <div class="col-lg-12 card py-3 mb-3">
 					<h4 class="fw-semibold text-secondary">Other Certifications</h4>
 					<div class="d-flex align-items-center my-3">
 									<%= HtmlUtils.radio_toggle name: 'other_cert_field',
@@ -148,12 +290,13 @@
 							</label>
 						</div>
 					</div>
-				</div>
+				</div> -->
 		</div>
 	</div>
 </div>
 
 <script>
+var csrfToken = $('meta[name="csrf-token"]').attr('content');
 $('#participating-medicaid-no-number').on('change',function(){
     console.log($(this).prop('checked'));
     if($(this).prop('checked'))
@@ -176,4 +319,26 @@ $('#other-certification-not-expire').on('change',function(){
       $('.other-cert-expire').removeAttr('disabled');
 
 });
+
+$('.medicare-radio').on('change',function(){
+		// console.log($(this).val());
+		($(this).val() == 'yes') ?	$('#medicare_fields_test').removeClass('d-none') : $('#medicare_fields_test').addClass('d-none');
+})
+
+$('.medicaid-radio').on('change',function(){
+		// console.log($(this).val());
+		($(this).val() == 'yes') ?	$('#medicaid_fields').removeClass('d-none') : $('#medicaid_fields').addClass('d-none');
+})
+
+$('.caqh-radio').on('change',function(){
+		// console.log($(this).val());
+		($(this).val() == 'yes') ?	$('#caqh_fields').removeClass('d-none') : $('#caqh_fields').addClass('d-none');
+})
+
+$('.other-cert-radio').on('change',function(){
+		// console.log($(this).val());
+		($(this).val() == 'yes') ?	$('#other_cert_fields').removeClass('d-none') : $('#other_cert_fields').addClass('d-none');
+})
 </script>
+
+
