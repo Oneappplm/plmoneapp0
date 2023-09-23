@@ -4,7 +4,7 @@ module DynamicRolesInitializer
 	included do
 		def method_missing(method_name, *args, &block)
 				role_name = method_name.to_s.chomp("?") # Remove trailing "?" if present
-				role.downcase == role_name.downcase
+				role.downcase.parameterize(separator: '_') == role_name.downcase
 		end
 	end
 end
