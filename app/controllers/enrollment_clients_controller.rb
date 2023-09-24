@@ -176,15 +176,15 @@ class EnrollmentClientsController < ApplicationController
 
       enrollment_details.each do |enrollment_detail|
         csv << [
-          enrollment_detail.enrollment_provider&.provider&.group&.flatform&.titleize,
+          flatforms.detect{|flatform| flatform.last == enrollment_detail.enrollment_provider&.provider&.group&.flatform }&.first,
           enrollment_detail.enrollment_provider&.provider&.group&.group_name,
           enrollment_detail.enrollment_provider&.provider&.first_name,
           enrollment_detail.enrollment_provider&.provider&.last_name,
           enrollment_detail.enrollment_provider&.provider&.practitioner_type,
-          enrollment_detail.enrollment_provider&.provider&.npi,
+          format_number_for_leading_zeroes(enrollment_detail.enrollment_provider&.provider&.npi),
           enrollment_detail.enrollment_payer,
-          enrollment_detail.enrollment_tracking_id,
-          enrollment_detail.application_status_logs&.where(status: 'application-submitted').where(created_at: @month.beginning_of_month..@month.end_of_month)&.last&.created_at&.strftime('%m/%d/%Y')
+          format_number_for_leading_zeroes(enrollment_detail.enrollment_tracking_id),
+          enrollment_detail.application_status_logs&.where(status: 'application-submitted').where(created_at: @month.beginning_of_month..@month.end_of_month)&.last&.created_at&.strftime('%b %d, %Y')
         ]
       end
     end
@@ -196,14 +196,86 @@ class EnrollmentClientsController < ApplicationController
       csv << ["Platform", "Group Name", "NPI", "Payor", "Enrollment Tracking ID", "Submission Date"]
       enrollment_details.each do |enrollment_detail|
         csv << [
-          enrollment_detail.enroll_group&.group&.flatform&.titleize,
+          flatforms.detect{|flatform| flatform.last == enrollment_detail.enroll_group&.group&.flatform }&.first,
           enrollment_detail.enroll_group&.group&.group_name,
-          enrollment_detail.enroll_group&.group&.npi_digit_type,
+          format_number_for_leading_zeroes(enrollment_detail.enroll_group&.group&.npi_digit_type),
           enrollment_detail.enrollment_payer,
           "",
-          enrollment_detail.application_status_logs&.where(status: 'application-submitted').where(created_at: @month.beginning_of_month..@month.end_of_month)&.last&.created_at&.strftime('%m/%d/%Y')
+          enrollment_detail.application_status_logs&.where(status: 'application-submitted').where(created_at: @month.beginning_of_month..@month.end_of_month)&.last&.created_at&.strftime('%b %d, %Y')
         ]
       end
+    end
+  end
+
+  def license_report_to_csv
+    providers = Provider.includes(:licenses, :cnp_licenses, :rn_licenses).where(created_at: @month.beginning_of_month..@month.end_of_month)
+    CSV.generate(headers: true) do |csv|
+      csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State License Number", "State License Expiration",
+              "NP License Number", "NP Expiration Date", "RN License Number", "RN Expiration Date", "NCCPA Number", "NCCPA Expiration", "NP Certification Number",
+              "NP Certification Expiration"]
+      providers.each do |provider|
+        licenses = provider.licenses
+        cnp_licenses = provider.cnp_licenses
+        rn_licenses = provider.rn_licenses
+        csv << [
+          flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
+          provider.group&.group_name,
+          provider.first_name,
+          provider.last_name,
+          provider.practitioner_type,
+          format_number_for_leading_zeroes(provider.npi),
+          format_number_for_leading_zeroes(licenses.pluck(:license_number).reject {|i| !i.present? }),
+          licenses.pluck(:license_expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
+          format_number_for_leading_zeroes(cnp_licenses.pluck(:cnp_license_number).reject {|i| !i.present? }),
+          cnp_licenses.pluck(:expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
+          format_number_for_leading_zeroes(rn_licenses.pluck(:rn_license_number).reject {|i| !i.present? }),
+          rn_licenses.pluck(:rn_license_expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", ")
+        ]
+      end
+    end
+  end
+
+  def dea_to_csv
+    providers = Provider.includes(:dea_licenses).where(created_at: @month.beginning_of_month..@month.end_of_month)
+    CSV.generate(headers: true, write_headers: true) do |csv|
+      csv << ["", "", "", "", "", "", "", "", "", "", "Previous Month", "Previous Month"]
+      csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "DEA Number", "DEA State", "DEA Effective Date",
+              "DEA Expiration Date", "DEA Expiration Date", "DEA Verification Date"]
+      providers.each do |provider|
+        dea_licenses = provider.dea_licenses
+        csv << [
+          flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
+          provider.group&.group_name,
+          provider.first_name,
+          provider.last_name,
+          provider.practitioner_type,
+          format_number_for_leading_zeroes(provider.npi),
+          format_number_for_leading_zeroes(dea_licenses.pluck(:dea_license_number).reject {|i| !i.present? }),
+          State.where(id: dea_licenses.pluck(:state_id)).pluck(:name).join(", "),
+          dea_licenses.pluck(:dea_license_renewal_effective_date).reject {|i| !i.present? }.collect { |i| Date.parse(i).strftime('%b %d, %Y') }.join(", "),
+          dea_licenses.pluck(:dea_license_expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
+          "",
+          dea_licenses.pluck(:created_at).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", ")
+        ]
+      end
+    end
+  end
+
+  def flatforms
+    @flatforms ||=  [['Credible','credible'], ['CareLogic','carelogic'], ['Insync','insync']]
+  end
+
+  # accepts Int, String and Array
+  def format_number_for_leading_zeroes(value)
+    return nil unless value.present?
+    if value.is_a?(Array)
+      if value.size > 1
+        return value.collect { |i| i.to_s }.join(", ")
+      else
+        return value.collect { |i| '="' + "#{i.to_s}" + '"' }.join(", ")
+      end
+    else
+      return '="' + "#{value.to_s}" + '"'
     end
   end
 end
