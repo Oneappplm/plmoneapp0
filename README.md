@@ -51,3 +51,11 @@ List of domains with corresponding branches
  - https://demo.plmhealth.net/ - staging branch (for QA | testing)
  - https://qualifacts-06a6ed193a78.herokuapp.com/ - qualifacts-app-heroku branch ( for QA | testing)
 
+**Task Workflow:**
+
+ 1. Create new branch againsts master branch for your task
+ 2. after done on development, create a PR request
+ 3. make sure your commits is only 1, if more than one, use rebase squashing method: **git rebase -i HEAD~{number_of_commits}**
+ 4. When testing on dev instance, use **git cherry-pick {commit_hash}** command.
+ 5. When done, create a short demo of your task or attach snapshots.
+ 6. After your PR is approved. you can execute deploy script. **ruby git_deploy.rb**
