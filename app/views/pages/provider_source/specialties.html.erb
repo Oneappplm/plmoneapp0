@@ -107,7 +107,27 @@
                </div>
             </div>
             <div class="col-lg-12 card py-3 mb-3">
-               <h4 class="fw-semibold text-secondary mb-3">Failed Exams</h4>
+               <div class="row mb-3">
+   							<div class="col-lg-12">
+								<div class="d-flex justify-content-between">
+										<label class="text-dark-grey">Have you ever failed to pass a specialty board examination? <span class="text-danger"> *</span></label>
+									<div class="d-flex me-4 gap-2">
+										<div class="gap-2">
+											<input type="radio" name="specialties_board_exam" class="radio-with-form" data-form='failed_exam_board' value="yes" checked='checked'>
+											<span>YES</span>
+										</div>	
+										<div class="gap-2">
+											<input type="radio" name="specialties_board_exam" class="radio-with-form" data-form='failed_exam_board' value="no" >
+											<span>NO</span>
+										</div>
+									</div>
+								</div>	
+						    </div>	
+						</div>	
+							<div class="<%= toggle_hide_current_provider_source('specialties_board_exam', @provider) %>" id="failed_exam_board">
+								<%= render partial: 'provider_source_components/failed_exam_form'%>
+							</div>
+               <!-- <h4 class="fw-semibold text-secondary mb-3">Failed Exams</h4>
                <div class="d-flex align-items-center my-3">
                   <%= HtmlUtils.radio_toggle name: 'specialties_board_exam',
                      label: 'Have you ever failed to pass a specialty board examination? <span class="text-danger"> *</span>',
@@ -117,10 +137,41 @@
                </div>
                 <div class="<%=toggle_hide('specialties_board_exam')%>" id="failed_exam_board">
                <%= render "provider_source_components/failed_exam_form"%>
-               </div>
+               </div> -->
             </div>
             <div class="col-lg-12 card py-3 mb-3">
-               <h4 class="fw-semibold text-secondary mb-3">Populations Served</h4>
+               <h4 class="fw-semibold text-secondary mb-3">Population Served</h4>
+               <div class="row mb-3">
+                  <div class="col-lg-6">
+                     <label class="text-dark-grey">Requesting priviliges for the target populations (can be multiple)</label>
+                     <select class="form-select border-dark" placeholder="Suffix" name="target_population_privileges">
+                        <option value="">Select Option</option>
+                     </select>
+                  </div>
+                  <div class="col-lg-6">
+                     <label class="text-dark-grey">Employment Type (can be multiple)</label>
+                     <select class="form-select border-dark" placeholder="Suffix" name="populations_employment_type">
+                         <option value="">Select Option</option>
+                     </select>
+                  </div>
+               </div>
+               <div class="row mb-3">
+                  <div class="col-lg-6">
+                  <label class="text-dark-grey">Population being served (can be multiple)</label>
+                  <%= HtmlUtils::dropdown name: 'populations_served', multiple: true %>
+                  </div>
+               </div>
+               <div class="col-lg-12">
+								<div class="d-flex justify-content-between">
+									<%= HtmlUtils.radio_options name: 'specialty_student_intern', label: 'Are you student intern?' %>
+								</div>
+					</div>
+               <div class="form-group mb-3">
+               	<label class="text-dark-grey">Other informations</label>
+               	<textarea name="populations-infos" class="form-control border-dark" rows="8">
+               	</textarea>
+               	<label class="text-dark-grey">2500 max characters</label>
+               </div>
                <div class="form-group">
                	<label class="text-dark-grey">Other areas of professional practice interest, activieties, procedures, diagnoses or populations:</label>
                	<textarea name="populations-served" class="form-control border-dark" rows="8">
