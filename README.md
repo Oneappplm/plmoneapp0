@@ -1,24 +1,53 @@
-# README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
 
-Things you may want to cover:
 
-* Ruby version
+## PLMHEALTHONEPP
 
-* System dependencies
+Ruby Version: **3.0.2**
+Rails Version: **7.0.4.2**
+Bundler Version: **2.4.12**
+Rbenv Version: **1.2.0**
+Database: **postgres (PostgreSQL) 15.3**
 
-* Configuration
+**Setup:**
 
-* Database creation
+ 1. Install ruby using rbenv
+ 2. bundle install
 
-* Database initialization
+**Rake Tasks Setup:**
 
-* How to run the test suite
+     - rake db:reset
+     - rake db:migrate
+     - rake plmhealthoneapp:seed_initial_data
+     - rake 'plmhealthoneapp:update_client_name[plmhealthoneapp]' - plm instance (default)
+     - rake 'plmhealthoneapp:update_client_name[qualifacts]' - qualifacts instance (other option)
+     - rake plmhealthoneapp:create_default_accounts - creating default accounts
 
-* Services (job queues, cache servers, search engines, etc.)
+**Start Local Server:**
 
-* Deployment instructions
+     - rails s
 
-# plmhealthone-app
+**Deployment**
+
+    run: ruby git_deploy.rb
+
+list of branches for automated rebasing and push:
+
+ - hvhs-app
+ - qualifacts-app
+ - qualifacts-app-heroku
+ - staging
+ - master
+
+> we have **dev** branch for testing our working branch.  everytime you
+> push those branch on live, it will autodeploy on the server.
+> You can wait 2 - 3 minutes before checking on live.
+
+List of domains with corresponding branches
+
+ - https://plmhealth.net/ - master branch (main app)
+ - https://dev.plmhealth.net/ - dev branch (for developers | testing)
+ - https://qualifacts.plmhealth.net/ - qualifacts-app branch (main app)
+ - https://demo.plmhealth.net/ - staging branch (for QA | testing)
+ - https://qualifacts-06a6ed193a78.herokuapp.com/ - qualifacts-app-heroku branch ( for QA | testing)
+
