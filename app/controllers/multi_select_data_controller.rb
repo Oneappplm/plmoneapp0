@@ -122,6 +122,10 @@ class MultiSelectDataController < ApplicationController
 	def board_names
 		send_result	BoardName.all.map{|board| { label: board.name, value: board.name} }
 	end
+
+	def serviced_populations
+		send_result	ServicedPopulation.all.map(&:name)
+	end
 	# add more methods here
 
 	private

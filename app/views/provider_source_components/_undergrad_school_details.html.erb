@@ -2,7 +2,8 @@
 	<div class="col-lg-6">
 		<div id= "undergrad-location">
 		<div class="form-group">
-			<%= HtmlUtils::dropdown name: 'usd_school_location', label: 'Undergraduate School Location <span class="text-danger"> *</span>' %>
+			<label class="text-dark-grey">Undergraduate School Location <span class="text-danger"> *</span></label>
+			<%= HtmlUtils::dropdown name: 'usd_school_location'%>
 		</div>
 		</div>
 	</div>
@@ -11,7 +12,7 @@
 <div class="row mb-3">
 	<div class="col-lg-12">
 		<label class="text-dark-grey">Undergraduate School Name <span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" name="usd_undergraduate_school_name">
+		<input type="text" class="form-control border-dark" name="usd_undergraduate_school_name" placeholder="Undergrad School Name">
 
 	</div>
 </div>
@@ -19,22 +20,22 @@
 <div class="row mb-3">
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Address Line 1<span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" required name="usd_address_line1">
+		<input type="text" class="form-control border-dark" required name="usd_address_line1" placeholder="Addess Line 1">
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Address Line 2</label>
-		<input type="text" class="form-control border-dark" name="usd_address_line2">
+		<input type="text" class="form-control border-dark" name="usd_address_line2" placeholder="Address Line 2">
 	</div>
 </div>
 
 <div class="row mb-3">
 	<div class="col-lg-6">
 		<label class="text-dark-grey">City<span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" required name="usd_city">
+		<input type="text" class="form-control border-dark" required name="usd_city" placeholder="City">
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Zip Code<span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" required name="usd_zipcode">
+		<input type="text" class="form-control border-dark" required name="usd_zipcode" placeholder="Zip Code">
 	</div>
 </div>
 
@@ -43,52 +44,62 @@
 		<div class="row">
 			<div class="col-lg-8">
 				<label class="text-dark-grey">Telephone Number</label>
-				<input type="text" class="form-control border-dark" name="usd_telephone_number">
+				<input type="text" class="form-control border-dark" name="usd_telephone_number" placeholder="Telephone Number">
 			</div>
 			<div class="col-lg-4">
 				<label class="text-dark-grey">Ext</label>
-				<input type="text" class="form-control border-dark" name="usd_ext">
+				<input type="text" class="form-control border-dark" name="usd_ext" placeholder="Ext">
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Fax Number</label>
-		<input type="text" class="form-control border-dark" name="usd_fax_number">
+		<input type="text" class="form-control border-dark" name="usd_fax_number" placeholder="Fax Number">
 	</div>
 </div>
 <div class="row mb-3">
 	<div class="col-lg-5">
 		<label class="text-dark-grey">Email</label>
-		<input type="email"  class="form-control border-dark" name="usd_email">
+		<input type="email"  class="form-control border-dark" name="usd_email" placeholder="Email">
 	</div>
 </div>
 <div class="row mb-3">
 	<div class="col-lg-12">
 		<label class="text-dark-grey">Degree Awarded<span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" required name="usd_degree_awarded">
+		<input type="text" class="form-control border-dark" required name="usd_degree_awarded" placeholder="Degree Awarded">
 	</div>
 </div>
-
- <div class="row mb-3">
-    <div class="d-flex align-items-center my-3">
-      <%= HtmlUtils.radio_toggle name: 'incomplete_undergrad',
-    			label: 'Did you not complete your undergraduate education at this school? <span class="text-danger"> *</span>',
-        toshow: 'undergrad_school_reason'
-      %>
-      <input type="hidden" id="incomplete_undergrad" name="incomplete_undergrad" value="no">
-    </div>
-      <div id="undergrad_school_reason" class="d-none">
-        <%= render partial: 'provider_source_components/undergrad_school_reason'%>
-      </div>
-	</div>
 
 <div class="row mb-3">
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Start Date</label>
-		<input type="date" class="form-control border-dark" name="usd_date_start">
+		<input type="date" class="form-control border-dark" name="usd_date_start" >
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">End(Graduation) Date<span class="text-danger">*</span></label>
 		<input type="date" class="form-control border-dark" name="usd_date_graduation">
 	</div>
 </div>
+
+<div class="row mb-3">
+   		<div class="col-lg-12">
+			<div class="d-flex justify-content-between">
+				<label class="text-dark-grey">Did you complete your undergraduate education at this school? <span class="text-danger"> *</span></label>
+					<div class="d-flex me-4 gap-2">
+						<div class="gap-2">
+							<input type="radio" name="incomplete_undergrad" class="radio-with-form" data-form='undergrad_school_reason' value="no" checked='checked' >
+							<span>YES</span>
+						</div>	
+						<div class="gap-2">
+							<input type="radio" name="incomplete_undergrad" class="radio-with-form" data-form='undergrad_school_reason' value="yes" >
+							<span>NO</span>
+						</div>
+					</div>
+			</div>	
+		</div>	
+		
+		<div class="<%= toggle_hide_current_provider_source('incomplete_undergrad', @provider) %>" id="undergrad_school_reason">
+			<%= render partial: 'provider_source_components/undergrad_school_reason'%>
+		</div>
+</div>
+

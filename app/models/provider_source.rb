@@ -257,7 +257,7 @@ class ProviderSource < ApplicationRecord
   def health_plans_progress_v2
     percentage = 0
     fields_no_prerequisites = [
-      'hp_health_plans', 'hp_hospitals', 'hp_directories'
+      'hp_health_plans'
     ]
 
     filled_up_fields = fetch_many(fields_no_prerequisites)&.pluck(:data_value).compact.reject(&:empty?).count
