@@ -142,10 +142,11 @@ class AjaxController < ApplicationController
 
   def get_provider_notification_services
     notification_services = [
-			['Practice/Provider Setups', 'provider_setup'],
+			['Practice/Provider Setup', 'provider_setup'],
 			['Monthly Monitoring', 'monthly_monitoring'],
-			['Facility Enrollments/Maintenance', 'facility_maintenance'],
-			['Provider Enrollments/Maintenance', 'provider_maintenance'],
+			['Facility Enrollment', 'facility_enrollment'],
+			['Provider Enrollment', 'provider_enrollment'],
+      ['Enrollment Required Maintenance', 'enrollment_maintenance'],
 			['FBI Checks', 'fbi_checks'],
 			['Hospital Org PSV', 'hospital_org']
 		].map { |m| { label: m[0], value: m[1]} }
@@ -156,10 +157,11 @@ class AjaxController < ApplicationController
 
   def get_group_notification_services
     notification_services = [
-			['Practice/Provider Setups', 'provider_setup'],
+      ['Practice/Provider Setup', 'provider_setup'],
 			['Monthly Monitoring', 'monthly_monitoring'],
-			['Facility Enrollments/Maintenance', 'facility_maintenance'],
-			['Provider Enrollments/Maintenance', 'provider_maintenance'],
+			['Facility Enrollment', 'facility_enrollment'],
+			['Provider Enrollment', 'provider_enrollment'],
+      ['Enrollment Required Maintenance', 'enrollment_maintenance'],
 			['FBI Checks', 'fbi_checks'],
 			['Hospital Org PSV', 'hospital_org']
 		].map { |m| { label: m[0], value: m[1]} }
