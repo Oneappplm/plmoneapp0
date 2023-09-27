@@ -3,7 +3,7 @@ class GroupRole < ApplicationRecord
 
 	def self.generate_group_roles
 		group_roles = ['Director or Officers', 'DO Delegated Official', 'Managing Employee', 'AO Authorized Official',
-					  'Partner', 'W2 Employee', 'PECOS AO Authorized Official', 'PECOS AM Access Manager'
+					  'Partner', 'W2 Employee', 'PECOS AO Authorized Official', 'PECOS AM Access Manager', '5 Percent or Greater Direct/Indirect Owner'
 					]
 
       group_roles.each do |group_role|
