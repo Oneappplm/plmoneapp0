@@ -293,6 +293,7 @@ Rails.application.routes.draw do
       get :board_names
       get :group_states, path: 'group-states'
       get :serviced_populations
+      get :method_resolutions
       # add more here
     end
   end

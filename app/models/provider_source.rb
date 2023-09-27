@@ -444,7 +444,7 @@ class ProviderSource < ApplicationRecord
   def affiliation_info_progress_has_hospital_privilege_fields
     [
       'state_abbr', 'hp-facility-name', 'hp-mso-address-line1',
-      'hp-city', 'hp-zipcode', 'hp-mso-telephone-number', 'hp-mso-fax-number'
+      'hp-city', 'hp-zipcode', 'hp-mso-telephone-number', 'hp-mso-fax-number', 'mso-department-name'
     ]
   end
 
