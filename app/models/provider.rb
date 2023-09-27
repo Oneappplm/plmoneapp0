@@ -264,12 +264,19 @@ class Provider < ApplicationRecord
   def doc_submitted(doc)
     # auto check if file is not nil
     doc = self.send(doc)
-    (doc && doc&.url.nil?) ? false : true
+
+    doc && doc.size > 0
   end
 
   def doc_url(doc)
-    doc = self.send(doc)
-    (doc && doc&.url.present?) ? doc&.url : nil
+    doc = send(doc)
+    return [] unless doc.present? || (doc.kind_of?(Array) && doc.size > 0) || (doc.kind_of?(String) && doc.present?)
+
+    if doc.kind_of?(Array)
+      doc.map(&:url)
+    else
+      [doc.url]
+    end
   end
 
   def selected_practitioner_types
@@ -313,15 +320,15 @@ class Provider < ApplicationRecord
 
   def required_documents
     [
-     ['State License Copy', 'state_license_copy_file'],
-     ['DEA Copy', 'dea_copy_file'],
-     ['W9 Form', 'w9_form_file' ],
-     ['Certificate of Insurance', 'certificate_insurance_file'],
-     ['Drivers License', 'drivers_license_file' ],
-     ['License Registered State', 'board_certification_file' ],
-     ['CAQH App Copy', 'caqh_app_copy_file' ],
-     ['Curriculum Vitae (CV)', 'cv_file' ],
-     ['Telehealth License Copy', 'telehealth_license_copy_file'],
+     ['State License Copy', 'state_license_copies'],
+     ['DEA Copy', 'dea_copies'],
+     ['W9 Form', 'w9_form_copies' ],
+     ['Certificate of Insurance', 'certificate_insurance_copies'],
+     ['Drivers License', 'driver_license_copies' ],
+     ['License Registered State', 'board_certification_copies' ],
+     ['CAQH App Copy', 'caqh_app_copies' ],
+     ['Curriculum Vitae (CV)', 'cv_copies' ],
+     ['Telehealth License Copy', 'telehealth_license_copies'],
      ['Copy of Certificate', 'school_certificate']
    ]
   end

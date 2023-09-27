@@ -315,16 +315,18 @@
 
                     <div class="d-flex flex-column  gap-2">
                       <% docs.each do |doc|%>
-                      <% doc_url = @provider.doc_url(doc[1]) %>
-                      <% if !doc_url.nil?%>
-                      <div class="card p-2">
-                        <div class="d-flex justify-content-between">
-                          <a href="<%= doc_url %>" target="_blank" class="text-dark-grey"><%= doc[0]%></a>
-                          <a href="<%= doc_url %>" target="_blank" class="text-dark-grey">
-                          <i class="bi bi-eye"></i>
-                          </a>
+                      <% doc_urls = @provider.doc_url(doc[1]) %>
+                      <% if doc_urls %>
+                        <% doc_urls.each do |doc_url|%>
+                        <div class="card p-2">
+                          <div class="d-flex justify-content-between">
+                            <a href="<%= doc_url %>" target="_blank" class="text-dark-grey"><%= File.basename(doc_url) %></a>
+                            <a href="<%= doc_url %>" target="_blank" class="text-dark-grey">
+                            <i class="bi bi-eye"></i>
+                            </a>
+                          </div>
                         </div>
-                      </div>
+                        <% end %>
                       <% end %>
                       <% end %>
                     </div>
