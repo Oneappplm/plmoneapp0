@@ -1,4 +1,4 @@
-class ProviderSource::BaseService < ApplicationService
+class ProviderSource::BaseService < BaseService
 	attr_reader	:provider_source, :group_engage_initial_fields
 
 	def initialize(provider_source)

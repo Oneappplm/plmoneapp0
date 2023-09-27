@@ -3,7 +3,7 @@ require 'nokogiri'
 require 'open-uri'
 require 'mechanize'
 
-class Webscraper::StateAlaskaService < ApplicationService
+class Webscraper::StateAlaskaService < WebscraperService
 	attr_reader :url, :license_number, :program, :license_type
 
 	def initialize(license_number = '100782', program = 'Medical', license_type = nil,  url	= 'https://www.commerce.alaska.gov/cbp/main/Search/Professional')

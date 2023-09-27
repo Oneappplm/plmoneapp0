@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Webscraper::SamService < ApplicationService
+class Webscraper::SamService < WebscraperService
 	attr_reader :last_name, :first_name
 
 	def initialize(last_name = 'Ryals', first_name = 'Chandra')

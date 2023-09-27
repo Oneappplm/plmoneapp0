@@ -658,7 +658,6 @@
             }
         }
 
-
         var provider_id = $(btn).data('providerid');
 
         $.ajax({
@@ -682,6 +681,12 @@
              $('.loading-overlay').hide(); //
              $('html, body').animate({scrollTop: 0}, 'fast');
              setTimeout(function() { location.reload(); }, 1000);
+            },
+            error: function(xhr, status, error) {
+             // Handle the error response here
+             alert(xhr.responseText);
+             // Display an error message or perform any other actions
+             $('.loading-overlay').hide();
             }
         });
      }
@@ -749,7 +754,7 @@
                     console.log(response);
                     // Display a success message or perform any other actions
                     $('.loading-overlay').hide();
-                },
+                },  // Handle the error response here
                 error: function(xhr, status, error) {
                     // Handle the error response here
                     alert(xhr.responseText);

@@ -4,7 +4,7 @@ require 'nokogiri'
 require	'open-uri'
 require	'mechanize'
 
-class Webscraper::StateCaliforniaService < ApplicationService
+class Webscraper::StateCaliforniaService < WebscraperService
 	attr_reader :license_number, :url
 
 	def initialize(license_number)

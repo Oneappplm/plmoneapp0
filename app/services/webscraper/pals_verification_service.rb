@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class Webscraper::PalsVerificationService < ApplicationService
+class Webscraper::PalsVerificationService < WebscraperService
 	attr_reader :license_number
 
 	def initialize(license_number	= 'OS010089L')

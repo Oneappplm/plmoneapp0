@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class Webscraper::OigService < ApplicationService
+class Webscraper::OigService < WebscraperService
 	attr_reader :last_name, :first_name
 
 	def initialize(last_name = 'emmet', first_name = '')

@@ -86,10 +86,16 @@ class OfficeManagersController < ApplicationController
   end
 
   def send_email_to_provider provider_id
-    provider = ProviderSource.find_by(id: provider_id)
-    return unless provider.present?
+    api_service = ProviderSource::SendInviteService.call(
+      ProviderSource.find_by(id: provider_id),
+      params
+    )
 
-    ProviderSource::SendInviteService.call(provider, params)
+    if api_service.success?
+      render json: api_service.display_result
+    else
+      render json: api_service.display_error, status: 500
+    end
   end
 
   protected
