@@ -527,7 +527,7 @@ $('.multi-select').on('change', function() {
 
 $('.single-select').on('change', function() {
   var dropdownId = $(this).attr('id');
-  if(['ps-citizenship', 'ps-cob', 'fnin-country-of-issue', 'ps-state', 'gi-visa-types', 'dea_registration_state', 'cds_registration_state', 'registration_issue_state', 'registration_state', 'licensure_state', 'participating_medicare_state', 'participating_medicaid_state', 'other_certification_state', 'specialty', 'usd_school_location', 'prof_school_location', 'tf-location', 'tr_training_types', 'tr_specialties', 'tfu_affiliated_location', 'taf-location', 'military_primary_base_location', 'state_abbr', 'hfa_privilege_status', 'admit_state', 'edc-employment-location', 'state_abbr', 'rf-specialty', 'rf-state', 'cc-state', 'dco_state', 'contact_office_state', 'contact_billing_state', 'contact_remittance_state','practice_midlevel_state', 'practice_partners_state', 'practice_partners_specialty', 'lf-carrier-location', 'gi-country'].includes(dropdownId)) {
+  if(['ps-citizenship', 'ps-cob', 'fnin-country-of-issue', 'ps-state', 'gi-visa-types', 'dea_registration_state', 'cds_registration_state', 'registration_issue_state', 'registration_state', 'licensure_state', 'participating_medicare_state', 'participating_medicaid_state', 'other_certification_state', 'specialty', 'usd_school_location', 'prof_school_location', 'tf-location', 'tr_training_types', 'tr_specialties', 'tfu_affiliated_location', 'taf-location', 'military_primary_base_location', 'state_abbr', 'hfa_privilege_status', 'admit_state', 'edc-employment-location', 'state_abbr', 'rf-specialty', 'rf-state', 'cc-state', 'dco_state', 'contact_office_state', 'contact_billing_state', 'contact_remittance_state','practice_midlevel_state', 'practice_partners_state', 'practice_partners_specialty', 'lf-carrier-location', 'gi-country', 'mc-method-resolution'].includes(dropdownId)) {
     saveInput($(this));
   }
 });
@@ -569,7 +569,7 @@ $('input, textarea, select, div.multi-select, div.single-select').each(function(
       [
         'state_of_practice', 'primary-practioner-type',
         'ps-citizenship', 'ps-cob', 'fnin-country-of-issue',
-        'ps-state','gi-visa-types', 'languages-you-speak', 'languages-you-write', 'dea_registration_state', 'cds_registration_state', 'registration_issue_state', 'registration_state', 'licensure_state', 'participating_medicare_state', 'participating_medicaid_state', 'other_certification_state', 'hp_health_plans', 'hp_hospitals', 'hp_directories', 'specialty', 'usd_school_location', 'prof_school_location', 'tf-location', 'tr_training_types', 'tr_specialties', 'tfu_affiliated_location', 'taf-location', 'military_primary_base_location', 'state_abbr', 'hfa_privilege_status', 'admit_state', 'edc-employment-location', 'state_abbr', 'rf-specialty', 'rf-state', 'cc-state', 'dco_state', 'contact_office_state', 'contact_billing_state', 'contact_remittance_state', 'practice_midlevel_state', 'practice_partners_state', 'practice_partners_specialty', 'lf-carrier-location', 'gi-country', 'populations_served'
+        'ps-state','gi-visa-types', 'languages-you-speak', 'languages-you-write', 'dea_registration_state', 'cds_registration_state', 'registration_issue_state', 'registration_state', 'licensure_state', 'participating_medicare_state', 'participating_medicaid_state', 'other_certification_state', 'hp_health_plans', 'hp_hospitals', 'hp_directories', 'specialty', 'usd_school_location', 'prof_school_location', 'tf-location', 'tr_training_types', 'tr_specialties', 'tfu_affiliated_location', 'taf-location', 'military_primary_base_location', 'state_abbr', 'hfa_privilege_status', 'admit_state', 'edc-employment-location', 'state_abbr', 'rf-specialty', 'rf-state', 'cc-state', 'dco_state', 'contact_office_state', 'contact_billing_state', 'contact_remittance_state', 'practice_midlevel_state', 'practice_partners_state', 'practice_partners_specialty', 'lf-carrier-location', 'gi-country', 'populations_served', 'mc-method-resolution'
       ].includes(inputName)
     ){
     inputType = 'multi-select' // single-select is included here
@@ -673,6 +673,18 @@ $('input, textarea, select, div.multi-select, div.single-select').each(function(
                 $('#other_cert_fields').addClass('d-none');
               }
             }
+
+            if (inputName == 'is_self_insured'){
+             if (value === 'yes') {
+                  document.getElementById('insured_form_fields').classList.remove('d-none');
+                  document.getElementById('not_insured_form_fields').classList.add('d-none');
+              } else if (value === 'no') {
+                  document.getElementById('insured_form_fields').classList.add('d-none');
+                  document.getElementById('not_insured_form_fields').classList.remove('d-none');
+              }
+            }
+
+
 
             if (inputName == 'practice_patient_age_not_applicable') {
               if ($('#age_not_applicable').is(':checked')) {
@@ -824,7 +836,11 @@ function displayFieldsFromMultiSelectElement(data, inputName, tagName){
   } else if(['hfa_privilege_status', 'hfa_privilege_status'].includes(inputName)){
     path = '<%= privilege_statuses_multi_select_data_path %>';
     multiselect = false
+  } else if(['mc-method-resolution', 'mc-method-resolution'].includes(inputName)){
+    path = '<%= method_resolutions_multi_select_data_path %>';
+    multiselect = false
   }
+  
 
   // add more else if here for multi-select
 

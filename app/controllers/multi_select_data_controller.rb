@@ -126,6 +126,10 @@ class MultiSelectDataController < ApplicationController
 	def serviced_populations
 		send_result	ServicedPopulation.all.map(&:name)
 	end
+
+	def method_resolutions
+		send_result	MethodResolution.all.map(&:name)
+  end
 	# add more methods here
 
 	private

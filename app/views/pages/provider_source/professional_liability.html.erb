@@ -14,7 +14,7 @@
 				 		</span>
 				 		<div class="d-flex flex-column">
 				 			<label class="text-dark-grey">Professional Liability Coverage and Claims History</label>
-				 			<small>Please fill out 	all required fields</small>
+				 			<small>Please fill out 	all required fields. Required fields are marked with <span class="text-danger"> *</span>. </small>
 				 		</div>
 					</div>
 				</div>
@@ -24,47 +24,44 @@
         <%= render partial: "provider_source_components/progress_bar", locals: { steps: steps }%>
 				<%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
 				<div class="col-lg-12 card py-3 my-3">
-					<h4 class="fw-semibold text-secondary mb-3">Professional Liability Coverage and Claims History</h4>
+					<h4 class="fw-semibold text-secondary mb-3">Coverage and Claims History</h4>
 
 					<div class="alert alert-info alert-light-blue">
 						<i class="bi bi-info-circle" style="font-size: 20px;"></i><br>
 						<small>Please enter all professional liability coverage and claims history information. For claims made against you at any time provide information for each case under Professional Liability Claims History. </small><br>
 						<small>Please ensure your current professional liability coverage is not expiring within 30 days.</small>
 					</div>
+					<div class="row mb-3">
+						<div class="col-lg-12">
+								<div class="d-flex justify-content-between my-3">
+										<%= HtmlUtils.radio_options name: 'has_sovereign_immunity', label: 'Do you have a Sovereign Immunity document? <span class="text-danger"> *</span>' %>
+								</div>
+						</div>
+					</div>
 
 					<div class="row">
 						<div class="col-lg-12">
-							<div class="d-flex align-items-center my-3">
-							 <%= HtmlUtils.radio_toggle name: 'has_sovereign_immunity',
-									label: 'Do you have a Sovereign Immunity document? <span class="text-danger"> *</span>',
-									hidden: true
-        %>
-							</div>
-						</div>
-						<div class="col-lg-12">
-							<div class="d-flex align-items-center my-3">
-							 <%= HtmlUtils.radio_toggle name: 'has_liability_coverage',
-										label: 'Do/Did you have professional liability coverage within the past ten (10) years? <span class="text-danger"> *</span>',
-										toshow: 'self_insurance_fields',
-										hidden_field: true
-								%>
-							</div>
-						</div>
-            <div class="col-lg-12 <%= @provider.fetch('has_liability_coverage') ? 'd-none' : ''%>" id="lack_of_liability_form">
+								<div class="d-flex justify-content-between">
+										<label class="text-dark-grey">Do/Did you have professional liability coverage within the past ten (10) years? <span class="text-danger"> *</span></label>
+									<div class="d-flex me-4 gap-2">
+										<div class="gap-2">
+											<input type="radio" name="has_liability_coverage" class="liability-coverage-rbtn" data-form='self_insurance_fields' value="yes" checked='checked'>
+											<span>YES</span>
+										</div>	
+										<div class="gap-2">
+											<input type="radio" name="has_liability_coverage" class="liability-coverage-rbtn" data-form='self_insurance_fields' value="no" >
+											<span>NO</span>
+										</div>
+									</div>
+								</div>	
+						    </div>	
+
+            <div class="col-lg-12" id="lack_of_liability_form">
               <label class="text-dark-grey">Please explain your lack of Professional Liability Coverage.</label>
-              <textarea class="form-control" name="lf-lack-of-liability-coverage" rows="5"></textarea>
+              <textarea class="form-control border-dark" name="lf-lack-of-liability-coverage" rows="5"></textarea>
             </div>
 					</div>
-   <div class="<%= toggle_hide('has_liability_coverage') %>" id="self_insurance_fields">
-					<div class="row mt-2" id="">
-						<div class="col-lg-12">
-							<div class="alert alert-info alert-light-blue">
-								<i class="bi bi-info-circle" style="font-size: 20px;"></i>
-								<small>Self-insurance claims are paid by a self-insurance trust fund or employer. Answer
-            no if you are insured through an insurance carrier.</small>
-							</div>
-						</div>
-					</div><!--  start of divider -->
+   <div class="<%= toggle_hide_current_provider_source('has_liability_coverage', @provider) %>" id="self_insurance_fields">
 						<div class="row my-3">
 							<div class="col-lg-12">
 								<div class="d-flex align-items-center divider gap-3 ">
@@ -77,9 +74,10 @@
 							</div>
 						</div>
 						<!-- end of divider -->
-					<div class="row">
-						<div class="col-lg-12">
-							<div class="d-flex align-items-center my-3">
+						<div class="col-lg-12 card p-3">	
+						<div class="row mb-3 mt-3">	
+							<div class="col-lg-12">
+							<div class=" d-flex align-items-center my-3">
 									<%= HtmlUtils.radio_toggle name: 'is_self_insured',
 													label: 'Are you self-insured? <span class="text-danger"> *</span>',
 													toshow: 'insured_form_fields',
@@ -87,6 +85,7 @@
 													tohide: 'not_insured_form_fields'
 											%>
 							</div>
+						</div>
 						</div>
 						<div class="col-lg-12">
               <div id="not_insured_form_fields" class="<%= @provider.fetch('is_self_insured') == 'no' ? '' : 'd-none' %>">
@@ -98,11 +97,48 @@
 						</div>
 					</div>
           </div>
+					<div class="col-lg-12 card p-3 mt-3">	
+						<div class="row mb-3 mt-3">	
+							<div class="col-lg-12">
+					 <div class="d-flex justify-content-between">
+							 <label class="text-dark-grey">Was this policy involved in a malpractice claim? <span class="text-danger"> *</label>
+						 <div class="d-flex me-4 gap-2">
+							 <div class="gap-2">
+								 <input type="radio" name="has_malpractice_claim" class="radio-with-form" data-form='malpractice_form' value="yes" checked='checked'>
+								 <span>YES</span>
+							 </div>	
+							 <div class="gap-2">
+								 <input type="radio" name="has_malpractice_claim" class="radio-with-form" data-form='malpractice_form' value="no" >
+								 <span>NO</span>
+							 </div>
+						 </div>
+					 </div>	
+					 </div>	
+			 </div>	
+				 <div class="<%= toggle_hide_current_provider_source('has_malpractice_claim', @provider) %>" id="malpractice_form">
+					 <%= render partial: 'provider_source_components/malpractice_form'%>
+				 </div>
 				</div>
+			</div>
+
+			<!--	<div class="row">
+					<div class="col-lg-12">
+							<div class="col-lg-12">
+									<div class="d-flex justify-content-between my-3">
+										<%= HtmlUtils.radio_options name: 'has_malpractice_claim', label: 'Was this policy involved in a malpractice claim? *' %>
+									</div>
+							</div>
+					</div>
+				</div>	-->
 			</div>
 		</div>
 	</div>
 </div>
-<input type="text" name="has_sovereign_immunity" value="no" class="invisible-input">
-<input type="text" name="has_liability_coverage" value="no" class="invisible-input">
-<input type="text" name="is_self_insured" value="no" class="invisible-input">
+
+
+<script>
+$('.liability-coverage-rbtn').on('change',function(){
+		// console.log($(this).val());
+		($(this).val() == 'yes') ?	$('#self_insurance_fields').removeClass('d-none') : $('#self_insurance_fields').addClass('d-none');
+})
+</script>
