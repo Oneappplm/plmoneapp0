@@ -91,8 +91,60 @@
 									</label>
 								</div>
 								<div id="other_name_field" class="d-none">
-									<label class="text-dark-grey">Other Names</label>
-									<input type="text" name="other_names" class="form-control border-dark" placeholder="Other Names" >
+									<div class="row">
+                    <div class="col-lg-12 card py-3 mb-3">
+                        <h3>Other Names</h3>
+                        <div class="row my-3">
+                          <div class="col-lg-6">
+                              <label class="text-dark-grey">Name type</label>
+                              <input type="text" name="other_names" class="form-control border-dark" placeholder="Other Names" >
+                          </div>
+                        </div>
+                        <div class="row mb-3">
+                          <div class="col-lg-3">
+                              <label class="text-dark-grey">Other First Name <span class="text-danger">*</span></label>
+                              <input type="text" name="other_first_name" class="form-control border-dark" placeholder="Other First Name" >
+                          </div>
+                          <div class="col-lg-3">
+                              <label class="text-dark-grey">Other Middle Name</label>
+                              <input type="text" name="other_middle_name" class="form-control border-dark" placeholder="Other Middle Name" >
+                          </div>
+                          <div class="col-lg-3">
+                              <label class="text-dark-grey">Other Last Name <span class="text-danger">*</span></label>
+                              <input type="text" name="other_last_name" class="form-control border-dark" placeholder="Other Last Name" >
+                          </div>
+                          <div class="col-lg-3">
+                              <label class="text-dark-grey">Other Suffix</label>
+                              <select class="form-select border-dark">
+                                <option value="Jr.">Jr.</option>
+                                <option value="Sr.">Sr.</option>
+                                <option value="II">II</option>
+                                <option value="II">III</option>
+                                <option value="IV">IV</option>
+                                <option value="V">V</option>
+                              </select>
+                          </div>
+                        </div>
+                        <div class="row mb-3">
+                          <div class="col-lg-6">
+                              <label class="text-dark-grey">Date Started Using Other Name</label>
+                              <input type="date" name="other_name_date_started" class="form-control border-dark" placeholder="Date Started Using Other Name" >
+                          </div>
+                          <div class="col-lg-6">
+                              <label class="text-dark-grey">Date Stopped Using Other Name</label>
+                              <% if  @provider.fetch("other_name_in_use") == 'yes'%>
+                                <input type="date" name="other_name_date_stopped" class="form-control border-dark" placeholder="Date Started Using Other Name" id="stopped_date_other_name" readonly>
+                              <% else %>
+                                <input type="date" name="other_name_date_stopped" class="form-control border-dark" placeholder="Date Started Using Other Name" id="stopped_date_other_name">
+                              <% end %>
+                              <span class="d-flex mt-2">
+                                <input type="checkbox" name="other_name_in_use" class="me-2 other_name_still_use" <%= @provider.fetch("other_name_in_use") == 'yes' ? 'checked: checked' : '' %>>
+                                <label>Name is still in use</label>
+                              </span>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
 								</div>
 							</div>
 						</div>

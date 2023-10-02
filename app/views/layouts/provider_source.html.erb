@@ -542,6 +542,19 @@ function saveInput(input) {
         value = input.is(':checked') ? 'yes' : 'no';
       }
 
+      if(input.hasClass('other_name_still_use')) {
+        if(input.is(':checked')){
+          $('#stopped_date_other_name').val('');
+          $("#stopped_date_other_name").attr("readonly", true);
+          $("#stopped_date_other_name").css("background", '#eee');
+
+        }
+        else {
+          $("#stopped_date_other_name").css("background", '#fff');
+          $("#stopped_date_other_name").removeAttr("readonly");
+        }
+      }
+
       $.ajax({
           url: url,
           method: 'POST',
