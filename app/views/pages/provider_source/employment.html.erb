@@ -37,21 +37,28 @@
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-lg-12">
-		                  <div class="d-flex align-items-center my-3">
-                            <%= HtmlUtils.radio_toggle name: 'has_work_history',
-                            label: 'Do you have a work history since completion of your education/training <span class="text-danger"> *</span>',
-                            toshow: 'work_history',
-                           	hidden_field: true
-                          %>
-		                  </div>
-					</div>
-				</div>
-				<div class="<%= toggle_hide('has_work_history') %>" id="work_history">
-				<%= render "provider_source_components/employment_details_form" %>
-				</div>
+				<div class="col-lg-12">
+								<div class="d-flex justify-content-between">
+										<label class="text-dark-grey">Do you have a work history since completion of your education/training <span class="text-danger"> *</span></label>
+									<div class="d-flex me-4 gap-2">
+										<div class="gap-2">
+											<input type="radio" name="has_work_history" class="radio-with-form" data-form='work_history' value="yes" checked='checked'>
+											<span>YES</span>
+										</div>	
+										<div class="gap-2">
+											<input type="radio" name="has_work_history" class="radio-with-form" data-form='work_history' value="no" >
+											<span>NO</span>
+										</div>
+									</div>
+								</div>	
+						    </div>	
+						
+							<div class="<%= toggle_hide_current_provider_source('has_work_history', @provider) %>" id="work_history">
+								<%= render "provider_source_components/employment_details_form" %>
+							</div>
+						</div>		
+			</div>	
 			</div>
 		</div>
 	</div>
 </div>
-<input type="text" name="has_work_history" value="no" class="invisible-input">
