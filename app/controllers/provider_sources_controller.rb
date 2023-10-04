@@ -3,7 +3,6 @@ class ProviderSourcesController < ApplicationController
 	before_action :create_provider_source_and_redirect_to_edit_page, only: [:new]
 
 	def new
-    render json: params and return
   end
 
   def edit; end
@@ -41,6 +40,23 @@ class ProviderSourcesController < ApplicationController
     respond_to do |format|
       format.json  { render json: { progress: progress } }
     end
+  end
+
+  def autosave_multi_record
+    model = params[:model]
+    id = params[:id]
+    content = params[:content]
+    field = params[:field]
+
+    record = if model == 'dea'
+      ProviderSourcesDea.find(id)
+    elsif model == 'cds'
+      ProviderSourcesCds.find(id)
+    elsif model == 'registration'
+      ProviderSourcesRegistration.find(id)
+    end
+
+    record.update_attribute(field,content)
   end
 
 	def fetch

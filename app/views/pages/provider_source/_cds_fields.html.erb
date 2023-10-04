@@ -1,0 +1,81 @@
+<div class="row">
+
+<div class="row">
+  <div class="col-lg-12 d-flex justify-content-end">
+    <a href="<%= custom_provider_source_path(page: 'professional_ids', remove_record: 'cds', id: cds.id)%>" class="btn btn-danger btn-sm">Delete</a>
+  </div>
+</div>
+  <div class="col-lg-6">
+    <label class="text-dark-grey">CDS Registration Number</label>
+    <input type="text" name="registration_number" required class="form-control border-dark multi-field" placeholder="CDS Registration Number" value="<%= cds.registration_number%>" data-model="cds" data-id="<%= cds.id %>">
+  </div>
+  <div class="col-lg-6">
+    <%= HtmlUtils::dropdown_with_model name: 'state', label: 'CDS Registration State', model: 'cds', modelId: "#{cds.id}" %>
+  </div>
+  <div class="col-lg-6">
+    <label class="text-dark-grey">Issue Date</label>
+    <input type="date" name="issue_date" required class="form-control border-dark multi-field" data-model="cds" data-id="<%= cds.id %>"  value="<%= cds.issue_date%>"> 
+  </div>
+  <div class="col-lg-6">
+    <label class="text-dark-grey">Expiration Date <span class="text-danger">*</span></label>
+    <input type="date" name="expiration_date" required class="form-control border-dark multi-field cds-expire" data-model="cds" data-id="<%= cds.id %>"  value="<%= cds.expiration_date%>">
+    <span class="d-flex gap-2">
+      <input type="checkbox" name="cds_not_expire" id="cds-not-expire" data-model="cds" data-id="<%= cds.id %>">
+      <small>Does not expire</small>
+    </span>
+  </div>
+
+  <div class="col-lg-12">
+      <div class="d-flex justify-content-between my-3">
+         <label class="form-label">Are you currently practicing in this state? *</label>
+         <div class="d-flex me-4 gap-2">
+            <span>
+            <input type="radio" value="yes" name="practicing_in_state" class="multi-field" data-model="cds" data-id="<%= cds.id %>">
+            <span>YES</span>
+            </span>
+            <span>
+            <input type="radio" value="no" name="practicing_in_state" class="multi-field" data-model="cds" data-id="<%= cds.id %>">
+            <span>NO</span>
+            </span>
+         </div>
+      </div>
+  </div>
+  <div class="col-lg-12">
+      <div class="d-flex justify-content-between my-3">
+         <label class="form-label">Full Schedule?</label>
+         <div class="d-flex me-4 gap-2">
+            <span>
+            <input type="radio" value="yes" name="full_schedule" class="multi-field full-sched-radio" data-model="cds" data-id="<%= cds.id %>">
+            <span>YES</span>
+            </span>
+            <span>
+            <input type="radio" value="no" name="full_schedule" class="multi-field full-sched-radio" data-model="cds" data-id="<%= cds.id %>">
+            <span>NO</span>
+            </span>
+         </div>
+      </div>
+    <div id="record_tarea-<%= cds.id %>" class="<%= cds.full_schedule == 'no' ? '' : 'd-none' %>">
+      <div class="col-lg-12">
+        <label class="text-dark-grey">Please explain schedule limitations</label>
+        <textarea name="schedule_limit_explanation" class="form-control border-dark" rows="8" data-model="cds" data-id="<%= cds.id%>"></textarea>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<script>
+$('#cds-not-expire').on('change',function(){
+    console.log($(this).prop('checked'));
+    if($(this).prop('checked'))
+    {
+      $('.cds-expire').prop('disabled', true);
+      $('.cds-expire').val('');
+    }
+    else
+      $('.cds-expire').removeAttr('disabled');
+
+   });
+</script>
+

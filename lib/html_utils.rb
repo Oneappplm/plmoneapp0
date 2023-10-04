@@ -115,7 +115,32 @@ module HtmlUtils
 
     option = <<-HTML
       <label class="text-dark-grey">#{options[:label]}</label>
-      <div class="#{options[:multiple] ? 'multi' : 'single'}-select multi-select-#{options[:name]} #{dropdown_class.join(' ')}" name="#{options[:name]}" id="#{options[:name]}" placeholder="#{options[:label]}" ></div>
+      <div class="#{options[:multiple] ? 'multi' : 'single'}-select multi-select-#{options[:name]} #{dropdown_class.join(' ')}" name="#{options[:name]}" id="#{options[:name]}" placeholder="#{options[:label]}"></div>
+    HTML
+
+    option.html_safe
+  end
+
+  def dropdown_with_model **options
+    options[:label] ||= ''
+    options[:multiple] ||= false
+    options[:name] ||= ''
+
+    value = options[:value]
+
+
+    dropdown_class = ['form-select']
+    if value.nil?
+      dropdown_class << 'border-dark'
+    elsif value.to_s.strip.blank?
+      dropdown_class << 'border-danger'
+    else
+      dropdown_class << 'border-dark'
+    end
+
+    option = <<-HTML
+      <label class="text-dark-grey">#{options[:label]}</label>
+      <div class="#{options[:multiple] ? 'multi' : 'single'}-select multi-record multi-record-multi-select multi-select-#{options[:name]} #{dropdown_class.join(' ')}" name="#{options[:name]}" id="#{options[:name]}" placeholder="#{options[:label]}" data-model="#{options[:model]}" data-id="#{options[:modelId]}" ></div>
     HTML
 
     option.html_safe

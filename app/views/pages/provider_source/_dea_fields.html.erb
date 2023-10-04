@@ -1,0 +1,65 @@
+<div class="col-lg-12 card p-3 mb-3">
+<div class="row">
+  <div class="col-lg-12 d-flex justify-content-end">
+    <a href="<%= custom_provider_source_path(page: 'professional_ids', remove_record: 'dea', id: dea.id)%>" class="btn btn-danger btn-sm">Delete</a>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-6">
+    <label class="text-dark-grey">DEA Registration Number</label>
+    <input type="text" name="registration_number" class="form-control border-dark multi-field" placeholder="DEA Registration Number" value="<%= dea.registration_number%>" data-model="dea" data-id="<%= dea.id %>">
+  </div>
+  <div class="col-lg-6">
+    <%#= HtmlUtils::dropdown name: 'state_id', label: 'DEA Registration State' %>
+    <%= HtmlUtils::dropdown_with_model name: 'state', label: 'DEA Registration State', model: 'dea', modelId: "#{dea.id}" %>
+  </div>
+  <div class="col-lg-6">
+    <label class="text-dark-grey">Issue Date</label>
+    <input type="date" name="issue_date" class="form-control border-dark multi-field" data-model="dea" data-id="<%= dea.id %>" value="<%= dea.issue_date %>">
+  </div>
+  <div class="col-lg-6">
+    <label class="text-dark-grey">Expiration Date <span class="text-danger">*</span></label>
+    <input type="date" name="expiration_date" class="form-control border-dark dea-expire multi-field" data-model="dea" data-id=<%= dea.id %> value="<%= dea.expiration_date%>">
+    <span class="d-flex gap-2">
+      <input type="checkbox" name="dea_not_expire" id="dea-not-expire" value="">
+      <small>Does not expire</small>
+    </span>
+  </div>
+  <div class="col-lg-12">
+      <div class="d-flex justify-content-between my-3">
+         <label class="form-label">Full Schedule (2 2N 3 3N 4 5)?</label>
+         <div class="d-flex me-4 gap-2">
+            <span>
+            <input type="radio" value="yes" name="full_schedule" class="multi-field full-sched-radio" data-model="dea" data-id="<%= dea.id %>">
+            <span>YES</span>
+            </span>
+            <span>
+            <input type="radio" value="no" name="full_schedule" class="multi-field full-sched-radio" data-model="dea" data-id="<%= dea.id %>">
+            <span>NO</span>
+            </span>
+         </div>
+      </div>
+  </div>
+
+  <div id="record_tarea-<%= dea.id %>" class="<%= dea.full_schedule == 'no' ? '' : 'd-none' %>">
+    <div class="col-lg-12">
+      <label class="text-dark-grey">Please explain schedule limitations</label>
+      <textarea name="schedule_limit_explanation" class="form-control border-dark multi-field" rows="8" data-model="dea" data-id="<%= dea.id%>"></textarea>
+    </div>
+      <div class="col-lg-12 mt-3">
+        <% scheds = ['2', '2N', '3', '3N', '4', '5'] %>
+        <h5>Select Schedule(s) Held</h5>
+        <div class="d-flex gap-2">
+          <% scheds.each do |sched| %>
+          <label class="text-dark-grey">
+            <input type="checkbox" name="sched_<%= sched %>" value="<%= sched %>" class="cb_sched-<%= dea.id %> cb_sched multi-field" data-id="<%= dea.id%>">
+            <strong><%= sched %></strong>
+          </label>
+          <% end %>
+
+        <!-- <input type="text" name="schedule_helds" class="multi-field sched-field" data-model="dea" data-id="<%#= dea.id %>" id="schedules-<%#= dea.id %>"> -->
+        </div>
+      </div>
+  </div>
+</div>
+</div>

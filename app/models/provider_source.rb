@@ -1,6 +1,15 @@
 class ProviderSource < ApplicationRecord
   has_many :data, class_name: 'ProviderSourceData', inverse_of: :provider_source, dependent: :destroy
   has_many  :documents, class_name: 'ProviderSourceDocument', inverse_of: :provider_source, dependent: :destroy
+  has_many :deas, class_name: 'ProviderSourcesDea', inverse_of: :provider_source, dependent: :destroy
+  has_many :cds, class_name: 'ProviderSourcesCds', inverse_of: :provider_source, dependent: :destroy
+  has_many :registrations, class_name: 'ProviderSourcesRegistration', inverse_of: :provider_source, dependent: :destroy
+
+  accepts_nested_attributes_for :deas, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :cds, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :registrations, allow_destroy: true, reject_if: :all_blank
+
+
   belongs_to :practice_location, optional: true
   belongs_to :group_engage_provider, optional: true
   scope :current, ->{ find_by(current_provider_source: true) }
@@ -833,6 +842,18 @@ class ProviderSource < ApplicationRecord
     User.find_by(id: self.created_by_user)
   rescue
     nil
+  end
+
+  def create_dea
+    ProviderSourcesDea.create(provider_source_id: self.id)
+  end
+
+  def create_cds
+    ProviderSourcesCds.create(provider_source_id: self.id)
+  end
+
+  def create_registration
+    ProviderSourcesRegistration.create(provider_source_id: self.id)
   end
 
   private

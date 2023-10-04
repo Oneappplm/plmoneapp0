@@ -481,6 +481,14 @@
 <script type="text/javascript">
   $('.radio-with-form').on('change',function(e) {
     $(this).val() == 'yes' ? toShow($(this).data('form'), true) : toShow($(this).data('form'), false)
+
+
+
+    if($(this).hasClass('has-textarea') && $(this).hasClass('textarea-no')) {
+      var textarea = $(this).data('textarea');
+      // alert(textarea);
+      ($(this).val() == 'no')  ? $('#'+textarea).removeClass('d-none') : $('#'+textarea).addClass('d-none')
+    } 
   });
 
   $('.btn-toggle').on('click',function(e){
@@ -511,8 +519,13 @@
 <script>
 var csrfToken = $('meta[name="csrf-token"]').attr('content');
 $('input:not([type="hidden"]), textarea, select').on('change', function() {
-	saveInput($(this));
+  if(!($(this).hasClass('multi-field')))
+	 saveInput($(this));
+  else{
+      saveInputMultiRecord($(this));
+  }
 });
+
 
 //Autosave for custom dropdown
 $('.multi-select').on('change', function() {
@@ -525,12 +538,58 @@ $('.multi-select').on('change', function() {
   }
 });
 
+$('.cb_sched').on('change',function() {
+  updateSchedFieldText($(this));
+})
+
+function updateSchedFieldText(input) {
+    var newText = ''; // Initialize an empty string to store the new text
+
+    var closestParent = input.closest('.d-flex');
+    var inputField = closestParent.find('.sched-field');
+    var id = input.data('id');
+    $('.cb_sched-'+id).each(function() {
+      if ($(this).prop('checked')) {
+        newText += $(this).val() + ' ';
+      }
+    });
+    inputField.val(newText);
+}
+
 $('.single-select').on('change', function() {
   var dropdownId = $(this).attr('id');
   if(['ps-citizenship', 'ps-cob', 'fnin-country-of-issue', 'ps-state', 'gi-visa-types', 'dea_registration_state', 'cds_registration_state', 'registration_issue_state', 'registration_state', 'licensure_state', 'participating_medicare_state', 'participating_medicaid_state', 'other_certification_state', 'specialty', 'usd_school_location', 'prof_school_location', 'tf-location', 'tr_training_types', 'tr_specialties', 'tfu_affiliated_location', 'taf-location', 'military_primary_base_location', 'state_abbr', 'hfa_privilege_status', 'admit_state', 'edc-employment-location', 'state_abbr', 'rf-specialty', 'rf-state', 'cc-state', 'dco_state', 'contact_office_state', 'contact_billing_state', 'contact_remittance_state','practice_midlevel_state', 'practice_partners_state', 'practice_partners_specialty', 'lf-carrier-location', 'gi-country', 'mc-method-resolution'].includes(dropdownId)) {
     saveInput($(this));
   }
 });
+
+function saveInputMultiRecord(input) {
+  var url = '/provider_sources/autosave_multi_record';
+  var model = input.data('model');
+  var id = input.data('id')
+  var content = input.val();
+  var field = input.attr('name');
+
+  if(input.is(':checkbox')){
+    field = $('#schedules-'+id).attr('name');
+    content = $('#schedules-'+id).val();
+    model = $('#schedules-'+id).data('model');
+  }
+
+  // alert(content);
+  $.ajax({
+    url: url,
+    method: 'POST',
+    dataType: 'json',
+    data: { authenticity_token: csrfToken, model: model, id: id, content: content, field: field },
+    success: function (data) {
+      console.log('Autosaved successfully!');
+    },
+    error: function() {
+      console.log('Autosave failed!');
+    }
+  })
+}
 
 function saveInput(input) {
     var url = '/provider_sources/autosave'; // Replace with the URL for your autosave endpoint
@@ -576,17 +635,21 @@ $('input, textarea, select, div.multi-select, div.single-select').each(function(
 	var inputValue = $(this).val();
   var tagName = $(this).prop('tagName').toLowerCase();
   var inputType = $(this).attr('type');
+  var isMultiRecord = $(this).hasClass('multi-field');
 
   //  add multi-select and single-select to inputType name
   if (
       [
         'state_of_practice', 'primary-practioner-type',
         'ps-citizenship', 'ps-cob', 'fnin-country-of-issue',
-        'ps-state','gi-visa-types', 'languages-you-speak', 'languages-you-write', 'dea_registration_state', 'cds_registration_state', 'registration_issue_state', 'registration_state', 'licensure_state', 'participating_medicare_state', 'participating_medicaid_state', 'other_certification_state', 'hp_health_plans', 'hp_hospitals', 'hp_directories', 'specialty', 'usd_school_location', 'prof_school_location', 'tf-location', 'tr_training_types', 'tr_specialties', 'tfu_affiliated_location', 'taf-location', 'military_primary_base_location', 'state_abbr', 'hfa_privilege_status', 'admit_state', 'edc-employment-location', 'state_abbr', 'rf-specialty', 'rf-state', 'cc-state', 'dco_state', 'contact_office_state', 'contact_billing_state', 'contact_remittance_state', 'practice_midlevel_state', 'practice_partners_state', 'practice_partners_specialty', 'lf-carrier-location', 'gi-country', 'populations_served', 'mc-method-resolution'
+        'ps-state','gi-visa-types', 'languages-you-speak', 'languages-you-write', 'dea_registration_state', 'cds_registration_state', 'registration_issue_state', 'registration_state', 'licensure_state', 'participating_medicare_state', 'participating_medicaid_state', 'other_certification_state', 'hp_health_plans', 'hp_hospitals', 'hp_directories', 'specialty', 'usd_school_location', 'prof_school_location', 'tf-location', 'tr_training_types', 'tr_specialties', 'tfu_affiliated_location', 'taf-location', 'military_primary_base_location', 'state_abbr', 'hfa_privilege_status', 'admit_state', 'edc-employment-location', 'state_abbr', 'rf-specialty', 'rf-state', 'cc-state', 'dco_state', 'contact_office_state', 'contact_billing_state', 'contact_remittance_state', 'practice_midlevel_state', 'practice_partners_state', 'practice_partners_specialty', 'lf-carrier-location', 'gi-country',
+        'ps-state','gi-visa-types', 'languages-you-speak', 'languages-you-write', 'dea_registration_state', 'cds_registration_state', 'registration_issue_state', 'registration_state', 'licensure_state', 'participating_medicare_state', 'participating_medicaid_state', 'other_certification_state', 'hp_health_plans', 'hp_hospitals', 'hp_directories', 'specialty', 'usd_school_location', 'prof_school_location', 'tf-location', 'tr_training_types', 'tr_specialties', 'tfu_affiliated_location', 'taf-location', 'military_primary_base_location', 'state_abbr', 'hfa_privilege_status', 'admit_state', 'edc-employment-location', 'state_abbr', 'rf-specialty', 'rf-state', 'cc-state', 'dco_state', 'contact_office_state', 'contact_billing_state', 'contact_remittance_state', 'practice_midlevel_state', 'practice_partners_state', 'practice_partners_specialty', 'lf-carrier-location', 'gi-country', 'populations_served', 'state', 'issue_state', 'registration_state', 'mc-method-resolution'
       ].includes(inputName)
     ){
     inputType = 'multi-select' // single-select is included here
   }
+
+
 
 	// Make an AJAX request to retrieve the value for the input field
 	$.ajax({
@@ -798,7 +861,8 @@ $('input, textarea, select, div.multi-select, div.single-select').each(function(
               if (typeof inputName === 'undefined') {
                 console.error('inputName is not defined', inputName, tagName, inputType, data);
               } else {
-                displayFieldsFromInputElement(data, inputName, tagName, inputType);
+                if(isMultiRecord === false)
+                  displayFieldsFromInputElement(data, inputName, tagName, inputType);
               }
             } catch (error) {
               // Handle the error here
@@ -840,9 +904,9 @@ function displayFieldsFromMultiSelectElement(data, inputName, tagName){
   var path = ''
   var multiselect = true;
 
-  if(['state_of_practice', 'ps-state', 'dea_registration_state', 'cds_registration_state', 'registration_issue_state', 'registration_state', 'licensure_state', 'participating_medicare_state', 'participating_medicaid_state', 'other_certification_state', 'usd_school_location', 'prof_school_location', 'tf-location', 'tfu_affiliated_location', 'taf-location', 'military_primary_base_location', 'state_abbr', 'admit_state', 'edc-employment-location', 'state_abbr', 'rf-state', 'cc-state', 'dco_state', 'contact_office_state', 'contact_billing_state', 'contact_remittance_state', 'practice_midlevel_state', 'practice_partners_state', 'lf-carrier-location'].includes(inputName)){
+  if(['state_of_practice', 'ps-state', 'dea_registration_state', 'cds_registration_state', 'registration_issue_state', 'registration_state', 'licensure_state', 'participating_medicare_state', 'participating_medicaid_state', 'other_certification_state', 'usd_school_location', 'prof_school_location', 'tf-location', 'tfu_affiliated_location', 'taf-location', 'military_primary_base_location', 'state_abbr', 'admit_state', 'edc-employment-location', 'state_abbr', 'rf-state', 'cc-state', 'dco_state', 'contact_office_state', 'contact_billing_state', 'contact_remittance_state', 'practice_midlevel_state', 'practice_partners_state', 'lf-carrier-location', 'state', 'issue_state', 'registration_state'].includes(inputName)){
     path = '<%= states_multi_select_data_path %>';
-    if(['ps-state', 'dea_registration_state', 'cds_registration_state', 'registration_issue_state', 'registration_state', 'licensure_state', 'participating_medicare_state', 'participating_medicaid_state', 'other_certification_state', 'usd_school_location', 'prof_school_location', 'tf-location', 'tfu_affiliated_location', 'taf-location', 'military_primary_base_location', 'state_abbr', 'admit_state', 'edc-employment-location', 'state_abbr', 'rf-state', 'cc-state', 'dco_state', 'contact_office_state', 'contact_billing_state', 'contact_remittance_state', 'practice_midlevel_state', 'practice_partners_state', 'lf-carrier-location'].includes(inputName)){ // single select
+    if(['ps-state', 'dea_registration_state', 'cds_registration_state', 'registration_issue_state', 'registration_state', 'licensure_state', 'participating_medicare_state', 'participating_medicaid_state', 'other_certification_state', 'usd_school_location', 'prof_school_location', 'tf-location', 'tfu_affiliated_location', 'taf-location', 'military_primary_base_location', 'state_abbr', 'admit_state', 'edc-employment-location', 'state_abbr', 'rf-state', 'cc-state', 'dco_state', 'contact_office_state', 'contact_billing_state', 'contact_remittance_state', 'practice_midlevel_state', 'practice_partners_state', 'lf-carrier-location', 'state', 'issue_state', 'registration_state'].includes(inputName)){ // single select
       multiselect = false
     }
   }else if(inputName == 'primary-practioner-type'){
@@ -967,6 +1031,20 @@ function initMultiSelect(collection, selected_values, element = '.multi-select',
       var to_show = $(this).data('toshow');
       ($(this).val() == 'yes') ? $('#'+to_show).removeClass('d-none') : $('#'+to_show).addClass('d-none') ;
    });
+
+
+$(document).on('ready',function() {
+  $('.multi-record-multi-select').change(function() {
+    var value = this.value;
+    if(value != "")
+      saveInputMultiRecord($(this))
+  });
+
+  $('.full-sched-radio').on('change', function(){
+    var sched_id = $(this).data('id');
+    ($(this).val() == 'no') ? $('#record_tarea-'+sched_id).removeClass('d-none') : $('#record_tarea-'+sched_id).addClass('d-none');
+  })
+})
 var page_group = '';
 $(document).on('ready',getProgress());
   function getProgress() {

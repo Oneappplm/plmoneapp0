@@ -28,7 +28,16 @@ class PagesController < ApplicationController
 	def provider_source
 		@provider_sources = ProviderSource.all
 		@provider = current_user.provider_source_lookup
+    build_initial_associations
 		HtmlUtils.set_current_provider_source(@provider)
+
+    if params[:add_new].present?
+      new_association(params[:add_new])
+    end
+
+    if params[:remove_record].present?
+      delete_association_record(params[:remove_record], params[:id])
+    end
 
 		if params[:page].present?
 			render "pages/provider_source/#{params[:page]}", layout: 'provider_source'
@@ -269,9 +278,27 @@ class PagesController < ApplicationController
 					nil
   end
 
-		def redirect_to_default_page
-			# render json: current_role and return
-			redirect_to_filtered_page(current_user.default_page) if current_user.default_page.present? && current_user.default_page != 'overview'
-			render 'shared/access_denied' and return if current_user.default_page.blank?
-		end
+	def redirect_to_default_page
+		# render json: current_role and return
+		redirect_to_filtered_page(current_user.default_page) if current_user.default_page.present? && current_user.default_page != 'overview'
+		render 'shared/access_denied' and return if current_user.default_page.blank?
+	end
+
+  def build_initial_associations
+    @provider.create_dea if @provider&.deas&.reload&.blank?
+    @provider.create_cds if @provider&.cds&.reload&.blank?
+    @provider.create_registration if @provider&.registrations&.reload&.blank?
+  end
+
+  def new_association(model)
+    @provider.create_dea if model == 'dea'
+    @provider.create_cds if model == 'cds'
+    @provider.create_registration if model == 'registration'
+  end
+
+  def delete_association_record(model, id)
+    ProviderSourcesDea.delete(id) if model == 'dea'
+    ProviderSourcesCds.delete(id) if model == 'cds'
+    ProviderSourcesRegistration.delete(id) if model == 'registration'
+  end
 end

@@ -1,0 +1,117 @@
+
+<div class="row">
+  <div class="col-lg-12 d-flex justify-content-end">
+    <a href="<%= custom_provider_source_path(page: 'professional_ids', remove_record: 'registration', id: registration.id)%>" class="btn btn-danger btn-sm">Delete</a>
+  </div>
+</div>
+<div class="row mb-3">
+  <div class="col-lg-12">
+    <div class="form-group">
+      <label class="text-dark-grey">Registration Number <span class="text-danger">*</span></label>
+      <input type="text" name="registration_number" required class="form-control border-dark multi-field" placeholder="Registration Number" data-model="registration" data-id="<%= registration.id %>"  value="<%= registration.registration_number%>">
+    </div>
+  </div>
+</div>
+<div class="row mb-3">
+  <div class="col-lg-6">
+    <label class="text-dark-grey">Specialty <span class="text-danger">*</span></label>
+    <input type="text" name="specialty:" required class="form-control border-dark multi-field" placeholder="Specialty"  value="<%= registration.specialty%>" data-model="registration" data-id="<%= registration.id %>"> 
+  </div>
+  <div class="col-lg-6">
+    <%= HtmlUtils::dropdown name: 'issue_state', label: 'State <span class="text-danger">*</span>', model: 'registration', modelId: registration.id %>
+  </div>
+</div>
+<div class="row mb-3">
+  <div class="col-lg-12">
+    <label class="text-dark-grey">Issuing Board <span class="text-danger">*</span></label>
+    <input type="text" name="issuing_board" class="form-control border-dark multi-field" placeholder="Issuing Board" required  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.issuing_board%>">
+  </div>
+</div>
+<div class="row mb-3">
+  <div class="col-lg-6">
+    <label class="text-dark-grey">Address Line 1 <span class="text-danger">*</span></label>
+    <input type="text" name="address_line_1" class="form-control border-dark multi-field" placeholder="Address Line 1" required  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.address_line_1%>">
+  </div>
+  <div class="col-lg-6">
+    <label class="text-dark-grey">Address Line 2</label>
+    <input type="text" name="address_line_2" class="form-control border-dark multi-field" placeholder="Address Line 2"  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.address_line_2%>">
+  </div>
+</div>
+<div class="row mb-3">
+  <div class="col-lg-6">
+    <label class="text-dark-grey">City <span class="text-danger">*</span></label>
+    <input type="text" name="city" class="form-control border-dark multi-field" placeholder="City" required  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.city%>">
+  </div>
+  <div class="col-lg-6">
+    <%= HtmlUtils::dropdown_with_model name: 'registration_state', label: 'State', model: 'registration', modelId: registration.id %>
+  </div>
+</div>
+<div class="row mb-3">
+  <div class="col-lg-6">
+    <label class="text-dark-grey">Zip Code <span class="text-danger">*</span></label>
+    <input type="text" name="zip_code" class="form-control border-dark multi-field" placeholder="Zip Code" required  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.zip_code%>">
+  </div>
+</div>
+<div class="row mb-3">
+  <div class="col-lg-6">
+    <div class="row">
+      <div class="col-lg-8">
+        <label class="text-dark-grey">Telephone Number </label>
+        <input type="" class="form-control border-dark multi-field" name="telephone_number" placeholder="Telephone Number"  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.telephone_number%>">
+      </div>
+      <div class="col-lg-4">
+        <label class="text-dark-grey">Ext </label>
+        <input type="" class="form-control border-dark multi-field" name="ext" placeholder="Ext"  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.ext%>">
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <label class="text-dark-grey">Fax Number </label>
+    <input type="" class="form-control border-dark multi-field" name="fax_number" placeholder="Fax Number"  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.fax_number%>">
+  </div>
+</div>
+<div class="row mb-3">
+  <div class="col-lg-6">
+    <label class="text-dark-grey">Issue Date <span class="text-danger">*</span></label>
+    <input type="date" name="issue_date" class="form-control border-dark multi-field" placeholder="Issue Date"  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.issue_date%>">
+  </div>
+  <div class="col-lg-6">
+    <label class="text-dark-grey">Expiration Date <span class="text-danger">*</span></label>
+    <input type="date" name="expiration_date" class="form-control border-dark multi-field ps-registration-expire" placeholder="Expiration Date"  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.expiration_date%>"> 
+    <span class="d-flex gap-2">
+      <input type="checkbox" class="multi-field" name="ps_registration_not_expire" id="ps-registration-not-expire"  data-model="registration" data-id="<%= registration.id %>" >
+      <small>Does not expire</small>
+    </span>
+  </div>
+</div>
+<div class="row mb-3">
+  <div class="col-lg-12">
+      <div class="d-flex justify-content-between my-3">
+         <label class="form-label">Are you currently practicing under this number? <span class="text-danger">*</span></label>
+         <div class="d-flex me-4 gap-2">
+            <span>
+            <input type="radio" value="yes" name="practicing_under_number" required>
+            <span>YES</span>
+            </span>
+            <span>
+            <input type="radio" value="no" name="practicing_under_number" required>
+            <span>NO</span>
+            </span>
+         </div>
+      </div>
+  </div>
+</div>
+
+<script>
+$('#ps-registration-not-expire').on('change',function(){
+    console.log($(this).prop('checked'));
+    if($(this).prop('checked'))
+    {
+      $('.ps-registration-expire').prop('disabled', true);
+      $('.ps-registration-expire').val('');
+    }
+    else
+      $('.ps-registration-expire').removeAttr('disabled');
+
+   });
+</script>

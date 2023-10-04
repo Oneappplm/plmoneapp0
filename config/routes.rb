@@ -85,6 +85,7 @@ Rails.application.routes.draw do
       post :autosave
       get :fetch
       post :get_progress
+      post :autosave_multi_record
     end
   end
 
