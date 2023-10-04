@@ -16,7 +16,7 @@ class PlmMailer < ApplicationMailer
 		@email = params[:email]
 		@otp_code	= params[:otp_code]
 
-		mail(to: @email, from: from, subject: "PLM Health's One App OTP Code")
+		mail(to: @email, from: from, subject: Setting.take.t('mailers.plm_mailer.subject'))
 	end
 
 	def welcome_letter

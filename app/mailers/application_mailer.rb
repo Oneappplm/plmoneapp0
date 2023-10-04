@@ -4,6 +4,6 @@ class ApplicationMailer < ActionMailer::Base
 
   protected
   def from
-    "PLM Health One App <#{Figaro.env.smtp_email}>"
+    "#{Setting.take.t('mailers.plm_mailer.from')} <#{Figaro.env.smtp_email}>"
   end
 end
