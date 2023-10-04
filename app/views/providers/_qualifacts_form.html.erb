@@ -229,20 +229,7 @@
 
         </div>
         <div class="row mb-2">
-          <div class="col-lg-6">
-            <!-- new field -->
-            <label class="text-dark-grey">Copy of Certificate</label>
-            <!-- Had to add condition here since on edit it still requires an upload even though I already uploaded a file before. -->
-            <% if @provider.school_certificate.url.nil? %>
-            <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: 'form-control border border-dark', title: 'Copy of Certificate', required: true %>
-            <% else %>
-            <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: 'form-control border border-dark', title: 'Copy of Certificate'%>
-            <% end %>
-
-            <% if !@provider.pending_submitted_documents.include?('school_certificate')%>
-            <%= HtmlUtils.generate_view_link file_url: @provider.school_certificate.url %>
-            <% end %>
-          </div>
+          
           <div class="col-lg-6 mb-3">
             <!-- new field -->
             <label class="text-dark-grey">Did you complete your graduate education at this school? </label>
@@ -251,7 +238,7 @@
         </div>
       </div>
     </div>
-    <div class="row-mb-5">
+    <div class="row mb-5">
       <div class="col-lg-12 mb-2">
           <h3 class="mt-5 mb-2">Practitioner Type Details</h3>
       </div>
@@ -268,7 +255,7 @@
       </div>
       <div class="row mb-3 mt-2">
         <div class="col-lg-6">
-          <label class="text-dark-grey">Specialty (can be multiple) <span class="text-red">*</span></label>
+          <label class="text-dark-grey">Specialty (i.e., Specialties is selected based on taxonomy codes) (can be multiple) <span class="text-red">*</span></label>
           <%= HtmlUtils.multi_select_dropdown name: 'provider[specialty]', id: 'provider_specialty'%>
           <%#= f.collection_select :specialty, specialties, :bcbs, :bcbs, { prompt: 'Select Option' }, { class: 'form-control border border-dark' } %>
         </div>
@@ -284,10 +271,22 @@
         </div>
       </div>
     </div>
-    <div class="row-mb-5">
-      <div class="col-lg-12 mb-2">
-          <h3 class="mt-5 mb-2">Board Certifications</h3>
-      </div>
+    <div class="row mt-3">
+       <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
+          <div class="d-flex gap-2">
+            <div class="form-row  d-flex align-items-center">
+              <h3>Board Certifications</h3>
+            </div>
+           <div class="form-row  d-flex align-items-center gap-1">
+              <%= f.check_box :board_certificate_not_applicable, id:'no-board-cert' %>
+              <%= f.label :board_certificate_not_applicable, "N/A", class: 'text-dark-grey' %>
+           </div>
+          </div>  
+        </div> 
+        <div class="form-row  d-flex align-items-start">
+        <%= f.text_area :board_cert_explain,  placeholder: 'Explain if you do not have Board Certification Number (required if no Board Certification Number)', class: 'form-control border border-dark', rows: '8', id: 'board-cert-explain'%>
+      </div> 
+      <div id="board_fields"%>
       <div class="row mb-3">
         <div class="col-lg-6">
           <label class="text-dark-grey">Board Name</span></label>
@@ -313,8 +312,38 @@
           <label class="text-dark-grey">Expiration Date</label>
           <%= f.text_field :board_expiration_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
         </div>
+         <div class="col-lg-6">
+          <label class="text-dark-grey">Specialty Type</span></label>
+          <%= f.text_field :board_specialty_type, placeholder: 'Type here...',class: 'form-control border border-dark' %>
+        </div>
       </div>
     </div>
+    </div>
+
+    <div class="row mb-3 mt-2">
+      <%= HtmlUtils.radio_toggle name: 'provider[payer_login]',
+          label: 'Provider Data Portals',
+          container_class: 'd-flex align-items-center my-3',
+          toshow: 'payer_login_form'
+      %>
+
+      <%= f.hidden_field :payer_login%>
+
+      <div id="payer_login_form" class="<%= @provider.is_payer_login? ? '' : 'd-none'%>">
+         <div class="fields">
+            <%= f.fields_for :payer_logins do |payer_login_fields| %>
+              <%= render 'payer_login_fields', f: payer_login_fields %>
+            <% end %>
+         </div>
+
+         <div class="row">
+           <div class="col-lg-12 text-center">
+          <a class="btn btn-primary btn-xs add_association">Add New</a>
+        </div>
+         </div>
+      </div>
+    </div>
+
     <!-- CAQH -->
     <div class="row mb-3">
       <div class="col-lg-12 mt-3">
@@ -373,29 +402,7 @@
       </div>
     </div>
     <!-- CAQH -->
-     <div class="row mb-3 mt-2">
-      <%= HtmlUtils.radio_toggle name: 'provider[payer_login]',
-          label: 'Credentialing Platform',
-          container_class: 'd-flex align-items-center my-3',
-          toshow: 'payer_login_form'
-      %>
-
-      <%= f.hidden_field :payer_login%>
-
-      <div id="payer_login_form" class="<%= @provider.is_payer_login? ? '' : 'd-none'%>">
-         <div class="fields">
-            <%= f.fields_for :payer_logins do |payer_login_fields| %>
-              <%= render 'payer_login_fields', f: payer_login_fields %>
-            <% end %>
-         </div>
-
-         <div class="row">
-           <div class="col-lg-12 text-center">
-          <a class="btn btn-primary btn-xs add_association">Add New</a>
-        </div>
-         </div>
-      </div>
-    </div>
+     
 
    <div class="row mb-5 mt-2">
       <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
@@ -749,11 +756,17 @@
 =end%>
     <hr>
     <div class="row mb-5">
-      <div class="col-lg-6">
+           <div class="col-lg-6">
         <!-- new field -->
-        <label class="text-dark-grey">Does the provider require to work under a supervising licensed psychologist?</label>
-              <%= f.select :supervised_by_psychologist, options_for_select([['Yes','yes'],['No','no']], @provider.supervised_by_psychologist), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
-      </div>
+        <label class="text-dark-grey">Does provider require a collab/supervising provider?</label>
+              <%= f.select :supervised_by_psychologist, options_for_select([['Yes','yes'],['No','no']], @provider.supervised_by_psychologist), { prompt: 'Select Option' }, {:class => 'form-select border border-dark collab-provider'}  %>
+           </div>
+           <div class="col-lg-6">
+              <div class="mb-3 my-1 supervising-provider-field <%= f.object.supervised_by_psychologist == 'yes' ? '' : 'd-none'%>">              
+                <label class="text-dark-grey">Providers Name and NPI</label>
+                <%= f.text_field :supervising_name_npi, placeholder: 'Type here', class: 'form-control border border-dark' %>
+              </div>
+          </div>
     </div>
     <div class="row mb-3">
       <div class="col-lg-12 mt-3">
@@ -806,6 +819,20 @@
         <div class="col-lg-12 mb-3">
         <%= HtmlUtils.multiple_file_uploads model: f.object, input_field_name: 'telehealth_license_copies' %>
       </div>
+           <div class="col-lg-12">
+            <!-- new field -->
+            <label class="text-dark-grey">Copy of Certificate</label>
+            <!-- Had to add condition here since on edit it still requires an upload even though I already uploaded a file before. -->
+            <% if @provider.school_certificate.url.nil? %>
+            <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: 'form-control border border-dark', title: 'Copy of Certificate', required: true %>
+            <% else %>
+            <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: 'form-control border border-dark', title: 'Copy of Certificate'%>
+            <% end %>
+
+            <% if !@provider.pending_submitted_documents.include?('school_certificate')%>
+            <%= HtmlUtils.generate_view_link file_url: @provider.school_certificate.url %>
+            <% end %>
+          </div>
     </div>
     <div class="row">
       <div class="col-lg-12 d-flex justify-content-end">
@@ -1008,6 +1035,24 @@
           else
               dropDown.parent().parent().parent().find(divClass).addClass('d-none');
         }
+
+
+         $(document).on('change', '.collab-provider', function () {
+         var supervisor = $(this).val();
+         if ( supervisor == 'yes') {
+            showHideDetailFields($(this), '.supervising-provider-field', 'show')
+         } else {
+            showHideDetailFields($(this), '.supervising-provider-field', 'hide')
+         }
+      })
+
+        function showHideDetailFields(dropDown, divClass, mode) {
+          if (mode == 'show')
+              dropDown.parent().parent().parent().find(divClass).removeClass('d-none');
+          else
+              dropDown.parent().parent().parent().find(divClass).addClass('d-none');
+        }
+
 
 
          $(document).on('click','#questions-fields .add_questions',function() {
