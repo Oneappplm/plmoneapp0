@@ -148,6 +148,29 @@
          })
           });
 
+           //Board checkbox disable function
+          $(document).ready(function() {
+            function updateButtonState() { // Function to update elements based on the checkbox state
+               var isChecked = $("#no-board-cert").is(":checked");
+              
+              if (isChecked) { // Disable or enable the select element based on the checkbox state
+                $("#board_fields").prop("hidden", true);
+                $("#board_fields :input").prop("hidden", true);
+                $("#board-cert-explain").prop("hidden", false);
+              } else { // Enable the dea-explain field (regardless of the checkbox state)
+                $("#board_fields").prop("hidden", false);
+                $("#board_fields :input").prop("hidden", false);
+                $("#board-cert-explain").prop("hidden", true);
+              }
+            }
+
+            // Listen for changes on the checkbox
+            $("#no-board-cert").change(updateButtonState);
+
+            // Update the button state on page load
+            updateButtonState();
+          });
+
          //DEA checkbox disable function
           $(document).ready(function() {
             function updateButtonState() { // Function to update elements based on the checkbox state

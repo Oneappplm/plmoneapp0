@@ -269,6 +269,10 @@ end
 					:rn_explain,
 					:cnp_explain,
 					:license_explain,
+					:board_cert_explain,
+					:board_certificate_not_applicable,
+					:board_specialty_type,
+					:supervising_name_npi,
 					:welcome_letter_status, :welcome_letter_subject, :welcome_letter_message, :check_welcome_letter, :check_co_caqh, :check_mn_caqh_state_release_form, :check_mn_caqh_authorization_form, :check_caqh_standard_authorization,
 					{ welcome_letter_attachments: [], state_license_copies: [], dea_copies: [], w9_form_copies: [], certificate_insurance_copies: [], driver_license_copies: [], board_certification_copies: [], caqh_app_copies: [], cv_copies: [], telehealth_license_copies: [] },
 					#taxonomies_attributes: [:id, :taxonomy_code, :specialty, :_destroy],
@@ -287,7 +291,7 @@ end
 					medicares_attributes: [:id, :ptan_number, :medicare_username, :password, :question, :answer, :effective_date, :reval_date, :notes, :_destroy],
 					cnp_licenses_attributes: [:id, :cnp_license_number, :state_id, :effective_date, :expiration_date, :cnp_license_renewal_effective_date, :no_cnp_license, :_destroy],
 					ins_policies_attributes: [:id, :ins_policy_number, :effective_date, :expiration_date, :_destroy],
-					payer_logins_attributes: [:id, :enrollment_payer, :username, :password, :state_id, :notes, :_destroy, questions_attributes: [:id, :question, :answer]]
+					payer_logins_attributes: [:id, :enrollment_payer, :username, :password, :state_id, :notes, :cred_current_reattest_date, :cred_reattest_date, :_destroy, questions_attributes: [:id, :question, :answer]]
 			)
 	end
 end
