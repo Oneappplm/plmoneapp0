@@ -320,11 +320,11 @@ module ApplicationHelper
       ['License Report','license_report'],
       ['DEA','dea'],
       ['SAM(coming soon)','sam'],
-			['CAQH(coming soon)','caqh'],
+			['CAQH','caqh'],
 			['OIG(coming soon)','oig'],
-			['Liability(coming soon)','liability'],
+			['Liability','liability'],
 			['Revalidation(coming soon)','revalidation'],
-			['Enrollment Details Report(coming soon)', 'enrollment_details_report']
+			['Enrollment Details Report', 'enrollment_details_report']
     ]
 	end
 

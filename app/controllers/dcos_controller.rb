@@ -52,7 +52,7 @@ class DcosController < ApplicationController
 	protected
 	def dco_params
 		params.require(:group_dco).permit(
-			:client, :dco_name, :dco_address,
+			:client, :dco_name, :dco_address, :effective_date,
 			:dco_city, :state, :dco_zipcode, :county, :is_primary_location,
 			:service_location_phone_number, :service_location_fax_number,
 			:panel_status_to_new_patients, :panel_age_limit, :include_in_directory,
@@ -61,7 +61,7 @@ class DcosController < ApplicationController
 			:telehealth_provider, :website, :tax_id, :facility_billing_npi, :mn_medicaid_number,
 			:wi_medicaid_number, :medicare_id_ptan, :taxonomy, :telehealth_video_conferencing_technology,
 			:is_gender_affirming_treatment, :panel_size, :medicare_authorized_official, :collab_npi, :collab_name,
-			old_location_addresses_attributes: [:id, :old_address, :old_city, :old_state, :old_county, :old_zipcode, :is_old_location_primary, :_destroy],
+			old_location_addresses_attributes: [:id, :old_address, :old_city, :old_state, :old_county, :old_zipcode, :is_old_location_primary, :effective_date, :_destroy],
 			schedules_attributes: [:id, :day, :start_time, :end_time, :_destroy],
 			provider_outreach_info_attributes: [:id, :name, :email, :phone, :fax, :position, :_destroy]
 		)

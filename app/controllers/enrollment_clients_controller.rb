@@ -261,6 +261,86 @@ class EnrollmentClientsController < ApplicationController
     end
   end
 
+  def caqh_to_csv
+    providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    CSV.generate(headers: true, write_headers: true) do |csv|
+      csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "CAQH ID", "Attestation", "Reattestation"]
+      providers.each do |provider|
+        caqh_reattest_completed_by = Date.parse(provider&.caqh_reattest_completed_by)&.strftime('%b %d, %Y') rescue nil
+        csv << [
+          flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
+          provider.group&.group_name,
+          provider.first_name,
+          provider.last_name,
+          provider.practitioner_type,
+          format_number_for_leading_zeroes(provider.npi),
+          format_number_for_leading_zeroes(provider.caqhid),
+          provider.caqh_current_reattestation_date&.strftime('%b %d, %Y'),
+          caqh_reattest_completed_by
+        ]
+      end
+    end
+  end
+
+  def liability_to_csv
+    providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    CSV.generate(headers: true, write_headers: true) do |csv|
+      csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "Policy Number", "Exp Date"]
+      providers.each do |provider|
+        csv << [
+          flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
+          provider.group&.group_name,
+          provider.first_name,
+          provider.last_name,
+          provider.practitioner_type,
+          format_number_for_leading_zeroes(provider.npi),
+          provider.prof_liability_policy_number,
+          provider.prof_liability_expiration_date&.strftime('%b %d, %Y')
+        ]
+      end
+    end
+  end
+
+  def enrollment_details_report_to_csv
+    enrollment_details = EnrollmentProvidersDetail.includes(:application_status_logs, enrollment_provider: :provider).where(created_at: @month.beginning_of_month..@month.end_of_month)
+    CSV.generate(headers: true, write_headers: true) do |csv|
+      csv << ["Group", "Provider Last Name", "Provider First Name", "Credentialing Type", "Payor Name", "Notification of New Provider",
+              "Date Group Notification of Provider", "Date Notification to begin submitting enrollment", "Date Application Submitted to Payor",
+              "Date Payor Approved", "Information Required from Qualifacts", "Payor Notes", "General Notes"]
+      enrollment_details.each do |enrollment_detail|
+        provider = enrollment_detail.enrollment_provider&.provider
+        missing_fields = []
+        provider&.required_fields.each do |field|
+          if (provider&.send(field[1]).nil? || provider&.send(field[1]).blank?) && !provider&.submitted_missing_fields.include?(field[1])
+            missing_fields.push(field[0])
+          end
+        end
+        if !provider&.licenses&.any?(&:persisted?) || provider&.has_missing_state_licenses_fields?
+          provider&.required_state_licenses_fields.each do |field|
+            if !provider&.submitted_missing_fields.include?(field[1])
+              missing_fields.push(field[0])
+            end
+          end
+        end
+        csv << [
+          provider&.group&.group_name,
+          provider&.last_name,
+          enrollment_detail.enrollment_provider&.provider.first_name,
+          enrollment_detail.enrollment_type,
+          enrollment_detail.enrollment_payer,
+          provider&.new_provider_notification,
+          provider&.welcome_letter_sent,
+          provider&.notification_enrollment_submit,
+          enrollment_detail.application_status_logs&.where(status: 'application-submitted')&.last&.created_at&.strftime('%b %d, %Y'),
+          enrollment_detail.application_status_logs&.where(status: 'approved')&.last&.created_at&.strftime('%b %d, %Y'),
+          missing_fields.join(', '),
+          enrollment_detail.comment,
+          ""
+        ]
+      end
+    end
+  end
+
   def flatforms
     @flatforms ||=  [['Credible','credible'], ['CareLogic','carelogic'], ['Insync','insync']]
   end
