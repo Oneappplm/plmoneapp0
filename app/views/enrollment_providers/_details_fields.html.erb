@@ -31,7 +31,7 @@
   <% end %>
   <div class="row mb-3">
     <div class="col-lg-6">
-      <label class="text-dark-grey">Application Status</label>
+      <label class="text-dark-grey">Initial Application Status</label>
       <%= f.select :enrollment_status, options_for_select(enrollment_status, f.object.enrollment_status), { prompt: 'Enrollment Status' }, {:class => 'form-select multi-enrollment-status border border-dark '}  %>
     </div>
     <div class="col-lg-6">
@@ -42,15 +42,15 @@
 
   <div class="row mb-3 application-submitted-field <%= f.object&.enrollment_status == 'application-submitted' ? '' : 'd-none'%>">
     <div class="col-lg-6">
-      <label class="text-dark-grey">Enrollment Tracking ID</label>
-      <%= f.text_field :enrollment_tracking_id, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      <label class="text-dark-grey">Start Date</label>
+      <%= f.text_field :start_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.start_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
     </div>
   </div>
 
     <div class="row mb-3 revalidation-fields <%= f.object&.enrollment_status == 'approved' ? '' : 'd-none'%>">
       <div class="col-lg-6 mb-3">
-        <label class="text-dark-grey">Initial Effective Date</label>
-          <%= f.text_field :enrollment_effective_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+        <label class="text-dark-grey">Effective Date</label>
+          <%= f.text_field :enrollment_effective_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.enrollment_effective_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
       </div>
       <div class="row mt-3 mb-3">
           <%# <div class="col-lg-4"> %>
@@ -58,12 +58,12 @@
               <%# <%= f.text_field :revalidation_status, placeholder: 'Type here...', class: 'form-control border border-dark' %>
           <%# </div> %>
           <div class="col-lg-6">
-            <label class="text-dark-grey">Most Current Revalidation Date</label>
-              <%= f.text_field :revalidation_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+            <label class="text-dark-grey">Revalidation Date</label>
+              <%= f.text_field :revalidation_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.revalidation_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
           </div>
           <div class="col-lg-6">
-            <label class="text-dark-grey">Revalidation Next Due Date</label>
-              <%= f.text_field :revalidation_due_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+            <label class="text-dark-grey">Revalidation Due Date</label>
+              <%= f.text_field :revalidation_due_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.revalidation_due_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
           </div>
       </div>
         <div class="col-lg-12">
