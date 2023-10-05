@@ -57,6 +57,7 @@ class Provider < ApplicationRecord
   has_one :enrollment_provider , class_name: 'EnrollmentProvider', dependent: :destroy
   has_many :np_licenses , class_name: 'ProviderNpLicense', dependent: :destroy
   has_many :rn_licenses , class_name: 'ProviderRnLicense', dependent: :destroy
+  has_many :board_certifications , class_name: 'ProviderBoardCertification', dependent: :destroy
   has_many :service_locations , class_name: 'ProvidersServiceLocation', dependent: :destroy
   has_many :comments, class_name: 'EnrollmentComment'
   # made it like this to prepare if needed to be multiple
@@ -94,6 +95,7 @@ class Provider < ApplicationRecord
   accepts_nested_attributes_for :cnp_licenses, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :ins_policies, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :payer_logins, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :board_certifications, allow_destroy: true, reject_if: :all_blank
 
   scope :selected_first, -> { order(selected: :desc) }
   default_scope { where(api_token: nil) }

@@ -1,5 +1,35 @@
 <script>
   $(document).ready(function(){
+
+          //Board Certification
+          $(document).ready(function () {
+         $("#board_fields").on("click", ".add_association", function () {
+          var detailsFields = $("#board_fields .field");
+          var newEnrollmentdetails = detailsFields.last().clone();
+          var lastId = detailsFields.length - 1;
+          var newId = lastId + 1;
+          var board_name_id = "provider_board_certifications_attributes_" + newId + "_bc_board_name";
+ 
+            newEnrollmentdetails.find("[id^='provider_board_certifications_attributes_']").each(function() {
+             var oldId = $(this).attr("id");
+             var newIdValue = oldId.replace(/\d+/, newId);
+             $(this).attr("id", newIdValue);
+             $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
+             $(this).val('');
+          });
+          setTimeout(function(){
+ 
+             $.get('<%= board_names_multi_select_data_path %>', function(data){
+                VirtualSelect.init({ele: '#' + board_name_id, search: true });
+                document.querySelector('#' + board_name_id).setOptions(data['result']);
+                document.querySelector('#' + board_name_id).setValue(value);
+             });
+          }, 1000);
+          
+            $("#board_fields .fields").append(newEnrollmentdetails);
+          })
+         });
+
           //DEA License
           $(document).ready(function () {
          $("#dea_licenses").on("click", ".add_association", function () {

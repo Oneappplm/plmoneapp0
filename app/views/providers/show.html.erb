@@ -109,15 +109,19 @@
             </div>
           </div>
 
-          <div class="card rounded shadow-lg p-1 px-3 mb-3">
+           <div class="card rounded shadow-lg p-1 px-3 mb-3">
             <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Board Certifications', collapse_name: 'board_certifications'}%>
             <div class="collapsible" style="<%= current_user&.is_card_open?('board_certifications') ? '' : 'display: none;' %>">
-              <p class="mb-1"><strong>Board Name:</strong> <%= @provider.board_name %></p>
-              <p class="mb-1"><strong>Certification Number:</strong> <%= @provider&.board_certificate_number %></p>
-              <p class="mb-1"><strong>Effective Date:</strong> <%= @provider&.board_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>Re-Certification Date:</strong> <%= @provider&.board_recertification_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>Expiration:</strong> <%= @provider&.board_expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
+              <% @provider&.board_certifications&.each do |board|%>
+              <p class="mb-1"><strong>Board Name:</strong> <%=  board&.bc_board_name %></p>
+              <p class="mb-1"><strong>Certification Number:</strong> <%= board&.bc_certification_number %></p>
+              <p class="mb-1"><strong>Effective Date:</strong> <%= Time.zone.parse(board&.bc_effective_date.to_s)&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>Re-Certification Date:</strong> <%= Time.zone.parse(board&.bc_recertification_date.to_s)&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>Expiration:</strong> <%= Time.zone.parse(board&.bc_expiration_date.to_s)&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>Specialty Type:</strong> <%= board&.bc_specialty_type %></p>
               <hr>
+              <% end %>
+
             </div>
           </div>
 

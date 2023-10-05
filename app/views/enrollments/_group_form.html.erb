@@ -28,21 +28,21 @@
    <div class="row mb-3">
      <div class="col-lg-6">
        <label class="text-dark-grey">Notification of New Group</span></label>
-        <%= f.text_field :new_group_notification, placeholder: 'MM-DD-YYYY',class: 'form-control border border-dark',  onfocus: "(this.type = 'date')" %>
+        <%= f.text_field :new_group_notification, placeholder: 'MM-DD-YYYY',class: 'form-control border border-dark', value: Time.zone.parse(f.object.new_group_notification.to_s)&.strftime('%m-%d-%Y'),  onfocus: "(this.type = 'date')" %>
      </div>
      <div class="col-lg-6">
        <label class="text-dark-grey">Start Date</span></label>
-       <%= f.text_field :noti_group_start_date, placeholder: 'MM-DD-YYYY',class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+       <%= f.text_field :noti_group_start_date, placeholder: 'MM-DD-YYYY',class: 'form-control border border-dark', value: Time.zone.parse(f.object.noti_group_start_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
      </div>
    </div>
    <div class="row mb-3 mt-2">
      <div class="col-lg-6">
        <label class="text-dark-grey">Welcome Letter Sent </span></label>
-       <%= f.text_field :noti_welcome_letter_sent, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+       <%= f.text_field :noti_welcome_letter_sent, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.noti_welcome_letter_sent.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
      </div>
      <div class="col-lg-6">
        <label class="text-dark-grey">Notification to begin submitting Enrollment</label>
-       <%= f.text_field :notification_enrollment_submit_group, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+       <%= f.text_field :notification_enrollment_submit_group, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.notification_enrollment_submit_group.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
      </div>
    </div>
    <div class="row mb-3 mt-2">
@@ -59,7 +59,7 @@
    <div class="col-lg-6">
    <div class="row mb-3 my-1 status-inactive-field <%= f.object.noti_status == 'inactive-termed' ? '' : 'd-none'%>">
            <label class="text-dark-grey">Work End Date</label>
-           <%= f.text_field :noti_work_end_date, placeholder: 'MM-DD-YYYY', onfocus: "(this.type = 'date')", class: 'form-control border border-dark' %>
+           <%= f.text_field :noti_work_end_date, placeholder: 'MM-DD-YYYY', value: Time.zone.parse(f.object.noti_work_end_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')", class: 'form-control border border-dark' %>
    </div>
    </div>
  </div>
@@ -127,8 +127,8 @@
         <%= f.select :flatform, options_for_select(flatforms, f.object.flatform), { prompt: 'Select option' }, {:class => 'form-select border-dark'}  %>
       </div>
       <div class="col-lg-6 mb-3">
-         <label class="text-dark-grey"><%= Setting.take.t('enrollment_dashboard.groups.add_new_group.group_information.contract_effective_date') %></label>
-         <%= f.text_field :qualifacts_contract_effective_date, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', onfocus: "(this.type = 'date')" %>
+         <label class="text-dark-grey">Qualifacts Contract Effective Date</label>
+         <%= f.text_field :qualifacts_contract_effective_date, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', value: Time.zone.parse(f.object.qualifacts_contract_effective_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
       </div>
    </div>
    <div class="row mb-3">
@@ -369,11 +369,11 @@
    <div class="row mb-3">
       <div class="col-lg-6">
          <label class="text-dark-grey">Last Signed Date <em>(must be current within 6months)</em></label>
-         <%= f.text_field :w9_signed_date, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', onfocus: "(this.type = 'date')" %>
+         <%= f.text_field :w9_signed_date, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', value: Time.zone.parse(f.object.w9_signed_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
       </div>
       <div class="col-lg-6 mb-3">
          <label class="text-dark-grey">Sign Date Expiration<em>(expiry date is 1 month prior to the actual date)</em></label>
-         <%= f.text_field :w9_sign_date_expiration, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', onfocus: "(this.type = 'date')" %>
+         <%= f.text_field :w9_sign_date_expiration, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', value: Time.zone.parse(f.object.w9_sign_date_expiration.to_s)&.strftime('%m-%d-%Y'),onfocus: "(this.type = 'date')" %>
       </div>
    </div>
    <div class="row mb-2">
@@ -384,11 +384,11 @@
    <div class="row mb-3">
       <div class="col-lg-6">
          <label class="text-dark-grey">Last Signed Date <em>(must be current within 6months)</em></label>
-         <%= f.text_field :void_check_signed_date, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', onfocus: "(this.type = 'date')" %>
+         <%= f.text_field :void_check_signed_date, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', value: Time.zone.parse(f.object.void_check_signed_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
       </div>
       <div class="col-lg-6 mb-3">
          <label class="text-dark-grey">Sign Date Expiration<em>(expiry date is 1 month prior to the actual date)</em></label>
-         <%= f.text_field :void_check_date_expiration, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', onfocus: "(this.type = 'date')" %>
+         <%= f.text_field :void_check_date_expiration, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', value: Time.zone.parse(f.object.void_check_date_expiration.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
       </div>
    </div>
    <div class="row mb-2">
@@ -399,11 +399,11 @@
    <div class="row mb-3">
       <div class="col-lg-6">
          <label class="text-dark-grey">Last Signed Date <em>(must be current within 6months)</em></label>
-        <%= f.text_field :bank_letter_signed_date, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', onfocus: "(this.type = 'date')" %>
+        <%= f.text_field :bank_letter_signed_date, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', value: Time.zone.parse(f.object.bank_letter_signed_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
       </div>
       <div class="col-lg-6 mb-3">
          <label class="text-dark-grey">Sign Date Expiration<em>(expiry date is 1 month prior to the actual date)</em></label>
-         <%= f.text_field :bank_letter_date_expiration, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', onfocus: "(this.type = 'date')" %>
+         <%= f.text_field :bank_letter_date_expiration, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', value: Time.zone.parse(f.object.bank_letter_date_expiration.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
       </div>
    </div>
 

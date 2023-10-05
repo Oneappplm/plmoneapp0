@@ -160,6 +160,7 @@ end
     @provider.pa_licenses.build if @provider.pa_licenses.blank?
     @provider.cnp_licenses.build if @provider.cnp_licenses.blank?
 	@provider.cds_licenses.build if @provider.cds_licenses.blank?
+	@provider.board_certifications.build if @provider.board_certifications.blank?
     payer_login = @provider.payer_logins.build if @provider.payer_logins.blank?
     payer_login.questions.build if payer_login
   end
@@ -291,6 +292,7 @@ end
 					wi_medicaids_attributes: [:id, :wi_medicaid, :wi_medicaid_username, :password, :question, :answer, :notes, :_destroy],
 					medicares_attributes: [:id, :ptan_number, :medicare_username, :password, :question, :answer, :effective_date, :reval_date, :notes, :_destroy],
 					cnp_licenses_attributes: [:id, :cnp_license_number, :state_id, :effective_date, :expiration_date, :cnp_license_renewal_effective_date, :no_cnp_license, :_destroy],
+					board_certifications_attributes: [:id, :bc_certification_number, :bc_board_name, :bc_effective_date, :bc_expiration_date, :bc_recertification_date, :bc_specialty_type, :_destroy],
 					ins_policies_attributes: [:id, :ins_policy_number, :effective_date, :expiration_date, :_destroy],
 					payer_logins_attributes: [:id, :enrollment_payer, :username, :password, :state_id, :notes, :cred_current_reattest_date, :cred_reattest_date, :_destroy, questions_attributes: [:id, :question, :answer]]
 			)

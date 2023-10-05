@@ -19,21 +19,21 @@
       <div class="row mb-3">
         <div class="col-lg-6">
           <label class="text-dark-grey">Notification of New Provider</span></label>
-           <%= f.text_field :new_provider_notification, placeholder: 'MM-DD-YYYY',class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+           <%= f.text_field :new_provider_notification, placeholder: 'MM-DD-YYYY',class: 'form-control border border-dark', value: Time.zone.parse(f.object.new_provider_notification.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
         </div>
         <div class="col-lg-6">
           <label class="text-dark-grey">Start Date</span></label>
-          <%= f.text_field :notification_start_date, placeholder: 'MM-DD-YYYY',class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+          <%= f.text_field :notification_start_date, placeholder: 'MM-DD-YYYY',class: 'form-control border border-dark', value: Time.zone.parse(f.object.notification_start_date.to_s)&.strftime('%m-%d-%Y'),  onfocus: "(this.type = 'date')" %>
         </div>
       </div>
       <div class="row mb-3 mt-2">
         <div class="col-lg-6">
           <label class="text-dark-grey">Welcome Letter Sent </span></label>
-          <%= f.text_field :welcome_letter_sent, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+          <%= f.text_field :welcome_letter_sent, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.welcome_letter_sent.to_s)&.strftime('%m-%d-%Y'),  onfocus: "(this.type = 'date')" %>
         </div>
         <div class="col-lg-6">
           <label class="text-dark-grey">Notification to begin submitting Enrollment</label>
-          <%= f.text_field :notification_enrollment_submit, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+          <%= f.text_field :notification_enrollment_submit, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.notification_enrollment_submit.to_s)&.strftime('%m-%d-%Y'),  onfocus: "(this.type = 'date')" %>
         </div>
       </div>
       <div class="row mb-3 mt-2">
@@ -132,7 +132,7 @@
       </div>
       <div class="col-lg-4">
         <label class="text-dark-grey">Date of Birth <span class="text-red">*</span></label>
-        <%= f.text_field :birth_date, placeholder: 'MM-DD-YYYY', class: form_control_classes(danger: @provider.birth_date.blank? && @provider.persisted?), onfocus: "(this.type = 'date')", required: true %>
+        <%= f.text_field :birth_date, placeholder: 'MM-DD-YYYY', class: form_control_classes(danger: @provider.birth_date.blank? && @provider.persisted?), value: Time.zone.parse(f.object.birth_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')", required: true %>
       </div>
       </div>
     <div class="row mb-3">
@@ -216,7 +216,7 @@
           <div class="col-lg-6 ">
             <!-- new field -->
           <label class="text-dark-grey">Start Date</label>
-            <%= f.text_field :prof_medical_start_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+            <%= f.text_field :prof_medical_start_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.prof_medical_start_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
           </div>
           <div class="col-lg-6">
               <label class="text-dark-grey">Degree Awarded</label>
@@ -224,7 +224,7 @@
            </div>
            <div class="col-lg-6">
             <label class="text-dark-grey">End(Graduation) Date</label>
-            <%= f.text_field :graduation_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+            <%= f.text_field :graduation_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.graduation_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
           </div>
 
         </div>
@@ -261,7 +261,7 @@
         </div>
         <div class="col-lg-6">
           <label class="text-dark-grey">Provider Effective Date</label>
-          <%= f.text_field :provider_effective_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+          <%= f.text_field :provider_effective_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.provider_effective_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
         </div>
       </div>
       <div class="row mb-3 mt-2">
@@ -271,55 +271,37 @@
         </div>
       </div>
     </div>
-    <div class="row mt-3">
-       <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
-          <div class="d-flex gap-2">
-            <div class="form-row  d-flex align-items-center">
-              <h3>Board Certifications</h3>
-            </div>
-           <div class="form-row  d-flex align-items-center gap-1">
-              <%= f.check_box :board_certificate_not_applicable, id:'no-board-cert' %>
-              <%= f.label :board_certificate_not_applicable, "N/A", class: 'text-dark-grey' %>
-           </div>
-          </div>  
-        </div> 
-        <div class="form-row  d-flex align-items-start">
-        <%= f.text_area :board_cert_explain,  placeholder: 'Explain if you do not have Board Certification Number (required if no Board Certification Number)', class: 'form-control border border-dark', rows: '8', id: 'board-cert-explain'%>
-      </div> 
-      <div id="board_fields"%>
-      <div class="row mb-3">
-        <div class="col-lg-6">
-          <label class="text-dark-grey">Board Name</span></label>
-           <%= f.select :board_name, options_for_select([]), { prompt: 'Board Name' }, {:class => 'form-select border border-dark single-select board-name',  data: { value: f.object.board_name } }  %>
-        </div>
-        <div class="col-lg-6">
-          <label class="text-dark-grey">Certification Number</span></label>
-          <%= f.text_field :board_certificate_number, placeholder: 'Type here...',class: 'form-control border border-dark' %>
-        </div>
-      </div>
-      <div class="row mb-3 mt-2">
-        <div class="col-lg-6">
-          <label class="text-dark-grey">Effective Date </span></label>
-          <%= f.text_field :board_effective_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
-        </div>
-        <div class="col-lg-6">
-          <label class="text-dark-grey">Re-certification Date</label>
-          <%= f.text_field :board_recertification_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
-        </div>
-      </div>
-      <div class="row mb-3 mt-2">
-        <div class="col-lg-6">
-          <label class="text-dark-grey">Expiration Date</label>
-          <%= f.text_field :board_expiration_date ,placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
-        </div>
-         <div class="col-lg-6">
-          <label class="text-dark-grey">Specialty Type</span></label>
-          <%= f.text_field :board_specialty_type, placeholder: 'Type here...',class: 'form-control border border-dark' %>
-        </div>
-      </div>
-    </div>
-    </div>
 
+
+      <div class="row mb-5 mt-2">
+      <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
+        <div class="d-flex gap-2">
+          <div class="form-row  d-flex align-items-center">
+            <h3>Board Certification</h3>
+          </div>
+          <div class="form-row  d-flex align-items-center gap-1">
+            <%= f.check_box :board_certificate_not_applicable, id:'no-board-cert' %>
+            <%= f.label :board_certificate_not_applicable, "N/A", class: 'text-dark-grey' %>
+          </div>
+        </div>
+      </div>
+      <div class="form-row  d-flex align-items-start">
+        <%= f.text_area :board_cert_explain,  placeholder: 'Explain if you do not have DEA Registration Number (required if no DEA Number)', class: 'form-control border border-dark', rows: '8', id: 'board-cert-explain'%>
+      </div>
+      <div id="board_fields"%>
+        <div class="fields">
+          <%= f.fields_for :board_certifications do |board_certification_fields| %>
+            <%= render 'board_certification_fields', f: board_certification_fields %>
+          <% end %>
+        </div>
+        <div class="row mt-2">
+          <div class="col-lg-12 text-start">
+            <button type="button" class="add_association py-1 btn btn-primary"> <i class="bi bi-plus-circle-fill"></i> Add Board Certification </button>
+          </div>
+        </div>
+      </div>
+   </div>
+   
     <div class="row mb-3 mt-2">
       <%= HtmlUtils.radio_toggle name: 'provider[payer_login]',
           label: 'Provider Data Portals (i.e., CAQH, One HealthPort, MCC) ',
@@ -372,7 +354,7 @@
     <div class="row mb-3">
       <div class="col-lg-6">
         <label class="text-dark-grey">Current Re-Attestation</label>
-        <%= f.text_field :caqh_current_reattestation_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+        <%= f.text_field :caqh_current_reattestation_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.caqh_current_reattestation_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
       </div>
       <div class="col-lg-6">
         <label class="text-dark-grey">Re-Attestation must be completed by</label>
@@ -392,7 +374,7 @@
     <div class="row mb-3">
       <div class="col-lg-6">
         <label class="text-dark-grey">CAQH PDF Date Received</label>
-        <%= f.text_field :caqh_pdf_date_received, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+        <%= f.text_field :caqh_pdf_date_received, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.caqh_pdf_date_received.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
       </div>
     </div>
     <div class="row mb-3">
@@ -589,17 +571,17 @@
     <div class="row mb-3">
       <div class="col-lg-6">
         <label class="text-dark-grey">Original Effective Date</label>
-        <%= f.text_field :prof_liability_orig_effective_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+        <%= f.text_field :prof_liability_orig_effective_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.prof_liability_orig_effective_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
       </div>
       <div class="col-lg-6">
         <label class="text-dark-grey">Effective Date</label>
-        <%= f.text_field :prof_liability_effective_date,  placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+        <%= f.text_field :prof_liability_effective_date,  placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.prof_liability_effective_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
       </div>
     </div>
     <div class="row mb-3">
       <div class="col-lg-6">
         <label class="text-dark-grey">Expiration Date</label>
-        <%= f.text_field :prof_liability_expiration_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+        <%= f.text_field :prof_liability_expiration_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.prof_liability_expiration_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
       </div>
       <div class="col-lg-6">
         <label class="text-dark-grey">Type of Coverage</label>
@@ -1094,7 +1076,7 @@
       width: 100%;
       max-width: 1000px;
   }
-  .single-select {
+  .single-select  {
     width: 100%;
     max-width: 1000px;
     padding: 0;
