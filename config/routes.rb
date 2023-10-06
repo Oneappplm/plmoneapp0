@@ -33,6 +33,7 @@ Rails.application.routes.draw do
 
   post 'delete-record', to: 'ajax#delete_record'
   post 'group-dco-note', to: 'ajax#create_group_dco_note'
+  post 'provider-note', to: 'ajax#create_provider_note'
   post 'create-enrollment-comment', to: 'ajax#create_enrollment_comment'
   post 'create-roles', to: 'ajax#create_roles'
   post 'get-group-dcos', to: 'ajax#get_group_dcos'

@@ -27,6 +27,8 @@ class AjaxController < ApplicationController
       ProviderInsPolicy.delete(id)
     elsif model == 'group_dco_notes'
       GroupDcoNote.delete(id)
+    elsif model == 'provider_notes'
+      ProviderNote.delete(id)
     elsif model == 'comment'
       EnrollmentComment.delete(id)
     elsif model == 'payer_questions'
@@ -39,6 +41,11 @@ class AjaxController < ApplicationController
   def create_group_dco_note
     @group_dco_note = GroupDcoNote.create(group_dco_notes_params)
     render json: { html: render_to_string(partial: 'dcos/qualifacts/group_dco_note', locals: { group_dco_note: @group_dco_note }).html_safe }
+  end
+
+  def create_provider_note
+    @provider_note = ProviderNote.create(provider_notes_params)
+    render json: { html: render_to_string(partial: 'providers/provider_note', locals: { provider_note: @provider_note }).html_safe }
   end
 
   def create_roles
@@ -382,6 +389,13 @@ class AjaxController < ApplicationController
       :title, :description, :group_dco_id
     )
   end
+
+  def provider_notes_params
+    params.require(:data).permit(
+      :title, :description, :provider_id
+    )
+  end
+
   def roles_params
     params.require(:data).permit(
       :name
