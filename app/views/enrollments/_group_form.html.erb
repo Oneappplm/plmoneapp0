@@ -78,7 +78,7 @@
       </div>
       <div class="col-lg-12 mb-2">
        <label class="text-dark-grey">Message</label>
-       <textarea name="enrollment_group[welcome_letter_message]" id="enrollment_group_welcome_letter_message" cols="20" rows="12" class="form-control border border-dark"><%= "Hello,\r\n\r\nCongratulations on signing your Qualifacts contract and we welcome you to the OneApp Enrollment Tracking System.\r\n\r\nSomeone from the Qualifacts Credentialing Team will reach out to you shortly to schedule the introductory call, however in the meantime, please review the attached Welcome Letter and the Qualifacts Checklist spreadsheet to gather your group, provider and/or employee information. We look forward to working with you, and should you have any questions, please do not hesitate to contact us at credentialing@qualifacts.com.\r\n\r\nThank you,\r\n\r\nThe Qualifacts Credentialing Team".html_safe %></textarea>
+       <textarea name="enrollment_group[welcome_letter_message]" id="enrollment_group_welcome_letter_message" cols="20" rows="12" class="form-control border border-dark"><%= Setting.take.t('enrollment_dashboard.groups.add_new_group.welcome_letter.welcome_message_default').html_safe %></textarea>
       </div>
       <h6>Choose files to send or upload from computer</h6>
          <div class="col-lg-12 mb-2">
@@ -127,7 +127,7 @@
         <%= f.select :flatform, options_for_select(flatforms, f.object.flatform), { prompt: 'Select option' }, {:class => 'form-select border-dark'}  %>
       </div>
       <div class="col-lg-6 mb-3">
-         <label class="text-dark-grey">Qualifacts Contract Effective Date</label>
+         <label class="text-dark-grey"><%= Setting.take.t('enrollment_dashboard.groups.add_new_group.group_information.contract_effective_date') %></label>
          <%= f.text_field :qualifacts_contract_effective_date, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', onfocus: "(this.type = 'date')" %>
       </div>
    </div>
@@ -346,7 +346,7 @@
 		</div>
 	</div>
    <div class="row field mb-3 p-2 border border-2">
-		<%= render partial: "global_components/collapsible_sidebar_header", locals: { title: 'Qualifacts Contact List', collapse_name: 'contacts_list', text_position: 'text-start'}%>
+		<%= render partial: "global_components/collapsible_sidebar_header", locals: { title: Setting.take.t('enrollment_dashboard.groups.add_new_group.contact_list.title'), collapse_name: 'contacts_list', text_position: 'text-start'}%>
 		<div class="collapsible" style="<%= current_user&.is_card_open?('contacts_list') ? '' : 'display: none;' %>">
 			<div id="qualifacts-contacts">
 				<div class="fields field mb-3">
@@ -512,7 +512,7 @@
       </div>
       <div class="row my-3">
          <div class="col-lg-6 mb-3">
-            <label class="text-dark-grey">Qualifacts Documents</label>
+            <label class="text-dark-grey"><%= Setting.take.t('enrollment_dashboard.groups.add_new_group.documents.payor_contract') %></label>
             <%= f.file_field :payer_contracts,class: 'form-control border border-dark' %>
             <%= render partial: 'enrollments/document', locals: { key: 'payer_contracts', slug: 'Qualifacts Document' } %>
          </div>

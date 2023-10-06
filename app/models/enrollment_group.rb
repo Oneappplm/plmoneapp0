@@ -67,7 +67,7 @@ class EnrollmentGroup < ApplicationRecord
     [ ['ownership_file', 'Multiple Ownership'],
       ['w9_file', 'W9 Form'],
       ['cp575_file', 'CP575 or Proof of TIN'],
-      ['payer_contracts', 'Qualifacts Documents'],
+      ['payer_contracts', Setting.take.t('enrollment_dashboard.groups.add_new_group.documents.payor_contract')],
       ['group_type_documents', 'Other Group Documents'],
       ['voided_check_file', 'Voided Check'],
       ['specific_type_file', 'Articles of Incorporation'],
