@@ -112,7 +112,7 @@ class EnrollmentProvidersController < ApplicationController
 			:email_address,
       details_attributes: [:id, :start_date, :due_date,
                            :enrollment_payer, :enrollment_type, :enrollment_status, :payer_state,
-                           :approved_date, :revalidation_date, :revalidation_due_date,
+                           :approved_date, :revalidation_date, :revalidation_due_date, :denied_date,
                            :comment, :ptan_number, :provider_ptan, :group_ptan,
                            :enrollment_tracking_id, :enrollment_effective_date,
                            :association_start_date, :business_end_date, :association_end_date,
