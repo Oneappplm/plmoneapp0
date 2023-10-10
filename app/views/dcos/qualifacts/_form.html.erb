@@ -29,6 +29,11 @@
 		<%= f.label :is_primary_location, "Set as Primary Location", class: 'mx-2 text-dark-grey' %>
 	</div>
 	<div class="row mb-3">
+	  <div class="col-lg-6">
+		<label class="text-dark-grey">Status</label>
+		<%= f.select :location_status, options_for_select(active_or_inactive_options, @dco.location_status), {prompt: 'Select Option'}, {class: 'form-select location-status border border-dark', id: 'dcos_status_select'} %>
+		</div>
+
 		<div class="col-lg-6">
 			<label class="text-dark-grey">Effective Date</span></label>
 			<%= f.text_field :effective_date, placeholder: 'MM-DD-YYYY',class: 'form-control border border-dark',  onfocus: "(this.type = 'date')" %>
@@ -153,7 +158,7 @@
 	<div class="row mb-3">
    <div class="col-lg-4">
 				<label class="text-dark-grey">Does this location offer Telehealth services?</label>
-				<%= f.select :telehealth_provider, options_for_select(yes_or_no_options, f.object.inpatient_facility), { prompt: 'Select option' }, { class: 'form-select border border-dark' } %>
+				<%= f.select :telehealth_provider, options_for_select(yes_or_no_options, f.object.telehealth_provider), { prompt: 'Select option' }, { class: 'form-select border border-dark' } %>
    </div>
    <div class="col-lg-4">
     <label class="text-dark-grey">Website</label>
