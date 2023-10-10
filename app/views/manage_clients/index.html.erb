@@ -3,16 +3,14 @@
 </div>
 <%= render 'user_restriction', locals: { access_key: 'Manage Client' } do %>
     <div class="enc-content">
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-xl-3">
                     <%= render partial: "verification_platform/encompass_sidebar"%>
                 </div>
                 <div class="col-xl-9">
                     <div class="d-flex page-applicable align-items-center gap-2 mb-2">
-                        <button class="btn btn-primary py-1 page-applicable">
-                            Add New Practitioner
-                        </button>
+                        <%= link_to "Add New Practitioner", new_manage_client_path, class: "btn btn-primary py-1 page-applicable" %>
                         <button class="btn btn-primary py-1 page-applicable">
                             Modify Practitioner Record
                         </button>
@@ -30,24 +28,7 @@
                                 <!-- <i class='bx bx-search'></i> -->
                             </div>
                         </div>
-                    </div>
-                    <div class="row result-controls">
-                        <div class="col-xl-6 filter-result">
-                            <h6 class="">Result: 4 records</h6>
-                        </div>
-                        <div class="col-xl-6">
-                            <div class="table-controls">
-                                <div class="control-wrp">
-                                    <label for="limit">Show limit</label>
-                                    <input type="text" id="limit" class="form-control" value="20">
-                                </div>
-                                <div class="control-wrp">
-                                    <label for="page">Page 1 of 32</label>
-                                    <input type="text" id="page" class="form-control" value="1">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </div>  
                     <table class="table table-bordered practice-table mt-3">
                         <thead>
                             <tr>
@@ -71,16 +52,30 @@
                                 <td>Lorem</td>
                                 <td>Lorem</td>
                                 <td>
-                                    <button class="btn btn-table">
-                                        Upload
+                                    <button class="btn btn-primary button-sm px-3 py-2 mx-2">
+                                        <i class="fa-solid fa-upload"></i>
                                     </button>
-                                    <button class="btn btn-table mt-1">
-                                        View
+                                    <button class="btn btn-primary button-sm px-3 py-2">
+                                            <i class="fa-solid fa-eye"></i>
                                     </button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    <% if @practitioner %>
+                        <div class="col-lg-12">
+                            <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-0">
+                                <div class="page_info ms-3 text-black">
+                                     <%= page_entries_info @practitioner %>
+                                </div>
+                                <% if params[:per_page ].present? %>
+                                    <%= will_paginate @practitioner, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                                <% else %>
+                                    <%= will_paginate @practitioner, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                                <% end %>
+                            </div>
+                        </div>
+                    <% end %>
                 </div>
             </div>
         </div>
