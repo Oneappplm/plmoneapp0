@@ -24,7 +24,7 @@
 
     <div class="col-lg-6 mb-3">
       <label class="text-dark-grey">State License Renewal(Current Effective) Date <span class="text-red">*</span></label>
-			<%= f.text_field :license_state_renewal_date, placeholder: 'MM-DD-YYYY', class: form_control_classes(danger: f.object.license_expiration_date.blank? && @provider.persisted? ), value: Time.zone.parse(f.object.license_state_renewal_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')", required: true %>
+			<%= f.text_field :license_state_renewal_date, placeholder: 'MM-DD-YYYY', class: form_control_classes(danger: f.object.license_state_renewal_date.blank? && @provider.persisted? ), value: (Time.zone.parse(f.object.license_state_renewal_date.to_s)&.strftime('%m-%d-%Y') rescue nil), onfocus: "(this.type = 'date')", required: true %>
 		</div>
 
     <div class="col-lg-6">
