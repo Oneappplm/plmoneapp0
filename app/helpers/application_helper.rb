@@ -274,7 +274,7 @@ module ApplicationHelper
       ['Rejected','rejected']
     ]
   end
-
+  
   # not sure why but for some reason this has different options
   def enrollment_status
     [

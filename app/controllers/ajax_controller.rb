@@ -141,11 +141,12 @@ class AjaxController < ApplicationController
 
   def get_enrollment_group_locations
     enrollment_group = EnrollmentGroup.find_by(id: params[:group_id])
-    dcos = enrollment_group.present? ? enrollment_group.dcos.map { |m| { label: m.dco_name, value: m.id} } : []
+    dcos = enrollment_group.present? ? enrollment_group.dcos.where(location_status: 'active').map { |m| { label: m.dco_name, value: m.id } } : []
     render json: {
       "practice_locations" => dcos
     }
   end
+  
 
   def get_provider_notification_services
     notification_services = [
