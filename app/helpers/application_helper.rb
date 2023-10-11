@@ -285,7 +285,9 @@ module ApplicationHelper
       ['Denied','denied'],
       ['Terminated','terminated'],
 	  	['Not Eligible','not-eligible'],
-	  	['Revalidation','revalidation']
+	  	['Revalidation','revalidation'],
+		  ['Not Part of Contract','none-contract']
+
     ]
   end
 
