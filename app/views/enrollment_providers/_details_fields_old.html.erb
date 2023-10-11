@@ -1,105 +1,148 @@
 <div class="field card mb-3 p-2 py-3 mt-3">
-  <div class="col-lg-12">
-      <h3>Payer Enrollment Details</h3>
-    </div>
-<div class="row mb-3">
-    <div class="col-lg-6">
-      <label class="text-dark-grey">Start Date</label>
-      <%= f.text_field :start_date, placeholder: 'Start Date', class: 'form-control', onfocus: "(this.type = 'date')" %>
-    </div>
-    <div class="col-lg-6">
-      <label class="text-dark-grey"></label>
-      <%= f.text_field :due_date, placeholder: 'Due Date', class: 'form-control', onfocus: "(this.type = 'date')" %>
-    </div>
-  </div>
+     <div class="col-lg-12">
+        <h3>Payor Enrollment Details</h3>
+     </div>
   <div class="row mb-3">
     <div class="col-lg-6">
-      <label class="text-dark-grey">Enrollment Payer</label>
-      <%= f.select :enrollment_payer, options_for_select(enrollment_payer, f.object.enrollment_payer), { prompt: 'Enrollment Payer' }, {:class => 'form-select'}  %>
+      <label class="text-dark-grey">Enrollment Payor</label>
+      <%= f.text_field :enrollment_payer, placeholder: 'Type here', class: 'form-control border border-dark' %>
     </div>
     <div class="col-lg-6">
       <label class="text-dark-grey">Enrollment Type</label>
       <%= f.select :enrollment_type, options_for_select([
-          ['855A','855A'],
-          ['855I','855I'],
-          ['855R','855R']
-        ], f.object.enrollment_type), { prompt: 'Enrollment Type' }, {:class => 'form-select'}  %>
+          ['Add','add'],
+          ['Initial','Initial'],
+          ['Recred/Reval','recred'],
+          ['Not part on contract','not_part_on_contract']
+        ], f.object.enrollment_type), { prompt: 'Enrollment Type' }, {:class => 'form-select border border-dark'}  %>
     </div>
   </div>
+  <% if current_setting.qualifacts? %>
+      <div class="row mb-3 d-none">
+        <div class="col-lg-6">
+          <label class="text-dark-grey">CPT® Code</label>
+          <%= f.text_field :cpt_code, placeholder: 'Type here', class: 'form-control border border-dark' %>
+        </div>
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Descriptor</label>
+          <%= f.text_field :descriptor, placeholder: 'Type here', class: 'form-control border border-dark' %>
+        </div>
+     </div>
+  <% end %>
   <div class="row mb-3">
-    <div class="col-lg-12">
-      <label class="text-dark-grey">Enrollment Status</label>
-      <%= f.select :enrollment_status, options_for_select(enrollment_status, f.object.enrollment_status), { prompt: 'Enrollment Status' }, {:class => 'form-select multi-enrollment-status'}  %>
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Application Status</label>
+      <%= f.select :enrollment_status, options_for_select(enrollment_status, f.object.enrollment_status), { prompt: 'Enrollment Status' }, {:class => 'form-select multi-enrollment-status border border-dark '}  %>
+    </div>
+    <div class="col-lg-6">
+      <label class="text-dark-grey">State</label>
+       <%= f.select :payer_state, options_for_select([]), { prompt: 'State' }, {:class => 'form-select border border-dark payer-state single-select',  data: { value: f.object.payer_state } }  %>
     </div>
   </div>
 
    <div class="row mb-3 application-submitted-field <%= f.object&.enrollment_status == 'application-submitted' ? '' : 'd-none'%>">
     <div class="col-lg-6">
       <label class="text-dark-grey">Start Date</label>
-      <%= f.text_field :start_date, placeholder: 'Type here...', class: 'form-control', onfocus: "(this.type = 'date')" %>
+      <%= f.text_field :start_date, placeholder: 'Type here...', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
     </div>
-     <div class="col-lg-6">
-      <label class="text-dark-grey">Enrollment Tracking ID</label>
-      <%= f.text_field :enrollment_tracking_id, placeholder: 'Type here...', class: 'form-control' %>
-    </div>
-  </div>
-
-  <div class="row mb-3 revalidation-fields <%= f.object&.enrollment_status == 'approved' ? '' : 'd-none'%>">
       <div class="col-lg-6">
-        <label class="text-dark-grey">Effective Date</label>
-          <%= f.text_field :enrollment_effective_date, placeholder: 'MM-DD-YYYY', class: 'form-control', onfocus: "(this.type = 'date')" %>
-      </div>
-      <div class="col-lg-6">
-        <label class="text-dark-grey">Association Start Date</label>
-          <%= f.text_field :association_start_date, placeholder: 'MM-DD-YYYY', class: 'form-control', onfocus: "(this.type = 'date')" %>
-      </div>
-      <div class="col-lg-6">
-        <label class="text-dark-grey">Business End Date</label>
-          <%= f.text_field :business_end_date, placeholder: 'MM-DD-YYYY', class: 'form-control', onfocus: "(this.type = 'date')" %>
-      </div>
-      <div class="col-lg-6">
-        <label class="text-dark-grey">Association End Date</label>
-          <%= f.text_field :association_end_date, placeholder: 'MM-DD-YYYY', class: 'form-control', onfocus: "(this.type = 'date')" %>
-      </div>
-      <div class="col-lg-4">
-        <label class="text-dark-grey">Revalidation Status</label>
-          <%= f.text_field :revalidation_status, placeholder: 'Type here...', class: 'form-control' %>
-      </div>
-      <div class="col-lg-4">
-        <label class="text-dark-grey">Revalidation Date</label>
-          <%= f.text_field :revalidation_date, placeholder: 'MM-DD-YYYY', class: 'form-control', onfocus: "(this.type = 'date')" %>
-      </div>
-      <div class="col-lg-4">
-        <label class="text-dark-grey">Revalidation Due Date</label>
-          <%= f.text_field :revalidation_due_date, placeholder: 'MM-DD-YYYY', class: 'form-control', onfocus: "(this.type = 'date')" %>
-      </div>
-       <div class="col-lg-12">
-        <label class="text-dark-grey">Line of Business(can be multiple)</label>
-          <%= f.text_field :line_of_business, placeholder: 'Type here...', class: 'form-control' %>
+        <label class="text-dark-grey">Enrollment Tracking ID</label>
+        <%= f.text_field :enrollment_tracking_id, placeholder: 'Type here...', class: 'form-control border border-dark' %>
       </div>
   </div>
 
-  <div class="row mb-3 application-not-submitted-field <%= f.object&.enrollment_status == 'application-not-submitted' ? '' : 'd-none'%>">
+    <div class="row mb-3 revalidation-fields <%= f.object&.enrollment_status == 'approved' ? '' : 'd-none'%>">
+      <div class="col-lg-6 mb-3">
+        <label class="text-dark-grey">Initial Effective Date</label>
+          <%= f.text_field :enrollment_effective_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="row mt-3 mb-3">
+          <div class="col-lg-4">
+            <label class="text-dark-grey">Revalidation Status</label>
+              <%= f.text_field :revalidation_status, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+          </div>
+          <div class="col-lg-4">
+            <label class="text-dark-grey">Revalidation Date</label>
+              <%= f.text_field :revalidation_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+          </div>
+          <div class="col-lg-4">
+            <label class="text-dark-grey">Revalidation Due Date</label>
+              <%= f.text_field :revalidation_due_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', onfocus: "(this.type = 'date')" %>
+          </div>
+      </div>
+        <div class="col-lg-12">
+            <label class="text-dark-grey">Line of Business(can be multiple)</label>
+              <%= f.text_field :line_of_business, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+        </div>
+    </div>
+
+  <div class="row mb-3 application-not-submitted-field <%= f.object&.enrollment_status == 'application-not-submitted' ? '' : 'active'%>">
     <div class="col-lg-6">
-      <label class="text-dark-grey">Provider ID</label>
-      <%= f.text_field :provider_ptan, placeholder: 'PTAN, CHAMPS, PIN, etc.', class: 'form-control' %>
-    </div>
-     <div class="col-lg-6">
-      <label class="text-dark-grey">Group ID</label>
-      <%= f.text_field :group_ptan, placeholder: 'Group PTAN, CHAMPS, PIN, etc.', class: 'form-control' %>
+          <label class="text-dark-grey">Provider ID</label>
+          <%= f.text_field :provider_id, placeholder: 'Medicare and Medicaid,  PIN, etc.', class: 'form-control border border-dark' %>
     </div>
   </div>
 
-
+  <h4>Payor Login</h4>
   <div class="row mb-2">
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Username</label>
+      <%= f.text_field :payor_username, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+    </div>
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Password</label>
+      <%= f.text_field :payor_password, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+    </div>
+  </div>
+  <div id="questions-holder" class="row">
+    <%= f.fields_for :questions do |epd_question_fields| %>
+      <!-- Fields for EpdQuestion -->
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Question</label>
+        <%= epd_question_fields.text_field :question, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Answer</label>
+        <%= epd_question_fields.text_field :answer, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    <% end %>
+  </div>
+  <div class="col-lg-12 mt-2">
+    <button type="button" class="btn btn-primary add-question">Add Question</button>
+  </div>
+
+  <div class="row mb-2 mt-2">
     <div class="col-lg-12">
       <label class="text-dark-grey">Notes</label>
-      <%= f.text_area :comment, class: 'form-control', rows: '8'%>
+      <%= f.text_area :comment, class: 'form-control border border-dark', rows: '8'%>
     </div>
   </div>
 
+  <div class="row mb-3">
+    <div class="col-lg-12 ">
+      <label >Upload</label>
+      <%= f.file_field :upload_payor_file, class: 'form-control', multiple: true %>
+      <div class="d-flex gap-2">
+        <% f.object.upload_payor_file.each do |file| %>
+        <div class="upload-payor-file">
+          <%= f.hidden_field :upload_payor_file, multiple: true, value: file.identifier %>
+          <%= HtmlUtils.generate_view_link file_url: file.url, link_title: file.identifier, remove_icon: true %>
+        </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <% f.object.application_status_logs.each do |status_log| %>
+    <div class="row application-status-history-log">
+      <div class="col-lg-12">
+        <small><strong><%= status_log.display_summary %></strong></small>
+      </div>
+    </div>
+  <% end %>
+
   <div class="row">
-    <div class="col-lg-12 d-flex justify-content-end">
+    <div class="col-12 d-flex justify-content-sm-end justify-content-center align-items-center">
       <%= f.check_box :_destroy %>
       <%= f.label :_destroy, "Remove", class: 'mx-2 text-dark-grey' %>
     </div>
