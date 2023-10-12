@@ -1,6 +1,4 @@
 class Users::SessionsController < Devise::SessionsController
-	before_action :can_create?, except: [:new, :create]
-
   def create
     if current_user.present?
       if Rails.env.production?

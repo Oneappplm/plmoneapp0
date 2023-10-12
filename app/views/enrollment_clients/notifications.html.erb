@@ -1,134 +1,137 @@
-<style>
-   .vscomp-ele{
-      max-width: inherit;
-      padding: 0;
-   }
-</style>
 <div class="content container-fluid">
   <%= render "enrollment_clients_nav"%>
-  <div class="row">
-    <div class="col-xl-8">
-      <div class="row">
-      <div class="col-xl-12">
-         <div class="card card-payer">
-            <div class="card-body">
-              <%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |f| %>
-                  <h5>Search</h5>
-
-                  <div class="row mt-3">
-                     <div class="col-xl-6">
-                        <label for="">Name</label>
-                        <input type="text" name="name" value="<%=params[:name] %>" id="name" class="form-control" placeholder="Type here...">
-                     </div>
-                     <div class="col-xl-6">
-                        <label for="">Filter</label>
-                        <%= select_tag('missing_field', options_for_select([['Missing Documents','missing_documents'], ['Missing Required Fields', 'missing_fields']], params[:field]), class: 'form-control',  prompt: 'Select option')%>
-                  </div>
-                  <div class="d-flex justify-content-center mt-4">
-                     <button class="btn btn-primary py-1">Submit</button>
-                  </div>
-              <% end %>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-      <div class="table-wpr">
-        <%= render "providers_table"%>
-      </div>
-    </div>
-    <% if @provider %>
-    <div class="col-xl-4">
-      <%= render partial: "enrollment_clients/show/missing_documents"%>
-      <% if @show_missing_fields %>
-        <%= render partial: "enrollment_clients/show/missing_required_fields"%>
-      <% end %>
-      <% if !@provider.missing_field_submissions.blank? %>
-        <%= render partial: "enrollment_clients/show/submitted_required_fields"%>
-      <% end %>
-
-
-          <div class="card rounded shadow-lg p-1 px-3 mb-3 pb-5">
-          <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Comments', collapse_name: 'comments'}%>
-            <div id="comments-list">
-              <% @provider.comments.each do |comment|%>
-                <% if comment.persisted? %>
-                  <%= render partial: 'comments/comment', locals: {comment: comment}%>
-                <% end %>
-              <% end %>
-            </div>
-            <%= render partial: 'comments/form_ajax', comment: @comment %>
-          </div>
-    </div>
-    <% else %>
-    <div class="col-xl-4">
-        <div class="card rounded shadow-lg py-2 px-3 mb-3">
-          <h2 class="text-center my-2">No provider info found</h2>
-
-        </div>
-    </div>
-    <% end %>
-  </div>
 </div>
-
-<script>
-  $(document).ready(function() {
-    if($('body.navbar-vertical-aside-mini-mode').length == 0){
-      setTimeout(function () {$('#navbar-aside-toggler').click();}, 1000);
+<%= render 'user_restriction', locals: { access_key: 'Notifications' } do %>
+  <style>
+    .vscomp-ele{
+        max-width: inherit;
+        padding: 0;
     }
+  </style>
+  <div class="content container-fluid">
+    <div class="row">
+      <div class="col-xl-8">
+        <div class="row">
+        <div class="col-xl-12">
+          <div class="card card-payer">
+              <div class="card-body">
+                <%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |f| %>
+                    <h5>Search</h5>
 
-    setTimeout(function(){
-      $('.state_dropdown').each(function() {
-        var dropdown_id = $(this).attr('id');
-        $.get('<%= provider_states_multi_select_data_path %>', function(data){
-          VirtualSelect.init({ele: '#'+dropdown_id, search: true }); // initialze virtual select first
-          if($('#'+dropdown_id).length)
-            document.querySelector('#'+dropdown_id).setOptions(data['result']); // other alternative for initializing collection data
-        });
-      })
+                    <div class="row mt-3">
+                      <div class="col-xl-6">
+                          <label for="">Name</label>
+                          <input type="text" name="name" value="<%=params[:name] %>" id="name" class="form-control" placeholder="Type here...">
+                      </div>
+                      <div class="col-xl-6">
+                          <label for="">Filter</label>
+                          <%= select_tag('missing_field', options_for_select([['Missing Documents','missing_documents'], ['Missing Required Fields', 'missing_fields']], params[:field]), class: 'form-control',  prompt: 'Select option')%>
+                    </div>
+                    <div class="d-flex justify-content-center mt-4">
+                      <button class="btn btn-primary py-1">Submit</button>
+                    </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+        <div class="table-wpr">
+          <%= render "providers_table"%>
+        </div>
+      </div>
+      <% if @provider %>
+      <div class="col-xl-4">
+        <%= render partial: "enrollment_clients/show/missing_documents"%>
+        <% if @show_missing_fields %>
+          <%= render partial: "enrollment_clients/show/missing_required_fields"%>
+        <% end %>
+        <% if !@provider.missing_field_submissions.blank? %>
+          <%= render partial: "enrollment_clients/show/submitted_required_fields"%>
+        <% end %>
 
-       $.get('<%= specialties_multi_select_data_path %>', function(data){
-          VirtualSelect.init({ele: '#missing_provider_specialty', search: true, multiple: true }); // initialze virtual select first
-          if($('#missing_provider_specialty').length)
-            document.querySelector('#missing_provider_specialty').setOptions(data['result']); // other alternative for initializing collection data
-        });
 
-        $.get('<%= provider_types_multi_select_data_path %>', function(data){
-          VirtualSelect.init({ele: '#provider_practitioner_type', search: true, multiple: true }); // initialze virtual select first
-          if($('#provider_practitioner_type').length)
-            document.querySelector('#provider_practitioner_type').setOptions(data['result']); // other alternative for initializing collection data
-        });
-      }, 500);
+            <div class="card rounded shadow-lg p-1 px-3 mb-3 pb-5">
+            <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Comments', collapse_name: 'comments'}%>
+              <div id="comments-list">
+                <% @provider.comments.each do |comment|%>
+                  <% if comment.persisted? %>
+                    <%= render partial: 'comments/comment', locals: {comment: comment}%>
+                  <% end %>
+                <% end %>
+              </div>
+              <%= render partial: 'comments/form_ajax', comment: @comment %>
+            </div>
+      </div>
+      <% else %>
+      <div class="col-xl-4">
+          <div class="card rounded shadow-lg py-2 px-3 mb-3">
+            <h2 class="text-center my-2">No provider info found</h2>
 
-    //
+          </div>
+      </div>
+      <% end %>
+    </div>
+  </div>
+  <script>
+    $(document).ready(function() {
+      if($('body.navbar-vertical-aside-mini-mode').length == 0){
+        setTimeout(function () {$('#navbar-aside-toggler').click();}, 1000);
+      }
 
-    $('#provider_enrollment_group_id').on('change',function(){
-        var id = $(this).val();
-        var url = '/enrollments/groups/'+id+'/get_dcos';
-        if(id != '') {
-          $.ajax({
-            url: url,
-            type: 'POST',
-            data: { authenticity_token: csrfToken },
-            success: function(data) {
-              var practice_locations = data['practice_locations'];
-              if(practice_locations.length != 0) {
-                $('#provider_dco').empty();
-                $('#provider_dco').append('<option value="">Practice Location</option>');
-                for (var i = 0; i < practice_locations.length ; i++) {
-                  $('#provider_dco').append('<option value="'+practice_locations[i][0]+'">'+practice_locations[i][1]+'</option>');
+      setTimeout(function(){
+        $('.state_dropdown').each(function() {
+          var dropdown_id = $(this).attr('id');
+          $.get('<%= provider_states_multi_select_data_path %>', function(data){
+            VirtualSelect.init({ele: '#'+dropdown_id, search: true }); // initialze virtual select first
+            if($('#'+dropdown_id).length)
+              document.querySelector('#'+dropdown_id).setOptions(data['result']); // other alternative for initializing collection data
+          });
+        })
+
+        $.get('<%= specialties_multi_select_data_path %>', function(data){
+            VirtualSelect.init({ele: '#missing_provider_specialty', search: true, multiple: true }); // initialze virtual select first
+            if($('#missing_provider_specialty').length)
+              document.querySelector('#missing_provider_specialty').setOptions(data['result']); // other alternative for initializing collection data
+          });
+
+          $.get('<%= provider_types_multi_select_data_path %>', function(data){
+            VirtualSelect.init({ele: '#provider_practitioner_type', search: true, multiple: true }); // initialze virtual select first
+            if($('#provider_practitioner_type').length)
+              document.querySelector('#provider_practitioner_type').setOptions(data['result']); // other alternative for initializing collection data
+          });
+        }, 500);
+
+      //
+
+      $('#provider_enrollment_group_id').on('change',function(){
+          var id = $(this).val();
+          var url = '/enrollments/groups/'+id+'/get_dcos';
+          if(id != '') {
+            $.ajax({
+              url: url,
+              type: 'POST',
+              data: { authenticity_token: csrfToken },
+              success: function(data) {
+                var practice_locations = data['practice_locations'];
+                if(practice_locations.length != 0) {
+                  $('#provider_dco').empty();
+                  $('#provider_dco').append('<option value="">Practice Location</option>');
+                  for (var i = 0; i < practice_locations.length ; i++) {
+                    $('#provider_dco').append('<option value="'+practice_locations[i][0]+'">'+practice_locations[i][1]+'</option>');
+                  }
+                }else{
+                  $('#provider_dco').empty();
+                  $('#provider_dco').append('<option value="">Practice Location</option>');
                 }
-              }else{
-                $('#provider_dco').empty();
-                $('#provider_dco').append('<option value="">Practice Location</option>');
               }
-            }
-          })
-        }else{
-          $('#provider_dco').empty();
-          $('#provider_dco').append('<option value="">Practice Location</option>');
-        }
+            })
+          }else{
+            $('#provider_dco').empty();
+            $('#provider_dco').append('<option value="">Practice Location</option>');
+          }
 
-  })
-  })
-</script>
+    })
+    })
+  </script>
+<% end %>

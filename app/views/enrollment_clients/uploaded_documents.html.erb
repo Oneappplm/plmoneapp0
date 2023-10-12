@@ -1,38 +1,41 @@
-<% documents = ['state_license_copies','dea_copies', 'w9_form_copies', 'certificate_insurance_copies', 'driver_license_copies', 'board_certification_copies', 'caqh_app_copies', 'cv_copies', 'telehealth_license_copies', 'school_certificate'] %>
 <div class="content container-fluid">
    <%= render "enrollment_clients/nav"%>
-   <% documents.each_with_index do |doc,idx|%>
-      <% if @provider.send(doc).present? %>
-         <div class="row mb-3">
-            <div class="col-lg-12 card p-3">
-               <div class="w-100 d-flex justify-content-between col-lg-12">
-                  <h3 class="text-primary m-0"><%= provider_uploaded_files_titles[idx] %></h3>
-               </div>
-               <div class="gap-2">
-                  <% if doc == "school_certificate" %>
-                     <a href=<%= @provider.send(doc).url %> target="_blank">
-                        <div class="file-btn btn text-black btn-outline-primary btn-sm py-1 mt-2 fw-semibold">
-                           <%= @provider.send(doc).identifier %>
-                        </div>
-                     </a>
-                  <% else %>
-                     <% @provider.send(doc).each do |file| %>
-                        <a href=<%= file.url %> target="_blank">
+</div>
+<%= render 'user_restriction', locals: { access_key: 'Uploaded Documents' } do %>
+   <% documents = ['state_license_copies','dea_copies', 'w9_form_copies', 'certificate_insurance_copies', 'driver_license_copies', 'board_certification_copies', 'caqh_app_copies', 'cv_copies', 'telehealth_license_copies', 'school_certificate'] %>
+   <div class="content container-fluid">
+      <% documents.each_with_index do |doc,idx|%>
+         <% if @provider.send(doc).present? %>
+            <div class="row mb-3">
+               <div class="col-lg-12 card p-3">
+                  <div class="w-100 d-flex justify-content-between col-lg-12">
+                     <h3 class="text-primary m-0"><%= provider_uploaded_files_titles[idx] %></h3>
+                  </div>
+                  <div class="gap-2">
+                     <% if doc == "school_certificate" %>
+                        <a href=<%= @provider.send(doc).url %> target="_blank">
                            <div class="file-btn btn text-black btn-outline-primary btn-sm py-1 mt-2 fw-semibold">
-                              <%= file.identifier %>
+                              <%= @provider.send(doc).identifier %>
                            </div>
                         </a>
+                     <% else %>
+                        <% @provider.send(doc).each do |file| %>
+                           <a href=<%= file.url %> target="_blank">
+                              <div class="file-btn btn text-black btn-outline-primary btn-sm py-1 mt-2 fw-semibold">
+                                 <%= file.identifier %>
+                              </div>
+                           </a>
+                        <% end %>
                      <% end %>
-                  <% end %>
+                  </div>
                </div>
             </div>
-         </div>
+         <% end %>
       <% end %>
-   <% end %>
-</div>
-
-<style>
-   .file-btn:hover {
-   color: white!important;
-   }
-</style>
+   </div>
+   <style>
+      .file-btn:hover {
+      color: white!important;
+      }
+   </style>
+<% end %>

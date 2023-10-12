@@ -3,12 +3,16 @@
 		<td><%= link_to provider.practitioner_type, (action_name == "index" ? provider_path(provider) : providers_path), class: 'text-secondary'%></td>
 		<td><%= link_to provider.npi,  (action_name == "index" ? provider_path(provider) : providers_path), class: 'text-secondary' %>
 			<div class="d-flex gap-2" style="float:right;">
-  <%= link_to edit_provider_path(provider), class: 'btn btn-xs btn-primary' do %>
-    <i class="bi bi-pencil"></i>
-  <% end %>
- <%= button_to provider_path(provider), method: :delete, class: 'btn btn-xs btn-danger delete-button', data: { confirm: 'Are you sure you want to delete this provider?' }, id: "delete-provider-#{provider.id}" do %>
-    <i class="bi bi-trash"></i>
-  <% end %>
+				<% if current_user.can_access?('Edit Provider') %>
+					<%= link_to edit_provider_path(provider), class: 'btn btn-xs btn-primary' do %>
+							<i class="bi bi-pencil"></i>
+					<% end %>
+				<% end %>
+				<% if current_user.can_access?('Delete Provider') %>
+				<%= button_to provider_path(provider), method: :delete, class: 'btn btn-xs btn-danger delete-button', data: { confirm: 'Are you sure you want to delete this provider?' }, id: "delete-provider-#{provider.id}" do %>
+						<i class="bi bi-trash"></i>
+				<% end %>
+				<% end %>
 </div>
 		</td>
 </tr>

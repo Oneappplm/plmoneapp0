@@ -1,98 +1,9 @@
 
 module ApplicationHelper
-	def can_read?
-		return if current_role&.can_read || !current_user
-
-		render 'shared/access_denied' and return
-	end
-
-	def can_create?
-		return if current_role&.can_create || !current_user
-
-		render 'shared/access_denied' if current_user and return
-	end
-
-	def can_update?
-		return if current_role&.can_update || !current_user
-
-		render 'shared/access_denied' if current_user and return
-	end
-
-	def	can_delete?
-		return if current_role&.can_delete || !current_user
-
-		render 'shared/access_denied' if current_user and return
-	end
-
-	def can_view? page
-	 find_role(page)&.can_read
-	end
-
-	def translate_page(page = nil)
-		prev = Rails.application.routes.recognize_path(request.referrer)
-		page =	page || controller_name
-		if ['dashboard'].include?(controller_name)
-			'overview'
-		elsif ['auto_verifies'].include?(controller_name) && prev[:controller] != "providers"
-			'verification_platform'
-		elsif ['providers', 'auto_verifies', 'logs'].include?(controller_name)
-			if ['overview', 'index', 'show'].include?(action_name)
-				'enrollment_tracking'
-			else
-			'provider_app'
-			end
-		elsif ['enrollment_providers', 'enroll_groups', 'dcos', 'groups', 'client_provider_enrollments'].include?(controller_name)
-			'enrollment_tracking'
-		elsif ['auto_verifies', 'query_reports', 'hvhs_data', 'logs'].include?(controller_name)
-			'verification_platform'
-		elsif ['view_summary', 'provider_sources'].include?(controller_name)
-			'provider_app'
-		elsif ['pages', 'systems'].include?(controller_name)
-			'client_portal'
-		elsif ['office_managers'].include?(controller_name)
-			'office_manager'
-		elsif	['roles', 'users'].include?(controller_name)
-			'settings'
-		elsif ['manage_clients'].include?(controller_name)
-				'manage_clients'
-		elsif ['enrollment_clients'].include?(controller_name)
-			'enrollment_clients'
-		else
-			controller_name
-		end
-	end
-
-	def redirect_to_filtered_page page
-		return if page == 'overview'
-		case page
-		when 'verification_platform', 'enrollment_clients', 'office_manager', 'settings', 'manage_clients', 'manage_practitioners', 'work_ticklers'
-			redirect_to controller: page, action: 'index'
-		when 'client_portal', 'plm_sales_tool', 'smart_contract'
-				redirect_to send("#{page}_path")
-	 when 'enrollment_tracking'
-			redirect_to overview_providers_path
-		when 'provider_app'
-			redirect_to custom_provider_source_path
-		else
-		 render 'shared/access_denied' and return
-		end
-	end
-
-	def current_role
-		return nil unless current_user.present?
-
-		page = translate_page
-		role = current_user&.roles.find_by(page: page)
-	rescue
-		nil
-	end
+	include RolesHelper # this is the file that contains the role-based access methods
 
 	def current_client_organization
 		current_client_organization = ClientOrganization.take || ClientOrganization.new
-	end
-
-	def find_role page
-		current_user&.roles.find_by(page: page) rescue	nil
 	end
 
 	def active_menu cname, aname = nil

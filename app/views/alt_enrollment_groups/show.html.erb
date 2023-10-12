@@ -1,26 +1,30 @@
 <div class="content container-fluid">
-  <%= render "nav"%>
-  <%= render "alt_enrollment_groups/show/group_info"%>
+  <%= render "nav" %>
+</div>
+<%= render 'user_restriction', locals: { access_key: 'Group Details' } do %>
+  <div class="content container-fluid">
+    <%= render "alt_enrollment_groups/show/group_info"%>
 
-  <% @enrollment_group.contact_personnels.each_with_index do |contact,idx|%>
-    <%= render partial: "alt_enrollment_groups/show/group_contact_personnel", locals: {title: "Group Contact Personnel #{ @enrollment_group.contact_personnels.count == 1 ? '' : idx+1}", contact: contact} %>
-  <% end %>
+    <% @enrollment_group.contact_personnels.each_with_index do |contact,idx|%>
+      <%= render partial: "alt_enrollment_groups/show/group_contact_personnel", locals: {title: "Group Contact Personnel #{ @enrollment_group.contact_personnels.count == 1 ? '' : idx+1}", contact: contact} %>
+    <% end %>
 
-  <% @enrollment_group.details.each_with_index do |detail,idx|%>
-    <%= render partial: "alt_enrollment_groups/show/individual_ownership", locals: {title: "Individual Ownership #{ @enrollment_group.details.count == 1 ? '' : idx+1}", detail: detail} %>
-  <% end %>
+    <% @enrollment_group.details.each_with_index do |detail,idx|%>
+      <%= render partial: "alt_enrollment_groups/show/individual_ownership", locals: {title: "Individual Ownership #{ @enrollment_group.details.count == 1 ? '' : idx+1}", detail: detail} %>
+    <% end %>
 
   <% @enrollment_group.qualifacts_contacts.each_with_index do |qcontact,idx|%>
     <%= render partial: "alt_enrollment_groups/show/qualifacts_contact", locals: {title: "#{Setting.take.t('enrollment_dashboard.groups.group_details.qualifacts_contacts.title')} #{ @enrollment_group.qualifacts_contacts.count == 1 ? '' : idx+1}", qcontact: qcontact} %>
   <% end %>
 
-  <%= render "alt_enrollment_groups/show/w9_form"%>
-  <% if !@enrollment_group&.service_locations.blank? %>
-    <%= render "alt_enrollment_groups/show/service_location"%>
-  <% end %>
+    <%= render "alt_enrollment_groups/show/w9_form"%>
+    <% if !@enrollment_group&.service_locations.blank? %>
+      <%= render "alt_enrollment_groups/show/service_location"%>
+    <% end %>
 
-  <%= render "alt_enrollment_groups/show/admitting_privileges"%>
+    <%= render "alt_enrollment_groups/show/admitting_privileges"%>
 
 
 
-</div>
+  </div>
+<% end %>

@@ -32,11 +32,15 @@
       <%= npi %>
     <% end %>
     <div class="d-flex gap-2" style="float:right;">
-      <%= link_to edit_path, class: 'btn btn-xs btn-primary' do %>
-        <i class="bi bi-pencil"></i>
+      <% if current_user.can_access?('Edit Enrollment') %>
+        <%= link_to edit_path, class: 'btn btn-xs btn-primary' do %>
+          <i class="bi bi-pencil"></i>
+        <% end %>
       <% end %>
-      <%= button_to delete_path, method: :delete, class: 'btn btn-xs btn-danger delete-button', style: 'border: none; background-color: transparent;' do %>
-        <i class="bi bi-trash"></i>
+      <% if current_user.can_access?('Delete Enrollment') %>
+        <%= button_to delete_path, method: :delete, class: 'btn btn-xs btn-danger delete-button', style: 'border: none; background-color: transparent;' do %>
+          <i class="bi bi-trash"></i>
+        <% end %>
       <% end %>
     </div>
   </td>

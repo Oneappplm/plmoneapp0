@@ -279,8 +279,8 @@ class PagesController < ApplicationController
   end
 
 	def redirect_to_default_page
-		# render json: current_role and return
 		redirect_to_filtered_page(current_user.default_page) if current_user.default_page.present? && current_user.default_page != 'overview'
+
 		render 'shared/access_denied' and return if current_user.default_page.blank?
 	end
 

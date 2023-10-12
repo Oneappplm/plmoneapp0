@@ -52,13 +52,17 @@
 						</div>
 						<%= HtmlUtils.multi_select_dropdown name: 'user[enrollment_group_ids]', id: 'enrollment_group_ids'%>
           </div>
+					<% if current_user.can_access?('Select Role') %>
           <div class="col-lg-5">
             <label class="text-dark-grey">Role</label>
-						<button class="btn btn-xs btn-link p-0" id="add-new-role" data-bs-toggle="modal" data-bs-target="#addNewRole" style="float:right;font-size:12px;">
-							Add new role
-						</button>
+						<% if current_user.can_access?('Add New Role') %>
+							<button class="btn btn-xs btn-link p-0" id="add-new-role" data-bs-toggle="modal" data-bs-target="#addNewRole" style="float:right;font-size:12px;">
+								Add new role
+							</button>
+						<% end %>
             <%= f.select :user_role, options_for_select(current_user.allowed_roles, f.object.user_role), { prompt: 'Select Option' }, class: 'form-select border border-dark', placeholder: 'Role' %>
           </div>
+					<% end %>
 					<div class="col-lg-2">
             <label class="text-dark-grey">Status</label>
 						<%= f.select :status, options_for_select(['Active', 'Inactive'], f.object.status), { prompt: 'Select Option' }, { class: 'form-select border border-dark' } %>
@@ -96,10 +100,18 @@
 				</div>
 				<div class="row">
 					<div class="col-lg-12 d-flex justify-content-end gap-2">
-						<button type="submit" class="d-flex btn btn-primary btn-md">
-              <%= action_name == 'edit' ? '<i class="bi bi-pencil-square me-2"></i>'.html_safe : '<i class="bi bi-plus-lg me-2"></i>'.html_safe %>
-							<span><%= action_name == 'edit' ? 'Update User' : 'Add User' %></span>
-						</button>
+						<% if current_user.can_access?('Add New User') && action_name == 'index' %>
+							<button type="submit" class="d-flex btn btn-primary btn-md">
+								<i class="bi bi-plus-lg me-2"></i>
+								<span>Add User</span>
+							</button>
+						<% end %>
+						<% if current_user.can_access?('Edit User') && action_name == 'edit_user' %>
+							<button type="submit" class="d-flex btn btn-primary btn-md">
+								<i class="bi bi-pencil-square me-2"></i>
+								<span>Update User</span>
+							</button>
+						<% end %>
 					</div>
 				</div>
 			</div>

@@ -7,6 +7,9 @@ module HtmlUtils
 	extend self
 
   @@current_provider_source = nil
+  @@role_based = nil
+
+  attr_accessor :role_based
 
   def set_current_provider_source provider_source
     @@current_provider_source = provider_source
@@ -369,6 +372,26 @@ module HtmlUtils
         <span class="text-muted">No File Uploaded</span>
       HTML
     end
+
+    html.html_safe
+  end
+
+  def role_based_access_checkbox **options
+    options[:role] ||= role_based
+    options[:title] ||= ''
+    options[:replace_title] ||= nil
+
+    role_based_access = RoleBasedAccess.find_role_access(options[:role], options[:title])
+
+    return unless role_based_access.present?
+
+    html = <<-HTML
+      <input class="form-check-input border border-dark role-based-access" type="checkbox" name="#{role_based_access.page}" data-id="#{role_based_access.id}" #{role_based_access.can_read? ? 'checked' : ''} style="margin-right: 5px;margin-top: 0px">
+    HTML
+
+    html += <<-HTML
+      <span>#{options[:replace_title] || options[:title]}</span>
+    HTML
 
     html.html_safe
   end

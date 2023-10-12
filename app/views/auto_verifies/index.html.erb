@@ -1,83 +1,88 @@
 <div class="content container-fluid">
-	<div class="row mb-3">
+  <%= render "verification_platform/encompass_nav"%>
+</div>
+<%= render 'user_restriction', locals: { access_key: 'Autoverify' } do %>
+	<div class="content container-fluid">
 		<div class="row mb-3">
-			<div class="col-lg-12 d-flex justify-content-end gap-2">
-				<%= link_to 'Logs', webscrapers_root_path, class: 'btn btn-primary' %>
+			<div class="row mb-3">
+				<div class="col-lg-12 d-flex justify-content-end gap-2">
+					<%= link_to 'Logs', webscrapers_root_path, class: 'btn btn-primary' %>
+				</div>
+			</div>
+			<div class="col-lg-12">
+				<h2>
+					Auto Verification
+				</h2>
+
 			</div>
 		</div>
-		<div class="col-lg-12">
-			<h2>
-				Auto Verification
-			</h2>
+		<div class="row mb-3">
+			<div class="col-lg-6">
 
-		</div>
-	</div>
-	<div class="row mb-3">
-		<div class="col-lg-6">
+				<%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
 
-			<%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
-
-				<%= form.select :search_state, options_for_select([
-								['PALS','PALS'],
-								['OIG', 'OIG'],
-								['SAM', 'SAM'],
-								['ALASKA','ALASKA'],
-								['CALIFORNIA','CALIFORNIA']
-						], params[:search_state]), { prompt: 'Select State of Practice' }, {:class => 'form-select'}  %>
-						<br>
-						<label for="">Search by License Number</label>
-				<div class="">
-					<input type="text" name="license_number" value="<%= params[:license_number] %>" class="form-control">
-					<i class="bi bi-search"></i>
-		  </div>
-
-				<br>
-				<label for="">OIG/SAM FIELDS</label>
-				<div class="oig">
+					<%= form.select :search_state, options_for_select([
+									['PALS','PALS'],
+									['OIG', 'OIG'],
+									['SAM', 'SAM'],
+									['ALASKA','ALASKA'],
+									['CALIFORNIA','CALIFORNIA']
+							], params[:search_state]), { prompt: 'Select State of Practice' }, {:class => 'form-select'}  %>
+							<br>
+							<label for="">Search by License Number</label>
 					<div class="">
-						<input type="text" name="first_name" placeholder="First name" value="<%= params[:first_name] %>" class="form-control">
-					</div>
-					<div class="">
-						<input type="text" name="last_name" placeholder="Last name" value="<%= params[:last_name] %>" class="form-control">
-
-					</div>
+						<input type="text" name="license_number" value="<%= params[:license_number] %>" class="form-control">
+						<i class="bi bi-search"></i>
 				</div>
-				<br>
-				<input type="submit" value="Search" class="btn btn-primary mt-4">
-			<% end %>
+
+					<br>
+					<label for="">OIG/SAM FIELDS</label>
+					<div class="oig">
+						<div class="">
+							<input type="text" name="first_name" placeholder="First name" value="<%= params[:first_name] %>" class="form-control">
+						</div>
+						<div class="">
+							<input type="text" name="last_name" placeholder="Last name" value="<%= params[:last_name] %>" class="form-control">
+
+						</div>
+					</div>
+					<br>
+					<input type="submit" value="Search" class="btn btn-primary mt-4">
+				<% end %>
+			</div>
+		</div>
+		<br>
+		<div class="row">
+			<div class="col-lg-12">
+				<% if params[:search_state] == 'PALS' %>
+					<%= render 'pals_table' %>
+				<% elsif params[:search_state] == 'ALASKA' %>
+					<%= render 'alaska_table' %>
+				<% elsif params[:search_state] == 'CALIFORNIA' %>
+					<%= render 'california_table' %>
+				<% elsif params[:search_state] == 'OIG' %>
+					<%= render 'oig_table' %>
+				<% elsif params[:search_state] == 'SAM' %>
+					<%= render 'sam_table' %>
+				<% end %>
+			</div>
 		</div>
 	</div>
-	<br>
-	<div class="row">
-		<div class="col-lg-12">
-			<% if params[:search_state] == 'PALS' %>
-				<%= render 'pals_table' %>
-			<% elsif params[:search_state] == 'ALASKA' %>
-				<%= render 'alaska_table' %>
-			<% elsif params[:search_state] == 'CALIFORNIA' %>
-				<%= render 'california_table' %>
-			<% elsif params[:search_state] == 'OIG' %>
-				<%= render 'oig_table' %>
-			<% elsif params[:search_state] == 'SAM' %>
-				<%= render 'sam_table' %>
-			<% end %>
-		</div>
-	</div>
-</div>
 
-<script>
-	$(document).ready(function() {
-		$('.oig').hide();
-		setInterval(function() {
-			$('select[name="search_state"]').trigger('change');
-		}, 500);
+	<script>
+		$(document).ready(function() {
+			$('.oig').hide();
+			setInterval(function() {
+				$('select[name="search_state"]').trigger('change');
+			}, 500);
 
-		$('select[name="search_state"]').change(function() {
-			if ($(this).val() == 'OIG' || $(this).val() == 'SAM') {
-				$('.oig').show();
-			} else {
-				$('.oig').hide();
-			}
+			$('select[name="search_state"]').change(function() {
+				if ($(this).val() == 'OIG' || $(this).val() == 'SAM') {
+					$('.oig').show();
+				} else {
+					$('.oig').hide();
+				}
+			});
 		});
-	});
-</script>
+	</script>
+<% end %>

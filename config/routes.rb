@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   get 'client-portal', to: 'pages#client_portal'
   get 'virtual-review-committee', to: 'pages#virtual_review_committee'
   get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
-  get 'provider-source', to: 'provider_app#provider_source', as: :custom_provider_source
+  get 'provider-engage', to: 'provider_app#provider_source', as: :custom_provider_source
   get 'app-tracker', to: 'pages#app_tracker'
   get 'encompass', to: 'pages#encompass'
   get 'microsite', to: 'pages#microsite'
@@ -104,8 +104,8 @@ Rails.application.routes.draw do
   resources :missing_field_submissions
 
   # added these two resources just to make it different to pages_controller for now it doesn't have any model
-  resources :verification_platform
-  resources :office_managers, path: 'office-managers' do
+  resources :verification_platform, path: 'verification-platform'
+  resources :office_managers, path: 'group-engage' do
     collection do
       post :send_invitation
       post :bulk_remove_providers
@@ -206,13 +206,16 @@ Rails.application.routes.draw do
   end
   resources :settings do
     collection do
-      resources :users
       resources :roles
-      resources :role_based_accesses, only: [:index], path: 'role-based-access' do
-        member do
-          post :update_access
-        end
-      end
+      resources :users
+    end
+  end
+  resources :role_based_accesses, only: [:index], path: 'role-based-access' do
+    member do
+      post :update_access
+    end
+    collection do
+      post :delete_role
     end
   end
   resources :pals_verifications, only: [:index], path: 'pals-verification'

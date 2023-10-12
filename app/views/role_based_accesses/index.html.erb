@@ -1,3 +1,23 @@
+<style>
+	h5:hover {
+		color: black!important;
+	}
+	.padding-10 {
+		padding: 10px;
+	}
+	.padding-5 {
+		padding: 5px;
+	}
+	.padding-25 {
+		padding-left: 25px;
+		padding-right: 25px;
+	}
+	h5 {
+		margin: 0;
+	}
+</style>
+
+
 <div class="content container-fluid">
 	<div class="row mb-4">
 		<div class="col-lg-12 d-flex justify-content-end gap-2">
@@ -5,100 +25,648 @@
 			<a href="javascript:void(0);" class="btn btn-md border-0 <%= enrollment_nav_active('role_based_accesses')%>">Role Access</a>
 		</div>
 	</div>
-	<div class="row mb-3">
-		<div class="col-lg-12">
-			<h2>
-				Role-Based Access
-			</h2>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<div class="col-lg-6">
-			<%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
-				<%= form.select :role_based, options_for_select(current_user.allowed_roles, params[:role_based]), { prompt: 'Select Role' }, {:class => 'form-select', required: true,  onchange: 'this.form.submit();'}  %>
-			<% end %>
-		</div>
-	</div>
-	<br>
-	<div class="row">
-		<div class="col-lg-12">
-			<table class="table table table-striped table-bordered table-responsive">
-				<thead>
-					<tr>
-						<th scope="col" class="bg-primary text-white">Page</th>
-						<th scope="col" class="bg-primary text-white">Full Access
-							<%= check_box_tag "role_based_can_read"%>
-						</th>
-						<!-- <th scope="col" class="bg-primary text-white">Create
-							<%= check_box_tag "role_based_can_create"%>
-						</th>
-						<th scope="col" class="bg-primary text-white">Update
-							<%= check_box_tag "role_based_can_update"%>
-						</th>
-						<th scope="col" class="bg-primary text-white">Delete
-							<%= check_box_tag "role_based_can_delete"%>
-						</th> -->
-					</tr>
-				</thead>
-				<tbody>
-					<% RoleBasedAccess.where(role: @role_based).each do |role_based| %>
-					<tr>
-						<td><%= role_based.page.titleize %></td>
-						<td>
-							<%= check_box_tag "role_based[#{role_based.id}][can_read]", 1, role_based.can_read, class: 'role-based-access can-read' %>
-						</td>
-						<!-- <td>
-							<%= check_box_tag "role_based[#{role_based.id}][can_create]", 1, role_based.can_create, class: 'role-based-access can-create' %>
-						</td>
-						<td>
-							<%= check_box_tag "role_based[#{role_based.id}][can_update]", 1, role_based.can_update, class: 'role-based-access can-update' %>
-						</td>
-						<td>
-							<%= check_box_tag "role_based[#{role_based.id}][can_delete]", 1, role_based.can_delete, class: 'role-based-access can-delete' %>
-						</td> -->
-					</tr>
-					<% end %>
-				</tbody>
-			</table>
-		</div>
-	</div>
 </div>
 
-<% content_for :js do %>
-<script>
-	$(document).on('change', '.role-based-access', function() {
-  var checkbox = $(this);
-  var checkboxValue = checkbox.is(':checked');
-  var roleId = checkbox.attr('name').match(/\[([^[\]]+)\]/)[1];
-  var attributeName = checkbox.attr('name').match(/\]\[([^[\]]+)\]$/)[1];
-		var update_url = "/settings/role-based-access/"+roleId+"/update_access";
+<%= render 'user_restriction', locals: { access_key: 'Role Access' } do %>
+	<div class="content container-fluid">
+		<div class="row mb-3">
+			<div class="col-lg-12">
+				<h2>
+					Role-Based Access
+				</h2>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-6">
+				<%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
+					<%= form.select :role_based, options_for_select(current_user.allowed_roles, @role_based), { prompt: 'Select Role' }, {:class => 'form-select', required: true,  onchange: 'this.form.submit();'}  %>
+				<% end %>
+				<%= link_to 'Delete Role', 'javascript::void(0)', class: 'btn-danger text-white rounded mt-2 btn btn-xs', id: 'delete-role' if current_user.can_access?('Delete Role') %>
+			</div>
+		</div>
+		<br>
 
-		$.post(update_url, {authenticity_token: $('meta[name="csrf-token"]').attr('content'), attribute_name: attributeName, attribute_value: checkboxValue});
-});
+		<% if @role_based %>
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card rounded shadow-lg p-3 mb-3">
+						<%= render partial: "global_components/collapsible_sidebar_header_with_checkbox", locals: { title: 'Overview', collapse_name: 'role_access_overview'} %>
+						<div class="collapsible" style="<%= can_view?('Overview', @role_based) ? '' : 'display: none;' %>">
+						</div>
+					</div>
+					<div class="card rounded shadow-lg p-3 mb-3">
+						<%= render partial: "global_components/collapsible_sidebar_header_with_checkbox", locals: { title: 'Dashboard', collapse_name: 'role_access_dashbord'} %>
+						<div class="collapsible mt-3" style="<%= can_view?('Dashboard', @role_based) ? '' : 'display: none;' %> ">
+							<div class="row">
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Data Access' %>
+											</h5>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Decision Point' %>
+											</h5>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="card rounded shadow-lg p-3 mb-3">
+						<%= render partial: "global_components/collapsible_sidebar_header_with_checkbox", locals: { title: 'Provider Engage', collapse_name: 'role_access_provider_engage'} %>
+					</div>
+					<div class="card rounded shadow-lg p-3 mb-3">
+						<%= render partial: "global_components/collapsible_sidebar_header_with_checkbox", locals: { title: 'Group Engage', collapse_name: 'role_access_group_engage'} %>
 
-$('#role_based_can_read').on('change', function(){
- var isChecked = $(this).is(':checked');
- $('.can-read').prop('checked', isChecked);
-	$('.can-read').trigger('change');
-});
+						<div class="collapsible mt-3" style="<%= can_view?('Group Engage', @role_based) ? '' : 'display: none;' %> ">
+							<div class="row">
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= @role_based %>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Manage Provider' %>
+											</h5>
+										</div>
+										<div class="padding-25">
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Send Invite' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Add Provider' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Remove Provider' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Manage Application' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Remove Location' %>
+												</h5>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Manage Practice' %>
+											</h5>
+										</div>
+										<div class="padding-25">
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Edit Organization' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Add Location' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Edit Location' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Associate Providers' %>
+												</h5>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="card rounded shadow-lg p-3 mb-3">
+						<%= render partial: "global_components/collapsible_sidebar_header_with_checkbox", locals: { title: 'Enrollment Dashboard', collapse_name: 'role_access_enrollment_dashboard'} %>
+						<div class="collapsible mt-3" style="<%= can_view?('Enrollment Dashboard', @role_based) ? '' : 'display: none;' %> ">
+							<div class="row" style="min-height: 150px">
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'ED Dashboard', replace_title: 'Dashboard' %>
+											</h5>
+										</div>
+										<div class="padding-25">
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Groups' %>
+											</h5>
+										</div>
+										<div class="padding-25">
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Group Details' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Group Enrollment' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Group Documents' %>
+												</h5>
+											</div>
+											<div>
+												<div class="padding-5">
+													<h5>
+														<%= HtmlUtils.role_based_access_checkbox title: 'Location' %>
+													</h5>
+												</div>
+												<div class="padding-25">
+													<div class="padding-5">
+														<h5>
+															<%= HtmlUtils.role_based_access_checkbox title: 'Location Details' %>
+														</h5>
+													</div>
+												</div>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Group Providers', replace_title: 'Providers' %>
+												</h5>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Provider Data' %>
+											</h5>
+										</div>
+										<div class="padding-25">
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Provider Profile' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Provider Enrollment Details' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Uploaded Documents' %>
+												</h5>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row mt-2" style="min-height: 150px">
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Reports' %>
+											</h5>
+										</div>
+										<div class="padding-25">
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Notifications' %>
+											</h5>
+										</div>
+										<div class="padding-25">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="card rounded shadow-lg p-3 mb-3">
+						<%= render partial: "global_components/collapsible_sidebar_header_with_checkbox", locals: { title: 'Enrollment Tracking', collapse_name: 'role_access_enrollment_tracking'} %>
+						<div class="collapsible mt-3" style="<%= can_view?('Enrollment Tracking', @role_based) ? '' : 'display: none;' %> ">
+							<div class="row" style="min-height: 150px">
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'ET Overview', replace_title: 'Overview' %>
+											</h5>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Providers' %>
+											</h5>
+										</div>
+										<div class="padding-25">
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Add New Provider' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Edit Provider' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Delete Provider' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'View Provider Sidebar' %>
+												</h5>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Enrollment' %>
+											</h5>
+										</div>
+										<div class="padding-25">
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Add New Enrollment' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Edit Enrollment' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Delete Enrollment' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'View Enrollment Sidebar' %>
+												</h5>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row mt-2" style="min-height: 150px">
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Group' %>
+											</h5>
+										</div>
+										<div class="padding-25">
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Add New Group' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Edit Group' %>
+												</h5>
+											</div>
+											<div>
+												<div class="padding-5">
+													<h5>
+														<%= HtmlUtils.role_based_access_checkbox title: 'Delete Group' %>
+													</h5>
+												</div>
+												<div class="padding-25">
+													<div class="padding-5">
+														<h5>
+															<%= HtmlUtils.role_based_access_checkbox title: 'Add New Location' %>
+														</h5>
+													</div>
+													<div class="padding-5">
+														<h5>
+															<%= HtmlUtils.role_based_access_checkbox title: 'Edit Location' %>
+														</h5>
+													</div>
+													<div class="padding-5">
+														<h5>
+															<%= HtmlUtils.role_based_access_checkbox title: 'Delete Location' %>
+														</h5>
+													</div>
+													<div class="padding-5">
+														<h5>
+															<%= HtmlUtils.role_based_access_checkbox title: 'View Location Sidebar' %>
+														</h5>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'ET Notification', replace_title: 'Notification' %>
+											</h5>
+										</div>
+										<div class="padding-25">
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Missing Required Fields', replace_title: 'Missing Required Fields are submitted' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Missing Documents', replace_title: 'Missing Documents are submitted' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Provider Group Updated', replace_title: 'New Provider/Group form is updated' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Provider Group Deleted', replace_title: 'New Provider/Group form is deleted' %>
+												</h5>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="card rounded shadow-lg p-3 mb-3">
+						<%= render partial: "global_components/collapsible_sidebar_header_with_checkbox", locals: { title: 'Verification Platform', collapse_name: 'role_access_verification_platform'} %>
+						<div class="collapsible mt-3" style="<%= can_view?('Verification Platform', @role_based) ? '' : 'display: none;' %> ">
+							<div class="row">
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Client Home' %>
+											</h5>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Manage Client' %>
+											</h5>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Manage Practitioner' %>
+											</h5>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="mt-3 row">
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Manage Tools' %>
+											</h5>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Query Report' %>
+											</h5>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Work Tickler' %>
+											</h5>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="mt-3 row">
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Manage DB' %>
+											</h5>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Autoverify' %>
+											</h5>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="card rounded shadow-lg p-3 mb-3">
+						<% if @role_based == 'super_administrator' %>
+						<code>Role Based Access is always enable to Super Admin</code>
+						<% else %>
+							<%= render partial: "global_components/collapsible_sidebar_header_with_checkbox", locals: { title: 'Role Based Access', collapse_name: 'role_access_role_based_access'} %>
+						<% end %>
 
-$('#role_based_can_create').on('change', function(){
- var isChecked = $(this).is(':checked');
- $('.can-create').prop('checked', isChecked);
-	$('.can-create').trigger('change');
-});
+						<div class="collapsible mt-3" style="<%= can_view?('Role Based Access', @role_based) ? '' : 'display: none;' %>">
+							<div class="row">
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Users' %>
+											</h5>
+										</div>
+										<div class="padding-25">
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Add New User' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Add New Role' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Edit User' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Delete User' %>
+												</h5>
+											</div>
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Select Role' %>
+												</h5>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<% if @role_based != 'super_administrator' %>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Role Access' %>
+												<% end %>
+											</h5>
+										</div>
+										<div class="padding-25">
+											<!-- <div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Edit Access' %>
+												</h5>
+											</div> -->
+											<div class="padding-5">
+												<h5>
+													<%= HtmlUtils.role_based_access_checkbox title: 'Delete Role' %>
+												</h5>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!-- <div class="col-lg-4">
+									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
+										<div class='row d-flex align-items-center padding-5'>
+											<h5>
+												<%= HtmlUtils.role_based_access_checkbox title: 'Associate Location' %>
+											</h5>
+										</div>
+										<div class="padding-25">
+										</div>
+									</div>
+								</div> -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		<% end %>
 
-$('#role_based_can_update').on('change', function(){
- var isChecked = $(this).is(':checked');
- $('.can-update').prop('checked', isChecked);
-	$('.can-update').trigger('change');
-});
+	</div>
+	<% content_for :js do %>
+	<script>
+		$(document).on('change', '.role-based-access', function() {
+		var checkbox = $(this);
+		var checkboxValue = checkbox.is(':checked');
+			var attributeName = checkbox.attr('name')
+			var roleId = checkbox.data('id');
+			var update_url = "/role-based-access/"+roleId+"/update_access";
+			var collapsible_link = $(this).parent().parent().find('a.collapsible-trigger');
 
-$('#role_based_can_delete').on('change', function(){
- var isChecked = $(this).is(':checked');
- $('.can-delete').prop('checked', isChecked);
-	$('.can-delete').trigger('change');
-});
+			$.post(update_url, {authenticity_token: $('meta[name="csrf-token"]').attr('content'), attribute_name: attributeName, attribute_value: checkboxValue});
 
-</script>
+			// find closest anchor with class collapsible-trigger and click it
+			// verify if collapsible_link exists
+			if(collapsible_link.length > 0){
+				collapsible_link.trigger('click');
+			}
+
+	});
+
+	$('#role_based_can_read').on('change', function(){
+	var isChecked = $(this).is(':checked');
+	$('.can-read').prop('checked', isChecked);
+		$('.can-read').trigger('change');
+	});
+
+	$('#role_based_can_create').on('change', function(){
+	var isChecked = $(this).is(':checked');
+	$('.can-create').prop('checked', isChecked);
+		$('.can-create').trigger('change');
+	});
+
+	$('#role_based_can_update').on('change', function(){
+	var isChecked = $(this).is(':checked');
+	$('.can-update').prop('checked', isChecked);
+		$('.can-update').trigger('change');
+	});
+
+	$('#role_based_can_delete').on('change', function(){
+	var isChecked = $(this).is(':checked');
+	$('.can-delete').prop('checked', isChecked);
+		$('.can-delete').trigger('change');
+	});
+
+	$('#delete-role').on('click', function(){
+		// add confirm first
+		if(!confirm('Are you sure you want to delete this role?')){
+			return false;
+		}
+		var role_id = $('#role_based').val();
+		var delete_url = "<%= delete_role_role_based_accesses_path %>";
+
+		$.ajax({
+			url: delete_url,
+			type: 'post',
+			data: {authenticity_token: $('meta[name="csrf-token"]').attr('content'), role: role_id},
+			success: function(data){
+				window.location.href = "/role-based-access";
+			},
+			error: function(response){
+				alert(response.responseText)
+			}
+		});
+
+	});
+	</script>
+	<% end %>
 <% end %>
