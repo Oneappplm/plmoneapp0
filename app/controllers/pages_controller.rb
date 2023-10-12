@@ -281,7 +281,7 @@ class PagesController < ApplicationController
 	def redirect_to_default_page
 		redirect_to_filtered_page(current_user.default_page) if current_user.default_page.present? && current_user.default_page != 'overview'
 
-		render 'shared/access_denied' and return if current_user.default_page.blank?
+		render partial: 'shared/access_denied' and return if current_user.default_page.blank?
 	end
 
   def build_initial_associations

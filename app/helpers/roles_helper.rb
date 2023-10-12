@@ -28,7 +28,7 @@ module RolesHelper
 		when 'provider_app'
 			redirect_to custom_provider_source_path
 		else
-			render 'shared/access_denied' and return
+			render partial: 'shared/access_denied' and return
 		end
 	end
 end
