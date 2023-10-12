@@ -4,6 +4,14 @@
 	<td><%= practice_location.city %></td>
 	<td><%= practice_location.zip_code %></td>
 	<td><%= practice_location.phone_number %></td>
-	<td><a href=""  data-bs-toggle="modal" data-bs-target=".associateProviderModal">Provider</a></td>
-	<td><a href=""><i class='bx bx-edit' ></i></a></td>
+	<td>
+		<% if current_user.can_access?('Associate Providers') %>
+			<a href=""  data-bs-toggle="modal" data-bs-target=".associateProviderModal">Provider</a>
+		<% end %>
+	</td>
+	<td>
+		<% if current_user.can_access?('Edit Location')%>
+			<a href=""><i class='bx bx-edit' ></i></a>
+		<% end %>
+	</td>
 </tr>

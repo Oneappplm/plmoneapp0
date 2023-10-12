@@ -2,6 +2,7 @@ class AltEnrollmentGroupsController < ApplicationController
   before_action :get_enrollment_group, only: [:show, :locations, :documents, :enrollments, :providers]
   before_action :get_enroll_groups, only: [:enrollments]
   before_action :get_enrollment_group_providers, only: [:providers]
+
   def show; end
 
   def documents; end
@@ -24,6 +25,5 @@ class AltEnrollmentGroupsController < ApplicationController
   def get_enrollment_group_providers
     @providers = @enrollment_group.providers
     @providers = @providers.paginate(per_page: 50, page: params[:page] || 1)
-
   end
 end

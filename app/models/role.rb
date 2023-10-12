@@ -1,9 +1,11 @@
 class Role < ApplicationRecord
- validates :name, uniqueness: true, presence: true
- before_validation :set_slug, on: :create
+  validates :name, uniqueness: true, presence: true
+  before_validation :set_slug, on: :create
 	before_validation :strip_whitespace, only: [:name],	on: :create
 	after_create :generate_role_based_access
 	after_destroy :delete_role_based_access
+
+	has_many :role_based_access, class_name: 'RoleBasedAccess', foreign_key: 'role', primary_key: 'slug', dependent: :destroy
 
 	class << self
 		def load_data

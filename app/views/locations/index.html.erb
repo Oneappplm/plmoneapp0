@@ -1,46 +1,48 @@
-
 <div class="content container-fluid">
   <%= render "alt_enrollment_groups/nav"%>
-
-<div class="row">
-  <% if !@enrollment_group.dcos.blank? %>
-  <table class="table table table-striped table-bordered table-responsive">
-    <thead>
-          <tr>
-                  <th scope="col" class="bg-primary text-white" width="10%">
-                    <div class="form-check">
-                      <div class="align-items-center">
-                        <input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
+</div>
+<%= render 'user_restriction', locals: { access_key: 'Location' } do %>
+<div class="content container-fluid">
+  <div class="row">
+    <% if !@enrollment_group.dcos.blank? %>
+    <table class="table table table-striped table-bordered table-responsive">
+      <thead>
+            <tr>
+                    <th scope="col" class="bg-primary text-white" width="10%">
+                      <div class="form-check">
+                        <div class="align-items-center">
+                          <input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
+                        </div>
                       </div>
-                    </div>
-                  </th>
-                  <th scope="col" class="bg-primary text-white">Primary Location</th>
-                  <th scope="col" class="bg-primary text-white">Location Name</th>
-                  <th scope="col" class="bg-primary text-white">Address</th>
-                  <th scope="col" class="bg-primary text-white">State</th>
-                  <th scope="col" class="bg-primary text-white">Number of Providers</th>
+                    </th>
+                    <th scope="col" class="bg-primary text-white">Primary Location</th>
+                    <th scope="col" class="bg-primary text-white">Location Name</th>
+                    <th scope="col" class="bg-primary text-white">Address</th>
+                    <th scope="col" class="bg-primary text-white">State</th>
+                    <th scope="col" class="bg-primary text-white">Number of Providers</th>
 
-          </tr>
-  </thead>
-  <tbody>
-    <% @enrollment_group.dcos.each do |dco| %>
-      <tr>
-        <td>
-          <div class="form-check">
-            <div class="align-items-center">
-              <input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
+            </tr>
+    </thead>
+    <tbody>
+      <% @enrollment_group.dcos.each do |dco| %>
+        <tr>
+          <td>
+            <div class="form-check">
+              <div class="align-items-center">
+                <input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
+              </div>
             </div>
-          </div>
-        </td>
-        <td><%= link_to dco.primary_location, alt_enrollment_group_location_path(@enrollment_group, dco), class: 'text-dark-grey' %></td>
-        <td><%= link_to dco.dco_name, alt_enrollment_group_location_path(@enrollment_group, dco), class: 'text-dark-grey' %></td>
-        <td><%= link_to dco.dco_address, alt_enrollment_group_location_path(@enrollment_group, dco), class: 'text-dark-grey' %></td>
-        <td><%= link_to dco&.state, alt_enrollment_group_location_path(@enrollment_group, dco), class: 'text-dark-grey' %></td>
-        <td><%= link_to "#{dco&.providers&.count} Provider(s)", alt_enrollment_group_location_path(@enrollment_group, dco), class: 'text-dark-grey' rescue "0 Provider(s)" %></td>
-      </tr>
+          </td>
+          <td><%= link_to dco.primary_location, alt_enrollment_group_location_path(@enrollment_group, dco), class: 'text-dark-grey' %></td>
+          <td><%= link_to dco.dco_name, alt_enrollment_group_location_path(@enrollment_group, dco), class: 'text-dark-grey' %></td>
+          <td><%= link_to dco.dco_address, alt_enrollment_group_location_path(@enrollment_group, dco), class: 'text-dark-grey' %></td>
+          <td><%= link_to dco&.state, alt_enrollment_group_location_path(@enrollment_group, dco), class: 'text-dark-grey' %></td>
+          <td><%= link_to "#{dco&.providers&.count} Provider(s)", alt_enrollment_group_location_path(@enrollment_group, dco), class: 'text-dark-grey' rescue "0 Provider(s)" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+    </table>
     <% end %>
-  </tbody>
-  </table>
-  <% end %>
+  </div>
 </div>
-</div>
+<% end %>
