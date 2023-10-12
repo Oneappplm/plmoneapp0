@@ -1,40 +1,44 @@
 <div class="content container-fluid">
 	<%= render "enrollment_tracking_components/enrollment_nav"%>
-	<div class="row mb-3">
-		<div class="col-lg-12">
-			<h2>
-				<a href="<%= groups_path %>" class="d-flex gap-2 text-secondary">
-				<i class="bi bi-arrow-left"></i>
-				<span><%= @enrollment_group.group_name %></span>
-				</a>
-			</h2>
-
-		</div>
-	</div>
-	<div class="row mb-3">
-		<div class="col-lg-6">
-			<%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
-			<div class="">
-				<input type="text" name="dco_search" placeholder="Search by Location Name" value="<%= params[:dco_search] %>" class="form-control">
-				<i class="bi bi-search"></i>
-			</div>
-			<% end %>
-		</div>
-		<div class="col-lg-6 d-flex justify-content-end">
-			<a href="<%= new_group_dco_path(@enrollment_group) %>" class="d-flex btn btn-primary btn-md">
-				<i class="bi bi-plus-lg me-1"></i>
-				<span>Add Location</span>
-			</a>
-		</div>
-	</div>
-	<br>
-	<div class="row">
-		<div class="col-lg-12">
-			<% if current_setting.qualifacts? %>
-				<%= render 'dcos/qualifacts/table' %>
-			<% else %>
-				<%= render "table"%>
-			<% end %>
-		</div>
-	</div>
 </div>
+	<div class="content container-fluid">
+		<div class="row mb-3">
+			<div class="col-lg-12">
+				<h2>
+					<a href="<%= groups_path %>" class="d-flex gap-2 text-secondary">
+					<i class="bi bi-arrow-left"></i>
+					<span><%= @enrollment_group.group_name %></span>
+					</a>
+				</h2>
+
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-lg-6">
+				<%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
+				<div class="">
+					<input type="text" name="dco_search" placeholder="Search by Location Name" value="<%= params[:dco_search] %>" class="form-control">
+					<i class="bi bi-search"></i>
+				</div>
+				<% end %>
+			</div>
+			<div class="col-lg-6 d-flex justify-content-end">
+				<% if current_user.can_access?('Add New Location') %>
+					<a href="<%= new_group_dco_path(@enrollment_group) %>" class="d-flex btn btn-primary btn-md">
+						<i class="bi bi-plus-lg me-1"></i>
+						<span>Add Location</span>
+					</a>
+				<% end %>
+			</div>
+		</div>
+		<br>
+		<div class="row">
+			<div class="col-lg-12">
+				<% if current_setting.qualifacts? %>
+					<%= render 'dcos/qualifacts/table' %>
+				<% else %>
+					<%= render "table"%>
+				<% end %>
+			</div>
+		</div>
+	</div>

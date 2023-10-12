@@ -1,20 +1,24 @@
 <div class="content container-fluid">
-   <%= render "enrollment_clients/nav"%>
-   <%= render "enrollment_clients/show/provider_info"%>
-   <%#= render "enrollment_clients/show/admitting_privileges"%>
-   <%= render "enrollment_clients/show/professional_medical_school"%>
-   <%#= render "enrollment_clients/show/service_location"%>
-   <%= render "enrollment_clients/show/board_certification"%>
-    <% @provider.payer_logins.each_with_index do |payer_login, idx|%>
-    <%= render partial: "enrollment_clients/show/payer_login_card", locals: {title: "#{@provider.payer_logins.size > 1 ? ('Provider Data Portals ' + (idx+1).to_s) : 'Provider Data Portals' }", payer_login: payer_login} %>
-   <% end %>
-   <%= render "enrollment_clients/show/caqh_card"%>
-   <%= render "enrollment_clients/show/licenses"%>
-   <%= render "enrollment_clients/show/licenses/liability"%>
-   <%= render "enrollment_clients/show/client"%>
-
-   <% @provider&.group_dcos&.each_with_index do |dco,idx| %>
-     <%= render partial: "enrollment_clients/show/group_dco", locals: {title: "#{@provider&.group_dcos&.size > 1 ? ('Location ' + (idx+1).to_s) : 'Location' }", dco: dco} %>
-   <% end %>
-
+  <%= render "enrollment_clients/nav"%>
 </div>
+<%= render 'user_restriction', locals: { access_key: 'Provider Profile' } do %>
+  <div class="content container-fluid">
+    <%= render "enrollment_clients/show/provider_info"%>
+    <%#= render "enrollment_clients/show/admitting_privileges"%>
+    <%= render "enrollment_clients/show/professional_medical_school"%>
+    <%#= render "enrollment_clients/show/service_location"%>
+    <%= render "enrollment_clients/show/board_certification"%>
+      <% @provider.payer_logins.each_with_index do |payer_login, idx|%>
+      <%= render partial: "enrollment_clients/show/payer_login_card", locals: {title: "#{@provider.payer_logins.size > 1 ? ('Credentialing Platform ' + (idx+1).to_s) : 'Credentialing Platform' }", payer_login: payer_login} %>
+    <% end %>
+    <%= render "enrollment_clients/show/caqh_card"%>
+    <%= render "enrollment_clients/show/licenses"%>
+    <%= render "enrollment_clients/show/licenses/liability"%>
+    <%= render "enrollment_clients/show/client"%>
+
+    <% @provider&.group_dcos&.each_with_index do |dco,idx| %>
+      <%= render partial: "enrollment_clients/show/group_dco", locals: {title: "#{@provider&.group_dcos&.size > 1 ? ('Location ' + (idx+1).to_s) : 'Location' }", dco: dco} %>
+    <% end %>
+
+  </div>
+<% end %>

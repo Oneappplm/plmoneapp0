@@ -13,7 +13,7 @@
          <div class="navbar-vertical-content">
             <div id="navbarVerticalMenu" class="nav nav-pills nav-vertical card-navbar-nav px-0">
                <!-- Collapse -->
-               <% if can_view?('overview') %>
+               <% if current_user.can_access?('overview') %>
                <div class="nav-item mb-2 nav-item-active">
                   <!-- ph-active -->
                   <a class="nav-link <%= active_menu('pages', 'dashboard') %>" href="<%= root_path %>">
@@ -23,7 +23,7 @@
                </div>
                <% end %>
 
-               <% if can_view?('client_portal') %>
+               <% if current_user.can_access?('client_portal') %>
                <div class="nav-item mb-2">
                   <div class="d-flex with-submenu align-items-center justify-content-between pe-3 <%= active_menu('pages,users', 'client_portal,virtual_review_committee,data_access,all_users,new') %>">
                       <a class="nav-link has-submenu" href="javascript:void(0);" data-placement="left" data-submenu="client_submenu">
@@ -75,7 +75,7 @@
                   <span class="nav-link-title">Virtual Review Committee</span>
                   </a>
                </div> -->
-               <% if can_view?('provider_app') %>
+               <% if current_user.can_access?('provider_app') %>
                <div class="nav-item mb-2">
                   <a class="nav-link <%= active_menu('pages', 'provider_source') %>" href="<%= custom_provider_source_path %>" data-placement="left">
                      <!-- <i class="bi-receipt nav-icon"></i> -->
@@ -85,7 +85,7 @@
                </div>
                <% end %>
 
-               <% if can_view?('office_manager') %>
+               <% if current_user.can_access?('office_manager') %>
                <div class="nav-item mb-2">
                   <a class="nav-link <%= active_menu('office_managers', 'index') %>" href="<%= office_managers_path %>" data-placement="left">
                      <!-- <i class="bi-receipt nav-icon"></i> -->
@@ -97,7 +97,7 @@
 
 
 
-               <% if can_view?('enrollment_clients') && current_setting.plmhealthoneapp? || current_setting.qualifacts? %>
+               <% if current_user.can_access?('enrollment_clients') && current_setting.plmhealthoneapp? || current_setting.qualifacts? %>
                <div class="nav-item mb-1">
                   <a class="nav-link <%= active_menu('enrollment_clients', 'index') %> <%= active_menu('index') %>" href="<%= enrollment_clients_path %>" data-placement="left">
                      <!-- <i class="bi-receipt nav-icon"></i> -->
@@ -108,7 +108,7 @@
                </div>
                <% end %>
 
-               <% if can_view?('enrollment_tracking') && current_setting.plmhealthoneapp? || !current_setting.hvhs? %>
+               <% if current_user.can_access?('enrollment_tracking') && current_setting.plmhealthoneapp? || !current_setting.hvhs? %>
                <div class="nav-item mb-2">
                   <a class="nav-link <%= active_menu('providers,enrollments,enrollment_providers,enroll_groups') %>" href="<%= overview_providers_path %>" data-placement="left">
                      <i class="bi bi-person nav-icon"></i>
@@ -117,7 +117,7 @@
                </div>
                <% end %>
 
-               <% if can_view?('verification_platform') && current_setting.plmhealthoneapp? || !current_setting.qualifacts? %>
+               <% if current_user.can_access?('verification_platform') && current_setting.plmhealthoneapp? || !current_setting.qualifacts? %>
                <div class="nav-item mb-1">
                   <a class="nav-link <%= active_menu('verification_platform', 'index') %> <%= active_menu('manage_tools') %>" href="<%= verification_platform_index_path %>" data-placement="left">
                      <!-- <i class="bi-receipt nav-icon"></i> -->
@@ -128,7 +128,7 @@
                </div>
                <% end %>
 
-               <% if can_view?('plm_sales_tool') %>
+               <% if current_user.can_access?('plm_sales_tool') %>
                <div class="nav-item mb-2">
                   <a class="nav-link <%= active_menu('pages', 'plm_sales_tool') %> d-none" target="_blank" href="<%= plm_sales_tool_path %>" data-placement="left">
                      <!-- <i class="bi-layers nav-icon"></i> -->
@@ -139,7 +139,7 @@
                </div>
                <% end %>
 
-               <% if can_view?('smart_contract') %>
+               <% if current_user.can_access?('smart_contract') %>
                <div class="nav-item mb-2">
                   <a class="nav-link <%= active_menu('pages', 'smart_contract') %> text-muted d-none" href="javascript:void(0);" data-placement="left">
                      <!-- <i class="bi-layers nav-icon"></i> -->
@@ -151,8 +151,10 @@
                </div>
                <% end %>
 
-               <% if current_user&.super_administrator? && can_view?('settings') %>
+               <% if current_user&.super_administrator? %>
                <div class="nav-item mb-2">
+
+                  <% if current_user.can_access?('settings') %>
                   <div class="d-flex with-submenu align-items-center justify-content-between pe-3 <%= active_menu('role_based_accesses,roles') %>">
                      <a class="nav-link has-submenu" href="javascript:void(0);" data-placement="left" data-submenu="settings_submenu">
                         <i class="bi bi-gear nav-icon"></i>
@@ -161,8 +163,10 @@
                      <svg xmlns="http://www.w3.org/2000/svg" id="settings_submenu_chevron" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="open_submenu <%= chevron_active('role_based_accesses,roles') %>" data-toopen="settings_submenu" style="width: 20px;height: auto;">
                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                      </svg>
-                 </div>
+                  </div>
+                  <% end %>
 
+                 <% if current_user.can_access?('role_based_access') %>
                  <div id="settings_submenu" class="sub_menu <%= active_submenu('role_based_accesses')%> mt-3">
                      <ul>
                         <li class="d-flex gap-2 align-items-center <%= active_submenu_link('users')%>">
@@ -175,7 +179,8 @@
                            <span></span><a href="<%= role_based_accesses_path %>">Role-Based Access</a>
                         </li>
                      </ul>
-                  </div>
+                 </div>
+                 <% end %>
                </div>
                <% end %>
               <!--  <div class="nav-item mb-2">

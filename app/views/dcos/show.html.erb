@@ -1,44 +1,47 @@
 <div class="content container-fluid">
-<%= render "enrollment_tracking_components/enrollment_nav"%>
-
-  <div class="row mb-3">
-    <div class="col-lg-12">
-      <h2>
-        <a href="<%= groups_path %>" class="d-flex gap-2 text-secondary">
-        <i class="bi bi-arrow-left"></i>
-        <span><%= @enrollment_group.group_name %></span>
-        </a>
-      </h2>
-
-    </div>
-  </div>
-  <div class="row mb-3">
-    <div class="col-lg-6">
-      <%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
-      <div class="">
-        <input type="text" name="dco_search" placeholder="Search" value="<%= params[:dco_search] %>" class="form-control">
-        <i class="bi bi-search"></i>
-      </div>
-      <% end %>
-    </div>
-    <div class="col-lg-6 d-flex justify-content-end">
-      <a href="<%= new_group_dco_path(@enrollment_group) %>" class="d-flex btn btn-primary btn-md">
-        <i class="bi bi-plus-lg me-1"></i>
-        <span>Add Location</span>
-      </a>
-    </div>
-  </div>
-<div class="row mb-3">
-   <div class="col-lg-9">
-      <% if current_setting.qualifacts? %>
-				<%= render 'dcos/qualifacts/table' %>
-			<% else %>
-				<%= render "table"%>
-			<% end %>
-   </div>
-<% if current_setting.qualifacts? %>
-   <%= render 'dcos/qualifacts/sidebar' %>
-<% else %>
-   <%= render 'sidebar' %>
-<% end %>
+  <%= render "enrollment_tracking_components/enrollment_nav"%>
 </div>
+<%= render 'user_restriction', locals: { access_key: 'View Location Sidebar' } do %>
+  <div class="content container-fluid">
+    <div class="row mb-3">
+      <div class="col-lg-12">
+        <h2>
+          <a href="<%= groups_path %>" class="d-flex gap-2 text-secondary">
+          <i class="bi bi-arrow-left"></i>
+          <span><%= @enrollment_group.group_name %></span>
+          </a>
+        </h2>
+
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
+        <div class="">
+          <input type="text" name="dco_search" placeholder="Search" value="<%= params[:dco_search] %>" class="form-control">
+          <i class="bi bi-search"></i>
+        </div>
+        <% end %>
+      </div>
+      <div class="col-lg-6 d-flex justify-content-end">
+        <a href="<%= new_group_dco_path(@enrollment_group) %>" class="d-flex btn btn-primary btn-md">
+          <i class="bi bi-plus-lg me-1"></i>
+          <span>Add Location</span>
+        </a>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-9">
+          <% if current_setting.qualifacts? %>
+            <%= render 'dcos/qualifacts/table' %>
+          <% else %>
+            <%= render "table"%>
+          <% end %>
+      </div>
+    <% if current_setting.qualifacts? %>
+      <%= render 'dcos/qualifacts/sidebar' %>
+    <% else %>
+      <%= render 'sidebar' %>
+    <% end %>
+  </div>
+<% end %>

@@ -14,6 +14,7 @@ class OfficeManagersController < ApplicationController
       render params[:template]
     else
       clean_empty_providers
+
       if params[:practice_location_id].present? && params[:practice_location_id] == 'All Location'
         redirect_to office_managers_path
       end
