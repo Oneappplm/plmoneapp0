@@ -275,6 +275,7 @@ end
 					:board_specialty_type,
 					:supervising_name,
 					:supervising_npi,
+					:primary_location,
 					:welcome_letter_status, :welcome_letter_subject, :welcome_letter_message, :check_welcome_letter, :check_co_caqh, :check_mn_caqh_state_release_form, :check_mn_caqh_authorization_form, :check_caqh_standard_authorization,
 					{ welcome_letter_attachments: [], state_license_copies: [], dea_copies: [], w9_form_copies: [], certificate_insurance_copies: [], driver_license_copies: [], board_certification_copies: [], caqh_app_copies: [], cv_copies: [], telehealth_license_copies: [] },
 					#taxonomies_attributes: [:id, :taxonomy_code, :specialty, :_destroy],
