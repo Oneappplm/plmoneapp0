@@ -1,0 +1,78 @@
+<h1><%= params[:page ]%></h1>
+<div class="content container-fluid ps-0">
+   <%= render "provider_source_components/top_buttons"%>
+   <div  class="row">
+      <div class="col-lg-3">
+         <%= render "provider_source_components/sub_navbar"%>
+      </div>
+      <div class="col-lg-9">
+         <div class="row border border-4 p-3">
+            <div class="col-lg-12">
+               <%= render partial: "provider_source_components/header_title", locals: {title: "Education and Training", icon: 'bi-mortarboard-fill'}%>
+               <%#= render partial: "provider_source_components/progress_bar", locals: {percent: 0}%>
+               <% steps = [['Education','inactive', custom_provider_source_path(page: 'education_training'), 'education_progress_v2'],
+                  # ['Practice Location','inactive', custom_provider_source_path(page: 'practice_location')],
+                  # ['Employment Gap','active', custom_provider_source_path(page: 'employment_gap')],
+                  ['Training','inactive', custom_provider_source_path(page: 'training'), 'training_progress_v2'],
+                  ['Teaching Appointments','inactive', custom_provider_source_path(page: 'teaching_appointments'), 'teaching_appointments_progress_v2'],
+                  ['Continuing Medical Education', 'active', custom_provider_source_path(page: 'medical_education'), 'medical_education_progress']
+                  ]%>
+               <%= render partial: "provider_source_components/progress_bar", locals: { steps: steps }%>
+               <%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
+            </div>
+            <div class="col-lg-12">
+               <div class="row">
+                  <div class="col-lg-12">
+                     <div class="d-flex justify-content-between mt-3 mb-1">
+                        <label class="form-label">Have you received CME or CEU credit(s) during the past two years? <span class="text-danger">*</span></label>
+                        <div class="d-flex me-4 gap-2">
+                           <span>
+                           <input type="radio" value="yes" class="radio-with-form" data-form="cme_forms" name="cme_credit">
+                           <span>YES</span>
+                           </span>
+                           <span>
+                           <input type="radio" value="no" class="radio-with-form" data-form="cme_forms" name="cme_credit">
+                           <span>NO</span>
+                           </span>
+                        </div>
+                     </div>
+                  </div>
+                  <div id="cme_forms" class="row <%= @provider.fetch('cme_credit') == 'yes' ? '' : 'd-none'%>">
+                   <% if !@provider.cmes&.reload&.blank? %>
+                      <% @provider&.cmes&.reload&.each do |cme|%>
+                        <%= render partial: "pages/provider_source/cme_fields", locals: {cme: cme}%>
+                      <% end %>
+                    <% end %>
+                    <div class="col-lg-12 ps-0">
+                      <a href="<%= custom_provider_source_path(page: 'medical_education', add_new: 'cme') %>" class="btn btn-sm btn-primary">Add New CME/CEU Credit</a>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-12 card py-3 my-3">
+                        <h4 class="fw-semibold text-secondary">Credentials Requested</h4>
+                        <div class="row mb-3">
+                          <div class="col-lg-12">
+                            <label class="text-dark-grey">Name of Course/Training<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control border-dark" name="cme_requested_credentials" placeholder="Type here...">
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<% if params[:add_new].present? or params[:remove_record]%>
+<script>
+  setTimeout(removeAddNewInURL, 3000);
+  function removeAddNewInURL() {
+    // this is added to remove the add_new parameter in URL to prevent creating
+    // new association when page is reloaded
+    history.pushState(null, null, '/provider-source?page=medical_education');
+  }
+</script>
+<% end %>

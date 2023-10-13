@@ -576,6 +576,10 @@ function saveInputMultiRecord(input) {
     model = $('#schedules-'+id).data('model');
   }
 
+  if(input.is(':radio')) {
+    field = input.data('altname');
+  }
+
   // alert(content);
   $.ajax({
     url: url,
@@ -584,9 +588,11 @@ function saveInputMultiRecord(input) {
     data: { authenticity_token: csrfToken, model: model, id: id, content: content, field: field },
     success: function (data) {
       console.log('Autosaved successfully!');
+      getProgress();
     },
     error: function() {
       console.log('Autosave failed!');
+      
     }
   })
 }
@@ -925,7 +931,7 @@ function displayFieldsFromMultiSelectElement(data, inputName, tagName){
   } else if(['hp_hospitals', 'hp_hospitals'].includes(inputName)){
     path = '<%= hospitals_multi_select_data_path %>';
    } else if(['populations_served', 'population_serviced'].includes(inputName)){
-    path = '<%= serviced_populations_multi_select_data_path %>';  
+    path = '<%= serviced_populations_multi_select_data_path %>';
   } else if(['hp_directories', 'hp_directories'].includes(inputName)){
     path = '<%= directories_multi_select_data_path %>';
     multiselect = false
@@ -942,7 +948,6 @@ function displayFieldsFromMultiSelectElement(data, inputName, tagName){
     path = '<%= method_resolutions_multi_select_data_path %>';
     multiselect = false
   }
-  
 
   // add more else if here for multi-select
 
@@ -1041,8 +1046,8 @@ $(document).on('ready',function() {
   });
 
   $('.full-sched-radio').on('change', function(){
-    var sched_id = $(this).data('id');
-    ($(this).val() == 'no') ? $('#record_tarea-'+sched_id).removeClass('d-none') : $('#record_tarea-'+sched_id).addClass('d-none');
+    var tarea_id = $(this).data('textarea');
+    ($(this).val() == 'no') ? $('#'+tarea_id).removeClass('d-none') : $('#'+tarea_id).addClass('d-none');
   })
 })
 var page_group = '';
