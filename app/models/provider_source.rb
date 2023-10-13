@@ -3,6 +3,7 @@ class ProviderSource < ApplicationRecord
   has_many  :documents, class_name: 'ProviderSourceDocument', inverse_of: :provider_source, dependent: :destroy
   has_many :deas, class_name: 'ProviderSourcesDea', inverse_of: :provider_source, dependent: :destroy
   has_many :cds, class_name: 'ProviderSourcesCds', inverse_of: :provider_source, dependent: :destroy
+  has_many :cmes, class_name: 'ProviderSourceCme', inverse_of: :provider_source, dependent: :destroy
   has_many :registrations, class_name: 'ProviderSourcesRegistration', inverse_of: :provider_source, dependent: :destroy
 
   accepts_nested_attributes_for :deas, allow_destroy: true, reject_if: :all_blank
@@ -427,6 +428,25 @@ class ProviderSource < ApplicationRecord
     false
   end
 
+  def medical_education_progress
+    percentage = 0
+    total_cme_fields_with_answer = []
+    total_cme_fields = self&.cmes.pluck(:training,:month_attended,:year_attended,:hours).flatten
+    total_cme_fields_with_answer << self.fetch('cme_requested_credentials')
+    total_cme_fields_with_answer = total_cme_fields&.compact&.reject(&:empty?)
+    if self.fetch("cme_credit") == 'yes'
+       percentage = (total_cme_fields_with_answer.count.to_f/total_cme_fields.count.to_f) * 100
+      # percentage = 50
+    else
+      if !self.fetch('cme_requested_credentials').blank?
+        percentage = 100
+      end
+    end
+    percentage.to_i
+  rescue
+    0
+  end
+
   def affiliation_info_progress
     percentage = 0
     prerequisites = [ 'has_admitting_arrangement', 'has_hospital_privilege']
@@ -573,7 +593,7 @@ class ProviderSource < ApplicationRecord
 
   def work_history_employment_gap_progress
     percentage = 0
-    prerequisites = []
+    prerequisites = ['has_employment_gap']
     with_prerequisites = ['work_history_employment_gap_fields']
 
     values = fetch_many(prerequisites)&.pluck(:data_value)
@@ -854,6 +874,10 @@ class ProviderSource < ApplicationRecord
 
   def create_registration
     ProviderSourcesRegistration.create(provider_source_id: self.id)
+  end
+
+  def create_cme
+    ProviderSourceCme.create(provider_source_id: self.id)
   end
 
   private

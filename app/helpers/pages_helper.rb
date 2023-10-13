@@ -45,6 +45,8 @@ module PagesHelper
         'disclosure_progress_v2'
       elsif ['professional_liability'].include?(page)
         'professional_liability_progress_v2'
+      elsif ['medical_education'].include?(page)
+        'medical_education_progress'
       end
     end
   end

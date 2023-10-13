@@ -34,7 +34,8 @@ class ProviderSourcesController < ApplicationController
 
   def get_progress
     data_group = params[:data_group]
-    @provider = ProviderSource.current
+    @provider = ProviderSource.current_provider_source_by_current_user(current_user.id)
+
     progress = @provider.send(data_group)
 
     respond_to do |format|
@@ -54,6 +55,8 @@ class ProviderSourcesController < ApplicationController
       ProviderSourcesCds.find(id)
     elsif model == 'registration'
       ProviderSourcesRegistration.find(id)
+    elsif model == 'cme'
+      ProviderSourceCme.find(id)
     end
 
     record.update_attribute(field,content)

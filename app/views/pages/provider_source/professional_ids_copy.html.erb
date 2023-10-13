@@ -1,0 +1,277 @@
+<div class="content container-fluid ps-0">
+	<%= render "provider_source_components/top_buttons"%>
+	<div  class="row">
+		<div class="col-lg-3">
+			<%= render "provider_source_components/sub_navbar"%>
+		</div>
+		<div class="col-lg-9">
+			<div class="row border border-4 p-3">
+				<div class="col-lg-12">
+					<%= render partial: "provider_source_components/header_title", locals: {title: "Professional IDs", icon: 'bi-person-badge-fill'}%>
+					<%#= render partial: "provider_source_components/progress_bar", locals: {percent: (@provider.professional_ids_progress)}%>
+          <% steps = [['Registration IDs','active', custom_provider_source_path(page: 'professional_ids'), 'registration_ids_progress'],
+                     ['Licensure','inactive', custom_provider_source_path(page: 'licensure'), 'licensure_progress'],
+                     ['Other IDs and Cerfifications','inactive', custom_provider_source_path(page: 'other_ids'), 'other_ids_certifications_progress'],
+            ]%>
+
+
+        <%= render partial: "provider_source_components/progress_bar", locals: { steps: steps }%>
+            <%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
+				</div>
+				<div class="col-lg-12 card py-3 my-3">
+					<h4 class="fw-semibold text-secondary">NPI ID</h4>
+					<div class="form-group">
+						<label class="text-dark-grey">National Practitioner Identification (NPI) Number (e.g. 10 digits, 1234567890, Individual NPI only)</label>
+						<input type="text" name="npi_number" class="form-control border-dark">
+					</div>
+				</div>
+				<div class="col-lg-12 card py-3 mb-3">
+					<h4 class="fw-semibold text-secondary">DEA</h4>
+					<div class="d-flex gap-2 align-items-center my-3">
+									<%#= HtmlUtils.radio_toggle name: 'has_dea_registration_number',
+										label: 'Do/Did you have a DEA Registration Number <span class="text-danger"> *</span>',
+										toshow: 'dea_form',
+										hidden_field: true
+								%>
+                <div class="d-flex gap-2">
+                  <input type="radio" name="has_dea_registration_number" class="radio-with-form has-textarea textarea-no" data-textarea="no_dea_explanation" data-form='dea_form' value="no" >
+                  <span>NO</span>
+                </div>  
+
+                <div class="d-flex gap-2">
+                  <input type="radio" name="has_dea_registration_number" class="radio-with-form  has-textarea textarea-no" data-form='dea_form' data-textarea="no_dea_explanation" value="yes" checked='checked'>
+                  <span>YES</span>
+                </div>
+					</div>
+					<!-- <div class="<%#= toggle_hide_current_provider_source('has_dea_registration_number', @provider) %>" id="dea_form">
+						<%#= render partial: 'provider_source_components/dea_form'%>
+					</div> -->
+
+
+        <div class="<%= toggle_hide_current_provider_source('has_dea_registration_number', @provider) %>" id="dea_form">
+         <% if !@provider.deas&.reload&.blank? %>
+          <% @provider&.deas&.reload&.each do |dea|%>
+            <%= render partial: "pages/provider_source/dea_fields", locals: {dea: dea}%>
+          <% end %>
+        <% end %>
+
+
+
+      <div class="col-lg-12">
+          <div class="d-flex justify-content-between my-3">
+             <label class="form-label">Full Schedule (2 2N 3 3N 4 5)?</label>
+             <div class="d-flex me-4 gap-2">
+                <span>
+                <input type="radio" value="yes" class="radio-with-textarea" data-textarea="dea_tarea" name="dea_full_schedule">
+                <span>YES</span>
+                </span>
+                <span>
+                <input type="radio" value="no" class="radio-with-textarea" data-textarea="dea_tarea" name="dea_full_schedule">
+                <span>NO</span>
+                </span>
+             </div>
+          </div>
+      </div>
+
+      <div id="dea_tarea" class="<%= @provider.fetch('dea_full_schedule') == 'no' ? '' : 'd-none'%>">
+            <div class="col-lg-12">
+              <label class="text-dark-grey">Please explain schedule limitations</label>
+              <textarea name="dea_no" class="form-control border-dark" rows="8"></textarea>
+            </div>
+            <div class="col-lg-12 mt-3">
+              <% scheds = ['2', '2N', '3', '3N', '4', '5'] %>
+              <h5>Select Schedule(s) Held</h5>
+              <div class="d-flex gap-2">
+                <% scheds.each do |sched| %>
+                <label class="text-dark-grey">
+                  <input type="checkbox" name="sched_<%= sched %>" value="<%= sched %>" class="multi-field">
+                  <strong><%= sched %></strong>
+                </label>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <div class="row my-3">
+          <div class="col-lg-12 text-center">
+            <a  href="<%= custom_provider_source_path(page: 'professional_ids', add_new: 'dea') %>" class="btn btn-primary btn-sm">Add New DEA</a>
+          </div>
+        </div>
+        </div>
+   
+        <div id="no_dea_explanation" class="<%= (@provider.fetch('has_dea_registration_number') == 'yes') ? 'd-none' : ''%>">
+              <label class="text-dark-grey">Please explain why you do not have a DEA Registration Number</label>
+              <textarea class="form-control" name="no_dea_explanation"></textarea>
+        </div>
+				</div>
+
+				<div class="col-lg-12 card py-3 mb-3">
+					<h4 class="fw-semibold text-secondary mb-3">CDS</h4>
+					<div class="d-flex align-items-center my-3 gap-2">
+              <%#= HtmlUtils.radio_toggle name: 'has_cds_registration_number',
+                label: 'Do/Did you have a CDS Registration Number? <span class="text-danger"> *</span>',
+                toshow: 'cds_form',
+                hidden_field: true
+              %>
+                <div class="d-flex gap-2">
+                  <input type="radio" name="has_cds_registration_number" class="radio-with-form has-textarea textarea-no" data-textarea="ps-cds-registration-number"  data-form='cds_form' value="no">
+                  <span>NO</span>
+                </div>
+
+                <div  class="d-flex gap-2">
+                  <input type="radio" name="has_cds_registration_number" class="radio-with-form has-textarea textarea-no" data-textarea="ps-cds-registration-number" data-form='cds_form' value="yes">
+                  <span>YES</span>
+                </div>
+					</div>
+
+
+        <div class="<%= toggle_hide_current_provider_source('has_cds_registration_number',@provider)%>" id="cds_form">
+         <% if !@provider.cds.blank? %>
+          <% @provider&.cds&.reload&.each do |cds|%>
+            <%= render partial: "pages/provider_source/cds_fields", locals: {cds: cds}%>
+          <% end %>
+        <% end %>
+
+
+
+        <div class="col-lg-12">
+            <div class="d-flex justify-content-between my-3">
+               <label class="form-label">Full Schedule?</label>
+               <div class="d-flex me-4 gap-2">
+                  <span>
+                  <input type="radio" value="yes"  class="radio-with-textarea" data-textarea="cds_tarea" name="cds_full_schedule">
+                  <span>YES</span>
+                  </span>
+                  <span>
+                  <input type="radio" value="no"  class="radio-with-textarea" data-textarea="cds_tarea" name="cds_full_schedule">
+                  <span>NO</span>
+                  </span>
+               </div>
+            </div>
+        </div>
+
+        <div id="cds_tarea" class="<%= @provider.fetch('cds_full_schedule') == 'no' ? '' : 'd-none'%>">
+            <div class="col-lg-12">
+              <label class="text-dark-grey">Please explain schedule limitations</label>
+              <textarea name="cds_no" class="form-control border-dark" rows="8"></textarea>
+            </div>
+          </div>
+
+         <div class="row my-3">
+          <div class="col-lg-12 text-center">
+            <a  href="<%= custom_provider_source_path(page: 'professional_ids', add_new: 'cds') %>" class="btn btn-primary btn-sm">Add New CDS</a>
+          </div>
+        </div>
+        </div>
+   
+        <div id="ps-cds-registration-number" class="<%= (@provider.fetch('has_cds_registration_number') == 'yes') ? 'd-none' : ''%>">
+              <label class="text-dark-grey">Please explain why you do not have a CDS Registration Number</label>
+              <textarea class="form-control" name="ps-cds-registration-number"></textarea>
+        </div>
+				   <!-- <div class="<%#= toggle_hide_current_provider_source('has_cds_registration_number',@provider)%>" id="cds_form">
+						<%#= render partial: 'provider_source_components/cds_form'%>
+					</div>
+ -->
+				<!-- 	<div id="cds_tarea">
+						<div class="row">
+							<div class="col-lg-12">
+								<label class="text-dark-grey">Please explain why you do not have a CDS Registration Number.</label>
+								<textarea name="ps-cds-registration-number" class="form-control border-dark" rows="8"></textarea>
+							</div>
+						</div>
+					</div> -->
+				</div>
+
+		<!-- 		<div class="col-lg-12 card py-3 mb-3">
+					<h4 class="fw-semibold text-secondary mb-3">Other IDs</h4>
+					<div class="alert alert-info alert-light-blue">
+						<i class="bi bi-info-circle" style="font-size: 20px;"></i>
+						<br>
+						<small>Identification number assigned by TRICARE, a government agency designated to provider healthcare for military personel</small>
+						<small>Identification number assigned by United States Medical Licensing Examination (Do not enter hyphen)</small>
+						<small>Identification number assigned by United States Department of Labor</small>
+					</div>
+					<div class="row mb-2">
+						<div class="col-lg-6">
+							<div class="form-group">
+								<input type="text" name="tricare-provider-number" placeholder="TRICARE Provider Number" class="form-control border-dark">
+							</div>
+						</div>
+						<div class="col-lg-6">
+							<div class="form-group">
+								<input type="text" name="usmle-number" placeholder="USMLE Number" class="form-control border-dark">
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-6">
+							<div class="form-group">
+								<input type="text" name="workers-compensation-number" placeholder="Workers Compensation Number" class="form-control border-dark">
+							</div>
+						</div>
+					</div>
+				</div> -->
+
+				<div class="col-lg-12 card py-3 mb-3 ">
+					<h4 class="fw-semibold text-secondary">Registration</h4>
+					<div class="d-flex align-items-center my-3 gap-2" >
+							<%#= HtmlUtils.radio_toggle name: 'registration_id_form',
+								label: 'Do/Did you have a registration number related to your practicing specialty? <span class="text-danger"> *</span>',
+								toshow: 'registration_ids_form',
+								hidden_field: true
+							%>
+                <div class="d-flex gap-2">
+                  <input type="radio" name="registration_id_form" class="radio-with-form" data-form='registration_ids_form' value="no">
+                  <span>NO</span>
+                </div>
+
+                <div  class="d-flex gap-2">
+                  <input type="radio" name="registration_id_form" class="radio-with-form" data-form='registration_ids_form' value="yes">
+                  <span>YES</span>
+                </div>
+					</div>
+
+
+
+          <div class="<%#= toggle_hide_current_provider_source('registration_id_form', @provider) %>" id="registration_ids_form">
+             <% if !@provider.registrations.blank? %>
+            <% @provider&.registrations&.reload&.each do |registration|%>
+              <%= render partial: "pages/provider_source/registration_fields", locals: {registration: registration}%>
+              <hr>
+            <% end %>
+          <% end %>
+
+
+         <div class="row my-3">
+          <div class="col-lg-12 text-center">
+            <a  href="<%= custom_provider_source_path(page: 'professional_ids', add_new: 'registration') %>" class="btn btn-primary btn-sm">Add New Registration</a>
+          </div>
+        </div>
+        </div>
+					<!-- <div class="<%#= toggle_hide_current_provider_source('registration_id_form', @provider) %>" id="registration_ids_form">
+						<%#= render partial: 'provider_source_components/prof_registration_form'%>
+					</div> -->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<% if params[:add_new].present? or params[:remove_record]%>
+<script>
+  setTimeout(removeAddNewInURL, 3000);
+  function removeAddNewInURL() {
+    // this is added to remove the add_new parameter in URL to prevent creating
+    // new association when page is reloaded
+    history.pushState(null, null, '/provider-source?page=professional_ids');
+  }
+</script>
+<% end %>
+<script>
+  $(document).ready(function() {
+    $('.radio-with-textarea').on('change',function() {
+        var id = $(this).data('textarea');
+        $(this).val() == 'no' ? $('#'+id).removeClass('d-none') : $('#'+id).addClass('d-none');
+    })
+  })
+</script>

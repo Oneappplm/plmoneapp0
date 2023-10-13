@@ -288,17 +288,21 @@ class PagesController < ApplicationController
     @provider.create_dea if @provider&.deas&.reload&.blank?
     @provider.create_cds if @provider&.cds&.reload&.blank?
     @provider.create_registration if @provider&.registrations&.reload&.blank?
+    @provider.create_cme if @provider&.cmes&.reload&.blank?
   end
 
   def new_association(model)
     @provider.create_dea if model == 'dea'
     @provider.create_cds if model == 'cds'
     @provider.create_registration if model == 'registration'
+    @provider.create_cme if model == 'cme'
   end
 
   def delete_association_record(model, id)
     ProviderSourcesDea.delete(id) if model == 'dea'
     ProviderSourcesCds.delete(id) if model == 'cds'
     ProviderSourcesRegistration.delete(id) if model == 'registration'
+    ProviderSourceCme.delete(id) if model == 'cme'
+
   end
 end
