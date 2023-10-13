@@ -41,14 +41,14 @@
 
             </div>
             <div class="col-xl-6">
-                <label class="text-dark-grey">Date of Birth</label>
-                <%= form.date_field :date_of_birth, class: 'form-control border-dark', placeholder: 'MM-DD-YYYY' %>
+                <label class="text-dark-grey">Date of Birth <span class="text-red">*</span></label>
+                <%= form.date_field :date_of_birth, class: 'form-control border-dark', placeholder: 'MM-DD-YYYY', required:true %>
             </div>
         </div>
         <div class="row mb-3 mx-2">
             <div class="col-xl-6">
-                <label class="text-dark-grey" for="social-security-number">Social Security Number</label>
-                <%= form.text_field :social_security_number , class:"form-control border-dark", placeholder:"Type here..."%>
+                <label class="text-dark-grey" for="social-security-number">Social Security Number <span class="text-red">*</span></label>
+                <%= form.text_field :social_security_number , class:"form-control border-dark", placeholder:"Type here...", required: true %>
             </div>
         </div>
 
@@ -60,20 +60,20 @@
             </div>
             <div class="row mx-2 mb-3">
                 <div class="col-xl-3">
-                    <label class="text-dark-grey">First Name <span class="text-red">*</span></label>
-                   <%= form.text_field :first_name , class:"form-control border-dark", placeholder:"Type here...", required: true%>
+                    <label class="text-dark-grey">First Name </label>
+                    <%= form.text_field :first_name_of_credentialing_contact , class:"form-control border-dark", placeholder:"Type here..." %>
                 </div>
                 <div class="col-xl-3">
                     <label class="text-dark-grey">Middle Name</label>
-                   <%= form.text_field :middle_name , class:"form-control border-dark", placeholder:"Type here..."%>
+                    <%= form.text_field :middle_name_of_credentialing_contact , class:"form-control border-dark", placeholder:"Type here..." %>
                 </div>
                 <div class="col-xl-4">
-                    <label class="text-dark-grey">Last Name <span class="text-red">*</span></label>
-                   <%= form.text_field :last_name , class:"form-control border-dark", placeholder:"Type here...", required: true%>
+                    <label class="text-dark-grey">Last Name </label>
+                    <%= form.text_field :last_name_of_credentialing_contact , class:"form-control border-dark", placeholder:"Type here..." %>
                 </div>
                 <div class="col-xl-2">
                     <label class="text-dark-grey">Suffix</label>
-                    <%= form.select :suffix, options_for_select([ 'Jr.', 'Sr.', 'II', 'III', 'IV', 'V']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
+                    <%= form.select :suffix_of_credentialing_contact, options_for_select([ 'Jr.', 'Sr.', 'II', 'III', 'IV', 'V']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
 
                 </div>
             </div>
@@ -124,9 +124,8 @@
                     <%= form.text_field :county, class: 'form-control border-dark', placeholder: 'Type here...' %>
                 </div>
                 <div class="col-xl-6">
-                    <label class="text-dark-grey">State/Provience</label>
-                    <%= form.select :state_or_province, options_for_select([ 'UP', 'MP', 'MH']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
-
+                    <label class="text-dark-grey">State/Province</label>
+                    <%= form.select :state_or_province, options_for_select(State.where.not(name: [nil, '']).pluck(:name, :name)), { prompt: 'Select Option' }, { class: 'form-select border border-dark ' , id:"state-type-select"} %>
                 </div>
             </div>
             <div class="row mb-3 mx-2">
@@ -136,21 +135,18 @@
                 </div>
                 <div class="col-xl-6">
                     <label class="text-dark-grey">Country</label>
-                    <%= form.select :country, options_for_select([ 'India', 'Alaska', 'Australia']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
-
-                </div>
+                  <%= form.select :country, options_for_select(ManageClient::COUNTRIES), { prompt: 'Select Option' }, { class: 'form-select', id: 'country-type-select' } %>
+                </div>  
             </div>
         </div>
-
         <!-- Send Notification to Credentialing Contact Container -->
 
         <div class="row mb-3 mx-2 mt-5">
             <div class="col-xl-6">
                 <label class="text-dark-grey">Practitioner Type</label>
-                    <%= form.select :practitioner_type, options_for_select([ 'India', 'Alaska', 'Australia']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
-
-            </div>  
-            <div class="col-xl-6">
+                <%= form.select :practitioner_type, options_for_select(ProviderType.where.not(fch: [nil, '']).pluck(:fch, :fch)),{ prompt: 'Select Option' }, { class: 'form-select', id: 'practitioner-type-select' } %>
+            </div> 
+                <div class="col-xl-6">
                 <label class="text-dark-grey">Credentials Committee Date </label>
                 <%= form.date_field :credentials_committee_date, class: 'form-control border-dark', placeholder: 'MM-DD-YYYY' %>
             </div>
@@ -178,17 +174,17 @@
         <div class="row mb-3 mx-2">
             <div class="col-xl-6">
                     <label class="text-dark-grey">Status</label>
-                    <%= form.select :status, options_for_select([ 'Active', 'Unactive']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
+                    <%= form.select :status, options_for_select([ ' Credential (Appointment)', 'Recredential (Reappointment)']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
             </div>  
              <div class="col-xl-6">
                     <label class="text-dark-grey">Application Method</label>
-                     <%= form.select :application_method, options_for_select([ 'Active', 'Unactive']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
+                     <%= form.select :application_method, options_for_select([ 'Paper', 'Online']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
             </div> 
         </div>
         <div class="row mb-3 mx-2">
             <div class="col-xl-6">
                     <label class="text-dark-grey">Available to be on call?</label>
-                    <%= form.select :availability, options_for_select([ 'Active', 'Unactive']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
+                    <%= form.select :availability, options_for_select([ 'Yes', 'No']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
 
             </div>   
         </div>
@@ -203,3 +199,52 @@
     </div>
 <% end %>
 </div>
+
+<style>
+  #country-type-select{
+    width: 100%;
+  }
+
+  #state-type-select{
+    width: 100%;
+  }
+
+  #practitioner-type-select {
+        width: 100%;
+  }
+
+  .select2-selection__rendered {
+    padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+    background-color: white; /* Background color */
+    border: 1px solid black; /* Border color */
+    border-radius: 0.25rem;
+  }
+
+  .select2-selection__placeholder {
+    color: black;
+  }
+</style>
+
+<script>
+  $(document).ready(function() {
+    $('#country-type-select').select2({
+      placeholder: 'Select a Country ',
+      allowClear: true,
+    });
+  });
+
+   $(document).ready(function() {
+    $('#practitioner-type-select').select2({
+      placeholder: 'Select a practitioner ',
+      allowClear: true,
+    });
+  });
+
+
+   $(document).ready(function() {
+    $('#state-type-select').select2({
+      placeholder: 'Select a State/Province ',
+      allowClear: true,
+    });
+  });
+</script>

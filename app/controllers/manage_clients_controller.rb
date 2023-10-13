@@ -1,6 +1,7 @@
 class ManageClientsController < ApplicationController
 
   def index
+    @practitioners = Practitioner.page(params[:page]).per(20)
   end
 
   def new 
@@ -23,6 +24,7 @@ class ManageClientsController < ApplicationController
            :contact_method, :phone_number, :fax_number, :email_address, :address, :suit_or_apt, 
            :additional_address, :city, :country, :state_or_province, :zipcode, :practitioner_type,
            :credentials_committee_date, :credentials_batch_date, :client_batch_name, :client_batch_id,
-           :market, :status, :application_method, :availability, :county) 
+           :market, :status, :application_method, :availability, :county, :first_name_of_credentialing_contact,
+           :middle_name_of_credentialing_contact, :last_name_of_credentialing_contact, :suffix_of_credentialing_contact) 
   end 
 end
