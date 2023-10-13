@@ -45,7 +45,7 @@ class Import::ProviderTypesService < ApplicationService
 					end
 				end
 			elsif version == 3
-				ProviderType.destroy_all
+					ProviderType.destroy_all
 				data.each_with_index do |sheet, index|
 					if index > 0
 						next if sheet.compact.size == 0

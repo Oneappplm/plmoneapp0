@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_10_105527) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_12_124119) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -652,6 +652,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_10_105527) do
     t.string "collab_npi"
     t.boolean "is_primary_location"
     t.date "effective_date"
+    t.string "location_status"
     t.index ["enrollment_group_id"], name: "index_group_dcos_on_enrollment_group_id"
   end
 
@@ -869,6 +870,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_10_105527) do
     t.string "application_method"
     t.string "availability"
     t.string "county"
+    t.string "first_name_of_credentialing_contact"
+    t.string "middle_name_of_credentialing_contact"
+    t.string "last_name_of_credentialing_contact"
+    t.string "suffix_of_credentialing_contact"
   end
 
   create_table "privilege_statuses", force: :cascade do |t|
