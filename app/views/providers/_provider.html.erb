@@ -1,14 +1,51 @@
 <tr>
-		<th scope="row"><%= link_to provider.provider_name, (action_name == "index" ? provider_path(provider) : providers_path), class: 'text-secondary' %></th>
-		<td><%= link_to provider.practitioner_type, (action_name == "index" ? provider_path(provider) : providers_path), class: 'text-secondary'%></td>
-		<td><%= link_to provider.npi,  (action_name == "index" ? provider_path(provider) : providers_path), class: 'text-secondary' %>
-			<div class="d-flex gap-2" style="float:right;">
-  <%= link_to edit_provider_path(provider), class: 'btn btn-xs btn-primary' do %>
-    <i class="bi bi-pencil"></i>
-  <% end %>
- <%= button_to provider_path(provider), method: :delete, class: 'btn btn-xs btn-danger delete-button', data: { confirm: 'Are you sure you want to delete this provider?' }, id: "delete-provider-#{provider.id}" do %>
-    <i class="bi bi-trash"></i>
-  <% end %>
-</div>
-		</td>
+  <td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true"><%=provider.provider_name%></a></td>
+  <td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true"><%=provider.practitioner_type%></a></td>
+  <td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true"><%=provider.npi %></a>
+    <div class="d-flex gap-2" style="float:right;">
+      <%= link_to edit_provider_path(provider), class: 'btn btn-xs btn-primary' do %>
+        <i class="bi bi-pencil"></i>
+      <% end %>
+      <%= button_to provider_path(provider), method: :delete, class: 'btn btn-xs btn-danger delete-button', data: { confirm: 'Are you sure you want to delete this provider?' }, id: "delete-provider-#{provider.id}" do %>
+        <i class="bi bi-trash"></i>
+      <% end %>
+    </div>
+  </td>
 </tr>
+
+<% content_for :js do %>
+  <script>
+    $(document).ready(function() {
+      var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+      $('.show-provider-button').on('click', function() {
+        if($('#provider-sidebar').length) {
+          var container = $('#show-provider-container');
+          container.html("")
+          container.removeClass('col-lg-4')
+          $('tr').removeClass('bg-medium-grey')
+        } else {
+          var provider_id = $(this).data("provider-id");
+          getProvider(provider_id);
+          $(this).parent().closest('tr').addClass('bg-medium-grey')
+        }
+      });
+
+      function getProvider(provider_id) {
+        $.ajax({
+          url: '<%= get_provider_path %>',
+          method: 'GET',
+          data: { authenticity_token: csrfToken, provider_id: provider_id },
+          success: function(data) {
+            console.log(data)
+            var container = $('#show-provider-container');
+            container.addClass('col-lg-4')
+            container.html(data.html)
+            // console.log(el)
+            // element.parent('tr').addClass('bg-medium-grey')
+          }
+        })
+      }
+    });
+  </script>
+<% end %>

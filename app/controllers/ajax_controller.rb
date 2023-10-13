@@ -212,6 +212,11 @@ class AjaxController < ApplicationController
     }
   end
 
+  def get_provider
+    @provider = Provider.find(params[:id] || params[:provider_id])
+    render json: { html: render_to_string(partial: 'providers/show', locals: { provider: @provider }).html_safe }
+  end
+
   def get_selected_providers
     enrollment_provider = EnrollmentProvider.find(params[:enrollment_provider_id])
     selected_providers = (enrollment_provider.selected_providers || [])
