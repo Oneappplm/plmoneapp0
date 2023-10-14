@@ -17,9 +17,7 @@
   <script>
     $(document).ready(function() {
       var csrfToken = $('meta[name="csrf-token"]').attr('content');
-
-      $('.show-provider-button').on('click', function() {
-        $('.show-provider-button').attr('disabled', true);
+      $('.show-provider-button').off().on('click', function() {
         if($('#provider-sidebar').length) {
           var container = $('#show-provider-container');
           container.html("")
@@ -41,11 +39,9 @@
             $('.loading-overlay').show(); //
           },
           success: function(data) {
-            console.log(data)
             var container = $('#show-provider-container');
             container.addClass('col-lg-4')
             container.html(data.html)
-            $('.show-provider-button').attr('disabled', false);
             $('.loading-overlay').hide(); //
           }
         })
