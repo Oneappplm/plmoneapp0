@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_07_032819) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_13_132124) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -439,27 +439,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_07_032819) do
     t.index ["enrollment_group_id"], name: "index_enrollment_groups_details_on_enrollment_group_id"
   end
 
-<<<<<<< HEAD
-=======
-  create_table "enrollment_groups_svc_locations", force: :cascade do |t|
-    t.bigint "enrollment_groups_id"
-    t.string "primary_service_non_office_area"
-    t.string "primary_service_location_apps"
-    t.string "primary_service_zip_code"
-    t.string "primary_service_office_email"
-    t.string "primary_service_fax"
-    t.string "primary_service_office_website"
-    t.string "primary_service_crisis_phone"
-    t.string "primary_service_location_other_phone"
-    t.string "primary_service_appt_scheduling"
-    t.string "primary_service_interpreter_language"
-    t.string "primary_service_telehealth_only_state"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["enrollment_groups_id"], name: "index_enrollment_groups_svc_locations_on_enrollment_groups_id"
-  end
-
->>>>>>> 05a699d4 (Feature: Role Based Access V2)
   create_table "enrollment_payers", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -673,6 +652,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_07_032819) do
     t.string "collab_npi"
     t.boolean "is_primary_location"
     t.date "effective_date"
+    t.string "location_status"
+    t.string "location_npi"
+    t.string "location_tin"
     t.index ["enrollment_group_id"], name: "index_group_dcos_on_enrollment_group_id"
   end
 
@@ -890,6 +872,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_07_032819) do
     t.string "application_method"
     t.string "availability"
     t.string "county"
+    t.string "first_name_of_credentialing_contact"
+    t.string "middle_name_of_credentialing_contact"
+    t.string "last_name_of_credentialing_contact"
+    t.string "suffix_of_credentialing_contact"
   end
 
   create_table "privilege_statuses", force: :cascade do |t|
@@ -1092,6 +1078,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_07_032819) do
     t.string "no_rn_license"
     t.integer "state_id"
     t.index ["provider_id"], name: "index_provider_rn_licenses_on_provider_id"
+  end
+
+  create_table "provider_source_cmes", force: :cascade do |t|
+    t.bigint "provider_source_id"
+    t.string "training"
+    t.string "month_attended"
+    t.string "year_attended"
+    t.string "hours"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_source_id"], name: "index_provider_source_cmes_on_provider_source_id"
   end
 
   create_table "provider_source_data", force: :cascade do |t|
@@ -1398,11 +1395,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_07_032819) do
     t.string "welcome_letter_subject"
     t.text "welcome_letter_message"
     t.json "welcome_letter_attachments"
-    t.boolean "check_welcome_letter", default: false
-    t.boolean "check_co_caqh", default: false
-    t.boolean "check_mn_caqh_state_release_form", default: false
-    t.boolean "check_mn_caqh_authorization_form", default: false
-    t.boolean "check_caqh_standard_authorization", default: false
     t.string "dea_not_applicable"
     t.string "cds_not_applicable"
     t.string "rn_not_applicable"
@@ -1413,6 +1405,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_07_032819) do
     t.string "rn_explain"
     t.string "cnp_explain"
     t.string "license_explain"
+    t.boolean "check_welcome_letter", default: false
+    t.boolean "check_co_caqh", default: false
+    t.boolean "check_mn_caqh_state_release_form", default: false
+    t.boolean "check_mn_caqh_authorization_form", default: false
+    t.boolean "check_caqh_standard_authorization", default: false
     t.json "state_license_copies"
     t.json "dea_copies"
     t.json "w9_form_copies"
@@ -1428,6 +1425,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_07_032819) do
     t.string "supervising_name_npi"
     t.string "supervising_name"
     t.string "supervising_npi"
+    t.string "primary_location"
   end
 
   create_table "providers_missing_field_submissions", force: :cascade do |t|
@@ -1613,15 +1611,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_07_032819) do
     t.string "otp_token"
     t.string "otp_code"
     t.datetime "otp_code_expires_at"
-<<<<<<< HEAD
     t.boolean "logout_on_close", default: false
     t.datetime "last_logout_on_close"
     t.boolean "can_access_all_groups"
-=======
-    t.boolean "can_access_all_groups"
-    t.boolean "logout_on_close", default: false
-    t.datetime "last_logout_on_close"
->>>>>>> 05a699d4 (Feature: Role Based Access V2)
     t.boolean "is_provider_account"
     t.string "accessible_provider"
     t.string "password_change_status_via_invite"
