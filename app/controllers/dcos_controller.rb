@@ -60,7 +60,7 @@ class DcosController < ApplicationController
 			:dco_provider_fax_number, :dco_provider_position, :inpatient_facility, :is_clinic,
 			:telehealth_provider, :website, :tax_id, :facility_billing_npi, :mn_medicaid_number,
 			:wi_medicaid_number, :medicare_id_ptan, :taxonomy, :telehealth_video_conferencing_technology,
-			:is_gender_affirming_treatment, :panel_size, :medicare_authorized_official, :collab_npi, :collab_name, :location_status,
+			:is_gender_affirming_treatment, :panel_size, :medicare_authorized_official, :collab_npi, :collab_name, :location_status, :location_npi, :location_tin,
 			old_location_addresses_attributes: [:id, :old_address, :old_city, :old_state, :old_county, :old_zipcode, :is_old_location_primary, :effective_date, :_destroy],
 			schedules_attributes: [:id, :day, :start_time, :end_time, :_destroy],
 			provider_outreach_info_attributes: [:id, :name, :email, :phone, :fax, :position, :_destroy]
