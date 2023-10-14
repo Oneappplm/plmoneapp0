@@ -37,12 +37,16 @@
           url: '<%= get_provider_path %>',
           method: 'GET',
           data: { authenticity_token: csrfToken, provider_id: provider_id },
+          beforeSend: function() {
+            $('.loading-overlay').show(); //
+          },
           success: function(data) {
             console.log(data)
             var container = $('#show-provider-container');
             container.addClass('col-lg-4')
             container.html(data.html)
             $('.show-provider-button').attr('disabled', false);
+            $('.loading-overlay').hide(); //
           }
         })
       }
