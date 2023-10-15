@@ -512,4 +512,21 @@ module ApplicationHelper
       ['Copy of Certificate', 'school_certificate']
     ]
   end
+
+  def month_options
+    [
+      ['January','January'],
+      ['February','February'],
+      ['March','March'],
+      ['April','April'],
+      ['May','May'],
+      ['June','June'],
+      ['July','July'],
+      ['August','August'],
+      ['September','September'],
+      ['October','October'],
+      ['November','November'],
+      ['December','December'],
+    ]
+  end
 end
