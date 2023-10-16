@@ -1,5 +1,9 @@
 class ManageClientsController < ApplicationController
 
+	def index
+    @practitioner = Practitioner.paginate(page: params[:page])
+  end
+
   def new 
     @practitioner = Practitioner.new
   end
