@@ -1,6 +1,7 @@
 class ManageClientsController < ApplicationController
 	def index
-     @practitioners = Practitioner.page(params[:page]).per(20)
+    @practitionerss = Practitioner.all
+     @practitioners = Practitioner.paginate(page: params[:page])
   end
 
   def new
