@@ -17,9 +17,11 @@ class ManageClientsController < ApplicationController
   private
   def practitioner_params
     params.require(:practitioner).permit(:first_name, :middle_name, :last_name, :suffix, :gender, :date_of_birth, :social_security_number,
-     :contact_method, :phone_number, :fax_number, :email_address, :address, :suit_or_apt, 
-     :additional_address, :city, :country, :state_or_province, :zipcode, :practitioner_type,
-     :credentials_committee_date, :credentials_batch_date, :client_batch_name, :client_batch_id,
-     :market, :status, :application_method, :availability, :county) 
-  end 
+
+    :contact_method, :phone_number, :fax_number, :email_address, :address, :suit_or_apt,
+    :additional_address, :city, :country, :state_or_province, :zipcode, :practitioner_type,
+    :credentials_committee_date, :credentials_batch_date, :client_batch_name, :client_batch_id,
+    :market, :status, :application_method, :availability, :county, :first_name_of_credentialing_contact,
+    :middle_name_of_credentialing_contact, :last_name_of_credentialing_contact, :suffix_of_credentialing_contact)
+  end
 end
