@@ -53,6 +53,7 @@ Rails.application.routes.draw do
   post 'get-selected-mixed-providers-options', to: 'ajax#get_selected_mixed_providers_options'
   get 'get-providers', to: 'ajax#get_providers'
   get 'get-provider', to: 'ajax#get_provider'
+  get 'get-client-provider-enrollment', to: 'ajax#get_client_provider_enrollment'
   post 'get-selected-providers', to: 'ajax#get_selected_providers'
   get 'get-states', to: 'ajax#get_states'
   post 'get-selected-states', to: 'ajax#get_selected_states'

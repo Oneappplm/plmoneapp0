@@ -400,116 +400,113 @@
   <%= link_to 'Download', '#', class: 'btn btn-primary' %>
 </div>
 
-<% content_for :js do %>
-  <script>
-    var deleteComment;
-    $(document).ready(function() {
-      var csrfToken = $('meta[name="csrf-token"]').attr('content');
-      var form = document.getElementById('provider-note-form');
-      form.onsubmit = function(event){
-          var title = form.elements.namedItem("title").value;
-          var description = form.elements.namedItem("description").value;
-          var provider_id = form.elements.namedItem("provider_id").value;
-          createProviderNote(provider_id, title, description, form)
-          return false;
-      }
+<script>
+  var deleteComment;
+  $(document).ready(function() {
+    var csrfToken = $('meta[name="csrf-token"]').attr('content');
+    var form = document.getElementById('provider-note-form');
+    form.onsubmit = function(event){
+        var title = form.elements.namedItem("title").value;
+        var description = form.elements.namedItem("description").value;
+        var provider_id = form.elements.namedItem("provider_id").value;
+        createProviderNote(provider_id, title, description, form)
+        return false;
+    }
 
-      $("#provider-notes-list").on("click", ".remove-dynamic-fields", function() {
-        var field = document.getElementsByClassName("provider_note");
-        if(field.length > 0) {
-          var id = $(this).data('id');
-          var model = $(this).data('model');
-          deleteDynamicAttr(id,model,$(this));
+    $("#provider-notes-list").on("click", ".remove-dynamic-fields", function() {
+      var field = document.getElementsByClassName("provider_note");
+      if(field.length > 0) {
+        var id = $(this).data('id');
+        var model = $(this).data('model');
+        deleteDynamicAttr(id,model,$(this));
+      }
+    });
+
+    function createProviderNote(provider_id, title, description, form) {
+      $.ajax({
+        url: '<%= provider_note_path %>',
+        method: 'POST',
+        data: { authenticity_token: csrfToken, data: {title: title, description: description, provider_id: provider_id} },
+        success: function(data) {
+          var container = document.getElementById('provider-notes-list');
+          var newElement = document.createElement('div')
+          newElement.innerHTML = data.html
+          container.appendChild(newElement)
+          $('#addProviderNote').modal('hide');
+          form.elements.namedItem("title").value = ""
+          form.elements.namedItem("description").value = ""
+          $('.loading-overlay').css("display", 'none')
         }
-      });
+      })
+    }
 
-      function createProviderNote(provider_id, title, description, form) {
-        $.ajax({
-          url: '<%= provider_note_path %>',
-          method: 'POST',
-          data: { authenticity_token: csrfToken, data: {title: title, description: description, provider_id: provider_id} },
-          success: function(data) {
-            var container = document.getElementById('provider-notes-list');
-            var newElement = document.createElement('div')
-            newElement.innerHTML = data.html
-            container.appendChild(newElement)
-            $('#addProviderNote').modal('hide');
-            form.elements.namedItem("title").value = ""
-            form.elements.namedItem("description").value = ""
-            $('.loading-overlay').css("display", 'none')
-          }
-        })
-      }
-      if($('body.navbar-vertical-aside-mini-mode').length == 0){
-        setTimeout(function () {$('#navbar-aside-toggler').click();}, 1000);
-      }
+    if($('body.navbar-vertical-aside-mini-mode').length == 0){
+      setTimeout(function () {$('#navbar-aside-toggler').click();}, 1000);
+    }
 
-      $('.time-line-done').on('click',function() {
-        changeTimeLineStatus($(this));
-      });
+    $('.time-line-done').on('click',function() {
+      changeTimeLineStatus($(this));
+    });
 
-      $('.time-line-options-toggle').on('click',function(){
-        $(this).parent().find('.time-line-options').toggle();
-        // $(this).parent().find('.time-line-options').removeClass('d-none');
-      });
+    $('.time-line-options-toggle').on('click',function(){
+      $(this).parent().find('.time-line-options').toggle();
+      // $(this).parent().find('.time-line-options').removeClass('d-none');
+    });
 
-      function changeTimeLineCardState(btn) {
-        var timeline_id = btn.data('timeline');
-        btn.closest('.time-line').removeClass('tl_pending');
-        btn.closest('.time-line').addClass('tl_done');
-        $('#tl_icon_'+timeline_id).find('i').remove();
-        $('#tl_icon_'+timeline_id).html('<i class="bi bi-check-circle-fill text-success"></i>');
-        btn.remove();
-      }
+    function changeTimeLineCardState(btn) {
+      var timeline_id = btn.data('timeline');
+      btn.closest('.time-line').removeClass('tl_pending');
+      btn.closest('.time-line').addClass('tl_done');
+      $('#tl_icon_'+timeline_id).find('i').remove();
+      $('#tl_icon_'+timeline_id).html('<i class="bi bi-check-circle-fill text-success"></i>');
+      btn.remove();
+    }
 
-      function changeTimeLineStatus(btn) {
-        var timeline_id = btn.data('timeline');
-        $.ajax({
-          url: '<%= update_timeline_path %>',
-          method: 'POST',
-          data:  { authenticity_token: csrfToken, timeline_id: timeline_id },
-          success: function(data) {
-            changeTimeLineCardState(btn);
-          }
-        })
-      }
-
-      $('.missing-fields-submitted-btn').on('click',function(){
-        CompleteMissingFields($(this).data('submission'),$(this));
-      });
-
-
-      function CompleteMissingFields(submission_id,btn) {
-        $.ajax({
-          url: '/missing_field_submissions/'+submission_id,
-          method: 'PUT',
-          data:  { authenticity_token: csrfToken },
-          success: function(data) {
-            var status = data['status']
-            if(status == 'done') {
-              btn.parent().find('.submission-msg').removeClass('d-none');
-              setTimeout(function(){
-                btn.parent().find('.submission-msg').addClass('d-none');
-              },3000)
-              btn.remove();
-            }
-          }
-
-        })
-      }
-
-      function deleteDynamicAttr(id,model,button) {
-          $.ajax({
-            url: '<%= delete_record_path %>',
-            method: 'POST',
-            data: { authenticity_token: csrfToken, id: id, model: model },
-            success: function(data) {
-                button.parent().parent().remove();
-            }
-          })
+    function changeTimeLineStatus(btn) {
+      var timeline_id = btn.data('timeline');
+      $.ajax({
+        url: '<%= update_timeline_path %>',
+        method: 'POST',
+        data:  { authenticity_token: csrfToken, timeline_id: timeline_id },
+        success: function(data) {
+          changeTimeLineCardState(btn);
         }
+      })
+    }
+
+    $('.missing-fields-submitted-btn').on('click',function(){
+      CompleteMissingFields($(this).data('submission'),$(this));
     });
 
 
-  </script>
-<% end %>
+    function CompleteMissingFields(submission_id,btn) {
+      $.ajax({
+        url: '/missing_field_submissions/'+submission_id,
+        method: 'PUT',
+        data:  { authenticity_token: csrfToken },
+        success: function(data) {
+          var status = data['status']
+          if(status == 'done') {
+            btn.parent().find('.submission-msg').removeClass('d-none');
+            setTimeout(function(){
+              btn.parent().find('.submission-msg').addClass('d-none');
+            },3000)
+            btn.remove();
+          }
+        }
+
+      })
+    }
+
+    function deleteDynamicAttr(id,model,button) {
+        $.ajax({
+          url: '<%= delete_record_path %>',
+          method: 'POST',
+          data: { authenticity_token: csrfToken, id: id, model: model },
+          success: function(data) {
+              button.parent().parent().remove();
+          }
+        })
+      }
+  });
+</script>
