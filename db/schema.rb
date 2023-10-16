@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_10_105527) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_13_132124) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -652,6 +652,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_10_105527) do
     t.string "collab_npi"
     t.boolean "is_primary_location"
     t.date "effective_date"
+    t.string "location_status"
+    t.string "location_npi"
+    t.string "location_tin"
     t.index ["enrollment_group_id"], name: "index_group_dcos_on_enrollment_group_id"
   end
 
@@ -869,6 +872,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_10_105527) do
     t.string "application_method"
     t.string "availability"
     t.string "county"
+    t.string "first_name_of_credentialing_contact"
+    t.string "middle_name_of_credentialing_contact"
+    t.string "last_name_of_credentialing_contact"
+    t.string "suffix_of_credentialing_contact"
   end
 
   create_table "privilege_statuses", force: :cascade do |t|
@@ -1071,6 +1078,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_10_105527) do
     t.string "no_rn_license"
     t.integer "state_id"
     t.index ["provider_id"], name: "index_provider_rn_licenses_on_provider_id"
+  end
+
+  create_table "provider_source_cmes", force: :cascade do |t|
+    t.bigint "provider_source_id"
+    t.string "training"
+    t.string "month_attended"
+    t.string "year_attended"
+    t.string "hours"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_source_id"], name: "index_provider_source_cmes_on_provider_source_id"
   end
 
   create_table "provider_source_data", force: :cascade do |t|
@@ -1407,6 +1425,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_10_105527) do
     t.string "supervising_name_npi"
     t.string "supervising_name"
     t.string "supervising_npi"
+    t.string "primary_location"
   end
 
   create_table "providers_missing_field_submissions", force: :cascade do |t|
