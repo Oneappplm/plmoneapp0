@@ -39,7 +39,7 @@ class OfficeManagersController < ApplicationController
   def manage_applications; end
 
   def credentialing_application
-		redirect_to custom_provider_source_path
+		redirect_to edit_provider_source_path(id: params[:id])
   end
 
   def view_summary
