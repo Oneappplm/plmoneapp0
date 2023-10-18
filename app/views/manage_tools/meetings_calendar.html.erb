@@ -1,59 +1,88 @@
 <%= render "manage_tools_container" do %>
-    <div class="d-flex gap-2 mt-3">
-        <%= link_to(call_schedule_manage_tools_path, class: "button-lg #{active_manage_tool_sub_menu('manage_tools', 'call_schedule')}") do %>
-        <span>Call Schedule View</span>
-        <% end %>
-        <%= link_to(cme_calendar_manage_tools_path, class: "button-lg #{active_manage_tool_sub_menu('manage_tools', 'cme_calendar')}") do %>
-        <span>CME Calendar View</span>
-        <% end %>
-        <%= link_to(meetings_calendar_manage_tools_path, class: "button-lg #{active_manage_tool_sub_menu('manage_tools', 'meetings_calendar')}") do %>
-        <span>Meetings Calendar View</span>
-        <% end %>
-    </div>
-    <form action="">
-    <div class="form-row row mt-3">
-        <div class="col-xl-12">
-            <div class="row">
-                <div class="col-xl-6">
-                    <label for="sched-year" class="">Calendar:</label>
-                    <div class="row">
-                        <div class="col-xl-6">
-                            <label for="calendar-month" class="d-none">Calendar:</label>
-                            <select name="calendar-month" id="calendar-month" class="form-select">
-                                <option value="">Month</option>
-                            </select>
+  <div class="col-xl-12">
+    <div class="card other-name-card">
+      <div class="card-body">
+          <div class="d-flex gap-2 mt-1">
+            <%= link_to(call_schedule_manage_tools_path, class: "enc-btn-nav w-100 manage-tools-top-nav-button #{active_manage_tool_sub_menu('manage_tools', 'call_schedule')}") do %>
+            <span>Call Schedule View</span>
+            <% end %>
+            <%= link_to(cme_calendar_manage_tools_path, class: "enc-btn-nav w-100 manage-tools-top-nav-button #{active_manage_tool_sub_menu('manage_tools', 'cme_calendar')}") do %>
+            <span>CME Calendar View</span>
+            <% end %>
+            <%= link_to(meetings_calendar_manage_tools_path, class: "enc-btn-nav w-100 manage-tools-top-nav-button #{active_manage_tool_sub_menu('manage_tools', 'meetings_calendar')}") do %>
+            <span>Meetings Calendar View</span>
+            <% end %>
+         </div>
+          <div class="form-row row">
+              <div class="col-xl-12">
+                  <div class="row">
+                      <div class="col-xl-6">
+                          <label for="sched-year" class="">Year</label>
+                          <select name="sched-year" id="sched-year" class="form-select">
+                              <option value="">Select option</option>
+                          </select>
+                      </div>
+                      <div class="col-xl-6">
+                          <label for="sched-month" class="">Month</label>
+                          <select class="js-example-basic-multiple form-select" name="sched-month[]" id="sched-month" multiple="multiple">
+                              <option value='January'>January</option>
+                              <option value='February'>February</option>
+                              <option value='March'>March</option>
+                              <option value='April'>April</option>
+                              <option value='May'>May</option>
+                              <option value='June'>June</option>
+                              <option value='July'>July</option>
+                              <option value='August'>August</option>
+                              <option value='September'>September</option>
+                              <option value='October'>October</option>
+                              <option value='November'>November</option>
+                              <option value='December'>December</option>
+                          </select>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-xl-12">
+                <div class="row">
+                    <div class="col-xl-10">
+                        <div class="mt-4">
+                          <div id='calendar'></div>
                         </div>
-                        <div class="col-xl-6">
-                            <label for="calendar-year" class="d-none">Year:</label>
-                            <select name="calendar-year" id="calendar-year" class="form-select">
-                                <option value="">Year</option>
-                            </select>
+                    </div>
+                    <div class="col-xl-2">
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <%= button_to "Download", nil, class: "btn button-sm"%>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-6 d-flex align-items-end">
-                    <%= button_to "Print Schedule", nil, class: "btn button-sm"%>
-                </div>
-            </div>
-        </div>
+              </div>
+          </div>
+      </div>
     </div>
-    <div class="mt-4">
-        <div id='calendar'></div>
-    </div>
-    </form>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                headerToolbar: {
-                    left: '',
-                    center: 'title',
-                    right: ''
-                }
-            });
-            calendar.render();
-        });
-    </script>
+  </div>
+   </form>
 <% end %>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+<style>
+  .fc-toolbar{
+    background-color: #4e40ff;
+    padding: 36px;
+  }
+    .fc-toolbar-title{
+    color: white;
+  }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          headerToolbar: {
+              left: '',
+              center: 'title',
+              right: ''
+          }
+      });
+      calendar.render();
+  });
+</script>
