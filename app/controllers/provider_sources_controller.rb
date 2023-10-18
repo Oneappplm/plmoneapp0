@@ -57,6 +57,8 @@ class ProviderSourcesController < ApplicationController
       ProviderSourcesRegistration.find(id)
     elsif model == 'cme'
       ProviderSourceCme.find(id)
+	elsif model == 'licensure'
+		ProviderSourceLicensure.find(id)
     end
 
     record.update_attribute(field,content)

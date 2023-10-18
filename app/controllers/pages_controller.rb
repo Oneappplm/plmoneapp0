@@ -289,6 +289,7 @@ class PagesController < ApplicationController
     @provider.create_cds if @provider&.cds&.reload&.blank?
     @provider.create_registration if @provider&.registrations&.reload&.blank?
     @provider.create_cme if @provider&.cmes&.reload&.blank?
+	@provider.create_licensure if @provider&.licensures&.reload&.blank?
   end
 
   def new_association(model)
@@ -296,6 +297,7 @@ class PagesController < ApplicationController
     @provider.create_cds if model == 'cds'
     @provider.create_registration if model == 'registration'
     @provider.create_cme if model == 'cme'
+	@provider.create_licensure if model == 'licensure'
   end
 
   def delete_association_record(model, id)

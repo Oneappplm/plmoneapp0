@@ -5,10 +5,12 @@ class ProviderSource < ApplicationRecord
   has_many :cds, class_name: 'ProviderSourcesCds', inverse_of: :provider_source, dependent: :destroy
   has_many :cmes, class_name: 'ProviderSourceCme', inverse_of: :provider_source, dependent: :destroy
   has_many :registrations, class_name: 'ProviderSourcesRegistration', inverse_of: :provider_source, dependent: :destroy
+  has_many :licensures, class_name: 'ProviderSourcesLicensure', inverse_of: :provider_source, dependent: :destroy
 
   accepts_nested_attributes_for :deas, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :cds, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :registrations, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :licensures, allow_destroy: true, reject_if: :all_blank
 
 
   belongs_to :practice_location, optional: true
@@ -878,6 +880,11 @@ class ProviderSource < ApplicationRecord
 
   def create_cme
     ProviderSourceCme.create(provider_source_id: self.id)
+  end
+
+
+  def create_licensure
+    ProviderSourcesLicensure.create(provider_source_id: self.id)
   end
 
   private
