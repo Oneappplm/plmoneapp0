@@ -10,9 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_13_132124) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_18_092357) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "add_schedules", force: :cascade do |t|
+    t.string "group_name"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "add_members", default: [], array: true
+  end
 
   create_table "ahoy_events", force: :cascade do |t|
     t.bigint "visit_id"
