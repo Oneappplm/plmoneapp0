@@ -93,7 +93,7 @@
                                     <p>City: <%= current_client_organization&.organization_city %></p>
                                 </div>
                                 <div class="form-row">
-                                    <p>State: <%= current_client_organization&.organization_state_id %></p>
+                                    <p>State: <%= State.where(id: current_client_organization&.organization_state_id).first&.name %></p>
                                 </div>
                                 <div class="form-row">
                                     <p>Zip Code: <%= current_client_organization&.organization_zipcode %></p>
@@ -335,6 +335,7 @@
         $(document).ready(function() {
             var csrfToken = $('meta[name="csrf-token"]').attr('content');
             var languages_dropdown = '.multi-languages';
+            var current_organization_state_id = $('#current_organization_state_id').val();
             function getLanguages() {
                     $.ajax({
                     url: '<%= get_languages_path %>',
@@ -360,7 +361,8 @@
                         VirtualSelect.init({
                             options: data['states'],
                             ele: '#dropdown-states',
-                            showSelectedOptionsFirst: true
+                            showSelectedOptionsFirst: true,
+                            selectedValue: current_organization_state_id
                         });
                     }
                     })
