@@ -5,10 +5,8 @@
   </div>
 </div>
 
-<div class="licensure-field" id="fields">
 <div class="row mb-3">
    <div class="col-lg-12">
-      <#%= HtmlUtils::dropdown name: 'licensure_state', label: 'Licensure State' %>
       <%= HtmlUtils::dropdown_with_model name: 'state', label: 'Licensure State', model: 'licensure', modelId: "#{licensure.id}" %>
    </div>
 </div>
@@ -34,13 +32,13 @@
 <div class="row mb-3">
    <div class="col-lg-6">
       <label class="text-dark-grey">Issue Date <span class="text-danger">*</span></label>
-      <input type="date" name="licensure_issue_date" required class="form-control border-dark multi-field" data-model="licensure" data-id=<%= licensure.id %> value="<%= licensure_issue_date%>">
+      <input type="date" name="licensure_issue_date" required class="form-control border-dark multi-field" data-model="licensure" data-id=<%= licensure.id %> value="<%= licensure.licensure_issue_date%>">
    </div>
    <div class="col-lg-6">
       <label class="text-dark-grey">Expiration Date <span class="text-danger">*</span></label>
-      <input type="date" name="licensure_expiration_date"  required class="form-control border-dark licensure-expire multi-field"  data-model="licensure" data-id=<%= licensure.id %> value="<%= dea.licensure_issue_date%>" >
+      <input type="date" name="licensure_expiration_date"  required class="form-control border-dark licensure-expire multi-field"  data-model="licensure" data-id=<%= licensure.id %> value="<%= licensure.licensure_expiration_date%>" >
       <span class="d-flex gap-2">
-      <input type="checkbox" name="licensure_not_expire" id="licensure-not-expire" data-model="licensure" data-id=<%= licensure.id %> value="<%= licensure_not_expire%>">
+      <input type="checkbox" name="licensure_not_expire" id="licensure-not-expire" data-model="licensure" data-id=<%= licensure.id %> value="<%= licensure.licensure_not_expire%>">
       <small>Does not expire</small>
       </span>
    </div>
@@ -51,11 +49,11 @@
          <label class="form-label">Are you currently practicing in this state? <span class="text-danger">*</span></label>
          <div class="d-flex me-4 gap-2">
             <span>
-            <input type="radio" value="yes" name="licensure_practice_state" data-model="licensure" data-id="<%= licensure.id %>" required>
+            <input type="radio" value="yes" name="licensure_practice_state" class="multi-field" data-model="licensure" data-id="<%= licensure.id %>" required>
             <span>YES</span>
             </span>
             <span>
-            <input type="radio" value="no" name="licensure_practice_state" data-model="licensure" data-id="<%= licensure.id %>" required>
+            <input type="radio" value="no" name="licensure_practice_state" class="multi-field" data-model="licensure" data-id="<%= licensure.id %>" required>
             <span>NO</span>
             </span>
          </div>
@@ -68,11 +66,11 @@
          <label class="form-label">Is this your primary license? <span class="text-danger">*</span></label>
          <div class="d-flex me-4 gap-2">
             <span>
-            <input type="radio" value="yes" name="licensure_primary_license" data-model="licensure" data-id="<%= licensure.id %>" required>
+            <input type="radio" value="yes" name="licensure_primary_license" class="multi-field" data-model="licensure" data-id="<%= licensure.id %>" required>
             <span>YES</span>
             </span>
             <span>
-            <input type="radio" value="no" name="licensure_primary_license" data-model="licensure" data-id="<%= licensure.id %>" required>
+            <input type="radio" value="no" name="licensure_primary_license" class="multi-field" data-model="licensure" data-id="<%= licensure.id %>" required>
             <span>NO</span>
             </span>
          </div>
@@ -85,11 +83,11 @@
          <label class="form-label">Does this license require supervision? <span class="text-danger">*</span></label>
          <div class="d-flex me-4 gap-2">
             <span>
-            <input type="radio" value="yes" name="licensure_require_supervision" data-model="licensure" data-id="<%= licensure.id %>" required>
+            <input type="radio" value="yes" name="licensure_require_supervision" class="multi-field" data-model="licensure" data-id="<%= licensure.id %>" required>
             <span>YES</span>
             </span>
             <span>
-            <input type="radio" value="no" name="licensure_require_supervision" data-model="licensure" data-id="<%= licensure.id %>" required>
+            <input type="radio" value="no" name="licensure_require_supervision" class="multi-field" data-model="licensure" data-id="<%= licensure.id %>" required>
             <span>NO</span>
             </span>
          </div>
@@ -102,19 +100,19 @@
    </div>
    <div class="col-lg-4">
       <label class="text-dark-grey">First Name</label>
-      <input type="text" name="licensure_sponsor_fname" class="form-control border-dark multi-field"  data-model="licensure" data-id=<%= licensure.id %> value="<%= dea.licensure_sponsor_fname%>">
+      <input type="text" name="licensure_sponsor_fname" class="form-control border-dark multi-field" placeholder="First Name"  data-model="licensure" data-id=<%= licensure.id %> value="<%= licensure.licensure_sponsor_fname%>">
    </div>
    <div class="col-lg-2">
       <label class="text-dark-grey">Middle Name</label>
-      <input type="text" name="licensure_sponsor_mname" class="form-control border-dark multi-field"  data-model="licensure" data-id=<%= licensure.id %> value="<%= dea.licensure_sponsor_mname%>">
+      <input type="text" name="licensure_sponsor_mname" class="form-control border-dark multi-field" placeholder="Middle Name"  data-model="licensure" data-id=<%= licensure.id %> value="<%= licensure.licensure_sponsor_mname%>">
    </div>
    <div class="col-lg-4">
       <label class="text-dark-grey">Last Name</label>
-      <input type="text" name="licensure_sponsor_lname" class="form-control border-dark multi-field"  data-model="licensure" data-id=<%= licensure.id %> value="<%= dea.licensure_sponsor_lname%>">
+      <input type="text" name="licensure_sponsor_lname" class="form-control border-dark multi-field" placeholder="Last Name"  data-model="licensure" data-id=<%= licensure.id %> value="<%= licensure.licensure_sponsor_lname%>">
    </div>
    <div class="col-lg-2">
       <label class="text-dark-grey">Suffix</label>
-      <select class="form-select border-dark" placeholder="Suffix" name="licensure_sponsor_suffix"  data-model="licensure" data-id=<%= licensure.id %> value="<%= dea.licensure_sponsor_suffix%>">
+      <select class="form-select border-dark" placeholder="Suffix" name="licensure_sponsor_suffix" placeholder="Suffix"  data-model="licensure" data-id=<%= licensure.id %> value="<%= licensure.licensure_sponsor_suffix%>">
          <option>Suffix</option>
          <option>Jr.</option>
          <option>Sr.</option>
@@ -124,7 +122,7 @@
    </div>
    <div class="col-lg-12 mt-3">
       <label class="text-dark-grey">Degree</label>
-      <input type="text" name="licensure_sponsor_degree" class="form-control border-dark multi-field"  data-model="licensure" data-id=<%= licensure.id %> value="<%= dea.licensure_sponsor_degree%>">
+      <input type="text" name="licensure_sponsor_degree" class="form-control border-dark multi-field" placeholder="Degree"  data-model="licensure" data-id=<%= licensure.id %> value="<%= licensure.licensure_sponsor_degree%>">
    </div>
 </div>
 </div>
