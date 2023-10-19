@@ -302,6 +302,7 @@ class PagesController < ApplicationController
     ProviderSourcesDea.delete(id) if model == 'dea'
     ProviderSourcesCds.delete(id) if model == 'cds'
     ProviderSourcesRegistration.delete(id) if model == 'registration'
+	ProviderSourcesLicensure.delete(id) if model == 'licensure'
     ProviderSourceCme.delete(id) if model == 'cme'
 
   end

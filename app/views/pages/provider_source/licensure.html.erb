@@ -8,15 +8,15 @@
 			<form>
 			<div class="row border border-4 p-3">
 				<div class="col-lg-12">
-					<%= render partial: "provider_source_components/header_title", locals: {title: "Professional IDs", icon: 'bi-person-badge-fill'}%>
-					<%#= render partial: "provider_source_components/progress_bar", locals: {percent: (@provider.professional_ids_progress)}%>
-               <% steps = [['Registration IDs','finished', custom_provider_source_path(page: 'professional_ids'), 'registration_ids_progress'],
+					<%= render partial: "provider_source_components/header_title", locals: {title: "Licensures", icon: 'bi-person-badge-fill'}%>
+					<%#= render partial: "provider_source_components/progress_bar", locals: {percent: (@provider.licensure_progress)}%>
+					<% steps = [['Registration IDs','finished', custom_provider_source_path(page: 'professional_ids'), 'registration_ids_progress'],
                      ['Licensure','active', custom_provider_source_path(page: 'licensure'), 'licensure_progress'],
                      ['Other IDs and Cerfifications','inactive', custom_provider_source_path(page: 'other_ids'), 'other_ids_certifications_progress'],
-            ]%>
+            	]%>
 
-        <%= render partial: "provider_source_components/progress_bar", locals: { steps: steps }%>
-            <%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
+				<%= render partial: "provider_source_components/progress_bar", locals: { steps: steps }%>
+				<%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
 				</div>
 				<div class="col-lg-12 card py-3 my-3">
 					<h4 class="fw-semibold text-secondary">Licensure</h4>
@@ -37,22 +37,44 @@
 								</div>	
 						    </div>	
 						</div>	
-							<div class="<%= toggle_hide_current_provider_source('state_license_specialty', @provider) %>" id="licensure_form">
-								<%= render partial: 'provider_source_components/licensure_form'%>
+
+					<div class="<%= toggle_hide_current_provider_source('state_license_specialty', @provider) %>" id="licensure_form">
+						<% if !@provider.licensures&.reload&.blank? %>
+						<% @provider&.licensures&.reload&.each do |licensure|%>
+						<%= render partial: "pages/provider_source/licensure_fields", locals: {licensure: licensure}%>
+						<% end %>
+						<% end %>
+						
+						<div class="row my-3">
+							<div class="col-lg-12 text-center">
+								<a  href="<%= custom_provider_source_path(page: 'licensure', add_new: 'licensure') %>" class="btn btn-primary btn-sm">Add New Licensure</a>
 							</div>
+						</div>
 
-						<!--	<%= HtmlUtils.radio_toggle name: 'state_license_specialty',
-								label: 'Do/Did you have a state license to practice in your specialty? <span class="text-danger"> *</span>',
-								toshow: 'licensure_form',
-								hidden_field: true
-							%>
-					</div>
-					<div class="<%= toggle_hide('state_license_specialty')%>" id="licensure_form">
-					<%= render partial: "provider_source_components/licensure_form"%> -->
-
+				   	</div>
+						
 				</div>
+
+					
+
+			</div>
+						 
+					
+				
 			</form>
 		</div>
 	</div>
 </div>
+
+
+<% if params[:add_new].present? or params[:remove_record]%>
+<script>
+  setTimeout(removeAddNewInURL, 3000);
+  function removeAddNewInURL() {
+    // this is added to remove the add_new parameter in URL to prevent creating
+    // new association when page is reloaded
+    history.pushState(null, null, '/provider-source?page=licensure');
+  }
+</script>
+<% end %>
 
