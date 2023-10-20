@@ -1,128 +1,263 @@
 <%= render "manage_tools_container" do %>
-  <div class="col-xl-12">
-     <div class="card other-name-card">
-       <div class="card-body">
-           <div class="d-flex gap-2 mt-1">
-             <%= link_to(call_schedule_manage_tools_path, class: "enc-btn-nav w-100 manage-tools-top-nav-button #{active_manage_tool_sub_menu('manage_tools', 'call_schedule')}") do %>
-             <span>Call Schedule View</span>
-             <% end %>
-             <%= link_to(cme_calendar_manage_tools_path, class: "enc-btn-nav w-100 manage-tools-top-nav-button #{active_manage_tool_sub_menu('manage_tools', 'cme_calendar')}") do %>
-             <span>CME Calendar View</span>
-             <% end %>
-             <%= link_to(meetings_calendar_manage_tools_path, class: "enc-btn-nav w-100 manage-tools-top-nav-button #{active_manage_tool_sub_menu('manage_tools', 'meetings_calendar')}") do %>
-             <span>Meetings Calendar View</span>
-             <% end %>
+    <div class="col-xl-12">
+      <div class="card other-name-card">
+        <div class="card-body">
+          <div class="d-flex gap-2 mt-1">
+            <%= link_to(call_schedule_manage_tools_path, class: "enc-btn-nav w-100 manage-tools-top-nav-button #{active_manage_tool_sub_menu('manage_tools', 'call_schedule')}") do %>
+            <span>Call Schedule View</span>
+            <% end %>
+            <%= link_to(cme_calendar_manage_tools_path, class: "enc-btn-nav w-100 manage-tools-top-nav-button #{active_manage_tool_sub_menu('manage_tools', 'cme_calendar')}") do %>
+            <span>CME Calendar View</span>
+            <% end %>
+            <%= link_to(meetings_calendar_manage_tools_path, class: "enc-btn-nav w-100 manage-tools-top-nav-button #{active_manage_tool_sub_menu('manage_tools', 'meetings_calendar')}") do %>
+            <span>Meetings Calendar View</span>
+            <% end %>
           </div>
-     <form action="">
-     <div class="form-row row mt-3">
-         <div class="input-group d-flex gap-3 align-items-center">
-             <div class="col-xl-12">
-                 <h6 class="form-heading">Type</h6>
-                 <select name="group" id="group" class="form-select ">
-                     <option value="">Group</option>
-                 </select>
-             </div>
-         </div>
-     </div>
-     <div class="form-row">
-     <div class="card other-name-card">
-       <div class="card-body">
-           <div class="form-row row">
-               <div class="col-xl-12">
-                   <div class="row">
-                       <div class="col-xl-12">
-                         <h6 class="form-heading">Group</h6>
-                           <label for="group" class="">Group</label>
-                           <select name="group" id="group" class="form-select">
-                               <option value="">Select option</option>
-                           </select>
-                       </div>
-                   </div>
-               </div>
-               <div class="col-xl-12">
-                   <div class="row">
-                       <div class="col-xl-12">
-                           <label for="group" class="">Contact(can be multiple)</label>
-                           <select name="group" id="group" class="form-select">
-                               <option value="">Select option</option>
-                           </select>
-                       </div>
-                   </div>
-               </div>
-           </div>
-           <div class="form-row row">
-               <div class="col-xl-12">
-                   <div class="row">
-                       <div class="col-xl-6">
-                           <label for="sched-year" class="">Year</label>
-                           <select name="sched-year" id="sched-year" class="form-select">
-                               <option value="">Select option</option>
-                           </select>
-                       </div>
-                       <div class="col-xl-6">
-                           <label for="sched-month" class="">Month</label>
-                           <select class="js-example-basic-multiple form-select" name="sched-month[]" id="sched-month" multiple="multiple">
-                               <option value='January'>January</option>
-                               <option value='February'>February</option>
-                               <option value='March'>March</option>
-                               <option value='April'>April</option>
-                               <option value='May'>May</option>
-                               <option value='June'>June</option>
-                               <option value='July'>July</option>
-                               <option value='August'>August</option>
-                               <option value='September'>September</option>
-                               <option value='October'>October</option>
-                               <option value='November'>November</option>
-                               <option value='December'>December</option>
-                           </select>
-                       </div>
-                   </div>
-               </div>
-           </div>
-       </div>
-     </div>
-   </div>
-   <div class="col-xl-12">
-     <div class="row">
-         <div class="col-xl-10">
-             <div class="mt-4">
-               <div id='calendar'></div>
-             </div>
-         </div>
-         <div class="col-xl-2">
-             <div class="d-flex end gap-2 mt-4">
-                 <%= button_to "Delete Schedule", nil, class: "btn button-sm btn-danger"%>
-             </div>
-             <div class="d-flex justify-content-end gap-2 mt-2">
-                 <%= button_to "Download", nil, class: "btn button-sm"%>
-             </div>
-         </div>
-     </div>
-   </div>
-    </form>
- <% end %>
- <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
- <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
- <style>
-   .fc-toolbar{
-     background-color: #4e40ff;
-     padding: 36px;
-   }
-     .fc-toolbar-title{
-     color: white;
-   }
- </style>
- <script>
-   document.addEventListener('DOMContentLoaded', function() {
-       var calendarEl = document.getElementById('calendar');
-       var calendar = new FullCalendar.Calendar(calendarEl, {
-           initialView: 'dayGridMonth',
-           headerToolbar: {
-               left: '',
-               center: 'title',
-               right: ''
-           }
-       });
-       calendar.render();
-   });
- </script>
+          <form action="">
+          <div class="form-row row mt-3">
+            <div class="input-group d-flex gap-3 align-items-center">
+              <div class="col-xl-12">
+                <h6 class="form-heading">Type</h6>
+                <select name="group" id="dropdown" class="form-select form-control form-control-lg py-3">
+                <option value="group">Group</option>
+                <option value="department">Department</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div id="departmentContent">
+            <div class="form-row row page-applicable mt-3">
+              <div class="col-xl-12">
+                <div class="card other-name-card">
+                  <div class="card-body">
+                    <div class="form-row row">
+                      <div class="input-group d-flex gap-2 align-items-center">
+                        <div class="col-xl-12">
+                          <h6 class="fs-3">Department</h6>
+                          <div class="form-row row mt-2">
+                            <div class="col-xl-6">
+                              <label for="group" class="fs-6">Department</label>
+                              <select name="group" id="group" class="form-select form-control form-control-lg py-3">
+                                <option value="">Select option</option>
+                              </select>
+                            </div>
+                            <div class="col-xl-6">
+                              <label for="group" class="fs-6">Division</label>
+                              <select name="group" id="group" class="form-select form-control form-control-lg py-3">
+                                <option value="">Select option</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-xl-12 mt-3">
+                          <div class="row">
+                            <div class="col-xl-12">
+                              <label for="sched-year" class="fs-6">Contact(can be multiple)</label>
+                              <select name="sched-year" id="sched-year" class="form-select form-control form-control-lg py-3">
+                                <option value="">Select option</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-xl-12">
+                          <div class="form-row row mt-2">
+                            <div class="col-xl-6">
+                              <label for="group" class="fs-6">Year</label>
+                              <select name="group" id="group" class="form-select form-control form-control-lg py-3">
+                                <option value="">Select option</option>
+                              </select>
+                            </div>
+                            <div class="col-xl-6">
+                              <label for="sched-month" class="fs-6">Month</label>
+                              <select class="form-select form-control form-control-lg py-3" id="sched-month">
+                                <option value='January'>January</option>
+                                <option value='February'>February</option>
+                                <option value='March'>March</option>
+                                <option value='April'>April</option>
+                                <option value='May'>May</option>
+                                <option value='June'>June</option>
+                                <option value='July'>July</option>
+                                <option value='August'>August</option>
+                                <option value='September'>September</option>
+                                <option value='October'>October</option>
+                                <option value='November'>November</option>
+                                <option value='December'>December</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row row">
+              <div class="col-xl-12">
+                <div class="row">
+                  <div class="col-xl-9">
+                    <div class="mt-4">
+                      <div id='departmentCalendar'></div>
+                    </div>
+                  </div>
+                  <div class="col-xl-3">
+                    <div class="d-flex end gap-2 mt-4">
+                      <%= button_to "Delete Schedule", nil, class: "btn btn-danger btn-lg btn-block"%>
+                    </div>
+                    <div class="d-flex end gap-2 mt-2">
+                      <%= button_to "Download-------", nil, class: "btn btn-primary btn-lg btn-block"%>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="groupContent">
+            <div class="form-row row mt-3">
+              <div class="col-xl-12">
+                <div class="card other-name-card">
+                  <div class="card-body">
+                    <div class="form-row row">
+                      <div class="col-xl-12">
+                        <div class="row">
+                          <div class="col-xl-12">
+                            <h6 class="fs-3">Group</h6>
+                              <label for="group" class="fs-6">Group</label>
+                              <select name="group" id="group" class="form-select form-control form-control-lg py-3">
+                                  <option value="">Select option</option>
+                              </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-12 mt-3">
+                      <div class="row">
+                        <div class="col-xl-12">
+                          <label for="sched-year" class="fs-6">Contact(can be multiple)</label>
+                          <select name="sched-year" id="sched-year" class="form-select form-control form-control-lg py-3">
+                            <option value="">Select option</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-row row mt-3">
+                      <div class="col-xl-12">
+                        <div class="row">
+                          <div class="col-xl-6">
+                            <label for="sched-year" class="fs-6">Year</label>
+                            <select name="sched-year" id="sched-year" class="form-select form-control form-control-lg py-3">
+                              <option value="">Select option</option>
+                            </select>
+                          </div>
+                          <div class="col-xl-6">
+                            <label for="sched" class="fs-6">Month</label>
+                            <select class="form-select form-control form-control-lg py-3" name="sched[]" id="sched">
+                              <option value='January'>January</option>
+                              <option value='February'>February</option>
+                              <option value='March'>March</option>
+                              <option value='April'>April</option>
+                              <option value='May'>May</option>
+                              <option value='June'>June</option>
+                              <option value='July'>July</option>
+                              <option value='August'>August</option>
+                              <option value='September'>September</option>
+                              <option value='October'>October</option>
+                              <option value='November'>November</option>
+                              <option value='December'>December</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row row">
+              <div class="col-xl-12">
+                <div class="row">
+                  <div class="col-xl-9">
+                    <div class="mt-4">
+                      <div id='groupCalendar'></div>
+                    </div>
+                  </div>
+                  <div class="col-xl-3">
+                    <div class="d-flex end gap-2 mt-4">
+                      <%= button_to "Delete Schedule", nil, class: "btn btn-danger btn-lg btn-block"%>
+                    </div>
+                    <div class="d-flex end gap-2 mt-2">
+                      <%= button_to "Download-------", nil, class: "btn btn-primary btn-lg btn-block"%>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </form>
+   <% end %>
+   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+   <style>
+     .fc-toolbar{
+       background-color: #4e40ff;
+       padding: 36px;
+     }
+       .fc-toolbar-title{
+       color: white;
+     }
+   </style>
+   <script>
+       document.addEventListener('DOMContentLoaded', function() {
+      var departmentCalendarEl = document.getElementById('departmentCalendar');
+      var departmentCalendar = new FullCalendar.Calendar(departmentCalendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+          left: '',
+          center: 'title',
+          right: ''
+        }
+      });
+      departmentCalendar.render();
+    });
+    // Calendar initialization for the "Group" content
+    document.addEventListener('DOMContentLoaded', function() {
+      var groupCalendarEl = document.getElementById('groupCalendar');
+      var groupCalendar = new FullCalendar.Calendar(groupCalendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+          left: '',
+          center: 'title',
+          right: ''
+        }
+      });
+      groupCalendar.render();
+    });
+       $(document).ready(function() {
+      // Function to update content based on the selected option
+      function updateContent(selectedOption) {
+        if (selectedOption === 'department') {
+          $('#departmentContent').show();
+          $('#groupContent').hide();
+        } else if (selectedOption === 'group') {
+          $('#departmentContent').hide();
+          $('#groupContent').show();
+        } else {
+          // If neither department nor group is selected, show one of them (e.g., "Department" in this case)
+          $('#departmentContent').show();
+          $('#groupContent').hide();
+        }
+      }
+      // Initial update based on the selected value (e.g., "department" for "Department" by default)
+      updateContent($('#dropdown').val());
+      // Change event handler
+      $('#dropdown').change(function() {
+        var selectedOption = $(this).val();
+        updateContent(selectedOption);
+      });
+    });
+  </script>
+  
