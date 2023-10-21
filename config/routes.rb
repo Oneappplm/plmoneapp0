@@ -227,6 +227,7 @@ Rails.application.routes.draw do
 
   resources :manage_tools, path: 'manage-tools' do
     collection do
+      post :creation_of_schedule
       get :manage_cme, path: 'manage-cme'
       get :meeting_attendance, path: 'meeting-attendance'
       get :call_schedule_maintenance, path: 'call-schedule-maintenance'
@@ -243,6 +244,7 @@ Rails.application.routes.draw do
       get :define_privileges, path: 'define-privileges'
     end
   end
+
 
 
   resources :view_summary
