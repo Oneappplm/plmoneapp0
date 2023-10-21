@@ -20,21 +20,63 @@
             <%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
             </div>
 
-             <div class="col-lg-12 card py-3 my-3">
-               <h4 class="fw-semibold text-secondary">Teaching Appointments</h4>
-                  <div class="d-flex align-items-center my-3">
-                     <%= HtmlUtils.radio_toggle name: 'an_instructor',
+            <div class="col-lg-12">
+                <div class="d-flex justify-content-between">
+                    <label class="text-dark-grey">Are/Were you an instructor for a teaching program? <span class="text-danger"> *</span></label>
+                  <div class="d-flex me-4 gap-2">
+                    <div class="gap-2">
+                      <input type="radio" name="an_instructor" class="radio-with-form" data-form='teaching_app_form' value="yes" checked='checked'>
+                      <span>YES</span>
+                    </div>  
+                    <div class="gap-2">
+                      <input type="radio" name="an_instructor" class="radio-with-form" data-form='teaching_app_form' value="no" >
+                      <span>NO</span>
+                    </div>
+                  </div>
+                </div>
+                </div>
+
+            
+<!--                   <div class="d-flex align-items-center my-3">
+                     <%#= HtmlUtils.radio_toggle name: 'an_instructor',
                         label: 'Are/Were you an instructor for a teaching program? <span class="text-danger"> *</span>',
                         toshow: 'teaching_app_form',
                         hidden_field: true
                      %>
 
-                  </div>
-                     <div id="teaching_app_form" class="<%= toggle_hide('an_instructor') %>">
-                        <%= render partial: 'provider_source_components/teaching_app_form'%>
+                  </div> -->
+                     <div id="teaching_app_form" class="<%= @provider.fetch('an_instructor') == 'yes' ? '' : 'd-none'%>">
+                      <% if !@provider.teaching_programs.blank? %>
+                        <% @provider&.teaching_programs&.reload&.each do |teaching_program| %>
+                          <div class="col-lg-12 card p-3 my-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                              
+                          <h4 class="fw-semibold text-secondary">Teaching Program</h4>
+                             <a href="<%= custom_provider_source_path(page: 'teaching_appointments', remove_record: 'teaching_programs', id: teaching_program.id)%>" class="btn btn-danger btn-xs">Delete</a>
+                            </div>
+                        <%= render partial: 'provider_source_components/teaching_app_form', locals: {teaching_program: teaching_program}%>
+                         </div>
+                        <% end %>
+                      <% end %>
+                      <div class="row">
+                            <div class="col-lg-12 d-flex justify-content-start ps-3">
+                            <a  href="<%= custom_provider_source_path(page: 'teaching_appointments', add_new: 'teaching_programs') %>" class="btn btn-primary btn-sm">Add New Teaching Program</a>
+                            </div>
+                          </div>
                      </div>
-            </div>
+            <!-- </div> -->
          </div>
       </div>
    </div>
 </div>
+
+<% if params[:add_new].present? or params[:remove_record]%>
+<script>
+  setTimeout(removeAddNewInURL, 3000);
+  function removeAddNewInURL() {
+    // this is added to remove the add_new parameter in URL to prevent creating
+    // new association when page is reloaded
+    history.pushState(null, null, '/provider-source?page=teaching_appointments');
+  }
+</script>
+<% end %>

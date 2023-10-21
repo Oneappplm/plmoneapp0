@@ -6,6 +6,8 @@ class ProviderSource < ApplicationRecord
   has_many :cmes, class_name: 'ProviderSourceCme', inverse_of: :provider_source, dependent: :destroy
   has_many :registrations, class_name: 'ProviderSourcesRegistration', inverse_of: :provider_source, dependent: :destroy
   has_many :licensures, class_name: 'ProviderSourcesLicensure', inverse_of: :provider_source, dependent: :destroy
+  has_many :collaborating_physicians, class_name: 'ProviderSourceCollaboratingPhysician', inverse_of: :provider_source, dependent: :destroy
+  has_many :teaching_programs, class_name: 'ProviderSourceTeachingProgram', inverse_of: :provider_source, dependent: :destroy
 
   accepts_nested_attributes_for :deas, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :cds, allow_destroy: true, reject_if: :all_blank
@@ -395,26 +397,61 @@ class ProviderSource < ApplicationRecord
     ]
   end
 
+  # def teaching_appointments_progress_v2
+  #   percentage = 0
+  #   prerequisites = ['an_instructor']
+  #   with_prerequisites = ['teaching_appointments_an_instructor_fields']
+  #   values = fetch_many(prerequisites)&.pluck(:data_value)
+
+  #   percentage = if values.include?('yes')
+  #     prerequisites_with_yes = values.map.with_index{|v,idx| idx if (v != 'no' && v != nil)}.compact
+  #     fields_to_fill_up = prerequisites_with_yes.map{|y| send(with_prerequisites[y])}
+
+  #     prerequisites_with_yes.reverse_each do |idx|
+  #       prerequisites.delete_at(idx)
+  #     end
+  #     fields_to_answer = fields_to_fill_up.flatten + prerequisites
+  #     answered = fetch_many(fields_to_answer)&.pluck(:data_value).compact.reject(&:empty?).count
+  #     (answered.to_f/(fields_to_answer.count).to_f) * 100
+  #   else
+  #     100
+  #   end
+  #   percentage.to_i
+  # end
+
   def teaching_appointments_progress_v2
     percentage = 0
-    prerequisites = ['an_instructor']
-    with_prerequisites = ['teaching_appointments_an_instructor_fields']
-    values = fetch_many(prerequisites)&.pluck(:data_value)
-
-    percentage = if values.include?('yes')
-      prerequisites_with_yes = values.map.with_index{|v,idx| idx if (v != 'no' && v != nil)}.compact
-      fields_to_fill_up = prerequisites_with_yes.map{|y| send(with_prerequisites[y])}
-
-      prerequisites_with_yes.reverse_each do |idx|
-        prerequisites.delete_at(idx)
-      end
-      fields_to_answer = fields_to_fill_up.flatten + prerequisites
-      answered = fetch_many(fields_to_answer)&.pluck(:data_value).compact.reject(&:empty?).count
-      (answered.to_f/(fields_to_answer.count).to_f) * 100
+    total_teaching_program_fields_with_answer = []
+    total_teaching_program_fields = self&.teaching_programs.pluck(:name, :address1, :city, :zip_code, :start_date, :end_date).flatten
+    total_teaching_program_fields_with_answer = total_teaching_program_fields&.compact&.reject(&:blank?)
+  
+    percentage = if self.fetch("an_instructor") == 'yes'
+      (total_teaching_program_fields_with_answer.count.to_f/total_teaching_program_fields.count.to_f) * 100
     else
       100
     end
     percentage.to_i
+  rescue
+    0
+  end
+
+  def medical_education_progress
+    percentage = 0
+    total_cme_fields_with_answer = []
+    total_cme_fields = self&.cmes.pluck(:training,:month_attended,:year_attended,:hours).flatten
+    total_cme_fields_with_answer << self.fetch('cme_requested_credentials')
+    total_cme_fields_with_answer = total_cme_fields&.compact&.reject(&:empty?)
+    if self.fetch("cme_credit") == 'yes'
+       percentage = (total_cme_fields_with_answer.count.to_f/total_cme_fields.count.to_f) * 100
+      # percentage = 50
+    else
+      if !self.fetch('cme_requested_credentials').blank?
+        percentage = 100
+      end
+    end
+    percentage.to_i
+  rescue
+    0
   end
 
   def teaching_appointments_an_instructor_fields
@@ -885,6 +922,14 @@ class ProviderSource < ApplicationRecord
 
   def create_licensure
     ProviderSourcesLicensure.create(provider_source_id: self.id)
+  end
+  
+  def create_collaborating_physicians
+    ProviderSourceCollaboratingPhysician.create(provider_source_id: self.id)
+  end
+
+  def create_teaching_programs
+    ProviderSourceTeachingProgram.create(provider_source_id: self.id)
   end
 
   private

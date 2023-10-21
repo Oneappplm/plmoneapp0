@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_18_092357) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_21_213733) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -447,6 +447,24 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_18_092357) do
     t.index ["enrollment_group_id"], name: "index_enrollment_groups_details_on_enrollment_group_id"
   end
 
+  create_table "enrollment_groups_svc_locations", force: :cascade do |t|
+    t.bigint "enrollment_group_id"
+    t.string "primary_service_non_office_area"
+    t.string "primary_service_location_apps"
+    t.string "primary_service_zip_code"
+    t.string "primary_service_office_email"
+    t.string "primary_service_fax"
+    t.string "primary_service_office_website"
+    t.string "primary_service_crisis_phone"
+    t.string "primary_service_location_other_phone"
+    t.string "primary_service_appt_scheduling"
+    t.string "primary_service_interpreter_language"
+    t.string "primary_service_telehealth_only_state"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enrollment_group_id"], name: "index_enrollment_groups_svc_locations_on_enrollment_group_id"
+  end
+
   create_table "enrollment_payers", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -765,75 +783,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_18_092357) do
     t.string "languages_speak"
     t.string "languages_write"
     t.string "interpreters_available"
-    t.string "contact_first_name"
-    t.string "contact_middle_name"
-    t.string "contact_last_name"
-    t.string "contact_suffix"
-    t.string "contact_title"
-    t.string "contact_phone_number"
-    t.string "contact_ext"
-    t.string "contact_fax_number"
-    t.string "contact_email"
-    t.time "monday_time_start"
-    t.time "monday_time_end"
-    t.boolean "monday_split_day"
-    t.boolean "monday_closed"
-    t.time "tuesday_time_start"
-    t.time "tuesday_time_end"
-    t.boolean "tuesday_split_day"
-    t.boolean "tuesday_closed"
-    t.time "wednesday_time_start"
-    t.time "wednesday_time_end"
-    t.boolean "wednesday_split_day"
-    t.boolean "wednesday_closed"
-    t.time "thursday_time_start"
-    t.time "thursday_time_end"
-    t.boolean "thursday_split_day"
-    t.boolean "thursday_closed"
-    t.time "friday_time_start"
-    t.time "friday_time_end"
-    t.boolean "friday_split_day"
-    t.boolean "friday_closed"
-    t.time "saturday_time_start"
-    t.time "saturday_time_end"
-    t.boolean "saturday_split_day"
-    t.boolean "saturday_closed"
-    t.time "sunday_time_start"
-    t.time "sunday_time_end"
-    t.boolean "sunday_split_day"
-    t.boolean "sunday_closed"
-    t.string "comment"
-    t.string "telephone_coverage"
-    t.string "telephone_coverage_type"
-    t.string "telephone_number_after_hours"
-    t.string "telephone_number_ext"
-    t.string "pa_practice_status"
-    t.string "pa_by_health_plan"
-    t.string "pa_limitations"
-    t.string "pa_gender_limitations"
-    t.integer "pa_minimum_age"
-    t.integer "pa_maximum_age"
-    t.boolean "pa_min_max_not_applicable"
-    t.string "pa_other_limitations"
-    t.string "ada_accessibility"
-    t.string "ada_wrp"
-    t.string "disabled_other_services"
-    t.string "disabled_other_services_wrp"
-    t.string "public_transportation"
-    t.string "public_transportation_wrp"
-    t.string "laboratory_services"
-    t.string "laboratory_services_wrp"
-    t.string "clia_waiver"
-    t.string "clia_waiver_wrp"
-    t.string "clia_waiver_expiration_date"
-    t.string "clia_certificate"
-    t.string "clia_certificate_wrp"
-    t.string "clia_certificate_expiration_date"
-    t.string "radiology_services"
-    t.string "radiology_services_xray"
-    t.string "radiology_services_fda"
-    t.string "anesthesia_administered"
-    t.string "additional_procedures"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -880,10 +829,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_18_092357) do
     t.string "application_method"
     t.string "availability"
     t.string "county"
-    t.string "first_name_of_credentialing_contact"
-    t.string "middle_name_of_credentialing_contact"
-    t.string "last_name_of_credentialing_contact"
-    t.string "suffix_of_credentialing_contact"
   end
 
   create_table "privilege_statuses", force: :cascade do |t|
@@ -1099,6 +1044,21 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_18_092357) do
     t.index ["provider_source_id"], name: "index_provider_source_cmes_on_provider_source_id"
   end
 
+  create_table "provider_source_collaborating_physicians", force: :cascade do |t|
+    t.integer "provider_source_id"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "middle_name"
+    t.string "suffix"
+    t.string "degree"
+    t.string "state_license"
+    t.string "license_number"
+    t.string "medicare_number"
+    t.string "npi_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "provider_source_data", force: :cascade do |t|
     t.bigint "provider_source_id", null: false
     t.string "data_key"
@@ -1115,6 +1075,29 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_18_092357) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_source_id"], name: "index_provider_source_documents_on_provider_source_id"
+  end
+
+  create_table "provider_source_teaching_programs", force: :cascade do |t|
+    t.integer "provider_source_id"
+    t.string "location"
+    t.string "name"
+    t.string "address1"
+    t.string "address2"
+    t.string "city"
+    t.string "zip_code"
+    t.string "phone_number"
+    t.string "phone_ext"
+    t.string "fax_number"
+    t.string "email"
+    t.string "director_first_name"
+    t.string "director_last_name"
+    t.string "director_degree"
+    t.string "academic_rank"
+    t.boolean "not_expire"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "provider_sources", force: :cascade do |t|
@@ -1425,21 +1408,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_18_092357) do
     t.string "welcome_letter_subject"
     t.text "welcome_letter_message"
     t.json "welcome_letter_attachments"
-    t.string "dea_not_applicable"
-    t.string "cds_not_applicable"
-    t.string "rn_not_applicable"
-    t.string "aprn_not_applicable"
-    t.string "state_not_applicable"
-    t.string "dea_explain"
-    t.string "cds_explain"
-    t.string "rn_explain"
-    t.string "cnp_explain"
-    t.string "license_explain"
     t.boolean "check_welcome_letter", default: false
     t.boolean "check_co_caqh", default: false
     t.boolean "check_mn_caqh_state_release_form", default: false
     t.boolean "check_mn_caqh_authorization_form", default: false
     t.boolean "check_caqh_standard_authorization", default: false
+    t.string "dea_not_applicable"
+    t.string "cds_not_applicable"
+    t.string "rn_not_applicable"
+    t.string "aprn_not_applicable"
+    t.string "state_not_applicable"
     t.json "state_license_copies"
     t.json "dea_copies"
     t.json "w9_form_copies"

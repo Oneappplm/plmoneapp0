@@ -290,6 +290,8 @@ class PagesController < ApplicationController
     @provider.create_registration if @provider&.registrations&.reload&.blank?
     @provider.create_cme if @provider&.cmes&.reload&.blank?
 	@provider.create_licensure if @provider&.licensures&.reload&.blank?
+    @provider.create_collaborating_physicians if @provider&.collaborating_physicians.reload&.blank? && params[:page] == 'employment'
+    @provider.create_teaching_programs if @provider&.teaching_programs.reload&.blank? && params[:page] == 'teaching_appointments'
   end
 
   def new_association(model)
@@ -298,6 +300,8 @@ class PagesController < ApplicationController
     @provider.create_registration if model == 'registration'
     @provider.create_cme if model == 'cme'
 	@provider.create_licensure if model == 'licensure'
+    @provider.create_collaborating_physicians if model == 'collaborating_physicians'
+    @provider.create_teaching_programs if model == 'teaching_programs'
   end
 
   def delete_association_record(model, id)
@@ -306,6 +310,7 @@ class PagesController < ApplicationController
     ProviderSourcesRegistration.delete(id) if model == 'registration'
 	ProviderSourcesLicensure.delete(id) if model == 'licensure'
     ProviderSourceCme.delete(id) if model == 'cme'
-
+    ProviderSourceCollaboratingPhysician.delete(id) if model == 'collaborating_physicians'
+    ProviderSourceTeachingProgram.delete(id) if model == 'teaching_programs'
   end
 end

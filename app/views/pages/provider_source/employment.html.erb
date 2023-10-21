@@ -50,8 +50,8 @@
 											<span>NO</span>
 										</div>
 									</div>
-								</div>	
-						    </div>	
+								</div>
+						    </div>
 						
 							<div class="<%= toggle_hide_current_provider_source('has_work_history', @provider) %>" id="work_history">
 								<%= render "provider_source_components/employment_details_form" %>
@@ -62,3 +62,15 @@
 		</div>
 	</div>
 </div>
+
+
+<% if params[:add_new].present? or params[:remove_record]%>
+<script>
+  setTimeout(removeAddNewInURL, 3000);
+  function removeAddNewInURL() {
+    // this is added to remove the add_new parameter in URL to prevent creating
+    // new association when page is reloaded
+    history.pushState(null, null, '/provider-source?page=employment');
+  }
+</script>
+<% end %>
