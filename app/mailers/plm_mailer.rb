@@ -53,4 +53,12 @@ class PlmMailer < ApplicationMailer
 
 		mail(to: @email, from: from, subject: subject, cc: email_cc)
 	end
+
+	def send_system_notification
+		@email = params[:email]
+		subject	= params[:subject]
+		@message	= params[:body]
+
+		mail(to: @email, from: from, subject: subject)
+	end
 end
