@@ -31,6 +31,12 @@ class ProvidersController < ApplicationController
 		# render json: @provider and return
 		@provider.encoded_by = current_user&.full_name
 		if @provider.save
+			PlmMailer.with(
+				email: Setting.take.t('system_notification_email'),
+				subject: "Add Provider",
+				body: "#{@provider.encoded_by} added a new provider: #{@provider.provider_name}"
+			).send_system_notification.deliver_later
+
 			redirect_to providers_path
 		else
 			build_associations
@@ -66,8 +72,13 @@ class ProvidersController < ApplicationController
 		@provider.remove_cv_copies
 		@provider.remove_telehealth_license_copies
 
-  if @provider.save(validate: false)
+  	if @provider.save(validate: false)
 			@provider.update updated_by: current_user&.full_name
+			PlmMailer.with(
+				email: Setting.take.t('system_notification_email'),
+				subject: "Edit Provider",
+				body: "#{@provider.updated_by} updated a provider: #{@provider.provider_name}"
+			).send_system_notification.deliver_later
 			if params[:from_notifications].present?
         submission = @provider.create_missing_field_submission
         if submission
@@ -84,14 +95,19 @@ class ProvidersController < ApplicationController
 			 build_associations
 				render :edit
 		end
-end
+	end
 
 	def destroy
-			if @provider.destroy
-				redirect_to providers_path, notice: 'Successfully deleted'
-			else
-				redirect_to providers_path, alert: 'Something went wrong'
-			end
+		if @provider.destroy
+			PlmMailer.with(
+				email: Setting.take.t('system_notification_email'),
+				subject: "Delete Provider",
+				body: "#{current_user&.full_name} deleted a provider: #{@provider.provider_name}"
+			).send_system_notification.deliver_later
+			redirect_to providers_path, notice: 'Successfully deleted'
+		else
+			redirect_to providers_path, alert: 'Something went wrong'
+		end
 	end
 
   def show
