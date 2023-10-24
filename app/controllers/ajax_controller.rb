@@ -45,6 +45,11 @@ class AjaxController < ApplicationController
 
   def create_provider_note
     @provider_note = ProviderNote.create(provider_notes_params)
+    PlmMailer.with(
+      email: Setting.take.t('system_notification_email'),
+      subject: "Added Note to Provider Profile",
+      body: "#{current_user&.full_name} added a new note to provider: #{@provider_note&.provider&.provider_name}"
+    ).send_system_notification.deliver_later
     render json: { html: render_to_string(partial: 'providers/provider_note', locals: { provider_note: @provider_note }).html_safe }
   end
 
