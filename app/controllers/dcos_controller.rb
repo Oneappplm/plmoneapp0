@@ -23,6 +23,11 @@ class DcosController < ApplicationController
 	def create
 		@dco = @enrollment_group.dcos.new(dco_params)
 		if @dco.save
+			PlmMailer.with(
+				email: Setting.take.t('system_notification_email'),
+				subject: "Add Location",
+				body: "#{current_user&.full_name} added a new location: #{@dco&.dco_name}"
+			).send_system_notification.deliver_later
 			redirect_to group_dcos_path(@enrollment_group), notice: 'DCO has been successfully created.'
 		else
 			@dco.schedules.build if !@dco.schedules.present?
@@ -33,6 +38,11 @@ class DcosController < ApplicationController
 
 	def update
 		if @dco.update(dco_params)
+			PlmMailer.with(
+				email: Setting.take.t('system_notification_email'),
+				subject: "Edit Location",
+				body: "#{current_user&.full_name} edited a location: #{@dco&.dco_name}"
+			).send_system_notification.deliver_later
 			redirect_to group_dcos_path(@enrollment_group), notice: 'DCO has been successfully updated.'
 		else
 			@dco.schedules.build if !@dco.schedules.present?
@@ -43,6 +53,11 @@ class DcosController < ApplicationController
 
 	def destroy
 		if @dco.destroy
+			PlmMailer.with(
+				email: Setting.take.t('system_notification_email'),
+				subject: "Delete Location",
+				body: "#{current_user&.full_name} deleted a location: #{@dco&.dco_name}"
+			).send_system_notification.deliver_later
 			redirect_to group_dcos_path(@enrollment_group), notice: 'DCO has been successfully deleted.'
 		else
 			redirect_to group_dcos_path(@enrollment_group), alert: 'Something went wrong.'

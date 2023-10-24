@@ -70,6 +70,11 @@ class EnrollmentsController < ApplicationController
 			@enrollment_group = EnrollmentGroup.new(group_params)
 			# render json: params and return
 			if @enrollment_group.save
+				PlmMailer.with(
+					email: Setting.take.t('system_notification_email'),
+					subject: "Added Group",
+					body: "#{current_user&.full_name} added a new group: #{@enrollment_group&.group_name}"
+				).send_system_notification.deliver_later
 				redirect_to groups_enrollments_path, notice: 'Group has been successfully created.' and return
 			end
 		else
@@ -101,6 +106,11 @@ class EnrollmentsController < ApplicationController
 
 		if	request.patch?
 			if @enrollment_group.update(group_params)
+				PlmMailer.with(
+					email: Setting.take.t('system_notification_email'),
+					subject: "Edit Group",
+					body: "#{current_user&.full_name} edited a group: #{@enrollment_group&.group_name}"
+				).send_system_notification.deliver_later
 				redirect_to groups_enrollments_path, notice: "#{@enrollment_group.group_name} has been successfully updated." and return
 			end
 		end
@@ -132,6 +142,11 @@ class EnrollmentsController < ApplicationController
 
 	def delete_group
 		if @enrollment_group.destroy
+			PlmMailer.with(
+				email: Setting.take.t('system_notification_email'),
+				subject: "Delete Group",
+				body: "#{current_user&.full_name} deleted a group: #{@enrollment_group&.group_name}"
+			).send_system_notification.deliver_later
 			redirect_to groups_enrollments_path, notice: "#{@enrollment_group.group_name} has been deleted."
 		else
 			redirect_to groups_enrollments_path, alert: 'Something went wrong'
