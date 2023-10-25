@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+		mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
   resources :hvhs_data
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -111,6 +112,7 @@ Rails.application.routes.draw do
       post :send_invitation
       post :bulk_remove_providers
       post :send_invite
+						get :fetch_providers
     end
     member do
       get :manage_applications

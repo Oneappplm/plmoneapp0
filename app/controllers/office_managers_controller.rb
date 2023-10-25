@@ -14,11 +14,10 @@ class OfficeManagersController < ApplicationController
       render params[:template]
     else
       clean_empty_providers
-      if params[:practice_location_id].present? && params[:practice_location_id] == 'All Location'
-        redirect_to office_managers_path
-      end
 
-      @providers = ProviderSource.unscoped.where(practice_location_id:  params[:practice_location_id]).order(created_at: :asc).paginate(page: params[:page], per_page: 12)
+						@providers = ProviderSource.unscoped.where.not(practice_location_id: nil)
+						@providers = ProviderSource.unscoped.where(practice_location_id: params[:practice_location_id]) if params[:practice_location_id].present? && params[:practice_location_id] != 'All Location'
+      @providers = @providers.order(created_at: :asc).paginate(page: params[:page], per_page: 12) if @providers.present?
     end
   end
 
@@ -97,6 +96,20 @@ class OfficeManagersController < ApplicationController
       render json: api_service.display_error, status: 500
     end
   end
+
+		def fetch_providers
+			api_service	= PracticeLocation::FetchProvidersFromInviteService.call(PracticeLocation.find(params[:practice_location_id]))
+
+			if api_service.success?
+				@providers_invite_completed_under_practice_location	= api_service.providers_invite_completed_under_practice_location
+				@providers_invite_completed_not_under_practice_location	= api_service.providers_invite_completed_not_under_practice_location
+
+				respond_to :js
+				# render json: api_service.display_result
+			else
+				render json: api_service.display_error, status: 500
+			end
+		end
 
   protected
   def set_client_organizations

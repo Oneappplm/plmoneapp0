@@ -1,0 +1,73 @@
+<style>
+	/* .drag-drop-container {
+				width: 200px;
+				height: 300px;
+				border: 1px solid #ccc;
+				float: left;
+				margin: 10px;
+} */
+
+.draggable {
+		background-color: #eee;
+		color: #000;
+		text-align: center;
+		cursor: pointer;
+		padding: 10px;
+		border-radius: 10px;
+		border-bottom: #ddd	4px solid;
+}
+
+.draggable:active {
+	border-bottom: none;
+}
+
+
+/* .droppable {
+				border: 2px dashed #3498db;
+				min-height: 50px;
+				margin: 10px;
+} */
+</style>
+<div class="row">
+	<div class="col-xl-6">
+					<h6 class="associate-heading mt-4">Providers added to the Organization, who have accepted your invitation, but not yet associated with the selected location.</h6>
+					<div class="associate-left-pane droppable" ondrop="drop(event)" ondragover="allowDrop(event)">
+						<% providers_invite_completed_not_under_practice_location.each do |user| %>
+							<div class="draggable" draggable="true" id="provider-<%= user.id %>">
+								<%= user.full_name %>
+							</div>
+						<% end %>
+					</div>
+	</div>
+	<div class="col-xl-6">
+					<h6 class="associate-heading mt-4">Providers associated to location who have accepted your invitation.</h6>
+					<div class="associate-right-pane droppable" ondrop="drop(event)" ondragover="allowDrop(event)">
+						<% providers_invite_completed_under_practice_location.each do |user| %>
+							<div class="draggable" draggable="true" id="provider-<%= user.id %>">
+								<%= user.full_name %>
+							</div>
+					<% end %>
+					</div>
+	</div>
+</div>
+
+
+<script>
+	document.querySelectorAll(".draggable").forEach(function (element) {
+					element.addEventListener("dragstart", function (e) {
+						// alert('here')
+									e.dataTransfer.setData("text", e.target.id);
+					});
+	});
+
+	function allowDrop(e) {
+					e.preventDefault();
+	}
+
+	function drop(e) {
+					e.preventDefault();
+					var data = e.dataTransfer.getData("text");
+					var draggableElement = document.getElementById(data);
+					e.target.appendChild(draggableElement);
+	}
+</script>

@@ -158,68 +158,7 @@
                         <div class="row">
                             <p class="associate-note mt-4">Instruction: Drag the name of the provider you want to associate or disassociate.</p>
                         </div>
-                        <form action="">
-                            <div class="row">
-                                <div class="col-xl-6">
-                                    <h6 class="associate-heading mt-4">Providers added to the Organization, who have accepted your invitation, but not yet associated with the selected location.</h6>
-                                    <div class="associate-left-pane">
-                                        <span class="provider-check">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                                                <label class="form-check-label" for="flexCheckDefault">
-                                                    Janeen Ruth Burlison
-                                                </label>
-                                            </div>
-                                        </span>
-                                        <span class="provider-check">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault1">
-                                                <label class="form-check-label" for="flexCheckDefault1">
-                                                    Larry De Hoyos
-                                                </label>
-                                            </div>
-                                        </span>
-                                        <span class="provider-check">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault2">
-                                                <label class="form-check-label" for="flexCheckDefault2">
-                                                    Rose Dawson
-                                                </label>
-                                            </div>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="col-xl-6">
-                                    <h6 class="associate-heading mt-4">Providers associated to location who have accepted your invitation.</h6>
-                                    <div class="associate-right-pane">
-                                        <span class="provider-check">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault3">
-                                                <label class="form-check-label" for="flexCheckDefault3">
-                                                    Maribel Zazueta
-                                                </label>
-                                            </div>
-                                        </span>
-                                        <span class="provider-check">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault4">
-                                                <label class="form-check-label" for="flexCheckDefault4">
-                                                    Mary Gatter
-                                                </label>
-                                            </div>
-                                        </span>
-                                        <span class="provider-check">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault5">
-                                                <label class="form-check-label" for="flexCheckDefault5">
-                                                    Jack Dawson
-                                                </label>
-                                            </div>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+																									<div id="fetched-providers" class="row"></div>
                         <div class="add-note mt-4">
                             <h6>Note:</h6>
                             <h6>Please note that this window only shows Providers who have accepted your invitation. Providers who have not yet accepted your invitation cannot be associated or disassociated. </h6>
@@ -367,6 +306,19 @@ $(document).ready(function() {
     setTimeout(getLanguages(),3000);
     setTimeout(getStates(),3000);
 });
+
+function fetchAssociateProvider(){
+	var practice_location_id = $(event.target).data('practicelocationid');
+	$.ajax({
+					url: '<%= fetch_providers_office_managers_path %>',
+					method: 'GET',
+					data: { practice_location_id: practice_location_id },
+					success: function(data) {
+						console.log(data);
+									// $('.associateProviderModal').html(data);
+					}
+	})
+}
 </script>
 
 <style>

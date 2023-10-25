@@ -1,6 +1,5 @@
 class User < ApplicationRecord
   include PgSearch::Model
-  include DynamicRolesInitializer
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :invitable, :database_authenticatable, :registerable,
@@ -105,6 +104,28 @@ class User < ApplicationRecord
       find_by(user_role: 'admin_staff')
     end
   end
+
+		def method_missing(method_name, *args, &block)
+			if method_name.to_s.start_with?('invite_') && method_name.to_s.end_with?('?')
+				# method name should have prefix invite_ and suffix ?	to be considered as invitation status
+				# check password_change_status_via_invite value if it matches the filtered method name
+				# password_change_status_via_invite: [nil, 'pending', 'completed'] or User.pluck(:password_change_status_via_invite).uniq
+				# sample method invocation: invite_pending?, invite_completed?
+				invitation_status = method_name.to_s.gsub('invite_', '').gsub('?', '') # Remove trailing "?" and prefix invite_ if present
+				invitation_status.to_param == self.password_change_status_via_invite.to_param
+			elsif	method_name.to_s.end_with?('?')
+				# method name should have prefix a role_name with suffix ?	to be considered as role
+				# check user_role value if it matches the filtered method name
+				# user_role: ['administrator', 'super_administrator', 'encoder', 'calls_agent', 'agent', 'admin_staff', 'test_user', 'viewer'] or User.pluck(:user_role).uniq
+				# sample method invocation: administrator?, super_administrator?, encoder?, calls_agent?, agent?, admin_staff?, test_user?, viewer?
+				role_name = method_name.to_s.chomp("?") # Remove trailing "?" if present
+				role_name.to_param == self.user_role.to_param
+			else
+				super
+			end
+		end
+
+
 
   def not_allowed_to_view?(role = nil)
     find_excluded_roles.include?(role)

@@ -14,8 +14,10 @@ class GroupEngageProvider < ApplicationRecord
 	validates_presence_of :first_name, :last_name, :email_address, :ssn
 	validates_uniqueness_of :email_address, :ssn
 
-	after_create	:create_provider_source
+	after_create	:create_provider_source,	unless: :skip_create_provider_source
 	after_create :create_user
+
+	attr_accessor :skip_create_provider_source
 
 	def full_name = [first_name, middle_name, last_name].compact.join(' ')
 

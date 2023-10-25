@@ -274,7 +274,7 @@ module ApplicationHelper
       ['Rejected','rejected']
     ]
   end
-  
+
   # not sure why but for some reason this has different options
   def enrollment_status
     [
@@ -574,6 +574,10 @@ module ApplicationHelper
     end
     selected_enrollment_type
   end
+
+		def practice_locations_for_select
+			@practice_locations_for_select = PracticeLocation.all.map{|m| [m.location, m.id]}
+		end
 
   def provider_all_required_fields
     [
