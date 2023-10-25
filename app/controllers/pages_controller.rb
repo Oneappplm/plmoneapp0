@@ -289,7 +289,8 @@ class PagesController < ApplicationController
     @provider.create_cds if @provider&.cds&.reload&.blank?
     @provider.create_registration if @provider&.registrations&.reload&.blank?
     @provider.create_cme if @provider&.cmes&.reload&.blank?
-	@provider.create_licensure if @provider&.licensures&.reload&.blank?
+				# temporary commented out
+			 # @provider.create_licensure if @provider&.licensures&.reload&.blank?
   end
 
   def new_association(model)
