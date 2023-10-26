@@ -34,7 +34,6 @@ class EnrollmentProvidersController < ApplicationController
 	end
 
 	def update
-
 		@enrollment_provider.assign_attributes(enrollment_provider_params)
 		@enrollment_provider.remove_upload_payor_files! # remove upload payor files if not present, for handling all files deletion
 
@@ -110,7 +109,7 @@ class EnrollmentProvidersController < ApplicationController
 			:suffix,
 			:telephone_number,
 			:email_address,
-      details_attributes: [:id, :due_date,
+      details_attributes: [:id, :start_date, :due_date,
                            :enrollment_payer, :enrollment_type, :enrollment_status, :payer_state,
                            :approved_date, :revalidation_date, :revalidation_due_date, :denied_date,
                            :comment, :ptan_number, :provider_ptan, :group_ptan, :start_date,
