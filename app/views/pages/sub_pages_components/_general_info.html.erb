@@ -153,13 +153,16 @@
    </div>
    <div class="row mb-3">
       <div class="col-lg-6">
-         <label class="text-dark-grey">Tax ID | 
+         <label class="text-dark-grey">Tax ID |
          <span>
          <input type="checkbox" name="practice_primay_tax_id">
          Primary Tax ID?
          </span>
          </label>
-         <input type="text" name="practice_tax_id" class="form-control">
+         <input type="text" id="practice_tax_id" name="practice_tax_id" class="form-control border-dark">
+         <div class="invalid-feedback">
+            Please provide a valid Tax ID - at least 9 digits.
+         </div>
       </div>
       <div class="col-lg-6">
          <label class="text-dark-grey">Type of Tax ID <span class="text-danger">*</span></label>
@@ -215,3 +218,21 @@
    </div>
 </div>
 </form>
+
+
+<script>
+
+$(document).on('ready',function() {
+	console.log("peste")
+	console.log($('#practice_tax_id'))
+	$('#practice_tax_id').keyup(phoneMask);
+
+	function phoneMask() {
+		console.log("ewe")
+    var num = $(this).val().replace(/\D/g,'');
+    $(this).val(num.substring(0,1) + '-' + num.substring(1,8));
+	}
+})
+
+
+</script>
