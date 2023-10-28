@@ -27,7 +27,7 @@
 		</div>
 		<div class="col-lg-3">
 			<label class="text-dark-grey">DOB</label>
-			<%= f.text_field :individual_ownership_dob, class: 'form-control border border-dark', placeholder: 'MM-DD-YYYY', onfocus: "(this.type = 'date')" %>
+			<%= f.text_field :individual_ownership_dob, class: 'form-control border border-dark', placeholder: 'MM/DD/YYYY', onfocus: "(this.type = 'date')" %>
 		</div>
 		<div class="col-lg-3">
 			<label class="text-dark-grey">% of Ownership</label>
@@ -48,11 +48,11 @@
 
 				<div class="col-lg-3">
 					<label class="text-dark-grey">Effective Date of Ownership:</label>
-					<%= f.text_field :individual_ownership_effective_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.individual_ownership_effective_date.to_s)&.strftime('%m-%d-%Y'), onfocus: "(this.type = 'date')" %>
+					<%= f.text_field :individual_ownership_effective_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value:display_mdy(f.object.individual_ownership_effective_date), onfocus: "(this.type = 'date')" %>
 				</div>
 				<div class="col-lg-3">
 					<label class="text-dark-grey">Acquired Managing Control Date:</label>
-					<%= f.text_field :individual_ownership_control_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark', value: Time.zone.parse(f.object.individual_ownership_control_date.to_s)&.strftime('%m-%d-%Y'),  onfocus: "(this.type = 'date')" %>
+					<%= f.text_field :individual_ownership_control_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.individual_ownership_control_date),  onfocus: "(this.type = 'date')" %>
 				</div>
 				 <div class="col-lg-6">
 						<label class="text-dark-grey">Select all that apply: </label>
@@ -74,7 +74,7 @@
    var group_roles = '<%= chosen_group_roles %>';
    var selected_group_roles  = stringArrayModifier(group_roles);
    var group_roles_dropdown = '.edit-role-dropdown-'+'<%= index_of_object.to_s %>';
-  
+
   function getDetailsGroupRoles() {
           $.ajax({
             url: '<%= get_group_roles_path %>',
