@@ -65,7 +65,7 @@
               <p class="mb-1"><strong>Status:</strong> <%= @provider.status %></p>
               <p class="mb-1"><strong>Gender:</strong> <%= @provider.gender %></p>
               <p class="mb-1"><strong>SSN:</strong> <%= @provider.ssn %></p>
-              <p class="mb-1"><strong>Date of Birth:</strong> <%= @provider.birth_date&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>Date of Birth:</strong> <%= @provider.birth_date&.strftime('%m/%d/%Y') rescue nil %></p>
               <p class="mb-1"><strong>Birth City:</strong> <%= @provider&.birth_city %></p>
               <p class="mb-1"><strong>Birth State:</strong> <%= State.find_by(id: @provider&.birth_state.to_i)&.name rescue nil %></p>
 
@@ -89,8 +89,8 @@
               <p class="mb-1"><strong>State:</strong> <%= State.find_by(id: @provider&.prof_medical_school_state_id.to_i)&.name rescue nil %></p>
               <p class="mb-1"><strong>Country:</strong> <%= @provider&.prof_medical_school_country %></p>
               <p class="mb-1"><strong>Zip Code:</strong> <%= @provider&.prof_medical_school_zipcode %></p>
-              <p class="mb-1"><strong>Start Date:</strong> <%= @provider&.prof_medical_start_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>End (Graduation) Date:</strong> <%= @provider&.graduation_date&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>Start Date:</strong> <%= @provider&.prof_medical_start_date&.strftime('%m/%d/%Y') rescue nil %></p>
+              <p class="mb-1"><strong>End (Graduation) Date:</strong> <%= @provider&.graduation_date&.strftime('%m/%d/%Y') rescue nil %></p>
               <p class="mb-1"><strong>Degree Awarded:</strong> <%= @provider&.prof_medical_school_degree_awarded %></p>
               <p class="mb-1"><strong>Did you complete your graduate education at this school?</strong> <%= @provider&.medical_license %></p>
               <hr>
@@ -103,7 +103,7 @@
               <p class="mb-1"><strong>Practitioner Type:</strong> <%= @provider&.practitioner_type %></p>
               <p class="mb-1"><strong>Taxonomy Code:</strong> <%= @provider&.taxonomy %></p>
               <p class="mb-1"><strong>Specialty:</strong> <%= @provider&.specialty %></p>
-              <p class="mb-1"><strong>Provider Effective Date:</strong> <%= @provider&.provider_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>Provider Effective Date:</strong> <%= @provider&.provider_effective_date&.strftime('%m/%d/%Y') rescue nil %></p>
               <p class="mb-1"><strong>NPI Number:</strong> <%= @provider&.npi %></p>
               <hr>
             </div>
@@ -115,9 +115,9 @@
               <% @provider&.board_certifications&.each do |board|%>
               <p class="mb-1"><strong>Board Name:</strong> <%=  board&.bc_board_name %></p>
               <p class="mb-1"><strong>Certification Number:</strong> <%= board&.bc_certification_number %></p>
-              <p class="mb-1"><strong>Effective Date:</strong> <%= Time.zone.parse(board&.bc_effective_date.to_s)&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>Re-Certification Date:</strong> <%= Time.zone.parse(board&.bc_recertification_date.to_s)&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>Expiration:</strong> <%= Time.zone.parse(board&.bc_expiration_date.to_s)&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>Effective Date:</strong> <%= Time.zone.parse(board&.bc_effective_date.to_s)&.strftime('%m/%d/%Y') rescue nil %></p>
+              <p class="mb-1"><strong>Re-Certification Date:</strong> <%= Time.zone.parse(board&.bc_recertification_date.to_s)&.strftime('%m/%d/%Y') rescue nil %></p>
+              <p class="mb-1"><strong>Expiration:</strong> <%= Time.zone.parse(board&.bc_expiration_date.to_s)&.strftime('%m/%d/%Y') rescue nil %></p>
               <p class="mb-1"><strong>Specialty Type:</strong> <%= board&.bc_specialty_type %></p>
               <hr>
               <% end %>
@@ -132,11 +132,11 @@
               <p class="mb-1"><strong>CAQH State:</strong> <%= State.find_by(id: @provider&.caqh_state.to_i)&.name rescue nil %></p>
               <p class="mb-1"><strong>CAQH Username:</strong> <%= @provider&.caqh_username %></p>
               <p class="mb-1"><strong>CAQH Password:</strong> <%= @provider&.caqh_password %></p>
-              <p class="mb-1"><strong>Current Re-Attestation:</strong> <%= @provider&.caqh_current_reattestation_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>Re-Attestation must be completed by:</strong> <%= Date.parse(@provider&.caqh_reattest_completed_by)&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>Current Re-Attestation:</strong> <%= @provider&.caqh_current_reattestation_date&.strftime('%m/%d/%Y') rescue nil %></p>
+              <p class="mb-1"><strong>Re-Attestation must be completed by:</strong> <%= Date.parse(@provider&.caqh_reattest_completed_by)&.strftime('%m/%d/%Y') rescue nil %></p>
               <p class="mb-1"><strong>Questions:</strong> <%= @provider&.caqh_question %></p>
               <p class="mb-1"><strong>Answer:</strong> <%= @provider&.caqh_answer %></p>
-              <p class="mb-1"><strong>CAQH PDF Date Received:</strong> <%= @provider&.caqh_pdf_date_received&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>CAQH PDF Date Received:</strong> <%= @provider&.caqh_pdf_date_received&.strftime('%m/%d/%Y') rescue nil %></p>
               <p class="mb-1"><strong>CAQH Notes:</strong> <%= @provider&.caqh_notes %></p>
               <hr>
             </div>
@@ -168,10 +168,10 @@
             <div class="collapsible" style="<%= current_user&.is_card_open?('dea_licenses') ? '' : 'display: none;' %>">
               <% @provider&.dea_licenses&.each do |dea_license|%>
               <p class="mb-1"><strong>DEA Registration Number:</strong> <%= dea_license&.dea_license_number %></p>
-              <p class="mb-1"><strong>DEA Registration Original License Issue Date:</strong> <%= dea_license&.dea_license_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>DEA Registration Original License Issue Date:</strong> <%= dea_license&.dea_license_effective_date&.strftime('%m/%d/%Y') rescue nil %></p>
               <p class="mb-1"><strong>DEA Registration State:</strong> <%= State.find_by(id: dea_license.state_id.to_i)&.name rescue nil %></p>
-              <p class="mb-1"><strong>DEA Registration Expiration Date:</strong> <%= dea_license&.dea_license_expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>DEA Registration Renewal Date:</strong> <%= Time.zone.parse(dea_license&.dea_license_renewal_effective_date.to_s)&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>DEA Registration Expiration Date:</strong> <%= dea_license&.dea_license_expiration_date&.strftime('%m/%d/%Y') rescue nil %></p>
+              <p class="mb-1"><strong>DEA Registration Renewal Date:</strong> <%= Time.zone.parse(dea_license&.dea_license_renewal_effective_date.to_s)&.strftime('%m/%d/%Y') rescue nil %></p>
               <p class="mb-1"><strong>Explain if you do not have a DEA Registration Number:</strong> <%= dea_license&.no_dea_license %></p>
               <hr>
               <% end %>
@@ -184,10 +184,10 @@
             <div class="collapsible" style="<%= current_user&.is_card_open?('cds_licenses') ? '' : 'display: none;' %>">
               <% @provider&.cds_licenses&.each do |cds_license|%>
               <p class="mb-1"><strong>CDS Registration Number:</strong> <%= cds_license&.cds_license_number %></p>
-              <p class="mb-1"><strong>CDS Registration Original License Issue Date:</strong> <%= cds_license&.cds_license_issue_date&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>CDS Registration Original License Issue Date:</strong> <%= cds_license&.cds_license_issue_date&.strftime('%m/%d/%Y') rescue nil %></p>
               <p class="mb-1"><strong>CDS Registration State:</strong> <%= State.find_by(id: cds_license.state_id.to_i)&.name rescue nil %></p>
-              <p class="mb-1"><strong>CDS Registration Expiration Date:</strong> <%= cds_license&.cds_license_expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>CDS Registration Renewal Date:</strong> <%= cds_license&.cds_renewal_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>CDS Registration Expiration Date:</strong> <%= cds_license&.cds_license_expiration_date&.strftime('%m/%d/%Y') rescue nil %></p>
+              <p class="mb-1"><strong>CDS Registration Renewal Date:</strong> <%= cds_license&.cds_renewal_effective_date&.strftime('%m/%d/%Y') rescue nil %></p>
               <p class="mb-1"><strong>Explain if you do not have a CDS Registration Number:</strong> <%= cds_license&.no_cds_license %></p>
               <hr>
               <% end %>
@@ -200,10 +200,10 @@
             <div class="collapsible" style="<%= current_user&.is_card_open?('rn_licenses') ? '' : 'display: none;' %>">
               <% @provider&.rn_licenses&.each do |rn_license|%>
               <p class="mb-1"><strong>RN License Number:</strong> <%= rn_license&.rn_license_number %></p>
-              <p class="mb-1"><strong>RN Original License Issue Date:</strong> <%= rn_license&.rn_license_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>RN Original License Issue Date:</strong> <%= rn_license&.rn_license_effective_date&.strftime('%m/%d/%Y') rescue nil %></p>
               <p class="mb-1"><strong>RN License State:</strong> <%= State.find_by(id: rn_license.state_id.to_i)&.name rescue nil %></p>
-              <p class="mb-1"><strong>RN License Expiration Date:</strong> <%= rn_license&.rn_license_expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>RN License Renewal Date:</strong> <%= Time.zone.parse(rn_license&.rn_license_renewal_effective_date.to_s)&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>RN License Expiration Date:</strong> <%= rn_license&.rn_license_expiration_date&.strftime('%m/%d/%Y') rescue nil %></p>
+              <p class="mb-1"><strong>RN License Renewal Date:</strong> <%= Time.zone.parse(rn_license&.rn_license_renewal_effective_date.to_s)&.strftime('%m/%d/%Y') rescue nil %></p>
               <p class="mb-1"><strong>Explain if you do not have a RN License Number:</strong> <%= rn_license&.no_rn_license %></p>
               <hr>
               <% end %>
@@ -216,10 +216,10 @@
             <div class="collapsible" style="<%= current_user&.is_card_open?('aprn_licenses') ? '' : 'display: none;' %>">
               <% @provider&.cnp_licenses&.each do |aprn_license|%>
               <p class="mb-1"><strong>APRN License Number:</strong> <%= aprn_license&.cnp_license_number %></p>
-              <p class="mb-1"><strong>APRN Original License Issue Date:</strong> <%= aprn_license&.effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>APRN Original License Issue Date:</strong> <%= aprn_license&.effective_date&.strftime('%m/%d/%Y') rescue nil %></p>
               <p class="mb-1"><strong>APRN License State:</strong> <%= State.find_by(id: aprn_license.state_id.to_i)&.name rescue nil %></p>
-              <p class="mb-1"><strong>APRN License Expiration Date:</strong> <%= aprn_license&.cnp_license_renewal_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>APRN License Renewal Date:</strong> <%= aprn_license&.expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>APRN License Expiration Date:</strong> <%= aprn_license&.cnp_license_renewal_effective_date&.strftime('%m/%d/%Y') rescue nil %></p>
+              <p class="mb-1"><strong>APRN License Renewal Date:</strong> <%= aprn_license&.expiration_date&.strftime('%m/%d/%Y') rescue nil %></p>
               <p class="mb-1"><strong>Explain if you do not have a APRN License Number:</strong> <%= aprn_license&.no_cnp_license %></p>
               <hr>
               <% end %>
@@ -233,10 +233,10 @@
               <% @provider&.licenses.each_with_index do |license, indx|%>
                 <div class="mb-2 <%= "border-bottom-dash" if indx < @provider&.licenses.length - 1 %>">
                   <p class="mb-1"><strong>State License Number:</strong> <%= license&.license_number %></p>
-                  <p class="mb-1"><strong>State License Issue Date:</strong> <%= license&.license_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
+                  <p class="mb-1"><strong>State License Issue Date:</strong> <%= license&.license_effective_date&.strftime('%m/%d/%Y') rescue nil %></p>
                   <p class="mb-1"><strong>State License Registration State:</strong> <%= State.find_by(id: license&.state_id)&.name rescue nil %></p>
-                  <p class="mb-1"><strong>State License Expiration Date:</strong> <%= license&.license_expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
-                  <p class="mb-1"><strong>State License Renewal Date:</strong> <%= Time.zone.parse(license&.license_state_renewal_date.to_s)&.strftime('%m-%d-%Y') rescue nil %></p>
+                  <p class="mb-1"><strong>State License Expiration Date:</strong> <%= license&.license_expiration_date&.strftime('%m/%d/%Y') rescue nil %></p>
+                  <p class="mb-1"><strong>State License Renewal Date:</strong> <%= Time.zone.parse(license&.license_state_renewal_date.to_s)&.strftime('%m/%d/%Y') rescue nil %></p>
                   <p class="mb-1"><strong>Explain if you do not have a PA License Number:</strong>  <%= license&.no_state_license %> </p>
                    <p class="mb-1"><strong>License Type</strong>  <%= license&.license_type %> </p>
                 </div>
@@ -253,9 +253,9 @@
               <p class="mb-1"><strong>City:</strong> <%= @provider&.prof_liability_city %></p>
               <p class="mb-1"><strong>State:</strong> <%= State.find_by(id: @provider&.prof_liability_state_id.to_i)&.name rescue nil %></p>
               <p class="mb-1"><strong>Zip Code:</strong> <%= @provider&.prof_liability_zipcode %></p>
-              <p class="mb-1"><strong>Original Effective Date:</strong> <%= @provider&.prof_liability_orig_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>Original Effective Date:</strong> <%= @provider&.prof_liability_effective_date&.strftime('%m-%d-%Y') rescue nil %></p>
-              <p class="mb-1"><strong>Expiration Date:</strong> <%= @provider&.prof_liability_expiration_date&.strftime('%m-%d-%Y') rescue nil %></p>
+              <p class="mb-1"><strong>Original Effective Date:</strong> <%= @provider&.prof_liability_orig_effective_date&.strftime('%m/%d/%Y') rescue nil %></p>
+              <p class="mb-1"><strong>Original Effective Date:</strong> <%= @provider&.prof_liability_effective_date&.strftime('%m/%d/%Y') rescue nil %></p>
+              <p class="mb-1"><strong>Expiration Date:</strong> <%= @provider&.prof_liability_expiration_date&.strftime('%m/%d/%Y') rescue nil %></p>
               <p class="mb-1"><strong>Type of Coverage:</strong> <%= @provider&.prof_liability_coverage_type %></p>
               <p class="mb-1"><strong>Do you have unlimited coverage with this insurance carrier?</strong> <%= @provider&.prof_liability_unlimited_coverage %></p>
               <p class="mb-1"><strong>Policy includes tail coverage?</strong> <%= @provider&.prof_liability_tail_coverage %></p>
@@ -365,11 +365,11 @@
                       <p class="mb-2"><strong>State:</strong> <%= State.find_by(alpha_code: detail&.payer_state)&.name rescue nil %></p>
                       <p class="mb-2"><strong>Application Status:</strong> <%= detail&.enrollment_status&.titleize %></p>
                       <% if detail&.enrollment_status == "approved" %>
-                        <p class="mb-2"><strong>Effective Date:</strong> <%= DateTime.parse(detail&.enrollment_effective_date)&.strftime('%m-%d-%Y') rescue nil %></p>
-                        <p class="mb-2"><strong>Business End Date:</strong> <%= DateTime.parse(detail&.business_end_date)&.strftime('%m-%d-%Y') rescue nil %></p>
+                        <p class="mb-2"><strong>Effective Date:</strong> <%= DateTime.parse(detail&.enrollment_effective_date)&.strftime('%m/%d/%Y') rescue nil %></p>
+                        <p class="mb-2"><strong>Business End Date:</strong> <%= DateTime.parse(detail&.business_end_date)&.strftime('%m/%d/%Y') rescue nil %></p>
                         <p class="mb-2"><strong>Revalidation Status:</strong> <%= detail&.revalidation_status %></p>
-                        <p class="mb-2"><strong>Most Current Revalidation Date:</strong> <%= detail&.revalidation_date&.strftime('%m-%d-%Y') rescue nil %></p>
-                        <p class="mb-2"><strong>Revalidation Next Due Date:</strong> <%=detail&.revalidation_due_date&.strftime('%m-%d-%Y') rescue nil %></p>
+                        <p class="mb-2"><strong>Most Current Revalidation Date:</strong> <%= detail&.revalidation_date&.strftime('%m/%d/%Y') rescue nil %></p>
+                        <p class="mb-2"><strong>Revalidation Next Due Date:</strong> <%=detail&.revalidation_due_date&.strftime('%m/%d/%Y') rescue nil %></p>
                         <p class="mb-2"><strong>Line of Business:</strong> <%= detail&.line_of_business %></p>
                       <% end %>
                       <p class="mb-2"><strong>Provider ID:</strong> <%= detail&.provider_id %> </p>
