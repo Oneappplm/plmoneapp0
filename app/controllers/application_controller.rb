@@ -10,7 +10,8 @@ class ApplicationController < ActionController::Base
 	before_action :authenticate_user!, except: %i[terms privacy_policy]
 	before_action :configure_permitted_parameters, if: :devise_controller?
   # exceptions for track_event are mostly ajax requests
-  before_action :track_event
+	before_action :track_event
+	before_action { filter_params params }
 
   # before_action :force_logout_on_close_if_expired, except: [:logout_on_close] # TODO: uncomment this line
 
@@ -56,6 +57,23 @@ class ApplicationController < ActionController::Base
       end
     end
   end
+
+		# Recursively process the params hash
+		def filter_params(params)
+			params.each do |key, value|
+					if value.is_a?(Hash) || value.is_a?(ActionController::Parameters)
+							#	process nested hashes
+							filter_params(value)
+					elsif value.is_a?(Array)
+							#	process nested arrays
+							value.each { |item| filter_params(item) if item.is_a?(Hash) || item.is_a?(ActionController::Parameters) }
+					elsif value.is_a?(String) && value.match(/\A\d{1,2}\/\d{1,2}\/\d{4}\z/)
+						# custom date format for date fields in the form (mm/dd/yyyy) to be converted to (yyyy-mm-dd)
+						params[key] = Date.strptime(value, '%m/%d/%Y').strftime('%Y-%m-%d')
+					# elsif add	more conditions here if needed
+					end
+			end
+		end
 
   private
 

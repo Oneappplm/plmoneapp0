@@ -274,7 +274,7 @@ module ApplicationHelper
       ['Rejected','rejected']
     ]
   end
-  
+
   # not sure why but for some reason this has different options
   def enrollment_status
     [
@@ -620,4 +620,8 @@ module ApplicationHelper
       ['December','December'],
     ]
   end
+
+		def display_mdy value
+			Time.zone.parse(value.to_s)&.strftime('%m/%d/%Y') rescue nil
+		end
 end
