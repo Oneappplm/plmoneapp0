@@ -15,4 +15,9 @@ class VirtualReviewCommittee < ApplicationRecord
 	def social
 		"@#{self.provider_name.parameterize}"
 	end
+
+	def changing
+		selected_row = VirtualReviewCommittee.find(id);
+		selected_row.progress_status = "assigned"
+	end
 end
