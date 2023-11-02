@@ -1,0 +1,20 @@
+wb = xlsx_package.workbook
+
+wb.add_worksheet(name: "Enrollments") do |sheet|
+  # Create the header row
+  sheet.add_row [
+      "First Name", "Middle Name(optional)", "Last Name", "Suffix(optional)",
+      "Telephone Number", "Email Address"
+			]
+  
+  @enrollment_provider_export.each do |enrollment_provider|
+  sheet.add_row [
+		  enrollment_provider.first_name,
+      enrollment_provider.middle_name,
+      enrollment_provider.last_name,
+      enrollment_provider.suffix,
+      enrollment_provider.telephone_number,
+      enrollment_provider.email_address
+				]
+  end
+end
