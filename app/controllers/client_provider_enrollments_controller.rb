@@ -17,5 +17,15 @@ class ClientProviderEnrollmentsController < ApplicationController
       params[:enrollment_group_ids] = current_user.enrollment_groups.pluck(:id)
     end
 		@client_provider_enrollments = ClientProviderEnrollment.search_by_params(params)
+    @client_providers = EnrollmentProvider.all
+    @enrollment_provider_export = @client_providers
+    respond_to do |format|
+      format.xlsx {
+        response.headers[
+          'Content-Disposition'
+        ] = "attachment; filename=enrollments.xlsx"
+      }
+      format.html { render :index }
+    end
   end
 end

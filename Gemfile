@@ -96,3 +96,6 @@ gem "noticed", "~> 1.6"
 gem 'draper' # https://github.com/drapergem/draper
 gem "figaro" # https://github.com/laserlemon/figaro
 gem 'exception_notification' # https://github.com/smartinez87/exception_notification
+gem 'rubyzip', '>= 1.2.1'
+gem 'axlsx', git: 'https://github.com/randym/axlsx.git', ref: 'c8ac844'
+gem 'axlsx_rails'
