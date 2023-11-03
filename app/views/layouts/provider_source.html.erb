@@ -508,6 +508,20 @@
     }
   });
 
+  $('.disclosure-btn-toggle').on('click',function(e){
+    var selected_option = $(e.target).siblings('.disclosure-select-option').val();
+
+    $(this).hasClass('active') ? $(this).removeClass('active') : $(this).addClass('active');
+    selected_option == 'yes' ? toShow($(this).data('toshow'),true) : toShow($(this).data('toshow'),false);
+
+    if($(this).hasClass('to-change-value')) {
+      var to_change = $(this).data('tochange');
+      $('input[name='+to_change+']').val(selected_option)
+
+      saveInput($('input[name='+to_change+']'));
+    }
+  });
+
   function toShow(to_show,show) {
     show ? $('#'+to_show).removeClass('d-none') : $('#'+to_show).addClass('d-none');
   }
@@ -669,7 +683,7 @@ function saveInput(input) {
 }
 
 
-$('input, textarea, select, div.multi-select, div.single-select').each(function(element) {
+$('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-select, div.single-select').each(function(element) {
 	var inputName = $(this).attr('name');
 	var inputValue = $(this).val();
   var tagName = $(this).prop('tagName').toLowerCase();
