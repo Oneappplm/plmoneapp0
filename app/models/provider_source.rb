@@ -28,7 +28,7 @@ class ProviderSource < ApplicationRecord
     'practice_location_interpreter', 'practice_laboratory_services', 'practice_partner', 'all_practice_location'
   ]
 
-  after_create :set_default_disclosure_answer
+  # after_create :set_default_disclosure_answer
   after_create :set_default_answers_to_rqeuired_switch_toggles
 
   class << self
@@ -89,6 +89,16 @@ class ProviderSource < ApplicationRecord
   def is_answer_yes?(question_slug)
     # this is for disclosures related models is DisclosureQuestion and ProviderSourceData
     fetch(question_slug) == 'yes'
+  end
+
+  def is_answer_no?(question_slug)
+    # this is for disclosures related models is DisclosureQuestion and ProviderSourceData
+    fetch(question_slug) == 'no'
+  end
+
+  def no_answer?(question_slug)
+    # this is for disclosures related models is DisclosureQuestion and ProviderSourceData
+    fetch(question_slug).nil?
   end
 
   def disclosure_explanation(question_slug)
@@ -800,24 +810,21 @@ class ProviderSource < ApplicationRecord
 
   def disclosure_progress_v2
     percentage = 0
-    prerequisites = DisclosureQuestion.all.pluck(:slug)
+    prerequisites = DisclosureQuestion.all.order(:slug).pluck(:slug)
     with_prerequisites = prerequisites.map{|m| "#{m}_explanation"}
-    values = fetch_many(prerequisites)&.pluck(:data_value)
-
-    percentage = if values.include?('yes')
-      prerequisites_with_yes = values.map.with_index{|v,idx| idx if (v != 'no' && v != nil)}.compact
-
-      fields_to_fill_up = prerequisites_with_yes.map{|y| with_prerequisites[y]}
-
-      prerequisites_with_yes.reverse_each do |idx|
-        prerequisites.delete_at(idx)
-      end
-      fields_to_answer = fields_to_fill_up.flatten + prerequisites
-      answered = fetch_many(fields_to_answer)&.pluck(:data_value).compact.reject(&:empty?).count
-      (answered.to_f/(fields_to_answer.count).to_f) * 100
+    values = fetch_many(prerequisites).order(:data_key)&.pluck(:data_key, :data_value)
+    data_values = values.collect { |c| c[1] }
+    valid_yes_count = if data_values.include?('yes')
+      prerequisites_with_yes = values.select { |v| v[1] == 'yes' }
+      prerequisites_with_yes = prerequisites_with_yes.map{|m| "#{m[0]}_explanation"}
+      answered = fetch_many(prerequisites_with_yes)&.pluck(:data_value).compact.reject(&:empty?).count
+      answered
     else
-      100
+      0
     end
+
+    no_count = data_values.select{|v| v == 'no'}.count
+    percentage = ((valid_yes_count + no_count) / with_prerequisites.count.to_f) * 100
     percentage.to_i
   end
 
@@ -887,11 +894,11 @@ class ProviderSource < ApplicationRecord
   private
 
   # will set provider source disclosure answer to no as default is needed to calculate percentage of progress
-  def set_default_disclosure_answer
-    DisclosureQuestion.all.each do |question|
-      ProviderSourceData.find_or_create_by(provider_source_id: self.id, data_key: question.slug, data_value: 'no')
-    end
-  end
+  # def set_default_disclosure_answer
+  #   DisclosureQuestion.all.each do |question|
+  #     ProviderSourceData.find_or_create_by(provider_source_id: self.id, data_key: question.slug, data_value: 'no')
+  #   end
+  # end
 
   def set_default_answers_to_rqeuired_switch_toggles
     # Made this so that all required toggles have default answers NO

@@ -32,27 +32,34 @@
 							   <tbody>
                   <tr>
 							      <td width="10%" class="text-center">
-							         <button type="button" class="btn btn-xs btn-toggle has-to-show to-change-value <%= @provider.is_answer_yes?(question.slug) ? 'active' : ''%> " data-tochange="<%= question.slug %>" data-toshow="<%= question.slug %>_explain_field" data-toggle="button" aria-pressed="false" autocomplete="off">
-							            <div class="handle"></div>
-							         </button>
-							         <input type="text" name="<%= question.slug %>" value="no" class='invisible-input'>
+										<select class="form-select disclosure-select-option" aria-label="select option">
+											<% if @provider.no_answer?(question.slug) %>
+												<option value="" <%= @provider.no_answer?(question.slug) ? 'selected' : '' %>>Select option</option>
+											<% end %>
+											<option value="yes" <%= @provider.is_answer_yes?(question.slug) ? 'selected' : '' %>>Yes</option>
+											<option value="no" <%= @provider.is_answer_no?(question.slug) ? 'selected' : '' %>>No</option>
+										</select>
+											<button type="button" class="d-none disclosure-toggle-button btn btn-xs disclosure-btn-toggle has-to-show to-change-value <%= @provider.is_answer_yes?(question.slug) ? 'active' : ''%> " data-tochange="<%= question.slug %>" data-toshow="<%= question.slug %>_explain_field" data-toggle="button" aria-pressed="false" autocomplete="off">
+												<div class="handle"></div>
+											</button>
+											<input type="text" name="<%= question.slug %>" value="no" class='invisible-input no-auto-save'>
 							      </td>
-							      <td width="90%">
+							      <td width="90%" style="padding-left: 10px;">
 							         <p class="text-black">
 							            <p class="text-black"><span class="text-danger">*</span><%= question.slug[1..-1]%>. <%= question.question %>
 													</p>
-										<%= question.note.nil? ? '' : "<div class='#{question.alert_type}'>#{question.note}</div>".html_safe %>
+													<%= question.note.nil? ? '' : "<div class='#{question.alert_type}'>#{question.note}</div>".html_safe %>
 							         </p>
 							      </td>
                     </tr>
                     <tr>
                       <td width="">
                       </td>
-                      <td>
+                      <td style="padding-left: 10px;">
                         <div id="<%= question.slug %>_explain_field" class="<%= @provider.is_answer_yes?(question.slug) ? '' : 'd-none'%>">
                         <label class="text-black">Please provide an explanation below <span class="text-danger">*</span></label>
-                          <textarea class="form-control" rows="3" name="<%= question.slug%>_explanation">
-                            <%= @provider.disclosure_explanation(question.slug)%>
+                          <textarea class="form-control no-auto-save" rows="3" name="<%= question.slug%>_explanation">
+                            <%= @provider.disclosure_explanation(question.slug) %>
                           </textarea>
                        </div>
                       </td>
@@ -68,10 +75,9 @@
 </div>
 
 <script>
-	$('.btn-toggle').on('click',function(e){
-    if($(this).hasClass('to-change-value')) {
-      var to_change = $(this).data('tochange');
-      !$(this).hasClass('active') ? $('input[name='+to_change+']').val('yes') : $('input[name='+to_change+']').val('no');
-    }
-  });
+  $(document).ready(function() {
+		$(body).on('change', '.disclosure-select-option', function(e) {
+			$(e.target).siblings('.disclosure-btn-toggle').trigger('click');
+		})
+	})
 </script>
