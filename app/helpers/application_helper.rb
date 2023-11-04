@@ -74,7 +74,7 @@ module ApplicationHelper
 			return current_setting.logo_file.url if current_setting.logo_file.present?
 
    @current_logo ||= if current_setting.qualifacts?
-					asset_path('qualifacts-logo.svg')
+					asset_path('sample.png')
     else
 					asset_path('plm-logo-3.png')
     end
