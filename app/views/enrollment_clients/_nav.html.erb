@@ -1,8 +1,13 @@
+<% client = @provider.client %>
 
    <div class="row mb-3">
       <div class="col-xl-12 d-flex justify-content-between">
          <h2>
-            <a href="<%= enrollment_clients_path %>" class="d-flex gap-2 text-secondary">
+            <% if client %>
+               <a href="<%= alt_enrollment_group_providers_path(client) %>" class="d-flex gap-2 text-secondary">
+            <% else %>
+               <a href="<%= enrollment_clients_path %>" class="d-flex gap-2 text-secondary">
+            <% end %> 
             <i class="bi bi-arrow-left h3"></i>
             <span class="h3"><%= @provider&.fullname rescue 'Back' %></span>
             </a>
