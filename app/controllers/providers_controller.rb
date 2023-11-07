@@ -49,7 +49,7 @@ class ProvidersController < ApplicationController
 				body: "#{@provider.encoded_by} added a new provider: #{@provider.provider_name}"
 			).send_system_notification.deliver_later
 
-			redirect_to providers_path
+			redirect_to providers_path, notice: 'Provider has been successfully created.' 
 		else
 			build_associations
 			render :new
