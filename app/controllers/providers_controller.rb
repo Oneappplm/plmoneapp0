@@ -2,28 +2,16 @@ class ProvidersController < ApplicationController
 	before_action :set_provider, only: [:show, :edit, :update, :destroy, :update_from_notifications]
 	before_action :set_overview_details, only: [:overview]
   def index
-			if params[:user_search].present?
-				@providers = Provider.unscoped.select("NULLIF(first_name, '') as f, NULLIF(last_name, '') as l,NULLIF(middle_name, '') as m, *").search(params[:user_search])
-			else
-				@providers = Provider.unscoped.select("NULLIF(first_name, '') as f, NULLIF(last_name, '') as l,NULLIF(middle_name, '') as m, *").all
-			end
-			if !current_user.can_access_all_groups? && !current_user.super_administrator?
-				@providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
-			end
+		if params[:user_search].present?
+			@providers = Provider.unscoped.select("NULLIF(first_name, '') as f, NULLIF(last_name, '') as l,NULLIF(middle_name, '') as m, *").search(params[:user_search])
+		else
+			@providers = Provider.unscoped.select("NULLIF(first_name, '') as f, NULLIF(last_name, '') as l,NULLIF(middle_name, '') as m, *").all
+		end
+		if !current_user.can_access_all_groups? && !current_user.super_administrator?
+			@providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
+		end
 
-			@providers = @providers.reorder("f asc NULLS last", "m asc NULLS last", "l asc NULLS last")
-			@providers_without_pagination =	@providers
-
-			@providers = @providers.paginate(per_page: 10, page: params[:page] || 1)
-
-			respond_to do |format|
-    format.xlsx {
-      response.headers[
-        'Content-Disposition'
-      ] = "attachment; filename=providers.xlsx"
-    }
-    format.html { render :index }
-  end
+		@providers = @providers.reorder("f asc NULLS last", "m asc NULLS last", "l asc NULLS last").paginate(per_page: 10, page: params[:page] || 1)
 	end
 
 	def new
@@ -49,7 +37,7 @@ class ProvidersController < ApplicationController
 				body: "#{@provider.encoded_by} added a new provider: #{@provider.provider_name}"
 			).send_system_notification.deliver_later
 
-			redirect_to providers_path
+			redirect_to providers_path, notice: 'Provider has been successfully created.'
 		else
 			build_associations
 			render :new
