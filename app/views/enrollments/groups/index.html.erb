@@ -13,62 +13,114 @@
         </form>
       </div>
       <% if current_user.can_access?('Add New Group') %>
-        <div class="col-lg-6 d-flex justify-content-end">
+        <div class="col-lg-6 d-flex justify-content-end gap-3">
           <a class="btn btn-primary btn-md" href="<%= new_group_enrollments_path %>">
             <i class="bi bi-plus-lg"></i>
             <span>
               Add New Group
             </span>
           </a>
+          <a class="btn btn-primary btn-md" id="inactive-button">
+            <span>
+              Inactive group
+            </span>
+          </a>
+        </div>
         </div>
       <% end %>
     </div>
 
 
-    <div class="row">
+    <div class="row mx-3">
     <% if @enrollment_groups.size != 0 %>
-      <% @enrollment_groups.each do |enrollment_group| %>
-        <div class="col-lg-4">
-          <div class="card p-3">
-            <h4 class="mb-3"><%= enrollment_group.group_name %></h4>
-            <label class="mb-3">
-              <i class="bi bi-bookmark-fill text-warning"></i>
-              <span><%= enrollment_group.group_code %></span>
-            </label>
-            <label class="mb-3">
-              <i class="bi bi-geo-alt-fill"></i>
-              <span><%= enrollment_group.state %></span>
-            </label>
-            <label class="mb-3">
-              <i class="bi bi-people"></i>
-              <span><%= enrollment_group.dco_count_display %></span>
-            </label>
-            <div class="row">
-              <div class="col-12">
-                <a href="<%= group_dcos_path(enrollment_group) %>" class="btn btn-primary btn-md w-100">See More</a>
-              </div>
-              <div class="col col-lg-6">
-                <% if current_user.can_access?('Edit Group') %>
-                  <%= link_to 'Group Details', edit_group_enrollment_path(enrollment_group), class: 'btn border btn-md w-100 mt-2' %>
-                <% end %>
-              </div>
-              <div class="col col-lg-6 text-center">
-                <% if current_user.can_access?('Delete Group') %>
-                 <%= button_to 'Remove', delete_group_enrollment_path(enrollment_group), method: :post, class: 'btn border btn-md w-100 mt-2 delete-button' %>
-                <% end %>
+      <div id="active">
+        <div class="row">
+          <% @enrollment_groups.each do |enrollment_group| %>
+              <% unless enrollment_group.noti_status == 'inactive-termed' %>
+                <div class="col-lg-4">
+                  <div class="card p-3">
+                  <h4 class="mb-3"><%= enrollment_group.group_name %></h4>
+                  <label class="mb-3">
+                    <i class="bi bi-bookmark-fill text-warning"></i>
+                    <span><%= enrollment_group.group_code %></span>
+                  </label>
+                  <label class="mb-3">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <span><%= enrollment_group.state %></span>
+                  </label>
+                  <label class="mb-3">
+                    <i class="bi bi-people"></i>
+                    <span><%= enrollment_group.dco_count_display %></span>
+                  </label>
+                  <div class="row">
+                    <div class="col-12">
+                      <a href="<%= group_dcos_path(enrollment_group) %>" class="btn btn-primary btn-md w-100">See More</a>
+                    </div>
+                    <div class="col col-lg-6">
+                      <% if current_user.can_access?('Edit Group') %>
+                        <%= link_to 'Group Details', edit_group_enrollment_path(enrollment_group), class: 'btn border btn-md w-100 mt-2' %>
+                      <% end %>
+                    </div>
+                    <div class="col col-lg-6 text-center">
+                      <% if current_user.can_access?('Delete Group') %>
+                       <%= button_to 'Remove', delete_group_enrollment_path(enrollment_group), method: :post, class: 'btn border btn-md w-100 mt-2 delete-button' %>
+                      <% end %>
+                    </div>
+                  </div>
+                  </div>
+                </div>
+              <% end %>
+          <% end %>
+        </div>
+      </div>
+      <div id="inactive" style="display: none;">
+        <div class="row">
+          <% @enrollment_groups.each do |enrollment_group| %>
+          <% if enrollment_group.noti_status == 'inactive-termed' %>
+            <div class="col-lg-4">
+              <div class="card p-3">
+                <h4 class="mb-3"><%= enrollment_group.group_name %></h4>
+                <label class="mb-3">
+                  <i class="bi bi-bookmark-fill text-warning"></i>
+                  <span><%= enrollment_group.group_code %></span>
+                </label>
+                <label class="mb-3">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  <span><%= enrollment_group.state %></span>
+                </label>
+                <label class="mb-3">
+                  <i class="bi bi-people"></i>
+                  <span><%= enrollment_group.dco_count_display %></span>
+                </label>
+                <div class="row">
+                  <div class="col-12">
+                    <a href="<%= group_dcos_path(enrollment_group) %>" class="btn btn-primary btn-md w-100">See More</a>
+                  </div>
+                  <div class="col col-lg-6">
+                    <% if current_user.can_access?('Edit Group') %>
+                      <%= link_to 'Group Details', edit_group_enrollment_path(enrollment_group), class: 'btn border btn-md w-100 mt-2' %>
+                    <% end %>
+                  </div>
+                  <div class="col col-lg-6 text-center">
+                    <% if current_user.can_access?('Delete Group') %>
+                     <%= button_to 'Remove', delete_group_enrollment_path(enrollment_group), method: :post, class: 'btn border btn-md w-100 mt-2 delete-button' %>
+                    <% end %>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          <% end %>
+          <% end %>
         </div>
-      <% end %>
+      </div>
     <% else %>
       <div class="col-lg-12 mt-4">
         <div class="alert alert-danger">
           No matching groups found.
         </div>
       </div>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
   </div>
 
   <script>
@@ -82,3 +134,13 @@
     })
   </script>
 <% end %>
+
+
+<script type="text/javascript">
+  const inactiveButton = document.getElementById('inactive-button');
+
+  inactiveButton.addEventListener("click", () => {
+    document.getElementById("active").style.display = "none";
+    document.getElementById("inactive").style.display = "block";
+  })
+</script> 
