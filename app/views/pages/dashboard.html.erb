@@ -1,145 +1,147 @@
-<div class="content container-fluid">
-   <div class="row">
-      <div class="col-lg-12">
-         <h1>Analytics</h1>
-      </div>
-   </div>
-   <div class="row">
-      <div class="col-lg-7">
-         <%= render "pages/dashboard_components/clients_data"%>
-         <%= render "pages/dashboard_components/providers_data"%>
-         <%= render "pages/dashboard_components/server_storage"%>
-         <!-- commented teh other charts for now will be used later on -->
-         <%#= render "pages/dashboard_components/traffic_chart"%>
-         <div class="row g-2">
-          <%#= render "pages/dashboard_components/reports_generated"%>
-          <%#= render "pages/dashboard_components/browsers_chart"%>
-         </div>
-      </div>
-      <div class="col-lg-5">
-         <%= render "pages/dashboard_components/bar_chart"%>
-         <%= render "pages/dashboard_components/doughnut_chart"%>
-         <%#= render "pages/dashboard_components/provider_map"%>
-         <%#= render "pages/dashboard_components/statistics_gender"%>
+<%= render 'user_restriction', locals: { access_key: 'Overview' } do %>
+	<div class="content container-fluid">
+				<div class="row">
+							<div class="col-lg-12">
+										<h1>Analytics</h1>
+							</div>
+				</div>
+				<div class="row">
+							<div class="col-lg-7">
+										<%= render "pages/dashboard_components/clients_data"%>
+										<%= render "pages/dashboard_components/providers_data"%>
+										<%= render "pages/dashboard_components/server_storage"%>
+										<!-- commented teh other charts for now will be used later on -->
+										<%#= render "pages/dashboard_components/traffic_chart"%>
+										<div class="row g-2">
+											<%#= render "pages/dashboard_components/reports_generated"%>
+											<%#= render "pages/dashboard_components/browsers_chart"%>
+										</div>
+							</div>
+							<div class="col-lg-5">
+										<%= render "pages/dashboard_components/bar_chart"%>
+										<%= render "pages/dashboard_components/doughnut_chart"%>
+										<%#= render "pages/dashboard_components/provider_map"%>
+										<%#= render "pages/dashboard_components/statistics_gender"%>
 
-      </div>
-   </div>
-</div>
+							</div>
+				</div>
+	</div>
 
-<% content_for :js do %>
-<%= render "pages/dashboard_components/us_map_js" %>
-<script src="/dist/app.js" > </script>
-<script >
-document.addEventListener("DOMContentLoaded", function () {
-   var clientData = [];
-   var providerGenders = [];
-   var visitData = [];
-   var browserData = [];
-   var csrfToken = $('meta[name="csrf-token"]').attr('content');
-   getClientDataForDoughnutGraph();
-   getVisitData();
-   getBrowserVisits();
-   getStateProviders();
-   getProviderGenderData();
-   creatReportsGraph();
-   $('.provider-range-selector').on('change', function () {
-      getProviderCount($(this).val());
-   })
+	<% content_for :js do %>
+	<%= render "pages/dashboard_components/us_map_js" %>
+	<script src="/dist/app.js" > </script>
+	<script >
+	document.addEventListener("DOMContentLoaded", function () {
+				var clientData = [];
+				var providerGenders = [];
+				var visitData = [];
+				var browserData = [];
+				var csrfToken = $('meta[name="csrf-token"]').attr('content');
+				getClientDataForDoughnutGraph();
+				getVisitData();
+				getBrowserVisits();
+				getStateProviders();
+				getProviderGenderData();
+				creatReportsGraph();
+				$('.provider-range-selector').on('change', function () {
+							getProviderCount($(this).val());
+				})
 
-   function getProviderCount(range) {
-      $.ajax({
-         url: '<%= get_dashboard_providers_path %>',
-         method: 'POST',
-         data: {
-            authenticity_token: csrfToken,
-            range: range
-         },
-         success: function (data) {
-            var providers = data['providers'];
-            var order_of_providers = ["new", "assigned", "completed", "terminated", "unassigned"];
-            for (var i = 0; i < providers.length; i++) {
-               $('#' + order_of_providers[i] + "_providers").html(providers[i]);
-            }
-         }
-      })
-   }
-  <%= render "pages/dashboard_components/doughnut_chart_js" %>
-  <%= render "pages/dashboard_components/bar_chart_js" %>
-  <%= render "pages/dashboard_components/traffic_chart_js" %>
-  <%= render "pages/dashboard_components/browsers_chart_js" %>
-  <%= render "pages/dashboard_components/statistics_gender_js" %>
-  <%= render "pages/dashboard_components/reports_generated_js" %>
+				function getProviderCount(range) {
+							$.ajax({
+										url: '<%= get_dashboard_providers_path %>',
+										method: 'POST',
+										data: {
+													authenticity_token: csrfToken,
+													range: range
+										},
+										success: function (data) {
+													var providers = data['providers'];
+													var order_of_providers = ["new", "assigned", "completed", "terminated", "unassigned"];
+													for (var i = 0; i < providers.length; i++) {
+																$('#' + order_of_providers[i] + "_providers").html(providers[i]);
+													}
+										}
+							})
+				}
+			<%= render "pages/dashboard_components/doughnut_chart_js" %>
+			<%= render "pages/dashboard_components/bar_chart_js" %>
+			<%= render "pages/dashboard_components/traffic_chart_js" %>
+			<%= render "pages/dashboard_components/browsers_chart_js" %>
+			<%= render "pages/dashboard_components/statistics_gender_js" %>
+			<%= render "pages/dashboard_components/reports_generated_js" %>
 
 
-});
- </script>
+	});
+		</script>
 
- <script>
-    var csrfToken = $('meta[name="csrf-token"]').attr('content');
-    var state_providers = {};
-    var series_regions_values = {};
-    var series_regions_scale = {};
-    var numberMap = {};
-    function getStateProviders() {
-      $.ajax({
-        url: '<%=state_providers_path%>',
-        method: 'GET',
-        data: {
-         authenticity_token: csrfToken
-        },
-        success: function(data) {
-          $('.jvectormap-container').remove();
-          var providers = data['state_providers'];
-          $.each(providers,function(index, item) {
-            var state = item[3];
-            var provider_count = item[1];
-            state_providers['US-'+state.toUpperCase()] = provider_count;
-          })
+		<script>
+					var csrfToken = $('meta[name="csrf-token"]').attr('content');
+					var state_providers = {};
+					var series_regions_values = {};
+					var series_regions_scale = {};
+					var numberMap = {};
+					function getStateProviders() {
+							$.ajax({
+									url: '<%=state_providers_path%>',
+									method: 'GET',
+									data: {
+										authenticity_token: csrfToken
+									},
+									success: function(data) {
+											$('.jvectormap-container').remove();
+											var providers = data['state_providers'];
+											$.each(providers,function(index, item) {
+													var state = item[3];
+													var provider_count = item[1];
+													state_providers['US-'+state.toUpperCase()] = provider_count;
+											})
 
-          $.each(providers, function(index, item) {
-            var state = item[3];
-            var color = item[2];
-            series_regions_values['US-'+state.toUpperCase()] = color;
-            series_regions_scale[color] = color;
-          })
+											$.each(providers, function(index, item) {
+													var state = item[3];
+													var color = item[2];
+													series_regions_values['US-'+state.toUpperCase()] = color;
+													series_regions_scale[color] = color;
+											})
 
-          $.each(providers,function(index, item) {
-            var state = item[3];
-            var provider_count = item[1];
-            numberMap['US-'+state.toUpperCase()] = provider_count;
-          })
-          createMap();
-        }
-      })
-    }
+											$.each(providers,function(index, item) {
+													var state = item[3];
+													var provider_count = item[1];
+													numberMap['US-'+state.toUpperCase()] = provider_count;
+											})
+											createMap();
+									}
+							})
+					}
 
-    function createMap() {
-      $('#WidgetMap').vectorMap({
-        map: 'us_mill',
-        backgroundColor: '#e3f5ff',
-        zoomButtons: false,
-        regionStyle: {
-          initial: {
-           stroke: '#000',
-          'stroke-width': 1
-          }
-        },
-        series: {
-          regions: [{
-            values: series_regions_values,
-            scale: series_regions_scale
-          }]
-        },
-        onRegionTipShow: function(e, el, code) {
-          var number = getNumberForRegion(code);
+					function createMap() {
+							$('#WidgetMap').vectorMap({
+									map: 'us_mill',
+									backgroundColor: '#e3f5ff',
+									zoomButtons: false,
+									regionStyle: {
+											initial: {
+												stroke: '#000',
+											'stroke-width': 1
+											}
+									},
+									series: {
+											regions: [{
+													values: series_regions_values,
+													scale: series_regions_scale
+											}]
+									},
+									onRegionTipShow: function(e, el, code) {
+											var number = getNumberForRegion(code);
 
-          el.html(el.html() + ' ' +number);
-        }
-      });
+											el.html(el.html() + ' ' +number);
+									}
+							});
 
-   function getNumberForRegion(regionCode) {
-    return numberMap[regionCode] || '';
-  }
-  };
- </script>
+				function getNumberForRegion(regionCode) {
+					return numberMap[regionCode] || '';
+			}
+			};
+		</script>
+	<% end %>
 <% end %>
