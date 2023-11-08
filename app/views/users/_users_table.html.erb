@@ -1,3 +1,15 @@
+<%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
+  <div class="">
+    <input type="text" name="user_search" value="<%= params[:user_search] %>" placeholder="Search" class="form-control">
+    <i class="bi bi-search"></i>
+  </div>
+  <% end %>
+</div>
+<div class="row">
+  <div class="col">
+    <h5>Search Result: <%= @users.count %> records</h5>
+  </div>
+
 <table class="table mt-5">
   <thead>
     <tr>
@@ -22,11 +34,15 @@
           <div class="d-flex gap-2 align-items-center">
             <%= user.status  %>
             <div class="d-flex gap-2" style="margin-left: auto;">
-              <%= link_to edit_user_path(user), class: 'btn btn-sm btn-primary' do %>
-                <i class="bi bi-pencil"></i>
+              <% if current_user.can_access?('Edit User') %>
+                <%= link_to edit_user_path(user), class: 'btn btn-sm btn-primary' do %>
+                  <i class="bi bi-pencil"></i>
+                <% end %>
               <% end %>
-              <%= button_to user_path(user), method: :delete, class: 'btn btn-sm btn-danger delete-button', data: {confirm: 'Are you sure?'} do %>
-                <i class="bi bi-trash"></i>
+              <% if current_user.can_access?('Delete User') %>
+                <%= button_to user_path(user), method: :delete, class: 'btn btn-sm btn-danger delete-button', data: {confirm: 'Are you sure?'} do %>
+                  <i class="bi bi-trash"></i>
+                <% end %>
               <% end %>
             </div>
          </div>
