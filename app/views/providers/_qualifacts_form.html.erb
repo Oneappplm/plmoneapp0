@@ -358,13 +358,14 @@
     <div class="row mb-3">
       <div class="col-lg-6">
         <label class="text-dark-grey">Current Re-Attestation</label>
-        <%= f.text_field :caqh_current_reattestation_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.caqh_current_reattestation_date), onfocus: "(this.type = 'date')" %>
+        <%= f.text_field :caqh_current_reattestation_date, id: 'start-date', placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.caqh_current_reattestation_date),oninput: "updateCompletionDate()" , onfocus: "(this.type = 'date')"%>
       </div>
       <div class="col-lg-6">
         <label class="text-dark-grey">Re-Attestation must be completed by</label>
-        <%= f.text_field :caqh_reattest_completed_by, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.caqh_reattest_completed_by), onfocus: "(this.type = 'date')" %>
+        <%= f.text_field :caqh_reattest_completed_by, id: 'completion-date', placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.caqh_reattest_completed_by), onfocus: "(this.type = 'date')" %>
       </div>
     </div>
+
     <div class="row mb-3">
       <div class="col-lg-6">
         <label class="text-dark-grey">Questions</label>
@@ -1086,6 +1087,26 @@
         })
       }
       });
+      function updateCompletionDate() {
+        const startDateField = document.getElementById('start-date');
+        const completionDateField = document.getElementById('completion-date');
+
+        if (startDateField && completionDateField) {
+          const startDateValue = startDateField.value;
+
+          if (startDateValue) {
+            const startDate = new Date(startDateValue);
+            startDate.setDate(startDate.getDate() + 120);
+
+            const completionDate = startDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            
+            completionDateField.value = completionDate;
+          } else {
+            completionDateField.value = ''; // Clear the completion date if the start date is empty.
+          }
+        }
+      }
+
 
     </script>
   <% end %>
