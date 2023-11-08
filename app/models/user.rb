@@ -192,6 +192,23 @@ class User < ApplicationRecord
    end
   end
 
+  def can_access? page = nil
+    # role-based access v2 is now attached to current_user instead of application helpers
+    return false unless page.present?
+
+    # to_role is monkey patch from String class in initializers/string.rb
+    # force to return false instead of nil if role is not found
+    roles.find_by(page: page.to_role)&.can_read || false
+  end
+
+  def restricted? page
+    !can_access?(page)
+  end
+
+  def current_role
+    role.to_role
+  end
+
   def generate_otp_code_and_expiration
     self.otp_code = loop do
       random_otp_code= SecureRandom.hex(3)

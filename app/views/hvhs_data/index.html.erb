@@ -1,62 +1,66 @@
 <div class="content container-fluid">
-	<div class="row mb-3">
-		<div class="col-lg-12">
-			<h2>
-				<span>HVHS</span>
-			</h2>
-
-		</div>
-	</div>
-	<div class="row mb-3">
-		<div class="col-lg-6">
-			<%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
-			<div class="">
-				<input type="text" name="search" value="<%= params[:search] %>" class="form-control">
-				<i class="bi bi-search"></i>
-			</div>
-			<% end %>
-		</div>
-		<div class="col-lg-6 d-flex justify-content-end">
-			<a href="<%= new_hvhs_datum_path %>" class="d-flex btn btn-primary btn-md">
-				<i class="bi bi-plus-lg me-1"></i>
-				<span>New HVHS</span>
-			</a>
-		</div>
-	</div>
-	<br>
-	<div class="row">
-		<div class="col-lg-12">
-      <table class="table">
-        <thead>
-          <tr>
-              <th scope="col" class="bg-primary text-white">Fullname</th>
-              <th scope="col" class="bg-primary text-white">NPI</th>
-              <th scope="col" class="bg-primary text-white">License Number</th>
-              <th scope="col" class="bg-primary text-white">Taxonomy Code</th>
-              <th scope="col" class="bg-primary text-white">Phone</th>
-              <th scope="col" class="bg-primary text-white">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <%= render @hvhs_data %>
-        </tbody>
-      </table>
-
-      <% if @hvhs_data %>
-        <div class="col-lg-12">
-          <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
-          <div class="page_info ms-3 text-black">
-              <%= page_entries_info @hvhs_data %>
-          </div>
-          <% if params[:per_page ].present? %>
-            <%= will_paginate @hvhs_data, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-          <% else %>
-            <%= will_paginate @hvhs_data, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-          <% end %>
-          </div>
-        </div>
-      <% end %>
-
-		</div>
-	</div>
+  <%= render "verification_platform/encompass_nav"%>
 </div>
+<%= render 'user_restriction', locals: { access_key: 'Manage DB' } do %>
+  <div class="content container-fluid">
+    <div class="row mb-3">
+      <div class="col-lg-12">
+        <h2>
+          <span>HVHS</span>
+        </h2>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
+        <div class="">
+          <input type="text" name="search" value="<%= params[:search] %>" class="form-control">
+          <i class="bi bi-search"></i>
+        </div>
+        <% end %>
+      </div>
+      <div class="col-lg-6 d-flex justify-content-end">
+        <a href="<%= new_hvhs_datum_path %>" class="d-flex btn btn-primary btn-md">
+          <i class="bi bi-plus-lg me-1"></i>
+          <span>New HVHS</span>
+        </a>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-lg-12">
+        <table class="table">
+          <thead>
+            <tr>
+                <th scope="col" class="bg-primary text-white">Fullname</th>
+                <th scope="col" class="bg-primary text-white">NPI</th>
+                <th scope="col" class="bg-primary text-white">License Number</th>
+                <th scope="col" class="bg-primary text-white">Taxonomy Code</th>
+                <th scope="col" class="bg-primary text-white">Phone</th>
+                <th scope="col" class="bg-primary text-white">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%= render @hvhs_data %>
+          </tbody>
+        </table>
+
+        <% if @hvhs_data %>
+          <div class="col-lg-12">
+            <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+            <div class="page_info ms-3 text-black">
+                <%= page_entries_info @hvhs_data %>
+            </div>
+            <% if params[:per_page ].present? %>
+              <%= will_paginate @hvhs_data, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+            <% else %>
+              <%= will_paginate @hvhs_data, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+            <% end %>
+            </div>
+          </div>
+        <% end %>
+
+      </div>
+    </div>
+  </div>
+<% end %>

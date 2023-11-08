@@ -1,12 +1,4 @@
 class ApplicationController < ActionController::Base
-	before_action :can_read?, only: [
-		:index, :show, :overview, :client_portal, :provider_source, :plm_sales_tool,
-		:organization_profile, :virtual_review_committee
-	], :if => :skip_validation_for_enrollment_clients?
-	before_action :can_create?, only: [:new, :create]
-	before_action :can_update?, only: [:edit, :update, :autosave]
-	before_action :can_delete?, only: [:destroy]
-
 	before_action :authenticate_user!, except: %i[terms privacy_policy]
 	before_action :configure_permitted_parameters, if: :devise_controller?
   # exceptions for track_event are mostly ajax requests
