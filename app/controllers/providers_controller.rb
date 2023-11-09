@@ -1,6 +1,7 @@
 class ProvidersController < ApplicationController
 	before_action :set_provider, only: [:show, :edit, :update, :destroy, :update_from_notifications]
 	before_action :set_overview_details, only: [:overview]
+
   def index
 		if params[:user_search].present?
 			@providers = Provider.unscoped.select("NULLIF(first_name, '') as f, NULLIF(last_name, '') as l,NULLIF(middle_name, '') as m, *").search(params[:user_search])
@@ -37,7 +38,7 @@ class ProvidersController < ApplicationController
 				body: "#{@provider.encoded_by} added a new provider: #{@provider.provider_name}"
 			).send_system_notification.deliver_later
 
-			redirect_to providers_path
+			redirect_to providers_path, notice: 'Provider has been successfully created.'
 		else
 			build_associations
 			render :new

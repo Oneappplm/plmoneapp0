@@ -3,25 +3,24 @@ class OfficeManagersController < ApplicationController
   before_action :set_current_provider, only: [:credentialing_application, :view_summary, :re_attest_application]
   before_action :set_client_organizations, only: [:show]
   def index
-    if params[:template].present?
-      if params[:template] == 'manage_practice'
-        @locations = if params[:search].present?
-          PracticeLocation.search(params[:search]).paginate(per_page: 10, page: params[:page] || 1)
-        else
-          PracticeLocation.paginate(per_page: 10, page: params[:page] || 1)
-        end
-      end
-      render params[:template]
-    else
-      clean_empty_providers
+			clean_empty_providers
 
-      if params[:practice_location_id].present? && params[:practice_location_id] == 'All Location'
-        redirect_to office_managers_path
-      end
+			if params[:practice_location_id].present? && params[:practice_location_id] == 'All Location'
+					redirect_to office_managers_path
+			end
 
-      @providers = ProviderSource.unscoped.where(practice_location_id:  params[:practice_location_id]).order(created_at: :asc).paginate(page: params[:page], per_page: 12)
-    end
+			@providers = ProviderSource.unscoped.where(practice_location_id:  params[:practice_location_id]).order(created_at: :asc).paginate(page: params[:page], per_page: 12)
   end
+
+		def manage_practice_locations
+			@locations = if params[:search].present?
+					PracticeLocation.search(params[:search]).paginate(per_page: 10, page: params[:page] || 1)
+			else
+					PracticeLocation.paginate(per_page: 10, page: params[:page] || 1)
+			end
+
+			render	'manage_practice'
+		end
 
   def show
     @client_organizations = ClientOrganization.all
