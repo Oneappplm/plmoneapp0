@@ -6,49 +6,51 @@
   end
 %>
 
-<table class="table table-bordered mt-2">
-   <thead>
-      <tr>
-         <th class="text-white">Last Name</th>
-         <th class="text-white">First Name</th>
-         <th class="text-white">Middle Name</th>
-         <th class="text-white">Practitioner Type</th>
-         <th class="text-white">Group</th>
-         <th class="text-white">Status</th>
-      </tr>
-   </thead>
-   <tbody>
-      <% if @provider %>
-        <%= render partial: "enrollment_clients/show/selected_provider" %>
-      <% end %>
-      <% providers.each do |provider| %>
-      <% extra_params = params[:enrollment_status].present? ? { enrollment_status: params[:enrollment_status] } : {}%>
-      <% url = (action_name == 'notifications' ? notifications_enrollment_clients_path(provider_id: provider.id) : enrollment_client_path(provider, params: extra_params) ) %>
-      <% if @provider&.id != provider.id%>
-      <tr>
-         <td class="">
-            <%= link_to "#{provider&.last_name}", url, class: 'text-dark-grey' %>
-         </td>
-         <td class="">
-            <%= link_to "#{provider&.first_name}", url, class: 'text-dark-grey' %>
-         </td>
-         <td class="">
-            <%= link_to "#{provider&.middle_name}", url, class: 'text-dark-grey' %>
-         </td>
-         <td class="">
-            <%= link_to "#{provider&.practitioner}", url, class: 'text-dark-grey' %>
-         </td>
-         <td class="">
-            <%= link_to "#{provider&.client&.group_name}", url, class: 'text-dark-grey' %>
-         </td>
-         <td class="">
-            <%= link_to "#{provider&.status&.titleize rescue nil}", url, class: 'text-dark-grey' %>
-         </td>
-      </tr>
-      <% end %>
-      <% end %>
-   </tbody>
-</table>
+   <table class="table table-bordered mt-2">
+    <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
+      <thead>
+         <tr>
+            <th class="text-white">Last Name</th>
+            <th class="text-white">First Name</th>
+            <th class="text-white">Middle Name</th>
+            <th class="text-white">Practitioner Type</th>
+            <th class="text-white">Group</th>
+            <th class="text-white">Status</th>
+         </tr>
+      </thead>
+      <tbody>
+         <% if @provider %>
+           <%= render partial: "enrollment_clients/show/selected_provider" %>
+         <% end %>
+         <% providers.each do |provider| %>
+         <% extra_params = params[:enrollment_status].present? ? { enrollment_status: params[:enrollment_status] } : {}%>
+         <% url = (action_name == 'notifications' ? notifications_enrollment_clients_path(provider_id: provider.id) : enrollment_client_path(provider, params: extra_params) ) %>
+         <% if @provider&.id != provider.id%>
+         <tr>
+            <td class="">
+               <%= link_to "#{provider&.last_name}", url, class: 'text-dark-grey' %>
+            </td>
+            <td class="">
+               <%= link_to "#{provider&.first_name}", url, class: 'text-dark-grey' %>
+            </td>
+            <td class="">
+               <%= link_to "#{provider&.middle_name}", url, class: 'text-dark-grey' %>
+            </td>
+            <td class="">
+               <%= link_to "#{provider&.practitioner}", url, class: 'text-dark-grey' %>
+            </td>
+            <td class="">
+               <%= link_to "#{provider&.client&.group_name}", url, class: 'text-dark-grey' %>
+            </td>
+            <td class="">
+               <%= link_to "#{provider&.status&.titleize rescue nil}", url, class: 'text-dark-grey' %>
+            </td>
+         </tr>
+         <% end %>
+         <% end %>
+      </tbody>
+   </table>
+
   <div class="col-lg-12">
         <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
         <div class="page_info ms-3 text-black">
@@ -61,3 +63,25 @@
         <% end %>
         </div>
       </div>
+
+<script>
+   function toggleBackToTopButton() {
+      var backToTopBtn = document.getElementById("backToTopBtn");
+      if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+         backToTopBtn.style.display = "block";
+      } else {
+         backToTopBtn.style.display = "none";
+      }
+   }
+
+   window.onscroll = function () {
+      toggleBackToTopButton();
+   };
+
+   function scrollToTop() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+   }
+   var backToTopBtn = document.getElementById("backToTopBtn");
+   backToTopBtn.addEventListener("click", scrollToTop);
+</script>
