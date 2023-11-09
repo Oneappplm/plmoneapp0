@@ -67,6 +67,22 @@ class ApplicationController < ActionController::Base
 			end
 		end
 
+		def redirect_to_default_page
+
+			render partial: 'shared/access_denied' and return if current_user.default_page ==	'access_denied'
+
+			cname, aname = current_user.landing_page
+			return if cname == 'overview' &&	aname == 'index'
+
+			menu = menu_links[cname.to_sym][aname.to_sym]
+			menu = menu_links[cname.to_sym] if	menu.nil?
+
+			render partial: 'shared/access_denied' and	return if menu[:controller].nil? && menu[:action].nil?
+			redirect_to controller: menu[:controller],	action: menu[:action]
+		rescue
+			render partial: 'shared/access_denied'
+		end
+
   private
 
   def visit_properties

@@ -173,7 +173,29 @@ class User < ApplicationRecord
     end
   end
 
-  def default_page
+		def default_page
+			parent = if roles.present?
+				roles.where(page: PARENT_MENUS, can_read: true).take&.page || 'access_denied'
+			else
+				 super_administrator? ? 'role_based_accesses' : 'access_denied'
+			end
+		end
+
+		def landing_page
+			parent_menu = default_page
+			submenu = 'index'
+			active_menus = roles.where(can_read: true).pluck(:page)
+			SUB_MENUS[parent_menu.to_sym].each do |menu|
+				if active_menus.include?(menu)
+					submenu = menu
+					break
+				end
+			end
+
+			[parent_menu, submenu]
+		end
+
+  def default_page_old
    return 'enrollment_clients' if is_provider_account?
    return 'overview' if roles.find_by(page: 'overview')&.can_read
 

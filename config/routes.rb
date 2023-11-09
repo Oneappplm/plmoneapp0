@@ -3,12 +3,13 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
-  root 'dashboard#dashboard'
-  get 'client-portal', to: 'pages#client_portal'
-  get 'virtual-review-committee', to: 'pages#virtual_review_committee'
-  get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
-  get 'provider-engage', to: 'provider_app#provider_source', as: :custom_provider_source
-  get 'app-tracker', to: 'pages#app_tracker'
+  root 'dashboard#dashboard' # Overview	page
+  get 'client-portal', to: 'pages#client_portal' # Data Access page
+  get 'virtual-review-committee', to: 'pages#virtual_review_committee' # Decision Point page
+  get 'provider-engage', to: 'provider_app#provider_source', as: :custom_provider_source # Provider Engage page
+
+		get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
+		get 'app-tracker', to: 'pages#app_tracker'
   get 'encompass', to: 'pages#encompass'
   get 'microsite', to: 'pages#microsite'
   get 'ps-office-manager', to: 'pages#ps_office_manager'
@@ -111,6 +112,7 @@ Rails.application.routes.draw do
       post :send_invitation
       post :bulk_remove_providers
       post :send_invite
+						get :manage_practice_locations
     end
     member do
       get :manage_applications
