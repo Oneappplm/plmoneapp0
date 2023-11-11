@@ -49,8 +49,7 @@ class ProvidersController < ApplicationController
 				subject: "Add Provider",
 				body: "#{@provider.encoded_by} added a new provider: #{@provider.provider_name}"
 			).send_system_notification.deliver_later
-
-			redirect_to providers_path, notice: 'Provider has been successfully created.'
+			redirect_to providers_path, notice: "Profile created for #{@provider.first_name} #{@provider.middle_name} #{@provider.last_name}. Please complete all information."
 		else
 			build_associations
 			render :new

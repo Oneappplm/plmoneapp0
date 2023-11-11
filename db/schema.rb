@@ -9,8 +9,12 @@
 # migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
+<<<<<<< HEAD
 
 ActiveRecord::Schema[7.0].define(version: 2023_10_18_092357) do
+=======
+ActiveRecord::Schema[7.0].define(version: 2023_11_11_125654) do
+>>>>>>> 7b7be44c (Adding notification msg after creation of provider)
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -414,6 +418,21 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_18_092357) do
     t.boolean "check_caqh_standard_authorization", default: false
     t.string "billing_address_autofill"
     t.string "remittance_address_autofill"
+    t.string "prof_liability_carrier_name"
+    t.string "prof_liability_self_insured"
+    t.string "prof_liability_address"
+    t.string "prof_liability_city"
+    t.integer "prof_liability_state_id"
+    t.string "prof_liability_zipcode"
+    t.date "prof_liability_orig_effective_date"
+    t.date "prof_liability_effective_date"
+    t.date "prof_liability_expiration_date"
+    t.string "prof_liability_coverage_type"
+    t.string "prof_liability_unlimited_coverage"
+    t.string "prof_liability_tail_coverage"
+    t.string "prof_liability_coverage_amount"
+    t.string "prof_liability_coverage_amount_aggregate"
+    t.string "prof_liability_policy_number"
   end
 
   create_table "enrollment_groups_contact_details", force: :cascade do |t|
