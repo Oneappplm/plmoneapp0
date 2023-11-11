@@ -75,7 +75,7 @@ class EnrollmentsController < ApplicationController
 					subject: "Added Group",
 					body: "#{current_user&.full_name} added a new group: #{@enrollment_group&.group_name}"
 				).send_system_notification.deliver_later
-				redirect_to groups_enrollments_path, notice: 'Group has been successfully created.' and return
+				redirect_to groups_enrollments_path, notice: " Profile created for #{@enrollment_group.group_name} Group. Please complete all information." and return
 			end
 		else
 			@enrollment_group = EnrollmentGroup.new
@@ -262,6 +262,21 @@ class EnrollmentsController < ApplicationController
 					:admitting_facility_state,
 					:admitting_facility_zip_code,
 					:admitting_facility_arrangments,
+					:prof_liability_carrier_name,
+					:prof_liability_self_insured,
+					:prof_liability_address,
+					:prof_liability_city,
+					:prof_liability_state_id,
+					:prof_liability_zipcode,
+					:prof_liability_orig_effective_date,
+					:prof_liability_effective_date,
+					:prof_liability_expiration_date,
+					:prof_liability_coverage_type,
+					:prof_liability_unlimited_coverage,
+					:prof_liability_tail_coverage,
+					:prof_liability_coverage_amount,
+					:prof_liability_coverage_amount_aggregate,
+			   	:prof_liability_policy_number,
 					:welcome_letter_status, :welcome_letter_subject, :welcome_letter_message, :check_welcome_letter, :check_co_caqh, :check_mn_caqh_state_release_form, :check_mn_caqh_authorization_form, :check_caqh_standard_authorization, {welcome_letter_attachments: []},
 					contact_personnels_attributes: [:id, :group_personnel_name, :group_personnel_email, :group_personnel_phone_number, :group_personnel_fax_number, :group_personnel_position,
 						:_destroy],
