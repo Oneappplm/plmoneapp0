@@ -162,11 +162,11 @@
    <div class="row mb-3">
       <div class="row mb-3">
          <div class="col-lg-6">
-            <label class="text-dark-grey">Group NPI <span class="text-danger">*</span></label>
+            <label class="text-dark-grey">Group NPI (if different from main Type NPI)<span class="text-danger">*</span></label>
             <%= f.text_field :npi_digit_type, class: form_control_classes(danger: @enrollment_group.npi_digit_type.blank? && @enrollment_group.persisted?), required: true, placeholder: 'Type here...' %>
          </div>
          <div class="col-lg-6">
-            <label class="text-dark-grey">Group TIN <span class="text-danger">*</span></label>
+            <label class="text-dark-grey">Group TIN (If different from main TIN)<span class="text-danger">*</span></label>
             <%= f.text_field :tin_digit, class: form_control_classes(danger: @enrollment_group.tin_digit.blank? && @enrollment_group.persisted?), required: true, placeholder: 'Type here...' %>
          </div>
       </div>
@@ -416,19 +416,27 @@
 
 			<% if !current_setting.dcs? %>
    <div class="row">
-          <div class="row mb-1">
+          <%# <div class="col-lg-6">
+            <!-- new field -->
+            <%= HtmlUtils.radio_toggle name: 'enrollment_group[telehealth_providers]',
+                    label: 'Are you a Telehealth Provider?',
+                    container_class: 'd-flex align-items-center my-3',
+                    toshow: 'service_locations_fields'
+                  %>
+          <%# <%= f.hidden_field :telehealth_providers %> 
+          <%# </div> %> 
+          <%# <div class="row mb-1">
             <div id="service_locations">
                <div class="row" id="service_locations_fields">
                   <div class="fields">
                     <%= f.fields_for :service_locations do |service_location_fields| %>
-                      <%= render 'service_location_fields', f: service_location_fields %>
-                    <% end %>
-                  </div>
+                      <%# <%= render 'service_location_fields', f: service_location_fields %>
+                    <%# <% end %> 
+                  <%# </div>
                 </div>
             </div>
           </div>
-        </div>
-				<% end %>
+        </div>  %>
     <div class="row mb-3">
       <div class="col-lg-6">
         <!-- new field -->
