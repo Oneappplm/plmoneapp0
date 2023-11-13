@@ -230,6 +230,9 @@ module ApplicationHelper
 		[
 			['Provider Submitted Enrollment','provider_submitted_enrollments'],
       ['Group Enrollment','group_submitted_enrollments'],
+      ['Group Detail Report','group_detail_report'],
+      ['Termed Providers', 'termed_providers'],
+			['New Profile Setup in OneApp', 'new_profile_setup_in_one_app'],
       ['Missing Items Report(coming soon)','missing_items_report'],
       ['License Report','license_report'],
       ['DEA','dea'],
@@ -237,7 +240,7 @@ module ApplicationHelper
 			['CAQH','caqh'],
 			['OIG(coming soon)','oig'],
 			['Liability','liability'],
-			['Revalidation(coming soon)','revalidation'],
+			['Group Revalidation(coming soon)','group_revalidation'],
 			['Enrollment Details Report', 'enrollment_details_report']
     ]
 	end
