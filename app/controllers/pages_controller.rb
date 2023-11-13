@@ -278,12 +278,6 @@ class PagesController < ApplicationController
 					nil
   end
 
-	def redirect_to_default_page
-		# this will be ignore for now as role-based access v2 has new	logic
-		# redirect_to_filtered_page(current_user.default_page) if current_user.default_page.present? && current_user.default_page != 'overview'
-		# render partial: 'shared/access_denied' and return if current_user.default_page.blank?
-	end
-
   def build_initial_associations
     @provider.create_dea if @provider&.deas&.reload&.blank?
     @provider.create_cds if @provider&.cds&.reload&.blank?

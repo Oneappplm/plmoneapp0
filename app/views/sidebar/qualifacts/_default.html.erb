@@ -15,6 +15,7 @@
 							<div class="navbar-vertical-content">
 										<div id="navbarVerticalMenu" class="nav nav-pills nav-vertical card-navbar-nav px-0">
 													<!-- Collapse -->
+													<% if current_user.can_access?('Overview') %>
 													<div class="nav-item mb-2 nav-item-active">
 																<!-- ph-active -->
 																<a class="nav-link <%= active_menu('dashboard', 'dashboard') %>" href="<%= root_path %>">
@@ -72,16 +73,7 @@
 																			</div>
 													</div>
 													<% end %>
-													<% if current_user.can_access?('enrollment_tracking') && (current_setting.plmhealthoneapp? || current_setting.qualifacts?) && !current_user.is_provider_account && current_user.user_role != 'provider' %>
-													<div class="nav-item mb-2">
-
-																<a class="nav-link <%= active_menu('providers,enrollment_providers,enroll_groups,client_provider_enrollments,enrollments') %> <%= current_setting.qualifacts? ? active_menu('dcos') : "" %>" href="<%= overview_providers_path %>" data-placement="left">
-																			<i class="bi bi-person nav-icon"></i>
-																			<span class="nav-link-title">Enrollment Tracking</span>
-																</a>
-													</div>
-													<% end %>
-													<% if current_user.can_access?('enrollment_dashboard') && !current_user.is_provider_account && (current_setting.plmhealthoneapp? || current_setting.qualifacts?) && current_user.user_role != 'provider' %>
+													<% if current_user.can_access?('enrollment_dashboard') && !current_user.is_provider_account && (current_setting.plmhealthoneapp? || current_setting.qualifacts?) %>
 													<div class="nav-item mb-1">
 																<a class="nav-link <%= active_menu('enrollment_clients,alt_enrollment_groups,locations', 'index,dashboard,view_group,groups,show,documents,locations,enrollments,providers') %> <%= active_menu('index') %>" href="<%= dashboard_enrollment_clients_path %>" data-placement="left">
 																			<!-- <i class="bi-receipt nav-icon"></i> -->
@@ -91,8 +83,16 @@
 																</a>
 													</div>
 													<% end %>
+													<% if current_user.can_access?('enrollment_tracking') && (current_setting.plmhealthoneapp? || current_setting.qualifacts?) && !current_user.is_provider_account %>
+													<div class="nav-item mb-2">
 
-													<% if current_user.can_access?('provider_engage') || (current_user.provider? || current_user.administrator? || current_user.super_administrator?) %>
+																<a class="nav-link <%= active_menu('providers,enrollment_providers,enroll_groups,client_provider_enrollments,enrollments') %> <%= current_setting.qualifacts? ? active_menu('dcos') : "" %>" href="<%= overview_providers_path %>" data-placement="left">
+																			<i class="bi bi-person nav-icon"></i>
+																			<span class="nav-link-title">Enrollment Tracking</span>
+																</a>
+													</div>
+													<% end %>
+													<% if current_user.can_access?('provider_engage') && (current_user.provider? || current_user.administrator? || current_user.super_administrator?) %>
 													<div class="nav-item mb-2">
 																<a class="nav-link <%= active_menu('provider_engage') %>" href="<%= custom_provider_source_path %>" data-placement="left">
 																			<!-- <i class="bi-receipt nav-icon"></i> -->

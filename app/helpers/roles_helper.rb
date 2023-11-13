@@ -16,7 +16,7 @@ module RolesHelper
 		render partial: 'shared/access_denied'
 	end
 
-	def redirect_to_filtered_page page
+	def redirect_to_filtered_page page, submenu = 'index'
 		return if page == 'overview'
 		case page
 		when 'verification_platform', 'enrollment_clients', 'office_manager', 'settings', 'manage_clients', 'manage_practitioners', 'work_ticklers'
@@ -24,11 +24,14 @@ module RolesHelper
 		when 'client_portal', 'plm_sales_tool', 'smart_contract'
 				redirect_to send("#{page}_path")
 		when 'enrollment_tracking'
-			redirect_to overview_providers_path
+			# redirect_to  controller: 'providers', action: 'index'
 		when 'provider_app'
 			redirect_to custom_provider_source_path
 		else
 			render partial: 'shared/access_denied' and return
 		end
+	end
+
+	def translate_redirection
 	end
 end
