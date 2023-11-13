@@ -535,4 +535,121 @@ module ApplicationHelper
 		def display_mdy value
 			Time.zone.parse(value.to_s)&.strftime('%m/%d/%Y') rescue nil
 		end
+
+		def menu_links
+			@menu_links ||= {
+				overview: {
+					controller:	'dashboard',
+					action: 'dashboard'
+				},
+				dashboard: {
+					data_access: {
+						controller: 'pages',
+						action: 'client_portal'
+					},
+					decision_point: {
+						controller: 'pages',
+						action: 'virtual_review_committee'
+					}
+				},
+				provider_engage:	{
+					controller: 'provider_app',
+					action: 'provider_source'
+				},
+				group_engage: {
+					manage_provider: {
+						controller: 'office_managers',
+						action: 'index'
+					},
+					manage_practice: {
+						controller: 'office_managers',
+						action: 'manage_practice_locations'
+					}
+				},
+				enrollment_dashboard: {
+					ed_dashboard: {
+						controller: 'enrollment_clients',
+						action: 'dashboard'
+					},
+					groups: {
+						controller: 'enrollment_clients',
+						action: 'groups'
+					},
+					provider_data: {
+						controller: 'enrollment_clients',
+						action: 'index'
+					},
+					reports: {
+						controller: 'enrollment_clients',
+						action: 'reports'
+					},
+					notifications: {
+						controller: 'enrollment_clients',
+						action: 'notifications'
+					}
+				},
+				enrollment_tracking: {
+					et_overview: {
+						controller: 'providers',
+						action: 'overview'
+					},
+					providers: {
+						controller: 'providers',
+						action: 'index'
+					},
+					enrollment: {
+						controller: current_setting.qualifacts? ? 'client_provider_enrollments' : 'enrollment_providers',
+						action: 'index'
+					},
+					groups: {
+						controller: 'enrollments',
+						action: 'groups'
+					}
+				},
+				verification_platform: {
+					client_home: {
+						controller: 'verification_platform',
+						action: 'index'
+					},
+					manage_client: {
+						controller: 'manage_clients',
+						action: 'index'
+					},
+					manage_practitioner: {
+						controller: 'manage_practitioners',
+						action: 'index'
+					},
+					manage_tools: {
+						controller: 'manage_tools',
+						action: 'manage_cme'
+					},
+					query_report: {
+						controller: 'query_reports',
+						action: 'index'
+					},
+					work_tickler: {
+						controller: 'work_ticklers',
+						action: 'index'
+					},
+					manage_db: {
+						controller: 'hvhs_data',
+						action: 'index'
+					},
+					autoverify: {
+						controller: 'autoverifies',
+						action: 'index'
+					}
+				},
+				role_based_access: {
+					users: {
+						controller: 'users',
+						action: 'index'
+					},
+					role_access: {
+						controller: 'role_based_accesses',
+						action: 'index'
+					}
+				}
+			}
+		end
 end
