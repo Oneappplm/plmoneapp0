@@ -8,9 +8,9 @@ class Provider < ApplicationRecord
                           'taxonomy','specialty', 'enrollment_group_id'
                         ]
   REQUIRED_DOCUMENTS = [
-                          'state_license_copy_file', 'dea_copy_file', 'w9_form_file',
-                          'certificate_insurance_file', 'drivers_license_file', 'board_certification_file',
-                          'caqh_app_copy_file', 'telehealth_license_copy_file', 'school_certificate', 'cv_file'
+                          'state_license_copies', 'dea_copies', 'w9_form_copies',
+                          'certificate_insurance_copies', 'driver_license_copies', 'board_certification_copies',
+                          'caqh_app_copies', 'cv_copies', 'telehealth_license_copies', 'school_certificate'
                        ]
 
   ALL_REQUIRED_FIELDS = REQUIRED_ATTRIBUTES + REQUIRED_DOCUMENTS
