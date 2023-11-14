@@ -22,9 +22,11 @@
 			</div>
 			<div class="row">
 				<div class="col-lg-12">
-					<canvas  id="signature" class="border w-100 bg-medium-grey border-secondary" width="450" height="150">
+                    <div style="position: relative;">
+		 				<canvas  id="signature" class="border w-100 bg-medium-grey border-secondary" width="450" height="150">
 
-					</canvas >
+						</canvas >
+				    </div>
 				</div>
 				<div class="col-lg-12 my-3">
 						<a  id="clear-signature" class="btn btn-sm btn-primary fw-bold d-flex align-items-center" style="width: 100px;">
@@ -70,16 +72,21 @@
 	</div>
 </div>
 
-
 <script>
-	jQuery(document).ready(function($){
-    
-    var canvas = document.getElementById("signature");
-    var signaturePad = new SignaturePad(canvas);
-    
-    $('#clear-signature').on('click', function(){
-        signaturePad.clear();
+    jQuery(document).ready(function ($) {
+        var canvas = document.getElementById("signature");
+
+        canvas.width = 1200;
+        canvas.height = 400;
+
+        var signaturePad = new SignaturePad(canvas, {
+            minWidth: 0.5,  
+            maxWidth: 2,    
+            penColor: "black",  
+        });
+
+        $('#clear-signature').on('click', function () {
+            signaturePad.clear();
+        });
     });
-    
-});
 </script>
