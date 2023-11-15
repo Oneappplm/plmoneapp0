@@ -48,13 +48,6 @@
     </div>
   </div>
 
-  <div class="row mb-3 " style="display:none;" id="start_date_field" >
-    <div class="col-lg-6">
-      <label class="text-dark-grey"> Date Initial Application Submitted</label>
-      <%= f.date_field :start_date, placeholder: 'MM-DD-YYYY', class: 'form-control border border-dark' %>
-    </div>
-  </div>
-
     <div class="row mb-3 revalidation-fields <%= f.object&.enrollment_status == 'approved' ? '' : 'd-none'%>">
       <div class="col-lg-6">
         <label class="text-dark-grey">Initial Effective Date</label>
@@ -160,43 +153,4 @@
       <%= f.label :_destroy, "Remove", class: 'mx-2 text-dark-grey' %>
     </div>
   </div>
-
 </div>
-
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const enrollmentStatusSelect = document.getElementById('enrollment_status_select');
-    const startDateField = document.getElementById('start_date_field');
-      
-       if (enrollmentStatusSelect.value === 'terminated') {
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'approved'){
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'processing'){
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'revalidation'){
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'denied'){
-        startDateField.style.display = 'block';
-      } else {
-        startDateField.style.display = 'none';
-      }
-      
-    enrollmentStatusSelect.addEventListener('change', function () {
-      if (enrollmentStatusSelect.value === 'terminated') {
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'approved'){
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'processing'){
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'revalidation'){
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'denied'){
-        startDateField.style.display = 'block';
-      } else {
-        startDateField.style.display = 'none';
-      }
-    });
-  });
-</script>
