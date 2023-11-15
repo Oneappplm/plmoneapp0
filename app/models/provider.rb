@@ -22,7 +22,7 @@ class Provider < ApplicationRecord
           using: {
             tsearch: {any_word: true}
           }
-
+  validates :first_name, presence: true
   mount_uploader :school_certificate, DocumentUploader
   mount_uploader :state_license_copy_file, DocumentUploader
   mount_uploader :dea_copy_file, DocumentUploader
