@@ -95,7 +95,7 @@
 				<div class="row mb-3 <%= f.object.is_provider_account ? '' : 'd-none' %>" id="user_accessible_provider_container">
 					<div class="col-lg-6">
 						<label class="text-dark-grey">Provider Name</label>
-						<%= f.select :accessible_provider, options_for_select(Provider.all.map{ |p| ["#{p.provider_name}", p.id, {'data-enrollment_group_id'=> p.enrollment_group_id}]}, f.object.accessible_provider), { prompt: 'Select Option' }, class: 'form-select border border-dark optional', placeholder: 'Role', required: f.object.is_provider_account %>
+						<%= f.select :accessible_provider, options_for_select(Provider.all.reject { |p| p.provider_name.blank? }.map { |p| ["#{p.provider_name}", p.id, {'data-enrollment_group_id'=> p.enrollment_group_id}] }, f.object.accessible_provider), { prompt: 'Select Option' }, class: 'form-select border border-dark optional', placeholder: 'Role', required: f.object.is_provider_account %>
 					</div>
 				</div>
 				<div class="row">
