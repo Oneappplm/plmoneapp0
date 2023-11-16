@@ -92,6 +92,6 @@ class EnrollmentProvider < ApplicationRecord
   end
 
   def full_name
-    "#{self.first_name} #{self.last_name} #{self.suffix}"
+    "#{self.first_name} #{self.middle_name} #{self.last_name} #{self.suffix}"
   end
 end
