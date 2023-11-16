@@ -55,10 +55,13 @@ class PlmMailer < ApplicationMailer
 	end
 
 	def send_system_notification
-		@email = params[:email]
-		subject	= params[:subject]
-		@message	= params[:body]
+		return
+		# temporary disable this feature
 
-		mail(to: @email, from: from, subject: subject)
+		# @email = params[:email]
+		# subject	= params[:subject]
+		# @message	= params[:body]
+
+		# mail(to: @email, from: from, subject: subject)
 	end
 end
