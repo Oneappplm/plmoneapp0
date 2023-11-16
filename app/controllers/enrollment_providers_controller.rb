@@ -28,7 +28,7 @@ class EnrollmentProvidersController < ApplicationController
 				updated_by: current_user&.full_name
 			)
 			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
-			redirect_to redirect_url, notice: 'Enrollment Provider has been successfully created.'
+			redirect_to redirect_url, notice: "Enrollment #{@enrollment_provider.full_name} has been successfully created."
 		else
 			render 'new'
 		end
@@ -46,7 +46,7 @@ class EnrollmentProvidersController < ApplicationController
 				updated_by: current_user&.full_name
 			)
 			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
-			redirect_to redirect_url, notice: 'Enrollment Provider has been successfully updated.'
+			redirect_to redirect_url, notice: "Enrollment #{@enrollment_provider.full_name} has been successfully updated."
 		else
 			render 'edit'
 		end
