@@ -16,21 +16,14 @@
   <% delete_path = enrollment_provider_path(client_provider_enrollment.enrollable)%>
 <% end %>
 
-<tr>
 	<td scope="row">
-    <%= link_to url, class: 'text-dark-grey' do %>
-      <%= name %>
-    <% end %>
+    <a href="javascript:void(0)" class="text-secondary show-client-provider-enrollment-button" data-client-provider-enrollment-id=<%= client_provider_enrollment.id %> data-remote="true"><%= name %></a>
   </td>
 	<td scope="row">
-    <%= link_to url, class: 'text-dark-grey' do %>
-      <%= type %>
-    <% end %>
+    <a href="javascript:void(0)" class="text-dark-grey show-client-provider-enrollment-button" data-client-provider-enrollment-id=<%= client_provider_enrollment.id %> data-remote="true"><%=type%></a>
   </td>
 	<td scope="row">
-    <%= link_to url, class: 'text-dark-grey' do %>
-      <%= npi %>
-    <% end %>
+    <a href="javascript:void(0)" class="text-dark-grey show-client-provider-enrollment-button" data-client-provider-enrollment-id=<%= client_provider_enrollment.id %> data-remote="true"><%=npi%></a>
     <div class="d-flex gap-2" style="float:right;">
       <% if current_user.can_access?('Edit Enrollment') %>
         <%= link_to edit_path, class: 'btn btn-xs btn-primary' do %>
@@ -45,3 +38,38 @@
     </div>
   </td>
 </tr>
+
+<script>
+  $(document).ready(function() {
+    var csrfToken = $('meta[name="csrf-token"]').attr('content');
+    $('.show-client-provider-enrollment-button').off().on('click', function() {
+      if($('#client-provider-enrollment-sidebar').length) {
+        var container = $('#show-client-provider-enrollment-container');
+        container.html("")
+        container.removeClass('col-lg-4')
+        $('tr').removeClass('bg-medium-grey')
+      } else {
+        var client_provider_enrollment_id = $(this).data("client-provider-enrollment-id");
+        getClientProviderEnrollment(client_provider_enrollment_id);
+        $(this).parent().closest('tr').addClass('bg-medium-grey')
+      }
+    });
+
+    function getClientProviderEnrollment(client_provider_enrollment_id) {
+      $.ajax({
+        url: '<%= get_client_provider_enrollment_path %>',
+        method: 'GET',
+        data: { authenticity_token: csrfToken, id: client_provider_enrollment_id },
+        beforeSend: function() {
+          $('.loading-overlay').show(); //
+        },
+        success: function(data) {
+          var container = $('#show-client-provider-enrollment-container');
+          container.addClass('col-lg-4')
+          container.html(data.html)
+          $('.loading-overlay').hide(); //
+        }
+      })
+    }
+  });
+</script>
