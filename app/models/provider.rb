@@ -455,7 +455,7 @@ class Provider < ApplicationRecord
       attachments: attachments,
       folder_name: 'provider',
 						cc: email_addresses
-    ).welcome_letter.deliver_later
+    ).welcome_letter.deliver_now
 
 				update_columns(welcome_letter_sent: Date.today) if email.present?
 
