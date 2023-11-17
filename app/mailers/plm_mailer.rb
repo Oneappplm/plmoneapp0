@@ -24,6 +24,7 @@ class PlmMailer < ApplicationMailer
 		file_attachments = params[:attachments]
 		subject	= params[:subject] || "Request for Credentialing Documentation"
 		@message	= params[:body]
+		cc	= params[:cc]
 
 		file_attachments.each do |filename|
 			if filename.include? "https"
@@ -40,7 +41,7 @@ class PlmMailer < ApplicationMailer
 		#  add logo
   attachments.inline['logo.png'] = File.read(File.join(Rails.root, 'public', 'logos', 'qualifacts-logo.png'))
 
-		mail(to: @email, from: from, subject: subject)
+		mail(to: @email, from: from, subject: subject, cc: cc)
 	end
 
 	def send_invite_and_reset_password_instructions
