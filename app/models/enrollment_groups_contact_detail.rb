@@ -1,10 +1,8 @@
 class EnrollmentGroupsContactDetail < ApplicationRecord
   belongs_to :enrollment_group
 
-  after_create :send_welcome_letter
-
   def send_welcome_letter
-    return unless self.group_personnel_email.present? && self.enrollment_group.welcome_letter_status
+    return unless self.group_personnel_email.present?
 
     attachments = []
 
@@ -18,12 +16,17 @@ class EnrollmentGroupsContactDetail < ApplicationRecord
     attachments << "MN CAQH Authorization Form.pdf" if enrollment_group.check_mn_caqh_authorization_form
     attachments << "CAQH Standard Authorization.pdf" if enrollment_group.check_caqh_standard_authorization
 
+				email_addresses	= self.group_personnel_email.split(',').map(&:strip).reject(&:blank?)
+				email = email_addresses.delete_at(0)	# remove first element
+
     PlmMailer.with(
-      email: group_personnel_email,
+      email: email,
       subject: enrollment_group.welcome_letter_subject,
       body: enrollment_group.welcome_letter_message,
       attachments: attachments,
-      folder_name: 'group'
-    ).welcome_letter.deliver_later
+      folder_name: 'group',
+						cc: email_addresses
+    ).welcome_letter.deliver_now
+
   end
 end

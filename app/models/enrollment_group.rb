@@ -30,6 +30,8 @@ class EnrollmentGroup < ApplicationRecord
 
   default_scope { order(:group_name) }
 
+		after_save :send_welcome_letter
+
   class << self
     def search_by_params(params)
       return all if params_conditions(params).values.all?(&:blank?) && params[:group_name].blank?
@@ -80,4 +82,21 @@ class EnrollmentGroup < ApplicationRecord
   rescue
     nil
   end
+
+		def sent_welcome_letter?
+			welcome_letter_status? && welcome_letter_sent_at.present?
+		end
+
+		def send_welcome_letter
+		return unless contact_personnels.present? && welcome_letter_status && welcome_letter_sent_at.nil?
+
+			contact_personnels.each do |contact_personnel|
+				contact_personnel.send_welcome_letter
+			end
+
+			update_columns(
+				welcome_letter_status: true,
+				welcome_letter_sent_at: Time.now
+			)
+		end
 end
