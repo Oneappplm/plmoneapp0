@@ -217,20 +217,17 @@ class AjaxController < ApplicationController
     }
   end
 
+  def get_provider
+    @provider = Provider.find(params[:id] || params[:provider_id])
+    @comment = @provider.comments.build(user: current_user)
+    render json: { html: render_to_string(partial: 'providers/show', locals: { provider: @provider }).html_safe }
+  end
+
   def get_client_provider_enrollment
 		@client_provider_enrollment = ClientProviderEnrollment.find(params[:id])
     @comment = @client_provider_enrollment.enrollable.comments.build(user: current_user)
-    if @client_provider_enrollment.enrollable_type == "EnrollGroup"
-      render json: { html: render_to_string(partial: 'client_provider_enrollments/enroll_group', locals: { client_provider_enrollment: @client_provider_enrollment, comment: @comment }).html_safe }
-    else
-      render json: { html: render_to_string(partial: 'client_provider_enrollments/enrollment_provider', locals: { client_provider_enrollment: @client_provider_enrollment, comment: @comment }).html_safe }
-    end
-  end
-
-  def get_provider
-    @provider = Provider.find(params[:id] || params[:provider_id])
-    render json: { html: render_to_string(partial: 'providers/show', locals: { provider: @provider }).html_safe }
-  end
+    render json: { html: render_to_string(partial: 'client_provider_enrollments/show', locals: { client_provider_enrollment: @client_provider_enrollment, comment: @comment }).html_safe }
+	end
 
   def new_edit_practice_location
     @practice_location = params[:id].present? ? PracticeLocation.find(params[:id]) : PracticeLocation.new
