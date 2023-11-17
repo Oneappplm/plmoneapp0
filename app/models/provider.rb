@@ -106,7 +106,7 @@ class Provider < ApplicationRecord
   scope :active, -> { where(status: 'active') }
   scope :inactive, -> { where(status: 'inactive-termed') }
 
-  after_create :send_welcome_letter
+  after_save :send_welcome_letter
 
   # this is for all required fields including uploads
   def self.with_missing_required_attributes
@@ -430,7 +430,7 @@ class Provider < ApplicationRecord
   end
 
   def send_welcome_letter
-    return unless self.email_address.present? && self.welcome_letter_status?
+    return unless self.email_address.present? && self.welcome_letter_status? && self.welcome_letter_sent.nil?
 
     attachments = []
 
@@ -444,34 +444,27 @@ class Provider < ApplicationRecord
     attachments << "MN CAQH Authorization Form.pdf" if check_mn_caqh_authorization_form
     attachments << "CAQH Standard Authorization.pdf" if check_caqh_standard_authorization
 
+				email_addresses = email_address.split(',').map(&:strip).reject(&:blank?)
+				email = email_addresses.delete_at(0)	# remove first element
+
+
     PlmMailer.with(
-      email: email_address,
+      email: email,
       subject: welcome_letter_subject,
       body: welcome_letter_message,
       attachments: attachments,
-      folder_name: 'provider'
+      folder_name: 'provider',
+						cc: email_addresses
     ).welcome_letter.deliver_later
 
+				update_columns(welcome_letter_sent: Date.today) if email.present?
 
     # attachments
   end
 
-  def send_welcome_letter_old
-    return unless self.email_address.present? && self.welcome_letter_status?
-
-    attachments = []
-
-    if welcome_letter_attachments.present?
-      attachments = welcome_letter_attachments.map{|a| a.url}
-    end
-
-    PlmMailer.with(
-      email: email_address,
-      subject: welcome_letter_subject,
-      body: welcome_letter_message,
-      attachments: attachments
-    ).welcome_letter.deliver_later
-  end
+		def sent_welcome_letter?
+			welcome_letter_status? && welcome_letter_sent.present?
+		end
 
   def group_dcos
     GroupDco.where(id: self.dcos.split(",")) rescue []
