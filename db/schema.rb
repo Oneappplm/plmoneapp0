@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_18_090107) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   create_table "active_storage_attachments", force: :cascade do |t|
@@ -48,7 +48,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.datetime "updated_at", null: false
     t.string "add_members", default: [], array: true
   end
-  
+
   create_table "ahoy_events", force: :cascade do |t|
     t.bigint "visit_id"
     t.bigint "user_id"
@@ -472,6 +472,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.boolean "check_caqh_standard_authorization", default: false
     t.string "billing_address_autofill"
     t.string "remittance_address_autofill"
+    t.datetime "welcome_letter_sent_at"
     t.string "prof_liability_carrier_name"
     t.string "prof_liability_self_insured"
     t.string "prof_liability_address"
@@ -1645,6 +1646,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "client_name"
+    t.boolean "enable_otp", default: true
   end
 
   create_table "specialties", force: :cascade do |t|
