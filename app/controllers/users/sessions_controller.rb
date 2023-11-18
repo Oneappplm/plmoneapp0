@@ -1,7 +1,7 @@
 class Users::SessionsController < Devise::SessionsController
   def create
     if current_user.present?
-      if Rails.env.production? && !current_setting.dcs?
+      if Rails.env.production? && current_setting.enable_otp?
         current_user.generate_otp_code_and_expiration
         current_user.send_otp_code
         redirect_url = request_otp_code_otp_path(current_user.otp_token)
