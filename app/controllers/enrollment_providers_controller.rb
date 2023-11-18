@@ -26,6 +26,7 @@ class EnrollmentProvidersController < ApplicationController
 				provider_id: params[:provider_id],
 				outreach_type:	params[:outreach_type]
 			)
+			@notication = AllNotification.create(description: "Enrollment #{@enrollment_provider.full_name} has been successfully created.")
 			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
 			redirect_to redirect_url, notice: "Enrollment #{@enrollment_provider.full_name} has been successfully created."
 		else
@@ -43,8 +44,17 @@ class EnrollmentProvidersController < ApplicationController
 				provider_id: params[:provider_id],
 				outreach_type:	params[:outreach_type]
 			)
-			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
-			redirect_to redirect_url, notice: "Enrollment #{@enrollment_provider.full_name} has been successfully updated."
+		  previous_comment = @enrollment_provider.details.first.comment_before_last_save
+     
+	    if @enrollment_provider.details.first.comment.present? && @enrollment_provider.details.first.comment != previous_comment
+	      @notification = AllNotification.create(description: "A new note was added for #{@enrollment_provider.full_name} for #{@enrollment_provider.details.first.enrollment_payer}")
+			  redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
+			  redirect_to redirect_url, notice: "#{@notification.description}"
+	    else
+	      @notification = AllNotification.create(description: "Enrollment #{@enrollment_provider.enrollment_provider_update}")
+				redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
+				redirect_to redirect_url, notice: "#{@notification.description}"
+	    end
 		else
 			render 'edit'
 		end

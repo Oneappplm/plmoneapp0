@@ -94,4 +94,9 @@ class EnrollmentProvider < ApplicationRecord
   def full_name
     "#{self.first_name} #{self.middle_name} #{self.last_name} #{self.suffix}"
   end
+
+  def enrollment_provider_update
+  	provider = Provider.find(self.provider_id)
+  	"#{provider.first_name} #{provider.middle_name} #{provider.last_name} #{self.details.first.enrollment_status} for #{self.details.first.enrollment_payer} to Application Submitted "
+  end
 end

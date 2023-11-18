@@ -75,7 +75,8 @@ class EnrollmentsController < ApplicationController
 					subject: "Added Group",
 					body: "#{current_user&.full_name} added a new group: #{@enrollment_group&.group_name}"
 				).send_system_notification.deliver_later
-				redirect_to groups_enrollments_path, notice: " Profile created for #{@enrollment_group.group_name} Group. Please complete all information." and return
+				@notification = AllNotification.create(description: "Profile created for #{@enrollment_group.group_name} Group")
+				redirect_to groups_enrollments_path, notice: "#{@notification.description}.Please complete all information" and return
 			end
 		else
 			@enrollment_group = EnrollmentGroup.new

@@ -1,0 +1,2 @@
+class AllNotification < ApplicationRecord
+end

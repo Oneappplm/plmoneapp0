@@ -1,0 +1,57 @@
+<div class="content container-fluid">
+   <%= render "enrollment_clients_nav"%>
+</div>
+
+<h1 class="text-center mb-5">Notification List</h1>
+<div class="notification-list ms-5">
+  <% @notifications.each do |notification| %>
+    <ul class="mt-4 ms-3 list-unstyled">
+      <li>
+        <div class="row ms-5">
+          <div class="col-xl-8 notification-li py-2 rounded-1">
+            <span class="notification-date">
+              <%= notification.description %> 
+              <%= notification.created_at.in_time_zone("Eastern Time (US & Canada)").strftime("%I:%M %p %A, %d %B %Y  EST") %>
+            </span>
+          </div>
+          <div class="col-xl-4 py-2">
+            <span class="delete-notification ms-5" style="cursor: pointer;">
+              <%= button_to delete_notification_enrollment_client_path(notification), method: :delete, data: { "turbo-method": :delete }, form: { style: 'display: inline;' }, class: "cross-icon ms-5" do %>
+                <i class="fa-sharp fa-solid fa-trash vibrate fs-4" style="color: #ff0000;"></i>        
+              <% end %>
+            </span>
+          </div>
+        </div>
+      </li>
+    </ul>
+  <% end %>
+</div>
+
+  <style>
+    .notification-li {
+      border: 2px solid #6FCBA7;
+      transition: transform 0.5s;
+    }
+
+    .notification-li:hover {
+      transform: scale(1.1);
+    }
+
+    .cross-icon {
+      border:0;
+      outline: 0;
+      background: transparent;
+    }
+
+    .vibrate:hover {
+    animation: vibrate 0.3s linear infinite;
+    }
+
+    @keyframes vibrate {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-2px) rotate(-1deg); }
+      50% { transform: translateX(4px) rotate(2deg); }
+      75% { transform: translateX(-2px) rotate(-1deg); }
+      100% { transform: translateX(0); }
+    }
+  </style>

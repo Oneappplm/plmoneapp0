@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
   resources :hvhs_data
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
   # Defines the root path route ("/")
   root 'dashboard#dashboard' # Overview	page
   get 'client-portal', to: 'pages#client_portal' # Data Access page
@@ -196,8 +195,16 @@ Rails.application.routes.draw do
       get :dashboard
       get :groups
       get :view_group
+      get :all_notification
     end
   end
+
+  resources :enrollment_clients, path: 'enrollment-clients' do
+    member do
+      delete 'delete_notification'
+    end
+  end
+
 
   resources :systems do
     collection do

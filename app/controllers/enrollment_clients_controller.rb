@@ -52,6 +52,17 @@ class EnrollmentClientsController < ApplicationController
     end
   end
 
+  def delete_notification
+    @notification = AllNotification.find(params[:id])
+
+    if @notification.destroy
+      redirect_to all_notification_enrollment_clients_path, notice: 'Notification deleted successfully.'
+    else
+      redirect_to all_notification_enrollment_clients_path, alert: 'Failed to delete notification.'
+    end
+  end
+
+
   def download_documents
     @month = DateTime.parse(params[:month]&.split("-").join("/"))
     respond_to do |format|
@@ -93,6 +104,10 @@ class EnrollmentClientsController < ApplicationController
 		@enrollment_group.qualifacts_contacts.build if current_setting.qualifacts? && !@enrollment_group.qualifacts_contacts.present?
 
 		render 'enrollments/new_group'
+  end
+
+  def all_notification
+    @notifications = AllNotification.order(created_at: :desc).all
   end
 
   protected
