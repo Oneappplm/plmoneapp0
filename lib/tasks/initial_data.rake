@@ -62,4 +62,13 @@ namespace :plmhealthoneapp do
 		end
 
 	end
+
+	# rake plmhealthoneapp:reset_default_data
+	task :reset_default_data => :environment do |task, args|
+		puts "Deleting clients data"
+		Client.destroy_all
+
+		puts "Deleting Hvhs data"
+		HvhsDatum.destroy_all
+	end
 end
