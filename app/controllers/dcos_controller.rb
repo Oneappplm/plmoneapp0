@@ -67,7 +67,7 @@ class DcosController < ApplicationController
 	protected
 	def dco_params
 		params.require(:group_dco).permit(
-			:client, :dco_name, :dco_address, :effective_date,
+			:client, :dco_name, :dco_address, :effective_date, :npi_digits, :tin_digits_type,
 			:dco_city, :state, :dco_zipcode, :county, :is_primary_location,
 			:service_location_phone_number, :service_location_fax_number,
 			:panel_status_to_new_patients, :panel_age_limit, :include_in_directory,
