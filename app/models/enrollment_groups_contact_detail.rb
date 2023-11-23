@@ -22,7 +22,7 @@ class EnrollmentGroupsContactDetail < ApplicationRecord
     PlmMailer.with(
       email: email,
       subject: enrollment_group.welcome_letter_subject,
-      body: enrollment_group.welcome_letter_message,
+      body: simple_format(enrollment_group.welcome_letter_message),
       attachments: attachments,
       folder_name: 'group',
 						cc: email_addresses
