@@ -451,7 +451,7 @@ class Provider < ApplicationRecord
     PlmMailer.with(
       email: email,
       subject: welcome_letter_subject,
-      body: welcome_letter_message,
+      body: simple_format(welcome_letter_message),
       attachments: attachments,
       folder_name: 'provider',
 						cc: email_addresses
