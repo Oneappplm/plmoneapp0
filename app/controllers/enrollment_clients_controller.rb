@@ -166,7 +166,7 @@ class EnrollmentClientsController < ApplicationController
   def provider_submitted_enrollments_to_csv
     enrollment_details = EnrollmentProvidersDetail.includes(:application_status_logs).where(enrollment_status: 'application-submitted').where(application_status_logs: { created_at: @month.beginning_of_month..@month.end_of_month })
     CSV.generate(headers: true) do |csv|
-      csv << ["Platform", "Group Name", "Providers First Name", "Providers Last Name", "Practitioner Type", "NPI", "Payor", "Enrollment Tracking ID", "Submission Date"]
+      csv << ["Platform", "Group Name", "Providers First Name", "Providers Last Name", "Practitioner Type", "NPI", "Payor", "Enrollment Type", "State", "Initial Application Status", "Date Initial Application Submitted", "Provider ID"]
 
       enrollment_details.each do |enrollment_detail|
         csv << [
@@ -187,7 +187,7 @@ class EnrollmentClientsController < ApplicationController
   def group_submitted_enrollments_to_csv
     enrollment_details = EnrollGroupsDetail.includes(:application_status_logs).where(application_status: 'application-submitted').where(application_status_logs: { created_at: @month.beginning_of_month..@month.end_of_month })
     CSV.generate(headers: true) do |csv|
-      csv << ["Platform", "Group Name", "NPI", "Payor", "Enrollment Tracking ID", "Submission Date"]
+      csv << ["Platform", "Group Name", "NPI", "Payor", "State", "Application Status", "Initial Application Status", "Group Number", "Initial Effective Date", "Revalidation Date", "Notes"]
       enrollment_details.each do |enrollment_detail|
         csv << [
           flatforms.detect{|flatform| flatform.last == enrollment_detail.enroll_group&.group&.flatform }&.first,
@@ -204,9 +204,9 @@ class EnrollmentClientsController < ApplicationController
   def license_report_to_csv
     providers = Provider.includes(:licenses, :cnp_licenses, :rn_licenses).where(created_at: @month.beginning_of_month..@month.end_of_month)
     CSV.generate(headers: true) do |csv|
-      csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State License Number", "State License Expiration",
-              "NP License Number", "NP Expiration Date", "RN License Number", "RN Expiration Date", "NCCPA Number", "NCCPA Expiration", "NP Certification Number",
-              "NP Certification Expiration"]
+      csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "State License Number", "State License Expiration", "Advance Practice Registered Nurse License License Number",
+              "Advance Practice Registered Nurse LicenseExpiration Date", "Registered Nurse License Number", "Registered Nurse Expiration Date", "Board Certification Number", "Board Certification Expiration",
+              ]
       providers.each do |provider|
         licenses = provider.licenses
         cnp_licenses = provider.cnp_licenses
@@ -258,7 +258,67 @@ class EnrollmentClientsController < ApplicationController
   def caqh_to_csv
     providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
     CSV.generate(headers: true, write_headers: true) do |csv|
-      csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "CAQH ID", "Attestation", "Reattestation"]
+      csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "CAQH ID", "Attestation", "Reattestation"]
+      providers.each do |provider|
+        caqh_reattest_completed_by = Date.parse(provider&.caqh_reattest_completed_by)&.strftime('%b %d, %Y') rescue nil
+        csv << [
+          flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
+          provider.group&.group_name,
+          provider.first_name,
+          provider.last_name,
+          provider.practitioner_type,
+          format_number_for_leading_zeroes(provider.npi),
+          format_number_for_leading_zeroes(provider.caqhid),
+          provider.caqh_current_reattestation_date&.strftime('%b %d, %Y'),
+          caqh_reattest_completed_by
+        ]
+      end
+    end
+  end
+  def oig_to_csv
+    providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    CSV.generate(headers: true, write_headers: true) do |csv|
+      csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "OIG  Status", " Source Date", " Verification Date", "OIG Status", "OIG Verification Date", "OIG Source Date",]
+      providers.each do |provider|
+        caqh_reattest_completed_by = Date.parse(provider&.caqh_reattest_completed_by)&.strftime('%b %d, %Y') rescue nil
+        csv << [
+          flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
+          provider.group&.group_name,
+          provider.first_name,
+          provider.last_name,
+          provider.practitioner_type,
+          format_number_for_leading_zeroes(provider.npi),
+          format_number_for_leading_zeroes(provider.caqhid),
+          provider.caqh_current_reattestation_date&.strftime('%b %d, %Y'),
+          caqh_reattest_completed_by
+        ]
+      end
+    end
+  end
+  def sam_to_csv
+    providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    CSV.generate(headers: true, write_headers: true) do |csv|
+      csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", " Source Date", " Verification Date",]
+      providers.each do |provider|
+        caqh_reattest_completed_by = Date.parse(provider&.caqh_reattest_completed_by)&.strftime('%b %d, %Y') rescue nil
+        csv << [
+          flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
+          provider.group&.group_name,
+          provider.first_name,
+          provider.last_name,
+          provider.practitioner_type,
+          format_number_for_leading_zeroes(provider.npi),
+          format_number_for_leading_zeroes(provider.caqhid),
+          provider.caqh_current_reattestation_date&.strftime('%b %d, %Y'),
+          caqh_reattest_completed_by
+        ]
+      end
+    end
+  end
+  def missing_items_report_to_csv
+    providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    CSV.generate(headers: true, write_headers: true) do |csv|
+      csv << ["Group Name", "State", "First Name","Middle Name", "Last Name", "Practitioner Type", "NPI", "Tax ID", "Missing Information", "Notes",]
       providers.each do |provider|
         caqh_reattest_completed_by = Date.parse(provider&.caqh_reattest_completed_by)&.strftime('%b %d, %Y') rescue nil
         csv << [
@@ -279,7 +339,7 @@ class EnrollmentClientsController < ApplicationController
   def liability_to_csv
     providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
     CSV.generate(headers: true, write_headers: true) do |csv|
-      csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "Policy Number", "Exp Date"]
+      csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "Policy Number","Effective Date", "Expiration Date"]
       providers.each do |provider|
         csv << [
           flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
@@ -299,8 +359,8 @@ class EnrollmentClientsController < ApplicationController
     enrollment_details = EnrollmentProvidersDetail.includes(:application_status_logs, enrollment_provider: :provider).where(created_at: @month.beginning_of_month..@month.end_of_month)
     CSV.generate(headers: true, write_headers: true) do |csv|
       csv << ["Group", "Provider Last Name", "Provider First Name", "Credentialing Type", "Payor Name", "Notification of New Provider",
-              "Date Group Notification of Provider", "Date Notification to begin submitting enrollment", "Date Application Submitted to Payor",
-              "Date Payor Approved", "Information Required from Qualifacts", "Payor Notes", "General Notes"]
+              "Date Group Notification of Provider", "Date Notification to begin submitting enrollment", " Payor",
+              "Enrollment Type", "State", "Initial Application Status", "Date Initial Application Submitted", "Effective Date", "Provider ID", "Notes",]
       enrollment_details.each do |enrollment_detail|
         provider = enrollment_detail.enrollment_provider&.provider
         missing_fields = []
@@ -338,8 +398,8 @@ class EnrollmentClientsController < ApplicationController
   def group_detail_report_to_csv
     enrollment_details = EnrollGroupsDetail.includes(enroll_group: :group).where(enroll_group: { created_at: @month.beginning_of_month..@month.end_of_month })
     CSV.generate(headers: true) do |csv|
-      csv << ["Platform", "Group Name", "Notification of New \nGroup", "Date Notification to \nbegin submitting \nenrollment \n(Contract signed/Profile\n/Documents Complete)",
-              "Payor", "State", "Application Status", "Effective Date", "Revalidation Date", "Group ID", "Notes"]
+      csv << ["Platform", "Group Name", "Credentialing Type", "Payor Name", "Notification of New Group", "Date Notification to begin submitting enrollment(Contract signed/Profile/Documents Complete)",
+              "Payor","Enrollment Type", "State", "Initial Application Status", "Date Initial Application Submitted", "Effective Date", "Group ID", "Notes"]
       enrollment_details.each do |enrollment_detail|
         enroll_group = enrollment_detail.enroll_group
         group = enroll_group&.group
@@ -360,31 +420,31 @@ class EnrollmentClientsController < ApplicationController
     end
   end
 
-  # def group_revalidation_to_csv
-  #   enroll_groups = EnrollGroup.includes(:enroll_groups_details, :group).where(created_at: @month.beginning_of_month..@month.end_of_month)
-  #   CSV.generate(headers: true) do |csv|
-  #     csv << ["Platform", "Group Name", "NPI", "(Payor)1", "State", "(Payor)\nProvider ID", "(Payor)\nProvider\nEffective Date",
-  #             "(Payor)\nProvider\nRevalidation\nDate", "(Payor)2","State", "(Payor)\nProvider ID", "(Payor)\nProvider\nEffective Date",
-  #             "(Payor)\nProvider\nRevalidation\nDate"]
-  #     enroll_groups.each do |enroll_group|
-  #       group = enroll_group.group
-  #       payor_1 = enroll_group.enrollment_details&.first
-  #       payor_2 = enroll_group.enrollment_details&.second
-  #       csv << [
-  #         flatforms.detect{|flatform| flatform.last == group&.flatform }&.first,
-  #         group&.group_name,
-  #         group&.npi_digit_type
-  #         enrollment_detail.enrollment_payer,
-  #         enrollment_detail.payer_state,
-  #         application_statuses.detect{|application_status| application_status.last == enrollment_detail.application_status }&.first,
-  #         enrollment_detail.effective_date&.strftime('%b %d, %Y'),
-  #         enrollment_detail.revalidation_date&.strftime('%b %d, %Y'),
-  #         enroll_group&.group_id,
-  #         enrollment_detail.notes
-  #       ]
-  #     end
-  #   end
-  # end
+  def group_revalidation_to_csv
+    enroll_groups = EnrollGroup.includes(:enroll_groups_details, :group).where(created_at: @month.beginning_of_month..@month.end_of_month)
+    CSV.generate(headers: true) do |csv|
+      csv << ["Platform", "Group Name", "NPI", "(Payor)1", "State", "(Payor)\nProvider ID", "(Payor)\nProvider\nEffective Date",
+              "(Payor)\nProvider\nRevalidation\nDate", "(Payor)2","State", "(Payor)\nProvider ID", "(Payor)\nProvider\nEffective Date",
+              "(Payor)\nProvider\nRevalidation\nDate"]
+      enroll_groups.each do |enroll_group|
+        group = enroll_group.group
+        payor_1 = enroll_group.enrollment_details&.first
+        payor_2 = enroll_group.enrollment_details&.second
+        csv << [
+          flatforms.detect{|flatform| flatform.last == group&.flatform }&.first,
+          group&.group_name,
+          group&.npi_digit_type
+          # enrollment_detail.enrollment_payer,
+          # enrollment_detail.payer_state,
+          # application_statuses.detect{|application_status| application_status.last == enrollment_detail.application_status }&.first,
+          # enrollment_detail.effective_date&.strftime('%b %d, %Y'),
+          # enrollment_detail.revalidation_date&.strftime('%b %d, %Y'),
+          # enroll_group&.group_id,
+          # enrollment_detail.notes
+        ]
+      end
+    end
+  end
 
   def termed_providers_to_csv
     providers = Provider.where(status: 'inactive-termed').where(created_at: @month.beginning_of_month..@month.end_of_month)
