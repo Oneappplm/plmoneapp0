@@ -187,7 +187,7 @@ class EnrollmentClientsController < ApplicationController
   def group_submitted_enrollments_to_csv
     enrollment_details = EnrollGroupsDetail.includes(:application_status_logs).where(application_status: 'application-submitted').where(application_status_logs: { created_at: @month.beginning_of_month..@month.end_of_month })
     CSV.generate(headers: true) do |csv|
-      csv << ["Platform", "Group Name", "NPI", "Payor", "State", "Application Status", "Initial Application Status", "Group Number", "Initial Effective Date", "Revalidation Date", "Notes"]
+      csv << ["Platform", "Group Name", "Payor Name", "Group ID", "Application Status", "State", "Initial Application Submitted Date",]
       enrollment_details.each do |enrollment_detail|
         csv << [
           flatforms.detect{|flatform| flatform.last == enrollment_detail.enroll_group&.group&.flatform }&.first,
@@ -204,8 +204,9 @@ class EnrollmentClientsController < ApplicationController
   def license_report_to_csv
     providers = Provider.includes(:licenses, :cnp_licenses, :rn_licenses).where(created_at: @month.beginning_of_month..@month.end_of_month)
     CSV.generate(headers: true) do |csv|
-      csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "State License Number", "State License Expiration", "Advance Practice Registered Nurse License License Number",
-              "Advance Practice Registered Nurse LicenseExpiration Date", "Registered Nurse License Number", "Registered Nurse Expiration Date", "Board Certification Number", "Board Certification Expiration",
+      csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "State License Number","State License Effective date", "State License Expiration", "Advance Practice Registered Nurse License License Number",
+               "State", "Advance Practice Registered Nurse License Effective Date",
+              "Advance Practice Registered Nurse License Expiration Date", "Registered Nurse License Number", "State", "Registered Nurse Effective Date", "Registered Nurse Expiration Date", "Certification Name", "Board Certification Number", "Effective Date", "Re-cretification Date"
               ]
       providers.each do |provider|
         licenses = provider.licenses
@@ -318,7 +319,7 @@ class EnrollmentClientsController < ApplicationController
   def missing_items_report_to_csv
     providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
     CSV.generate(headers: true, write_headers: true) do |csv|
-      csv << ["Group Name", "State", "First Name","Middle Name", "Last Name", "Practitioner Type", "NPI", "Tax ID", "Missing Information", "Notes",]
+      csv << ["Platform", "Group Name", "State", "First Name","Middle Name", "Last Name", "Practitioner Type", "NPI", "Tax ID", "Missing Information",]
       providers.each do |provider|
         caqh_reattest_completed_by = Date.parse(provider&.caqh_reattest_completed_by)&.strftime('%b %d, %Y') rescue nil
         csv << [
@@ -358,9 +359,9 @@ class EnrollmentClientsController < ApplicationController
   def enrollment_details_report_to_csv
     enrollment_details = EnrollmentProvidersDetail.includes(:application_status_logs, enrollment_provider: :provider).where(created_at: @month.beginning_of_month..@month.end_of_month)
     CSV.generate(headers: true, write_headers: true) do |csv|
-      csv << ["Group", "Provider Last Name", "Provider First Name", "Credentialing Type", "Payor Name", "Notification of New Provider",
-              "Date Group Notification of Provider", "Date Notification to begin submitting enrollment", " Payor",
-              "Enrollment Type", "State", "Initial Application Status", "Date Initial Application Submitted", "Effective Date", "Provider ID", "Notes",]
+      csv << ["Group", "Provider Last Name", "Provider First Name", "Enrollment Type", "Payor Name", "Notification of New Provider",
+              "Date Group Notification of Provider (Welcome Letter)", "Date Notification to begin submitting enrollment (Contract signed/Profile/Documents Complete)", " Payor",
+              "Enrollment Type", "State", "Initial Application Status", "Date Initial Application Submitted", "Effective Date", "Provider ID", "Most Current Revalidation Date", "Revalidation Next Due Date", "Notes",]
       enrollment_details.each do |enrollment_detail|
         provider = enrollment_detail.enrollment_provider&.provider
         missing_fields = []
@@ -398,8 +399,8 @@ class EnrollmentClientsController < ApplicationController
   def group_detail_report_to_csv
     enrollment_details = EnrollGroupsDetail.includes(enroll_group: :group).where(enroll_group: { created_at: @month.beginning_of_month..@month.end_of_month })
     CSV.generate(headers: true) do |csv|
-      csv << ["Platform", "Group Name", "Credentialing Type", "Payor Name", "Notification of New Group", "Date Notification to begin submitting enrollment(Contract signed/Profile/Documents Complete)",
-              "Payor","Enrollment Type", "State", "Initial Application Status", "Date Initial Application Submitted", "Effective Date", "Group ID", "Notes"]
+      csv << ["Platform", "Group Name", "Notification of New Group", "Date Notification to begin submitting enrollment(Contract signed/Profile/Documents Complete)",
+              "Payor Name", "Group Id", "Enrollment Type", "State", "Application Status", "Initial Effective Date", "Most Current Revalidation Date", "Line of Services", "Notes"]
       enrollment_details.each do |enrollment_detail|
         enroll_group = enrollment_detail.enroll_group
         group = enroll_group&.group
@@ -469,7 +470,7 @@ class EnrollmentClientsController < ApplicationController
   def new_profile_setup_in_one_app_to_csv
     providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
     CSV.generate(headers: true, write_headers: true) do |csv|
-      csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "Date Profile Created in One App", "Notes"]
+      csv << ["Platform", "Services", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "Date Profile Created in One App",]
       providers.each do |provider|
 
         csv << [
