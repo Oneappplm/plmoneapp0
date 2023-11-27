@@ -177,8 +177,11 @@ class EnrollmentClientsController < ApplicationController
           enrollment_detail.enrollment_provider&.provider&.practitioner_type,
           format_number_for_leading_zeroes(enrollment_detail.enrollment_provider&.provider&.npi),
           enrollment_detail.enrollment_payer,
-          format_number_for_leading_zeroes(enrollment_detail.enrollment_tracking_id),
-          enrollment_detail.application_status_logs&.where(status: 'application-submitted').where(created_at: @month.beginning_of_month..@month.end_of_month)&.last&.created_at&.strftime('%b %d, %Y')
+          format_number_for_leading_zeroes(enrollment_detail.enrollment_type),
+          enrollment_detail.payer_state,
+          enrollment_detail.enrollment_status,
+          enrollment_detail.application_status_logs&.where(status: 'application-submitted').where(created_at: @month.beginning_of_month..@month.end_of_month)&.last&.created_at&.strftime('%b %d, %Y'),
+          enrollment_detail.provider_id,
         ]
       end
     end
