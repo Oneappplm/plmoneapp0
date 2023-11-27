@@ -195,10 +195,12 @@ class EnrollmentClientsController < ApplicationController
         csv << [
           flatforms.detect{|flatform| flatform.last == enrollment_detail.enroll_group&.group&.flatform }&.first,
           enrollment_detail.enroll_group&.group&.group_name,
-          format_number_for_leading_zeroes(enrollment_detail.enroll_group&.group&.npi_digit_type),
           enrollment_detail.enrollment_payer,
-          "",
-          enrollment_detail.application_status_logs&.where(status: 'application-submitted').where(created_at: @month.beginning_of_month..@month.end_of_month)&.last&.created_at&.strftime('%b %d, %Y')
+          enrollment_detail.group_number,
+          enrollment_detail.application_status,
+          enrollment_detail.payer_state,
+          enrollment_detail.application_status_logs&.where(status: 'application-submitted').where(created_at: @month.beginning_of_month..@month.end_of_month)&.last&.created_at&.strftime('%b %d, %Y'),
+          format_number_for_leading_zeroes(enrollment_detail.enroll_group&.group&.npi_digit_type),
         ]
       end
     end
