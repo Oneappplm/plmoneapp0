@@ -195,10 +195,12 @@ class EnrollmentClientsController < ApplicationController
         csv << [
           flatforms.detect{|flatform| flatform.last == enrollment_detail.enroll_group&.group&.flatform }&.first,
           enrollment_detail.enroll_group&.group&.group_name,
-          format_number_for_leading_zeroes(enrollment_detail.enroll_group&.group&.npi_digit_type),
           enrollment_detail.enrollment_payer,
-          "",
-          enrollment_detail.application_status_logs&.where(status: 'application-submitted').where(created_at: @month.beginning_of_month..@month.end_of_month)&.last&.created_at&.strftime('%b %d, %Y')
+          enrollment_detail.group_number,
+          enrollment_detail.application_status,
+          enrollment_detail.payer_state,
+          enrollment_detail.application_status_logs&.where(status: 'application-submitted').where(created_at: @month.beginning_of_month..@month.end_of_month)&.last&.created_at&.strftime('%b %d, %Y'),
+          format_number_for_leading_zeroes(enrollment_detail.enroll_group&.group&.npi_digit_type),
         ]
       end
     end
@@ -413,12 +415,14 @@ class EnrollmentClientsController < ApplicationController
           group&.new_group_notification&.strftime('%b %d, %Y'),
           group&.notification_enrollment_submit_group&.strftime('%b %d, %Y'),
           enrollment_detail.enrollment_payer,
+          enroll_group&.group_id,
+          enrollment_detail.payor_submission_type,
           enrollment_detail.payer_state,
           application_statuses.detect{|application_status| application_status.last == enrollment_detail.application_status }&.first,
           enrollment_detail.effective_date&.strftime('%b %d, %Y'),
           enrollment_detail.revalidation_date&.strftime('%b %d, %Y'),
-          enroll_group&.group_id,
-          enrollment_detail.notes
+          enrollment_detail.payor_type,
+          enrollment_detail.notes,
         ]
       end
     end
