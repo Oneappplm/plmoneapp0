@@ -32,8 +32,7 @@
   <div class="row mb-3">
     <div class="col-lg-6">
       <label class="text-dark-grey">Initial Application Status</label>
-       <%= f.select :enrollment_status, options_for_select(enrollment_status, f.object.enrollment_status), { prompt: 'Enrollment Status' }, { class: 'form-select multi-enrollment-status border border-dark', id: 'enrollment_status_select' } %>
-
+       <%= f.select :enrollment_status, options_for_select(enrollment_status, f.object.enrollment_status), { prompt: 'Enrollment Status' }, { class: 'form-select multi-enrollment-status border border-dark', id: 'multi-enrollment-status' } %>
     </div>
     <div class="col-lg-6">
       <label class="text-dark-grey">State</label>
@@ -41,7 +40,7 @@
     </div>
   </div>
 
-  <div id="start_date_field" class="row mb-3 application-submitted-field <%= f.object&.enrollment_status == 'application-submitted' ? '' : 'd-none'%>">
+  <div class="row mb-3 date_field <%= f.object&.enrollment_status.present? ? '' : 'd-none'%>">
     <div class="col-lg-6">
       <label class="text-dark-grey"> Date Initial Application Submitted </label>
       <%= f.text_field :start_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.start_date), onfocus: "(this.type = 'date')" %>
@@ -156,44 +155,3 @@
   </div>
 
 </div>
-
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const enrollmentStatusSelect = document.getElementById('enrollment_status_select');
-    const startDateField = document.getElementById('start_date_field');
-
-       if (enrollmentStatusSelect.value === 'terminated') {
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'approved'){
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'processing'){
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'revalidation'){
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'denied'){
-        startDateField.style.display = 'block';
-      } else {
-        startDateField.style.display = 'none';
-      }
-
-    enrollmentStatusSelect.addEventListener('change', function () {
-      if (enrollmentStatusSelect.value === 'terminated') {
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'approved'){
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'processing'){
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'revalidation'){
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'denied'){
-        startDateField.style.display = 'block';
-      } else if(enrollmentStatusSelect.value === 'application-submitted'){
-        startDateField.style.display = 'block';
-      }
-      else {
-        startDateField.style.display = 'none';
-      }
-    });
-  });
-</script>
