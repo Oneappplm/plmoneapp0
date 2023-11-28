@@ -217,6 +217,7 @@ class EnrollmentClientsController < ApplicationController
         licenses = provider.licenses
         cnp_licenses = provider.cnp_licenses
         rn_licenses = provider.rn_licenses
+        board_certifications = provider.board_certifications
         csv << [
           flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
           provider.group&.group_name,
@@ -224,12 +225,22 @@ class EnrollmentClientsController < ApplicationController
           provider.last_name,
           provider.practitioner_type,
           format_number_for_leading_zeroes(provider.npi),
+          provider.state_id,
           format_number_for_leading_zeroes(licenses.pluck(:license_number).reject {|i| !i.present? }),
+          format_number_for_leading_zeroes(licenses.pluck(:license_state_renewal_date).reject {|i| !i.present? }),
           licenses.pluck(:license_expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
           format_number_for_leading_zeroes(cnp_licenses.pluck(:cnp_license_number).reject {|i| !i.present? }),
+          format_number_for_leading_zeroes(cnp_licenses.pluck(:state_id).reject {|i| !i.present? }),
+          format_number_for_leading_zeroes(cnp_licenses.pluck(:cnp_license_renewal_effective_date).reject {|i| !i.present? }),
           cnp_licenses.pluck(:expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
           format_number_for_leading_zeroes(rn_licenses.pluck(:rn_license_number).reject {|i| !i.present? }),
-          rn_licenses.pluck(:rn_license_expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", ")
+          format_number_for_leading_zeroes(rn_licenses.pluck(:state_id).reject {|i| !i.present? }),
+          format_number_for_leading_zeroes(rn_licenses.pluck(:rn_license_renewal_effective_date).reject {|i| !i.present? }),
+          rn_licenses.pluck(:rn_license_expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
+          format_number_for_leading_zeroes(board_certifications.pluck(:bc_board_name).reject {|i| !i.present? }),
+          format_number_for_leading_zeroes(board_certifications.pluck(:bc_certification_number).reject {|i| !i.present? }),
+          format_number_for_leading_zeroes(board_certifications.pluck(:bc_effective_date).reject {|i| !i.present? }),
+          format_number_for_leading_zeroes(board_certifications.pluck(:bc_recertification_date).reject {|i| !i.present? }),
         ]
       end
     end
@@ -330,11 +341,14 @@ class EnrollmentClientsController < ApplicationController
         csv << [
           flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
           provider.group&.group_name,
+          provider.state_id,
           provider.first_name,
+          provider.middle_name,
           provider.last_name,
           provider.practitioner_type,
           format_number_for_leading_zeroes(provider.npi),
           format_number_for_leading_zeroes(provider.caqhid),
+          provider.welcome_letter_message,
           provider.caqh_current_reattestation_date&.strftime('%b %d, %Y'),
           caqh_reattest_completed_by
         ]
@@ -482,6 +496,7 @@ class EnrollmentClientsController < ApplicationController
 
         csv << [
           flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
+          provider.notification_services,
           provider.group&.group_name,
           provider.first_name,
           provider.last_name,
