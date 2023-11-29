@@ -1,384 +1,313 @@
-    <%= render "top_button_navs"%>
- <%= render 'user_restriction', locals: { access_key: 'Manage Practice' } do %>
-        <div class="content p-3">
-            <div class="container">
-                <div class="row">
-                    <div class="col-xl-8 right-pane">
-                        <div class="d-flex gap-2">
-                            <a href="javascript:void(0);" class="btn btn-nav btn-sm btn-primary active">Location</a>
-                            <!-- <button class="btn btn-nav btn-sm btn-primary">Hospital Affiliation</button>
-                            <button class="btn btn-nav btn-sm btn-primary">Contracted Health Plans</button>
-                            <button class="btn btn-nav btn-sm btn-primary">Services</button> -->
-                        </div>
-                        <div class="filter-wpr">
-                            <div class="row mb-3">
-                                <div class="col-xl-5">
-                                    <form class="form_search_with_icon">
-                                        <% if params[:template].present? %>
-                                            <%= hidden_field_tag :template, params[:template] %>
-                                        <% end %>
-                                        <div class="search-wrp form-control d-flex justify-content-between">
-                                            <input type="text" name="search" placeholder="Search" class="search-input w-100" value="<%= params[:search] %>">
-                                            <i class='bx bx-search'></i>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="col-xl-7 button-wpr">
-                                    <% if current_user.can_access?('Add Location') %>
-                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addLocationModal">
-                                            <i class='bx bx-plus' ></i>
-                                            Add Location
-                                        </button>
-                                    <% end %>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table practice-table mt-4">
-                                <thead>
-                                    <tr>
-                                        <th class="text-white"  scope="col">Practice Name</th>
-                                        <th class="text-white"  scope="col">Address</th>
-                                        <th class="text-white"  scope="col">City</th>
-                                        <th class="text-white"  scope="col">State/ZIP Code</th>
-                                        <th class="text-white"  scope="col">Phone</th>
-                                        <th class="text-white"  scope="col"></th>
-                                        <th class="text-white"  scope="col"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <%= render @locations %>
-                                </tbody>
-                            </table>
-                        </div>
-                        <br>
-                        <% if @locations %>
-                            <div class="col-lg-12">
-                            <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
-                                <div class="page_info ms-3 text-black">
-                                <%= page_entries_info @locations %>
-                                </div>
-                                <% if params[:per_page ].present? %>
-                                <%= will_paginate @locations, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                                <% else %>
-                                <%= will_paginate @locations, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                                <% end %>
-                            </div>
-                            </div>
-                        <% end %>
-                    </div>
-                    <div class="col-xl-4">
-                        <div class="side-panel">
-                            <div class="side-panel-header">
-                                <h6>Organization Info</h6>
-                            </div>
-                            <div class="side-panel-content">
-                                <div class="form-row">
-                                    <h6>Organization Name: <%= current_client_organization&.organization_name %></h6>
-                                </div>
-                                <div class="form-row">
-                                    <p>Organization Type: <%= current_client_organization&.organization_type %></p>
-                                </div>
-                                <div class="form-row">
-                                    <p>Organization NPI: <%= current_client_organization&.organization_npi %></p>
-                                </div>
-                                <div class="form-row">
-                                    <p>Address 1: <%= current_client_organization&.organization_address_1 %></p>
-                                </div>
-                                <div class="form-row">
-                                    <p>Address 2: <%= current_client_organization&.organization_address_2 %></p>
-                                </div>
-                                <div class="form-row">
-                                    <p>City: <%= current_client_organization&.organization_city %></p>
-                                </div>
-                                <div class="form-row">
-                                    <p>State: <%= State.where(id: current_client_organization&.organization_state_id).first&.name %></p>
-                                </div>
-                                <div class="form-row">
-                                    <p>Zip Code: <%= current_client_organization&.organization_zipcode %></p>
-                                </div>
-                                <div class="form-row">
-                                    <p>Phone Number: <%= current_client_organization&.organization_phone_number %></p>
-                                </div>
-                                <div class="form-row">
-                                    <p>Fax Number: <%= current_client_organization&.organization_fax_number %></p>
-                                </div>
-                                <div class="form-row">
-                                    <p>Organization DBA Name: <%= current_client_organization&.organization_dba_name %></p>
-                                </div>
-                                <div class="form-row">
-                                    <p>Organization Tax ID: <%= current_client_organization&.organization_tax_id %></p>
-                                </div>
-                                <div class="form-row mt-4">
-                                    <% if current_user.can_access?('Edit Organization') %>
-                                        <button class="btn btn-manage btn-primary" data-bs-toggle="modal" data-bs-target="#editOrganizationModal">Edit Organization</button>
-                                    <% end %>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<%= render "top_button_navs"%>
+<%= render 'user_restriction', locals: { access_key: 'Manage Practice' } do %>
+  <div class="content p-3">
+    <div class="container">
+      <div class="row">
+          <div class="col-xl-8 right-pane">
+            <div class="d-flex gap-2">
+              <a href="javascript:void(0);" class="btn btn-nav btn-sm btn-primary active">Location</a>
+              <!-- <button class="btn btn-nav btn-sm btn-primary">Hospital Affiliation</button>
+              <button class="btn btn-nav btn-sm btn-primary">Contracted Health Plans</button>
+              <button class="btn btn-nav btn-sm btn-primary">Services</button> -->
             </div>
-        </div>
-
-        <!-- Edit Organization Modal -->
-        <div class="modal fade" id="editOrganizationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <div class="content p-0">
-                        <h6 class="">Edit Organization</h6>
-                            <%= form_for current_client_organization, url: client_organizations_path do |f| %>
-                                    <div class="fade show active">
-                                    <%= render partial: "client_organizations/form", locals: { f: f } %>
-                                    </div>
-                                <div class="form-row row mt-3">
-                                    <%= f.submit "Save", class: 'btn btn-manage btn-primary skip-loader'%>
-                                </div>
-                            <% end %>
-
-                                <div class="form-row mt-3">
-                                <button type="button" class="btn btn-card-remove" data-bs-dismiss="modal">Cancel</button>
-                                </div>
-                            </form>
-                        </div>
+            <div class="filter-wpr">
+              <div class="row mb-3">
+                <div class="col-xl-5">
+                  <form class="form_search_with_icon">
+                    <% if params[:template].present? %>
+                      <%= hidden_field_tag :template, params[:template] %>
+                    <% end %>
+                    <div class="search-wrp form-control d-flex justify-content-between">
+                      <input type="text" name="search" placeholder="Search" class="search-input w-100" value="<%= params[:search] %>">
+                      <i class='bx bx-search'></i>
                     </div>
+                  </form>
                 </div>
-            </div>
-        </div>
-
-        <!-- Associate Provider Modal -->
-        <div class="modal fade associateProviderModal" id="" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <div class="content">
-                            <div class="modal-title">
-                                <h6 class="">Associate Providers</h6>
-                                <!-- <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button> -->
-                            </div>
-                            <div class="row">
-                                <p class="associate-note mt-4">Instruction: Drag the name of the provider you want to associate or disassociate.</p>
-                            </div>
-                            <form action="">
-                                <div class="row">
-                                    <div class="col-xl-6">
-                                        <h6 class="associate-heading mt-4">Providers added to the Organization, who have accepted your invitation, but not yet associated with the selected location.</h6>
-                                        <div class="associate-left-pane">
-                                            <span class="provider-check">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                                                    <label class="form-check-label" for="flexCheckDefault">
-                                                        Janeen Ruth Burlison
-                                                    </label>
-                                                </div>
-                                            </span>
-                                            <span class="provider-check">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault1">
-                                                    <label class="form-check-label" for="flexCheckDefault1">
-                                                        Larry De Hoyos
-                                                    </label>
-                                                </div>
-                                            </span>
-                                            <span class="provider-check">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault2">
-                                                    <label class="form-check-label" for="flexCheckDefault2">
-                                                        Rose Dawson
-                                                    </label>
-                                                </div>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <h6 class="associate-heading mt-4">Providers associated to location who have accepted your invitation.</h6>
-                                        <div class="associate-right-pane">
-                                            <span class="provider-check">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault3">
-                                                    <label class="form-check-label" for="flexCheckDefault3">
-                                                        Maribel Zazueta
-                                                    </label>
-                                                </div>
-                                            </span>
-                                            <span class="provider-check">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault4">
-                                                    <label class="form-check-label" for="flexCheckDefault4">
-                                                        Mary Gatter
-                                                    </label>
-                                                </div>
-                                            </span>
-                                            <span class="provider-check">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault5">
-                                                    <label class="form-check-label" for="flexCheckDefault5">
-                                                        Jack Dawson
-                                                    </label>
-                                                </div>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                            <div class="add-note mt-4">
-                                <h6>Note:</h6>
-                                <h6>Please note that this window only shows Providers who have accepted your invitation. Providers who have not yet accepted your invitation cannot be associated or disassociated. </h6>
-                            </div>
-                            <div class="form-row mt-3">
-                                <button type="submit" class="btn btn-manage btn-primary">Save</button>
-                                <button type="button" class="btn btn-card-remove" data-bs-dismiss="modal">Cancel</button>
-                            </div>
-                        </div>
-                    </div>
+                <div class="col-xl-7 button-wpr">
+                  <% if current_user.can_access?('Add Location') %>
+                    <button class="btn btn-sm btn-primary add-practice-location-button">
+                      <i class='bx bx-plus' ></i>
+                      Add Location
+                    </button>
+                  <% end %>
                 </div>
+              </div>
             </div>
-        </div>
-
-        <!-- Associate Provider Modal -->
-        <div class="modal fade" id="addLocationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <div class="content">
-                            <div class="modal-title">
-                                <h6 class="">Add Location</h6>
-                                <!-- <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button> -->
-                            </div>
-                            <!-- <form action=""> -->
-                                <ul class="nav nav-tabs gap-2 mt-3" id="myTab" role="tablist">
-                                    <li class="nav-item">
-                                        <a class="tab active" id="tab-general-info" data-bs-toggle="tab" href="#general-info"
-                                            role="tab" aria-controls="general" aria-selected="false">
-                                            General Info
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="tab" id="tab-contacts" data-bs-toggle="tab" href="#contacts"
-                                            role="tab" aria-controls="contact" aria-selected="false">
-                                            Contacts
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="tab" id="tab-hours" data-bs-toggle="tab" href="#hours"
-                                            role="tab" aria-controls="hour" aria-selected="false">
-                                            Hours
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="tab" id="tab-patient-acceptance" data-bs-toggle="tab" href="#patient-acceptance"
-                                            role="tab" aria-controls="acceptance" aria-selected="false">
-                                            Patient Acceptance
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="tab" id="tab-patient-access" data-bs-toggle="tab" href="#patient-access"
-                                            role="tab" aria-controls="access" aria-selected="false">
-                                            Patient Access
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="tab" id="tab-patient-services" data-bs-toggle="tab" href="#services"
-                                            role="tab" aria-controls="service" aria-selected="false">
-                                            Services
-                                        </a>
-                                    </li>
-                                </ul>
-                                <%= form_for PracticeLocation.new, url: practice_locations_path do |f| %>
-                                <div class="tab-content mt-3" id="myTabContent">
-
-                                <!-- location -->
-                                    <div class="tab-pane fade show active" id="general-info" role="tabpanel" aria-labelledby="general-info-tab">
-                                    <%= render partial: "practice_locations/general_info", locals: { f: f } %>
-                                    </div>
-                                <!-- location -->
-
-                                <!-- contacts -->
-                                    <div class="tab-pane fade show" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
-                                    <%= render partial: 'practice_locations/contacts', locals: { f: f } %>
-                                    </div>
-                                    <!-- contacts -->
-
-                                    <div class="tab-pane fade show" id="hours" role="tabpanel" aria-labelledby="hours-tab">
-                                    <%= render partial: 'practice_locations/hours', locals: { f: f }%>
-                                    </div>
-
-                                    <div class="tab-pane fade show" id="patient-acceptance" role="tabpanel" aria-labelledby="patient-acceptance-tab">
-                                    <%= render partial: 'practice_locations/patient_acceptance', locals: { f: f } %>
-                                    </div>
-
-                                    <div class="tab-pane fade show" id="patient-access" role="tabpanel" aria-labelledby="patient-access-tab">
-                                    <%= render partial: 'practice_locations/patient_access', locals: { f: f } %>
-                                    </div>
-
-                                    <div class="tab-pane fade show" id="services" role="tabpanel" aria-labelledby="services-tab">
-                                        <%= render partial: 'practice_locations/services', locals: { f:f } %>
-                                    </div>
-                                </div>
-                                <div class="form-row row mt-3">
-                                    <%= f.submit "Save", class: 'btn btn-manage btn-primary skip-loader'%>
-                                </div>
-                            <% end %>
-
-                                <div class="form-row mt-3">
-                                <button type="button" class="btn btn-card-remove" data-bs-dismiss="modal">Cancel</button>
-                                </div>
-                        </div>
-                    </div>
+            <div class="table-responsive">
+              <table class="table practice-table mt-4">
+                <thead>
+                  <tr>
+                    <th class="text-white"  scope="col">Practice Name</th>
+                    <th class="text-white"  scope="col">Address</th>
+                    <th class="text-white"  scope="col">City</th>
+                    <th class="text-white"  scope="col">State/ZIP Code</th>
+                    <th class="text-white"  scope="col">Phone</th>
+                    <th class="text-white"  scope="col"></th>
+                    <th class="text-white"  scope="col"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <%= render @locations %>
+                </tbody>
+              </table>
+            </div>
+            <br>
+            <% if @locations %>
+              <div class="col-lg-12">
+                <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+                  <div class="page_info ms-3 text-black">
+                    <%= page_entries_info @locations %>
+                  </div>
+                  <% if params[:per_page ].present? %>
+                    <%= will_paginate @locations, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                  <% else %>
+                    <%= will_paginate @locations, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                  <% end %>
                 </div>
+              </div>
+            <% end %>
+          </div>
+        <div class="col-xl-4">
+          <div class="side-panel">
+            <div class="side-panel-header">
+              <h6>Organization Info</h6>
             </div>
+            <div class="side-panel-content">
+              <div class="form-row">
+                <h6>Organization Name: <%= current_client_organization&.organization_name %></h6>
+              </div>
+              <div class="form-row">
+                <p>Organization Type: <%= current_client_organization&.organization_type %></p>
+              </div>
+              <div class="form-row">
+                <p>Organization NPI: <%= current_client_organization&.organization_npi %></p>
+              </div>
+              <div class="form-row">
+                <p>Address 1: <%= current_client_organization&.organization_address_1 %></p>
+              </div>
+              <div class="form-row">
+                <p>Address 2: <%= current_client_organization&.organization_address_2 %></p>
+              </div>
+              <div class="form-row">
+                <p>City: <%= current_client_organization&.organization_city %></p>
+              </div>
+              <div class="form-row">
+                <p>State: <%= State.where(id: current_client_organization&.organization_state_id).first&.name %></p>
+              </div>
+              <div class="form-row">
+                <p>Zip Code: <%= current_client_organization&.organization_zipcode %></p>
+              </div>
+              <div class="form-row">
+                <p>Phone Number: <%= current_client_organization&.organization_phone_number %></p>
+              </div>
+              <div class="form-row">
+                  <p>Fax Number: <%= current_client_organization&.organization_fax_number %></p>
+              </div>
+              <div class="form-row">
+                <p>Organization DBA Name: <%= current_client_organization&.organization_dba_name %></p>
+              </div>
+              <div class="form-row">
+                <p>Organization Tax ID: <%= current_client_organization&.organization_tax_id %></p>
+              </div>
+              <div class="form-row mt-4">
+                <% if current_user.can_access?('Edit Organization') %>
+                  <button class="btn btn-manage btn-primary" data-bs-toggle="modal" data-bs-target="#editOrganizationModal">Edit Organization</button>
+                <% end %>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <script>
-        $(document).ready(function() {
-            var csrfToken = $('meta[name="csrf-token"]').attr('content');
-            var languages_dropdown = '.multi-languages';
-            var current_organization_state_id = $('#current_organization_state_id').val();
-            function getLanguages() {
-                    $.ajax({
-                    url: '<%= get_languages_path %>',
-                    method: 'GET',
-                    data: { authenticity_token: csrfToken },
-                    success: function(data) {
-                        VirtualSelect.init({
-                            options: data['languages'],
-                            ele: '.multi-languages',
-                            multiple: true,
-                            showSelectedOptionsFirst: true
-                        });
-                    }
-                    })
-                }
+  <!-- Edit Organization Modal -->
+  <div class="modal fade" id="editOrganizationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+              <div class="modal-body">
+                  <div class="content p-0">
+                  <h6 class="">Edit Organization</h6>
+                      <%= form_for current_client_organization, url: client_organizations_path do |f| %>
+                              <div class="fade show active">
+                              <%= render partial: "client_organizations/form", locals: { f: f } %>
+                              </div>
+                          <div class="form-row row mt-3">
+                              <%= f.submit "Save", class: 'btn btn-manage btn-primary skip-loader'%>
+                          </div>
+                      <% end %>
 
-                function getStates() {
-                    $.ajax({
-                    url: '<%= get_states_with_id_path %>',
-                    method: 'GET',
-                    data: { authenticity_token: csrfToken },
-                    success: function(data) {
-                        VirtualSelect.init({
-                            options: data['states'],
-                            ele: '#dropdown-states',
-                            showSelectedOptionsFirst: true,
-                            selectedValue: current_organization_state_id
-                        });
-                    }
-                    })
-                }
-            setTimeout(getLanguages(),3000);
-            setTimeout(getStates(),3000);
-        });
-        </script>
+                          <div class="form-row mt-3">
+                          <button type="button" class="btn btn-card-remove" data-bs-dismiss="modal">Cancel</button>
+                          </div>
+                      </form>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
 
-        <style>
-            .multi-languages {
-            padding: 0;
-            }
-            #dropdown-states {
-            padding: 0;
-            max-width: 100%;
-            }
-        </style>
-    <% end %>
+  <!-- Associate Provider Modal -->
+  <div class="modal fade associateProviderModal" id="" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content">
+              <div class="modal-body">
+                  <div class="content">
+                      <div class="modal-title">
+                          <h6 class="">Associate Providers</h6>
+                          <!-- <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button> -->
+                      </div>
+                      <div class="row">
+                          <p class="associate-note mt-4">Instruction: Drag the name of the provider you want to associate or disassociate.</p>
+                      </div>
+                      <form action="">
+                          <div class="row">
+                              <div class="col-xl-6">
+                                  <h6 class="associate-heading mt-4">Providers added to the Organization, who have accepted your invitation, but not yet associated with the selected location.</h6>
+                                  <div class="associate-left-pane">
+                                      <span class="provider-check">
+                                          <div class="form-check">
+                                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                              <label class="form-check-label" for="flexCheckDefault">
+                                                  Janeen Ruth Burlison
+                                              </label>
+                                          </div>
+                                      </span>
+                                      <span class="provider-check">
+                                          <div class="form-check">
+                                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault1">
+                                              <label class="form-check-label" for="flexCheckDefault1">
+                                                  Larry De Hoyos
+                                              </label>
+                                          </div>
+                                      </span>
+                                      <span class="provider-check">
+                                          <div class="form-check">
+                                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault2">
+                                              <label class="form-check-label" for="flexCheckDefault2">
+                                                  Rose Dawson
+                                              </label>
+                                          </div>
+                                      </span>
+                                  </div>
+                              </div>
+                              <div class="col-xl-6">
+                                  <h6 class="associate-heading mt-4">Providers associated to location who have accepted your invitation.</h6>
+                                  <div class="associate-right-pane">
+                                      <span class="provider-check">
+                                          <div class="form-check">
+                                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault3">
+                                              <label class="form-check-label" for="flexCheckDefault3">
+                                                  Maribel Zazueta
+                                              </label>
+                                          </div>
+                                      </span>
+                                      <span class="provider-check">
+                                          <div class="form-check">
+                                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault4">
+                                              <label class="form-check-label" for="flexCheckDefault4">
+                                                  Mary Gatter
+                                              </label>
+                                          </div>
+                                      </span>
+                                      <span class="provider-check">
+                                          <div class="form-check">
+                                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault5">
+                                              <label class="form-check-label" for="flexCheckDefault5">
+                                                  Jack Dawson
+                                              </label>
+                                          </div>
+                                      </span>
+                                  </div>
+                              </div>
+                          </div>
+                      </form>
+                      <div class="add-note mt-4">
+                          <h6>Note:</h6>
+                          <h6>Please note that this window only shows Providers who have accepted your invitation. Providers who have not yet accepted your invitation cannot be associated or disassociated. </h6>
+                      </div>
+                      <div class="form-row mt-3">
+                          <button type="submit" class="btn btn-manage btn-primary">Save</button>
+                          <button type="button" class="btn btn-card-remove" data-bs-dismiss="modal">Cancel</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Associate Provider Modal -->
+  <div id="practice_location_modal_container">
+  </div>
+  <script>
+    $(document).ready(function() {
+      var csrfToken = $('meta[name="csrf-token"]').attr('content');
+      var languages_dropdown = '.multi-languages';
+      var current_organization_state_id = $('#current_organization_state_id').val();
+      function getLanguages() {
+        $.ajax({
+          url: '<%= get_languages_path %>',
+          method: 'GET',
+          data: { authenticity_token: csrfToken },
+        success: function(data) {
+          VirtualSelect.init({
+            options: data['languages'],
+            ele: '.multi-languages',
+            multiple: true,
+            showSelectedOptionsFirst: true
+          });
+        }
+        })
+      }
+      function getStates() {
+        $.ajax({
+        url: '<%= get_states_with_id_path %>',
+        method: 'GET',
+        data: { authenticity_token: csrfToken },
+        success: function(data) {
+          VirtualSelect.init({
+            options: data['states'],
+            ele: '#dropdown-states',
+            showSelectedOptionsFirst: true,
+            selectedValue: current_organization_state_id
+          });
+        }
+        })
+      }
+      setTimeout(getLanguages(),3000);
+      setTimeout(getStates(),3000);
+
+      $('.edit-practice-location-button').on('click', function() {
+          var practice_location_id = $(this).data("practice-location-id");
+          newEditPracticeLocation(practice_location_id);
+      });
+
+      $('.add-practice-location-button').on('click', function() {
+          newEditPracticeLocation();
+      });
+
+      function newEditPracticeLocation(practice_location_id) {
+        $.ajax({
+          url: '<%= new_edit_practice_location_path %>',
+          method: 'GET',
+          data: { authenticity_token: csrfToken, id: practice_location_id },
+          success: function(data) {
+            var container = $('#practice_location_modal_container');
+            container.html(data.html)
+            $('#addLocationModal').modal('toggle')
+          }
+        })
+      }
+    });
+  </script>
+
+  <style>
+    .multi-languages {
+    padding: 0;
+    }
+    #dropdown-states {
+    padding: 0;
+    max-width: 100%;
+    }
+  </style>
+<% end %>

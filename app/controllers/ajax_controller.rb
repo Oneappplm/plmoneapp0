@@ -229,6 +229,11 @@ class AjaxController < ApplicationController
     render json: { html: render_to_string(partial: 'client_provider_enrollments/show', locals: { client_provider_enrollment: @client_provider_enrollment, comment: @comment }).html_safe }
 	end
 
+  def new_edit_practice_location
+    @practice_location = params[:id].present? ? PracticeLocation.find(params[:id]) : PracticeLocation.new
+    render json: { html: render_to_string(partial: 'office_managers/practice_location_modal', locals: { practice_location: @practice_location }).html_safe }
+  end
+
   def get_selected_providers
     enrollment_provider = EnrollmentProvider.find(params[:enrollment_provider_id])
     selected_providers = (enrollment_provider.selected_providers || [])
