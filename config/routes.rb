@@ -73,6 +73,7 @@ Rails.application.routes.draw do
   get 'providers-gender', to: 'ajax#providers_gender'
   get 'get-specialties', to: 'ajax#get_specialties'
   get 'get-languages', to: 'ajax#get_languages'
+  get 'new-edit-practice-location', to: 'ajax#new_edit_practice_location'
   get 'get-states', to: 'ajax#get_states'
   post 'get-provider-practitioner-types', to: 'ajax#get_provider_practitioner_types'
   post 'get-provider-specialties', to: 'ajax#get_provider_specialties'

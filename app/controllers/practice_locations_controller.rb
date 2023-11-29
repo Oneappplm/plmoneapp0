@@ -1,11 +1,17 @@
 class PracticeLocationsController < ApplicationController
-  before_action :set_practice_location, only: [:destroy]
+  before_action :set_practice_location, only: [:destroy, :update]
 
   def create
     # render json: params and return
     @practice_location = PracticeLocation.new(practice_location_params)
     if @practice_location.save
       redirect_to request.referrer, notice: 'New location successfully added.'
+    end
+  end
+
+  def update
+    if @practice_location.update(practice_location_params)
+      redirect_to request.referrer, notice: 'Updated location successfully.'
     end
   end
 

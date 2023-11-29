@@ -1,0 +1,93 @@
+<div class="modal fade" id="addLocationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-body">
+              <div class="content">
+                  <div class="modal-title">
+                      <h6 class="">Add Location</h6>
+                      <!-- <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button> -->
+                  </div>
+                  <!-- <form action=""> -->
+                      <ul class="nav nav-tabs gap-2 mt-3" id="myTab" role="tablist">
+                          <li class="nav-item">
+                              <a class="tab active" id="tab-general-info" data-bs-toggle="tab" href="#general-info"
+                                  role="tab" aria-controls="general" aria-selected="false">
+                                  General Info
+                              </a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="tab" id="tab-contacts" data-bs-toggle="tab" href="#contacts"
+                                  role="tab" aria-controls="contact" aria-selected="false">
+                                  Contacts
+                              </a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="tab" id="tab-hours" data-bs-toggle="tab" href="#hours"
+                                  role="tab" aria-controls="hour" aria-selected="false">
+                                  Hours
+                              </a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="tab" id="tab-patient-acceptance" data-bs-toggle="tab" href="#patient-acceptance"
+                                  role="tab" aria-controls="acceptance" aria-selected="false">
+                                  Patient Acceptance
+                              </a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="tab" id="tab-patient-access" data-bs-toggle="tab" href="#patient-access"
+                                  role="tab" aria-controls="access" aria-selected="false">
+                                  Patient Access
+                              </a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="tab" id="tab-patient-services" data-bs-toggle="tab" href="#services"
+                                  role="tab" aria-controls="service" aria-selected="false">
+                                  Services
+                              </a>
+                          </li>
+                      </ul>
+                      <% url = @practice_location.persisted? ? practice_location_path(id: @practice_location.id) : practice_locations_path%>
+                      <%= form_for @practice_location, url: url do |f| %>
+                      <div class="tab-content mt-3" id="myTabContent1">
+
+                      <!-- location -->
+                          <div class="tab-pane fade show active" id="general-info" role="tabpanel" aria-labelledby="general-info-tab">
+                          <%= render partial: "practice_locations/general_info", locals: { f: f } %>
+                          </div>
+                      <!-- location -->
+
+                      <!-- contacts -->
+                          <div class="tab-pane fade show" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
+                          <%= render partial: 'practice_locations/contacts', locals: { f: f } %>
+                          </div>
+                          <!-- contacts -->
+
+                          <div class="tab-pane fade show" id="hours" role="tabpanel" aria-labelledby="hours-tab">
+                          <%= render partial: 'practice_locations/hours', locals: { f: f }%>
+                          </div>
+
+                          <div class="tab-pane fade show" id="patient-acceptance" role="tabpanel" aria-labelledby="patient-acceptance-tab">
+                          <%= render partial: 'practice_locations/patient_acceptance', locals: { f: f } %>
+                          </div>
+
+                          <div class="tab-pane fade show" id="patient-access" role="tabpanel" aria-labelledby="patient-access-tab">
+                          <%= render partial: 'practice_locations/patient_access', locals: { f: f } %>
+                          </div>
+
+                          <div class="tab-pane fade show" id="services" role="tabpanel" aria-labelledby="services-tab">
+                              <%= render partial: 'practice_locations/services', locals: { f:f } %>
+                          </div>
+                      </div>
+                      <div class="form-row row mt-3">
+                          <%= f.submit "Save", class: 'btn btn-manage btn-primary skip-loader'%>
+                      </div>
+                  <% end %>
+
+                      <div class="form-row mt-3">
+                      <button type="button" class="btn btn-card-remove" data-bs-dismiss="modal">Cancel</button>
+                      </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
