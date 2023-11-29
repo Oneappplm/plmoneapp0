@@ -26,7 +26,8 @@
    </div>
    <div class="col-xl-6">
       <label for="">State</label>
-      <div class="<%= "form-control" %> " name="practice_location[state_id]" id="dropdown-states">
+      <input type="hidden" id="practice_location_state_id" value=<%= f.object.state_id %>>
+      <div class="<%= "form-control" %> " name="practice_location[state_id]" id="dropdown-practice-location-states">
       </div>
   </div>
 </div>
@@ -77,11 +78,11 @@
 <div class="form-row row">
    <div class="col-xl-6">
       <label for="">Enter languages that your staffs speaks</label>
-      <%= HtmlUtils.multi_select_dropdown name: "practice_location[languages_speak]", classes: 'multi-languages'%>
+      <%= HtmlUtils.multi_select_dropdown name: "practice_location[languages_speak]", id: 'practice_location_languages_speak', classes: 'multi-languages spoken'%>
    </div>
    <div class="col-xl-6">
       <label for="">Enter languages that your staffs writes</label>
-      <%= HtmlUtils.multi_select_dropdown name: "practice_location[languages_write]", classes: 'multi-languages'%>
+      <%= HtmlUtils.multi_select_dropdown name: "practice_location[languages_write]", id: 'practice_location_languages_write', classes: 'multi-languages written'%>
    </div>
 </div>
 <div class="form-row row">
@@ -103,22 +104,66 @@
       </div>
    </div>
 </div>
+<%= render "providers/js_components/string_array_modifier"%>
 
 <script>
-	var taxidInput = document.querySelector('.taxid-input');
+   $(document).ready(function() {
+      var csrfToken = $('meta[name="csrf-token"]').attr('content');
+      var taxidInput = document.querySelector('.taxid-input');
+      var languages_dropdown = '.multi-languages';
+      var practice_location_languages_spoken= stringArrayModifier('<%= @practice_location.languages_speak&.split(",") %>');
+      var practice_location_languages_written= stringArrayModifier('<%= @practice_location.languages_write&.split(",") %>');
+      var practice_location_state_id = $('#practice_location_state_id').val();
 
-	taxidInput.addEventListener('input', function (e) {
-			// Remove non-numeric and non-dash characters
-			const cleanedValue = e.target.value.replace(/[^0-9-]/g, '');
+      taxidInput.addEventListener('input', function (e) {
+         // Remove non-numeric and non-dash characters
+         const cleanedValue = e.target.value.replace(/[^0-9-]/g, '');
 
-			// Limit the length to 10 characters
-			const formattedValue = cleanedValue.slice(0, 10);
+         // Limit the length to 10 characters
+         const formattedValue = cleanedValue.slice(0, 10);
 
-			// Apply the desired format (##-#######)
-			if (formattedValue.length >= 2 && formattedValue.charAt(2) !== '-') {
-					taxidInput.value = formattedValue.slice(0, 2) + '-' + formattedValue.slice(2);
-			} else {
-					taxidInput.value = formattedValue;
-			}
-	});
+         // Apply the desired format (##-#######)
+         if (formattedValue.length >= 2 && formattedValue.charAt(2) !== '-') {
+            taxidInput.value = formattedValue.slice(0, 2) + '-' + formattedValue.slice(2);
+         } else {
+            taxidInput.value = formattedValue;
+         }
+      });
+
+      function getLanguages(selected_values, field) {
+        $.ajax({
+          url: '<%= get_languages_path %>',
+          method: 'GET',
+          data: { authenticity_token: csrfToken },
+        success: function(data) {
+          VirtualSelect.init({
+            options: data['languages'],
+            ele: field,
+            multiple: true,
+            showSelectedOptionsFirst: true,
+            selectedValue: selected_values
+          });
+        }
+        })
+      }
+
+      function getStates() {
+         $.ajax({
+         url: '<%= get_states_with_id_path %>',
+         method: 'GET',
+         data: { authenticity_token: csrfToken },
+         success: function(data) {
+            VirtualSelect.init({
+            options: data['states'],
+            ele: '#dropdown-practice-location-states',
+            showSelectedOptionsFirst: true,
+            selectedValue: practice_location_state_id
+            });
+         }
+         })
+      }
+      setTimeout(getLanguages(practice_location_languages_spoken, '.multi-languages.spoken'),3000);
+      setTimeout(getLanguages(practice_location_languages_written, '.multi-languages.written'),3000);
+      setTimeout(getStates(),3000);
+   })
 </script>
