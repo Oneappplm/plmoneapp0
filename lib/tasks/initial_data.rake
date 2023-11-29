@@ -62,4 +62,17 @@ namespace :plmhealthoneapp do
 		end
 
 	end
+
+	# rake plmhealthoneapp:reset_passwords
+	task :reset_passwords => :environment do |task, args|
+		desc "Reset passwords"
+
+  puts "Resetting passwords..."
+
+		User.all.each do |user|
+			user.update!(password: 123456, password_confirmation: 123456)
+			puts "\nPassword for #{user.email} successfully reset to 123456. \nClient: #{Setting.take.client_name}"
+			puts "Email: #{user.email}"
+		end
+	end
 end

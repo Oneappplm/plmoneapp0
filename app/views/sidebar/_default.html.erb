@@ -3,9 +3,9 @@
 				<div class="navbar-vertical-footer-offset">
 							<a class="navbar-brand" href="javascript:void(0);" aria-label="">
 										<!-- <img class="navbar-brand-logo" src="./dist/assets/img/plm-logos/logo-blue.jpg" alt="Logo" data-hs-theme-appearance="default"> -->
-                    <% if !current_setting.cignahealth?%>
+									<% if !current_setting.cignahealth?%>
 										<img class="navbar-brand-logo-mini" src="<%= current_logo_sm %>" alt="Logo" data-hs-theme-appearance="default" style="width: auto;height: 60%;"  data-hs-theme-appearance="default">
-                    <% end %>
+									<% end %>
 										<img class="navbar-brand-logo" src="<%= current_logo %>" alt="Logo" data-hs-theme-appearance="default" data-hs-theme-appearance="default" style="height: 60% !important;width: auto;">
 							</a>
 							<button type="button" class="js-navbar-vertical-aside-toggle-invoker navbar-aside-toggler" id="navbar-aside-toggler">
@@ -16,96 +16,67 @@
 										<div id="navbarVerticalMenu" class="nav nav-pills nav-vertical card-navbar-nav px-0">
 													<!-- Collapse -->
 													<% if current_user.can_access?('Overview') %>
-														<div class="nav-item mb-2 nav-item-active">
-																	<!-- ph-active -->
-																	<a class="nav-link <%= active_menu('pages', 'dashboard') %>" href="<%= root_path %>">
-																	<i class="bi bi-box nav-icon"></i>
-																	<span class="nav-link-title">Overview</span>
-																	</a>
-														</div>
-													<% end %>
-													<% if current_user.can_access?('client_portal') && !current_user.is_provider_account && current_user.user_role != 'provider'  %>
-													<div class="nav-item mb-2">
-																<div class="d-flex with-submenu align-items-center justify-content-between pe-3 <%= active_menu('pages,users', 'client_portal,virtual_review_committee,data_access,all_users,new') %>">
-																				<a class="nav-link has-submenu" href="javascript:void(0);" data-placement="left" data-submenu="client_submenu">
-																				<i class="bi bi-person-video2 nav-icon"></i>
-																				<span class="nav-link-title ml-4">Dashboard </span>
-																				</a>
-																				<svg xmlns="http://www.w3.org/2000/svg" id="client_submenu_chevron" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="open_submenu <%= chevron_active('pages,users', 'client_portal,virtual_review_committee,data_access,organization_profile') %>" data-toopen="client_submenu" style="width: 20px;height: auto;">
-																						<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-																				</svg>
-																</div>
-
-
-																<div id="client_submenu" class="sub_menu <%= active_submenu('pages,users', 'client_portal,virtual_review_committee,data_access,organization_profile,new')%> mt-3">
-																				<ul>
-
-																						<li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'client_portal,data_access')%>">
-																									<span></span><a href="<%= client_portal_path %>">Data Access</a>
-																						</li>
-
-																						<li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'virtual_review_committee')%>"><span></span><a href="<%= virtual_review_committee_path %>">Decision Point </a>
-																						</li>
-
-																						<!-- <li class="d-flex gap-2 align-items-center <%= active_submenu_link('users', 'all_users,edit,new,show,organization_profile')%>"><span></span><a href="<%= organization_profile_path %>">Users</a>
-																						</li> -->
-
-																					<!--  <li class="d-flex gap-2 align-items-center <%#= active_submenu_link('pages', '')%>"><span></span><a href="<%#= client_portal_path %>">Clients</a>
-																						</li>
-
-																						<li class="d-flex gap-2 align-items-center <%#= active_submenu_link('systems', 'index,acl,data_import,data_lookup,acl')%>"><span></span><a href="<%#= systems_path %>">Systems</a>
-																						</li> -->
-
-																						<li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'reports')%> d-none"><span></span><a href="#">Reports</a>
-																						</li>
-
-																						<li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'service')%> d-none"><span></span><a href="#">Service</a>
-																						</li>
-
-																						<li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'screening')%> d-none"><span></span><a href="#">Screening</a>
-																						</li>
-																						<li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'support')%> d-none"><span></span><a href="#">Support</a>
-																						</li>
-																				</ul>
-																</div>
-													</div>
-													<% end %>
-													<% if current_user.can_access?('provider_app') && (current_user.provider? || current_user.administrator? || current_user.super_administrator?)  %>
-													<div class="nav-item mb-2">
-																<a class="nav-link <%= active_menu('pages', 'provider_source') %>" href="<%= custom_provider_source_path %>" data-placement="left">
-																			<!-- <i class="bi-receipt nav-icon"></i> -->
-																			<i class="bi bi-people nav-icon"></i>
-																			<span class="nav-link-title">Provider Engage</span>
+													<div class="nav-item mb-2 nav-item-active">
+																<!-- ph-active -->
+																<a class="nav-link <%= active_menu('dashboard', 'dashboard') %>" href="<%= root_path %>">
+																<i class="bi bi-box nav-icon"></i>
+																<span class="nav-link-title">Overview</span>
 																</a>
 													</div>
 													<% end %>
 
-													<% if current_user.can_access?('office_manager') && !current_user.is_provider_account && current_user.user_role != 'provider' %>
+													<% if current_user.can_access?('dashboard')%>
 													<div class="nav-item mb-2">
-																<a class="nav-link <%= active_menu('office_managers', 'index') %>" href="<%= office_managers_path %>" data-placement="left">
-																			<!-- <i class="bi-receipt nav-icon"></i> -->
-																			<i class="bi bi-person-rolodex nav-icon"></i>
-																			<span class="nav-link-title">Group Engage</span>
-																</a>
+																			<div class="d-flex with-submenu align-items-center justify-content-between pe-3 <%= active_menu('pages,users', 'client_portal,virtual_review_committee,data_access,all_users,new') %>">
+																											<a class="nav-link has-submenu" href="javascript:void(0);" data-placement="left" data-submenu="client_submenu">
+																											<i class="bi bi-person-video2 nav-icon"></i>
+																											<span class="nav-link-title ml-4">Dashboard </span>
+																											</a>
+																											<svg xmlns="http://www.w3.org/2000/svg" id="client_submenu_chevron" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="open_submenu <%= chevron_active('pages,users', 'client_portal,virtual_review_committee,data_access,organization_profile') %>" data-toopen="client_submenu" style="width: 20px;height: auto;">
+																															<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+																											</svg>
+																			</div>
+
+
+																			<div id="client_submenu" class="sub_menu <%= active_submenu('pages,users', 'client_portal,virtual_review_committee,data_access,organization_profile,new')%> mt-3">
+																											<ul>
+																														<% if current_user.can_access? 'Data Access' %>
+																															<li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'client_portal,data_access')%>">
+																																					<span></span><a href="<%= client_portal_path %>">Data Access</a>
+																															</li>
+																															<% end %>
+
+																															<% if current_user.can_access? 'Decision Point' %>
+																															<li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'virtual_review_committee')%>"><span></span><a href="<%= virtual_review_committee_path %>">Decision Point </a>
+																															</li>
+																															<% end %>
+
+																															<!-- <li class="d-flex gap-2 align-items-center <%= active_submenu_link('users', 'all_users,edit,new,show,organization_profile')%>"><span></span><a href="<%= organization_profile_path %>">Users</a>
+																															</li> -->
+
+																													<!--  <li class="d-flex gap-2 align-items-center <%#= active_submenu_link('pages', '')%>"><span></span><a href="<%#= client_portal_path %>">Clients</a>
+																															</li>
+
+																															<li class="d-flex gap-2 align-items-center <%#= active_submenu_link('systems', 'index,acl,data_import,data_lookup,acl')%>"><span></span><a href="<%#= systems_path %>">Systems</a>
+																															</li> -->
+
+																															<li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'reports')%> d-none"><span></span><a href="#">Reports</a>
+																															</li>
+
+																															<li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'service')%> d-none"><span></span><a href="#">Service</a>
+																															</li>
+
+																															<li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'screening')%> d-none"><span></span><a href="#">Screening</a>
+																															</li>
+																															<li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'support')%> d-none"><span></span><a href="#">Support</a>
+																															</li>
+																											</ul>
+																			</div>
 													</div>
 													<% end %>
-
-													<% if current_user.can_access?('verification_platform') && current_user.user_role != 'provider'%>
+													<% if current_user.can_access?('enrollment_dashboard') %>
 													<div class="nav-item mb-1">
-																<a class="nav-link <%= active_menu('verification_platform', 'index') %> <%= active_menu('manage_tools') %>" href="<%= verification_platform_index_path %>" data-placement="left">
-																			<!-- <i class="bi-receipt nav-icon"></i> -->
-																			<!-- <i class="bi bi-person nav-icon"></i> -->
-																			<i class="bi bi-folder nav-icon"></i>
-																			<span class="nav-link-title">Verification Platform</span>
-																</a>
-													</div>
-													<% end %>
-
-
-
-													<% if current_user.can_access?('enrollment_clients') && !current_user.is_provider_account && (current_setting.plmhealthoneapp? || current_setting.qualifacts?) && current_user.user_role != 'provider' %>
-													<div class="nav-item mb-1">
-																<a class="nav-link <%= active_menu('enrollment_clients', 'index') %> <%= active_menu('index') %>" href="<%= enrollment_clients_path %>" data-placement="left">
+																<a class="nav-link <%= active_menu('enrollment_clients,alt_enrollment_groups,locations', 'index,dashboard,view_group,groups,show,documents,locations,enrollments,providers') %> <%= active_menu('index') %>" href="<%= dashboard_enrollment_clients_path %>" data-placement="left">
 																			<!-- <i class="bi-receipt nav-icon"></i> -->
 																			<!-- <i class="bi bi-person nav-icon"></i> -->
 																			<i class="bi bi-geo-fill nav-icon"></i>
@@ -113,28 +84,48 @@
 																</a>
 													</div>
 													<% end %>
-
-													<% if current_user.can_access?('enrollment_tracking') && (current_setting.plmhealthoneapp? || !current_setting.hvhs?) && !current_user.is_provider_account && current_user.user_role != 'provider' %>
+													<% if current_user.can_access?('enrollment_tracking') %>
 													<div class="nav-item mb-2">
-																<a class="nav-link <%= active_menu('providers,enrollments,enrollment_providers,enroll_groups') %>" href="<%= overview_providers_path %>" data-placement="left">
+
+																<a class="nav-link <%= active_menu('providers,enrollment_providers,enroll_groups,client_provider_enrollments,enrollments') %> <%= current_setting.qualifacts? ? active_menu('dcos') : "" %>" href="<%= overview_providers_path %>" data-placement="left">
 																			<i class="bi bi-person nav-icon"></i>
 																			<span class="nav-link-title">Enrollment Tracking</span>
 																</a>
 													</div>
 													<% end %>
-
-													<% if current_user.can_access?('verification_platform') && (current_setting.plmhealthoneapp? || !current_setting.qualifacts?) && !current_user.is_provider_account && current_user.user_role != 'provider' %>
-													<div class="nav-item mb-1">
-																<a class="nav-link <%= active_menu('verification_platform', 'index') %> <%= active_menu('manage_tools') %>" href="<%= verification_platform_index_path %>" data-placement="left">
+													<% if current_user.can_access?('provider_engage')%>
+													<div class="nav-item mb-2">
+																<a class="nav-link <%= active_menu('provider_engage', 'provider_source') %>" href="<%= custom_provider_source_path %>" data-placement="left">
 																			<!-- <i class="bi-receipt nav-icon"></i> -->
-																			<!-- <i class="bi bi-person nav-icon"></i> -->
-																			<i class="bi bi-folder nav-icon"></i>
-																			<span class="nav-link-title">Verify</span>
+																			<i class="bi bi-people nav-icon"></i>
+																			<span class="nav-link-title">Provider Engage </span>
 																</a>
 													</div>
 													<% end %>
 
-													<% if current_user.can_access?('plm_sales_tool') && !current_user.is_provider_account && current_user.user_role != 'provider' %>
+													<% if current_user.can_access?('group_engage') %>
+													<div class="nav-item mb-2">
+																<a class="nav-link <%= active_menu('office_managers', 'index') %>" href="<%= office_managers_path %>" data-placement="left">
+																			<!-- <i class="bi-receipt nav-icon"></i> -->
+																			<i class="bi bi-person-rolodex nav-icon"></i>
+																			<span class="nav-link-title">Group Engage </span>
+																</a>
+													</div>
+													<% end %>
+
+
+													<% if current_user.can_access?('verification_platform')%>
+														<div class="nav-item mb-1">
+																	<a class="nav-link <%= active_menu('verification_platform', 'index') %> <%= active_menu('manage_tools') %>" href="<%= verification_platform_index_path %>" data-placement="left">
+																				<!-- <i class="bi-receipt nav-icon"></i> -->
+																				<!-- <i class="bi bi-person nav-icon"></i> -->
+																				<i class="bi bi-folder nav-icon"></i>
+																				<span class="nav-link-title">Verification Platform</span>
+																	</a>
+														</div>
+													<% end %>
+
+													<% if current_user.can_access?('plm_sales_tool') %>
 													<div class="nav-item mb-2">
 																<a class="nav-link <%= active_menu('pages', 'plm_sales_tool') %> d-none" target="_blank" href="<%= plm_sales_tool_path %>" data-placement="left">
 																			<!-- <i class="bi-layers nav-icon"></i> -->
@@ -145,7 +136,7 @@
 													</div>
 													<% end %>
 
-													<% if current_user.can_access?('smart_contract') && current_user.user_role != 'provider'%>
+													<% if current_user.can_access?('smart_contract')%>
 													<div class="nav-item mb-2">
 																<a class="nav-link <%= active_menu('pages', 'smart_contract') %> text-muted d-none" href="javascript:void(0);" data-placement="left">
 																			<!-- <i class="bi-layers nav-icon"></i> -->
@@ -157,31 +148,31 @@
 													</div>
 													<% end %>
 
-													<% if current_user&.super_administrator? && !current_user.is_provider_account || current_user.can_access?('Role Based Access') && current_user.user_role != 'provider' %>
-														<div class="nav-item mb-1">
-															<a class="nav-link <%= active_menu('role_based_accesses,roles,users') %> <%= active_menu('index') %>" href="<%= users_path %>" data-placement="left">
-																<i class="bi bi-gear nav-icon"></i>
-																<span class="nav-link-title">Role-Based Access</span>
-															</a>
-														</div>
-													<% end %>
-
-													<% if (current_user&.super_administrator? || current_user&.administrator?) && !current_user.is_provider_account && current_user.user_role != 'provider' %>
-														<div class="nav-item mb-1">
-															<a class="nav-link <%= active_menu('settings') %> <%= active_menu('index') %>" href="<%= settings_path %>" data-placement="left">
-																<i class="bi bi-gear nav-icon"></i>
-																<span class="nav-link-title">Settings</span>
-															</a>
-														</div>
-													<% end %>
-
+												<% if current_user.can_access?('Role Based Access') %>
 													<div class="nav-item mb-1">
-														<%= button_to destroy_user_session_path, method: :delete, class: 'nav-link w-100 ml-1', data: { placement: 'left' } do %>
-														<i class="bi bi-box-arrow-right nav-icon"></i>
-														<span class="nav-link-title">Logout</span>
-														<% end %>
+														<a class="nav-link <%= active_menu('role_based_accesses,roles,users') %> <%= active_menu('index') %>" href="<%= role_based_accesses_path %>" data-placement="left">
+															<i class="bi bi-gear nav-icon"></i>
+															<span class="nav-link-title">Role-Based Access</span>
+														</a>
 													</div>
+												<% end %>
 
+												<% if (current_user&.super_administrator? || current_user&.administrator?) %>
+													<div class="nav-item mb-1">
+														<a class="nav-link <%= active_menu('settings') %> <%= active_menu('index') %>" href="<%= settings_path %>" data-placement="left">
+															<i class="bi bi-gear nav-icon"></i>
+															<span class="nav-link-title">Settings</span>
+														</a>
+													</div>
+												<% end %>
+
+												<!-- logout -->
+												<div class="nav-item mb-1">
+													<%= button_to destroy_user_session_path, method: :delete, class: 'nav-link w-100 ml-1', data: { placement: 'left' } do %>
+													<i class="bi bi-box-arrow-right nav-icon"></i>
+													<span class="nav-link-title">Logout</span>
+													<% end %>
+												</div>
 										</div>
 							</div>
 				</div>
