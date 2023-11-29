@@ -242,23 +242,8 @@
   <script>
     $(document).ready(function() {
       var csrfToken = $('meta[name="csrf-token"]').attr('content');
-      var languages_dropdown = '.multi-languages';
       var current_organization_state_id = $('#current_organization_state_id').val();
-      function getLanguages() {
-        $.ajax({
-          url: '<%= get_languages_path %>',
-          method: 'GET',
-          data: { authenticity_token: csrfToken },
-        success: function(data) {
-          VirtualSelect.init({
-            options: data['languages'],
-            ele: '.multi-languages',
-            multiple: true,
-            showSelectedOptionsFirst: true
-          });
-        }
-        })
-      }
+
       function getStates() {
         $.ajax({
         url: '<%= get_states_with_id_path %>',
@@ -274,7 +259,6 @@
         }
         })
       }
-      setTimeout(getLanguages(),3000);
       setTimeout(getStates(),3000);
 
       $('.edit-practice-location-button').on('click', function() {
@@ -305,7 +289,7 @@
     .multi-languages {
     padding: 0;
     }
-    #dropdown-states {
+    #dropdown-states, #dropdown-practice-location-states {
     padding: 0;
     max-width: 100%;
     }
