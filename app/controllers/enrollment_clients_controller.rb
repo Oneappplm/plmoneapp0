@@ -285,6 +285,7 @@ class EnrollmentClientsController < ApplicationController
           provider.last_name,
           provider.practitioner_type,
           format_number_for_leading_zeroes(provider.npi),
+          provider.state_id,
           format_number_for_leading_zeroes(provider.caqhid),
           provider.caqh_current_reattestation_date&.strftime('%b %d, %Y'),
           caqh_reattest_completed_by
@@ -368,7 +369,9 @@ class EnrollmentClientsController < ApplicationController
           provider.last_name,
           provider.practitioner_type,
           format_number_for_leading_zeroes(provider.npi),
+          provider.state_id,
           provider.prof_liability_policy_number,
+          provider.provider_effective_date,
           provider.prof_liability_expiration_date&.strftime('%b %d, %Y')
         ]
       end
@@ -405,11 +408,16 @@ class EnrollmentClientsController < ApplicationController
           provider&.new_provider_notification,
           provider&.welcome_letter_sent,
           provider&.notification_enrollment_submit,
+          enrollment_detail.payor_username,
+          enrollment_detail.enrollment_type,
+          enrollment_detail.payer_state,
+          enrollment_detail.enrollment_status,
           enrollment_detail.application_status_logs&.where(status: 'application-submitted')&.last&.created_at&.strftime('%b %d, %Y'),
-          enrollment_detail.application_status_logs&.where(status: 'approved')&.last&.created_at&.strftime('%b %d, %Y'),
-          missing_fields.join(', '),
+          enrollment_detail.enrollment_effective_date,
+          enrollment_detail.provider_id,
+          enrollment_detail.revalidation_date,
+          enrollment_detail.revalidation_due_date,
           enrollment_detail.comment,
-          ""
         ]
       end
     end
