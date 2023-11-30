@@ -24,7 +24,8 @@ class EnrollmentProvidersController < ApplicationController
 		if @enrollment_provider.save
 			@enrollment_provider.update_columns(
 				provider_id: params[:provider_id],
-				outreach_type:	params[:outreach_type]
+				outreach_type:	params[:outreach_type],
+				updated_by: current_user&.full_name
 			)
 			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
 			redirect_to redirect_url, notice: 'Enrollment Provider has been successfully created.'
@@ -38,9 +39,11 @@ class EnrollmentProvidersController < ApplicationController
 		@enrollment_provider.remove_upload_payor_files! # remove upload payor files if not present, for handling all files deletion
 
 		if @enrollment_provider.save(validate: false)
+
 			@enrollment_provider.update_columns(
 				provider_id: params[:provider_id],
-				outreach_type:	params[:outreach_type]
+				outreach_type:	params[:outreach_type],
+				updated_by: current_user&.full_name
 			)
 			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
 			redirect_to redirect_url, notice: 'Enrollment Provider has been successfully updated.'
