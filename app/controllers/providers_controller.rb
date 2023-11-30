@@ -49,6 +49,7 @@ class ProvidersController < ApplicationController
 		@provider = Provider.new(provider_params)
 		# render json: @provider and return
 		@provider.encoded_by = current_user&.full_name
+		@provider.updated_by = current_user&.full_name
 		if @provider.save
 			PlmMailer.with(
 				email: Setting.take.t('system_notification_email'),
@@ -91,7 +92,8 @@ class ProvidersController < ApplicationController
 		@provider.remove_telehealth_license_copies
 
   	if @provider.save(validate: false)
-			@provider.update updated_by: current_user&.full_name
+			@provider.update_columns updated_by: current_user&.full_name
+
 			PlmMailer.with(
 				email: Setting.take.t('system_notification_email'),
 				subject: "Edit Provider",
