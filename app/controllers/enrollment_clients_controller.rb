@@ -196,7 +196,7 @@ class EnrollmentClientsController < ApplicationController
           flatforms.detect{|flatform| flatform.last == enrollment_detail.enroll_group&.group&.flatform }&.first,
           enrollment_detail.enroll_group&.group&.group_name,
           enrollment_detail.enrollment_payer,
-          enrollment_detail.group_number,
+          enrollment_detail.enroll_group_id,
           enrollment_detail.application_status,
           enrollment_detail.payer_state,
           enrollment_detail.application_status_logs&.where(status: 'application-submitted').where(created_at: @month.beginning_of_month..@month.end_of_month)&.last&.created_at&.strftime('%b %d, %Y'),
@@ -265,8 +265,8 @@ class EnrollmentClientsController < ApplicationController
           State.where(id: dea_licenses.pluck(:state_id)).pluck(:name).join(", "),
           dea_licenses.pluck(:dea_license_renewal_effective_date).reject {|i| !i.present? }.collect { |i| Date.parse(i).strftime('%b %d, %Y') }.join(", "),
           dea_licenses.pluck(:dea_license_expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
-          "",
-          dea_licenses.pluck(:created_at).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", ")
+          dea_licenses.pluck(:dea_license_expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
+          dea_licenses.pluck(:created_at).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
         ]
       end
     end
@@ -306,7 +306,8 @@ class EnrollmentClientsController < ApplicationController
           provider.last_name,
           provider.practitioner_type,
           format_number_for_leading_zeroes(provider.npi),
-          format_number_for_leading_zeroes(provider.caqhid),
+          provider.state_id,
+          "",
           provider.caqh_current_reattestation_date&.strftime('%b %d, %Y'),
           caqh_reattest_completed_by
         ]
@@ -326,7 +327,7 @@ class EnrollmentClientsController < ApplicationController
           provider.last_name,
           provider.practitioner_type,
           format_number_for_leading_zeroes(provider.npi),
-          format_number_for_leading_zeroes(provider.caqhid),
+          provider.state_id,
           provider.caqh_current_reattestation_date&.strftime('%b %d, %Y'),
           caqh_reattest_completed_by
         ]
@@ -437,7 +438,7 @@ class EnrollmentClientsController < ApplicationController
           group&.new_group_notification&.strftime('%b %d, %Y'),
           group&.notification_enrollment_submit_group&.strftime('%b %d, %Y'),
           enrollment_detail.enrollment_payer,
-          enroll_group&.group_id,
+          enrollment_detail.enroll_group_id,
           enrollment_detail.payor_submission_type,
           enrollment_detail.payer_state,
           application_statuses.detect{|application_status| application_status.last == enrollment_detail.application_status }&.first,
