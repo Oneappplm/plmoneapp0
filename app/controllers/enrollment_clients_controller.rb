@@ -453,26 +453,30 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def group_revalidation_to_csv
-    enroll_groups = EnrollGroup.includes(:enroll_groups_details, :group).where(created_at: @month.beginning_of_month..@month.end_of_month)
+    enrollment_details = EnrollGroupsDetail.includes(enroll_group: :group).where(enroll_group: { created_at: @month.beginning_of_month..@month.end_of_month })
     CSV.generate(headers: true) do |csv|
       csv << ["Platform", "Group Name", "NPI", "(Payor)1", "State", "(Payor)\nProvider ID", "(Payor)\nProvider\nEffective Date",
               "(Payor)\nProvider\nRevalidation\nDate", "(Payor)2","State", "(Payor)\nProvider ID", "(Payor)\nProvider\nEffective Date",
               "(Payor)\nProvider\nRevalidation\nDate"]
-      enroll_groups.each do |enroll_group|
-        group = enroll_group.group
-        payor_1 = enroll_group.enrollment_details&.first
-        payor_2 = enroll_group.enrollment_details&.second
+      enrollment_details.each do |enrollment_detail|
+        enroll_group = enrollment_detail.enroll_group
+        group = enroll_group&.group
+        payor_1 = enrollment_details&.first
+        payor_2 = enrollment_details&.second
         csv << [
           flatforms.detect{|flatform| flatform.last == group&.flatform }&.first,
           group&.group_name,
-          group&.npi_digit_type
-          # enrollment_detail.enrollment_payer,
-          # enrollment_detail.payer_state,
-          # application_statuses.detect{|application_status| application_status.last == enrollment_detail.application_status }&.first,
-          # enrollment_detail.effective_date&.strftime('%b %d, %Y'),
-          # enrollment_detail.revalidation_date&.strftime('%b %d, %Y'),
-          # enroll_group&.group_id,
-          # enrollment_detail.notes
+          group&.npi_digit_type,
+          payor_1&.enrollment_payer,
+          payor_1&.payer_state,
+          payor_1&.group_number,
+          payor_1&.effective_date&.strftime('%b %d, %Y'),
+          payor_1&.revalidation_date&.strftime('%b %d, %Y'),
+          payor_2&.enrollment_payer,
+          payor_2&.payer_state,
+          payor_2&.group_number,
+          payor_2&.effective_date&.strftime('%b %d, %Y'),
+          payor_2&.revalidation_date&.strftime('%b %d, %Y'),
         ]
       end
     end
