@@ -352,7 +352,8 @@ module HtmlUtils
         <input placeholder="#{ options[:input_field_placeholder] }" class="#{ options[:input_field_css_class] }" multiple="multiple" type="file" name="#{ input_file_name }">
       HTML
 
-    if options[:model].send(options[:input_field_name]).present? && !options[:model].send('pending_submitted_documents').include?(options[:input_field_name])
+    # if options[:model].send(options[:input_field_name]).present? && !options[:model].send('pending_submitted_documents').include?(options[:input_field_name])
+    if options[:model].send(options[:input_field_name]).present?
       html += <<-HTML
         <div class="d-flex gap-2">
       HTML

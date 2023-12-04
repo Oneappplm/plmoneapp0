@@ -4,14 +4,13 @@
     <% end %>
 
    <h3 class="text-center">Missing Documents</h3>
-   <%= form_for @provider, url: provider_path(@provider) , method: :put do |f|%>
+   <%= form_for @provider, html: { multipart: true, id: 'provider-form' } do |f|%>
    <%= hidden_field_tag :from_notifications, 'true'%>
    <% @provider&.required_documents.each do |doc|%>
    <% doc_url = @provider.doc_url(doc[1]) %>
    <% if doc_url.blank? %>
    <div class="form-group mb-2">
-      <label class="text-dark-grey"><%= doc[0]%></label>
-      <%= f.file_field doc[1].to_sym, class: 'form-control'%>
+      <%= HtmlUtils.multiple_file_uploads model: f.object, input_field_name: doc[1] %>
    </div>
    <% end %>
    <% end %>
