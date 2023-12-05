@@ -212,6 +212,7 @@ Rails.application.routes.draw do
     collection do
       resources :roles
       resources :users
+						resources :user_visits, only: [:index]
     end
   end
   resources :role_based_accesses, only: [:index], path: 'role-based-access' do

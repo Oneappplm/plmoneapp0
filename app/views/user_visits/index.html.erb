@@ -1,0 +1,70 @@
+<div class="content container-fluid">
+	<div class="row">
+			<h1 class="display-4">User Visits</h1>
+	</div>
+
+	<div class="row">
+			<div class="col-lg-12">
+
+				<div class="col-lg-12">
+					<div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+					<div class="page_info ms-3 text-black">
+									<%= page_entries_info @visits %>
+					</div>
+					<% if params[:per_page].present? %>
+							<%= will_paginate @visits, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+					<% else %>
+							<%= will_paginate @visits, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+					<% end %>
+					</div>
+				</div>
+
+					<table class="table table-striped table-bordered table-responsive text-center">
+							<thead>
+									<tr>
+											<th width="2%" class="bg-primary text-white ">User</th>
+											<th scope="col" class="bg-primary text-white">IP</th>
+											<!-- <th scope="col" class="bg-primary text-white">Referrer</th> -->
+											<th scope="col" width="30%" class="bg-primary text-white">Page Visit</th>
+											<th scope="col" class="bg-primary text-white">Browser</th>
+											<th scope="col" class="bg-primary text-white">OS</th>
+											<th scope="col" class="bg-primary text-white">Device Type</th>
+											<th scope="col" class="bg-primary text-white">Started At</th>
+											</div>
+									</tr>
+							</thead>
+							<tbody>
+								<% @visits.each do |visit| %>
+								<tr>
+									<td><%= visit&.user&.full_name %></td>
+									<td><%= visit.ip %></td>
+									<!-- <td></td> -->
+									<td>
+											<%= visit.landing_page %>
+											<br>
+											<small>Referrer: <%= visit.referrer %></small>
+									</td>
+									<td><%= visit.browser %></td>
+									<td><%= visit.os %></td>
+									<td><%= visit.device_type %></td>
+									<td><%= visit.started_at %></td>
+								</tr>
+								<% end %>
+							</tbody>
+					</table>
+
+					<div class="col-lg-12">
+						<div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+						<div class="page_info ms-3 text-black">
+										<%= page_entries_info @visits %>
+						</div>
+						<% if params[:per_page].present? %>
+								<%= will_paginate @visits, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+						<% else %>
+								<%= will_paginate @visits, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+						<% end %>
+						</div>
+					</div>
+			</div>
+	</div>
+</div>
