@@ -180,7 +180,7 @@ class EnrollmentClientsController < ApplicationController
           format_number_for_leading_zeroes(enrollment_detail.enrollment_type),
           enrollment_detail.payer_state,
           enrollment_detail.enrollment_status,
-          enrollment_detail.application_status_logs&.where(status: 'application-submitted').where(created_at: @month.beginning_of_month..@month.end_of_month)&.last&.created_at&.strftime('%b %d, %Y'),
+          enrollment_detail.start_date,
           enrollment_detail.provider_id,
         ]
       end
@@ -249,9 +249,8 @@ class EnrollmentClientsController < ApplicationController
   def dea_to_csv
     providers = Provider.includes(:dea_licenses).where(created_at: @month.beginning_of_month..@month.end_of_month)
     CSV.generate(headers: true, write_headers: true) do |csv|
-      csv << ["", "", "", "", "", "", "", "", "", "", "Previous Month", "Previous Month"]
       csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "DEA Number", "DEA State", "DEA Effective Date",
-              "DEA Expiration Date", "DEA Expiration Date", "DEA Verification Date"]
+              "DEA Expiration Date",]
       providers.each do |provider|
         dea_licenses = provider.dea_licenses
         csv << [
@@ -265,8 +264,6 @@ class EnrollmentClientsController < ApplicationController
           State.where(id: dea_licenses.pluck(:state_id)).pluck(:name).join(", "),
           dea_licenses.pluck(:dea_license_renewal_effective_date).reject {|i| !i.present? }.collect { |i| Date.parse(i).strftime('%b %d, %Y') }.join(", "),
           dea_licenses.pluck(:dea_license_expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
-          dea_licenses.pluck(:dea_license_expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
-          dea_licenses.pluck(:created_at).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
         ]
       end
     end
@@ -277,6 +274,9 @@ class EnrollmentClientsController < ApplicationController
     CSV.generate(headers: true, write_headers: true) do |csv|
       csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "CAQH ID", "Attestation", "Reattestation"]
       providers.each do |provider|
+        caqh_state = provider&.caqh_state
+        state_id = caqh_state.to_i
+        state_name = State.find_by(id: state_id)&.name
         caqh_reattest_completed_by = Date.parse(provider&.caqh_reattest_completed_by)&.strftime('%b %d, %Y') rescue nil
         csv << [
           flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
@@ -285,7 +285,7 @@ class EnrollmentClientsController < ApplicationController
           provider.last_name,
           provider.practitioner_type,
           format_number_for_leading_zeroes(provider.npi),
-          provider.state_id,
+          state_name,
           format_number_for_leading_zeroes(provider.caqhid),
           provider.caqh_current_reattestation_date&.strftime('%b %d, %Y'),
           caqh_reattest_completed_by
