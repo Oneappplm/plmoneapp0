@@ -161,7 +161,9 @@ class AjaxController < ApplicationController
 			['Provider Enrollment', 'provider_enrollment'],
       ['Enrollment Required Maintenance', 'enrollment_maintenance'],
 			['FBI Checks', 'fbi_checks'],
-			['Hospital Org PSV', 'hospital_org']
+			['Hospital Org PSV', 'hospital_org'],
+      ['Facility Re-Enrollment', 'facility_enrollment'],
+      ['Provider Re-Enrollment', 'provider_enrollment']
 		].map { |m| { label: m[0], value: m[1]} }
     render json: {
       'notification_services' => notification_services
