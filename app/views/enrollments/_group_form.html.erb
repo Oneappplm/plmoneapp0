@@ -1,7 +1,6 @@
 <% content_for :js do %>
   <%= render "enrollments/js_components/string_array_modifier"%>
 <% end %>
-
 <%= form_for @enrollment_group, :url => {action: action_name} , html: { multipart: true } do |f| %>
    <% if @enrollment_group.errors.any? %>
       <div id="error_explanation" class="row mb-3">
@@ -128,10 +127,10 @@
       </div>
       <div class="col-lg-6 mb-3">
          <label class="text-dark-grey">Platform</label>
-        <%= f.select :flatform, options_for_select(flatforms, f.object.flatform), { prompt: 'Select option' }, {:class => 'form-select border-dark'}  %>
+         <%= f.select :flatform, options_for_select(flatforms, f.object.flatform), { prompt: 'Select option' }, { class: 'form-select border-dark', disabled: true } %>
       </div>
       <div class="col-lg-6 mb-3">
-         <label class="text-dark-grey">Qualifacts Contract Effective Date</label>
+         <label class="text-dark-grey">Contract Effective Date</label>
          <%= f.text_field :qualifacts_contract_effective_date, class: 'form-control border border-dark', placeholder: 'MM/DD/YYYY', value: display_mdy(f.object.qualifacts_contract_effective_date), onfocus: "(this.type = 'date')" %>
       </div>
    </div>
@@ -350,7 +349,7 @@
 		</div>
 	</div>
    <div class="row field mb-3 p-2 border border-2">
-		<%= render partial: "global_components/collapsible_sidebar_header", locals: { title: Setting.take.t('enrollment_dashboard.groups.add_new_group.contact_list.title'), collapse_name: 'contacts_list', text_position: 'text-start'}%>
+      <%= render partial: "global_components/collapsible_sidebar_header", locals: { title: t('plmhealthoneapp.enrollment_dashboard.groups.add_new_group.contact_list.title'), collapse_name: 'contacts_list', text_position: 'text-start'} %>
 		<div class="collapsible" style="<%= current_user&.is_card_open?('contacts_list') ? '' : 'display: none;' %>">
 			<div id="qualifacts-contacts">
 				<div class="fields field mb-3">
@@ -410,21 +409,7 @@
          <%= f.text_field :bank_letter_date_expiration, class: 'form-control border border-dark', placeholder: 'MM/DD/YYYY', value: display_mdy(f.object.bank_letter_date_expiration), onfocus: "(this.type = 'date')" %>
       </div>
    </div>
-
-   <div class="row">
-          <div class="row mb-1">
-            <div id="service_locations">
-               <div class="row" id="service_locations_fields">
-                  <div class="fields">
-                    <%= f.fields_for :service_locations do |service_location_fields| %>
-                      <%= render 'service_location_fields', f: service_location_fields %>
-                    <% end %>
-                  </div>
-                </div>
-            </div>
-          </div>
-        </div>
-
+   
     <div class="row mb-3">
       <div class="col-lg-6">
         <!-- new field -->
