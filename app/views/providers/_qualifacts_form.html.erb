@@ -1,0 +1,1125 @@
+<% content_for :js do %>
+  <%= render "providers/js_components/string_array_modifier"%>
+<% end %>
+<%= form_for @provider, html: { multipart: true, id: 'provider-form' } do |f| %>
+  <% if @provider.errors.any? %>
+    <div id="error_explanation" class="row mb-3">
+      <div class="col-lg-12">
+        <h2><%= pluralize(@provider.errors.count, "error") %> prohibited this provider from being saved:</h2>
+        <ul>
+          <% @provider.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="row-mb-5">
+      <div class="row mb-3">
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Notification of New Provider</span></label>
+           <%= f.text_field :new_provider_notification, placeholder: 'MM/DD/YYYY',class: 'form-control border border-dark', value: display_mdy(f.object.new_provider_notification), onfocus: "(this.type = 'date')" %>
+        </div>
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Start Date</span></label>
+          <%= f.text_field :notification_start_date, placeholder: 'MM/DD/YYYY',class: 'form-control border border-dark', value: display_mdy(f.object.notification_start_date), onfocus: "(this.type = 'date')" %>
+        </div>
+      </div>
+      <div class="row mb-3 mt-2">
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Welcome Letter Sent </span></label>
+          <%= f.text_field :welcome_letter_sent, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.welcome_letter_sent), onfocus: "(this.type = 'date')" %>
+        </div>
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Notification to begin submitting Enrollment</label>
+          <%= f.text_field :notification_enrollment_submit, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.notification_enrollment_submit), onfocus: "(this.type = 'date')" %>
+        </div>
+      </div>
+      <div class="row mb-3 mt-2">
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Services</label>
+          <%= HtmlUtils.multi_select_dropdown name: 'provider[notification_services]', id: 'notification_services'%>
+        </div>
+      </div>
+       <div class="row mb-3">
+      <div class="col-lg-6">
+          <label class="text-dark-grey">Status</label>
+          <%= f.select :status, options_for_select(provider_statuses, @provider.status), {prompt: 'Select Option'}, {class: 'form-select provider-status border border-dark'}  %>
+      </div>
+      <div class="col-lg-6">
+      <div class="row mb-3 my-1 status-inactive-field <%= f.object.status == 'inactive-termed' ? '' : 'd-none'%>">
+              <label class="text-dark-grey">Work End Date</label>
+              <%= f.text_field :end_date, placeholder: 'MM/DD/YYYY', value: display_mdy(f.object.end_date), onfocus: "(this.type = 'date')", class: 'form-control border border-dark' %>
+      </div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-12">
+        <% if !f.object.sent_welcome_letter? %>
+          <div class="field dea-licenses-field mb-2 border-dash border-1 p-2">
+          <div class="col-lg-12 mb-2">
+            <%= f.check_box :welcome_letter_status %>
+            <%= f.label :welcome_letter_status, "Send Welcome Letter to Provider", class: 'mx-2 text-dark-grey' %>
+          </div>
+          <div class="col-lg-12 mb-2">
+            <label class="text-dark-grey">Subject</label>
+            <%= f.text_field :welcome_letter_subject,  placeholder: 'Type here...', class: 'form-control border border-dark', value: 'Request for Credentialing Documentation' %>
+          </div>
+          <div class="col-lg-12 mb-2">
+            <label class="text-dark-grey">Message</label>
+            <textarea name="provider[welcome_letter_message]" id="provider_welcome_letter_message" cols="20" rows="10" class="form-control border border-dark"><%= "Hello,\r\n\r\nPlease provide the requested information per the attached Welcome Letter and Checklist.  Once the information is received at Qualifacts someone from the Credentialing Team will reach out to you if any information is missing or if we have questions.\r\n\r\nWe look forward to working with you, and should you have any questions, please do not hesitate to contact us at credentialing@qualifacts.com.\r\n\r\nThank you,\r\n\r\nThe Qualifacts Credentialing Team".html_safe %></textarea>
+          </div>
+          <h6>Choose files to send or upload from computer</h6>
+          <div class="col-lg-12 mb-2">
+
+            <%= f.check_box :check_welcome_letter %>
+            <%= f.label :check_welcome_letter, "Provider Welcome Letter", class: 'mx-2 text-dark-grey' %>
+
+            <%= f.check_box :check_co_caqh %>
+            <%= f.label :check_co_caqh, "CO CAQH Authorization-Attestation and Release Form", class: 'mx-2 text-dark-grey' %>
+
+            <%= f.check_box :check_mn_caqh_state_release_form %>
+            <%= f.label :check_mn_caqh_state_release_form, "MN CAQH State Release Form", class: 'mx-2 text-dark-grey' %>
+
+            <%= f.check_box :check_mn_caqh_authorization_form %>
+            <%= f.label :check_mn_caqh_authorization_form, "MN CAQH Authorization Form", class: 'mx-2 text-dark-grey' %>
+
+            <%= f.check_box :check_caqh_standard_authorization %>
+            <%= f.label :check_caqh_standard_authorization, "CAQH Standard Authorization", class: 'mx-2 text-dark-grey' %>
+
+          </div>
+          <div class="col-lg-12 mb-2">
+              <label >Upload files from computer</label>
+              <%= f.file_field :welcome_letter_attachments, class: 'form-control border border-dark', multiple: true %>
+            </div>
+          </div>
+        <% else %>
+          <div class="border-dash border-1 p-2">
+            <h5 class="m-auto">Welcome letter has already been sent to the Provider</h5>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <div class="row mb-3">
+		<div class="col-lg-12">
+			<h3 class="mb-0">Practitioner Personal Information</h3>
+			<small class="text-black">Please fill out all required fields. Required fields are marked with <span class="text-red">*</span>.</small>
+		</div>
+	  </div>
+    <div class="row mb-3">
+      <div class="col-lg-4">
+        <label class="text-dark-grey">First Name <span class="text-red">*</span></label>
+        <%= f.text_field :first_name, class: form_control_classes(danger: @provider.first_name.blank? && @provider.persisted?), placeholder: 'Type here...', required: true %>
+      </div>
+      <div class="col-lg-2">
+        <label class="text-dark-grey">Middle Name</label>
+        <%= f.text_field :middle_name, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+      </div>
+      <div class="col-lg-4">
+        <label class="text-dark-grey">Last Name <span class="text-red">*</span></label>
+        <%= f.text_field :last_name, class: form_control_classes(danger: @provider.last_name.blank? && @provider.persisted?), placeholder: 'Type here...', required: true %>
+      </div>
+      <div class="col-lg-2">
+        <label class="text-dark-grey">Suffix</label>
+        <%= f.select :suffix, options_for_select(['Jr.', 'Sr.', 'II', 'III', 'IV', 'V'], @provider.suffix), { prompt: 'Select Option' }, { class: 'form-select border border-dark' } %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-4">
+        <label class="text-dark-grey">Gender </label>
+        <%= f.select :gender, options_for_select(['Male', 'Female', 'Non Binary'], @provider.gender), { prompt: 'Gender' }, { class: 'form-select border border-dark' } %>
+      </div>
+      <div class="col-lg-4">
+        <label class="text-dark-grey">SSN <span class="text-red">*</span></label>
+        <%= f.text_field :ssn, class: form_control_classes(danger: @provider.ssn.blank? && @provider.persisted?), placeholder: 'Type here...', required: true %>
+      </div>
+      <div class="col-lg-4">
+        <label class="text-dark-grey">Date of Birth <span class="text-red">*</span></label>
+        <%= f.text_field :birth_date, placeholder: 'MM/DD/YYYY', class: form_control_classes(danger: @provider.birth_date.blank? && @provider.persisted?), value: display_mdy(f.object.birth_date), onfocus: "(this.type = 'date')", required: true %>
+      </div>
+      </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Birth City <span class="text-red">*</span></label>
+        <%= f.text_field :birth_city, class: form_control_classes(danger: @provider.birth_city.blank? && @provider.persisted?), placeholder: 'Type here...', required: true %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Birth State <span class="text-red">*</span></label>
+        <%#= f.select :birth_state, options_for_select(states.map{|m| ["#{m.name} - #{m.alpha_code}", m.id]}, @provider.birth_state), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}
+         <div class="search-select state-search-select form-control border border-dark" name="provider[birth_state]" id="birth_state">  %>
+        <div class="<%= search_select_classes({ danger: @provider.birth_state.blank? && @provider.persisted? }) %>" name="provider[birth_state]" id="birth_state">
+      </div>
+      </div>
+    </div>
+
+    <h3 class="mt-5 mb-2">Home Address</h3>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <!-- new field -->
+        <label class="text-dark-grey">Address Line 1 <span class="text-red">*</span></label>
+        <%= f.text_field :address_line_1, placeholder: 'Type here...', class: form_control_classes(danger: @provider.address_line_1.blank? && @provider.persisted?), required: true %>
+      </div>
+      <div class="col-lg-6">
+        <!-- new field -->
+        <label class="text-dark-grey">Address Line 2</label>
+        <%= f.text_field :address_line_2,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <!-- new field -->
+        <label class="text-dark-grey">City <span class="text-red">*</span></label>
+        <%= f.text_field :city, placeholder: 'Type here...', class: form_control_classes(danger: @provider.city.blank? && @provider.persisted?), required: true %>
+      </div>
+      <div class="col-lg-6">
+        <!-- new field -->
+        <label class="text-dark-grey">State <span class="text-red">*</span></label>
+        <%#= f.select :state_id, options_for_select(states.pluck(:name, :id), @provider.state_id), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}
+        <div class="search-select state-search-select form-control border border-dark" name="provider[state_id]" id="home_address_state">  %>
+        <div class="<%= search_select_classes({ danger: @provider.state_id.blank? && @provider.persisted? }) %>" name="provider[state_id]" id="home_address_state">
+        </div>
+      </div>
+    </div>
+      <div class="row mb-3">
+      <div class="col-lg-6">
+        <!-- new field -->
+        <label class="text-dark-grey">Zipcode (+4 Zip Code) <span class="text-red">*</span></label>
+        <%= f.text_field :zip_code, placeholder: 'Type here...', class: form_control_classes(danger: @provider.zip_code.blank? && @provider.persisted?), required: true %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-4">
+        <!-- new field -->
+        <label class="text-dark-grey">Telephone Number</label>
+        <%= f.telephone_field :telephone_number, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-2">
+        <!-- new field -->
+        <label class="text-dark-grey">Ext</label>
+        <%= f.text_field :ext, placeholder: 'Type here...' , class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <!-- new field -->
+        <label class="text-dark-grey">Email <small>(required when sending welcome letter)</small> </label>
+        <%= f.text_field :email_address,  placeholder: 'Type here...', class: 'form-control border border-dark', required: true %>
+      </div>
+    </div>
+
+    <div class="row-mb-5">
+      <div class="col-lg-12 mb-2">
+        <h3 class="mt-5 mb-2">Professional/Medical School</h3>
+      </div>
+      <div class="col-lg-12">
+        <div class="row mb-3">
+          <div class="col-lg-6 mb-3">
+            <!-- new field -->
+          <label class="text-dark-grey">Name of U.S./Canadian School</label>
+            <%= f.text_field :medical_school_name,  placeholder: 'Type here...',class: 'form-control border border-dark'%>
+          </div>
+          <div class="col-lg-6 ">
+            <!-- new field -->
+          <label class="text-dark-grey">Start Date</label>
+            <%= f.text_field :prof_medical_start_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.prof_medical_start_date), onfocus: "(this.type = 'date')" %>
+          </div>
+          <div class="col-lg-6">
+              <label class="text-dark-grey">Degree Awarded</label>
+              <%= f.text_field :prof_medical_school_degree_awarded, placeholder: 'Type here...',class: 'form-control border border-dark'%>
+           </div>
+           <div class="col-lg-6">
+            <label class="text-dark-grey">End(Graduation) Date</label>
+            <%= f.text_field :graduation_date ,placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.graduation_date), onfocus: "(this.type = 'date')" %>
+          </div>
+
+        </div>
+        <div class="row mb-2">
+
+          <div class="col-lg-6 mb-3">
+            <!-- new field -->
+            <label class="text-dark-grey">Did you complete your graduate education at this school? </label>
+            <%= f.select :medical_license, options_for_select(yes_or_no_options, @provider.medical_license), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
+         </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-5">
+      <div class="col-lg-12 mb-2">
+          <h3 class="mt-5 mb-2">Practitioner Type Details</h3>
+      </div>
+      <div class="row mb-3">
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Practitioner Type (can be multiple) <span class="text-red">*</span></label>
+          <%= HtmlUtils.multi_select_dropdown name: 'provider[practitioner_type]', id: 'provider_practitioner_type'%>
+          <%#= f.collection_select :practitioner_type, provider_types, :fch, :fch, { prompt: 'Select Option' }, { class: 'form-control border border-dark', required: true } %>
+        </div>
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Taxonomy <span class="text-red">*</span></label>
+          <%= f.text_field :taxonomy, placeholder: 'Type here...',class: form_control_classes(danger: @provider.taxonomy.blank? && @provider.persisted?), required: true %>
+        </div>
+      </div>
+      <div class="row mb-3 mt-2">
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Specialty (i.e., Specialties is selected based on taxonomy codes) (can be multiple) <span class="text-red">*</span></label>
+          <%= HtmlUtils.multi_select_dropdown name: 'provider[specialty]', id: 'provider_specialty'%>
+          <%#= f.collection_select :specialty, specialties, :bcbs, :bcbs, { prompt: 'Select Option' }, { class: 'form-control border border-dark' } %>
+        </div>
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Provider Effective Date</label>
+          <%= f.text_field :provider_effective_date ,placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.provider_effective_date), onfocus: "(this.type = 'date')" %>
+        </div>
+      </div>
+      <div class="row mb-3 mt-2">
+        <div class="col-lg-6">
+          <label class="text-dark-grey">NPI Number</label>
+          <%= f.text_field :npi, placeholder: 'Type here...',class: 'form-control border border-dark' %>
+        </div>
+      </div>
+    </div>
+
+
+      <div class="row mb-5 mt-2">
+      <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
+        <div class="d-flex gap-2">
+          <div class="form-row  d-flex align-items-center">
+            <h3>Board Certification</h3>
+          </div>
+          <div class="form-row  d-flex align-items-center gap-1">
+            <%= f.check_box :board_certificate_not_applicable, id:'no-board-cert' %>
+            <%= f.label :board_certificate_not_applicable, "N/A", class: 'text-dark-grey' %>
+          </div>
+        </div>
+      </div>
+      <div class="form-row  d-flex align-items-start">
+        <%= f.text_area :board_cert_explain,  placeholder: 'Explain if you do not have DEA Registration Number (required if no DEA Number)', class: 'form-control border border-dark', rows: '8', id: 'board-cert-explain'%>
+      </div>
+      <div id="board_fields"%>
+        <div class="fields">
+          <%= f.fields_for :board_certifications do |board_certification_fields| %>
+            <%= render 'board_certification_fields', f: board_certification_fields %>
+          <% end %>
+        </div>
+        <div class="row mt-2">
+          <div class="col-lg-12 text-start">
+            <button type="button" class="add_association py-1 btn btn-primary"> <i class="bi bi-plus-circle-fill"></i> Add Board Certification </button>
+          </div>
+        </div>
+      </div>
+   </div>
+
+    <div class="row mb-3 mt-2">
+      <%= HtmlUtils.radio_toggle name: 'provider[payer_login]',
+          label: 'Provider Data Portals (i.e., CAQH, One HealthPort, MCC) ',
+          container_class: 'd-flex align-items-center my-3',
+          toshow: 'payer_login_form'
+      %>
+
+      <%= f.hidden_field :payer_login%>
+
+      <div id="payer_login_form" class="<%= @provider.is_payer_login? ? '' : 'd-none'%>">
+         <div class="fields">
+            <%= f.fields_for :payer_logins do |payer_login_fields| %>
+              <%= render 'payer_login_fields', f: payer_login_fields %>
+            <% end %>
+         </div>
+
+         <div class="row">
+           <div class="col-lg-12 text-center">
+          <a class="btn btn-primary btn-xs add_association">Add New</a>
+        </div>
+         </div>
+      </div>
+    </div>
+
+    <!-- CAQH -->
+    <div class="row mb-3">
+      <div class="col-lg-12 mt-3">
+        <h3>CAQH</h3>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH ID</label>
+        <%= f.text_field :caqhid ,placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH State</label>
+       <div class="search-select state-search-select form-control border border-dark" name="provider[caqh_state]" id="caqh_state">
+        </div>
+      </div>
+    </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH Username</label>
+        <%= f.text_field :caqh_username,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH Password</label>
+        <%= f.text_field :caqh_password,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Current Re-Attestation</label>
+        <%= f.text_field :caqh_current_reattestation_date, id: 'start-date', placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.caqh_current_reattestation_date),oninput: "updateCompletionDate()" , onfocus: "(this.type = 'date')"%>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Re-Attestation must be completed by</label>
+        <%= f.text_field :caqh_reattest_completed_by, id: 'completion-date', placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.caqh_reattest_completed_by), onfocus: "(this.type = 'date')" %>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Questions</label>
+        <%= f.text_field :caqh_question, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Answer</label>
+        <%= f.text_field :caqh_answer,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CAQH PDF Date Received</label>
+        <%= f.text_field :caqh_pdf_date_received, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.caqh_pdf_date_received), onfocus: "(this.type = 'date')" %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-12">
+        <label class="text-dark-grey">CAQH Notes</label>
+        <%= f.text_area :caqh_notes, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    </div>
+    <!-- CAQH -->
+
+
+   <div class="row mb-5 mt-2">
+      <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
+        <div class="d-flex gap-2">
+          <div class="form-row  d-flex align-items-center">
+            <h3>DEA Registration</h3>
+          </div>
+          <div class="form-row  d-flex align-items-center gap-1">
+            <%= f.check_box :dea_not_applicable, id:'no-dea' %>
+            <%= f.label :dea_not_applicable, "N/A", class: 'text-dark-grey' %>
+          </div>
+        </div>
+      </div>
+      <div class="form-row  d-flex align-items-start">
+        <%= f.text_area :dea_explain,  placeholder: 'Explain if you do not have DEA Registration Number (required if no DEA Number)', class: 'form-control border border-dark', rows: '8', id: 'dea-explain'%>
+      </div>
+      <div id="dea_licenses"%>
+        <div class="fields">
+          <%= f.fields_for :dea_licenses do |dea_license_fields| %>
+            <%= render 'dea_license_fields', f: dea_license_fields %>
+          <% end %>
+        </div>
+        <div class="row mt-2">
+          <div class="col-lg-12 text-start">
+            <button type="button" class="add_association py-1 btn btn-primary"> <i class="bi bi-plus-circle-fill"></i> Add DEA License </button>
+          </div>
+        </div>
+      </div>
+   </div>
+
+
+
+     <div class="row mb-5 mt-2">
+     <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
+        <div class="d-flex gap-2">
+          <div class="form-row  d-flex align-items-center">
+            <h3>Controlled Dangerous Substance Registration Number</h3>
+          </div>
+          <div class="form-row  d-flex align-items-center gap-1">
+            <%= f.check_box :cds_not_applicable, id:'no-cds' %>
+            <%= f.label :cds_not_applicable, "N/A", class: 'text-dark-grey' %>
+          </div>
+        </div>
+      </div>
+      <div class="form-row  d-flex align-items-start">
+        <%= f.text_area :cds_explain,  placeholder: 'Explain if you do not have CDS Registration Number(required if no CDS Number)', class: 'form-control border border-dark', rows: '8', id: 'cds-explain'%>
+      </div>
+      <div id="cds_licenses">
+          <div class="fields">
+            <%= f.fields_for :cds_licenses do |cds_license_fields| %>
+              <%= render 'cds_license_fields', f: cds_license_fields %>
+            <% end %>
+          </div>
+          <div class="row">
+                  <div class="col-lg-12 text-start">
+                        <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add CDS License </button>
+                  </div>
+          </div>
+      </div>
+    </div>
+
+     <div class="row mb-5 mt-2">
+     <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
+        <div class="d-flex gap-2">
+          <div class="form-row  d-flex align-items-center">
+            <h3>Registered Nurse License</h3>
+          </div>
+          <div class="form-row  d-flex align-items-center gap-1">
+            <%= f.check_box :rn_not_applicable, id:'no-rn' %>
+            <%= f.label :rn_not_applicable, "N/A", class: 'text-dark-grey' %>
+          </div>
+        </div>
+      </div>
+      <div class="form-row  d-flex align-items-start">
+        <%= f.text_area :rn_explain,  placeholder: 'Explain if you do not have RN License Number(required if no RN Number)', class: 'form-control border border-dark', rows: '8', id: 'rn-explain'%>
+      </div>
+      <div id="rn_licenses">
+          <div class="fields">
+            <%= f.fields_for :rn_licenses do |rn_license_fields| %>
+              <%= render 'rn_license_fields', f: rn_license_fields %>
+            <% end %>
+          </div>
+        <div class="row">
+                  <div class="col-lg-12 text-start">
+                        <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add RN License </button>
+                  </div>
+          </div>
+      </div>
+    </div>
+
+     <div class="row mb-5 mt-2">
+     <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
+        <div class="d-flex gap-2">
+          <div class="form-row  d-flex align-items-center">
+          <h3>Advance Practice Registered Nurse License</h3>
+          </div>
+          <div class="form-row  d-flex align-items-center gap-1">
+            <%= f.check_box :aprn_not_applicable, id:'no-aprn' %>
+            <%= f.label :aprn_not_applicable, "N/A", class: 'mx-0 text-dark-grey' %>
+          </div>
+        </div>
+      </div>
+      <div class="form-row align-items-center">
+          <h6> (also applies for NP, ANP, CRNA, CNS, CNM, and CNP) </h6>
+      </div>
+       <div class="form-row  d-flex align-items-start">
+        <%= f.text_area :cnp_explain,  placeholder: 'Explain if you do not have APRN License Number(required if no APRN Number)', class: 'form-control border border-dark', rows: '8', id: 'cnp-explain'%>
+      </div>
+      <div id="cnp_licenses">
+          <div class="fields">
+            <%= f.fields_for :cnp_licenses do |cnp_license_fields| %>
+              <%= render 'cnp_license_fields', f: cnp_license_fields %>
+            <% end %>
+          </div>
+          <div class="row">
+                  <div class="col-lg-12 text-start">
+                        <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add APRN License </button>
+                  </div>
+          </div>
+      </div>
+    </div>
+
+     <div class="row mb-5 mt-2">
+     <div class="d-flex gap-2">
+          <div class="form-row  d-flex align-items-center">
+            <h3>State License</h3>
+          </div>
+          <div class="form-row  d-flex align-items-center gap-1">
+            <%= f.check_box :state_not_applicable, id:'no-state' %>
+            <%= f.label :state_not_applicable, "N/A", class: 'text-dark-grey' %>
+          </div>
+        </div>
+        <div class="form-row  d-flex align-items-start">
+        <%= f.text_area :license_explain,  placeholder: 'Explain if you do not have State License Number(required if no State Number)', class: 'form-control border border-dark', rows: '8', id: 'license-explain'%>
+        </div>
+      <div id="licenses">
+          <div class="fields">
+            <%= f.fields_for :licenses do | license_fields| %>
+              <%= render 'license_fields', f: license_fields %>
+            <% end %>
+          </div>
+          <div class="row">
+                  <div class="col-lg-12 text-start">
+                        <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add State License </button>
+                  </div>
+          </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-12 mt-3">
+        <h3>Professional Liability Insurance</h3>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Carrier or Self-Insured Name</label>
+        <%= f.text_field  :prof_liability_carrier_name, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Self-Insured?</label>
+       <%= f.select  :prof_liability_self_insured, options_for_select([['Yes','yes'],['No','no']], @provider.prof_liability_self_insured), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
+      </div>
+    </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Address</label>
+        <%= f.text_field :prof_liability_address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">City</label>
+        <%= f.text_field :prof_liability_city,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">State</label>
+        <div class="search-select state-search-select form-control border border-dark" name="provider[prof_liability_state_id]" id="prof_liability_state_id">
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Zip Code (+4 Zip Code)</label>
+        <%= f.text_field :prof_liability_zipcode,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Original Effective Date</label>
+        <%= f.text_field :prof_liability_orig_effective_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.prof_liability_orig_effective_date), onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Effective Date</label>
+        <%= f.text_field :prof_liability_effective_date,  placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.prof_liability_effective_date), onfocus: "(this.type = 'date')" %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Expiration Date</label>
+        <%= f.text_field :prof_liability_expiration_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.prof_liability_expiration_date), onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Type of Coverage</label>
+        <%= f.select :prof_liability_coverage_type, options_for_select([['Individual','individual'],['Shared','shared']], @provider.prof_liability_coverage_type), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
+    </div>
+    </div>
+    <div class="row mb-3">
+     <div class="col-lg-6">
+        <label class="text-dark-grey">Do you have unlimited coverage with this insurance carrier?</label>
+        <%= f.select :prof_liability_unlimited_coverage, options_for_select([['Yes','yes'],['No','no']], @provider.prof_liability_unlimited_coverage), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
+    </div>
+     <div class="col-lg-6">
+        <label class="text-dark-grey">Policy includes tail coverage?</label>
+        <%= f.select :prof_liability_tail_coverage, options_for_select([['Yes','yes'],['No','no']], @provider.prof_liability_tail_coverage), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
+    </div>
+    </div>
+    <div class="row mb-3">
+     <div class="col-lg-6">
+        <label class="text-dark-grey">Amount of coverage per occurence (must be at least $1,000,000/$3,000,000)</label>
+        <%= f.text_field :prof_liability_coverage_amount, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+    </div>
+     <div class="col-lg-6">
+        <label class="text-dark-grey">Amount of coverage aggregate (must be at least $1,000,000/$3,000,000)</label>
+        <%= f.text_field :prof_liability_coverage_amount_aggregate, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+    </div>
+    </div>
+     <div class="row mb-3">
+     <div class="col-lg-6">
+        <label class="text-dark-grey">Policy Number</label>
+        <%= f.text_field :prof_liability_policy_number, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+    </div>
+     </div>
+
+     <div class="row mb-3 mt-3">
+     <div class="col-lg-12 mt-3">
+        <h3>Practice Information</h3>
+      </div>
+      <div class="col-lg-6">
+      <!-- new field -->
+      <label class="text-dark-grey">Group <span class="text-red">*</span></label>
+      <%= f.select :enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, { id: "provider_dcos_select", class: "#{form_select_classes(danger: @provider.enrollment_group_id.blank? && @provider.persisted?)} select-with-show", data: {show: 'provider_dco_div'}, required: true } %>
+      </div>
+      <div class="col-lg-6 <%= @provider.no_group? ? 'd-none' : '' %>" id="provider_dco_div">
+        <!-- new field -->
+        <label class="text-dark-grey">Primary Location</label>
+        <%= HtmlUtils.multi_select_dropdown name: 'provider[primary_location]', class:'mb-1', id: 'dcos_id'%>
+        <label class="text-dark-grey"> Additional Locations</label>
+        <%= HtmlUtils.multi_select_dropdown name: 'provider[dcos]', id: 'other_dcos_id'%>
+      </div>
+    </div>
+
+        <%
+=begin%>
+ <div class="row">
+          <div class="col-lg-6">
+            <!-- new field -->
+            <%= HtmlUtils.radio_toggle name: 'provider[telehealth_providers]',
+                    label: 'Are you a Telehealth Provider?',
+                    container_class: 'd-flex align-items-center my-3',
+                    toshow: 'service_locations_fields'
+                  %>
+          <%= f.hidden_field :telehealth_providers %>
+          </div>
+          <div class="row mb-3">
+            <div id="service_locations">
+               <div class="row d-none" id="service_locations_fields">
+                  <div class="fields">
+                    <%= f.fields_for :service_locations do |service_location_fields| %>
+                      <%= render 'service_location_fields', f: service_location_fields %>
+                    <% end %>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+<%
+=end%>
+
+
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <!-- new field -->
+        <label class="text-dark-grey">Hire date of provider seeing patients</label>
+        <%= f.text_field :provider_hire_date_seeing_patient,  placeholder: 'Type here...', class: 'form-control border border-dark', value: display_mdy(f.object.provider_hire_date_seeing_patient), onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+        <!-- new field -->
+        <label class="text-dark-grey">Effective date of provider seeing patients</label>
+        <%= f.text_field :effective_date_seeing_patient , placeholder: 'Type here...', class: 'form-control border border-dark', value: display_mdy(f.object.effective_date_seeing_patient), onfocus: "(this.type = 'date')" %>
+      </div>
+    </div>
+    <hr>
+      <div class="row mb-3">
+           <div class="col-lg-6">
+                 <label class="text-dark-grey">Does provider require a collab/supervising provider?</label>
+                    <%= f.select :supervised_by_psychologist, options_for_select([['Yes','yes'],['No','no']], @provider.supervised_by_psychologist), { prompt: 'Select Option' }, {:class => 'form-select border border-dark collab-provider'}  %>
+           </div>
+      </div>
+              <div class="my-1 supervising-provider-field <%= f.object.supervised_by_psychologist == 'yes' ? '' : 'd-none'%>">
+                <div class= "row">
+                    <div class="col-lg-6">
+                        <label class="text-dark-grey">Providers Name</label>
+                        <%= f.text_field :supervising_name, placeholder: 'Type here', class: 'form-control border border-dark' %>
+                    </div>
+                      <div class="col-lg-6">
+                        <label class="text-dark-grey">Providers NPI</label>
+                        <%= f.text_field :supervising_npi, placeholder: 'Type here', class: 'form-control border border-dark' %>
+                      </div>
+                </div>
+             </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-12 mt-3">
+          <h3>Telehealth</h3>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Telehealth License Number</label>
+        <%= f.text_field :telehealth_license_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Licensed Registered State</label>
+        <%#= f.text_field :board_certification_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+
+        <%#= f.select :licensed_registered_state_id, options_for_select(states.pluck(:name, :id), @provider.licensed_registered_state_id), {prompt: 'Select Option'}, {class: 'form-select border border-dark'}  %>
+
+        <div class="search-select state-search-select form-control border border-dark" name="provider[licensed_registered_state_id]" id="license_registered_state">
+
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-12 mt-3">
+          <h3>Documents</h3>
+          <%= link_to 'Deleted Logs', 'javascript:void(0);', class: 'btn btn-xs bg-primary text-white mb-2', "data-bs-toggle": 'modal', "data-bs-target": '#deletedLogsModal' %>
+      </div>
+      <div class="col-lg-12 mb-3">
+        <%= HtmlUtils.multiple_file_uploads model: f.object, input_field_name: 'state_license_copies' %>
+      </div>
+      <div class="col-lg-12 mb-3">
+        <%= HtmlUtils.multiple_file_uploads model: f.object, input_field_name: 'dea_copies' %>
+      </div>
+      <div class="col-lg-12 mb-3">
+        <%= HtmlUtils.multiple_file_uploads model: f.object, input_field_name: 'w9_form_copies', anchor_link: 'https://www.irs.gov/pub/irs-pdf/fw9.pdf' %>
+      </div>
+      <div class="col-lg-12 mb-3">
+        <%= HtmlUtils.multiple_file_uploads model: f.object, input_field_name: 'certificate_insurance_copies' %>
+      </div>
+      <div class="col-lg-12 mb-3">
+        <%= HtmlUtils.multiple_file_uploads model: f.object, input_field_name: 'driver_license_copies' %>
+      </div>
+      <div class="col-lg-12 mb-3">
+        <%= HtmlUtils.multiple_file_uploads model: f.object, input_field_name: 'board_certification_copies' %>
+      </div>
+      <div class="col-lg-12 mb-3">
+        <%= HtmlUtils.multiple_file_uploads model: f.object, input_field_name: 'caqh_app_copies' %>
+      </div>
+      <div class="col-lg-12 mb-3">
+        <%= HtmlUtils.multiple_file_uploads model: f.object, input_field_name: 'cv_copies', input_field_label: 'Curriculum Vitae (CV) Copies' %>
+      </div>
+        <div class="col-lg-12 mb-3">
+        <%= HtmlUtils.multiple_file_uploads model: f.object, input_field_name: 'telehealth_license_copies' %>
+      </div>
+           <div class="col-lg-12">
+            <!-- new field -->
+            <label class="text-dark-grey">Board Certificate</label>
+            <!-- Had to add condition here since on edit it still requires an upload even though I already uploaded a file before. -->
+            <% if @provider.school_certificate.url.nil? %>
+            <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: 'form-control border border-dark', title: 'Copy of Certificate', required: true %>
+            <% else %>
+            <%= f.file_field :school_certificate,  placeholder: 'Copy of Certificate',  class: 'form-control border border-dark', title: 'Copy of Certificate'%>
+            <% end %>
+
+            <% if !@provider.pending_submitted_documents.include?('school_certificate')%>
+            <%= HtmlUtils.generate_view_link file_url: @provider.school_certificate.url %>
+            <% end %>
+          </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 d-flex justify-content-end">
+        <button id="btn-provider-form-submit"  type="submit" class="btn btn-primary btn-md">Submit</button>
+      </div>
+    </div>
+<% end %>
+
+    <% content_for :js do %>
+      <!-- Modals -->
+      <div class="modal fade" id="deleteFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="">
+                        <div class="modal-title">
+                            <h1 class="mb-2">Delete existing <strong id="documentTitle">W9 Form</strong>?</h1>
+                        </div>
+                        <div class="form-row row">
+                            <div class="col-xl-12">
+                                <label for="">Note</label>
+                                <textarea name="note" id="delete-form-note" cols="30" rows="10" class="form-control"></textarea>
+
+                            </div>
+                        </div>
+                        <div class="form-row mt-3">
+                            <button id="btnDelete" class="btn btn-manage btn-danger" onclick="deleteDocument(this)" data-providerid="" data-documentholder="">Yes</button>
+                            <button id="btnCancel" class="btn btn-card-remove fw-bold text-black" data-bs-dismiss="modal" onclick="clearNote()">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deletedLogsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                  <div class="modal-body">
+                      <div class="">
+                          <div class="modal-title border-1 border-bottom mb-2">
+                              <h3>Deleted Logs</h3>
+                          </div>
+                          <div class="form-row row">
+                              <div id="deleted-logs" class="col-xl-12">
+                                <!-- loading -->
+                                <div class="d-flex justify-content-center">
+                                  <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                  </div>
+                                </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <!-- Modals -->
+
+    <div class="col-lg-12">
+
+    <%= render "providers/js_components/add_remove_association_buttons" %>
+    <%= render "providers/js_components/ajax_set_dropdown_options" %>
+    <%= render "providers/js_components/deleted_document_logs" %>
+
+    <script>
+      $(document).ready(function() {
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+        var selected_dcos  = stringArrayModifier('<%= @provider.dcos.split(",") %>');
+        var selected_notification_services  = stringArrayModifier('<%= @provider.notification_services&.split(",") %>');
+
+        $.ajax({
+          url: '<%= get_provider_notification_services_path %>',
+          type: 'get',
+          data: { authenticity_token: csrfToken },
+          success: function(data) {
+            VirtualSelect.init({
+              ele: '#notification_services',
+              multiple: true,
+              showSelectedOptionsFirst: true
+            });
+            document.querySelector('#notification_services').setOptions(data['notification_services'])
+            document.querySelector('#notification_services').setValue(selected_notification_services);
+          }
+        })
+
+        $('#provider_dcos_select').on('change',function(){
+          var id = $(this).val();
+          $.ajax({
+            url: '<%= get_group_locations_path %>',
+            type: 'get',
+            data: { authenticity_token: csrfToken, group_id: id },
+            success: function(data) {
+              VirtualSelect.init({
+                ele: '#dcos_id',
+                multiple: false,
+                showSelectedOptionsFirst: true
+              });
+              document.querySelector('#dcos_id').setOptions(data['practice_locations'])
+              document.querySelector('#dcos_id').setValue(selected_dcos);
+            }
+          })
+          $.ajax({
+            url: '<%= get_group_locations_path %>',
+            type: 'get',
+            data: { authenticity_token: csrfToken, group_id: id },
+            success: function(data) {
+              VirtualSelect.init({
+                ele: '#other_dcos_id',
+                multiple: true,
+                showSelectedOptionsFirst: true
+              });
+              document.querySelector('#other_dcos_id').setOptions(data['practice_locations'])
+              document.querySelector('#other_dcos_id').setValue(selected_dcos);
+            }
+          })
+        });
+        if('<%= @provider.persisted? %>' == 'true') {
+          $('#provider_dcos_select').trigger( "change" );
+        }
+        // force to invalidate all required fields
+        $('#btn-provider-form-submit').on('click', function(e) {
+          $('input[required], select[required], textarea[required]').each(function() {
+            $(this).removeAttr('required');
+          })
+        });
+
+        // kindly ask rave about this behavior. need to allow to save the form without validation even required fields are enabled
+        // $('#provider-form').on('submit', function(e) {
+        //   var birth_state = $("input[name='provider[birth_state]']").val();
+        //   var home_state = $("input[name='provider[state_id]']").val();
+        //   var practitioner_type = $("input[name='provider[practitioner_type]']").val();
+        //   var specialty = $("input[name='provider[specialty]']").val();
+        //   if(!birth_state) {
+        //     e.preventDefault();
+        //     document.querySelector('#birth_state').focus();
+        //     document.querySelector('#birth_state').open();
+        //     return  false;
+        //   } else if(!home_state) {
+        //     e.preventDefault();
+        //     document.querySelector('#home_address_state').focus();
+        //     document.querySelector('#home_address_state').open();
+        //     return  false;
+        //   } else if(!practitioner_type) {
+        //     e.preventDefault();
+        //     document.querySelector('#provider_practitioner_type').focus();
+        //     document.querySelector('#provider_practitioner_type').open();
+        //     return  false;
+        //   } else if(!specialty) {
+        //     e.preventDefault();
+        //     document.querySelector('#provider_specialty').focus();
+        //     document.querySelector('#provider_specialty').open();
+        //     return  false;
+        //   }
+        // })
+
+
+
+        $('.payer-state').each(function(){
+          var id = $(this).attr('id');
+          var value = $(this).data('value');
+
+          setTimeout(function(){
+             $.get('<%= provider_states_multi_select_data_path %>', function(data){
+                VirtualSelect.init({ele: '#' + id, search: true });
+                document.querySelector('#' + id).setOptions(data['result']);
+                document.querySelector('#' + id).setValue(value);
+             });
+          }, 1000);
+        });
+
+        $('.state-select').each(function(){
+          var id = $(this).attr('id');
+          var value = $(this).data('value');
+
+          setTimeout(function(){
+             $.get('<%= provider_states_multi_select_data_path %>', function(data){
+                VirtualSelect.init({ele: '#' + id, search: true });
+                document.querySelector('#' + id).setOptions(data['result']);
+                document.querySelector('#' + id).setValue(value);
+             });
+          }, 1000);
+        });
+
+        $(document).ready(function(){
+          $('.board-name').each(function(){
+            var id = $(this).attr('id');
+            var value = $(this).data('value');
+
+            setTimeout(function(){
+              $.get('<%= board_names_multi_select_data_path %>', function(data){
+                  VirtualSelect.init({ele: '#' + id, search: true });
+                  document.querySelector('#' + id).setOptions(data['result']);
+                  document.querySelector('#' + id).setValue(value);
+              });
+            }, 1000);
+          });
+
+        });
+
+        $(document).on('change', '.provider-status', function () {
+         var status = $(this).val();
+         if (status == 'inactive-termed') {
+            showHideDetailFields($(this), '.status-inactive-field', 'show')
+         } else {
+            showHideDetailFields($(this), '.status-inactive-field', 'hide')
+         }
+      })
+
+        function showHideDetailFields(dropDown, divClass, mode) {
+          if (mode == 'show')
+              dropDown.parent().parent().parent().find(divClass).removeClass('d-none');
+          else
+              dropDown.parent().parent().parent().find(divClass).addClass('d-none');
+        }
+
+
+         $(document).on('change', '.collab-provider', function () {
+         var supervisor = $(this).val();
+         if ( supervisor == 'yes') {
+            showHideDetailFields($(this), '.supervising-provider-field', 'show')
+         } else {
+            showHideDetailFields($(this), '.supervising-provider-field', 'hide')
+         }
+      })
+
+        function showHideDetailFields(dropDown, divClass, mode) {
+          if (mode == 'show')
+              dropDown.parent().parent().parent().find(divClass).removeClass('d-none');
+          else
+              dropDown.parent().parent().parent().find(divClass).addClass('d-none');
+        }
+
+
+
+         $(document).on('click','#questions-fields .add_questions',function() {
+            var index_of = $(this).data('index');
+            var detailsFields = $("#questions-fields .question-field");
+             var newEnrollmentdetails = detailsFields.last().clone();
+             var lastId = detailsFields.length - 1;
+             var newId = lastId + 1;
+             // alert(newId);
+             // provider_payer_logins_attributes_0_questions_attributes_0_question
+             newEnrollmentdetails.find("[id^='provider_payer_logins_attributes_']").each(function() {
+                var oldId = $(this).attr("id");
+                var newIdValue = oldId.replace(/\d+/, newId).replace(/\d+/,newId);
+                var oldName = $(this).attr('name');
+                var newName = 'provider[payer_logins_attributes]['+index_of+'][questions_attributes]['+newId+'][question]';
+                var anewName = 'provider[payer_logins_attributes]['+index_of+'][questions_attributes]['+newId+'][answer]';
+
+                // checks if input is answer field
+                if($(this).hasClass('answer')) {
+                  newName = anewName;
+                }
+
+                $(this).attr("id", newIdValue);
+                $(this).attr("name", newName);
+                $(this).val('');
+             });
+
+            $(this).closest("#questions-fields .q-fields").append(newEnrollmentdetails);
+          })
+
+        $('#payer_login_form').on('click','.add_association',function() {
+         var detailsFields = $("#payer_login_form .field");
+
+         var newEnrollmentdetails = detailsFields.last().clone();
+         var lastId = detailsFields.length - 1;
+         var newId = lastId + 1;
+
+        // var enrollment_payer_id = "provider_payer_logins_attributes_" + newId + "_enrollment_payer";
+         var payer_state_id = "provider_payer_logins_attributes_" + newId + "_state_id";
+
+          newEnrollmentdetails.find("[id^='provider_payer_logins_attributes_']").each(function() {
+            var oldId = $(this).attr("id");
+            var newIdValue = oldId.replace(/\d+/, newId);
+            $(this).attr("id", newIdValue);
+            $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
+            $(this).val('');
+         });
+
+
+         setTimeout(function(){
+            $.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
+               VirtualSelect.init({ele: '#' + enrollment_payer_id, search: true }); // initialze virtual select first
+               document.querySelector('#' + enrollment_payer_id).setOptions(data['result']); // other alternative for initializing collection data
+               document.querySelector('#' + enrollment_payer_id).setValue(data['value']); // other alternative for setting the value
+            });
+
+            $.get('<%= provider_states_multi_select_data_path %>', function(data){
+               VirtualSelect.init({ele: '#' + payer_state_id, search: true });
+               document.querySelector('#' + payer_state_id).setOptions(data['result']);
+               document.querySelector('#' + payer_state_id).setValue(value);
+            });
+         }, 500);
+
+          $("#payer_login_form .fields").append(newEnrollmentdetails);
+        })
+
+
+        $(document).on('click','.remove-question',function(){
+          if($(this).hasClass('has-data')) {
+            var model = $(this).data('model');
+            var id = $(this).data('id');
+            // alert(id);
+            deleteDynamicAttr(id,model,$(this));
+          }
+          else {
+            $(this).closest('.question-field').remove();
+          }
+        })
+
+        function deleteDynamicAttr(id,model,button) {
+        $.ajax({
+          url: '<%= delete_record_path %>',
+          method: 'POST',
+          data: { authenticity_token: csrfToken, id: id, model: model },
+          success: function(data) {
+              button.parent().parent().remove();
+          }
+        })
+      }
+      });
+      function updateCompletionDate() {
+        const startDateField = document.getElementById('start-date');
+        const completionDateField = document.getElementById('completion-date');
+
+        if (startDateField && completionDateField) {
+          const startDateValue = startDateField.value;
+
+          if (startDateValue) {
+            const startDate = new Date(startDateValue);
+            startDate.setDate(startDate.getDate() + 120);
+
+            const completionDate = startDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+            completionDateField.value = completionDate;
+          } else {
+            completionDateField.value = ''; // Clear the completion date if the start date is empty.
+          }
+        }
+      }
+
+
+    </script>
+  <% end %>
+
+<style type="text/css">
+  .multi-select, .search-select, .single-select {
+    padding: 0;
+      width: 100%;
+      max-width: 1000px;
+  }
+  .single-select  {
+    width: 100%;
+    max-width: 1000px;
+    padding: 0;
+  }
+</style>
