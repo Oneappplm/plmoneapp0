@@ -26,6 +26,29 @@
 							</div>
 				</div>
 	</div>
+<button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script>
+   function toggleBackToTopButton() {
+      var backToTopBtn = document.getElementById("backToTopBtn");
+      if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+         backToTopBtn.style.display = "block";
+      } else {
+         backToTopBtn.style.display = "none";
+      }
+   }
+
+   window.onscroll = function () {
+      toggleBackToTopButton();
+   };
+
+   function scrollToTop() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+   }
+   var backToTopBtn = document.getElementById("backToTopBtn");
+   backToTopBtn.addEventListener("click", scrollToTop);
+</script>
 
 	<% content_for :js do %>
 	<%= render "pages/dashboard_components/us_map_js" %>
