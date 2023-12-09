@@ -164,7 +164,7 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def provider_submitted_enrollments_to_csv
-    enrollment_details = EnrollmentProvidersDetail.includes(:application_status_logs).where(enrollment_status: 'application-submitted').where(application_status_logs: { created_at: @month.beginning_of_month..@month.end_of_month })
+    enrollment_details = EnrollmentProvidersDetail.where(enrollment_status: 'application-submitted').where(start_date: @month.beginning_of_month..@month.end_of_month)
     CSV.generate(headers: true) do |csv|
       csv << ["Platform", "Group Name", "Providers First Name", "Providers Last Name", "Practitioner Type", "NPI", "Payor", "Enrollment Type", "State", "Initial Application Status", "Date Initial Application Submitted", "Provider ID"]
 
