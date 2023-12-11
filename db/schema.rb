@@ -14,6 +14,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "add_schedules", force: :cascade do |t|
+    t.string "group_name"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "add_members", default: [], array: true
+  end
+
   create_table "ahoy_events", force: :cascade do |t|
     t.bigint "visit_id"
     t.bigint "user_id"
@@ -675,6 +683,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
     t.string "location_status"
     t.string "location_npi"
     t.string "location_tin"
+    t.string "npi_digits"
+    t.string "tin_digits_type"
     t.index ["enrollment_group_id"], name: "index_group_dcos_on_enrollment_group_id"
   end
 
@@ -1165,28 +1175,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_source_id"], name: "index_provider_sources_deas_on_provider_source_id"
-  end
-
-  create_table "provider_sources_licensures", force: :cascade do |t|
-    t.bigint "provider_source_id"
-    t.string "state"
-    t.string "license_type"
-    t.string "license_status"
-    t.string "license_number"
-    t.date "licensure_issue_date"
-    t.date "licensure_expiration_date"
-    t.string "licensure_not_expire"
-    t.string "licensure_practice_state"
-    t.string "licensure_primary_license"
-    t.string "licensure_require_supervision"
-    t.string "licensure_sponsor_degree"
-    t.string "licensure_sponsor_fname"
-    t.string "licensure_sponsor_mname"
-    t.string "licensure_sponsor_lname"
-    t.string "licensure_sponsor_suffix"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["provider_source_id"], name: "index_provider_sources_licensures_on_provider_source_id"
   end
 
   create_table "provider_sources_registrations", force: :cascade do |t|
