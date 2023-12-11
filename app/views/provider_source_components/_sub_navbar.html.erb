@@ -1,4 +1,6 @@
   <% if !@provider.blank? %>
+      <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
+
 			<div class="sub-sidenav ">
 				<ul class="list-group">
 						<li class="list-group-item <%= (params[:page].nil? or ['personal_info'].include?(params[:page])) ? 'bg-primary fw-bold' : 'bg-medium-grey'%> border-0">
@@ -85,3 +87,27 @@
 				</ul>
 			</div>
   <% end %>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <script>
+   function toggleBackToTopButton() {
+      var backToTopBtn = document.getElementById("backToTopBtn");
+      if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+         backToTopBtn.style.display = "block";
+      } else {
+         backToTopBtn.style.display = "none";
+      }
+   }
+
+   window.onscroll = function () {
+      toggleBackToTopButton();
+   };
+
+   function scrollToTop() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+   }
+   var backToTopBtn = document.getElementById("backToTopBtn");
+   backToTopBtn.addEventListener("click", scrollToTop);
+</script>
