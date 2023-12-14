@@ -31,7 +31,8 @@ Rails.application.routes.draw do
   get 'new-group', to: 'pages#new_group'
   get 'new-group-enrollment', to: 'pages#new_group_enrollment'
   get 'data-access', to: 'pages#data_access' #made this to not conflict with active state of client portal but for now same view
-
+  
+  match '/virtual_review_committee/update_review_committee_dates', to: 'pages#update_review_committee_dates', via: [:put, :patch], as: 'update_review_committee_dates'
   post 'delete-record', to: 'ajax#delete_record'
   post 'group-dco-note', to: 'ajax#create_group_dco_note'
   post 'provider-note', to: 'ajax#create_provider_note'
