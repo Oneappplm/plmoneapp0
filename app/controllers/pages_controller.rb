@@ -46,6 +46,18 @@ class PagesController < ApplicationController
 		end
 	end
 
+	def update_review_committee_dates
+    section_ids = params.require(:section_ids)
+
+    if section_ids.present? 
+      VirtualReviewCommittee.where(id: section_ids).update(review_committee_params)
+	    redirect_to virtual_review_committee_path, notice: 'Review and Committee dates updated successfully.'
+    else
+      flash[:error] = 'Invalid parameters.'
+      redirect_to virtual_review_committee_path, notice: 'There is an errors'
+    end
+  end
+
 	def dashboard
 			stat = Sys::Filesystem.stat('/')
 			total_size_bytes = stat.blocks * stat.block_size
@@ -299,4 +311,10 @@ class PagesController < ApplicationController
     ProviderSourceCme.delete(id) if model == 'cme'
 
   end
+
+  private
+
+	def review_committee_params
+	  params.permit(:review_date, :committee_date)
+	end
 end
