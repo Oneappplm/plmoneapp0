@@ -405,6 +405,16 @@ class AjaxController < ApplicationController
     end
   end
 
+  def create_payor_name
+    @payor_name = PayorName.new(title: params[:payor_name][:title])
+
+    if @payor_name.save
+      head :ok
+    else
+      render json:  { message: @payor_name.errors}, status: :unprocessable_entity
+    end
+  end
+
   protected
 
   def group_dco_notes_params
