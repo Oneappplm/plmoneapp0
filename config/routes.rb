@@ -72,6 +72,7 @@ Rails.application.routes.draw do
   get 'state-providers', to: 'ajax#state_providers'
   get 'providers-gender', to: 'ajax#providers_gender'
   get 'get-specialties', to: 'ajax#get_specialties'
+  post 'payor-name', to: 'ajax#create_payor_name'
   get 'get-languages', to: 'ajax#get_languages'
   get 'new-edit-practice-location', to: 'ajax#new_edit_practice_location'
   get 'get-states', to: 'ajax#get_states'
@@ -293,6 +294,7 @@ Rails.application.routes.draw do
     collection do
       get :states
       get :provider_types
+      get :payor_names
       get :countries
       get :visa_types
       get :languages

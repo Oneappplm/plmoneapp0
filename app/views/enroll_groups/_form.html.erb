@@ -90,7 +90,25 @@
    </div>
 </div>
    <% end %>
-
+<div class="modal fade" id="addNewPayorName" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-sm modal-dialog-centered">
+      <div class="modal-content">
+         <div class="p-4">
+            <h2 class="text-center">Add New Payor Name</h3>
+            <form name="myForm2" id="new-payor-name-form" method="post">
+               <div class="col-xl-12 py-2">
+                  <label class="h5 text-secondary" for="">Payor Name</label>
+                  <input type="text" name="title" class="form-control" placeholder="Type here..." required="true">
+               </div>
+               <button type="submit" class="btn btn-primary btn-md w-100" id="add-note">
+                  <strong>Add</strong>
+               </button>
+            </form>
+            <button class="btn btn-cancel w-100" data-bs-dismiss="modal" id="cancel-add-payer-name">Cancel</button>
+         </div>
+      </div>
+   </div>
+</div>
 <%= content_for :js do %>
 <script>
    $(document).ready(function(){
@@ -121,19 +139,60 @@
          });
       }, 1000);
     });
+    $('.payer-name').each(function(){
+         var id = $(this).attr('id');
+         var value = $(this).data('value');
+
+         setTimeout(function(){
+            $.get('<%= payor_names_multi_select_data_path %>', function(data){
+               VirtualSelect.init({ele: '#' + id, search: true });
+               document.querySelector('#' + id).setOptions(data['result']);
+               document.querySelector('#' + id).setValue(value);
+            });
+         }, 1000);
+      });
    });
 </script>
 <% end %>
 
 <script>
    $(document).ready(function () {
-
+      var csrfToken = $('meta[name="csrf-token"]').attr('content');
+		var form = document.getElementById('new-payor-name-form');
+      form.onsubmit = function(event){
+         var title = form.elements.namedItem("title").value;
+         createPayorName(title, form)
+         return false;
+      }
+		function createPayorName(title, form) {
+         $.ajax({
+         url: '<%= payor_name_path %>',
+         method: 'POST',
+         data: { authenticity_token: csrfToken, payor_name: {title: title} },
+         success: function(data) {
+            $('.payer-name').each(function(){
+               var id = $(this).attr('id');
+               var value = $(this).data('value');
+               var current_value = document.getElementById(id).value;
+               document.getElementById(id).addOption({
+                  value: title,
+                  label: title,
+               });
+               document.getElementById(id).setValue(current_value);
+            });
+            form.elements.namedItem("title").value = ""
+            $('#cancel-add-payer-name').click();
+            $('.loading-overlay').css('display',"none");
+         }
+         })
+      }
       $("#details").on("click", ".add_association", function () {
          var detailsFields = $("#details .field");
          var newEnrollmentdetails = detailsFields.last().clone();
          var lastId = detailsFields.length - 1;
          var newId = new Date().getTime();
          //var enrollment_payer_id = "enroll_group_details_attributes_" + newId + "_enrollment_payer";
+         var payer_enrollment_payer = "enroll_group_details_attributes_" + newId + "_enrollment_payer";
          var payer_state_id = "enroll_group_details_attributes_" + newId + "_payer_state";
 
          // Update the IDs in the cloned HTML content
@@ -192,6 +251,10 @@
                VirtualSelect.init({ele: '#' + payer_state_id, search: true });
                document.querySelector('#' + payer_state_id).setOptions(data['result']);
                // document.querySelector('#' + payer_state_id).setValue(value);
+            });
+            $.get('<%= payor_names_multi_select_data_path %>', function(data){
+               VirtualSelect.init({ele: '#' + payer_enrollment_payer, search: true });
+               document.querySelector('#' + payer_enrollment_payer).setOptions(data['result']);
             });
          }, 500);
 

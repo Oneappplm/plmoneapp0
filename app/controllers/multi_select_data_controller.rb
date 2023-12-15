@@ -26,6 +26,10 @@ class MultiSelectDataController < ApplicationController
     end
   end
 
+	def payor_names
+		send_result payor_names = PayorName.all.map{|m| { label: m.title, value: m.title} }
+  end
+
   def group_states
     send_result State.all.map{ |state| { label: "#{state.name} - #{state.alpha_code}", value: state.name } }
   end
