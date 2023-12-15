@@ -453,7 +453,9 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def group_revalidation_to_csv
-    enrollment_details = EnrollGroupsDetail.includes(enroll_group: :group).where(enroll_group: { created_at: @month.beginning_of_month..@month.end_of_month })
+                          enrollment_details = EnrollGroupsDetail.includes(enroll_group: :group)
+                        .where(enroll_group: { created_at: @month.beginning_of_month..@month.end_of_month })
+                        .where("enroll_groups_details.application_status = ?", 'approved')
     CSV.generate(headers: true) do |csv|
       csv << ["Platform", "Group Name", "NPI", "(Payor)1", "State", "(Payor)\nProvider ID", "(Payor)\nProvider\nEffective Date",
               "(Payor)\nProvider\nRevalidation\nDate", "(Payor)2","State", "(Payor)\nProvider ID", "(Payor)\nProvider\nEffective Date",
