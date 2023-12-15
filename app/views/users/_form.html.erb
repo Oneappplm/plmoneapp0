@@ -78,20 +78,6 @@
 						<%= f.text_field :temporary_password, value: @user.temporary_password, class: 'form-control border border-dark', placeholder: 'Type here...' %>
 					</div>
 				</div>
-				<div class="row mb-3">
-					<div class="col-lg-6">
-						<div class="col-lg-12">
-							<%= HtmlUtils.radio_toggle name: "user[is_provider_account]",
-								label: 'Enrollment Provider Account',
-								toshow: "user_accessible_provider_container",
-								hidden_field: true,
-								active: "#{f.object.is_provider_account ? 'active' : ''}",
-								data_value: "#{f.object.is_provider_account || false}",
-								isbooleantype: true
-							%>
-						</div>
-					</div>
-				</div>
 				<div class="row mb-3 <%= f.object.is_provider_account ? '' : 'd-none' %>" id="user_accessible_provider_container">
 					<div class="col-lg-6">
 						<label class="text-dark-grey">Provider Name</label>
@@ -156,13 +142,6 @@
         createRole(name, form)
         return false;
     }
-
-		if('<%= @user.is_provider_account %>' == 'true') {
-			$("#user_user_role").attr("disabled", true);
-			$("#user_user_role").addClass("unavailable");
-			$("#user_can_access_all_groups").attr("disabled", true);
-			$("#user_can_access_all_groups").addClass("unavailable");
-		}
 
 		function getEnrollmentGroups() {
 			$.ajax({
