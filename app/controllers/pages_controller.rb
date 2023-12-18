@@ -315,6 +315,6 @@ class PagesController < ApplicationController
   private
 
 	def review_committee_params
-	  params.permit(:review_date, :committee_date)
+	  params.permit(:review_date, :committee_date, :progress_status)
 	end
 end
