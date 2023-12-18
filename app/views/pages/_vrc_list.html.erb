@@ -72,31 +72,52 @@
   <!-- Below the table -->
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Update Review and Committee Dates</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <!-- Example form field for review date -->
-          <div class="mb-3">
-            <%= form.label :review_date, class: 'form-label' %>
-            <%= form.date_field :review_date, class: 'form-control' %>
-          </div>
-
-          <!-- Example form field for committee date -->
-          <div class="mb-3">
-            <%= form.label :committee_date, class: 'form-label' %>
-            <%= form.date_field :committee_date, class: 'form-control'%>
-          </div>
-
-      </div>
-      <div class="modal-footer">
-          <%= form.submit 'Update', class: 'btn btn-primary', id:"update-btn" %>
-      </div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title fs-4" id="exampleModalLabel">Assign Reviewer(s) and Date</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="checkbox-list">
+                	<div class="row p-0">
+                		<div class="col-lg-5 p-0">
+									    <input type="checkbox" name="item" value="Director Demo Director" class="form-check-input">
+									    <label class="ms-1 form-check-label" for="flexCheckDefault"> Director Demo Director</label>	
+                		</div>
+                		<div class="col-lg-6">
+                      <%= form.label :review_date, class: 'form-label' %>
+                      <%= form.date_field :review_date, class: 'form-control', required: true %>
+                		</div>
+                	</div>
+				    <br>
+				      <div class="row p-0">
+				      	<div class="col-lg-6 p-0">
+					    	  <input type="checkbox" name="item" value="Peer Demo Member" class="form-check-input">
+							    <label class="ms-1 form-check-label"  for="flexCheckDefault"> Peer Demo Member</label>
+				      	</div>
+				      </div>
+				    <br>
+				    <div class="row p-0 mt-2">
+    		      <div class="col-lg-5 p-0">
+						    <input type="checkbox" name="item" value="Test Demo Director" class="form-check-input">
+						    <label class="ms-1 mb-2 form-check-label"  for="flexCheckDefault"> Test Demo Director</label>
+    		      </div>
+		    		<div class="col-lg-6">
+		    			<%= form.label :committee_date, class: 'form-label' %>
+              <%= form.date_field :committee_date, class: 'form-control', required: true%>
+              <%= form.text_field :progress_status, value: "assigned", class: 'form-control', style: 'display: none;' %>
+		    		</div>
+		    	</div>
+				    <br>
+				  </div>     
+            </div>
+              <div class="modal-footer">
+                <%= form.submit 'Update', class: 'btn btn-primary', id:"update-btn" %>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 <% end %>
 
