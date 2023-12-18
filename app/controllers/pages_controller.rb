@@ -47,16 +47,22 @@ class PagesController < ApplicationController
 	end
 
 	def update_review_committee_dates
-    section_ids = params.require(:section_ids)
+    assigned_ids = params[:assigned_ids]
+    unassigned_ids = params[:unassigned_ids]
 
-    if section_ids.present? 
-      VirtualReviewCommittee.where(id: section_ids).update(review_committee_params)
-	    redirect_to virtual_review_committee_path, notice: 'Review and Committee dates updated successfully.'
+    if assigned_ids.present?
+      VirtualReviewCommittee.where(id: assigned_ids).update(assigned_params)
+      redirect_to virtual_review_committee_path, notice: 'Review and Committee dates updated successfully.'
+    elsif unassigned_ids.present?
+      VirtualReviewCommittee.where(id: unassigned_ids).update(unassigned_params)
+      redirect_to virtual_review_committee_path, notice: 'Assignments have been successfully removed'
     else
       flash[:error] = 'Invalid parameters.'
-      redirect_to virtual_review_committee_path, notice: 'There is an errors'
+      redirect_to virtual_review_committee_path, notice: 'There is an error.'
     end
   end
+
+
 
 	def dashboard
 			stat = Sys::Filesystem.stat('/')
@@ -314,7 +320,11 @@ class PagesController < ApplicationController
 
   private
 
-	def review_committee_params
+	def assigned_params
 	  params.permit(:review_date, :committee_date, :progress_status)
 	end
+
+  def unassigned_params
+    params.permit(:progress_status)
+  end
 end
