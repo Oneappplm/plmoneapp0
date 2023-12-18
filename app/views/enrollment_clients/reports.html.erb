@@ -36,3 +36,20 @@
    </div>
  </div>
 <% end %>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var monthInput = document.getElementById('start');
+
+    // Listen for changes in the template dropdown
+    document.querySelector('[name="template"]').addEventListener('change', function() {
+      // Check if the selected template is in the list where month is not required
+      var isMonthNotRequired = ['group_detail_report', 'group_revalidation', 'enrollment_details_report'].includes(this.value);
+
+      // Set the 'required' attribute based on the template
+      monthInput.required = !isMonthNotRequired;
+
+      // Change the input type to 'month' or 'text' based on the template
+      monthInput.type = isMonthNotRequired ? 'text' : 'month';
+    });
+  });
+</script>
