@@ -51,11 +51,11 @@ class EnrollmentClientsController < ApplicationController
       end
     end
   end
-
   def download_documents
-    @month = DateTime.parse(params[:month]&.split("-").join("/"))
+    @month = params[:month].present? ? DateTime.parse(params[:month].split("-").join("/")) : nil
+  
     respond_to do |format|
-      format.csv { send_data eval("#{params[:template]}_to_csv"), filename: "#{params[:template]&.dasherize}-#{params[:month]}.csv" }
+      format.csv { send_data eval("#{params[:template]}_to_csv"), filename: csv_filename }
     end
   end
 
@@ -426,7 +426,10 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def group_detail_report_to_csv
-    enrollment_details = EnrollGroupsDetail.includes(enroll_group: :group).where(enroll_group: { created_at: @month.beginning_of_month..@month.end_of_month })
+    enrollment_details = EnrollGroupsDetail.includes(enroll_group: :group)
+        if @month.present?
+          enrollment_details = enrollment_details.where(enroll_groups: { created_at: @month.beginning_of_month..@month.end_of_month })
+        end
     CSV.generate(headers: true) do |csv|
       csv << ["Platform", "Group Name", "Notification of New Group", "Date Notification to begin submitting enrollment(Contract signed/Profile/Documents Complete)",
               "Payor Name", "Group Id", "Enrollment Type", "State", "Application Status", "Initial Effective Date", "Most Current Revalidation Date", "Line of Services", "Notes"]
@@ -453,9 +456,13 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def group_revalidation_to_csv
-                          enrollment_details = EnrollGroupsDetail.includes(enroll_group: :group)
-                        .where(enroll_group: { created_at: @month.beginning_of_month..@month.end_of_month })
-                        .where("enroll_groups_details.application_status = ?", 'approved')
+      enrollment_details = EnrollGroupsDetail.includes(enroll_group: :group)
+
+      if @month.present?
+        enrollment_details = enrollment_details.where(enroll_group: { created_at: @month.beginning_of_month..@month.end_of_month })
+      end
+    
+      enrollment_details = enrollment_details.where("enroll_groups_details.application_status = ?", 'approved') 
     CSV.generate(headers: true) do |csv|
       csv << ["Platform", "Group Name", "NPI", "(Payor)1", "State", "(Payor)\nProvider ID", "(Payor)\nProvider\nEffective Date",
               "(Payor)\nProvider\nRevalidation\nDate", "(Payor)2","State", "(Payor)\nProvider ID", "(Payor)\nProvider\nEffective Date",
@@ -547,6 +554,16 @@ class EnrollmentClientsController < ApplicationController
       end
     else
       return '="' + "#{value.to_s}" + '"'
+    end
+  end
+
+  private
+  
+  def csv_filename
+    if @month.present?
+      "#{params[:template]&.dasherize}-#{@month.strftime("%Y-%m")}.csv"
+    else
+      "#{params[:template]&.dasherize}-all.csv"
     end
   end
 end
