@@ -1,3 +1,9 @@
+<% form_with url: request.url, method: :get, html: { id: 'vrc-progress-status-form' } do |form| %>
+  <div style="float: right;">
+    <% form.select :'vrc-progress-status', [["All", "all"], ["Completed", "completed"], ["Assigned", "assigned"], ["To Be Assigned", "to_be_assigned"]], { selected: params[:'vrc-progress-status'] }, { style: "padding:8px; background-color: #ddd; border: 0px; border-radius: 5px; margin-left: 4px;", onchange: 'this.form.submit();' } %>
+  </div>
+<% end %>
+
 <div class="content container-fluid">
    <%= render "vrc_components/vrc_nav"%>
    <div class="d-flex flex-row">
@@ -7,7 +13,7 @@
       <div class="col-lg-8 ms-3">
          <div class="">
             <div class="col-lg-4">
-               <div class="card" style="border-radius: 5px; background-color: #00c9a7;">
+               <div class="card" style="border-radius: 5px; background-color: #00c9a7;" id="completed-link">
                   <div class="card-header" style=" padding: 5px; border: none;">
                      <%= link_to 'javascript:void(0);', class: 'text-white' do %>
                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 18px;">
@@ -25,7 +31,7 @@
                </div>
             </div>
          </div>
-         <div class="mt-3">
+         <div class="mt-3" id="assigned-link">
             <div class="col-lg-4">
                <div class="card" style="border-radius: 5px; background-color: #377dff;">
                   <div class="card-header" style=" padding: 5px; border: none;">
@@ -44,7 +50,7 @@
                </div>
             </div>
          </div>
-         <div class="mt-3">
+         <div class="mt-3" id="to-be-assigned-link">
             <div class="col-lg-4">
                <div class="card" style="border-radius: 5px; background-color: red;">
                   <div class="card-header" style=" padding: 5px; border: none;">
@@ -79,4 +85,29 @@
 <!-- had to place this outside content_for :js for some reason it doesn't work on there -->
 <script>
    $('.form-select border-dark').select2();
+</script>
+
+<script>
+   document.getElementById('completed-link').addEventListener('click', function() {
+
+      document.getElementById('vrc-progress-status').value = 'completed';
+
+      document.getElementById('vrc-progress-status-form').submit();
+
+   });
+    
+   document.getElementById('assigned-link').addEventListener('click', function() {
+
+      document.getElementById('vrc-progress-status').value = 'assigned';
+
+      document.getElementById('vrc-progress-status-form').submit();
+   });
+
+   document.getElementById('to-be-assigned-link').addEventListener('click', function() {
+
+      document.getElementById('vrc-progress-status').value = 'to_be_assigned';
+
+      document.getElementById('vrc-progress-status-form').submit();
+   });
+ 
 </script>
