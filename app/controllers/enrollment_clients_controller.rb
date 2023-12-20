@@ -494,9 +494,7 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def termed_providers_to_csv
-    providers = Provider.where(status: 'inactive-termed')
-                   .where("(updated_at >= :start_date AND updated_at <= :end_date) OR (end_date >= :start_date AND end_date <= :end_date)",
-                          start_date: @month.beginning_of_month, end_date: @month.end_of_month)
+    providers = Provider.where(status: 'inactive-termed').where("(CAST(end_date AS DATE)) BETWEEN ? and ?", @month.beginning_of_month, @month.end_of_month)
     CSV.generate(headers: true, write_headers: true) do |csv|
       csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "Termed Date"]
       providers.each do |provider|
