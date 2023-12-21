@@ -42,7 +42,7 @@
             <label class="text-dark-grey">Select from following request</label>
             <%#= f.select :following_request, options_for_select([], f.object.following_request), { prompt: 'Select from following request' }, { class: 'form-select border border-dark' } %>
 					</div> -->
-          <div class="col-lg-5">
+          <div class="col-lg-3">
             <label class="text-dark-grey">Group</label>
 						<div style="float:right;">
 							<%= f.check_box :can_access_all_groups, class: 'form-check-input border border-dark optional'%>
@@ -52,37 +52,45 @@
 						</div>
 						<%= HtmlUtils.multi_select_dropdown name: 'user[enrollment_group_ids]', id: 'enrollment_group_ids'%>
           </div>
-					<% if current_user.can_access?('Select Role') %>
-          <div class="col-lg-5">
-            <label class="text-dark-grey">Role</label>
-						<% if current_user.can_access?('Add New Role') %>
-							<button class="btn btn-xs btn-link p-0" id="add-new-role" data-bs-toggle="modal" data-bs-target="#addNewRole" style="float:right;font-size:12px;">
-								Add new role
-							</button>
-						<% end %>
-            <%= f.select :user_role, options_for_select(current_user.allowed_roles, f.object.user_role), { prompt: 'Select Option' }, class: 'form-select border border-dark', placeholder: 'Role' %>
-          </div>
-					<% end %>
+
 					<div class="col-lg-2">
             <label class="text-dark-grey">Status</label>
 						<%= f.select :status, options_for_select(['Active', 'Inactive'], f.object.status), { prompt: 'Select Option' }, { class: 'form-select border border-dark' } %>
 					</div>
-				</div>
-				<div class="row mb-3">
-					<div class="col-lg-6">
-            <label class="text-dark-grey">Email Address</label>
+					<div class="col-lg-4">
+						<label class="text-dark-grey">Email Address</label>
 						<%= f.email_field :email, class: 'form-control border border-dark', placeholder: 'Type here...' %>
 					</div>
-					<div class="col-lg-6">
-            <label class="text-dark-grey">Temporary Password</label>
+					<div class="col-lg-3">
+						<label class="text-dark-grey">Temporary Password</label>
 						<%= f.text_field :temporary_password, value: @user.temporary_password, class: 'form-control border border-dark', placeholder: 'Type here...' %>
 					</div>
 				</div>
-				<div class="row mb-3 <%= f.object.is_provider_account ? '' : 'd-none' %>" id="user_accessible_provider_container">
-					<div class="col-lg-6">
-						<label class="text-dark-grey">Provider Name</label>
-						<%= f.select :accessible_provider, options_for_select(Provider.all.reject { |p| p.provider_name.blank? }.map { |p| ["#{p.provider_name}", p.id, {'data-enrollment_group_id'=> p.enrollment_group_id}] }, f.object.accessible_provider), { prompt: 'Select Option' }, class: 'form-select border border-dark optional', placeholder: 'Role', required: f.object.is_provider_account %>
-					</div>
+				<% if current_user.can_access?('Select Role') %>
+				<div class="row mb-3 mt-2">
+					<div class="col-lg-5">
+						<label class="text-dark-grey">Role</label>
+					<% if current_user.can_access?('Add New Role') %>
+						<button class="btn btn-xs btn-link p-0" id="add-new-role" data-bs-toggle="modal" data-bs-target="#addNewRole" style="float:right;font-size:12px;">
+							Add new role
+						</button>
+					<% end %>
+											<%= f.select :user_role, options_for_select(current_user.allowed_roles, f.object.user_role), { prompt: 'Select Option' }, class: 'form-select border border-dark', placeholder: 'Role' %>
+					<% end %>
+				</div>
+				<div class="col-lg-5">
+					<%= HtmlUtils.radio_toggle name: "user[is_provider_account]",
+								label: 'Enrollment Provider Account',
+								toshow: "user_accessible_provider_container",
+								hidden_field: true,
+								active: "#{f.object.is_provider_account ? 'active' : ''}",
+								data_value: "#{f.object.is_provider_account || false}",
+								isbooleantype: true
+							%>
+							<div id="user_accessible_provider_container" class="<%= f.object.is_provider_account ? '' : 'd-none' %>">
+								<%= f.select :accessible_provider, options_for_select(Provider.all.reject { |p| p.provider_name.blank? }.map { |p| ["#{p.provider_name}", p.id, {'data-enrollment_group_id'=> p.enrollment_group_id}] }, f.object.accessible_provider), { prompt: 'Select Provider' }, class: 'form-select border border-dark optional ', placeholder: 'Role', required: f.object.is_provider_account %>
+							</div>
+				</div>
 				</div>
 				<div class="row">
 					<div class="col-lg-12 d-flex justify-content-end gap-2">
@@ -143,6 +151,13 @@
         return false;
     }
 
+		if('<%= @user.is_provider_account %>' == 'true') {
+			// $("#user_user_role").attr("disabled", true);
+			// $("#user_user_role").addClass("unavailable");
+			$("#user_can_access_all_groups").attr("disabled", true);
+			$("#user_can_access_all_groups").addClass("unavailable");
+		}
+
 		function getEnrollmentGroups() {
 			$.ajax({
 				url: '<%= get_enrollment_groups_path %>',
@@ -164,10 +179,11 @@
 		$('.btn-toggle').on('click',function(e){
 			if($(this).hasClass('active')) {
 				$('#user_accessible_provider').attr('required', true);
-				$("#user_user_role").attr("disabled", true);
-				$("#user_user_role").addClass("unavailable");
-				$("#user_can_access_all_groups").attr("disabled", true);
-				$("#user_can_access_all_groups").addClass("unavailable");
+					$("#user_user_role").val('provider')
+				 $("#user_user_role").attr("disabled", true);
+					$("#user_user_role").addClass("unavailable");
+					$("#user_can_access_all_groups").attr("disabled", true);
+					$("#user_can_access_all_groups").addClass("unavailable");
 				document.querySelector('#enrollment_group_ids').disable();
 			 }
 			else {
