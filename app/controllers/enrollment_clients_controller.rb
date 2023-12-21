@@ -472,22 +472,20 @@ class EnrollmentClientsController < ApplicationController
       enrollment_details.each do |enrollment_detail|
         enroll_group = enrollment_detail.enroll_group
         group = enroll_group&.group
-        payor_1 = enrollment_details&.first
-        payor_2 = enrollment_details&.second
         csv << [
           flatforms.detect{|flatform| flatform.last == group&.flatform }&.first,
           group&.group_name,
           group&.npi_digit_type,
-          payor_1&.enrollment_payer,
-          payor_1&.payer_state,
-          payor_1&.group_number,
-          payor_1&.effective_date&.strftime('%b %d, %Y'),
-          payor_1&.revalidation_date&.strftime('%b %d, %Y'),
-          payor_2&.enrollment_payer,
-          payor_2&.payer_state,
-          payor_2&.group_number,
-          payor_2&.effective_date&.strftime('%b %d, %Y'),
-          payor_2&.revalidation_date&.strftime('%b %d, %Y'),
+          enrollment_detail.enrollment_payer,
+          enrollment_detail.payer_state,
+          enrollment_detail.group_number,
+          enrollment_detail.effective_date&.strftime('%b %d, %Y'),
+          enrollment_detail.revalidation_date&.strftime('%b %d, %Y'),
+          enrollment_detail.enrollment_payer,
+          enrollment_detail.payer_state,
+          enrollment_detail.group_number,
+          enrollment_detail.effective_date&.strftime('%b %d, %Y'),
+          enrollment_detail.revalidation_date&.strftime('%b %d, %Y'),
         ]
       end
     end
