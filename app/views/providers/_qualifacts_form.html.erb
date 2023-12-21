@@ -832,6 +832,7 @@
     <script>
       $(document).ready(function() {
         var csrfToken = $('meta[name="csrf-token"]').attr('content');
+        var selected_primary_dco  = stringArrayModifier('<%= @provider.primary_location.split(",") %>');
         var selected_dcos  = stringArrayModifier('<%= @provider.dcos.split(",") %>');
         var selected_notification_services  = stringArrayModifier('<%= @provider.notification_services&.split(",") %>');
 
@@ -863,7 +864,7 @@
                 showSelectedOptionsFirst: true
               });
               document.querySelector('#dcos_id').setOptions(data['practice_locations'])
-              document.querySelector('#dcos_id').setValue(selected_dcos);
+              document.querySelector('#dcos_id').setValue(selected_primary_dco);
             }
           })
           $.ajax({
