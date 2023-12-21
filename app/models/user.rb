@@ -106,6 +106,8 @@ class User < ApplicationRecord
     end
   end
 
+		def provider = Provider.find_by_id(accessible_provider)
+
   def not_allowed_to_view?(role = nil)
     find_excluded_roles.include?(role)
   end

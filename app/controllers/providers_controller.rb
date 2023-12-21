@@ -5,19 +5,36 @@ class ProvidersController < ApplicationController
   def index
 		if params[:user_search].present?
 			search_term = params[:user_search].strip.downcase
-		
+
 			@providers = Provider.unscoped
 				.select("CASE WHEN first_name = '' THEN NULL ELSE first_name END as f,
 								 CASE WHEN last_name = '' THEN NULL ELSE last_name END as l,
 								 CASE WHEN middle_name = '' THEN NULL ELSE middle_name END as m, *")
 				.where("LOWER(first_name) LIKE :search OR LOWER(last_name) LIKE :search OR LOWER(middle_name) LIKE :search", search: "%#{search_term}%")
 		else
-			@providers = Provider.unscoped
+			@providers = if current_user.provider?
+				# Provider.where(id: current_user.accessible_provider)
+				Provider.unscoped
+				.select("CASE WHEN first_name = '' THEN NULL ELSE first_name END as f,
+								 CASE WHEN last_name = '' THEN NULL ELSE last_name END as l,
+								 CASE WHEN middle_name = '' THEN NULL ELSE middle_name END as m, *")
+				.where("id = ?", current_user.accessible_provider)
+				.all
+			else
+				Provider.unscoped
 				.select("CASE WHEN first_name = '' THEN NULL ELSE first_name END as f,
 								 CASE WHEN last_name = '' THEN NULL ELSE last_name END as l,
 								 CASE WHEN middle_name = '' THEN NULL ELSE middle_name END as m, *")
 				.all
+			end
 		end
+
+		if !current_user.can_access_all_groups? && !current_user.super_administrator? && !current_user.provider?
+			@providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
+		end
+
+
+
 			@providers = @providers.reorder("f asc NULLS last", "m asc NULLS last", "l asc NULLS last")
 			@providers_without_pagination =	@providers
 
