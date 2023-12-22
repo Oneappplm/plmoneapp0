@@ -272,16 +272,13 @@
       </div>
     </div>
 
-    <div class="row mb-3">
-      <div class="col-lg-6">
-        <label class="text-dark-grey">CAQH State(optional)</label>
-       <%= f.select :caqh_state, options_for_select(states.pluck(:name, :id), @provider.caqh_state), {prompt: 'Select Option'}, {:class => 'form-select border border-dark'}  %>
-      </div>
-      <div class="col-lg-6">
-          <label class="text-dark-grey">CAQH Password(optional)</label>
-        <%= f.text_field :caqh_password,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-      </div>
-    </div>
+				<% if current_user.provider? %>
+				<div class="row mb-3 mt-3">
+					<div class="col-lg-12 mt-3">
+						<%= render "enrollment_clients/show/client"%>
+					</div>
+				</div>
+				<% else %>
      <div class="row mb-3 mt-3">
      <div class="col-lg-12 mt-3">
         <h3>Practice Information</h3>
@@ -296,7 +293,8 @@
       <label class="text-dark-grey">DCO/Practice Location</label>
         <%= HtmlUtils.multi_select_dropdown name: 'provider[dcos]', id: 'dcos_id'%>
       </div>
-    </div>
+    	</div>
+				<% end %>
 
         <div class="row">
           <div class="col-lg-6">
