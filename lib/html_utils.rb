@@ -355,7 +355,7 @@ module HtmlUtils
     # if options[:model].send(options[:input_field_name]).present? && !options[:model].send('pending_submitted_documents').include?(options[:input_field_name])
     if options[:model].send(options[:input_field_name]).present?
       html += <<-HTML
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 overflow-auto">
       HTML
       options[:model].send(options[:input_field_name]).each do |file|
         html += <<-HTML
