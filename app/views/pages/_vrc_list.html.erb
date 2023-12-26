@@ -50,14 +50,9 @@
       </tr>
     </thead>
     <tbody>
-<%= form_with url: '/virtual_review_committee/update_review_committee_dates', method: :put, html: { id: 'review-committee-form' } do |form| %>
       <% @vrcs.each do |vrc| %>
         	<td class="option form-check-input">
-				    <% if params[:'vrc-progress-status'] == "assigned" %>
-					    <%= check_box_tag "unassigned_ids[]", vrc.id, nil, id: "unassigned_#{vrc.id}" %>
-					  <% else %>
-					    <%= check_box_tag "assigned_ids[]", vrc.id, nil, id: "assigned_#{vrc.id}" %>
-            <% end %>
+            <%= check_box_tag "selected_ids[]", vrc.id, nil, id: "selected_#{vrc.id}" %>
           </td>
           <td><%= vrc&.first_name %></td>
           <td><%= vrc&.last_name %></td>
@@ -77,56 +72,58 @@
     </tbody>
   </table>
   <!-- Below the table -->
-
-	<% if params[:'vrc-progress-status'] != "assigned" %>
-		<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-		    <div class="modal-dialog modal-dialog-centered">
-		        <div class="modal-content">
-		            <div class="modal-header">
-		              <h5 class="modal-title fs-4" id="exampleModalLabel">Assign Reviewer(s) and Date</h5>
-		              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-		            </div>
-		            <div class="modal-body">
-		                <div id="checkbox-list">
-		                	<div class="row p-0">
-		                		<div class="col-lg-5 p-0">
-											    <input type="checkbox" name="item" value="Director Demo Director" class="form-check-input">
-											    <label class="ms-1 form-check-label" for="flexCheckDefault"> Director Demo Director</label>	
-		                		</div>
-		                		<div class="col-lg-6">
-		                      <%= form.label :review_date, class: 'form-label' %>
-		                      <%= form.date_field :review_date, class: 'form-control', required: true %>
-		                		</div>
-		                	</div>
-						    <br>
-						      <div class="row p-0">
-						      	<div class="col-lg-6 p-0">
-							    	  <input type="checkbox" name="item" value="Peer Demo Member" class="form-check-input">
-									    <label class="ms-1 form-check-label"  for="flexCheckDefault"> Peer Demo Member</label>
-						      	</div>
-						      </div>
-						    <br>
-						    <div class="row p-0 mt-2">
-		    		      <div class="col-lg-5 p-0">
-								    <input type="checkbox" name="item" value="Test Demo Director" class="form-check-input">
-								    <label class="ms-1 mb-2 form-check-label"  for="flexCheckDefault"> Test Demo Director</label>
-		    		      </div>
-				    		<div class="col-lg-6">
-					    			<%= form.label :committee_date, class: 'form-label' %>
-			              <%= form.date_field :committee_date, class: 'form-control', required: true %>
-			              <%= form.text_field :progress_status, value: "assigned", class: 'form-control', style: 'display: none;' %>
-				    		</div>
-				    	</div>
-						    <br>
-						  </div>     
-		            </div>
-		              <div class="modal-footer">
-		                <%= form.submit 'Update', class: 'btn btn-primary', id:"update-btn" %>
-		                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-		            </div>
-		        </div>
-		    </div>
-		</div>
+	<%= form_with url: '/virtual_review_committee/update_review_committee_dates', method: :put, html: { id: 'review-committee-form-1' } do |form| %>
+	    <%= hidden_field_tag 'selected_ids[]', '', id: 'selected-ids-input-form1' %>
+			<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			    <div class="modal-dialog modal-dialog-centered">
+			        <div class="modal-content">
+			            <div class="modal-header">
+			              <h5 class="modal-title fs-4" id="exampleModalLabel">Assign Reviewer(s) and Date</h5>
+			              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			            </div>
+			            <div class="modal-body">
+			                <div id="checkbox-list">
+			                	<div class="row p-0">
+			                		<div class="col-lg-5 p-0">
+												    <input type="checkbox" name="item" value="Director Demo Director" class="form-check-input">
+												    <label class="ms-1 form-check-label" for="flexCheckDefault"> Director Demo Director</label>	
+			                		</div>
+			                		<div class="col-lg-6">
+			                      <%= form.label :review_date, class: 'form-label' %>
+			                      <%= form.date_field :review_date, class: 'form-control', required: true %>
+			                		</div>
+			                	</div>
+							    <br>
+							      <div class="row p-0">
+							      	<div class="col-lg-6 p-0">
+								    	  <input type="checkbox" name="item" value="Peer Demo Member" class="form-check-input">
+										    <label class="ms-1 form-check-label"  for="flexCheckDefault"> Peer Demo Member</label>
+							      	</div>
+							      </div>
+							    <br>
+							    <div class="row p-0 mt-2">
+			    		      <div class="col-lg-5 p-0">
+									    <input type="checkbox" name="item" value="Test Demo Director" class="form-check-input">
+									    <label class="ms-1 mb-2 form-check-label"  for="flexCheckDefault"> Test Demo Director</label>
+			    		      </div>
+					    		<div class="col-lg-6">
+						    			<%= form.label :committee_date, class: 'form-label' %>
+				              <%= form.date_field :committee_date, class: 'form-control', required: true %>
+				              <% unless params[:'vrc-progress-status'] == "assigned" || params[:'vrc-progress-status'] == "completed" %>
+					              <%= form.text_field :progress_status, value: "assigned", class: 'form-control', style: 'display: none;' %>
+					            <% end %>
+					    		</div>
+					    	</div>
+							    <br>
+							  </div>     
+			            </div>
+			              <div class="modal-footer">
+			                <%= form.submit 'Update', class: 'btn btn-primary', id:"update-btn" %>
+			                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+			            </div>
+			        </div>
+			    </div>
+			</div>
 	<% end %>
 
 	<div class="col-lg-12">
@@ -142,41 +139,59 @@
 	  </div>
 	</div>
 
-  <div class="d-flex mt-4 justify-content-end">
-		<button type="button" class="btn btn-primary" id="submit-button" data-bs-toggle="modal" data-bs-target="#exampleModal">
-		  Assign to Committee Members
-		</button>
-	  <% if params[:'vrc-progress-status'] == "assigned" %>
-		  <div class="mx-3">
-		  	<%= form.text_field :progress_status, value: "to_be_assigned", class: 'form-control', style: 'display: none;' %>
-		  	<%= form.submit 'Unassign Providers', class: 'btn btn-primary', id:"update-btn" %>
-		  </div>
-	  <% end %>	
-  </div>
-	<script>
-	  document.addEventListener("DOMContentLoaded", function () {
-	    const submitButton = document.getElementById("submit-button");
-	    const checkboxes = document.querySelectorAll("input[name='section_ids[]']");
-	    const modal = new bootstrap.Modal(document.getElementById("exampleModal"));
-	    const alertMessage = document.getElementById("alert-notification");
+ <div class="d-flex mt-4 justify-content-end">
+    <button type="button" class="btn btn-primary" id="submit-button" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Assign to Committee Members
+    </button>
+    <% if params[:'vrc-progress-status'] == "assigned" || params[:'vrc-progress-status'] == "completed"%>
+	    <%= form_with url: '/virtual_review_committee/unassigned_records', method: :put, html: { id: 'review-committee-form-2' } do |form| %>
+	            <%= hidden_field_tag 'selected_ids[]', '', id: 'selected-ids-input-form2' %>
+	            <div class="mx-3">
+	                <%= form.submit 'Unassign Providers', class: 'btn btn-primary', id:"update-btn" %>
+	            </div>
+	    <% end %>
+    <% end %>
+</div>
 
-	    submitButton.addEventListener("click", function (event) {
-	      let atLeastOneCheckboxChecked = false;
+<script>
+ document.addEventListener("DOMContentLoaded", function () {
+  const submitButton = document.getElementById("submit-button");
+  const checkboxes = document.querySelectorAll("input[name='selected_ids[]']");
+  const modal = new bootstrap.Modal(document.getElementById("exampleModal"));
+  const alertMessage = document.getElementById("alert-notification");
+  const selectedIdsInputForm1 = document.getElementById("selected-ids-input-form1");
+  const selectedIdsInputForm2 = document.getElementById("selected-ids-input-form2");
 
-	      checkboxes.forEach(function (checkbox) {
-	        if (checkbox.checked) {
-	          atLeastOneCheckboxChecked = true;
-	        }
-	      });
+  checkboxes.forEach(function (checkbox) {
+    checkbox.addEventListener("change", function () {
+      updateSelectedIds();
+    });
+  });
 
-	      if (!atLeastOneCheckboxChecked) {
-	        event.preventDefault();
-	        alertMessage.style.display = "block";
-	      } else {
-	        modal.show();
-	      }
-	    });
-	  });
-	</script>
-<% end %>
+  submitButton.addEventListener("click", function (event) {
+    let atLeastOneCheckboxChecked = updateSelectedIds();
 
+    if (!atLeastOneCheckboxChecked) {
+      event.preventDefault();
+      alertMessage.style.display = "block";
+    } else {
+      modal.show();
+    }
+  });
+
+  function updateSelectedIds() {
+    let selectedIds = [];
+
+    checkboxes.forEach(function (checkbox) {
+      if (checkbox.checked) {
+        selectedIds.push(checkbox.value);
+      }
+    });
+
+    selectedIdsInputForm1.value = selectedIds.join(',');
+    selectedIdsInputForm2.value = selectedIds.join(',');
+    return selectedIds.length > 0;
+  }
+});
+
+</script>
