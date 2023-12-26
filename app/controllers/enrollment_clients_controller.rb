@@ -248,7 +248,10 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def dea_to_csv
-    providers = Provider.includes(:dea_licenses).where(created_at: @month.beginning_of_month..@month.end_of_month)
+    providers = Provider.includes(:dea_licenses)
+    if @month.present?
+      providers = providers.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    end
     CSV.generate(headers: true, write_headers: true) do |csv|
       csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "DEA Number", "DEA State", "DEA Effective Date",
               "DEA Expiration Date",]
