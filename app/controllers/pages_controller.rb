@@ -94,6 +94,11 @@ class PagesController < ApplicationController
 			VirtualReviewCommittee.all
 		end
 
+    if params[:review_date_from].present? && params[:review_date_to].present?
+      review_date_range = Date.parse(params[:review_date_from])..Date.parse(params[:review_date_to])
+      @vrcs = @vrcs.where(review_date: review_date_range)
+    end
+
 		if params[:'vrc-progress-status'].present? && params[:'vrc-progress-status'] != 'all'
 			@vrcs = @vrcs.send(params[:'vrc-progress-status'])
 		end
