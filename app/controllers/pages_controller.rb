@@ -46,27 +46,23 @@ class PagesController < ApplicationController
 		end
 	end
 
-  def update_review_committee_dates
-    selected_ids = params[:selected_ids][0].split(',').map(&:to_i)
-    review_date = params[:review_date]
-    committee_date = params[:committee_date]
+	def update_review_committee_dates
+    assigned_ids = params[:assigned_ids]
+    unassigned_ids = params[:unassigned_ids]
 
-    if review_date.present? && committee_date.present?
-      VirtualReviewCommittee.where(id: selected_ids).update_all(assigned_params.to_h)
-        redirect_to virtual_review_committee_path, notice: 'Review and Committee dates updated successfully.'
-      else
-        flash[:error] = 'Invalid parameters.'
-        redirect_to virtual_review_committee_path, notice: 'There is an error.'
-      end
+    if assigned_ids.present?
+      VirtualReviewCommittee.where(id: assigned_ids).update(assigned_params)
+      redirect_to virtual_review_committee_path, notice: 'Review and Committee dates updated successfully.'
+    elsif unassigned_ids.present?
+      VirtualReviewCommittee.where(id: unassigned_ids).update(unassigned_params)
+      redirect_to virtual_review_committee_path, notice: 'Assignments have been successfully removed'
+    else
+      flash[:error] = 'Invalid parameters.'
+      redirect_to virtual_review_committee_path, notice: 'There is an error.'
+    end
   end
 
-  def unassigned_records
-    selected_ids = params[:selected_ids][0].split(',').map(&:to_i)
-    puts "Selected IDs: #{selected_ids.inspect}"
-    VirtualReviewCommittee.where(id: selected_ids).update_all(progress_status: 'to_be_assigned')
 
-    redirect_to virtual_review_committee_path, notice: 'Assignments have been successfully removed'
-  end
 
 	def dashboard
 			stat = Sys::Filesystem.stat('/')
@@ -93,6 +89,11 @@ class PagesController < ApplicationController
 		else
 			VirtualReviewCommittee.all
 		end
+
+    if params[:review_date_from].present? && params[:review_date_to].present?
+      review_date_range = Date.parse(params[:review_date_from])..Date.parse(params[:review_date_to])
+      @vrcs = @vrcs.where(review_date: review_date_range)
+    end
 
 		if params[:'vrc-progress-status'].present? && params[:'vrc-progress-status'] != 'all'
 			@vrcs = @vrcs.send(params[:'vrc-progress-status'])
@@ -323,11 +324,12 @@ class PagesController < ApplicationController
   end
 
   private
-  	def assigned_params
-  	  params.permit(:review_date, :committee_date, :progress_status)
-  	end
 
-    def unassigned_params
-      params.permit(:progress_status)
-    end
+	def assigned_params
+	  params.permit(:review_date, :committee_date, :progress_status)
+	end
+
+  def unassigned_params
+    params.permit(:progress_status)
+  end
 end
