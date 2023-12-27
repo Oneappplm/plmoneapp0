@@ -274,7 +274,10 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def caqh_to_csv
-    providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    providers = Provider.all
+    if @month.present?
+      providers = providers.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    end
     CSV.generate(headers: true, write_headers: true) do |csv|
       csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "CAQH ID", "Attestation", "Reattestation"]
       providers.each do |provider|
@@ -364,10 +367,16 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def liability_to_csv
-    providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    providers = Provider.all
+    if @month.present?
+      providers = providers.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    end
     CSV.generate(headers: true, write_headers: true) do |csv|
       csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "Policy Number","Effective Date", "Expiration Date"]
       providers.each do |provider|
+        prof_liability_state_id = provider&.prof_liability_state_id
+        state_id = prof_liability_state_id.to_i
+        state_name = State.find_by(id: state_id)&.name
         csv << [
           flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
           provider.group&.group_name,
@@ -375,7 +384,7 @@ class EnrollmentClientsController < ApplicationController
           provider.last_name,
           provider.practitioner_type,
           format_number_for_leading_zeroes(provider.npi),
-          provider.state_id,
+          state_name,
           provider.prof_liability_policy_number,
           provider.provider_effective_date,
           provider.prof_liability_expiration_date&.strftime('%b %d, %Y')
