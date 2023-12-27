@@ -347,20 +347,46 @@ class EnrollmentClientsController < ApplicationController
     CSV.generate(headers: true, write_headers: true) do |csv|
       csv << ["Platform", "Group Name", "State", "First Name","Middle Name", "Last Name", "Practitioner Type", "NPI", "Tax ID", "Missing Information",]
       providers.each do |provider|
-        caqh_reattest_completed_by = Date.parse(provider&.caqh_reattest_completed_by)&.strftime('%b %d, %Y') rescue nil
+        state_id = provider&.state_id
+        state_id = state_id.to_i
+        state_name = State.find_by(id: state_id)&.name
+        missing_information = []
+
+        # Check each attribute for missing values and add to the missing_information array
+        missing_information << "Status" if provider.status.blank?
+        missing_information << "Gender" if provider.gender.blank?
+        missing_information << "SSN" if provider.ssn.blank?
+        missing_information << "Date of Birth" if provider.birth_date.blank?
+        missing_information << "Birth City" if provider.birth_city.blank?
+        missing_information << "Birth State" if provider.birth_state.blank?
+        missing_information << "Address 1" if provider.address_line_1.blank?
+        missing_information << "Address 2" if provider.address_line_2.blank?
+        missing_information << "city" if provider.city.blank?
+        missing_information << "State" if provider.state&.name.blank?
+        missing_information << "Zip code" if provider.zip_code.blank?
+        missing_information << "Phone Number" if provider.formatted_phone.blank?
+        missing_information << "Email" if provider.email_address.blank?
+        GroupDco.where(created_at: @month.beginning_of_month..@month.end_of_month).each do |dco|
+          missing_information << "city(group)" if dco&.dco_city.blank?
+          missing_information << "State(group)" if dco&.state.blank?
+          missing_information << "Zip Code(group)" if dco&.dco_zipcode.blank?
+          missing_information << "Phone Number (group)" if dco&.service_location_phone_number.blank?
+          missing_information << "Fax Number(group)" if dco&.service_location_fax_number.blank?
+          missing_information << "Panel Status to New Patients(group)" if dco&.panel_status_to_new_patients.blank?
+          missing_information << "Panel Age Limits(group)" if dco&.panel_age_limit.blank?
+          missing_information << "Include in Directory?(group)" if dco&.include_in_directory.blank?
+      end
         csv << [
           flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
           provider.group&.group_name,
-          provider.state_id,
+          state_name,
           provider.first_name,
           provider.middle_name,
           provider.last_name,
           provider.practitioner_type,
           format_number_for_leading_zeroes(provider.npi),
-          format_number_for_leading_zeroes(provider.caqhid),
-          provider.welcome_letter_message,
-          provider.caqh_current_reattestation_date&.strftime('%b %d, %Y'),
-          caqh_reattest_completed_by
+          provider.group&.tin_digit,
+          missing_information.join(', '),
         ]
       end
     end
