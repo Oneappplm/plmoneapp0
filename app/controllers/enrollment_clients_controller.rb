@@ -412,7 +412,7 @@ class EnrollmentClientsController < ApplicationController
           format_number_for_leading_zeroes(provider.npi),
           state_name,
           provider.prof_liability_policy_number,
-          provider.provider_effective_date,
+          provider.prof_liability_effective_date,
           provider.prof_liability_expiration_date&.strftime('%b %d, %Y')
         ]
       end
