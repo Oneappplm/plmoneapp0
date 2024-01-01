@@ -88,6 +88,8 @@ class PagesController < ApplicationController
 	end
 
 	def virtual_review_committee
+    @vrc_directors = User.directors
+
 		@vrcs = if @global_search_text.present?
 			VirtualReviewCommittee.search(@global_search_text)
 		else
