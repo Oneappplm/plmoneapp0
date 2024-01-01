@@ -3,18 +3,18 @@
       <div class="col-xl-12 d-flex justify-content-between">
          <h2>
             <% if client %>
-               <a href="<%= enrollment_clients_path %>" class="d-flex gap-2 text-secondary">
+               <a href="<%= enrollment_clients_path(status: params[:status]) %>" class="d-flex gap-2 text-secondary">
             <% else %>
-               <a href="<%= enrollment_clients_path %>" class="d-flex gap-2 text-secondary">
+               <a href="<%= enrollment_clients_path(status: params[:status]) %>" class="d-flex gap-2 text-secondary">
             <% end %> 
             <i class="bi bi-arrow-left h3"></i>
             <span class="h3"><%= @provider&.fullname rescue 'Back' %></span>
             </a>
          </h2>
          <div>
-           <a href="<%= enrollment_client_path(@provider, enrollment_status: params[:enrollment_status])%>" class="btn btn-md border-0 <%= params[:mode].nil? ? 'btn-primary fw-semibold text-white' : 'btn-secondary text-black bg-alt-grey'%>">Provider Profile</a>
-           <a href="<%= enrollment_client_path(@provider, mode: 'enrollment_details', enrollment_status: params[:enrollment_status])%>" class="btn btn-md border-0 <%= params[:mode] == 'enrollment_details' ? 'btn-primary fw-semibold text-white' : 'btn-secondary text-black bg-alt-grey'%>">Enrollment Details</a>
-           <a href="<%= enrollment_client_path(@provider,mode: 'uploaded_documents', enrollment_status: params[:enrollment_status])%>" class="btn btn-md border-0 <%= params[:mode] == 'uploaded_documents' ? 'btn-primary fw-semibold text-white' : 'btn-secondary text-black bg-alt-grey'%>">Uploaded Documents</a>
+           <a href="<%= enrollment_client_path(@provider, enrollment_status: params[:enrollment_status], status: params[:status])%>" class="btn btn-md border-0 <%= params[:mode].nil? ? 'btn-primary fw-semibold text-white' : 'btn-secondary text-black bg-alt-grey'%>">Provider Profile</a>
+           <a href="<%= enrollment_client_path(@provider, mode: 'enrollment_details', enrollment_status: params[:enrollment_status], status: params[:status])%>" class="btn btn-md border-0 <%= params[:mode] == 'enrollment_details' ? 'btn-primary fw-semibold text-white' : 'btn-secondary text-black bg-alt-grey'%>">Enrollment Details</a>
+           <a href="<%= enrollment_client_path(@provider,mode: 'uploaded_documents', enrollment_status: params[:enrollment_status], status: params[:status])%>" class="btn btn-md border-0 <%= params[:mode] == 'uploaded_documents' ? 'btn-primary fw-semibold text-white' : 'btn-secondary text-black bg-alt-grey'%>">Uploaded Documents</a>
          </div>
       </div>
    </div>
