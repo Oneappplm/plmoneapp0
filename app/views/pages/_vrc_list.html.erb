@@ -75,52 +75,53 @@
 	<%= form_with url: '/virtual_review_committee/update_review_committee_dates', method: :put, html: { id: 'review-committee-form-1' } do |form| %>
 	    <%= hidden_field_tag 'selected_ids[]', '', id: 'selected-ids-input-form1' %>
 			<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-			    <div class="modal-dialog modal-dialog-centered">
+			    <div class="modal-dialog modal-dialog-centered" >
 			        <div class="modal-content">
 			            <div class="modal-header">
 			              <h5 class="modal-title fs-4" id="exampleModalLabel">Assign Reviewer(s) and Date</h5>
 			              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			            </div>
 			            <div class="modal-body">
-			                <div id="checkbox-list">
-			                	<div class="row p-0">
-			                		<div class="col-lg-5 p-0">
-												    <input type="checkbox" name="item" value="Director Demo Director" class="form-check-input">
-												    <label class="ms-1 form-check-label" for="flexCheckDefault"> Director Demo Director</label>	
-			                		</div>
-			                		<div class="col-lg-6">
-			                      <%= form.label :review_date, class: 'form-label' %>
-			                      <%= form.date_field :review_date, class: 'form-control', required: true %>
-			                		</div>
-			                	</div>
-							    <br>
-							      <div class="row p-0">
-							      	<div class="col-lg-6 p-0">
-								    	  <input type="checkbox" name="item" value="Peer Demo Member" class="form-check-input">
-										    <label class="ms-1 form-check-label"  for="flexCheckDefault"> Peer Demo Member</label>
-							      	</div>
-							      </div>
-							    <br>
-							    <div class="row p-0 mt-2">
-			    		      <div class="col-lg-5 p-0">
-									    <input type="checkbox" name="item" value="Test Demo Director" class="form-check-input">
-									    <label class="ms-1 mb-2 form-check-label"  for="flexCheckDefault"> Test Demo Director</label>
-			    		      </div>
-					    		<div class="col-lg-6">
-						    			<%= form.label :committee_date, class: 'form-label' %>
-				              <%= form.date_field :committee_date, class: 'form-control', required: true %>
-				              <% unless params[:'vrc-progress-status'] == "assigned" || params[:'vrc-progress-status'] == "completed" %>
-					              <%= form.text_field :progress_status, value: "assigned", class: 'form-control', style: 'display: none;' %>
-					            <% end %>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                      <label class="form-check-label" for="flexCheckDefault">
+                        ASSIGN TO ALL
+                      </label>
+                    </div>
+                    <hr>
+  		              <div class="row">
+                      <div class="col-lg-6 overflow-auto" style="max-height: 300px;">
+                        <% @vrc_directors.each do |vrc_director| %>
+                          <% if vrc_director.director? %>
+                            <div class="m-3">
+                               <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                               <p class="d-inline ms-2 text-dark"><%= vrc_director.full_name%></p>
+                            </div>
+                          <% end %>
+                         <% end %>
+                      </div>
+                      <div class="col-lg-6 ">
+                        <div class="mb-4">
+                          <%= form.label :review_date, class: 'form-label' %>
+                          <%= form.date_field :review_date, class: 'form-control', required: true %>
+                        </div>
+                       <div>
+                            <%= form.label :committee_date, class: 'form-label' %>
+                            <%= form.date_field :committee_date, class: 'form-control', required: true %>
+                            <% unless params[:'vrc-progress-status'] == "assigned" || params[:'vrc-progress-status'] == "completed" %>
+                              <%= form.text_field :progress_status, value: "assigned", class: 'form-control', style: 'display: none;' %>
+                            <% end %>
+                         </div>
+                        </div>
+                       </div>
+                    </div>
+                    <div class="modal-footer">
+                      <%= form.submit 'Update', class: 'btn btn-primary', id:"update-btn" %>
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
 					    		</div>
 					    	</div>
-							    <br>
 							  </div>     
-			            </div>
-			              <div class="modal-footer">
-			                <%= form.submit 'Update', class: 'btn btn-primary', id:"update-btn" %>
-			                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-			            </div>
 			        </div>
 			    </div>
 			</div>

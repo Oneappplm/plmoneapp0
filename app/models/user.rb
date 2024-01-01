@@ -51,6 +51,7 @@ class User < ApplicationRecord
   scope :not_admin, -> { where.not(user_role: ['super_administrator', 'administrator']) }
   scope :admins, -> { where(user_role: 'administrator') }
   scope :agents, -> { where(user_role: 'agent') }
+  scope :directors, -> { where(user_role: 'director') }
 
   # Ex:- scope :active, -> {where(:active => true)}
 
