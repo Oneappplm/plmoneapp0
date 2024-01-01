@@ -29,7 +29,7 @@
 <div class="row mt-2">
 	<table id="vrc-table" class="border shadow p-3 mb-5 <%= dark_mode %> rounded table table-striped" >
 		<thead style="background-color: #377dff; color: #fff;">
-			<tr>
+			<tr class="text-center">
 				<th>
 					<div class="form-check">
 						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
@@ -46,65 +46,33 @@
 			</tr>
 		</thead>
 		<tbody class="bg-light">
-			<tr>
+			<% (@vrcs.where(progress_status: "Assigned")).each do |vrc|%>
+			<tr class="text-center">
 				<td>
 					<div class="form-check">
 						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
 				</div>
 				</td>
-				<td>
+				<td class="text-start">
 				<i class="bi bi-file-earmark-check-fill" style="font-size: 1rem; color: #1CC775;"></i>
-			Carter, Ava</td>
-				<td>OR</td>
+			  	<%= vrc.provider_name %></td>
+				<td><%= vrc.provider_type %></td>
 				<td>Director</td>
-				<td>Credential</td>
-				<td>Expedited</td>
-				<td>02/12/2024</td>
-				<td>10/13/2019</td>
-				<td><button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>Approved</td>
-			</tr>
-			<tr>
-				<td>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				</div>
-				</td>
-				<td>
-				<i class="bi bi-file-earmark-x-fill" style="font-size: 1rem; color: #C71C1C;"></i>
-			Carter, Ava</td>
-				<td>OR</td>
-				<td>Director</td>
-				<td>Credential</td>
-				<td>Expedited</td>
-				<td>02/12/2024</td>
-				<td>10/13/2019</td>
-				<td>Approved</td>
-			</tr>
-			<tr>
-				<td>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				</div>
-				</td>
-				<td>
-				<i class="bi bi-file-earmark-person-fill" style="font-size: 1rem; color: #1C6EC7;"></i>
-			Carter, Ava</td>
-				<td>OR</td>
-				<td>Director</td>
-				<td>Credential</td>
-				<td>Expedited</td>
-				<td>02/12/2024</td>
-				<td>10/13/2019</td>
-				<td>Approved</td>
+				<td><%= vrc.cred_cycle %></td>
+				<td><%= vrc.review_level %></td>
+				<td><%= vrc.review_date.to_date %></td>
+				<td><%= vrc.committee_date.to_date %></td>
+				<td><button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button><%= vrc.status %></td>
 			</tr>
 		</tbody>
+		<% end %>
 	</table>
 </div>
 
 <% content_for :js do %>
-<script>
+<%# <script>
 		$('#vrc-table tbody tr').on('click', function(){
 			location.href = "/show-virtual-review-committee"
 		});
-</script>
+</script> %>
 <% end %>
