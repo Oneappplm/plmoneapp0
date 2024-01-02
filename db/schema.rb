@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
+ActiveRecord::Schema[7.0].define(version: 2024_01_02_143959) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -54,6 +54,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
     t.datetime "started_at"
     t.index ["user_id"], name: "index_ahoy_visits_on_user_id"
     t.index ["visit_token"], name: "index_ahoy_visits_on_visit_token", unique: true
+  end
+
+  create_table "all_notifications", force: :cascade do |t|
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "board_names", force: :cascade do |t|
@@ -142,6 +148,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
     t.string "import_exid"
     t.string "client_id"
     t.string "external_id"
+  end
+
+  create_table "director_providers", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "virtual_review_committee_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_director_providers_on_user_id"
+    t.index ["virtual_review_committee_id"], name: "index_director_providers_on_virtual_review_committee_id"
   end
 
   create_table "directories", force: :cascade do |t|
@@ -455,24 +470,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
     t.index ["enrollment_group_id"], name: "index_enrollment_groups_details_on_enrollment_group_id"
   end
 
-  create_table "enrollment_groups_svc_locations", force: :cascade do |t|
-    t.bigint "enrollment_groups_id"
-    t.string "primary_service_non_office_area"
-    t.string "primary_service_location_apps"
-    t.string "primary_service_zip_code"
-    t.string "primary_service_office_email"
-    t.string "primary_service_fax"
-    t.string "primary_service_office_website"
-    t.string "primary_service_crisis_phone"
-    t.string "primary_service_location_other_phone"
-    t.string "primary_service_appt_scheduling"
-    t.string "primary_service_interpreter_language"
-    t.string "primary_service_telehealth_only_state"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["enrollment_groups_id"], name: "index_enrollment_groups_svc_locations_on_enrollment_groups_id"
-  end
-
   create_table "enrollment_payers", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -690,6 +687,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
     t.string "location_status"
     t.string "location_npi"
     t.string "location_tin"
+    t.string "npi_digit"
+    t.string "tin_digit_type"
+    t.string "npi_digits"
+    t.string "tin_digits_type"
     t.index ["enrollment_group_id"], name: "index_group_dcos_on_enrollment_group_id"
   end
 
@@ -770,8 +771,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
     t.datetime "read_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "description"
     t.index ["read_at"], name: "index_notifications_on_read_at"
     t.index ["recipient_type", "recipient_id"], name: "index_notifications_on_recipient"
+  end
+
+  create_table "payor_names", force: :cascade do |t|
+    t.string "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "practice_locations", force: :cascade do |t|
@@ -907,6 +915,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
     t.string "application_method"
     t.string "availability"
     t.string "county"
+    t.string "first_name_of_credentialing_contact"
+    t.string "middle_name_of_credentialing_contact"
+    t.string "last_name_of_credentialing_contact"
+    t.string "suffix_of_credentialing_contact"
   end
 
   create_table "privilege_statuses", force: :cascade do |t|
@@ -1122,6 +1134,21 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
     t.index ["provider_source_id"], name: "index_provider_source_cmes_on_provider_source_id"
   end
 
+  create_table "provider_source_collaborating_physicians", force: :cascade do |t|
+    t.integer "provider_source_id"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "middle_name"
+    t.string "suffix"
+    t.string "degree"
+    t.string "state_license"
+    t.string "license_number"
+    t.string "medicare_number"
+    t.string "npi_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "provider_source_data", force: :cascade do |t|
     t.bigint "provider_source_id", null: false
     t.string "data_key"
@@ -1138,6 +1165,29 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_source_id"], name: "index_provider_source_documents_on_provider_source_id"
+  end
+
+  create_table "provider_source_teaching_programs", force: :cascade do |t|
+    t.integer "provider_source_id"
+    t.string "location"
+    t.string "name"
+    t.string "address1"
+    t.string "address2"
+    t.string "city"
+    t.string "zip_code"
+    t.string "phone_number"
+    t.string "phone_ext"
+    t.string "fax_number"
+    t.string "email"
+    t.string "director_first_name"
+    t.string "director_last_name"
+    t.string "director_degree"
+    t.string "academic_rank"
+    t.boolean "not_expire"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "provider_sources", force: :cascade do |t|
@@ -1180,6 +1230,28 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_source_id"], name: "index_provider_sources_deas_on_provider_source_id"
+  end
+
+  create_table "provider_sources_licensures", force: :cascade do |t|
+    t.bigint "provider_source_id"
+    t.string "state"
+    t.string "license_type"
+    t.string "license_status"
+    t.string "license_number"
+    t.date "licensure_issue_date"
+    t.date "licensure_expiration_date"
+    t.string "licensure_not_expire"
+    t.string "licensure_practice_state"
+    t.string "licensure_primary_license"
+    t.string "licensure_require_supervision"
+    t.string "licensure_sponsor_degree"
+    t.string "licensure_sponsor_fname"
+    t.string "licensure_sponsor_mname"
+    t.string "licensure_sponsor_lname"
+    t.string "licensure_sponsor_suffix"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_source_id"], name: "index_provider_sources_licensures_on_provider_source_id"
   end
 
   create_table "provider_sources_registrations", force: :cascade do |t|
@@ -1426,11 +1498,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
     t.string "welcome_letter_subject"
     t.text "welcome_letter_message"
     t.json "welcome_letter_attachments"
-    t.boolean "check_welcome_letter", default: false
-    t.boolean "check_co_caqh", default: false
-    t.boolean "check_mn_caqh_state_release_form", default: false
-    t.boolean "check_mn_caqh_authorization_form", default: false
-    t.boolean "check_caqh_standard_authorization", default: false
     t.string "dea_not_applicable"
     t.string "cds_not_applicable"
     t.string "rn_not_applicable"
@@ -1441,6 +1508,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
     t.string "rn_explain"
     t.string "cnp_explain"
     t.string "license_explain"
+    t.boolean "check_welcome_letter", default: false
+    t.boolean "check_co_caqh", default: false
+    t.boolean "check_mn_caqh_state_release_form", default: false
+    t.boolean "check_mn_caqh_authorization_form", default: false
+    t.boolean "check_caqh_standard_authorization", default: false
     t.json "state_license_copies"
     t.json "dea_copies"
     t.json "w9_form_copies"
@@ -1642,9 +1714,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
     t.string "otp_token"
     t.string "otp_code"
     t.datetime "otp_code_expires_at"
-    t.boolean "can_access_all_groups"
     t.boolean "logout_on_close", default: false
     t.datetime "last_logout_on_close"
+    t.boolean "can_access_all_groups"
     t.boolean "is_provider_account"
     t.string "accessible_provider"
     t.string "password_change_status_via_invite"
@@ -1738,6 +1810,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_161440) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "director_providers", "users"
+  add_foreign_key "director_providers", "virtual_review_committees"
   add_foreign_key "egd_logs", "enroll_groups_details"
   add_foreign_key "enrollment_group_deleted_doc_logs", "enrollment_groups"
   add_foreign_key "epd_logs", "enrollment_providers_details"

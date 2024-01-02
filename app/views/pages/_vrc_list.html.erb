@@ -88,16 +88,18 @@
                     </div>
                     <hr>
   		              <div class="row">
-                      <div class="col-lg-6 overflow-auto" style="max-height: 300px;">
-                        <% @vrc_directors.each do |vrc_director| %>
-                          <% if vrc_director.director? %>
-                            <div class="m-3">
-                               <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                               <p class="d-inline ms-2 text-dark"><%= vrc_director.full_name%></p>
-                            </div>
-                          <% end %>
-                         <% end %>
-                      </div>
+                      <form>
+                        <div class="col-lg-6 overflow-auto" style="max-height: 300px;">
+                          <% @vrc_directors.each do |vrc_director| %>
+                            <% if vrc_director.director? %>
+                              <div class="m-3">
+                                 <input type="checkbox" name="vrc_directors[]" value="<%= vrc_director.id %>">
+                                 <p class="d-inline ms-2 text-dark"><%= vrc_director.full_name%></p>
+                              </div>
+                            <% end %>
+                           <% end %>
+                        </div>
+                      </form>
                       <div class="col-lg-6 ">
                         <div class="mb-4">
                           <%= form.label :review_date, class: 'form-label' %>
