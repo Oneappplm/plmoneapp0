@@ -12,6 +12,9 @@ class VirtualReviewCommittee < ApplicationRecord
 		to_be_assigned: 'To Be Assigned'
 	}
 
+  has_many :director_providers
+  has_many :users, through: :director_providers
+  
 	def social
 		"@#{self.provider_name.parameterize}"
 	end
