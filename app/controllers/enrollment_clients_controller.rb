@@ -505,6 +505,8 @@ class EnrollmentClientsController < ApplicationController
         missing_information << "State License Renewal(Current Effective) Date" unless license_state_renewal_date_st.present?
         license_type_st = format_number_for_leading_zeroes(licenses.pluck(:license_type).reject(&:blank?))
         missing_information << "License Type" unless license_type_st.present?
+        missing_information << "Message" if provider.welcome_letter_message.blank?
+        missing_information << "Send Welcome Letter to Provider" if provider.welcome_letter_status.blank?
         GroupDco.where(created_at: @month.beginning_of_month..@month.end_of_month).each do |dco|
           missing_information << "city(group)" if dco&.dco_city.blank?
           missing_information << "State(group)" if dco&.state.blank?
