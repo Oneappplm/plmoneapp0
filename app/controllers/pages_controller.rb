@@ -47,17 +47,33 @@ class PagesController < ApplicationController
 	end
 
   def update_review_committee_dates
+    if params[:vrc_directors].present?
+      vrc_director_ids = params[:vrc_directors].map(&:to_i)
+    end
+    
     selected_ids = params[:selected_ids][0].split(',').map(&:to_i)
+
     review_date = params[:review_date]
     committee_date = params[:committee_date]
 
-    if review_date.present? && committee_date.present?
-      VirtualReviewCommittee.where(id: selected_ids).update_all(assigned_params.to_h)
-        redirect_to virtual_review_committee_path, notice: 'Review and Committee dates updated successfully.'
-      else
-        flash[:error] = 'Invalid parameters.'
-        redirect_to virtual_review_committee_path, notice: 'There is an error.'
+    if vrc_director_ids.present? && selected_ids.present? && (review_date.present? && committee_date.present?)
+      vrc_director_ids.each do |director_id|
+        selected_ids.each do |virtual_review_committee_id|
+          DirectorProvider.create(user_id: director_id, virtual_review_committee_id: virtual_review_committee_id )
+        end
       end
+
+      VirtualReviewCommittee.where(id: selected_ids).update_all(assigned_params.to_h) 
+      redirect_to virtual_review_committee_path, notice: "Records are Assigned to Directors And Review and Committee dates updated successfully."
+
+    elsif selected_ids.present? && (review_date.present? && committee_date.present?)
+      VirtualReviewCommittee.where(id: selected_ids).update_all(assigned_params.to_h)
+      redirect_to virtual_review_committee_path, notice: "Review and Committee dates updated successfully."
+    else
+      flash[:error] = 'Invalid parameters.'
+      redirect_to virtual_review_committee_path, notice: 'There is an error.'
+    end
+
   end
 
   def unassigned_records
@@ -89,7 +105,7 @@ class PagesController < ApplicationController
 
 	def virtual_review_committee
     @vrc_directors = User.directors
-
+    
 		@vrcs = if @global_search_text.present?
 			VirtualReviewCommittee.search(@global_search_text)
 		else
