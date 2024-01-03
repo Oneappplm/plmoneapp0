@@ -587,7 +587,7 @@ class EnrollmentClientsController < ApplicationController
         csv << [
           provider&.group&.group_name,
           provider&.last_name,
-          enrollment_detail.enrollment_provider&.provider.first_name,
+          enrollment_detail.enrollment_provider&.provider&.first_name,
           enrollment_detail.enrollment_type,
           enrollment_detail.enrollment_payer,
           provider&.new_provider_notification,
