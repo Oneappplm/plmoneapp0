@@ -572,13 +572,13 @@ class EnrollmentClientsController < ApplicationController
       enrollment_details.each do |enrollment_detail|
         provider = enrollment_detail.enrollment_provider&.provider
         missing_fields = []
-        provider&.required_fields.each do |field|
+        provider&.required_fields&.each do |field|
           if (provider&.send(field[1]).nil? || provider&.send(field[1]).blank?) && !provider&.submitted_missing_fields.include?(field[1])
             missing_fields.push(field[0])
           end
         end
         if !provider&.licenses&.any?(&:persisted?) || provider&.has_missing_state_licenses_fields?
-          provider&.required_state_licenses_fields.each do |field|
+          provider&.required_state_licenses_fields&.each do |field|
             if !provider&.submitted_missing_fields.include?(field[1])
               missing_fields.push(field[0])
             end
