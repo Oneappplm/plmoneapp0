@@ -671,7 +671,17 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def termed_providers_to_csv
-    providers = Provider.where(status: 'inactive-termed').where("(CAST(end_date AS DATE)) BETWEEN ? and ?", @month.beginning_of_month, @month.end_of_month)
+    sql_string = "SELECT *
+          FROM  (SELECT to_date(end_date, 'YYYY-MM-DD') as end_date_timestamp, *
+                  FROM providers
+                  WHERE status = 'inactive-termed') as a
+          WHERE a.end_date_timestamp BETWEEN '#{@month.beginning_of_month}' AND '#{@month.end_of_month}'"
+
+    sql = <<-SQL
+      #{sql_string}
+    SQL
+
+    providers = Provider.find_by_sql(sql)
     CSV.generate(headers: true, write_headers: true) do |csv|
       csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "Termed Date"]
       providers.each do |provider|
