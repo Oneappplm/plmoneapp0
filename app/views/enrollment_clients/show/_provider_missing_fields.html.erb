@@ -1,21 +1,21 @@
-  <div class="card rounded shadow-lg py-2 px-3 mb-3">
+  <%# <div class="card rounded shadow-lg py-2 px-3 mb-3">
           <h5 class="text-center">Missing Required Fields</h5>
           <p class="text-center">Provider has missing required details that needs to be filled</p>
           <%= form_for @provider, url: provider_update_from_notifications_path(@provider) , method: :put do |f|%>
-          <%= hidden_field_tag :from_notifications, 'true'%>
-            <% @provider&.required_fields.each do |field|%>
-              <% if (@provider&.send(field[1]).nil? or @provider&.send(field[1]).blank?) && !@provider.submitted_missing_fields.include?(field[1]) %>
-                <div class="form-group mb-2">
-                  <label class="text-dark-grey"><%= field[0]%></label>
-                   <%= f.text_field field[1].to_sym, class: 'form-control border-dark bg-alt-grey', readonly: true, disabled: true%>
-                </div>
-              <% end %>
-            <% end %>
-            <% if !@provider&.licenses&.any?(&:persisted?) || @provider.has_missing_state_licenses_fields? %>
-              <%= render "enrollment_clients/show/provider_missing_licenses_field"%>
-            <% end %>
-            <div class="form-group mt-3">
+          <%# <%= hidden_field_tag :from_notifications, 'true'%> 
+            <%# <% @provider&.required_fields.each do |field|%> 
+              <%# <% if (@provider&.send(field[1]).nil? or @provider&.send(field[1]).blank?) && !@provider.submitted_missing_fields.include?(field[1]) %>
+                <%# <div class="form-group mb-2"> %>
+                  <%# <label class="text-dark-grey"><%= field[0]</label>  %>
+                   <%# <%= f.text_field field[1].to_sym, class: 'form-control border-dark bg-alt-grey', readonly: true, disabled: true%> 
+                <%# </div> %>
+              <%# <% end %> 
+            <%# <% end %> 
+            <%# <% if !@provider&.licenses&.any?(&:persisted?) || @provider.has_missing_state_licenses_fields? %>
+              <%# <%= render "enrollment_clients/show/provider_missing_licenses_field"%>
+            <%# <% end %>
+            <%# <div class="form-group mt-3"> %>
               <%#= f.submit "Submit", class: "btn btn-primary btn-md w-100" %>
-            </div>
-          <% end %>
-      </div>
+            <%# </div> %>
+          <%# <% end %>
+      <%# </div> %> 
