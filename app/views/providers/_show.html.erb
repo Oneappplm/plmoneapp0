@@ -159,39 +159,39 @@
 
       </div>
     </div>
-
-    <div class="card rounded shadow-lg p-1 px-3 mb-3">
-      <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Registered Nurse License', collapse_name: 'rn_licenses'}%>
-      <div class="collapsible" style="<%= current_user&.is_card_open?('rn_licenses') ? '' : 'display: none;' %>">
-        <% @provider&.rn_licenses&.each do |rn_license|%>
-        <p class="mb-1"><strong>RN License Number:</strong> <%= rn_license&.rn_license_number %></p>
-        <p class="mb-1"><strong>RN Original License Issue Date:</strong> <%= rn_license&.rn_license_effective_date&.strftime('%m/%d/%Y') rescue nil %></p>
-        <p class="mb-1"><strong>RN License State:</strong> <%= State.find_by(id: rn_license.state_id.to_i)&.name rescue nil %></p>
-        <p class="mb-1"><strong>RN License Expiration Date:</strong> <%= rn_license&.rn_license_expiration_date&.strftime('%m/%d/%Y') rescue nil %></p>
-        <p class="mb-1"><strong>RN License Renewal Date:</strong> <%= Time.zone.parse(rn_license&.rn_license_renewal_effective_date.to_s)&.strftime('%m/%d/%Y') rescue nil %></p>
-        <p class="mb-1"><strong>Explain if you do not have a RN License Number:</strong> <%= rn_license&.no_rn_license %></p>
-        <hr>
-        <% end %>
-
+    <% if !current_setting.dcs? %>
+      <div class="card rounded shadow-lg p-1 px-3 mb-3">
+        <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Registered Nurse License', collapse_name: 'rn_licenses'}%>
+        <div class="collapsible" style="<%= current_user&.is_card_open?('rn_licenses') ? '' : 'display: none;' %>">
+          <% @provider&.rn_licenses&.each do |rn_license|%>
+          <p class="mb-1"><strong>RN License Number:</strong> <%= rn_license&.rn_license_number %></p>
+          <p class="mb-1"><strong>RN Original License Issue Date:</strong> <%= rn_license&.rn_license_effective_date&.strftime('%m/%d/%Y') rescue nil %></p>
+          <p class="mb-1"><strong>RN License State:</strong> <%= State.find_by(id: rn_license.state_id.to_i)&.name rescue nil %></p>
+          <p class="mb-1"><strong>RN License Expiration Date:</strong> <%= rn_license&.rn_license_expiration_date&.strftime('%m/%d/%Y') rescue nil %></p>
+          <p class="mb-1"><strong>RN License Renewal Date:</strong> <%= Time.zone.parse(rn_license&.rn_license_renewal_effective_date.to_s)&.strftime('%m/%d/%Y') rescue nil %></p>
+          <p class="mb-1"><strong>Explain if you do not have a RN License Number:</strong> <%= rn_license&.no_rn_license %></p>
+          <hr>
+          <% end %>
+        </div>
       </div>
-    </div>
+    <% end %>
+    <% if !current_setting.dcs? %>
+      <div class="card rounded shadow-lg p-1 px-3 mb-3">
+        <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Advance Practice Registered Nurse', collapse_name: 'aprn_licenses'}%>
+        <div class="collapsible" style="<%= current_user&.is_card_open?('aprn_licenses') ? '' : 'display: none;' %>">
+          <% @provider&.cnp_licenses&.each do |aprn_license|%>
+          <p class="mb-1"><strong>APRN License Number:</strong> <%= aprn_license&.cnp_license_number %></p>
+          <p class="mb-1"><strong>APRN Original License Issue Date:</strong> <%= aprn_license&.effective_date&.strftime('%m/%d/%Y') rescue nil %></p>
+          <p class="mb-1"><strong>APRN License State:</strong> <%= State.find_by(id: aprn_license.state_id.to_i)&.name rescue nil %></p>
+          <p class="mb-1"><strong>APRN License Expiration Date:</strong> <%= aprn_license&.cnp_license_renewal_effective_date&.strftime('%m/%d/%Y') rescue nil %></p>
+          <p class="mb-1"><strong>APRN License Renewal Date:</strong> <%= aprn_license&.expiration_date&.strftime('%m/%d/%Y') rescue nil %></p>
+          <p class="mb-1"><strong>Explain if you do not have a APRN License Number:</strong> <%= aprn_license&.no_cnp_license %></p>
+          <hr>
+          <% end %>
 
-    <div class="card rounded shadow-lg p-1 px-3 mb-3">
-      <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'Advance Practice Registered Nurse', collapse_name: 'aprn_licenses'}%>
-      <div class="collapsible" style="<%= current_user&.is_card_open?('aprn_licenses') ? '' : 'display: none;' %>">
-        <% @provider&.cnp_licenses&.each do |aprn_license|%>
-        <p class="mb-1"><strong>APRN License Number:</strong> <%= aprn_license&.cnp_license_number %></p>
-        <p class="mb-1"><strong>APRN Original License Issue Date:</strong> <%= aprn_license&.effective_date&.strftime('%m/%d/%Y') rescue nil %></p>
-        <p class="mb-1"><strong>APRN License State:</strong> <%= State.find_by(id: aprn_license.state_id.to_i)&.name rescue nil %></p>
-        <p class="mb-1"><strong>APRN License Expiration Date:</strong> <%= aprn_license&.cnp_license_renewal_effective_date&.strftime('%m/%d/%Y') rescue nil %></p>
-        <p class="mb-1"><strong>APRN License Renewal Date:</strong> <%= aprn_license&.expiration_date&.strftime('%m/%d/%Y') rescue nil %></p>
-        <p class="mb-1"><strong>Explain if you do not have a APRN License Number:</strong> <%= aprn_license&.no_cnp_license %></p>
-        <hr>
-        <% end %>
-
+        </div>
       </div>
-    </div>
-
+    <% end %>
     <div class="card rounded shadow-lg p-1 px-3 mb-3">
       <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'State License', collapse_name: 'state_licenses'}%>
       <div class="collapsible" style="<%= current_user&.is_card_open?('state_licenses') ? '' : 'display: none;' %>">

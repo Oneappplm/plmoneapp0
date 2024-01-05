@@ -82,7 +82,7 @@ class EnrollmentsController < ApplicationController
 			@enrollment_group.contact_personnels.build
 			@enrollment_group.details.build
 			@enrollment_group.service_locations.build
-			@enrollment_group.qualifacts_contacts.build if current_setting.qualifacts? && !@enrollment_group.qualifacts_contacts.present?
+			@enrollment_group.qualifacts_contacts.build if (current_setting.qualifacts? || current_setting.dcs?) && !@enrollment_group.qualifacts_contacts.present?
 		end
 	end
 
