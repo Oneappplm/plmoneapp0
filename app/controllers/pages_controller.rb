@@ -105,7 +105,7 @@ class PagesController < ApplicationController
 
 	def virtual_review_committee
     @vrc_directors = User.directors
-    
+        
 		@vrcs = if @global_search_text.present?
 			VirtualReviewCommittee.search(@global_search_text)
 		else
@@ -142,6 +142,23 @@ class PagesController < ApplicationController
 			render 'issue'
 		end
 	end
+
+  def records
+    @vrc_directors = User.directors
+
+    if params[:selected_director].present?
+      if params[:selected_director] == "All"
+        @directors = true 
+      else 
+         selected_director_id = params[:selected_director]
+         @director = User.find(selected_director_id)     
+      end
+    else
+      @directors = true
+    end
+
+    render 'work_tickler'
+  end
 
 
 	def client_portal

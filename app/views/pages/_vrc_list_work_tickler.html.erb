@@ -1,83 +1,150 @@
 <div class="row mt-3 mb-3">
-	<div class="col-lg-6">
-		<h5>Search Result: 113 records</h5>
-	</div>
-	<div class="col-lg-6" style="padding: 0;">
-			<div style="float: right;" class="d-flex gap-4">
-				<div>
-		 					<label class="text-dark-grey">Show limit</label>
-		 					<% per_page_limits = [5,10,15,20,25,30,35,40,45,50]%>
-		 					<select name="per_page" class="border ms-2 px-1 <%= dark_mode %>" onchange="document.getElementById('per_page_selector').submit();">
-		 						<% per_page_limits.each do |per_page| %>
-		 							<% if per_page == @per_page.to_i%>
-		 								<option selected><%= per_page %></option>
-		 							<% else %>
-		 								<option><%= per_page %></option>
-		 							<% end %>
-		 						<% end %>
-		 					</select>
-		 				</div>
-				<label for="">Page 3 of 32 </label>
-				<input type="text" value="1" style="width: 35px; text-align: center; font-size: 12px;" class="">
-				<select name="" id="" class="" style="padding:8px; background-color: #ddd; border: 0px; border-radius: 5px; margin-left: 4px;"> 
-					<option selected>Select Directors</option>
-					<% @vrc_directors.each do |vrc_director|%>
-						<option value="completed">
-						  <%= vrc_director.full_name %>
-						</option>
-					<% end %>
-				</select>
-			</div>
-	</div>
+   <div class="col-lg-6">
+      <h5>Search Result: 113 records</h5>
+   </div>
+   <div class="col-lg-6" style="padding: 0;">
+      <div style="float: right;" class="d-flex gap-4">
+         <div>
+            <label class="text-dark-grey">Show limit</label>
+            <% per_page_limits = [5,10,15,20,25,30,35,40,45,50]%>
+            <select name="per_page" class="border ms-2 px-1 <%= dark_mode %>" onchange="document.getElementById('per_page_selector').submit();">
+               <% per_page_limits.each do |per_page| %>
+                  <% if per_page == @per_page.to_i %>
+                     <option selected><%= per_page %></option>
+                  <% else %>
+                     <option><%= per_page %></option>
+                  <% end %>
+               <% end %>
+            </select>
+         </div>
+         <label for="">Page 3 of 32 </label>
+         <input type="text" value="1" style="width: 35px; text-align: center; font-size: 12px;" class="">
+         <form id="directorForm" action="/virtual-review-committee/records" method="get">
+            <select name="director" id="directors" class="custom-select">
+               <option value="All">All</option>
+               <% @vrc_directors.each do |vrc_director| %>
+                  <option value="<%= vrc_director.id %>">
+                     <%= vrc_director.full_name %>
+                  </option>
+               <% end %>
+            </select>
+            <!-- Hidden field to store the selected director's ID -->
+            <input type="hidden" name="selected_director" id="selectedDirector">
+         </form>
+      </div>
+   </div>
 </div>
 
 <div class="row mt-2">
-	<table id="vrc-table" class="border shadow p-3 mb-5 <%= dark_mode %> rounded table table-striped" >
-		<thead style="background-color: #377dff; color: #fff;">
-			<tr class="text-center">
-				<th>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				</div>
-				</th>
-				<th>Provider Name</th>
-				<th>Type</th>
-				<th>Category</th>
-				<th>Cred Cycle</th>
-				<th>Review Level</th>
-				<th>Review Date</th>
-				<th>Committee Date</th>
-				<th>Status</th>
-			</tr>
-		</thead>
-		<tbody class="bg-light">
-			<% (@vrcs.where(progress_status: "Assigned")).each do |vrc|%>
-			<tr class="text-center">
-				<td>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				</div>
-				</td>
-				<td class="text-start">
-				<i class="bi bi-file-earmark-check-fill" style="font-size: 1rem; color: #1CC775;"></i>
-			  	<%= vrc.provider_name %></td>
-				<td><%= vrc.provider_type %></td>
-				<td>Director</td>
-				<td><%= vrc.cred_cycle %></td>
-				<td><%= vrc.review_level %></td>
-				<td><%= vrc.review_date.to_date %></td>
-				<td><%= vrc.committee_date.to_date %></td>
-				<td><button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button><%= vrc.status %></td>
-			</tr>
-		</tbody>
-		<% end %>
-	</table>
+   <table id="vrc-table" class="border shadow p-3 mb-5 <%= dark_mode %> rounded table table-striped">
+      <thead style="background-color: #377dff; color: #fff;">
+         <tr class="text-center">
+            <th>
+               <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+               </div>
+            </th>
+            <th>Provider Name</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Cred Cycle</th>
+            <th>Review Level</th>
+            <th>Review Date</th>
+            <th>Committee Date</th>
+            <th>Status</th>
+         </tr>
+      </thead>
+      <tbody class="bg-light">
+         <% if @director.present? %>
+            <%= render 'director_selection', director: @director %>
+         <% else %>
+            <% User.directors.each do |director|%>
+               <% director.virtual_review_committees.each do |assigned_records| %>
+                  <tr class="text-center">
+                     <td>
+                        <div class="form-check">
+                           <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                        </div>
+                     </td>
+                     <td class="text-start">
+                        <i class="bi bi-file-earmark-check-fill" style="font-size: 1rem; color: #1CC775;"></i>
+                        <%= assigned_records.provider_name %>
+                     </td>
+                     <td><%= assigned_records.provider_type %></td>
+                     <td>Director</td>
+                     <td><%= assigned_records.cred_cycle %></td>
+                     <td><%= assigned_records.review_level %></td>
+                     <td><%= assigned_records.review_date.to_date %></td>
+                     <td><%= assigned_records.committee_date.to_date %></td>
+                     <td>
+                        <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
+                        <%= assigned_records.status %>
+                     </td>
+                  </tr>
+               <% end %>
+            <% end %>
+         <% end %>
+      </tbody>
+   </table>
 </div>
 
 <% content_for :js do %>
-<%# <script>
-		$('#vrc-table tbody tr').on('click', function(){
-			location.href = "/show-virtual-review-committee"
-		});
-</script> %>
+   <%# <script>
+      $('#vrc-table tbody tr').on('click', function(){
+         location.href = "/show-virtual-review-committee"
+      });
+   </script> %>
 <% end %>
+<% content_for :js do %>
+  <script>
+    $(document).ready(function() {
+      var directorsSelect = $('#directors');
+      var selectedDirectorInput = $('#selectedDirector');
+      var directorForm = $('#directorForm');
+
+      // Function to set the selected value in the hidden input field and local storage
+      function setSelectedValue() {
+        var selectedValue = directorsSelect.val(); // Get the selected value from the dropdown
+        selectedDirectorInput.val(selectedValue); // Set the selected value in the hidden input field
+
+        // Store the selected value in local storage
+        localStorage.setItem('selectedDirector', selectedValue);
+      }
+
+      // Fetch updated dropdown options via AJAX
+      function fetchDirectorOptions() {
+        $.ajax({
+          url: '/virtual-review-committee/director_options', // Replace with your controller action
+          method: 'GET',
+          success: function(data) {
+            // Replace the dropdown options with the updated ones
+            directorsSelect.html(data);
+
+            // Set the selected value in the hidden input field and local storage
+            setSelectedValue();
+          }
+        });
+      }
+
+      // Call the function initially to populate dropdown options
+      fetchDirectorOptions();
+
+      // Handle change event of the dropdown
+      directorsSelect.change(function() {
+        // Set the selected value in the hidden input field and local storage when dropdown selection changes
+        setSelectedValue();
+        // Submit the form
+        directorForm.submit();
+      });
+
+      // Set the selected value on page load from local storage
+      var storedDirector = localStorage.getItem('selectedDirector');
+      if (storedDirector) {
+        directorsSelect.val(storedDirector);
+        setSelectedValue();
+      }
+    });
+  </script>
+<% end %>
+
+
