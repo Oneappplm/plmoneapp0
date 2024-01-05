@@ -457,66 +457,70 @@
       </div>
     </div>
 
-     <div class="row mb-5 mt-2">
-     <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
-        <div class="d-flex gap-2">
-          <div class="form-row  d-flex align-items-center">
-            <h3>Registered Nurse License</h3>
-          </div>
-          <div class="form-row  d-flex align-items-center gap-1">
-            <%= f.check_box :rn_not_applicable, id:'no-rn' %>
-            <%= f.label :rn_not_applicable, "N/A", class: 'text-dark-grey' %>
-          </div>
-        </div>
-      </div>
-      <div class="form-row  d-flex align-items-start">
-        <%= f.text_area :rn_explain,  placeholder: 'Explain if you do not have RN License Number(required if no RN Number)', class: 'form-control border border-dark', rows: '8', id: 'rn-explain'%>
-      </div>
-      <div id="rn_licenses">
-          <div class="fields">
-            <%= f.fields_for :rn_licenses do |rn_license_fields| %>
-              <%= render 'rn_license_fields', f: rn_license_fields %>
-            <% end %>
-          </div>
-        <div class="row">
-                  <div class="col-lg-12 text-start">
-                        <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add RN License </button>
-                  </div>
-          </div>
-      </div>
-    </div>
-
-     <div class="row mb-5 mt-2">
-     <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
-        <div class="d-flex gap-2">
-          <div class="form-row  d-flex align-items-center">
-          <h3>Advance Practice Registered Nurse License</h3>
-          </div>
-          <div class="form-row  d-flex align-items-center gap-1">
-            <%= f.check_box :aprn_not_applicable, id:'no-aprn' %>
-            <%= f.label :aprn_not_applicable, "N/A", class: 'mx-0 text-dark-grey' %>
+    <% if !current_setting.dcs? %>
+      <div class="row mb-5 mt-2">
+        <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
+          <div class="d-flex gap-2">
+            <div class="form-row  d-flex align-items-center">
+              <h3>Registered Nurse License</h3>
+            </div>
+            <div class="form-row  d-flex align-items-center gap-1">
+              <%= f.check_box :rn_not_applicable, id:'no-rn' %>
+              <%= f.label :rn_not_applicable, "N/A", class: 'text-dark-grey' %>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="form-row align-items-center">
-          <h6> (also applies for NP, ANP, CRNA, CNS, CNM, and CNP) </h6>
-      </div>
-       <div class="form-row  d-flex align-items-start">
-        <%= f.text_area :cnp_explain,  placeholder: 'Explain if you do not have APRN License Number(required if no APRN Number)', class: 'form-control border border-dark', rows: '8', id: 'cnp-explain'%>
-      </div>
-      <div id="cnp_licenses">
-          <div class="fields">
-            <%= f.fields_for :cnp_licenses do |cnp_license_fields| %>
-              <%= render 'cnp_license_fields', f: cnp_license_fields %>
-            <% end %>
-          </div>
+        <div class="form-row  d-flex align-items-start">
+          <%= f.text_area :rn_explain,  placeholder: 'Explain if you do not have RN License Number(required if no RN Number)', class: 'form-control border border-dark', rows: '8', id: 'rn-explain'%>
+        </div>
+        <div id="rn_licenses">
+            <div class="fields">
+              <%= f.fields_for :rn_licenses do |rn_license_fields| %>
+                <%= render 'rn_license_fields', f: rn_license_fields %>
+              <% end %>
+            </div>
           <div class="row">
-                  <div class="col-lg-12 text-start">
-                        <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add APRN License </button>
-                  </div>
-          </div>
+                    <div class="col-lg-12 text-start">
+                          <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add RN License </button>
+                    </div>
+            </div>
+        </div>
       </div>
-    </div>
+    <% end %>
+
+    <% if !current_setting.dcs? %>
+      <div class="row mb-5 mt-2">
+        <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
+          <div class="d-flex gap-2">
+            <div class="form-row  d-flex align-items-center">
+            <h3>Advance Practice Registered Nurse License</h3>
+            </div>
+            <div class="form-row  d-flex align-items-center gap-1">
+              <%= f.check_box :aprn_not_applicable, id:'no-aprn' %>
+              <%= f.label :aprn_not_applicable, "N/A", class: 'mx-0 text-dark-grey' %>
+            </div>
+          </div>
+        </div>
+        <div class="form-row align-items-center">
+            <h6> (also applies for NP, ANP, CRNA, CNS, CNM, and CNP) </h6>
+        </div>
+        <div class="form-row  d-flex align-items-start">
+          <%= f.text_area :cnp_explain,  placeholder: 'Explain if you do not have APRN License Number(required if no APRN Number)', class: 'form-control border border-dark', rows: '8', id: 'cnp-explain'%>
+        </div>
+        <div id="cnp_licenses">
+            <div class="fields">
+              <%= f.fields_for :cnp_licenses do |cnp_license_fields| %>
+                <%= render 'cnp_license_fields', f: cnp_license_fields %>
+              <% end %>
+            </div>
+            <div class="row">
+                    <div class="col-lg-12 text-start">
+                          <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add APRN License </button>
+                    </div>
+            </div>
+        </div>
+      </div>
+    <% end %>
 
      <div class="row mb-5 mt-2">
      <div class="d-flex gap-2">
