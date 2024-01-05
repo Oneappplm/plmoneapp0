@@ -267,6 +267,7 @@ Rails.application.routes.draw do
   get 'organization-users', to: 'users#organization_users'
   get 'client-portal-search', to: 'pages#client_search'
   get 'download-clients', to: 'pages#download_clients'
+  get 'virtual-review-committee/records', to: 'pages#records'
 
   namespace :webscrapers do
     root to: 'logs#index'
