@@ -16,7 +16,7 @@
   <% end %>
 
   <div class="row-mb-5">
-      <div class="row mb-3">
+      <div class="section row mb-3">
         <div class="col-lg-6">
           <label class="text-dark-grey">Notification of New Provider</span></label>
            <%= f.text_field :new_provider_notification, placeholder: 'MM/DD/YYYY',class: 'form-control border border-dark', value: display_mdy(f.object.new_provider_notification), onfocus: "(this.type = 'date')" %>
@@ -26,7 +26,7 @@
           <%= f.text_field :notification_start_date, placeholder: 'MM/DD/YYYY',class: 'form-control border border-dark', value: display_mdy(f.object.notification_start_date), onfocus: "(this.type = 'date')" %>
         </div>
       </div>
-      <div class="row mb-3 mt-2">
+      <div class="section row mb-3 mt-2">
         <div class="col-lg-6">
           <label class="text-dark-grey">Welcome Letter Sent </span></label>
           <%= f.text_field :welcome_letter_sent, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.welcome_letter_sent), onfocus: "(this.type = 'date')" %>
@@ -36,13 +36,17 @@
           <%= f.text_field :notification_enrollment_submit, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.notification_enrollment_submit), onfocus: "(this.type = 'date')" %>
         </div>
       </div>
-      <div class="row mb-3 mt-2">
+      <div class="section row mb-3 mt-2">
         <div class="col-lg-6">
           <label class="text-dark-grey">Services</label>
-          <%= HtmlUtils.multi_select_dropdown name: 'provider[notification_services]', id: 'notification_services'%>
+										<% if (current_user.provider? || current_user.clinic_admin?) && action_name == 'edit'  %>
+											<%= @provider.notification_services.split(',').map{|service| service.titleize }.join(',') rescue nil %>
+										<% else %>
+											<%= HtmlUtils.multi_select_dropdown name: 'provider[notification_services]', id: 'notification_services'%>
+										<% end %>
         </div>
       </div>
-       <div class="row mb-3">
+       <div class="section row mb-3">
       <div class="col-lg-6">
           <label class="text-dark-grey">Status</label>
           <%= f.select :status, options_for_select(provider_statuses, @provider.status), {prompt: 'Select Option'}, {class: 'form-select provider-status border border-dark'}  %>
@@ -54,7 +58,7 @@
       </div>
       </div>
     </div>
-    <div class="row mb-3">
+    <div class="section row mb-3">
       <div class="col-lg-12">
         <% if !f.object.sent_welcome_letter? %>
           <div class="field dea-licenses-field mb-2 border-dash border-1 p-2">
@@ -841,10 +845,14 @@
 
     <script>
       $(document).ready(function() {
+								var user_role = "<%= current_user.user_role %>";
+								var action_name = "<%= action_name %>";
         var csrfToken = $('meta[name="csrf-token"]').attr('content');
         var selected_primary_dco  = stringArrayModifier('<%= @provider.primary_location.split(",") rescue "" %>');
         var selected_dcos  = stringArrayModifier('<%= @provider.dcos.split(",") %>');
         var selected_notification_services  = stringArrayModifier('<%= @provider.notification_services&.split(",") %>');
+
+								readonlyFields(action_name, user_role);
 
         $.ajax({
           url: '<%= get_provider_notification_services_path %>',
@@ -1118,7 +1126,12 @@
         }
       }
 
-
+						function readonlyFields(action_name, user_role){
+							 if(['provider', 'clinic_admin'].includes(user_role) && action_name == 'edit'){
+									$('.section input, .section textarea').prop({onfocus: null, readonly: true});
+									$('.section select, .section input[type="checkbox"], .section input[type="file"]').prop('disabled', true);
+								}
+						}
     </script>
   <% end %>
 
