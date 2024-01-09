@@ -1,4 +1,5 @@
-  <% director.virtual_review_committees.each do |assigned_records| %>
+<% director.virtual_review_committees.each do |assigned_record| %>
+  <% if assigned_record.progress_status == "assigned" %>
     <tr class="text-center">
       <td>
         <div class="form-check">
@@ -8,19 +9,26 @@
       </td>
       <td class="text-start">
         <i class="bi bi-file-earmark-check-fill" style="font-size: 1rem; color: #1CC775;"></i>
-        <%= assigned_records.provider_name %>
+        <% assigned_record.users.each do |director|  %>
+          <% if current_user.full_name == director.full_name %>
+            <%= link_to assigned_record.provider_name, show_virtual_review_committee_path(assigned_record.id), id:"target-name" %>
+          <% else %>
+            <%= assigned_record.provider_name %>
+          <% end %>
+        <% end %>
       </td>
-      <td><%= assigned_records.provider_type %></td>
+      <td id="target-name"><%= assigned_record.provider_type %></td>
       <td>Director</td>
-      <td><%= assigned_records.cred_cycle %></td>
-      <td><%= assigned_records.review_level %></td>
-      <td><%= assigned_records.review_date.to_date %></td>
-      <td><%= assigned_records.committee_date.to_date %></td>
+      <td><%= assigned_record.cred_cycle %></td>
+      <td><%= assigned_record.review_level %></td>
+      <td><%= assigned_record.review_date.to_date %></td>
+      <td><%= assigned_record.committee_date.to_date %></td>
       <td>
         <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
-        <%= assigned_records.status %>
+        <%= assigned_record.status %>
       </td>
     </tr>
   <% end %>
+<% end %>
 
   

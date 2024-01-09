@@ -60,27 +60,29 @@
          <% else %>
             <% User.directors.each do |director|%>
                <% director.virtual_review_committees.each do |assigned_records| %>
-                  <tr class="text-center">
-                     <td>
-                        <div class="form-check">
-                           <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        </div>
-                     </td>
-                     <td class="text-start">
-                        <i class="bi bi-file-earmark-check-fill" style="font-size: 1rem; color: #1CC775;"></i>
+                  <% if assigned_records.progress_status == "assigned" %>
+                     <tr class="text-center">
+                        <td>
+                           <div class="form-check">
+                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                           </div>
+                        </td>
+                        <td class="text-start">
+                           <i class="bi bi-file-earmark-check-fill" style="font-size: 1rem; color: #1CC775;"></i>
                         <%= assigned_records.provider_name %>
-                     </td>
-                     <td><%= assigned_records.provider_type %></td>
-                     <td>Director</td>
-                     <td><%= assigned_records.cred_cycle %></td>
-                     <td><%= assigned_records.review_level %></td>
-                     <td><%= assigned_records.review_date.to_date %></td>
-                     <td><%= assigned_records.committee_date.to_date %></td>
-                     <td>
-                        <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
-                        <%= assigned_records.status %>
-                     </td>
-                  </tr>
+                        </td>
+                        <td><%= assigned_records.provider_type %></td>
+                        <td>Director</td>
+                        <td><%= assigned_records.cred_cycle %></td>
+                        <td><%= assigned_records.review_level %></td>
+                        <td><%= assigned_records.review_date.to_date %></td>
+                        <td><%= assigned_records.committee_date.to_date %></td>
+                        <td>
+                           <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
+                           <%= assigned_records.status %>
+                        </td>
+                     </tr>
+                  <% end %>
                <% end %>
             <% end %>
          <% end %>
@@ -89,8 +91,8 @@
 </div>
 
 <% content_for :js do %>
-   <%# <script>
-      $('#vrc-table tbody tr').on('click', function(){
+    <script>
+      $('#target-name').on('click', function(){
          location.href = "/show-virtual-review-committee"
       });
    </script> %>

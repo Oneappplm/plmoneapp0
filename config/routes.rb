@@ -1,14 +1,13 @@
 Rails.application.routes.draw do
   resources :hvhs_data
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
   # Defines the root path route ("/")
   root 'dashboard#dashboard' # Overview	page
   get 'client-portal', to: 'pages#client_portal' # Data Access page
   get 'virtual-review-committee', to: 'pages#virtual_review_committee' # Decision Point page
   get 'provider-engage', to: 'provider_app#provider_source', as: :custom_provider_source # Provider Engage page
 
-		get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
+		get 'show-virtual-review-committee/:id', to: 'pages#show_virtual_review_committee', as: "show_virtual_review_committee"
 		get 'app-tracker', to: 'pages#app_tracker'
   get 'encompass', to: 'pages#encompass'
   get 'microsite', to: 'pages#microsite'
@@ -85,6 +84,8 @@ Rails.application.routes.draw do
   get 'get-states-with-id', to: 'ajax#get_states_with_id'
   post 'mark-notification-read', to: 'ajax#mark_notification_read'
   post 'logout-on-close', to: 'ajax#logout_on_close'
+  patch '/record_approval', to: 'pages#record_approval', as: 'record_approval'
+
   resources :manage_clients
 
 
