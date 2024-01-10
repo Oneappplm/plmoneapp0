@@ -90,6 +90,7 @@ Rails.application.routes.draw do
 
   patch '/record_approval', to: 'pages#record_approval', as: 'record_approval'
 
+
   resources :manage_clients
 
 
