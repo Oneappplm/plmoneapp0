@@ -56,7 +56,7 @@ class PagesController < ApplicationController
     review_date = params[:review_date]
     committee_date = params[:committee_date]
 
-    if vrc_director_ids.present? && selected_ids.present? && (review_date.present? && committee_date.present?)
+    if (vrc_director_ids.present? && selected_ids.present?) && (review_date.present? && committee_date.present?)
       vrc_director_ids.each do |director_id|
         selected_ids.each do |virtual_review_committee_id|
           DirectorProvider.create(user_id: director_id, virtual_review_committee_id: virtual_review_committee_id )
@@ -208,9 +208,24 @@ class PagesController < ApplicationController
   def show_virtual_review_committee
   	if params[:client_id].present?
   		@vrc = VirtualReviewCommittee.find(params[:client_id])
+    elsif params[:id].present?
+      @vrc = VirtualReviewCommittee.find(params[:id])
   	else
   		@vrc = VirtualReviewCommittee.first
   	end
+  end
+
+  def record_approval
+    @record = DirectorProvider.where(virtual_review_committee_id: params[:id])
+
+    if @record.update(record_approval_params)
+     if record_approval_params[:status] != "Pending"
+        @vrc = VirtualReviewCommittee.find(params[:id]).update(progress_status: "completed")
+      end
+      redirect_to virtual_review_committee_path
+    else
+      render :show_virtual_review_committee, notice: "There was an error updating the records."
+    end
   end
 
   def providers;end
@@ -381,6 +396,10 @@ class PagesController < ApplicationController
 
     def unassigned_params
       params.permit(:progress_status)
+    end
+
+    def record_approval_params
+      params.permit(:status, :description, :signature_upload)
     end
 end
 
