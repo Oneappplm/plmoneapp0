@@ -1,3 +1,6 @@
+<% content_for :js do %>
+  <%= render "providers/js_components/string_array_modifier"%>
+<% end %>
 <%
 	form_path = if is_edit_mode?
 			group_dco_path(@enrollment_group, @dco)
@@ -44,11 +47,25 @@
       <label class="text-dark-grey">Location Name</label>
 			<%= f.text_field :dco_name, class: form_control_classes(danger: @dco.dco_name.blank? && @dco.persisted?), placeholder: 'Type here...', required: true %>
 		</div>
+		<% if current_setting.dcs? %>
+			<div class="col-lg-6">
+				<label class="text-dark-grey">Specialty</label>
+				<%= HtmlUtils.multi_select_dropdown name: 'group_dco[specialty]', id: 'specialty'%>
+			</div>
+		</div>
+		<div class="row mb-3">
 		<div class="col-lg-6">
       <label class="text-dark-grey">Address</label>
 			<%= f.text_field :dco_address, class: form_control_classes(danger: @dco.dco_address.blank? && @dco.persisted?), placeholder: 'Type here...', required: true %>
 		</div>
+		<% else %>
+			<div class="col-lg-6">
+				<label class="text-dark-grey">Address</label>
+				<%= f.text_field :dco_address, class: form_control_classes(danger: @dco.dco_address.blank? && @dco.persisted?), placeholder: 'Type here...', required: true %>
+			</div>
+		<% end %>
 	</div>
+
 	<div class="row mb-3">
     <div class="col-lg-6">
       <label class="text-dark-grey"> NPI (ie. If different from main NPI ) <span class="text-danger"></span></label>
@@ -59,16 +76,16 @@
       <%= f.text_field :tin_digits_type,  class: 'form-control border border-dark', placeholder: 'Type here...' %>
     </div>
   </div>
-	<div class="row mb-3">
+	<%# <div class="row mb-3">
 		<div class="col-lg-6">
-      <label class="text-dark-grey">NPI</label>
-			<%= f.text_field :location_npi, class: 'form-control border border-dark', placeholder: 'Type here...' %>
-		</div>
+      <label class="text-dark-grey">NPI</label> %>
+			<%# f.text_field :location_npi, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+		<%# </div>
 		<div class="col-lg-6">
-      <label class="text-dark-grey">TIN (If different from main Type II or NPI)</label>
-			<%= f.text_field :location_tin, class: 'form-control border border-dark', placeholder: 'Type here...' %>
-		</div>
-	</div>
+      <label class="text-dark-grey">TIN (If different from main Type II or NPI)</label> %>
+			<%# f.text_field :location_tin, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+		<%# </div>
+	</div> %>
 
 	<div class="row mb-3">
 		<div class="col-lg-6">
@@ -110,7 +127,6 @@
 			<%= f.text_field :panel_age_limit, class: 'form-control border border-dark', placeholder: 'Type here...' %>
 		</div>
 	</div>
-
 	<div class="row field mb-3 p-2 border border-2">
 		<%= render partial: "global_components/collapsible_sidebar_header", locals: { title: 'Schedules', collapse_name: 'schedules', text_position: 'text-start'}%>
 		<div class="collapsible" style="<%= current_user&.is_card_open?('schedules') ? '' : 'display: none;' %>">
@@ -273,7 +289,7 @@
 %>
 <script>
 	$(document).ready(function(){
-
+		var selected_specialties = stringArrayModifier('<%= @dco.selected_specialties %>' );
 		$('input[required], select[required], textarea[required]').each(function() {
     // Get the corresponding label element for the input field
     var labelElement = $(this).siblings('label');
@@ -350,6 +366,20 @@
 				}
 			});
 
+			$.ajax({
+				url: '<%= get_specialties_path %>',
+				method: 'GET',
+				data: { authenticity_token: csrfToken },
+				success: function(data) {
+					VirtualSelect.init({
+							options: data['specialties'],
+							ele: '#specialty',
+							multiple: true,
+							showSelectedOptionsFirst: true,
+							selectedValue: selected_specialties
+					});
+				}
+			})
 			// group dco old location addresses
 			$('#old_location_address').on('click', '.add_association', function(){
 				var detailsFields = $('#old_location_address .field');
@@ -380,3 +410,16 @@
 	});
 </script>
 <% end %>
+
+<style type="text/css">
+  .multi-select, .search-select, .single-select {
+    padding: 0;
+      width: 100%;
+      max-width: 1000px;
+  }
+  .single-select  {
+    width: 100%;
+    max-width: 1000px;
+    padding: 0;
+  }
+</style>
