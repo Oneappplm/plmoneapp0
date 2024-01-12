@@ -105,7 +105,7 @@ class PagesController < ApplicationController
 
 	def virtual_review_committee
     @vrc_directors = User.directors
-        
+
 		@vrcs = if @global_search_text.present?
 			VirtualReviewCommittee.search(@global_search_text)
 		else
@@ -140,13 +140,19 @@ class PagesController < ApplicationController
 			render 'reports'
 		elsif params[:vrc].present? && params[:vrc] == 'issue'
 			render 'issue'
+    elsif params[:vrc].present? && params[:vrc] == 'minutes'
+      @completed_records = VirtualReviewCommittee.where(progress_status: "completed")
+      render 'minutes'
 		end
 	end
 
   def records
     @vrc_directors = User.directors
 
-    if params[:selected_director].present?
+    if params[:selected_date].present?
+      @selected_date = params[:selected_date]
+      @selected_committee_dates = VirtualReviewCommittee.where(committee_date: @selected_date )
+    elsif params[:selected_director].present?
       if params[:selected_director] == "All"
         @directors = true 
       else 
@@ -160,6 +166,9 @@ class PagesController < ApplicationController
     render 'work_tickler'
   end
 
+
+  def minutes
+  end 
 
 	def client_portal
 		@simple_search = (params[:none].present? && params[:none]['simple_search'])
