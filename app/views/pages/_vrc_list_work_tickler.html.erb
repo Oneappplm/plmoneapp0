@@ -35,6 +35,21 @@
    </div>
 </div>
 
+<div class="d-flex gap-3 overflow-scroll py-2">
+  <% @vrc_directors.each do |director| %>
+    <% director.virtual_review_committees.where('committee_date >= ?', Date.today).pluck(:committee_date).uniq.each do |completed_record| %>
+      <div class="border border-dark p-2 text-dark date-box" data-date="<%= completed_record.to_date %>">
+        <%= completed_record.to_date %>
+        <%= form_with url: '/virtual-review-committee/records', method: :get, html: { class: 'date-form', style: 'display:none;' } do |form| %>
+          <%= form.hidden_field :selected_date, value: completed_record.to_date %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+
+
+
 <div class="row mt-2">
    <table id="vrc-table" class="border shadow p-3 mb-5 <%= dark_mode %> rounded table table-striped">
       <thead style="background-color: #377dff; color: #fff;">
@@ -55,8 +70,32 @@
          </tr>
       </thead>
       <tbody class="bg-light">
-         <% if @director.present? %>
+         <% if @director.present?%>
             <%= render 'director_selection', director: @director %>
+         <% elsif @selected_committee_dates.present? %>
+            <% @selected_committee_dates.each do |selected_committee_date|%>
+               <tr class="text-center">
+                  <td>
+                     <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                     </div>
+                  </td>
+                  <td class="text-start">
+                     <i class="bi bi-file-earmark-check-fill" style="font-size: 1rem; color: #1CC775;"></i>
+                  <%= selected_committee_date.provider_name %>
+                </td>
+                  <td><%= selected_committee_date.provider_type %></td>
+                  <td>Director</td>
+                  <td><%= selected_committee_date.cred_cycle %></td>
+                  <td><%= selected_committee_date.review_level %></td>
+                  <td><%= selected_committee_date.review_date.to_date %></td>
+                  <td><%= selected_committee_date.committee_date.to_date %></td>
+                  <td>
+                     <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
+                     <%= selected_committee_date.status %>
+                  </td>
+               </tr>
+            <% end %>
          <% else %>
             <% User.directors.each do |director|%>
                <% director.virtual_review_committees.each do |assigned_records| %>
@@ -82,10 +121,10 @@
                            <%= assigned_records.status %>
                         </td>
                      </tr>
-                    <% end %>
-             <% end %>
-          <% end %>
-       <% end %>
+                  <% end %>
+               <% end %>
+            <% end %>
+         <% end %>
       </tbody>
    </table>
 </div>
@@ -104,42 +143,32 @@
       var selectedDirectorInput = $('#selectedDirector');
       var directorForm = $('#directorForm');
 
-      // Function to set the selected value in the hidden input field and local storage
       function setSelectedValue() {
-        var selectedValue = directorsSelect.val(); // Get the selected value from the dropdown
-        selectedDirectorInput.val(selectedValue); // Set the selected value in the hidden input field
+        var selectedValue = directorsSelect.val(); 
+        selectedDirectorInput.val(selectedValue); 
 
-        // Store the selected value in local storage
         localStorage.setItem('selectedDirector', selectedValue);
       }
 
-      // Fetch updated dropdown options via AJAX
       function fetchDirectorOptions() {
         $.ajax({
           url: '/virtual-review-committee/director_options', // Replace with your controller action
           method: 'GET',
           success: function(data) {
-            // Replace the dropdown options with the updated ones
             directorsSelect.html(data);
 
-            // Set the selected value in the hidden input field and local storage
             setSelectedValue();
           }
         });
       }
 
-      // Call the function initially to populate dropdown options
       fetchDirectorOptions();
 
-      // Handle change event of the dropdown
       directorsSelect.change(function() {
-        // Set the selected value in the hidden input field and local storage when dropdown selection changes
         setSelectedValue();
-        // Submit the form
         directorForm.submit();
       });
 
-      // Set the selected value on page load from local storage
       var storedDirector = localStorage.getItem('selectedDirector');
       if (storedDirector) {
         directorsSelect.val(storedDirector);
@@ -150,3 +179,27 @@
 <% end %>
 
 
+<style>
+.date-box {
+   transition: transform 0.2s ease-in-out;
+}
+
+.date-box:hover {
+   transform: scale(1.05);
+}
+</style>
+
+<script>
+  $(document).ready(function() {
+    $('.date-box').on('click', function() {
+      var selectedDate = $(this).data('date');
+      var form = $(this).find('.date-form');
+
+      // Set the value of the hidden input field
+      form.find('input[name="selected_date"]').val(selectedDate);
+
+      // Submit the form
+      form.submit();
+    });
+  });
+</script>
