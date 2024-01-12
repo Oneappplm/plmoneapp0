@@ -56,8 +56,25 @@ class EnrollmentClientsController < ApplicationController
     @month = params[:month].present? ? DateTime.parse(params[:month].split("-").join("/")) : nil
   
     respond_to do |format|
-      format.csv { send_data eval("#{params[:template]}_to_csv"), filename: csv_filename }
+      format.csv { send_data filtered_csv_data, filename: csv_filename }
     end
+  end
+  
+  def filtered_csv_data
+    group_names = nil
+
+    if current_user.super_administrator?
+      group_names = params[:user][:enrollment_group_ids] if params[:user].present? && params[:user][:enrollment_group_ids].present?
+    elsif current_user.clinic_super_admin?
+      # Handle clinic super admin logic if needed
+    else
+      group_names = current_user.group_name.present? ? [current_user.group_name] : nil
+    end
+
+    puts "User Role: #{current_user.user_role}" # Debug information
+    puts "Group Names: #{group_names}" # Debug information
+
+    return send("#{params[:template]}_to_csv", group_names) if group_names.present?
   end
 
   def dashboard
