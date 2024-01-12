@@ -165,7 +165,12 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def provider_submitted_enrollments_to_csv
-    enrollment_details = EnrollmentProvidersDetail.where(enrollment_status: 'application-submitted').where(start_date: @month.beginning_of_month..@month.end_of_month)
+    enrollment_details = EnrollmentProvidersDetail.includes(enrollment_provider: [provider: :group])
+                              .where(enrollment_status: 'application-submitted')
+                              .where(start_date: @month.beginning_of_month..@month.end_of_month)
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      enrollment_details = enrollment_details.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
+    end
     CSV.generate(headers: true) do |csv|
       csv << ["Platform", "Group Name", "Providers First Name", "Providers Last Name", "Practitioner Type", "NPI", "Payor", "Enrollment Type", "State", "Initial Application Status", "Date Initial Application Submitted", "Provider ID"]
 
