@@ -194,7 +194,10 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def group_submitted_enrollments_to_csv
-    enrollment_details = EnrollGroupsDetail.includes(:application_status_logs).where(application_status: 'application-submitted').where(application_status_logs: { created_at: @month.beginning_of_month..@month.end_of_month })
+    enrollment_details = EnrollGroupsDetail.includes(:application_status_logs, enroll_group: :group).where(application_status: 'application-submitted').where(application_status_logs: { created_at: @month.beginning_of_month..@month.end_of_month })
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      enrollment_details = enrollment_details.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
+    end
     CSV.generate(headers: true) do |csv|
       csv << ["Platform", "Group Name", "Payor Name", "Group ID", "Application Status", "State", "Initial Application Submitted Date",]
       enrollment_details.each do |enrollment_detail|
@@ -213,7 +216,10 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def license_report_to_csv
-    providers = Provider.includes(:licenses, :cnp_licenses, :rn_licenses).where(created_at: @month.beginning_of_month..@month.end_of_month)
+    providers = Provider.includes(:licenses, :cnp_licenses, :rn_licenses, :group).where(created_at: @month.beginning_of_month..@month.end_of_month)
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      providers = providers.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
+    end
     CSV.generate(headers: true) do |csv|
       csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "State License Number","State License Effective date", "State License Expiration", "Advance Practice Registered Nurse License License Number",
                "State", "Advance Practice Registered Nurse License Effective Date",
@@ -253,7 +259,10 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def dea_to_csv
-    providers = Provider.includes(:dea_licenses)
+    providers = Provider.includes(:dea_licenses, :group)
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      providers = providers.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
+    end
     if @month.present?
       providers = providers.where(created_at: @month.beginning_of_month..@month.end_of_month)
     end
@@ -279,9 +288,12 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def caqh_to_csv
-    providers = Provider.all
+    providers = Provider.includes(:group)
     if @month.present?
       providers = providers.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    end
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      providers = providers.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
     end
     CSV.generate(headers: true, write_headers: true) do |csv|
       csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "CAQH ID", "Attestation", "Reattestation"]
@@ -306,7 +318,10 @@ class EnrollmentClientsController < ApplicationController
     end
   end
   def oig_to_csv
-    providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    providers = Provider.includes(:group).where(created_at: @month.beginning_of_month..@month.end_of_month)
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      providers = providers.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
+    end
     CSV.generate(headers: true, write_headers: true) do |csv|
       csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "OIG  Status", " Source Date", " Verification Date", "OIG Status", "OIG Verification Date", "OIG Source Date",]
       providers.each do |provider|
@@ -327,7 +342,10 @@ class EnrollmentClientsController < ApplicationController
     end
   end
   def sam_to_csv
-    providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    providers = Provider.includes(:group).where(created_at: @month.beginning_of_month..@month.end_of_month)
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      providers = providers.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
+    end
     CSV.generate(headers: true, write_headers: true) do |csv|
       csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", " Source Date", " Verification Date",]
       providers.each do |provider|
@@ -348,7 +366,10 @@ class EnrollmentClientsController < ApplicationController
     end
   end
   def missing_items_report_to_csv
-    providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    providers = Provider.includes(:group).where(created_at: @month.beginning_of_month..@month.end_of_month)
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      providers = providers.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
+    end
     CSV.generate(headers: true, write_headers: true) do |csv|
       csv << ["Platform", "Group Name", "State", "First Name","Middle Name", "Last Name", "Practitioner Type", "NPI", "Tax ID", "Missing Information",]
       providers.each do |provider|
@@ -539,9 +560,12 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def liability_to_csv
-    providers = Provider.all
+    providers = Provider.includes(:group)
     if @month.present?
       providers = providers.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    end
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      providers = providers.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
     end
     CSV.generate(headers: true, write_headers: true) do |csv|
       csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "Policy Number","Effective Date", "Expiration Date"]
@@ -566,9 +590,12 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def enrollment_details_report_to_csv
-    enrollment_details = EnrollmentProvidersDetail.includes(:application_status_logs, enrollment_provider: :provider)
+    enrollment_details = EnrollmentProvidersDetail.includes(:application_status_logs, enrollment_provider: [provider: :group])
     if @month.present?
       enrollment_details = enrollment_details.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    end
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      enrollment_details = enrollment_details.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
     end
     CSV.generate(headers: true, write_headers: true) do |csv|
       csv << ["Group", "Provider Last Name", "Provider First Name", "Enrollment Type", "Payor Name", "Notification of New Provider",
@@ -618,6 +645,9 @@ class EnrollmentClientsController < ApplicationController
     if @month.present?
       enrollment_details = enrollment_details.where(enroll_groups: { created_at: @month.beginning_of_month..@month.end_of_month })
     end
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      enrollment_details = enrollment_details.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
+    end
     CSV.generate(headers: true) do |csv|
       csv << ["Platform", "Group Name", "Notification of New Group", "Date Notification to begin submitting enrollment(Contract signed/Profile/Documents Complete)",
               "Payor Name", "Group Id", "Enrollment Type", "State", "Application Status", "Initial Effective Date", "Most Current Revalidation Date", "Line of Services", "Notes"]
@@ -649,6 +679,9 @@ class EnrollmentClientsController < ApplicationController
     if @month.present?
       enrollment_details = enrollment_details.where(enroll_group: { created_at: @month.beginning_of_month..@month.end_of_month })
     end
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      enrollment_details = enrollment_details.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
+    end
     CSV.generate(headers: true) do |csv|
       csv << ["Platform", "Group Name", "NPI", "(Payor)1", "State", "(Payor)\nProvider ID", "(Payor)\nProvider\nEffective Date",
               "(Payor)\nProvider\nRevalidation\nDate", "(Payor)2","State", "(Payor)\nProvider ID", "(Payor)\nProvider\nEffective Date",
@@ -676,14 +709,21 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def termed_providers_to_csv
-    sql_string = "SELECT *
+    sql_string = "SELECT a.*
           FROM  (SELECT to_date(end_date, 'YYYY-MM-DD') as end_date_timestamp, *
                   FROM providers
                   WHERE status = 'inactive-termed') as a
+          INNER JOIN enrollment_groups ON enrollment_groups.id = a.enrollment_group_id
           WHERE a.end_date_timestamp BETWEEN '#{@month.beginning_of_month}' AND '#{@month.end_of_month}'"
-
+    filter_by_group = ""
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      group_names = current_user&.enrollment_groups&.pluck(:group_name).compact
+      if group_names
+        filter_by_group = " AND enrollment_groups.group_name IN (#{group_names.map{|s| "'#{s.to_s}'"}.join(",")})"
+      end
+    end
     sql = <<-SQL
-      #{sql_string}
+      #{sql_string + filter_by_group}
     SQL
 
     providers = Provider.find_by_sql(sql)
@@ -706,7 +746,10 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def new_profile_setup_in_one_app_to_csv
-    providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    providers = Provider.includes(:group).where(created_at: @month.beginning_of_month..@month.end_of_month)
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      providers = providers.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
+    end
     CSV.generate(headers: true, write_headers: true) do |csv|
       csv << ["Platform", "Services", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "Date Profile Created in One App",]
       providers.each do |provider|
@@ -749,7 +792,7 @@ class EnrollmentClientsController < ApplicationController
     end
   end
   private
-  
+
   def csv_filename
     if @month.present?
       "#{params[:template]&.dasherize}-#{@month.strftime("%Y-%m")}.csv"
