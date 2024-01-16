@@ -87,6 +87,7 @@ Rails.application.routes.draw do
   post 'mark-notification-read', to: 'ajax#mark_notification_read'
   post 'logout-on-close', to: 'ajax#logout_on_close'
   patch '/record_approval', to: 'pages#record_approval', as: 'record_approval'
+  get '/virtual_review_committee/minutes', to: 'pages#minutes', as: 'minutes'
 
   resources :manage_clients
 

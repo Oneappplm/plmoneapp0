@@ -150,7 +150,7 @@ class PagesController < ApplicationController
     @vrc_directors = User.directors
     
     if @params_present = params_present?
-     
+
     elsif params[:selected_date].present?
       @selected_date = params[:selected_date]
       @selected_committee_dates = VirtualReviewCommittee.where(committee_date: @selected_date )
@@ -175,6 +175,11 @@ class PagesController < ApplicationController
   end
 
   def minutes
+    if params_present?.present?
+      @params_present = params_present?
+    else
+      @completed_records = VirtualReviewCommittee.where(progress_status: "completed")
+    end
   end 
 
 	def client_portal
