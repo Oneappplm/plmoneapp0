@@ -151,37 +151,26 @@ class AjaxController < ApplicationController
       "practice_locations" => dcos
     }
   end
-  
 
   def get_provider_notification_services
-    notification_services = [
-			['Practice/Provider Setup', 'provider_setup'],
-			['Monthly Monitoring', 'monthly_monitoring'],
-			['Facility Enrollment', 'facility_enrollment'],
-			['Provider Enrollment', 'provider_enrollment'],
-      ['Enrollment Required Maintenance', 'enrollment_maintenance'],
-			['FBI Checks', 'fbi_checks'],
-			['Hospital Org PSV', 'hospital_org'],
-      ['Facility Re-Enrollment', 'facility_enrollment'],
-      ['Provider Re-Enrollment', 'provider_enrollment']
-		].map { |m| { label: m[0], value: m[1]} }
+    notification_services = if current_setting.dcs?
+      dcs_notification_services
+    else
+      provider_notification_services
+    end
     render json: {
-      'notification_services' => notification_services
+      'notification_services' => notification_services.map { |m| { label: m[0], value: m[1]} }
     }
   end
 
   def get_group_notification_services
-    notification_services = [
-      ['Practice/Provider Setup', 'provider_setup'],
-			['Monthly Monitoring', 'monthly_monitoring'],
-			['Facility Enrollment', 'facility_enrollment'],
-			['Provider Enrollment', 'provider_enrollment'],
-      ['Enrollment Required Maintenance', 'enrollment_maintenance'],
-			['FBI Checks', 'fbi_checks'],
-			['Hospital Org PSV', 'hospital_org']
-		].map { |m| { label: m[0], value: m[1]} }
+    notification_services = if current_setting.dcs?
+      dcs_notification_services
+    else
+      group_notification_services
+    end
     render json: {
-      'notification_services' => notification_services
+      'notification_services' => notification_services.map { |m| { label: m[0], value: m[1]} }
     }
   end
 
@@ -408,6 +397,43 @@ class AjaxController < ApplicationController
   end
 
   protected
+
+  def provider_notification_services
+    [
+			['Practice/Provider Setup', 'provider_setup'],
+			['Monthly Monitoring', 'monthly_monitoring'],
+			['Facility Enrollment', 'facility_enrollment'],
+			['Provider Enrollment', 'provider_enrollment'],
+      ['Enrollment Required Maintenance', 'enrollment_maintenance'],
+			['FBI Checks', 'fbi_checks'],
+			['Hospital Org PSV', 'hospital_org'],
+      ['Facility Re-Enrollment', 'facility_enrollment'],
+      ['Provider Re-Enrollment', 'provider_enrollment']
+		]
+  end
+
+  def dcs_notification_services
+    [
+      ['Credentialing', 'credentialing'],
+      ['Add Location', 'add_location'],
+      ['Re-credentialing', 're_credentialing'],
+      ['Gold Subscription', 'gold_subscription'],
+      ['Silver Subscription', 'silver_subscription'],
+      ['Bronze Subscription', 'bronze_subscription']
+    ]
+  end
+
+  def group_notification_services
+    [
+      ['Practice/Provider Setup', 'provider_setup'],
+			['Monthly Monitoring', 'monthly_monitoring'],
+			['Facility Enrollment', 'facility_enrollment'],
+			['Provider Enrollment', 'provider_enrollment'],
+      ['Enrollment Required Maintenance', 'enrollment_maintenance'],
+			['FBI Checks', 'fbi_checks'],
+			['Hospital Org PSV', 'hospital_org']
+		]
+  end
 
   def group_dco_notes_params
     params.require(:data).permit(
