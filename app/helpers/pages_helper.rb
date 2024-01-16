@@ -1,4 +1,22 @@
 module PagesHelper
+
+  def build_filter_conditions
+    filter_conditions = {}
+
+    @date_check = if params[:form_committee_date].present? && params[:to_committee_date].present?
+        committee_date_range = Date.parse(params[:form_committee_date])..Date.parse(params[:to_committee_date])
+    end
+
+    filter_conditions[:review_level] = params[:review_level] if params[:review_level].present?
+    filter_conditions[:provider_type] = params[:provider_type] if params[:provider_type].present?
+    filter_conditions[:cred_cycle] = params[:cred_cycle] if params[:cred_cycle].present?
+    filter_conditions[:first_name] = params[:first_name] if params[:first_name].present?
+    filter_conditions[:last_name] = params[:last_name] if params[:last_name].present?
+    filter_conditions[:committee_date] = committee_date_range if @date_check.present?
+
+    filter_conditions
+  end
+
   def page_data_group action_name, page
     date_group = if action_name == 'provider_source'
       if page.nil?

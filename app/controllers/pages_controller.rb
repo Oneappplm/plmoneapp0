@@ -148,8 +148,10 @@ class PagesController < ApplicationController
 
   def records
     @vrc_directors = User.directors
-
-    if params[:selected_date].present?
+    
+    if @params_present = params_present?
+     
+    elsif params[:selected_date].present?
       @selected_date = params[:selected_date]
       @selected_committee_dates = VirtualReviewCommittee.where(committee_date: @selected_date )
     elsif params[:selected_director].present?
@@ -166,6 +168,11 @@ class PagesController < ApplicationController
     render 'work_tickler'
   end
 
+  def params_present?
+      params[:review_level].present? || params[:provider_type].present? || params[:cred_cycle].present? ||
+      params[:form_committee_date].present? || params[:to_committee_date].present? ||
+      params[:first_name].present? || params[:last_name].present? 
+  end
 
   def minutes
   end 
