@@ -94,4 +94,23 @@ class EnrollmentProvider < ApplicationRecord
   def full_name
     "#{self.first_name} #{self.middle_name} #{self.last_name} #{self.suffix}"
   end
+
+	def self.enrollment_types
+		if Setting.take.dcs?
+			[
+				['Initial','initial'],
+				['Re-Credential','re_credential'],
+				['Terminate Contract','terminate_contract'],
+				['Add Location','add_location'],
+				['Tin Change','tin_change']
+			]
+		else
+			[
+				['Add','add'],
+				['Initial','Initial'],
+				['Recred/Reval','recred'],
+				['Not part on contract','not_part_on_contract']
+			]
+		end
+	end
 end
