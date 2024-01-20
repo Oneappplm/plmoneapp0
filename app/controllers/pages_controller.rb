@@ -156,13 +156,13 @@ class PagesController < ApplicationController
       @selected_committee_dates = VirtualReviewCommittee.where(committee_date: @selected_date )
     elsif params[:selected_director].present?
       if params[:selected_director] == "All"
-        @directors = true 
+       
       else 
          selected_director_id = params[:selected_director]
          @director = User.find(selected_director_id)     
       end
     else
-      @directors = true
+      @director = true
     end
 
     render 'work_tickler'
