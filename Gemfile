@@ -98,3 +98,5 @@ gem "figaro" # https://github.com/laserlemon/figaro
 gem 'exception_notification' # https://github.com/smartinez87/exception_notification
 gem "geocoder" # https://github.com/alexreisner/geocoder
 gem "audited" # https://github.com/collectiveidea/audited
+gem 'caxlsx'
+gem 'caxlsx_rails'

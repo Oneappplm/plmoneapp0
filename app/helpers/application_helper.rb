@@ -533,6 +533,23 @@ module ApplicationHelper
     ]
   end
 
+	def format_number_for_leading_zeroes(value)
+    return nil unless value.present?
+    if value.is_a?(Array)
+      if value.size > 1
+        return value.collect { |i| i.to_s }.join(", ")
+      else
+        return value.collect { |i| '="' + "#{i.to_s}" + '"' }.join(", ")
+      end
+    else
+      return '="' + "#{value.to_s}" + '"'
+    end
+  end
+
+  def application_statuses
+    [['Application Not Submitted','application-not-submitted'],['Application Submitted','application-submitted'],['Processing','processing'],['Approved','approved'],['Denied','denied'],['Terminated','terminated'],['Not Eligible','not-eligible'],['Revalidation','revalidation'],['Not Part of Contract','none-contract']]
+  end
+
 		def display_mdy value
 			Time.zone.parse(value.to_s)&.strftime('%m/%d/%Y') rescue nil
 		end
