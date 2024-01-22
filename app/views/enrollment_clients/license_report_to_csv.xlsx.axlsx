@@ -1,0 +1,46 @@
+wb = xlsx_package.workbook
+s = wb.styles
+header = s.add_style sz: 14, b: true, bg_color: "6EAA46", fg_color: "FFFFFF", alignment: { wrap_text: true, vertical: :center }
+image = File.expand_path('public/logos/dcs-logo.png')
+wb.add_worksheet(name: "Post") do |sheet|
+  if current_setting.dcs?
+    sheet.add_image(image_src: image, start_at: 'A1', width: 300, height: 100)
+    sheet.merge_cells('A1:V1')
+    sheet.add_row [], height: 100
+  end
+  sheet.add_row ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "State License Number","State License Effective date", "State License Expiration", "Advance Practice Registered Nurse License License Number",
+               "State", "Advance Practice Registered Nurse License Effective Date",
+              "Advance Practice Registered Nurse License Expiration Date", "Registered Nurse License Number", "State", "Registered Nurse Effective Date", "Registered Nurse Expiration Date", "Certification Name", "Board Certification Number", "Effective Date", "Re-cretification Date"
+              ], style: header, height: 70
+  @providers.each do |provider|
+    licenses = provider.licenses
+    cnp_licenses = provider.cnp_licenses
+    rn_licenses = provider.rn_licenses
+    board_certifications = provider.board_certifications
+    sheet.add_row [
+      flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
+      provider.group&.group_name,
+      provider.first_name,
+      provider.last_name,
+      provider.practitioner_type,
+      format_number_for_leading_zeroes(provider.npi),
+      state_names_p = State.where(id: licenses.pluck(:state_id).reject(&:blank?)).pluck(:name).join(', '),
+      format_number_for_leading_zeroes(licenses.pluck(:license_number).reject {|i| !i.present? }),
+      format_number_for_leading_zeroes(licenses.pluck(:license_state_renewal_date).reject {|i| !i.present? }),
+      licenses.pluck(:license_expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
+      format_number_for_leading_zeroes(cnp_licenses.pluck(:cnp_license_number).reject {|i| !i.present? }),
+      state_names = State.where(id: cnp_licenses.pluck(:state_id).reject(&:blank?)).pluck(:name).join(', '),
+      format_number_for_leading_zeroes(cnp_licenses.pluck(:cnp_license_renewal_effective_date).reject {|i| !i.present? }),
+      cnp_licenses.pluck(:expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
+      format_number_for_leading_zeroes(rn_licenses.pluck(:rn_license_number).reject {|i| !i.present? }),
+      state_names_rn = State.where(id: rn_licenses.pluck(:state_id).reject(&:blank?)).pluck(:name).join(', '),
+      format_number_for_leading_zeroes(rn_licenses.pluck(:rn_license_renewal_effective_date).reject {|i| !i.present? }),
+      rn_licenses.pluck(:rn_license_expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
+      format_number_for_leading_zeroes(board_certifications.pluck(:bc_board_name).reject {|i| !i.present? }),
+      format_number_for_leading_zeroes(board_certifications.pluck(:bc_certification_number).reject {|i| !i.present? }),
+      format_number_for_leading_zeroes(board_certifications.pluck(:bc_effective_date).reject {|i| !i.present? }),
+      format_number_for_leading_zeroes(board_certifications.pluck(:bc_recertification_date).reject {|i| !i.present? }),
+    ]
+  end
+  sheet.column_widths 12, 18, 30, 30, 24, 18, 18, 18, 12, 26, 26, 18, 26, 26, 20, 12, 26, 26, 20, 18, 18, 18
+end
