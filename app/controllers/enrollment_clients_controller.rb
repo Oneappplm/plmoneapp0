@@ -54,10 +54,8 @@ class EnrollmentClientsController < ApplicationController
 
   def download_documents
     @month = params[:month].present? ? DateTime.parse(params[:month].split("-").join("/")) : nil
-  
-    respond_to do |format|
-      format.csv { send_data eval("#{params[:template]}_to_csv"), filename: csv_filename }
-    end
+    eval("#{params[:template]}_to_csv")
+    render xlsx: "#{params[:template]}_to_csv"
   end
 
   def dashboard
@@ -165,96 +163,25 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def provider_submitted_enrollments_to_csv
-    enrollment_details = EnrollmentProvidersDetail.includes(enrollment_provider: [provider: :group])
+    @enrollment_details = EnrollmentProvidersDetail.includes(enrollment_provider: [provider: :group])
                               .where(enrollment_status: 'application-submitted')
                               .where(start_date: @month.beginning_of_month..@month.end_of_month)
     if current_user.clinic_admin? || current_user.clinic_super_admin?
-      enrollment_details = enrollment_details.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
-    end
-    CSV.generate(headers: true) do |csv|
-      csv << ["Platform", "Group Name", "Providers First Name", "Providers Last Name", "Practitioner Type", "NPI", "Payor", "Enrollment Type", "State", "Initial Application Status", "Date Initial Application Submitted", "Provider ID"]
-
-      enrollment_details.each do |enrollment_detail|
-        csv << [
-          flatforms.detect{|flatform| flatform.last == enrollment_detail.enrollment_provider&.provider&.group&.flatform }&.first,
-          enrollment_detail.enrollment_provider&.provider&.group&.group_name,
-          enrollment_detail.enrollment_provider&.provider&.first_name,
-          enrollment_detail.enrollment_provider&.provider&.last_name,
-          enrollment_detail.enrollment_provider&.provider&.practitioner_type,
-          format_number_for_leading_zeroes(enrollment_detail.enrollment_provider&.provider&.npi),
-          enrollment_detail.enrollment_payer,
-          format_number_for_leading_zeroes(enrollment_detail.enrollment_type),
-          enrollment_detail.payer_state,
-          enrollment_detail.enrollment_status,
-          enrollment_detail.start_date,
-          enrollment_detail.provider_id,
-        ]
-      end
+      @enrollment_details = enrollment_details.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
     end
   end
 
   def group_submitted_enrollments_to_csv
-    enrollment_details = EnrollGroupsDetail.includes(:application_status_logs, enroll_group: :group).where(application_status: 'application-submitted').where(application_status_logs: { created_at: @month.beginning_of_month..@month.end_of_month })
+    @enrollment_details = EnrollGroupsDetail.includes(:application_status_logs, enroll_group: :group).where(application_status: 'application-submitted').where(application_status_logs: { created_at: @month.beginning_of_month..@month.end_of_month })
     if current_user.clinic_admin? || current_user.clinic_super_admin?
-      enrollment_details = enrollment_details.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
-    end
-    CSV.generate(headers: true) do |csv|
-      csv << ["Platform", "Group Name", "Payor Name", "Group ID", "Application Status", "State", "Initial Application Submitted Date",]
-      enrollment_details.each do |enrollment_detail|
-        csv << [
-          flatforms.detect{|flatform| flatform.last == enrollment_detail.enroll_group&.group&.flatform }&.first,
-          enrollment_detail.enroll_group&.group&.group_name,
-          enrollment_detail.enrollment_payer,
-          enrollment_detail.enroll_group_id,
-          enrollment_detail.application_status,
-          enrollment_detail.payer_state,
-          enrollment_detail.application_status_logs&.where(status: 'application-submitted').where(created_at: @month.beginning_of_month..@month.end_of_month)&.last&.created_at&.strftime('%b %d, %Y'),
-          format_number_for_leading_zeroes(enrollment_detail.enroll_group&.group&.npi_digit_type),
-        ]
-      end
+      @enrollment_details = enrollment_details.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
     end
   end
 
   def license_report_to_csv
-    providers = Provider.includes(:licenses, :cnp_licenses, :rn_licenses, :group).where(created_at: @month.beginning_of_month..@month.end_of_month)
+    @providers = Provider.includes(:licenses, :cnp_licenses, :rn_licenses, :group).where(created_at: @month.beginning_of_month..@month.end_of_month)
     if current_user.clinic_admin? || current_user.clinic_super_admin?
-      providers = providers.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
-    end
-    CSV.generate(headers: true) do |csv|
-      csv << ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "State License Number","State License Effective date", "State License Expiration", "Advance Practice Registered Nurse License License Number",
-               "State", "Advance Practice Registered Nurse License Effective Date",
-              "Advance Practice Registered Nurse License Expiration Date", "Registered Nurse License Number", "State", "Registered Nurse Effective Date", "Registered Nurse Expiration Date", "Certification Name", "Board Certification Number", "Effective Date", "Re-cretification Date"
-              ]
-      providers.each do |provider|
-        licenses = provider.licenses
-        cnp_licenses = provider.cnp_licenses
-        rn_licenses = provider.rn_licenses
-        board_certifications = provider.board_certifications
-        csv << [
-          flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
-          provider.group&.group_name,
-          provider.first_name,
-          provider.last_name,
-          provider.practitioner_type,
-          format_number_for_leading_zeroes(provider.npi),
-          state_names_p = State.where(id: licenses.pluck(:state_id).reject(&:blank?)).pluck(:name).join(', '),
-          format_number_for_leading_zeroes(licenses.pluck(:license_number).reject {|i| !i.present? }),
-          format_number_for_leading_zeroes(licenses.pluck(:license_state_renewal_date).reject {|i| !i.present? }),
-          licenses.pluck(:license_expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
-          format_number_for_leading_zeroes(cnp_licenses.pluck(:cnp_license_number).reject {|i| !i.present? }),
-          state_names = State.where(id: cnp_licenses.pluck(:state_id).reject(&:blank?)).pluck(:name).join(', '),
-          format_number_for_leading_zeroes(cnp_licenses.pluck(:cnp_license_renewal_effective_date).reject {|i| !i.present? }),
-          cnp_licenses.pluck(:expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
-          format_number_for_leading_zeroes(rn_licenses.pluck(:rn_license_number).reject {|i| !i.present? }),
-          state_names_rn = State.where(id: rn_licenses.pluck(:state_id).reject(&:blank?)).pluck(:name).join(', '),
-          format_number_for_leading_zeroes(rn_licenses.pluck(:rn_license_renewal_effective_date).reject {|i| !i.present? }),
-          rn_licenses.pluck(:rn_license_expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", "),
-          format_number_for_leading_zeroes(board_certifications.pluck(:bc_board_name).reject {|i| !i.present? }),
-          format_number_for_leading_zeroes(board_certifications.pluck(:bc_certification_number).reject {|i| !i.present? }),
-          format_number_for_leading_zeroes(board_certifications.pluck(:bc_effective_date).reject {|i| !i.present? }),
-          format_number_for_leading_zeroes(board_certifications.pluck(:bc_recertification_date).reject {|i| !i.present? }),
-        ]
-      end
+      @providers = providers.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
     end
   end
 
@@ -791,7 +718,6 @@ class EnrollmentClientsController < ApplicationController
       return '="' + "#{value.to_s}" + '"'
     end
   end
-  private
 
   def csv_filename
     if @month.present?
