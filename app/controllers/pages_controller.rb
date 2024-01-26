@@ -112,10 +112,11 @@ class PagesController < ApplicationController
 			VirtualReviewCommittee.all
 		end
 
-    if (params[:review_date_from].present? && params[:review_date_to].present?) && params[:committee_date_from].present? && params[:committee_date_to].present?
+    if (params[:review_date_from].present? && params[:review_date_to].present?) && (params[:committee_date_from].present? && params[:committee_date_to])&&params[:PSV_date_from].present? && params[:PSV_date_to].present?
         review_date_range = Date.parse(params[:review_date_from])..Date.parse(params[:review_date_to])
         committee_date_range = Date.parse(params[:committee_date_from])..Date.parse(params[:committee_date_to])
-        @vrcs = @vrcs.where(review_date: review_date_range, committee_date: committee_date_range)
+        psv_date_range = Date.parse(params[:PSV_date_from])..Date.parse(params[:PSV_date_to])
+        @vrcs = @vrcs.where(review_date: review_date_range, committee_date: committee_date_range, psv_completed_date: psv_date_range)
 
     elsif (params[:review_date_from].present? && params[:review_date_to].present?)
         review_date_range = Date.parse(params[:review_date_from])..Date.parse(params[:review_date_to])
@@ -124,6 +125,11 @@ class PagesController < ApplicationController
     elsif (params[:committee_date_from].present? && params[:committee_date_to].present?)
         committee_date_range = Date.parse(params[:committee_date_from])..Date.parse(params[:committee_date_to])
         @vrcs = @vrcs.where(committee_date: committee_date_range)
+
+    elsif (params[:PSV_date_from].present? && params[:PSV_date_to].present?)
+      psv_date_range = Date.parse(params[:PSV_date_from])..Date.parse(params[:PSV_date_to])
+       @vrcs = @vrcs.where(psv_completed_date: psv_date_range)
+
     end
 
 		if params[:'vrc-progress-status'].present? && params[:'vrc-progress-status'] != 'all'
