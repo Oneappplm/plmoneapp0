@@ -233,7 +233,7 @@ module ApplicationHelper
       ['Group Enrollment Detail Report','group_detail_report'],
       ['Termed Providers', 'termed_providers'],
 			['New Profile Setup in OneApp', 'new_profile_setup_in_one_app'],
-      ['Missing Items Report(coming soon)','missing_items_report'],
+      ['Missing Items Report','missing_items_report'],
       ['License Report','license_report'],
       ['DEA','dea'],
       ['SAM(coming soon)','sam'],
@@ -447,27 +447,25 @@ module ApplicationHelper
 
 	def application_status_count status
 		if current_user.can_access_all_groups? || current_user.super_administrator?
-			@enroll_group_details = EnrollGroupsDetail
 			@enrollment_provider_details = EnrollmentProvidersDetail
 		else
-			@enroll_group_details = EnrollGroupsDetail.includes(:enroll_group).where(enroll_group: { group_id: current_user.enrollment_groups.pluck(:id)})
 			@enrollment_provider_details = EnrollmentProvidersDetail.includes(enrollment_provider: :provider).where(provider: {enrollment_group_id: current_user.enrollment_groups.pluck(:id)})
 		end
 		case status
 		when 'application-submitted'
-			@enroll_group_details.submitted.count + @enrollment_provider_details.submitted.count
+			@enrollment_provider_details.submitted.count
 		when 'application-not-submitted'
-			@enroll_group_details.not_submitted.count + @enrollment_provider_details.not_submitted.count
+			@enrollment_provider_details.not_submitted.count
 		when 'processing'
-			@enroll_group_details.processing.count + @enrollment_provider_details.processing.count
+			@enrollment_provider_details.processing.count
 		when 'approved'
-			@enroll_group_details.approved.count + @enrollment_provider_details.approved.count
+			@enrollment_provider_details.approved.count
 		when 'denied'
-			@enroll_group_details.denied.count + @enrollment_provider_details.denied.count
+			@enrollment_provider_details.denied.count
 		when 'terminated'
-			@enroll_group_details.terminated.count + @enrollment_provider_details.terminated.count
+			@enrollment_provider_details.terminated.count
 		when 'not-eligible'
-			@enroll_group_details.not_eligible.count + @enrollment_provider_details.not_eligible.count
+			@enrollment_provider_details.not_eligible.count
 		else
 			0
 		end
