@@ -1,4 +1,4 @@
-class GroupCreationNotification < Noticed::Base
+class GroupEmailCreationNotification < Noticed::Base
    # Add your delivery methods
   #
   deliver_by :database, format: :to_database
@@ -20,7 +20,7 @@ class GroupCreationNotification < Noticed::Base
   # Define helper methods to make rendering easier.
   #
   def message
-    "Profile created for #{params[:group_name]} group. Please complete all information."
+    "Welcome letter is successfully sent to #{params[:group_name].present? ? params[:group_name]: "group"} group. "
   end
   #
   def url

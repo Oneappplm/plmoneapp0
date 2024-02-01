@@ -35,22 +35,46 @@ class EnrollmentProvidersController < ApplicationController
 	end
 
 	def update
-		@enrollment_provider.assign_attributes(enrollment_provider_params)
-		@enrollment_provider.remove_upload_payor_files! # remove upload payor files if not present, for handling all files deletion
+	  @enrollment_provider.assign_attributes(enrollment_provider_params)
+	  @enrollment_provider.remove_upload_payor_files! # remove upload payor files if not present, for handling all files deletion
+	  @old_enrollment_data = EnrollmentProvider.find(params[:id])
+	  @new_enrollment_data = @enrollment_provider
 
-		if @enrollment_provider.save(validate: false)
+    if note_comparison(@old_enrollment_data.details.first.comment,@new_enrollment_data.details.first.comment)
 
-			@enrollment_provider.update_columns(
-				provider_id: params[:provider_id],
-				outreach_type:	params[:outreach_type],
-				updated_by: current_user&.full_name
-			)
-			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
-			redirect_to redirect_url, notice: "Enrollment #{@enrollment_provider.full_name} has been successfully updated."
-		else
-			render 'edit'
-		end
+    elsif enrollment_changes(@old_enrollment_data,@new_enrollment_data) 
+    	
+    end
+
+	  if @enrollment_provider.save(validate: false)
+	    @enrollment_provider.update_columns(
+	      provider_id: params[:provider_id],
+	      outreach_type: params[:outreach_type],
+	      updated_by: current_user&.full_name
+	    )	
+	    redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
+	    redirect_to redirect_url, notice: "Enrollment #{@enrollment_provider.full_name} has been successfully updated."
+	  else
+	    render 'edit'
+	  end
 	end
+  
+  def note_comparison(old_note, new_note)
+  	if old_note != new_note
+  		EnrollmentChangesNotification.with(provider_full_name: @enrollment_provider.full_name, payer: @enrollment_provider.details.first.enrollment_payer, note: "true").deliver(User.all)
+  	end
+  end
+
+
+  def enrollment_changes(old_data, new_data)    
+    if old_data.full_name != new_data.full_name && 
+		   old_data.details.first.enrollment_payer != new_data.details.first.enrollment_payer &&
+		   old_data.details.first.enrollment_status != new_data.details.first.enrollment_status
+
+      EnrollmentChangesNotification.with(provider_full_name: @enrollment_provider.full_name, payer: @enrollment_provider.details.first.enrollment_payer, application_status: @enrollment_provider.details.first.enrollment_status, provider_id: @enrollment_provider.id).deliver(User.all)
+    end
+  end
+
 
 	def destroy
 		redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path

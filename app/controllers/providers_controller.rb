@@ -66,7 +66,7 @@ class ProvidersController < ApplicationController
 				subject: "Add Provider",
 				body: "#{@provider.encoded_by} added a new provider: #{@provider.provider_name}"
 			).send_system_notification.deliver_later
-
+      ProviderEmailCreationNotification.with(provider_full_name: @provider.fullname, provider_id: @provider.id).deliver(User.all)
       ProviderCreationNotification.with(provider_full_name: @provider.fullname, provider_id: @provider.id).deliver(User.all)
 			redirect_to providers_path, notice: 'Provider has been successfully created.'
 		else
@@ -103,6 +103,11 @@ class ProvidersController < ApplicationController
 		@provider.remove_cv_copies
 		@provider.remove_telehealth_license_copies
 
+		@old_provider_data = Provider.find(params[:id])
+	  @new_provider_data = @provider
+
+    profile_update(@old_provider_data,@new_provider_data)
+    
   	if @provider.save(validate: false)
 			@provider.update_columns updated_by: current_user&.full_name
 
@@ -111,6 +116,8 @@ class ProvidersController < ApplicationController
 				subject: "Edit Provider",
 				body: "#{@provider.updated_by} updated a provider: #{@provider.provider_name}"
 			).send_system_notification.deliver_later
+
+
 			if params[:from_notifications].present?
         submission = @provider.create_missing_field_submission
         if submission
@@ -129,6 +136,20 @@ class ProvidersController < ApplicationController
 		end
 	end
 
+	def profile_update(old_data, new_data)
+		  changed_attributes = []
+		  
+		  old_data.attributes.each do |attribute, old_value|
+		    new_value = new_data[attribute]
+		    if old_value != new_value
+		      changed_attributes << attribute.to_s
+		    end
+		  end
+	  
+	    changed_attributes
+	   
+	   EnrollmentChangesNotification.with(changed_attributes_array: changed_attributes, provider_full_name: old_data.fullname).deliver(User.all)
+	end
 	def destroy
 		if @provider.destroy
 			PlmMailer.with(

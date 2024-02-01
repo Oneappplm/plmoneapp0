@@ -75,6 +75,7 @@ class EnrollmentsController < ApplicationController
 					subject: "Added Group",
 					body: "#{current_user&.full_name} added a new group: #{@enrollment_group&.group_name}"
 				).send_system_notification.deliver_later
+				GroupEmailCreationNotification.with(group_name: @enrollment_group.group_name, group_id: @enrollment_group.id).deliver(User.all)
 				GroupCreationNotification.with(group_name: @enrollment_group.group_name, group_id: @enrollment_group.id).deliver(User.all)
 				redirect_to groups_enrollments_path, notice: 'Group has been successfully created.' and return
 			end

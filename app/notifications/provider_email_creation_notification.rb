@@ -1,4 +1,4 @@
-class GroupCreationNotification < Noticed::Base
+class ProviderEmailCreationNotification < Noticed::Base
    # Add your delivery methods
   #
   deliver_by :database, format: :to_database
@@ -20,14 +20,14 @@ class GroupCreationNotification < Noticed::Base
   # Define helper methods to make rendering easier.
   #
   def message
-    "Profile created for #{params[:group_name]} group. Please complete all information."
+    "Welcome letter is successfully sent to #{params[:provider_fullname].present? ? params[:provider_fullname]: "provider"}. "
   end
   #
   def url
-    if params[:group_id].blank?
+    if params[:provider_id].blank?
       "javascript:void(0);"
     else
-      alt_enrollment_group_path(params[:group_id])
+      provider_path(id: params[:provider_id])
     end
   end
 end 
