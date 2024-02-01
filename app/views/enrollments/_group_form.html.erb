@@ -63,53 +63,51 @@
    </div>
    </div>
  </div>
-<%# <div class="row mb-3"> %>
-   <%# <div class="col-lg-12"> %>
-      <%# <% if !f.object.sent_welcome_letter? %> 
-         <%# <div class="field dea-licenses-field mb-2 border-dash border-1 p-2"> %>
-            <%# <div class="col-lg-12 mb-2"> %>
-               <%# <%= f.check_box :welcome_letter_status %> 
-               <%# <%= f.label :welcome_letter_status, "Send Welcome Letter to Group Personnels", class: 'mx-2 text-dark-grey' %> 
-            <%# </div> %>
-            <%# <div class="col-lg-12 mb-2"> %>
-               <%# <label class="text-dark-grey">Subject</label> %>
-               <%# <%= f.text_field :welcome_letter_subject,  placeholder: 'Type here...', class: 'form-control border border-dark', value: 'Request for Credentialing Documentation' %> 
-            <%# </div> %>
-            <%# <div class="col-lg-12 mb-2"> %>
-               <%# <label class="text-dark-grey">Message</label> %>
-               <%# <textarea name="enrollment_group[welcome_letter_message]" id="enrollment_group_welcome_letter_message" cols="20" rows="12" class="form-control border border-dark"><%= Setting.take.t('enrollment_dashboard.groups.add_new_group.welcome_letter.welcome_message_default').html_safe</textarea>  %>
-            <%# </div> %>
-            <%# <h6>Choose files to send or upload from computer</h6> %>
-            <%# <div class="col-lg-12 mb-2"> %>
+   <% if !current_setting.dcs? %>
+      <div class="row mb-3">
+         <div class="col-lg-12">
+            <% if !f.object.sent_welcome_letter? %>
+               <div class="field dea-licenses-field mb-2 border-dash border-1 p-2">
+                  <div class="col-lg-12 mb-2">
+                     <%= f.check_box :welcome_letter_status %>
+                     <%= f.label :welcome_letter_status, "Send Welcome Letter to Group Personnels", class: 'mx-2 text-dark-grey' %>
+                  </div>
+                  <div class="col-lg-12 mb-2">
+                     <label class="text-dark-grey">Subject</label>
+                     <%= f.text_field :welcome_letter_subject,  placeholder: 'Type here...', class: 'form-control border border-dark', value: 'Request for Credentialing Documentation' %>
+                  </div>
+                  <div class="col-lg-12 mb-2">
+                     <label class="text-dark-grey">Message</label>
+                     <textarea name="enrollment_group[welcome_letter_message]" id="enrollment_group_welcome_letter_message" cols="20" rows="12" class="form-control border border-dark"><%= Setting.take.t('enrollment_dashboard.groups.add_new_group.welcome_letter.welcome_message_default').html_safe %></textarea>
+                  </div>
+                  <h6>Choose files to send or upload from computer</h6>
+                  <div class="col-lg-12 mb-2">
 
-               <%# <%= f.check_box :check_welcome_letter %> 
-               <%# <%= f.label :check_welcome_letter, "Provider Welcome Letter", class: 'mx-2 text-dark-grey' %> 
+                     <%= f.check_box :check_welcome_letter %>
+                     <%= f.label :check_welcome_letter, "Provider Welcome Letter", class: 'mx-2 text-dark-grey' %>
+                     <%= f.check_box :check_co_caqh %>
+                     <%= f.label :check_co_caqh, "CO CAQH Authorization-Attestation and Release Form", class: 'mx-2 text-dark-grey' %>
+                     <%= f.check_box :check_mn_caqh_state_release_form %>
+                     <%= f.label :check_mn_caqh_state_release_form, "MN CAQH State Release Form", class: 'mx-2 text-dark-grey' %>
+                     <%= f.check_box :check_mn_caqh_authorization_form %>
+                     <%= f.label :check_mn_caqh_authorization_form, "MN CAQH Authorization Form", class: 'mx-2 text-dark-grey' %>
+                     <%= f.check_box :check_caqh_standard_authorization %>
+                     <%= f.label :check_caqh_standard_authorization, "CAQH Standard Authorization", class: 'mx-2 text-dark-grey' %>
 
-               <%# <%= f.check_box :check_co_caqh %>
-               <%# <%= f.label :check_co_caqh, "CO CAQH Authorization-Attestation and Release Form", class: 'mx-2 text-dark-grey' %>
-
-               <%# <%= f.check_box :check_mn_caqh_state_release_form %> 
-               <%# <%= f.label :check_mn_caqh_state_release_form, "MN CAQH State Release Form", class: 'mx-2 text-dark-grey' %> 
-
-               <%# <%= f.check_box :check_mn_caqh_authorization_form %> 
-               <%# <%= f.label :check_mn_caqh_authorization_form, "MN CAQH Authorization Form", class: 'mx-2 text-dark-grey' %>
-
-               <%# <%= f.check_box :check_caqh_standard_authorization %> 
-               <%# <%= f.label :check_caqh_standard_authorization, "CAQH Standard Authorization", class: 'mx-2 text-dark-grey' %> 
-
-            <%# </div> %>
-            <%# <div class="col-lg-12 mb-2"> %>
-               <%# <label >Upload files from computer</label> %>
-               <%# <%= f.file_field :welcome_letter_attachments, class: 'form-control border border-dark', multiple: true %> 
-            <%# </div> %>
-         <%# </div> %>
-      <%# <% else %> 
-         <%# <div class="border-dash border-1 p-2"> %>
-            <%# <h5 class="m-auto">Welcome letter has already been sent to the Group Personnels</h5> %>
-         <%# </div> %>
-      <%# <% end %> 
-   <%# </div> %>
-<%# </div> %>
+                  </div>
+                  <div class="col-lg-12 mb-2">
+                     <label >Upload files from computer</label>
+                     <%= f.file_field :welcome_letter_attachments, class: 'form-control border border-dark', multiple: true %>
+                  </div>
+               </div>
+            <% else %>
+               <div class="border-dash border-1 p-2">
+                  <h5 class="m-auto">Welcome letter has already been sent to the Group Personnels</h5>
+               </div>
+            <% end %>
+         </div>
+      </div>
+   <% end %>
 
    <div class="row mb-3">
       <div class="col-lg-12">
