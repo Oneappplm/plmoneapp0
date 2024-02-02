@@ -26,7 +26,7 @@ class EnrollmentProvidersDetail < ApplicationRecord
   accepts_nested_attributes_for :questions, allow_destroy: true, reject_if: :all_blank
 
   after_save :create_application_status_log, if: :saved_change_to_enrollment_status?
-		before_update :validate_start_date, :if => proc { start_date_changed? && start_date_was.present? }
+  before_update :validate_start_date, :if => proc { start_date_changed? && start_date_was.present? && start_date.nil? }
 
   protected
   def create_application_status_log
