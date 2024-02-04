@@ -32,6 +32,8 @@ Rails.application.routes.draw do
   get 'new-group-enrollment', to: 'pages#new_group_enrollment'
   get 'data-access', to: 'pages#data_access' #made this to not conflict with active state of client portal but for now same view
 
+  match '/virtual_review_committee/update_review_committee_dates', to: 'pages#update_review_committee_dates', via: [:put, :patch], as: 'update_review_committee_dates'
+  match '/virtual_review_committee/unassigned_records', to: 'pages#unassigned_records', via: [:put, :patch], as: 'unassigned_records'
   post 'delete-record', to: 'ajax#delete_record'
   post 'group-dco-note', to: 'ajax#create_group_dco_note'
   post 'provider-note', to: 'ajax#create_provider_note'
@@ -163,6 +165,8 @@ Rails.application.routes.draw do
       get :document_deleted_logs
       post :delete_document
     end
+
+				resources :app_trackers, path: 'apptracker'
   end
   resources :enrollments do
     collection do
