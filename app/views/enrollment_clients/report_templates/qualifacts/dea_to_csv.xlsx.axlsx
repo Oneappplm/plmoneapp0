@@ -1,0 +1,22 @@
+wb = xlsx_package.workbook
+s = wb.styles
+header = s.add_style sz: 14, b: true, bg_color: "6EAA46", fg_color: "FFFFFF", alignment: { wrap_text: true, vertical: :center }
+wb.add_worksheet(name: "Post") do |sheet|
+  sheet.add_row ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "DEA Number", "DEA State", "DEA Effective Date", "DEA Expiration Date"], style: header, height: 50
+  @providers.each do |provider|
+    dea_licenses = provider.dea_licenses
+    sheet.add_row [
+      flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
+      provider.group&.group_name,
+      provider.first_name,
+      provider.last_name,
+      provider.practitioner_type,
+      provider.npi,
+      dea_licenses.pluck(:dea_license_number).reject {|i| !i.present? }.join(", "),
+      State.where(id: dea_licenses.pluck(:state_id)).pluck(:name).join(", "),
+      dea_licenses.pluck(:dea_license_renewal_effective_date).reject {|i| !i.present? }.collect { |i| Date.parse(i).strftime('%b %d, %Y') }.join(", "),
+      dea_licenses.pluck(:dea_license_expiration_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(", ")
+    ], types: [:string, :string, :string, :string, :string, :string, :string, :string, :string, :string]
+  end
+  sheet.column_widths 12, 18, 24, 24, 18, 16, 16, 16, 18, 18
+end

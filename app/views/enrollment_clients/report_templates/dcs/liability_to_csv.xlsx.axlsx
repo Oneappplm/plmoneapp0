@@ -1,0 +1,28 @@
+wb = xlsx_package.workbook
+s = wb.styles
+header = s.add_style sz: 14, b: true, bg_color: "6EAA46", fg_color: "FFFFFF", alignment: { wrap_text: true, vertical: :center }
+image = File.expand_path('public/logos/dcs-logo.png')
+wb.add_worksheet(name: "Post") do |sheet|
+  sheet.add_image(image_src: image, start_at: 'A1', width: 300, height: 100)
+  sheet.merge_cells('A1:J1')
+  sheet.add_row [], height: 100
+  sheet.add_row ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "Policy Number","Effective Date", "Expiration Date"], style: header, height: 70
+  @providers.each do |provider|
+    prof_liability_state_id = provider&.prof_liability_state_id
+    state_id = prof_liability_state_id.to_i
+    state_name = State.find_by(id: state_id)&.name
+    sheet.add_row [
+      flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
+      provider.group&.group_name,
+      provider.first_name,
+      provider.last_name,
+      provider.practitioner_type,
+      provider.npi,
+      state_name,
+      provider.prof_liability_policy_number,
+      provider.prof_liability_effective_date,
+      provider.prof_liability_expiration_date&.strftime('%b %d, %Y')
+    ], types: [:string, :string, :string, :string, :string, :string, :string, :string, :string, :string]
+  end
+  sheet.column_widths 12, 18, 24, 24, 18, 16, 12, 16, 16, 16
+end
