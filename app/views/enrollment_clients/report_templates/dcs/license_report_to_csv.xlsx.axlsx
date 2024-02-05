@@ -3,11 +3,9 @@ s = wb.styles
 header = s.add_style sz: 14, b: true, bg_color: "6EAA46", fg_color: "FFFFFF", alignment: { wrap_text: true, vertical: :center }
 image = File.expand_path('public/logos/dcs-logo.png')
 wb.add_worksheet(name: "Post") do |sheet|
-  if current_setting.dcs?
-    sheet.add_image(image_src: image, start_at: 'A1', width: 300, height: 100)
-    sheet.merge_cells('A1:V1')
-    sheet.add_row [], height: 100
-  end
+  sheet.add_image(image_src: image, start_at: 'A1', width: 300, height: 100)
+  sheet.merge_cells('A1:V1')
+  sheet.add_row [], height: 100
   sheet.add_row ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "State License Number","State License Effective date", "State License Expiration", "Advance Practice Registered Nurse License License Number",
                "State", "Advance Practice Registered Nurse License Effective Date",
               "Advance Practice Registered Nurse License Expiration Date", "Registered Nurse License Number", "State", "Registered Nurse Effective Date", "Registered Nurse Expiration Date", "Certification Name", "Board Certification Number", "Effective Date", "Re-cretification Date"
@@ -42,5 +40,5 @@ wb.add_worksheet(name: "Post") do |sheet|
       board_certifications.pluck(:bc_recertification_date).reject {|i| !i.present? }.collect { |i| i.strftime('%b %d, %Y') }.join(', '),
     ], types: [:string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string]
   end
-  sheet.column_widths 12, 18, 30, 30, 24, 18, 18, 18, 12, 26, 26, 18, 26, 26, 20, 12, 26, 26, 20, 18, 18, 18
+  sheet.column_widths 12, 18, 24, 24, 18, 16, 12, 16, 16, 16, 26, 12, 26, 26, 18, 12, 18, 18, 16, 16, 18, 18
 end

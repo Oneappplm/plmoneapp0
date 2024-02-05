@@ -1,0 +1,20 @@
+wb = xlsx_package.workbook
+s = wb.styles
+header = s.add_style sz: 14, b: true, bg_color: "6EAA46", fg_color: "FFFFFF", alignment: { wrap_text: true, vertical: :center }
+wb.add_worksheet(name: "Post") do |sheet|
+  sheet.add_row ["Platform", "Services", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "Date Profile Created in One App", "Notes"], style: header, height: 60
+  @providers.each do |provider|
+    sheet.add_row [
+      flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
+      provider.notification_services,
+      provider.group&.group_name,
+      provider.first_name,
+      provider.last_name,
+      provider.practitioner_type,
+      provider.npi,
+      provider.created_at&.strftime('%b %d, %Y'),
+      provider.notes.pluck(:description).join(", ")
+    ], types: [:string, :string, :string, :string, :string, :string, :string, :string, :string]
+  end
+  sheet.column_widths 12, 18, 24, 24, 24, 18, 18, 18, 30
+end
