@@ -1,0 +1,27 @@
+wb = xlsx_package.workbook
+s = wb.styles
+header = s.add_style sz: 14, b: true, bg_color: "6EAA46", fg_color: "FFFFFF", alignment: { wrap_text: true, vertical: :center }
+image = File.expand_path('public/logos/dcs-logo.png')
+wb.add_worksheet(name: "Post") do |sheet|
+  sheet.add_image(image_src: image, start_at: 'A1', width: 300, height: 100)
+  sheet.merge_cells('A1:L1')
+  sheet.add_row [], height: 100
+  sheet.add_row ["Platform", "Group Name", "Providers First Name", "Providers Last Name", "Practitioner Type", "NPI", "Payor", "Enrollment Type", "State", "Initial Application Status", "Date Initial Application Submitted", "Provider ID"], style: header, height: 60
+  @enrollment_details.each do |enrollment_detail|
+    sheet.add_row [
+      flatforms.detect{|flatform| flatform.last == enrollment_detail.enrollment_provider&.provider&.group&.flatform }&.first,
+      enrollment_detail.enrollment_provider&.provider&.group&.group_name,
+      enrollment_detail.enrollment_provider&.provider&.first_name,
+      enrollment_detail.enrollment_provider&.provider&.last_name,
+      enrollment_detail.enrollment_provider&.provider&.practitioner_type,
+      enrollment_detail.enrollment_provider&.provider&.npi,
+      enrollment_detail.enrollment_payer,
+      enrollment_detail.enrollment_type,
+      enrollment_detail.payer_state,
+      application_statuses.detect{|application_status| application_status.last == enrollment_detail.enrollment_status }&.first,
+      enrollment_detail.start_date&.strftime('%b %d, %Y'),
+      enrollment_detail.provider_id
+    ], types: [:string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string]
+  end
+  sheet.column_widths 12, 18, 30, 30, 24, 18, 18, 18, 12, 26, 15, 20
+end
