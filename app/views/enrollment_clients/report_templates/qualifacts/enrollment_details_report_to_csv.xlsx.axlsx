@@ -1,0 +1,16 @@
+wb = xlsx_package.workbook
+s = wb.styles
+header = s.add_style sz: 14, b: true, bg_color: "6EAA46", fg_color: "FFFFFF", alignment: { wrap_text: true, vertical: :center }
+wb.add_worksheet(name: "Post") do |sheet|
+  sheet.add_row ["Platform", "Group", "Provider Status", "Provider Last Name", "Provider First Name"], style: header, height: 50
+  @enrollment_details.each do |enrollment_detail|
+    sheet.add_row [
+      flatforms.detect{|flatform| flatform.last == enrollment_detail.enrollment_provider&.provider&.group&.flatform }&.first,
+      enrollment_detail.enrollment_provider&.provider&.group&.group_name,
+      provider_statuses.detect{|flatform| flatform.last == enrollment_detail.enrollment_provider&.provider&.status }&.first,
+      enrollment_detail.enrollment_provider&.provider&.first_name,
+      enrollment_detail.enrollment_provider&.provider&.last_name
+    ], types: [:string, :string, :string, :string, :string]
+  end
+  sheet.column_widths 12, 18, 16, 24, 24
+end

@@ -1,0 +1,32 @@
+wb = xlsx_package.workbook
+s = wb.styles
+header = s.add_style sz: 14, b: true, bg_color: "6EAA46", fg_color: "FFFFFF", alignment: { wrap_text: true, vertical: :center }
+wb.add_worksheet(name: "Post") do |sheet|
+  sheet.add_row ["Group", "Provider Last Name", "Provider First Name", "Enrollment Type", "Payor Name", "Notification of New Provider",
+              "Date Group Notification of Provider (Welcome Letter)", "Date Notification to begin submitting enrollment (Contract signed/Profile/Documents Complete)", " Payor",
+              "Enrollment Type", "State", "Initial Application Status", "Date Initial Application Submitted", "Effective Date", "Provider ID", "Most Current Revalidation Date", "Revalidation Next Due Date", "Notes"], style: header, height: 100
+  @enrollment_details.each do |enrollment_detail|
+    provider = enrollment_detail.enrollment_provider&.provider
+    sheet.add_row [
+      provider&.group&.group_name,
+      provider&.last_name,
+      enrollment_detail.enrollment_provider&.provider&.first_name,
+      enrollment_detail.enrollment_type,
+      enrollment_detail.enrollment_payer,
+      provider&.new_provider_notification,
+      provider&.welcome_letter_sent,
+      provider&.notification_enrollment_submit,
+      enrollment_detail.payor_username,
+      enrollment_detail.enrollment_type,
+      enrollment_detail.payer_state,
+      enrollment_detail.enrollment_status,
+      enrollment_detail.application_status_logs&.where(status: 'application-submitted')&.last&.created_at&.strftime('%b %d, %Y'),
+      enrollment_detail.enrollment_effective_date,
+      enrollment_detail.provider_id,
+      enrollment_detail.revalidation_date,
+      enrollment_detail.revalidation_due_date,
+      enrollment_detail.comment,
+    ], types: [:string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string]
+  end
+  sheet.column_widths 12, 18, 24, 18, 24, 18, 22, 26, 18, 16, 12, 16, 16, 16, 18, 16, 16, 26
+end

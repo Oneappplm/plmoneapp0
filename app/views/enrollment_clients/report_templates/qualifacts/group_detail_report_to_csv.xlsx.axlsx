@@ -1,0 +1,27 @@
+wb = xlsx_package.workbook
+s = wb.styles
+header = s.add_style sz: 14, b: true, bg_color: "6EAA46", fg_color: "FFFFFF", alignment: { wrap_text: true, vertical: :center }
+wb.add_worksheet(name: "Post") do |sheet|
+  sheet.add_row ["Platform", "Group Name", "Notification of New Group", "Date Notification to begin submitting enrollment(Contract signed/Profile/Documents Complete)",
+              "Payor Name", "Group Id", "Enrollment Type", "State", "Application Status", "Initial Effective Date", "Most Current Revalidation Date", "Line of Services", "Notes"], style: header, height: 100
+  @enrollment_details.each do |enrollment_detail|
+    enroll_group = enrollment_detail.enroll_group
+    group = enroll_group&.group
+    sheet.add_row [
+      flatforms.detect{|flatform| flatform.last == group&.flatform }&.first,
+      group&.group_name,
+      group&.new_group_notification&.strftime('%b %d, %Y'),
+      group&.notification_enrollment_submit_group&.strftime('%b %d, %Y'),
+      enrollment_detail.enrollment_payer,
+      enrollment_detail.enroll_group_id,
+      enrollment_detail.payor_submission_type,
+      enrollment_detail.payer_state,
+      application_statuses.detect{|application_status| application_status.last == enrollment_detail.application_status }&.first,
+      enrollment_detail.effective_date&.strftime('%b %d, %Y'),
+      enrollment_detail.revalidation_date&.strftime('%b %d, %Y'),
+      enrollment_detail.payor_type,
+      enrollment_detail.notes,
+    ], types: [:string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string]
+  end
+  sheet.column_widths 12, 18, 18, 30, 24, 12, 18, 16, 18, 18, 18, 18, 26
+end

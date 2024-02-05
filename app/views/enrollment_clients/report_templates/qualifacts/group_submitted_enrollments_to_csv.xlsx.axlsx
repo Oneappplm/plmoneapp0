@@ -1,0 +1,19 @@
+wb = xlsx_package.workbook
+s = wb.styles
+header = s.add_style sz: 14, b: true, bg_color: "6EAA46", fg_color: "FFFFFF", alignment: { wrap_text: true, vertical: :center }
+wb.add_worksheet(name: "Post") do |sheet|
+  sheet.add_row ["Platform", "Group Name", "Payor Name", "Group ID", "Application Status", "State", "Initial Application Submitted Date", "NPI"], style: header, height: 60
+  @enrollment_details.each do |enrollment_detail|
+    sheet.add_row [
+      flatforms.detect{|flatform| flatform.last == enrollment_detail.enroll_group&.group&.flatform }&.first,
+      enrollment_detail.enroll_group&.group&.group_name,
+      enrollment_detail.enrollment_payer,
+      enrollment_detail.enroll_group_id,
+      application_statuses.detect{|application_status| application_status.last == enrollment_detail.application_status }&.first,
+      enrollment_detail.payer_state,
+      enrollment_detail.application_status_logs&.where(status: 'application-submitted')&.last&.created_at&.strftime('%b %d, %Y'),
+      enrollment_detail.enroll_group&.group&.npi_digit_type
+    ], types: [:string, :string, :string, :string, :string, :string, :string, :string]
+  end
+  sheet.column_widths 12, 24, 24, 16, 24, 16, 20, 18
+end
