@@ -116,7 +116,7 @@ class EnrollmentProvidersController < ApplicationController
       details_attributes: [:id, :start_date, :due_date,
                            :enrollment_payer, :enrollment_type, :enrollment_status, :payer_state,
                            :approved_date, :revalidation_date, :revalidation_due_date, :denied_date,
-                           :comment, :ptan_number, :provider_ptan, :group_ptan,
+                           :comment, :ptan_number, :provider_ptan, :group_ptan, :date, :attempt_status, :note, :agent_user_id,
                            :enrollment_tracking_id, :enrollment_effective_date,
                            :association_start_date, :business_end_date, :association_end_date,
                            :line_of_business, :revalidation_status, :cpt_code, :descriptor,
