@@ -182,12 +182,130 @@ class PagesController < ApplicationController
 
   def minutes
     if params_present?.present?
+      @ids = VirtualReviewCommittee.where(build_filter_conditions).where(progress_status: "completed").ids
+
       @params_present = params_present?
     else
       @completed_records = VirtualReviewCommittee.where(progress_status: "completed")
     end
   end 
 
+def vrc_pdf_download
+  @vrc_ids = params[:id]
+  @from_committee_date = params[:from_committee_date]
+  @to_committee_date = params[:to_committee_date]
+
+  vrc_ids_array = @vrc_ids.split('/') 
+  vrc_pdf = Prawn::Document.new
+
+ vrc_pdf.font('Times-Roman') do 
+
+    # Header
+    vrc_pdf.repeat(:all) do
+      vrc_pdf.bounding_box([vrc_pdf.bounds.left, vrc_pdf.bounds.top], width: vrc_pdf.bounds.width) do 
+        vrc_pdf.image "#{Rails.root}/app/assets/images/d-logo.png", at: [10, 10], width: 100
+        vrc_pdf.text "Peer Review Credentialing Committee Minutes By", style: :bold, align: :right
+        vrc_pdf.move_down 5
+        vrc_pdf.text_box "Provider Name - NCQA Version", at: [283, 0], style: :bold, width: 200, height: 30
+      end  
+      vrc_pdf.move_down 64
+      vrc_pdf.stroke_horizontal_rule
+      # Sub Header
+      vrc_pdf.move_down 14
+      vrc_pdf.text "Report Generated: #{Date.today}", style: :bold
+      vrc_pdf.move_down 2
+      vrc_pdf.text "Total Provider Count: Credentialing: #{vrc_ids_array.count}", style: :bold
+      vrc_pdf.move_down 2
+      vrc_pdf.text "Total Provider Count: Recredentialing: #{vrc_ids_array.count}", style: :bold
+      vrc_pdf.move_down 2
+      vrc_pdf.text "Total Provider: Count: #{vrc_ids_array.count}", style: :bold
+      vrc_pdf.move_down 4
+      vrc_pdf.stroke_horizontal_rule
+      vrc_pdf.move_down 16
+      vrc_pdf.text "COMMITTEE DATES BETWEEN #{@from_committee_date} and #{@to_committee_date}", align: :center, style: :bold
+      # Sub Header
+    end
+    # Header 
+
+
+
+  
+    #Body
+    vrc_pdf.bounding_box([vrc_pdf.bounds.left, vrc_pdf.cursor], width: vrc_pdf.bounds.width, height: vrc_pdf.cursor) do
+      vrc_ids_array.map do |vrc|
+        @vrc_record = VirtualReviewCommittee.find(vrc)
+        # Body 
+        vrc_pdf.move_down 9
+        vrc_pdf.text_box "Event: ", style: :bold, at: [160, vrc_pdf.cursor], width: 200, height: 30
+        vrc_pdf.text_box "Report Category: ", style: :bold, at: [440, vrc_pdf.cursor], width: 200, height: 30
+        vrc_pdf.text "Committee Date:", style: :bold
+        vrc_pdf.text "#{@vrc_record.committee_date.to_date}", style: :bold
+
+        vrc_pdf.move_down 5
+        vrc_pdf.text_box "Name:", style: :bold, at: [160,vrc_pdf.cursor], width: 200, height: 30
+        vrc_pdf.text_box "City:", style: :bold, at: [440, vrc_pdf.cursor], width: 200, height: 30
+        vrc_pdf.text "Provider:", style: :bold
+        vrc_pdf.text_box "Anatony Sharma", style: :bold, at: [160, vrc_pdf.cursor], width: 200, height: 30
+        vrc_pdf.text_box "Indore", style: :bold, at: [440, vrc_pdf.cursor], width: 200, height: 30
+        vrc_pdf.move_down 3
+        vrc_pdf.text "ENC107273", style: :bold
+
+        vrc_pdf.move_down 4
+        vrc_pdf.text "Taxonomy:", style: :bold
+        vrc_pdf.move_down 4
+        vrc_pdf.text "Provider/Org.Affiliation:", style: :bold
+        vrc_pdf.move_down 4
+        vrc_pdf.text "Credentials Requested:", style: :bold
+        vrc_pdf.move_down 4
+        vrc_pdf.text "Practicing Specialty:", style: :bold
+        vrc_pdf.move_down 4
+        vrc_pdf.text "Result:", style: :bold
+        vrc_pdf.move_down 4
+        vrc_pdf.text "Recred Due Date: 05/06/2023", style: :bold
+        vrc_pdf.move_down 4
+        vrc_pdf.text "Notes:", style: :bold
+
+        vrc_pdf.move_down 12
+        bullet_point = "\u2022"
+        vrc_pdf.text "#{bullet_point} [Sharma Faheem]", style: :bold
+
+        vrc_pdf.move_down 4
+        vrc_pdf.stroke_horizontal_rule
+      end
+    end
+    #Body
+
+    # Footer
+    vrc_pdf.bounding_box([vrc_pdf.bounds.left, vrc_pdf.bounds.bottom + 130], width: vrc_pdf.bounds.width) do
+      vrc_pdf.text "** I had the opportunity to review the Providers listed in this document, and review their credentialing material (if applicable)."
+    end
+    # Footer
+  end
+
+  if params[:preview].present? 
+    send_data(vrc_pdf.render, filename: "Vrc.pdf", type: "application/pdf", disposition: 'inline')
+  else
+    send_data(vrc_pdf.render, filename: "Vrc.pdf", type: "application/pdf")
+  end
+end
+
+  
+  def build_filter_conditions
+    filter_conditions = {}
+
+    @date_check = if params[:from_committee_date].present? && params[:to_committee_date].present?
+        committee_date_range = Date.parse(params[:from_committee_date])..Date.parse(params[:to_committee_date])
+    end
+
+    filter_conditions[:review_level] = params[:review_level] if params[:review_level].present?
+    filter_conditions[:provider_type] = params[:provider_type] if params[:provider_type].present?
+    filter_conditions[:cred_cycle] = params[:cred_cycle] if params[:cred_cycle].present?
+    filter_conditions[:first_name] = params[:first_name] if params[:first_name].present?
+    filter_conditions[:last_name] = params[:last_name] if params[:last_name].present?
+    filter_conditions[:committee_date] = committee_date_range if @date_check.present?
+
+    filter_conditions
+  end
 	def client_portal
 		@simple_search = (params[:none].present? && params[:none]['simple_search'])
 		@grid = (params[:grid].present? or (params[:none].present? &&params[:none]['grid'].present?))

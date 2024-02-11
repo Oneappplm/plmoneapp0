@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
+  get 'virtual-review-committee/minutes/vrc_pdf_download/:id', to: "pages#vrc_pdf_download", as: "vrc_pdf_download"
   root 'dashboard#dashboard' # Overview	page
   get 'client-portal', to: 'pages#client_portal' # Data Access page
   get 'virtual-review-committee', to: 'pages#virtual_review_committee' # Decision Point page
@@ -87,7 +88,7 @@ Rails.application.routes.draw do
   post 'mark-notification-read', to: 'ajax#mark_notification_read'
   post 'logout-on-close', to: 'ajax#logout_on_close'
   patch '/record_approval', to: 'pages#record_approval', as: 'record_approval'
-  get '/virtual_review_committee/minutes', to: 'pages#minutes', as: 'minutes'
+  get '/virtual_review_committee/minutes', to: 'pages#minutes', as: 'minute'
 
   resources :manage_clients
 

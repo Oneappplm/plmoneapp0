@@ -42,10 +42,13 @@
             </div>
          </div>
       </div>
+      <% if @ids %>
       <div class="col-lg-4">
-
+         <span class=""><%= link_to "Download PDF", vrc_pdf_download_path(@ids, from_committee_date: params[:from_committee_date], to_committee_date: params[:to_committee_date]), class: "btn btn-primary" %></span>
       </div>
+      <% end %>
    </div>
+
    <div class="row mt-3 mb-3">
       <div class="col-lg-6">
          <h5>Search Result: 113 records</h5>
@@ -92,6 +95,7 @@
       </thead>
       <tbody class="bg-light">
          <% if @params_present.present? %>
+
            <% VirtualReviewCommittee.where(build_filter_conditions).each do |completed_record|%>
                <% if completed_record.progress_status == "completed" %>
                  <tr class="text-center">
