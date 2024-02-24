@@ -42,8 +42,8 @@ class EnrollmentProvidersController < ApplicationController
 
     if note_comparison(@old_enrollment_data.details.first.comment,@new_enrollment_data.details.first.comment)
 
-    elsif enrollment_changes(@old_enrollment_data,@new_enrollment_data) 
-    	
+    elsif enrollment_changes(@old_enrollment_data,@new_enrollment_data)
+
     end
 
 	  if @enrollment_provider.save(validate: false)
@@ -51,14 +51,14 @@ class EnrollmentProvidersController < ApplicationController
 	      provider_id: params[:provider_id],
 	      outreach_type: params[:outreach_type],
 	      updated_by: current_user&.full_name
-	    )	
+	    )
 	    redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
 	    redirect_to redirect_url, notice: "Enrollment #{@enrollment_provider.full_name} has been successfully updated."
 	  else
 	    render 'edit'
 	  end
 	end
-  
+
   def note_comparison(old_note, new_note)
   	if old_note != new_note
   		EnrollmentChangesNotification.with(provider_full_name: @enrollment_provider.full_name, payer: @enrollment_provider.details.first.enrollment_payer, note: "true").deliver(User.all)
@@ -66,8 +66,8 @@ class EnrollmentProvidersController < ApplicationController
   end
 
 
-  def enrollment_changes(old_data, new_data)    
-    if old_data.full_name != new_data.full_name && 
+  def enrollment_changes(old_data, new_data)
+    if old_data.full_name != new_data.full_name &&
 		   old_data.details.first.enrollment_payer != new_data.details.first.enrollment_payer &&
 		   old_data.details.first.enrollment_status != new_data.details.first.enrollment_status
 
