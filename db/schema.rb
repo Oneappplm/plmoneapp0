@@ -10,37 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_01_08_222208) do
+ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "active_storage_attachments", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "record_type", null: false
-    t.bigint "record_id", null: false
-    t.bigint "blob_id", null: false
-    t.datetime "created_at", null: false
-    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
-    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
-  end
-
-  create_table "active_storage_blobs", force: :cascade do |t|
-    t.string "key", null: false
-    t.string "filename", null: false
-    t.string "content_type"
-    t.text "metadata"
-    t.string "service_name", null: false
-    t.bigint "byte_size", null: false
-    t.string "checksum"
-    t.datetime "created_at", null: false
-    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
-  end
-
-  create_table "active_storage_variant_records", force: :cascade do |t|
-    t.bigint "blob_id", null: false
-    t.string "variation_digest", null: false
-    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
-  end
 
   create_table "add_schedules", force: :cascade do |t|
     t.string "group_name"
@@ -92,10 +64,26 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_08_222208) do
     t.index ["visit_token"], name: "index_ahoy_visits_on_visit_token", unique: true
   end
 
-  create_table "all_notifications", force: :cascade do |t|
-    t.string "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+  create_table "audits", force: :cascade do |t|
+    t.integer "auditable_id"
+    t.string "auditable_type"
+    t.integer "associated_id"
+    t.string "associated_type"
+    t.integer "user_id"
+    t.string "user_type"
+    t.string "username"
+    t.string "action"
+    t.text "audited_changes"
+    t.integer "version", default: 0
+    t.string "comment"
+    t.string "remote_address"
+    t.string "request_uuid"
+    t.datetime "created_at"
+    t.index ["associated_type", "associated_id"], name: "associated_index"
+    t.index ["auditable_type", "auditable_id", "version"], name: "auditable_index"
+    t.index ["created_at"], name: "index_audits_on_created_at"
+    t.index ["request_uuid"], name: "index_audits_on_request_uuid"
+    t.index ["user_id", "user_type"], name: "user_index"
   end
 
   create_table "board_names", force: :cascade do |t|
@@ -191,9 +179,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_08_222208) do
     t.bigint "virtual_review_committee_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "status"
-    t.string "description"
-    t.string "signature_upload"
     t.index ["user_id"], name: "index_director_providers_on_user_id"
     t.index ["virtual_review_committee_id"], name: "index_director_providers_on_virtual_review_committee_id"
   end
@@ -312,12 +297,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_08_222208) do
     t.string "client_notes"
     t.string "notes"
     t.string "password_digest"
-    t.string "payer_state"
-    t.string "payor_submission_type"
-    t.string "payor_link"
     t.string "portal_username"
     t.string "portal_password"
     t.json "upload_payor_file"
+    t.string "payer_state"
+    t.string "payor_submission_type"
+    t.string "payor_link"
     t.index ["enroll_group_id"], name: "index_enroll_groups_details_on_enroll_group_id"
   end
 
@@ -460,21 +445,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_08_222208) do
     t.boolean "check_caqh_standard_authorization", default: false
     t.string "billing_address_autofill"
     t.string "remittance_address_autofill"
-    t.string "prof_liability_carrier_name"
-    t.string "prof_liability_self_insured"
-    t.string "prof_liability_address"
-    t.string "prof_liability_city"
-    t.integer "prof_liability_state_id"
-    t.string "prof_liability_zipcode"
-    t.date "prof_liability_orig_effective_date"
-    t.date "prof_liability_effective_date"
-    t.date "prof_liability_expiration_date"
-    t.string "prof_liability_coverage_type"
-    t.string "prof_liability_unlimited_coverage"
-    t.string "prof_liability_tail_coverage"
-    t.string "prof_liability_coverage_amount"
-    t.string "prof_liability_coverage_amount_aggregate"
-    t.string "prof_liability_policy_number"
     t.datetime "welcome_letter_sent_at"
   end
 
@@ -504,8 +474,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_08_222208) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "roles"
-    t.string "email_address"
     t.string "group_role"
+    t.string "email_address"
     t.index ["enrollment_group_id"], name: "index_enrollment_groups_details_on_enrollment_group_id"
   end
 
@@ -592,13 +562,13 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_08_222208) do
     t.string "descriptor"
     t.string "provider_id"
     t.string "group_id"
-    t.string "payer_state"
     t.json "upload_payor_file"
     t.string "payor_username"
     t.string "payor_password"
     t.string "processing_date"
     t.string "terminated_date"
     t.date "denied_date"
+    t.string "payer_state"
     t.index ["enrollment_provider_id"], name: "index_enrollment_providers_details_on_enrollment_provider_id"
   end
 
@@ -702,34 +672,33 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_08_222208) do
     t.string "inpatient_facility"
     t.string "is_clinic"
     t.string "telehealth_provider"
-    t.string "old_address"
-    t.string "old_city"
-    t.string "old_state"
-    t.string "old_county"
-    t.string "old_zipcode"
-    t.boolean "is_old_location_primary"
+    t.boolean "is_primary_location"
     t.string "website"
+    t.string "telehealth_video_conferencing_technology"
     t.string "tax_id"
     t.string "facility_billing_npi"
     t.string "mn_medicaid_number"
     t.string "wi_medicaid_number"
     t.string "medicare_id_ptan"
     t.string "taxonomy"
-    t.string "telehealth_video_conferencing_technology"
     t.string "is_gender_affirming_treatment"
     t.string "panel_size"
     t.string "medicare_authorized_official"
     t.string "collab_name"
     t.string "collab_npi"
-    t.boolean "is_primary_location"
+    t.string "is_old_location_primary"
+    t.string "old_zipcode"
+    t.string "old_county"
+    t.string "old_state"
+    t.string "old_city"
+    t.string "old_address"
     t.date "effective_date"
     t.string "location_status"
     t.string "location_npi"
     t.string "location_tin"
-    t.string "npi_digit"
-    t.string "tin_digit_type"
     t.string "npi_digits"
     t.string "tin_digits_type"
+    t.string "specialty"
     t.index ["enrollment_group_id"], name: "index_group_dcos_on_enrollment_group_id"
   end
 
@@ -810,15 +779,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_08_222208) do
     t.datetime "read_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "description"
     t.index ["read_at"], name: "index_notifications_on_read_at"
     t.index ["recipient_type", "recipient_id"], name: "index_notifications_on_recipient"
-  end
-
-  create_table "payor_names", force: :cascade do |t|
-    t.string "title"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "practice_locations", force: :cascade do |t|
@@ -954,10 +916,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_08_222208) do
     t.string "application_method"
     t.string "availability"
     t.string "county"
-    t.string "first_name_of_credentialing_contact"
-    t.string "middle_name_of_credentialing_contact"
-    t.string "last_name_of_credentialing_contact"
-    t.string "suffix_of_credentialing_contact"
   end
 
   create_table "privilege_statuses", force: :cascade do |t|
@@ -1173,21 +1131,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_08_222208) do
     t.index ["provider_source_id"], name: "index_provider_source_cmes_on_provider_source_id"
   end
 
-  create_table "provider_source_collaborating_physicians", force: :cascade do |t|
-    t.integer "provider_source_id"
-    t.string "first_name"
-    t.string "last_name"
-    t.string "middle_name"
-    t.string "suffix"
-    t.string "degree"
-    t.string "state_license"
-    t.string "license_number"
-    t.string "medicare_number"
-    t.string "npi_number"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "provider_source_data", force: :cascade do |t|
     t.bigint "provider_source_id", null: false
     t.string "data_key"
@@ -1204,29 +1147,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_08_222208) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_source_id"], name: "index_provider_source_documents_on_provider_source_id"
-  end
-
-  create_table "provider_source_teaching_programs", force: :cascade do |t|
-    t.integer "provider_source_id"
-    t.string "location"
-    t.string "name"
-    t.string "address1"
-    t.string "address2"
-    t.string "city"
-    t.string "zip_code"
-    t.string "phone_number"
-    t.string "phone_ext"
-    t.string "fax_number"
-    t.string "email"
-    t.string "director_first_name"
-    t.string "director_last_name"
-    t.string "director_degree"
-    t.string "academic_rank"
-    t.boolean "not_expire"
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "provider_sources", force: :cascade do |t|
@@ -1269,28 +1189,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_08_222208) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_source_id"], name: "index_provider_sources_deas_on_provider_source_id"
-  end
-
-  create_table "provider_sources_licensures", force: :cascade do |t|
-    t.bigint "provider_source_id"
-    t.string "state"
-    t.string "license_type"
-    t.string "license_status"
-    t.string "license_number"
-    t.date "licensure_issue_date"
-    t.date "licensure_expiration_date"
-    t.string "licensure_not_expire"
-    t.string "licensure_practice_state"
-    t.string "licensure_primary_license"
-    t.string "licensure_require_supervision"
-    t.string "licensure_sponsor_degree"
-    t.string "licensure_sponsor_fname"
-    t.string "licensure_sponsor_mname"
-    t.string "licensure_sponsor_lname"
-    t.string "licensure_sponsor_suffix"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["provider_source_id"], name: "index_provider_sources_licensures_on_provider_source_id"
   end
 
   create_table "provider_sources_registrations", force: :cascade do |t|
@@ -1492,7 +1390,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_08_222208) do
     t.string "caqh_answer"
     t.string "caqh_notes"
     t.integer "licensed_registered_state_id"
-    t.string "payer_login", default: "no"
     t.string "license_state_number"
     t.string "license_state_effective_date"
     t.string "license_state_id"
@@ -1568,6 +1465,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_08_222208) do
     t.string "supervising_name"
     t.string "supervising_npi"
     t.string "primary_location"
+    t.string "payer_login", default: "no"
   end
 
   create_table "providers_missing_field_submissions", force: :cascade do |t|
@@ -1850,18 +1748,13 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_08_222208) do
     t.datetime "updated_at", null: false
   end
 
-  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "director_providers", "users"
   add_foreign_key "director_providers", "virtual_review_committees"
   add_foreign_key "egd_logs", "enroll_groups_details"
   add_foreign_key "enrollment_group_deleted_doc_logs", "enrollment_groups"
-  add_foreign_key "epd_logs", "enrollment_providers_details"
   add_foreign_key "epd_questions", "enrollment_providers_details"
   add_foreign_key "group_contacts", "enrollment_groups"
-  add_foreign_key "group_dco_old_location_addresses", "group_dcos"
   add_foreign_key "group_dcos", "enrollment_groups"
-  add_foreign_key "provider_deleted_document_logs", "providers"
   add_foreign_key "provider_licenses", "providers"
   add_foreign_key "provider_np_licenses", "providers"
   add_foreign_key "provider_rn_licenses", "providers"

@@ -3,6 +3,9 @@
 	<td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true"><%=provider.practitioner_type%></a></td>
 	<td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true"><%=provider.npi %></a>
 			<div class="d-flex gap-2" style="float:right;">
+				<%= link_to audit_trail_path(provider, type: 'provider'), target: '_blank', class: 'btn btn-xs btn-secondary' do %>
+				<i class="bi bi-graph-up"></i>
+				<% end %>
 				<% if current_user.can_access?('Edit Provider') %>
 					<%= link_to edit_provider_path(provider), class: 'btn btn-xs btn-primary' do %>
 							<i class="bi bi-pencil"></i>
