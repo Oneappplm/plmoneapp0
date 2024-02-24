@@ -1,0 +1,46 @@
+<div class="content container-fluid">
+	<div class="row mb-4">
+		<div class="col-lg-12 ">
+			<h1>Activity History</h1>
+			<code>
+				NOTE: User, Provider & EnrollmentProvidersDetail are supported for displaying the SOURCE of the changes.
+			</code>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+				<table class="table table-striped table-bordered table-responsive">
+					<thead>
+						<tr>
+							<th scope="col" class="bg-primary text-white">Source</th>
+							<th scope="col" class="bg-primary text-white">Source Type</th>
+							<th scope="col" class="bg-primary text-white" width="40%">Changes</th>
+							<th scope="col" class="bg-primary text-white">Action Taken</th>
+							<th scope="col" class="bg-primary text-white">Action By</th>
+							<th scope="col" class="bg-primary text-white">Date Created</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% @audit_trails.each do |audit_trail| %>
+						<% next if audit_trail.empty_changes? %>
+						<tr>
+							<td>
+								<%= audit_trail.display_source %>
+							</td>
+							<td><%= audit_trail.auditable_type %></td>
+							<td>
+									<% audit_trail.dislay_changes.each_with_index do |changes, index| %>
+										<p style="margin: 0;"><%= index + 1 %>.) <%= raw changes %></p>
+									<% end %>
+							</td>
+							<td><%= audit_trail.action %></td>
+							<td><%= audit_trail.user&.full_name %></td>
+							<td><%= audit_trail.created_at.strftime("%Y-%m-%d %I:%M%p") %></td>
+						</tr>
+						<% end %>
+					</tbody>
+				</table>
+		</div>
+	</div>
+</div>
+

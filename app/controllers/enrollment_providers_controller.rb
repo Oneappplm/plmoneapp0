@@ -40,17 +40,39 @@ class EnrollmentProvidersController < ApplicationController
 
 		if @enrollment_provider.save(validate: false)
 
-			@enrollment_provider.update_columns(
-				provider_id: params[:provider_id],
-				outreach_type:	params[:outreach_type],
-				updated_by: current_user&.full_name
-			)
-			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
-			redirect_to redirect_url, notice: "Enrollment #{@enrollment_provider.full_name} has been successfully updated."
-		else
-			render 'edit'
-		end
+    elsif enrollment_changes(@old_enrollment_data,@new_enrollment_data)
+
+    end
+
+	  if @enrollment_provider.save(validate: false)
+	    @enrollment_provider.update_columns(
+	      provider_id: params[:provider_id],
+	      outreach_type: params[:outreach_type],
+	      updated_by: current_user&.full_name
+	    )
+	    redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
+	    redirect_to redirect_url, notice: "Enrollment #{@enrollment_provider.full_name} has been successfully updated."
+	  else
+	    render 'edit'
+	  end
 	end
+
+  def 	(old_note, new_note)
+  	if old_note != new_note
+  		EnrollmentChangesNotification.with(provider_full_name: @enrollment_provider.full_name, payer: @enrollment_provider.details.first.enrollment_payer, note: "true").deliver(User.all)
+  	end
+  end
+
+
+  def enrollment_changes(old_data, new_data)
+    if old_data.full_name != new_data.full_name &&
+		   old_data.details.first.enrollment_payer != new_data.details.first.enrollment_payer &&
+		   old_data.details.first.enrollment_status != new_data.details.first.enrollment_status
+
+      EnrollmentChangesNotification.with(provider_full_name: @enrollment_provider.full_name, payer: @enrollment_provider.details.first.enrollment_payer, application_status: @enrollment_provider.details.first.enrollment_status, provider_id: @enrollment_provider.id).deliver(User.all)
+    end
+  end
+
 
 	def destroy
 		redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
