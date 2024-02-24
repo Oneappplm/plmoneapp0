@@ -1,5 +1,9 @@
 class AuditTrailsController < ApplicationController
 	before_action :find_auditable, only: [:show]
+	def index
+		@audit_trails	= CustomAudit.where(auditable_type: ['Provider', 'EnrollmentProvidersDetail', 'User'])
+	end
+
 	def show
 		@audit_trails = @auditable.audits
 

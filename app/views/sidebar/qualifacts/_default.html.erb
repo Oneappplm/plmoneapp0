@@ -1,20 +1,12 @@
-<% if current_setting.dcs? %>
-<style>
-		.navbar-brand-logo{
-			padding: 0 !important;
-		}
-</style>
-<% end %>
-
 <aside class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-bordered <%= dark_mode %>  ">
 	<div class="navbar-vertical-container">
 				<div class="navbar-vertical-footer-offset">
 							<a class="navbar-brand" href="javascript:void(0);" aria-label="">
 										<!-- <img class="navbar-brand-logo" src="./dist/assets/img/plm-logos/logo-blue.jpg" alt="Logo" data-hs-theme-appearance="default"> -->
-									<% if !current_setting.cignahealth?%>
-										<img class="navbar-brand-logo-mini" src="<%= current_logo_sm %>" alt="Logo" data-hs-theme-appearance="default" style="width: auto;height: 60%;"  data-hs-theme-appearance="default">
-									<% end %>
-										<img class="navbar-brand-logo" src="<%= current_logo %>" alt="Logo" data-hs-theme-appearance="default" data-hs-theme-appearance="default">
+                    <% if !current_setting.cignahealth?%>
+										<img class="navbar-brand-logo-mini img-fluid" src="/logos/<%= current_logo_sm %>" alt="Logo" data-hs-theme-appearance="default" style="width: auto;height: 60%;"  data-hs-theme-appearance="default">
+                    <% end %>
+										<img class="navbar-brand-logo img-fluid" src="<%= current_logo %>" alt="Logo" data-hs-theme-appearance="default" data-hs-theme-appearance="default" style="height: 120% !important;width: auto;">
 							</a>
 							<button type="button" class="js-navbar-vertical-aside-toggle-invoker navbar-aside-toggler" id="navbar-aside-toggler">
 							<i class="bi-arrow-bar-left navbar-toggler-short-align" data-bs-template='<div class="tooltip d-none d-md-block" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>' data-bs-toggle="tooltip" data-bs-placement="right" title="Collapse"></i>
@@ -33,7 +25,7 @@
 													</div>
 													<% end %>
 
-													<% if current_user.can_access?('dashboard')%>
+													<% if current_user.can_access?('dashboard') && (current_setting.plmhealthoneapp? || current_setting.qualifacts?) && !current_user.is_provider_account%>
 													<div class="nav-item mb-2">
 																			<div class="d-flex with-submenu align-items-center justify-content-between pe-3 <%= active_menu('pages,users', 'client_portal,virtual_review_committee,data_access,all_users,new') %>">
 																											<a class="nav-link has-submenu" href="javascript:void(0);" data-placement="left" data-submenu="client_submenu">
@@ -55,7 +47,7 @@
 																															<% end %>
 
 																															<% if current_user.can_access? 'Decision Point' %>
-																															<li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', '	virtual_review_committee')%>"><span></span><a href="<%= virtual_review_committee_path %>">Decision Point </a>
+																															<li class="d-flex gap-2 align-items-center <%= active_submenu_link('pages', 'virtual_review_committee')%>"><span></span><a href="<%= virtual_review_committee_path %>">Decision Point </a>
 																															</li>
 																															<% end %>
 
@@ -82,9 +74,9 @@
 																			</div>
 													</div>
 													<% end %>
-													<% if current_user.can_access?('enrollment_dashboard') %>
+													<% if current_user.can_access?('enrollment_dashboard') && !current_user.is_provider_account && (current_setting.plmhealthoneapp? || current_setting.qualifacts?) %>
 													<div class="nav-item mb-1">
-																<a class="nav-link <%= active_menu('enrollment_clients,alt_enrollment_groups,locations', 'index,dashboard,view_group,groups,show,documents,locations,enrollments,providers') %> <%= active_menu('index') %>" href="<%= dashboard_enrollment_clients_path %>" data-placement="left">
+																<a class="nav-link <%= active_menu('enrollment_clients,alt_enrollment_groups,locations', 'index,dashboard,view_group,groups,show,documents,locations,enrollments,providers,reports,notifications') %> <%= active_menu('index') %>" href="<%= dashboard_enrollment_clients_path %>" data-placement="left">
 																			<!-- <i class="bi-receipt nav-icon"></i> -->
 																			<!-- <i class="bi bi-person nav-icon"></i> -->
 																			<i class="bi bi-geo-fill nav-icon"></i>
@@ -92,7 +84,7 @@
 																</a>
 													</div>
 													<% end %>
-													<% if current_user.can_access?('enrollment_tracking') %>
+													<% if current_user.can_access?('enrollment_tracking') && (current_setting.plmhealthoneapp? || current_setting.qualifacts?) && !current_user.is_provider_account %>
 													<div class="nav-item mb-2">
 
 																<a class="nav-link <%= active_menu('providers,enrollment_providers,enroll_groups,client_provider_enrollments,enrollments') %> <%= current_setting.qualifacts? ? active_menu('dcos') : "" %>" href="<%= overview_providers_path %>" data-placement="left">
@@ -101,7 +93,7 @@
 																</a>
 													</div>
 													<% end %>
-													<% if current_user.can_access?('provider_engage')%>
+													<% if current_user.can_access?('provider_engage') && (current_user.provider? || current_user.administrator? || current_user.super_administrator?) %>
 													<div class="nav-item mb-2">
 																<a class="nav-link <%= active_menu('provider_engage', 'provider_source') %>" href="<%= custom_provider_source_path %>" data-placement="left">
 																			<!-- <i class="bi-receipt nav-icon"></i> -->
@@ -111,7 +103,7 @@
 													</div>
 													<% end %>
 
-													<% if current_user.can_access?('group_engage') %>
+													<% if current_user.can_access?('group_engage') && !current_user.is_provider_account %>
 													<div class="nav-item mb-2">
 																<a class="nav-link <%= active_menu('office_managers', 'index') %>" href="<%= office_managers_path %>" data-placement="left">
 																			<!-- <i class="bi-receipt nav-icon"></i> -->
@@ -133,7 +125,18 @@
 														</div>
 													<% end %>
 
-													<% if current_user.can_access?('plm_sales_tool') %>
+													<% if current_user.can_access?('verification_platform') && (current_setting.plmhealthoneapp? || !current_setting.qualifacts?) && !current_user.is_provider_account%>
+													<div class="nav-item mb-1">
+																<a class="nav-link <%= active_menu('verification_platform', 'index') %> <%= active_menu('manage_tools') %>" href="<%= verification_platform_index_path %>" data-placement="left">
+																			<!-- <i class="bi-receipt nav-icon"></i> -->
+																			<!-- <i class="bi bi-person nav-icon"></i> -->
+																			<i class="bi bi-folder nav-icon"></i>
+																			<span class="nav-link-title">Verify</span>
+																</a>
+													</div>
+													<% end %>
+
+													<% if current_user.can_access?('plm_sales_tool') && !current_user.is_provider_account %>
 													<div class="nav-item mb-2">
 																<a class="nav-link <%= active_menu('pages', 'plm_sales_tool') %> d-none" target="_blank" href="<%= plm_sales_tool_path %>" data-placement="left">
 																			<!-- <i class="bi-layers nav-icon"></i> -->
@@ -144,7 +147,7 @@
 													</div>
 													<% end %>
 
-													<% if current_user.can_access?('smart_contract')%>
+													<% if current_user.can_access?('smart_contract') && !current_user.is_provider_account %>
 													<div class="nav-item mb-2">
 																<a class="nav-link <%= active_menu('pages', 'smart_contract') %> text-muted d-none" href="javascript:void(0);" data-placement="left">
 																			<!-- <i class="bi-layers nav-icon"></i> -->
@@ -156,7 +159,7 @@
 													</div>
 													<% end %>
 
-												<% if current_user.can_access?('Role Based Access') %>
+												<% if (current_user.present? && current_user&.super_administrator? || current_user.present? && current_user.administrator?) && !current_user.is_provider_account || current_user.can_access?('Role Based Access') %>
 													<div class="nav-item mb-1">
 														<a class="nav-link <%= active_menu('role_based_accesses,roles,users') %> <%= active_menu('index') %>" href="<%= role_based_accesses_path %>" data-placement="left">
 															<i class="bi bi-gear nav-icon"></i>
@@ -165,7 +168,7 @@
 													</div>
 												<% end %>
 
-												<% if (current_user&.super_administrator? || current_user&.administrator?) %>
+												<% if (current_user&.super_administrator? || current_user&.administrator?) && !current_user.is_provider_account %>
 													<div class="nav-item mb-1">
 														<a class="nav-link <%= active_menu('settings') %> <%= active_menu('index') %>" href="<%= settings_path %>" data-placement="left">
 															<i class="bi bi-gear nav-icon"></i>
@@ -180,7 +183,6 @@
 														</a>
 													</div>
 												<% end %>
-
 
 												<!-- logout -->
 												<div class="nav-item mb-1">

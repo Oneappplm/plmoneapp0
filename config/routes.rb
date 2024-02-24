@@ -337,7 +337,7 @@ Rails.application.routes.draw do
     end
   end
 
-		resources :audit_trails, only: [:show], path: 'audit-trail'
+		resources :audit_trails, only: [:index, :show], path: 'audit-trail'
 
   namespace :api do
     namespace :v1 do
