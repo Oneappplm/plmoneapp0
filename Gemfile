@@ -99,3 +99,4 @@ gem 'exception_notification' # https://github.com/smartinez87/exception_notifica
 gem "geocoder" # https://github.com/alexreisner/geocoder
 gem 'caxlsx'
 gem 'caxlsx_rails'
+gem "audited" # https://github.com/collectiveidea/audited
