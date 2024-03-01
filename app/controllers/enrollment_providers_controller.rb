@@ -57,7 +57,7 @@ class EnrollmentProvidersController < ApplicationController
 	  end
 	end
 
-  def 	(old_note, new_note)
+  def note_comparison(old_note, new_note)
   	if old_note != new_note
   		EnrollmentChangesNotification.with(provider_full_name: @enrollment_provider.full_name, payer: @enrollment_provider.details.first.enrollment_payer, note: "true").deliver(User.all)
   	end
