@@ -234,13 +234,24 @@ class EnrollmentClientsController < ApplicationController
     end
   end
 
-  def enrollment_details_report_to_csv
+  def provider_enrollment_details_report_to_csv
     @enrollment_details = EnrollmentProvidersDetail.includes(:application_status_logs, enrollment_provider: [provider: :group])
     if @month.present?
       @enrollment_details = @enrollment_details.where(created_at: @month.beginning_of_month..@month.end_of_month)
     end
     if current_user.clinic_admin? || current_user.clinic_super_admin?
       @enrollment_details = @enrollment_details.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
+    end
+  end
+
+  def provider_revalidation_report_to_csv
+    @enrollment_details = EnrollmentProvidersDetail.includes(enrollment_provider: [provider: :group])
+                              .where(enrollment_status: 'approved')
+    if @month.present?
+      @enrollment_details = @enrollment_details.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    end
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      @enrollment_details = enrollment_details.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
     end
   end
 
