@@ -241,7 +241,8 @@ module ApplicationHelper
 			['OIG(coming soon)','oig'],
 			['Liability','liability'],
 			['Group Revalidation(coming soon)','group_revalidation'],
-			['Provider Enrollment Detail Report', 'enrollment_details_report']
+			['Provider Enrollment Detail Report', 'provider_enrollment_details_report'],
+			['Provider Revalidation Report', 'provider_revalidation_report']
     ]
 	end
 
