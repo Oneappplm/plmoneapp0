@@ -629,7 +629,7 @@ class EnrollmentClientsController < ApplicationController
           enrollment_detail.enrollment_type,
           enrollment_detail.payer_state,
           enrollment_detail.enrollment_status,
-          enrollment_detail.application_status_logs&.where(status: 'application-submitted')&.last&.created_at&.strftime('%b %d, %Y'),
+          enrollment_detail.start_date,
           enrollment_detail.enrollment_effective_date,
           enrollment_detail.provider_id,
           enrollment_detail.revalidation_date,
