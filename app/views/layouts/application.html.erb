@@ -1036,6 +1036,24 @@ $('#provider_enrollment_group_id').on('change',function(){
     });
   });
 
+  // Fix on the part where clicking a date input
+  // It clears out the current value
+  onFocusDateField = (e) => {
+    curernt_value = e.target.value
+    if(curernt_value != '') {
+      myDate = curernt_value;
+      altDate = myDate.split('/');
+      tmpDate = altDate.pop();
+      altDate.unshift(tmpDate);
+      newDate = altDate.join('-');
+      e.target.type = 'date';
+      e.target.value = newDate
+    }
+    else{
+      e.target.type = 'date'
+    }
+  }
+
   $(document).on('click', '.enrollment-update-status',function() {
     var model = $(this).data('model');
     var status = $(this).data('status');
