@@ -4,15 +4,14 @@ header = s.add_style sz: 14, b: true, bg_color: "6EAA46", fg_color: "FFFFFF", al
 image = File.expand_path('public/logos/dcs-logo.png')
 wb.add_worksheet(name: "Post") do |sheet|
   sheet.add_image(image_src: image, start_at: 'A1', width: 300, height: 100)
-  sheet.merge_cells('A1:M1')
+  sheet.merge_cells('A1:L1')
   sheet.add_row [], height: 100
-  sheet.add_row ["Platform", "Group Name", "Notification of New Group", "Date Notification to begin submitting enrollment(Contract signed/Profile/Documents Complete)",
+  sheet.add_row ["Group Name", "Notification of New Group", "Date Notification to begin submitting enrollment(Contract signed/Profile/Documents Complete)",
               "Payor Name", "Group Id", "Enrollment Type", "State", "Application Status", "Initial Effective Date", "Most Current Revalidation Date", "Line of Services", "Notes"], style: header, height: 100
   @enrollment_details.each do |enrollment_detail|
     enroll_group = enrollment_detail.enroll_group
     group = enroll_group&.group
     sheet.add_row [
-      flatforms.detect{|flatform| flatform.last == group&.flatform }&.first,
       group&.group_name,
       group&.new_group_notification&.strftime('%b %d, %Y'),
       group&.notification_enrollment_submit_group&.strftime('%b %d, %Y'),
@@ -27,5 +26,5 @@ wb.add_worksheet(name: "Post") do |sheet|
       enrollment_detail.notes,
     ], types: [:string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string]
   end
-  sheet.column_widths 12, 18, 18, 30, 24, 12, 18, 16, 18, 18, 18, 18, 26
+  sheet.column_widths 18, 18, 30, 24, 12, 18, 16, 18, 18, 18, 18, 26
 end
