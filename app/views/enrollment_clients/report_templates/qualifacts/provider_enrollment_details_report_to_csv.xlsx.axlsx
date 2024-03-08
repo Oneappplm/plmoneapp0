@@ -2,15 +2,40 @@ wb = xlsx_package.workbook
 s = wb.styles
 header = s.add_style sz: 14, b: true, bg_color: "6EAA46", fg_color: "FFFFFF", alignment: { wrap_text: true, vertical: :center }
 wb.add_worksheet(name: "Post") do |sheet|
-  sheet.add_row ["Platform", "Group", "Provider Status", "Provider Last Name", "Provider First Name"], style: header, height: 50
+  sheet.add_row ["Platform", "Group", "Provider Status", "Provider Last Name", "Provider First Name", "Enrollment Type",
+                  "Payor Name", "Notification of New Provider", "Date Group Notification of Provider", "Date Notification to begin submitting enrollment",
+                  "State", "Initial Application Status", "Date Initial Application Submitted", "Effective Date", "Provider ID", "Notes"], style: header, height: 80
   @enrollment_details.each do |enrollment_detail|
+    provider = enrollment_detail.enrollment_provider&.provider
+    effective_date = Date.parse(enrollment_detail.enrollment_effective_date).strftime('%b %d, %Y') rescue ''
+    state_name = State.find_by(alpha_code: enrollment_detail.payer_state)&.name
+    effective_date = if enrollment_detail.enrollment_status == 'approved'
+                        Date.parse(enrollment_detail.enrollment_effective_date)&.strftime('%b %d, %Y') rescue ''
+                    elsif enrollment_detail.enrollment_status == 'terminated'
+                      Date.parse(enrollment_detail.terminated_date)&.strftime('%b %d, %Y') rescue ''
+                    elsif enrollment_detail.enrollment_status == 'denied'
+                      enrollment_detail.denied_date&.strftime('%b %d, %Y')
+                    else
+                      nil
+                    end
     sheet.add_row [
       flatforms.detect{|flatform| flatform.last == enrollment_detail.enrollment_provider&.provider&.group&.flatform }&.first,
-      enrollment_detail.enrollment_provider&.provider&.group&.group_name,
-      provider_statuses.detect{|flatform| flatform.last == enrollment_detail.enrollment_provider&.provider&.status }&.first,
-      enrollment_detail.enrollment_provider&.provider&.last_name,
-      enrollment_detail.enrollment_provider&.provider&.first_name
-    ], types: [:string, :string, :string, :string, :string]
+      provider&.group&.group_name,
+      provider_statuses.detect{|flatform| flatform.last == provider&.status }&.first,
+      provider&.last_name,
+      provider&.first_name,
+      enrollment_detail.enrollment_type,
+      enrollment_detail.enrollment_payer,
+      provider&.new_provider_notification&.strftime('%b %d, %Y'),
+      provider&.welcome_letter_sent&.strftime('%b %d, %Y'),
+      provider&.notification_enrollment_submit&.strftime('%b %d, %Y'),
+      state_name,
+      application_statuses.detect{|application_status| application_status.last == enrollment_detail.enrollment_status }&.first,
+      enrollment_detail.start_date&.strftime('%b %d, %Y'),
+      effective_date,
+      enrollment_detail.provider_id,
+      enrollment_detail.comment
+    ], types: [:string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string]
   end
-  sheet.column_widths 12, 18, 16, 24, 24
+  sheet.column_widths 12, 18, 16, 24, 24, 24, 24, 16, 16, 16, 16, 20, 16, 16, 14, 30
 end

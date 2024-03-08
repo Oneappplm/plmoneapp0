@@ -55,7 +55,12 @@ class EnrollmentClientsController < ApplicationController
   def download_documents
     @month = params[:month].present? ? DateTime.parse(params[:month].split("-").join("/")) : nil
     eval("#{params[:template]}_to_csv")
-    render xlsx: "#{params[:template]}_to_csv", template: "enrollment_clients/report_templates/#{current_setting.client_name}/#{params[:template]}_to_csv"
+
+    file_name = "#{params[:template]}_to_csv"
+    if params[:month].present?
+      file_name = "#{file_name}_#{params[:month]}"
+    end
+    render xlsx: file_name, template: "enrollment_clients/report_templates/#{current_setting.client_name}/#{params[:template]}_to_csv"
   end
 
   def dashboard
@@ -248,7 +253,7 @@ class EnrollmentClientsController < ApplicationController
     @enrollment_details = EnrollmentProvidersDetail.includes(enrollment_provider: [provider: :group])
                               .where(enrollment_status: 'approved')
     if @month.present?
-      @enrollment_details = @enrollment_details.where(created_at: @month.beginning_of_month..@month.end_of_month)
+      @enrollment_details = @enrollment_details.where(enrollment_effective_date: @month.beginning_of_month..@month.end_of_month)
     end
     if current_user.clinic_admin? || current_user.clinic_super_admin?
       @enrollment_details = enrollment_details.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})

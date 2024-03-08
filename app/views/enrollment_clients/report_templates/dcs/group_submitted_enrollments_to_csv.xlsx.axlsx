@@ -4,20 +4,19 @@ header = s.add_style sz: 14, b: true, bg_color: "6EAA46", fg_color: "FFFFFF", al
 image = File.expand_path('public/logos/dcs-logo.png')
 wb.add_worksheet(name: "Post") do |sheet|
   sheet.add_image(image_src: image, start_at: 'A1', width: 300, height: 100)
-  sheet.merge_cells('A1:H1')
+  sheet.merge_cells('A1:F1')
   sheet.add_row [], height: 100
-  sheet.add_row ["Platform", "Payor Name", "Group ID", "State", "Application Status", "Date Initial Application Submitted", "Initial Application Status", "Most Current Revalidation Date"], style: header, height: 60
+  sheet.add_row ["Payor Name", "Group ID", "State", "Application Status", "Date Initial Application Submitted", "Agent UserID"], style: header, height: 60
   @enrollment_details.each do |enrollment_detail|
+    state_name = State.find_by(alpha_code: enrollment_detail.payer_state)&.name
+
     sheet.add_row [
-      flatforms.detect{|flatform| flatform.last == enrollment_detail.enroll_group&.group&.flatform }&.first,
       enrollment_detail.enrollment_payer,
       enrollment_detail.enroll_group_id,
-      enrollment_detail.payer_state,
+      state_name,
       application_statuses.detect{|application_status| application_status.last == enrollment_detail.application_status }&.first,
       enrollment_detail.application_status_logs&.where(status: 'application-submitted')&.last&.created_at&.strftime('%b %d, %Y'),
-      enrollment_detail.enrollment_status,
-      enrollment_detail.revalidation_date
     ], types: [:string, :string, :string, :string, :string, :string, :string, :string]
   end
-  sheet.column_widths 12, 24, 18, 16, 20, 18, 18, 18
+  sheet.column_widths 24, 16, 16, 16, 16, 18
 end

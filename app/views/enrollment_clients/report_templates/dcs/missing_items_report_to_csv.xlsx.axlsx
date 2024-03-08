@@ -4,9 +4,9 @@ header = s.add_style sz: 14, b: true, bg_color: "6EAA46", fg_color: "FFFFFF", al
 image = File.expand_path('public/logos/dcs-logo.png')
 wb.add_worksheet(name: "Post") do |sheet|
   sheet.add_image(image_src: image, start_at: 'A1', width: 300, height: 100)
-  sheet.merge_cells('A1:J1')
+  sheet.merge_cells('A1:I1')
   sheet.add_row [], height: 100
-  sheet.add_row ["Platform", "Group Name", "State", "First Name","Middle Name", "Last Name", "Practitioner Type", "NPI", "Tax ID", "Missing Information"], style: header, height: 70
+  sheet.add_row ["Group Name", "State", "First Name","Middle Name", "Last Name", "Practitioner Type", "NPI", "Tax ID", "Missing Information"], style: header, height: 70
   @providers.each do |provider|
     state_id = provider&.state_id
     state_id = state_id.to_i
@@ -179,7 +179,6 @@ wb.add_worksheet(name: "Post") do |sheet|
       missing_information << "Include in Directory?(group)" if dco&.include_in_directory.blank?
     end
     sheet.add_row [
-      flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
       provider.group&.group_name,
       state_name,
       provider.first_name,
@@ -191,5 +190,5 @@ wb.add_worksheet(name: "Post") do |sheet|
       missing_information.join(', ')
     ], types: [:string, :string, :string, :string, :string, :string, :string, :string, :string, :string]
   end
-  sheet.column_widths 12, 18, 12, 24, 24, 24, 18, 18, 12, 30
+  sheet.column_widths 18, 12, 24, 24, 24, 18, 18, 12, 30
 end
