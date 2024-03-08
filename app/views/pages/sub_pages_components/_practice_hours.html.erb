@@ -16,22 +16,47 @@
                <div class="col-lg-3">
                   <%= day %>
                </div>
-               <div class="col-lg-5">
+               <div class="col-lg-4">
                   <div class="d-flex align-items-center gap">
-                     <input type="time" name="<%= day.downcase %>_practice_hours_from" class="form-control">
+                     <input type="time" name="<%= day.downcase %>_practice_hours_from" class="<%= day.downcase %>_practice_hours_from form-control">
                      <label class="mx-2">to</label>
-                     <input type="time" name="<%= day.downcase %>_practice_hours_to" class="form-control">
+                     <input type="time" name="<%= day.downcase %>_practice_hours_to" class="<%= day.downcase %>_practice_hours_to form-control">
+                  </div>
+               </div>
+               <div class="col-lg-1">
+                  <div class="dropdown" data-toggle="tooltip" data-placement="top" title="Copy hours">
+                     <a class="navbar-dropdown-account-wrapper" href="javascript:;" id="accountNavbarDropdown" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside" data-bs-dropdown-animation>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
+                           <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                        </svg>
+                     </a>
+                     <div class="dropdown-menu dropdown-checkbox-copy-hours dropdown-menu-end navbar-dropdown-menu navbar-dropdown-menu-borderless navbar-dropdown-account p-0" aria-labelledby="accountNavbarDropdown" style="width: 200px;border:1px solid #09a5be;">
+                        <div class="dropdown-item-text m-0 text-center pt-3 text-bold" style="line-height:0;">
+                           <p class="m-0" style="line-height:0;">Copy hours to another day</p>
+                        </div>
+                        <div class="dropdown-divider" style="border-color:#09a5be!important;"></div>
+                        <label class="text-dark-grey w-100 px-2 py-1">
+                           <input type="checkbox" id="<%= day.downcase %>_practice_hours_apply_to_all" class="copy_hour_checkbox no-auto-save" autocomplete="off">
+                           All
+                        </label>
+                        <% days.each do |_day|%>
+                           <label class="text-dark-grey w-100 px-2 py-1">
+                              <input type="checkbox" id="<%= day.downcase %>_practice_hours_apply_to_<%= _day.downcase %>" autocomplete="off" class="copy_hour_checkbox no-auto-save" <%= _day.downcase == day.downcase ? 'disabled' : ''%>>
+                              <%= _day %>
+                           </label>
+                        <% end %>
+                     </div>
                   </div>
                </div>
                <div class="col-lg-2">
                   <label class="text-dark-grey">
-                  <input type="checkbox" name="practice_hours_split_day_<%= day %>">
-                  Split Day
+                  <input type="checkbox" name="practice_hours_split_day_<%= day %>" id="practice_hours_split_day_<%= day %>">
+                     Split Day
                   </label>
                </div>
                <div class="col-lg-2">
                   <label class="text-dark-grey">
-                  <input type="checkbox" name="practice_hours_closed_<%= day %>">
+                  <input type="checkbox" name="practice_hours_closed_<%= day %>" id="practice_hours_closed_<%= day %>">
                   Closed
                   </label>
                </div>
@@ -97,3 +122,36 @@
    </div>
 </div>
 </form>
+
+<script>
+   var dropdown = $('.dropdown-checkbox-copy-hours');
+   $(document).click(function(e){
+      if (!$(e.target).closest('.dropdown-checkbox-copy-hours').length ) {
+         $('.copy_hour_checkbox').removeAttr('checked')
+      }
+   });
+   $(document).ready(function() {
+      const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+
+      $('.copy_hour_checkbox').change((e) => {
+         var id = e.target.id.split("_")
+         var copy_from = id[0]
+         var copy_to = id.pop()
+         var copy_from_from_value = $(`.${copy_from}_practice_hours_from`).val()
+         var copy_from_to_value = $(`.${copy_from}_practice_hours_to`).val()
+         if(copy_to == "all"){
+            for (let i = 0; i < days.length; i++) {
+               var copy_to_id = id.join("_") + `_${days[i]}`
+
+               $(`.${days[i]}_practice_hours_from`).val(copy_from_from_value)
+               $(`.${days[i]}_practice_hours_to`).val(copy_from_to_value)
+               $(`.${days[i]}_practice_hours_from, .${days[i]}_practice_hours_to`).trigger("change");
+            }
+         } else {
+            $(`.${copy_to}_practice_hours_from`).val(copy_from_from_value)
+            $(`.${copy_to}_practice_hours_to`).val(copy_from_to_value)
+            $(`.${copy_to}_practice_hours_from, .${copy_to}_practice_hours_to`).trigger("change");
+         }
+      })
+   });
+</script>
