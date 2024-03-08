@@ -475,7 +475,7 @@ module ApplicationHelper
     [
       ['Add','add'],
       ['Initial','Initial'],
-      ['Recred/Reval','recred'],
+      ['Re-validation/Re-credentialing','recred'],
       ['Not part on contract','not_part_on_contract']
     ]
   end
