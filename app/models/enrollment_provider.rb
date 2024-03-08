@@ -102,7 +102,7 @@ class EnrollmentProvider < ApplicationRecord
 				['Re-Credential','re_credential'],
 				['Terminate Contract','terminate_contract'],
 				['Add Location','add_location'],
-				['Tin Change','tin_change']
+				['TIN Change','tin_change']
 			]
 		else
 			[
