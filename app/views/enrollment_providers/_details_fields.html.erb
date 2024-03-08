@@ -28,10 +28,11 @@
      </div>
   <% end %>
   <div class="row mb-3">
-    <div class="col-lg-6">
-      <label class="text-dark-grey">Application Status</label>
+     <div class="col-lg-6">
+       <label class="text-dark-grey">Initial Application Status</label>
        <%= f.select :enrollment_status, options_for_select(enrollment_status, f.object.enrollment_status), { prompt: 'Enrollment Status' }, { class: 'form-select multi-enrollment-status border border-dark' } %>
     </div>
+
     <div class="col-lg-6">
       <label class="text-dark-grey">State</label>
        <%= f.select :payer_state, options_for_select([]), { prompt: 'State' }, {:class => 'form-select border border-dark payer-state single-select',  data: { value: f.object.payer_state } }  %>
@@ -40,25 +41,25 @@
 
   <div class="row mb-3 date_field <%= f.object&.enrollment_status.present? ? '' : 'd-none'%>">
     <div class="col-lg-6">
-      <label class="text-dark-grey">Application Date</label>
-      <%= f.text_field :start_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.start_date), onfocus: "onFocusDateField(event)" %>
+      <label class="text-dark-grey"> Date Initial Application Submitted </label>
+      <%= f.text_field :start_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.start_date), onfocus: "(this.type = 'date')" %>
     </div>
   </div>
 
     <div class="row mb-3 revalidation-fields <%= f.object&.enrollment_status == 'approved' ? '' : 'd-none'%>">
       <div class="col-lg-6">
         <label class="text-dark-grey">Initial Effective Date</label>
-          <%= f.text_field :enrollment_effective_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.enrollment_effective_date), onfocus: "onFocusDateField(event)" %>
+          <%= f.text_field :enrollment_effective_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.enrollment_effective_date), onfocus: "(this.type = 'date')" %>
       </div>
       <div class="row mt-3 mb-3">
           <div class="col-lg-6">
             <label class="text-dark-grey">Most Current Revalidation Date</label>
-              <%= f.text_field :revalidation_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.revalidation_date), onfocus: "onFocusDateField(event)" %>
+              <%= f.text_field :revalidation_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.revalidation_date), onfocus: "(this.type = 'date')" %>
           </div>
           <div class="col-lg-6">
             <label class="text-dark-grey">Revalidation Next Due Date</label>
 												<!-- f.object.revalidation_due_date -->
-              <%= f.text_field :revalidation_due_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.revalidation_due_date), onfocus: "onFocusDateField(event)" %>
+              <%= f.text_field :revalidation_due_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.revalidation_due_date), onfocus: "(this.type = 'date')" %>
           </div>
       </div>
         <div class="col-lg-12">
@@ -75,7 +76,7 @@
   <div class="row mb-3 processing-field <%= f.object&.enrollment_status == 'processing' ? '' : 'd-none'%>">
     <div class="col-lg-6">
       <label class="text-dark-grey">Processing Date</label>
-      <%= f.text_field :processing_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.processing_date), onfocus: "onFocusDateField(event)" %>
+      <%= f.text_field :processing_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.processing_date), onfocus: "(this.type = 'date')" %>
     </div>
   </div>
 
@@ -89,7 +90,7 @@
   <div class="row mb-3 terminated-field <%= f.object&.enrollment_status == 'terminated' ? '' : 'd-none'%>">
       <div class="col-lg-6">
         <label class="text-dark-grey">Terminated Date</label>
-        <%= f.text_field :terminated_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.terminated_date), onfocus: "onFocusDateField(event)" %>
+        <%= f.text_field :terminated_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.terminated_date), onfocus: "(this.type = 'date')" %>
       </div>
   </div>
   <div class="row mb-2">
