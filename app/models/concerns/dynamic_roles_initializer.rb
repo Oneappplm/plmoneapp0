@@ -15,7 +15,7 @@ module DynamicRolesInitializer
 			if method_name.to_s.start_with?("pick_")
 				role_name = method_name.to_s.sub("pick_", "") # Remove leading "pick_" if present
 				role_name = role_name.downcase.parameterize(separator: '_')
-				find_by(user_role: role_name)
+				where(user_role: role_name)
 			else
 				super
 			end
