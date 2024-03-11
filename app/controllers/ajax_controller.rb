@@ -407,8 +407,8 @@ class AjaxController < ApplicationController
       ['Enrollment Required Maintenance', 'enrollment_maintenance'],
 			['FBI Checks', 'fbi_checks'],
 			['Hospital Org PSV', 'hospital_org'],
-      ['Facility Re-Enrollment', 'facility_enrollment'],
-      ['Provider Re-Enrollment', 'provider_enrollment']
+      ['Facility Re-Enrollment', 'facility_re_enrollment'],
+      ['Provider Re-Enrollment', 'provider_re_enrollment']
 		]
   end
 
