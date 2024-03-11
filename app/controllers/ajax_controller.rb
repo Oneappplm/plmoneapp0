@@ -396,16 +396,6 @@ class AjaxController < ApplicationController
     end
   end
 
-  def create_payor_name
-    @payor_name = PayorName.new(title: params[:payor_name][:title])
-
-    if @payor_name.save
-      head :ok
-    else
-      render json:  { message: @payor_name.errors}, status: :unprocessable_entity
-    end
-  end
-
   protected
 
   def provider_notification_services
@@ -417,8 +407,8 @@ class AjaxController < ApplicationController
       ['Enrollment Required Maintenance', 'enrollment_maintenance'],
 			['FBI Checks', 'fbi_checks'],
 			['Hospital Org PSV', 'hospital_org'],
-      ['Facility Re-Enrollment', 'facility_enrollment'],
-      ['Provider Re-Enrollment', 'provider_enrollment']
+      ['Facility Re-Enrollment', 'facility_re-enrollment'],
+      ['Provider Re-Enrollment', 'provider_re-enrollment']
 		]
   end
 
