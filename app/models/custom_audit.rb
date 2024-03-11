@@ -9,11 +9,11 @@ class CustomAudit < Audited::Audit
 
 	def display_source
 		if auditable_type == 'Provider'
-			auditable.fullname
+			auditable&.fullname
 		elsif auditable_type == 'EnrollmentProvidersDetail'
 			auditable.enrollment_provider.full_name
 		elsif auditable_type == 'User'
-			auditable.full_name
+			auditable&.full_name
 		else
 			"N/A"
 		end
