@@ -4,7 +4,7 @@ header = s.add_style sz: 14, b: true, bg_color: "6EAA46", fg_color: "FFFFFF", al
 wb.add_worksheet(name: "Post") do |sheet|
   sheet.add_row ["Platform", "Group", "Provider Status", "Provider Last Name", "Provider First Name", "Enrollment Type",
                   "Payor Name", "Notification of New Provider", "Date Group Notification of Provider", "Date Notification to begin submitting enrollment",
-                  "State", "Initial Application Status", "Date Initial Application Submitted", "Effective Date", "Provider ID", "Notes"], style: header, height: 80
+                  "State", "Initial Application Status", "Date Initial Application Submitted", "Effective Date", "Provider ID", "Current Revalidation Date", "Next Revalidation Date", "Notes"], style: header, height: 80
   @enrollment_details.each do |enrollment_detail|
     provider = enrollment_detail.enrollment_provider&.provider
     effective_date = Date.parse(enrollment_detail.enrollment_effective_date).strftime('%b %d, %Y') rescue ''
@@ -21,7 +21,7 @@ wb.add_worksheet(name: "Post") do |sheet|
     sheet.add_row [
       flatforms.detect{|flatform| flatform.last == enrollment_detail.enrollment_provider&.provider&.group&.flatform }&.first,
       provider&.group&.group_name,
-      provider_statuses.detect{|flatform| flatform.last == provider&.status }&.first,
+      provider_statuses.detect{|provider_status| provider_status.last == provider&.status }&.first,
       provider&.last_name,
       provider&.first_name,
       enrollment_detail.enrollment_type,
@@ -34,8 +34,10 @@ wb.add_worksheet(name: "Post") do |sheet|
       enrollment_detail.start_date&.strftime('%b %d, %Y'),
       effective_date,
       enrollment_detail.provider_id,
+      enrollment_detail.revalidation_date&.strftime('%b %d, %Y'),
+      enrollment_detail.revalidation_due_date&.strftime('%b %d, %Y'),
       enrollment_detail.comment
-    ], types: [:string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string]
+    ], types: [:string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string]
   end
-  sheet.column_widths 12, 18, 16, 24, 24, 24, 24, 16, 16, 16, 16, 20, 16, 16, 14, 30
+  sheet.column_widths 12, 18, 16, 24, 24, 24, 24, 16, 16, 16, 16, 20, 16, 16, 14, 24, 24, 30
 end

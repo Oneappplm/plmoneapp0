@@ -2,21 +2,23 @@ wb = xlsx_package.workbook
 s = wb.styles
 header = s.add_style sz: 14, b: true, bg_color: "6EAA46", fg_color: "FFFFFF", alignment: { wrap_text: true, vertical: :center }
 wb.add_worksheet(name: "Post") do |sheet|
-  sheet.add_row ["Platform", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "OIG  Status", " Source Date", " Verification Date", "OIG Status", "OIG Verification Date", "OIG Source Date"], style: header, height: 60
+  sheet.add_row ["Platform", "Group Name", "Provider Status", "First Name", "Last Name", "Practitioner Type", "NPI", "State", "OIG  Status", " Source Date", " Verification Date"], style: header, height: 60
   @providers.each do |provider|
     caqh_reattest_completed_by = Date.parse(provider&.caqh_reattest_completed_by)&.strftime('%b %d, %Y') rescue nil
+    state_name = State.find_by(id: provider.state_id)&.name rescue nil
     sheet.add_row [
       flatforms.detect{|flatform| flatform.last == provider.group&.flatform }&.first,
       provider.group&.group_name,
+      provider_statuses.detect{|provider_status| provider_status.last == provider&.status }&.first,
       provider.first_name,
       provider.last_name,
       provider.practitioner_type,
       provider.npi,
-      provider.state_id,
+      state_name,
       "",
       provider.caqh_current_reattestation_date&.strftime('%b %d, %Y'),
       caqh_reattest_completed_by
-    ], types: [:string, :string, :string, :string, :string, :string, :string, :string, :string, :string]
+    ], types: [:string, :string, :string, :string, :string, :string, :string, :string, :string, :string, :string]
   end
-  sheet.column_widths 12, 18, 24, 24, 18, 16, 12, 12, 16, 16, 12, 16, 16
+  sheet.column_widths 12, 18, 18, 24, 24, 18, 16, 12, 12, 16, 16
 end
