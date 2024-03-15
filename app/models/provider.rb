@@ -108,6 +108,66 @@ class Provider < ApplicationRecord
 
   after_save :send_welcome_letter
 
+		def self.to_csv
+			providers = Provider.all
+			CSV.generate do |csv|
+				csv << [
+					"First Name",
+					"Last Name",
+					"Birth Date",
+					"Birth City",
+					"Address Line 1",
+					"City",
+					"State",
+					"Zip Code",
+					"Practitioner Type",
+					"Taxonomy",
+					"Specialty",
+					"Enrollment Group",
+					"State License Copies",
+					"DEA Copies",
+					"W9 Form Copies",
+					"Certificate of Insurance Copies",
+					"Drivers License Copies",
+					"Board Certification Copies",
+					"CAQH App Copies",
+					"CV Copies",
+					"Telehealth License Copies",
+					"School Certificate"
+				]
+
+				# csv << column_names
+				providers.each do |provider|
+					# csv << [provider.provider_name, provider.practitioner, provider.npi]
+					# csv << provider.attributes.values_at(*column_names)
+					csv << [
+						provider&.first_name,
+						provider&.last_name,
+						provider&.birth_date,
+						provider&.birth_city,
+						provider&.address_line_1,
+						provider&.city,
+						provider&.state&.name,
+						provider&.zip_code,
+						provider&.practitioner_type,
+						provider&.taxonomy,
+						provider&.specialty,
+						provider&.group&.group_name,
+					(provider&.state_license_copies&.map(&:url).join(',') rescue	nil),
+					(provider&.dea_copies&.map(&:url).join(',') rescue	nil),
+					(provider&.w9_form_copies&.map(&:url).join(',') rescue	nil),
+					(provider&.certificate_insurance_copies&.map(&:url).join(',') rescue	nil),
+					(provider&.driver_license_copies&.map(&:url).join(',') rescue	nil),
+					(provider&.board_certification_copies&.map(&:url).join(',') rescue	nil),
+					(provider&.caqh_app_copies&.map(&:url).join(',') rescue	nil),
+					(provider&.cv_copies&.map(&:url).join(',') rescue	nil),
+					(provider&.telehealth_license_copies&.map(&:url).join(',') rescue	nil),
+					(provider&.school_certificate&.map(&:url).join(',') rescue	nil)
+					]
+				end
+			end
+		end
+
   # this is for all required fields including uploads
   def self.with_missing_required_attributes
     joins("LEFT JOIN provider_licenses ON providers.id = provider_licenses.provider_id")

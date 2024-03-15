@@ -41,7 +41,16 @@ class ProvidersController < ApplicationController
 			@providers = @providers.paginate(per_page: 10, page: params[:page] || 1)
 
 			@providers = @providers.reorder("f asc NULLS last", "m asc NULLS last", "l asc NULLS last").paginate(per_page: 10, page: params[:page] || 1)
-	end
+
+			respond_to do	|format|
+				format.html
+				format.json { render json: @providers_without_pagination }
+				format.csv {
+					send_data Provider.to_csv, filename: "providers-#{DateTime.now.strftime("%d%m%Y%H%M")}.csv"
+				}
+			end
+
+		end
 
 	def new
 			@provider = Provider.new
