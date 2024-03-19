@@ -555,7 +555,7 @@ $('input:not([type="hidden"]), textarea, select').on('change', function() {
         $(this).removeClass('border-dark');
         $(this).addClass('is-invalid');
       }
-    } else {
+    } else if(!($(this).hasClass('no-auto-save')))  {
 	    saveInput($(this));
     }
   }
@@ -640,7 +640,6 @@ function saveInputMultiRecord(input) {
     },
     error: function() {
       console.log('Autosave failed!');
-      
     }
   })
 }
@@ -669,17 +668,19 @@ function saveInput(input) {
       }
 
       $.ajax({
-          url: url,
-          method: 'POST',
-          dataType: 'json',
-          data: { authenticity_token: csrfToken, field_name: fieldName, value: value },
-          success: function(data) {
-              console.log('Autosaved successfully!');
-              getProgress();
-          },
-          error: function() {
-              console.log('Autosave failed!');
-          }
+        url: url,
+        method: 'POST',
+        dataType: 'json',
+        data: { authenticity_token: csrfToken, field_name: fieldName, value: value },
+        success: function(data) {
+          console.log('Autosaved successfully!');
+          getProgress();
+          setPracticeHoursInputs(data.data_value, fieldName)
+
+        },
+        error: function() {
+            console.log('Autosave failed!');
+        }
       });
 }
 
@@ -712,222 +713,274 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
 			data: { authenticity_token: csrfToken, field_name: inputName },
 			dataType: 'json',
 			success: function(data) {
-          if (inputType == 'radio' || inputType == 'checkbox') {
-            var radioInput = $(tagName + '[name="' + inputName + '"][value="' + data.value + '"]');
+        if (inputType == 'radio' || inputType == 'checkbox') {
+          var radioInput = $(tagName + '[name="' + inputName + '"][value="' + data.value + '"]');
 
-            if (data.value == 'yes' || data.value == 'on'){
-              if(inputType == 'radio'){
-                radioInput.prop("checked", true);
-                $('#'+inputName+'-holder').removeClass('d-none')
-              }else if(inputType == 'checkbox'){
-                $(tagName + '[name="' + inputName + '"]').prop("checked", true);
-              }
-            }else{
-              // console.log(tagName + '[name="' + inputName + '"]')
-              if(inputType == 'radio'){
-                radioInput.prop("checked", true);
-                $('#'+inputName+'-holder').addClass('d-none')
-              }else if(inputType == 'checkbox'){
-                $(tagName + '[name="' + inputName + '"]').prop("checked", false);
-              }
+          if (data.value == 'yes' || data.value == 'on'){
+            if(inputType == 'radio'){
+              radioInput.prop("checked", true);
+              $('#'+inputName+'-holder').removeClass('d-none')
+            }else if(inputType == 'checkbox'){
+              $(tagName + '[name="' + inputName + '"]').prop("checked", true);
             }
-
-            if (inputName == 'other_name'){
-              if (data.value == 'yes'){
-                $('#other_name_field').removeClass('d-none');
-              }else{
-                $('#other_name_field').addClass('d-none');
-              }
-            }
-
-            if (inputName == 'ssn'){
-              if (data.value == 'yes'){
-                $('#ssn_field').removeClass('d-none');
-              }else{
-                $('#ssn_field').addClass('d-none');
-              }
-            }
-
-             if (inputName == 'dea_full_schedule'){
-              if (data.value == 'no'){
-                $('#dea_tarea').removeClass('d-none');
-              }else{
-                $('#dea_tarea').addClass('d-none');
-              }
-            }
-
-            if(inputName == 'licensure_require_supervision'){
-              if (data.value == 'yes'){
-                $('#supervised_fields').removeClass('d-none');
-              }else{
-                $('#supervised_fields').addClass('d-none');
-              }
-            }
-
-            if (inputName == 'edc_collab'){
-              if (data.value == 'yes'){
-                $('#collab_form').removeClass('d-none');
-              }else{
-                $('#collab_form').addClass('d-none');
-              }
-            }
-
-            if (inputName == 'medicare_field'){
-              if (data.value == 'yes'){
-                $('#medicare_fields_test').removeClass('d-none');
-              }else{
-                $('#medicare_fields_test').addClass('d-none');
-              }
-            }
-
-            if (inputName == 'medicaid_field'){
-              if (data.value == 'yes'){
-                $('#medicaid_fields').removeClass('d-none');
-              }else{
-                $('#medicaid_fields').addClass('d-none');
-              }
-            }
-
-            if (inputName == 'caqh_field'){
-              if (data.value == 'yes'){
-                $('#caqh_fields').removeClass('d-none');
-              }else{
-                $('#caqh_fields').addClass('d-none');
-              }
-            }
-
-            if (inputName == 'other_cert_field'){
-              if (data.value == 'yes'){
-                $('#other_cert_fields').removeClass('d-none');
-              }else{
-                $('#other_cert_fields').addClass('d-none');
-              }
-            }
-
-
-            if (inputName == 'honorably_discharge'){
-              if (data.value == 'no'){
-                $('#is-discharged-field').removeClass('d-none');
-              }else{
-                $('#is-discharged-field').addClass('d-none');
-              }
-            }
-
-            if (inputName == 'military_court_martialed'){
-              if (data.value == 'yes'){
-                $('#court-martialed-field').removeClass('d-none');
-              }else{
-                $('#court-martialed-field').addClass('d-none');
-              }
-            }
-
-            if (inputName == 'military_reserve'){
-              if (data.value == 'yes'){
-                $('#military-reserve-field').removeClass('d-none');
-              }else{
-                $('#military-reserve-field').addClass('d-none');
-              }
-            }
-
-            if (inputName == 'is_self_insured'){
-             if (value === 'yes') {
-                  document.getElementById('insured_form_fields').classList.remove('d-none');
-                  document.getElementById('not_insured_form_fields').classList.add('d-none');
-              } else if (value === 'no') {
-                  document.getElementById('insured_form_fields').classList.add('d-none');
-                  document.getElementById('not_insured_form_fields').classList.remove('d-none');
-              }
-            }
-
-
-
-            if (inputName == 'practice_patient_age_not_applicable') {
-              if ($('#age_not_applicable').is(':checked')) {
-                $('.age-restrict').prop('disabled', true);
-                  $('.age-restrict').val('');
-              } else {
-                $('.age-restrict').removeAttr('disabled');
-              }
-            }
-
-            if (inputName == 'dea_not_expire') {
-              if ($('#dea-not-expire').is(':checked')) {
-                $('.dea-expire').prop('disabled', true);
-                  $('.dea-expire').val('');
-              } else {
-                $('.dea-expire').removeAttr('disabled');
-              }
-            }
-
-            if (inputName == 'cds_not_expire') {
-              if ($('#cds-not-expire').is(':checked')) {
-                $('.cds-expire').prop('disabled', true);
-                  $('.cds-expire').val('');
-              } else {
-                $('.cds-expire').removeAttr('disabled');
-              }
-            }
-
-            if (inputName == 'ps_registration_not_expire') {
-              if ($('#ps-registration-not-expire').is(':checked')) {
-                $('.ps-registration-expire').prop('disabled', true);
-                  $('.ps-registration-expire').val('');
-              } else {
-                $('.ps-registration-expire').removeAttr('disabled');
-              }
-            }
-
-            if (inputName == 'licensure_not_expire') {
-              if ($('#licensure-not-expire').is(':checked')) {
-                $('.licensure-expire').prop('disabled', true);
-                  $('.licensure-expire').val('');
-              } else {
-                $('.licensure-expire').removeAttr('disabled');
-              }
-            }
-
-            if (inputName == 'participating_medicaid_no_number') {
-              if ($('#participating-medicaid-no-number').is(':checked')) {
-                $('.medicaid-number').prop('disabled', true);
-                  $('.medicaid-number').val('');
-              } else {
-                $('.medicaid-number').removeAttr('disabled');
-              }
-            }
-
-            if (inputName == 'other_certification_not_expire') {
-              if ($('#other-certification-not-expire').is(':checked')) {
-                $('.other-cert-expire').prop('disabled', true);
-                  $('.other-cert-expire').val('');
-              } else {
-                $('.other-cert-expire').removeAttr('disabled');
-              }
-            }
-
-          } else if((tagName == 'select') && (inputName != 'month_attended')){
-            displayFieldsFromSelectElement(data, inputName, tagName);
-          }  else if(inputType == 'hidden'){
-            displayFieldsFromHiddenElement(data, inputName, tagName);
-          } else if(inputType == 'multi-select'){
-            displayFieldsFromMultiSelectElement(data, inputName, tagName);
-          } else  {
-            try {
-              if (typeof inputName === 'undefined') {
-                console.error('inputName is not defined', inputName, tagName, inputType, data);
-              } else {
-                if(isMultiRecord === false)
-                  displayFieldsFromInputElement(data, inputName, tagName, inputType);
-              }
-            } catch (error) {
-              // Handle the error here
-              console.log(inputName, tagName, inputType);
-              console.error("An error occurred:", error);
+          }else{
+            // console.log(tagName + '[name="' + inputName + '"]')
+            if(inputType == 'radio'){
+              radioInput.prop("checked", true);
+              $('#'+inputName+'-holder').addClass('d-none')
+            }else if(inputType == 'checkbox'){
+              $(tagName + '[name="' + inputName + '"]').prop("checked", false);
             }
           }
+
+          setPracticeHoursInputs(data.value, inputName)
+
+          if (inputName == 'other_name'){
+            if (data.value == 'yes'){
+              $('#other_name_field').removeClass('d-none');
+            }else{
+              $('#other_name_field').addClass('d-none');
+            }
+          }
+
+          if (inputName == 'ssn'){
+            if (data.value == 'yes'){
+              $('#ssn_field').removeClass('d-none');
+            }else{
+              $('#ssn_field').addClass('d-none');
+            }
+          }
+
+          if (inputName == 'dea_full_schedule'){
+            if (data.value == 'no'){
+              $('#dea_tarea').removeClass('d-none');
+            }else{
+              $('#dea_tarea').addClass('d-none');
+            }
+          }
+
+          if(inputName == 'licensure_require_supervision'){
+            if (data.value == 'yes'){
+              $('#supervised_fields').removeClass('d-none');
+            }else{
+              $('#supervised_fields').addClass('d-none');
+            }
+          }
+
+          if (inputName == 'edc_collab'){
+            if (data.value == 'yes'){
+              $('#collab_form').removeClass('d-none');
+            }else{
+              $('#collab_form').addClass('d-none');
+            }
+          }
+
+          if (inputName == 'medicare_field'){
+            if (data.value == 'yes'){
+              $('#medicare_fields_test').removeClass('d-none');
+            }else{
+              $('#medicare_fields_test').addClass('d-none');
+            }
+          }
+
+          if (inputName == 'medicaid_field'){
+            if (data.value == 'yes'){
+              $('#medicaid_fields').removeClass('d-none');
+            }else{
+              $('#medicaid_fields').addClass('d-none');
+            }
+          }
+
+          if (inputName == 'caqh_field'){
+            if (data.value == 'yes'){
+              $('#caqh_fields').removeClass('d-none');
+            }else{
+              $('#caqh_fields').addClass('d-none');
+            }
+          }
+
+          if (inputName == 'other_cert_field'){
+            if (data.value == 'yes'){
+              $('#other_cert_fields').removeClass('d-none');
+            }else{
+              $('#other_cert_fields').addClass('d-none');
+            }
+          }
+
+
+          if (inputName == 'honorably_discharge'){
+            if (data.value == 'no'){
+              $('#is-discharged-field').removeClass('d-none');
+            }else{
+              $('#is-discharged-field').addClass('d-none');
+            }
+          }
+
+          if (inputName == 'military_court_martialed'){
+            if (data.value == 'yes'){
+              $('#court-martialed-field').removeClass('d-none');
+            }else{
+              $('#court-martialed-field').addClass('d-none');
+            }
+          }
+
+          if (inputName == 'military_reserve'){
+            if (data.value == 'yes'){
+              $('#military-reserve-field').removeClass('d-none');
+            }else{
+              $('#military-reserve-field').addClass('d-none');
+            }
+          }
+
+          if (inputName == 'is_self_insured'){
+            if (value === 'yes') {
+                document.getElementById('insured_form_fields').classList.remove('d-none');
+                document.getElementById('not_insured_form_fields').classList.add('d-none');
+            } else if (value === 'no') {
+                document.getElementById('insured_form_fields').classList.add('d-none');
+                document.getElementById('not_insured_form_fields').classList.remove('d-none');
+            }
+          }
+
+          if (inputName == 'practice_patient_age_not_applicable') {
+            if ($('#age_not_applicable').is(':checked')) {
+              $('.age-restrict').prop('disabled', true);
+                $('.age-restrict').val('');
+            } else {
+              $('.age-restrict').removeAttr('disabled');
+            }
+          }
+
+          if (inputName == 'dea_not_expire') {
+            if ($('#dea-not-expire').is(':checked')) {
+              $('.dea-expire').prop('disabled', true);
+                $('.dea-expire').val('');
+            } else {
+              $('.dea-expire').removeAttr('disabled');
+            }
+          }
+
+          if (inputName == 'cds_not_expire') {
+            if ($('#cds-not-expire').is(':checked')) {
+              $('.cds-expire').prop('disabled', true);
+                $('.cds-expire').val('');
+            } else {
+              $('.cds-expire').removeAttr('disabled');
+            }
+          }
+
+          if (inputName == 'ps_registration_not_expire') {
+            if ($('#ps-registration-not-expire').is(':checked')) {
+              $('.ps-registration-expire').prop('disabled', true);
+                $('.ps-registration-expire').val('');
+            } else {
+              $('.ps-registration-expire').removeAttr('disabled');
+            }
+          }
+
+          if (inputName == 'licensure_not_expire') {
+            if ($('#licensure-not-expire').is(':checked')) {
+              $('.licensure-expire').prop('disabled', true);
+                $('.licensure-expire').val('');
+            } else {
+              $('.licensure-expire').removeAttr('disabled');
+            }
+          }
+
+          if (inputName == 'participating_medicaid_no_number') {
+            if ($('#participating-medicaid-no-number').is(':checked')) {
+              $('.medicaid-number').prop('disabled', true);
+                $('.medicaid-number').val('');
+            } else {
+              $('.medicaid-number').removeAttr('disabled');
+            }
+          }
+
+          if (inputName == 'other_certification_not_expire') {
+            if ($('#other-certification-not-expire').is(':checked')) {
+              $('.other-cert-expire').prop('disabled', true);
+                $('.other-cert-expire').val('');
+            } else {
+              $('.other-cert-expire').removeAttr('disabled');
+            }
+          }
+        } else if((tagName == 'select') && (inputName != 'month_attended')){
+          displayFieldsFromSelectElement(data, inputName, tagName);
+        }  else if(inputType == 'hidden'){
+          displayFieldsFromHiddenElement(data, inputName, tagName);
+        } else if(inputType == 'multi-select'){
+          displayFieldsFromMultiSelectElement(data, inputName, tagName);
+        } else  {
+          try {
+            if (typeof inputName === 'undefined') {
+              console.error('inputName is not defined', inputName, tagName, inputType, data);
+            } else {
+              if(isMultiRecord === false)
+                displayFieldsFromInputElement(data, inputName, tagName, inputType);
+            }
+          } catch (error) {
+            // Handle the error here
+            console.log(inputName, tagName, inputType);
+            console.error("An error occurred:", error);
+          }
+        }
 			}
 	  });
 });
 
+function setPracticeHoursInputs(value, inputName) {
+  days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+  days.forEach((day) => {
+    titleized_day = day.charAt(0).toUpperCase() + day.slice(1)
+    if (inputName == `practice_hours_closed_${day}` || inputName == `practice_hours_closed_${titleized_day}`){
+      if (value == 'yes'){
+        $(`.${day}_by_appointment_only`).prop('disabled', true);
+      }else{
+        $(`.${day}_by_appointment_only`).removeAttr('disabled');
+      }
+    }
+
+    if (inputName == `${day}_by_appointment_only`){
+      if (value == 'yes'){
+        $(`.${day}_hour_from_and_to_container`).addClass('d-none');
+        $(`.${day}_copy_dropdown_container`).addClass('d-none');
+        $(`.${day}_open_24_hour_container`).addClass('d-none');
+        $(`.${day}_practice_hours_split_day_container`).addClass('d-none');
+        $(`.${day}_by_appointment_only_phone_container`).removeClass('d-none');
+        $(`.${day}_by_appointment_only_email_container`).removeClass('d-none');
+        $(`.${day}_practice_hours_closed`).prop('disabled', true);
+      }else{
+        $(`.${day}_practice_hours_closed`).removeAttr('disabled');
+        $(`.${day}_hour_from_and_to_container`).removeClass('d-none');
+        $(`.${day}_copy_dropdown_container`).removeClass('d-none');
+        $(`.${day}_open_24_hour_container`).removeClass('d-none');
+        $(`.${day}_practice_hours_split_day_container`).removeClass('d-none');
+        $(`.${day}_by_appointment_only_phone_container`).addClass('d-none');
+        $(`.${day}_by_appointment_only_email_container`).addClass('d-none');
+        $(`.${day}_practice_hours_closed`).removeClass('disabled', true);
+      }
+    }
+
+    if ((inputName == `practice_hours_closed_${day}` || inputName == `practice_hours_closed_${titleized_day}`) || inputName == `${day}_by_appointment_only`){
+      practice_hours_closed_input = $(`.${day}_practice_hours_closed`)
+      by_appointment_only_input = $(`.${day}_by_appointment_only`)
+
+      if(practice_hours_closed_input.is(':checked') || by_appointment_only_input.is(':checked')){
+        $(`.${day}_practice_hours_from`).prop('disabled', true);
+        $(`.${day}_practice_hours_to`).prop('disabled', true);
+        $(`.${day}_open_24_hour`).prop('disabled', true);
+        $(`.${day}_copy_dropdown`).prop('disabled', true);
+        $(`.${day}_practice_hours_split_day`).prop('disabled', true);
+      }else{
+        $(`.${day}_practice_hours_from`).removeAttr('disabled');
+        $(`.${day}_practice_hours_to`).removeAttr('disabled');
+        $(`.${day}_open_24_hour`).removeAttr('disabled');
+        $(`.${day}_copy_dropdown`).removeAttr('disabled');
+        $(`.${day}_practice_hours_split_day`).removeAttr('disabled');
+      }
+    }
+  });
+}
 function displayFieldsFromSelectElement(data, inputName, tagName) {
   if (['state_of_practice', 'health_plans', 'hospitals', 'directories', 'languages-you-speak', 'languages-you-write'].includes(inputName)) {
     // InputName is in the list, so the values are expected to be an array
