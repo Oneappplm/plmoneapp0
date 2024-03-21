@@ -105,6 +105,7 @@ class Provider < ApplicationRecord
   scope :non_binary, -> { where(gender: 'Non Binary') }
   scope :active, -> { where(status: 'active') }
   scope :inactive, -> { where(status: 'inactive-termed') }
+		scope :active_and_inactive, -> { where(status: ['active', 'inactive-termed']) }
 
   after_save :send_welcome_letter
 
@@ -191,12 +192,13 @@ class Provider < ApplicationRecord
 
     def with_missing_required_fields
       query_conditions = REQUIRED_ATTRIBUTES.map { |field| "#{field} IS NULL" }.join(' OR ')
-      Provider.where(query_conditions)
+      Provider.active_and_inactive.where(query_conditions)
     end
 
     def with_missing_required_docs
       query_conditions = REQUIRED_DOCUMENTS.map { |field| "#{field} IS NULL" }.join(' OR ')
-      Provider.where(query_conditions)
+      Provider.active_and_inactive.where(query_conditions)
+						# Provider.active_and_inactive.map{|p| p if p.send('state_license_copies').present? && p.send('dea_copies') && p.w9_form_copies.present? && p.certificate_insurance_copies.present? && p.driver_license_copies.present? && p.board_certification_copies.present? && p.caqh_app_copies.present? && p.cv_copies.present? && p.telehealth_license_copies.present? && p.school_certificate.present?}.compact.size
     end
 
     def format_names

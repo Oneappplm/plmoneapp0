@@ -54,7 +54,7 @@ class EnrollmentClientsController < ApplicationController
 
   def download_documents
     @month = params[:month].present? ? DateTime.parse(params[:month].split("-").join("/")) : nil
-  
+
     respond_to do |format|
       format.csv { send_data eval("#{params[:template]}_to_csv"), filename: csv_filename }
     end
@@ -675,7 +675,7 @@ class EnrollmentClientsController < ApplicationController
 
   def group_revalidation_to_csv
     enrollment_details = EnrollGroupsDetail.includes(enroll_group: :group)
-    enrollment_details = enrollment_details.where("enroll_groups_details.application_status = ?", 'approved') 
+    enrollment_details = enrollment_details.where("enroll_groups_details.application_status = ?", 'approved')
     if @month.present?
       enrollment_details = enrollment_details.where(enroll_group: { created_at: @month.beginning_of_month..@month.end_of_month })
     end
