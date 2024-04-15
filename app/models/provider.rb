@@ -1,5 +1,6 @@
 class Provider < ApplicationRecord
   include PgSearch::Model
+		audited
 
   REQUIRED_ATTRIBUTES = [
                           'first_name', 'last_name', 'birth_date',
