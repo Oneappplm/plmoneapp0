@@ -1,4 +1,5 @@
 class EnrollmentProvidersDetail < ApplicationRecord
+	 audited
   belongs_to :enrollment_provider, optional: true
   mount_uploaders :upload_payor_file, DocumentUploader
 

@@ -1,7 +1,7 @@
 class ApplicationRecord < ActiveRecord::Base
   primary_abstract_class
 		include ActionView::Helpers::TextHelper
-		audited
+		# audited
 
   class << self
     def enum_list(enum)

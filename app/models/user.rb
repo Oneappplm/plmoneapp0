@@ -6,6 +6,8 @@ class User < ApplicationRecord
   devise :invitable, :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :timeoutable
 
+		audited
+
   pg_search_scope :search,
           against: self.column_names,
           using: {
