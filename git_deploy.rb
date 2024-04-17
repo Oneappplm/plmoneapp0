@@ -8,4 +8,5 @@ puts `git fetch origin qualifacts-app-heroku && git checkout qualifacts-app-hero
 puts `git fetch origin dcs-app && git checkout dcs-app && git rebase master && git push origin dcs-app`
 # puts `git fetch origin dcs-demo && git checkout dcs-demo && git rebase dcs-app && git push origin dcs-demo`
 puts `git fetch origin metlife-app && git checkout metlife-app && git rebase master && git push origin metlife-app`
+puts `git fetch origin mhc-app && git checkout mhc-app && git rebase master && git push origin mhc-app`
 puts `git checkout master && git push origin master`
