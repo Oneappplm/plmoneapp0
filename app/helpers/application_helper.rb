@@ -245,6 +245,27 @@ module ApplicationHelper
     ]
 	end
 
+	def qualifacts_provider_generate_report_options
+		[
+			['Provider Monthly Submitted Enrollment','provider_submitted_enrollments'],
+      ['Group Monthly Submitted Enrollment','group_submitted_enrollments'],
+      ['Group Enrollment Detail Report','group_detail_report'],
+      ['Termed Providers', 'termed_providers'],
+			['New Profile Setup in OneApp', 'new_profile_setup_in_one_app'],
+      ['Missing Items Report','missing_items_report'],
+      ['License Report','license_report'],
+      ['DEA','dea'],
+      ['SAM(coming soon)','sam'],
+			['CAQH','caqh'],
+			['OIG(coming soon)','oig'],
+			['Liability','liability'],
+			['Group Revalidation(coming soon)','group_revalidation'],
+			['Provider Enrollment Detail Report', 'enrollment_details_report'],
+			['Qualifacts Inventory', 'qualifacts_inventory'],
+			['Qualifacts Enrollment Report', 'qualifacts_enrollment_report']
+    ]
+	end
+
   def days_options
     [
       ['Sunday','S'],

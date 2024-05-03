@@ -16,8 +16,14 @@
                <label class="text-dark-grey">Report Type</label>
                <select class="form-select border-dark" name="template" required >
                   <option value="" selected="selected">Select option</option>
-                  <% provider_generate_report_options.each do |option|%>
-                     <option value=<%= option[1]%>><%= option[0] %></option>
+                  <% if current_setting.qualifacts? %>
+                     <% qualifacts_provider_generate_report_options.each do |option|%>
+                        <option value=<%= option[1]%>><%= option[0] %></option>
+                     <% end %>
+                  <% else%>
+                     <% provider_generate_report_options.each do |option|%>
+                        <option value=<%= option[1]%>><%= option[0] %></option>
+                     <% end %>
                   <% end %>
                </select>
                </div>
@@ -43,7 +49,7 @@
     // Listen for changes in the template dropdown
     document.querySelector('[name="template"]').addEventListener('change', function() {
       // Check if the selected template is in the list where month is not required
-      var isMonthNotRequired = ['group_detail_report', 'group_revalidation', 'enrollment_details_report', 'dea', 'caqh', 'liability'].includes(this.value);
+      var isMonthNotRequired = ['group_detail_report', 'group_revalidation', 'enrollment_details_report', 'dea', 'caqh', 'liability', 'qualifacts_inventory', 'qualifacts_enrollment_report'].includes(this.value);
 
       // Set the 'required' attribute based on the template
       monthInput.required = !isMonthNotRequired;
