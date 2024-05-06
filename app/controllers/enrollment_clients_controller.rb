@@ -702,6 +702,43 @@ class EnrollmentClientsController < ApplicationController
     end
   end
 
+  def qualifacts_modified_providers_to_csv
+    enrollment_details = EnrollmentProvidersDetail.includes(:audits).where(audits: { created_at:  @month.beginning_of_month..@month.end_of_month })
+
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      enrollment_details = enrollment_details.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
+    end
+    CSV.generate(headers: true, write_headers: true) do |csv|
+      csv << ["Group", "Provider Last Name", "Provider First Name", "Enrollment Type", "Payor Name", "Notification of New Provider",
+              "Date Group Notification of Provider (Welcome Letter)", "Date Notification to begin submitting enrollment (Contract signed/Profile/Documents Complete)", " Payor",
+              "Enrollment Type", "State", "Initial Application Status", "Date Initial Application Submitted", "Effective Date", "Provider ID", "Most Current Revalidation Date", "Revalidation Next Due Date", "Notes", "Last Modification Date"]
+      enrollment_details.each do |enrollment_detail|
+        provider = enrollment_detail.enrollment_provider&.provider
+        csv << [
+          provider&.group&.group_name,
+          provider&.last_name,
+          enrollment_detail.enrollment_provider&.provider&.first_name,
+          enrollment_detail.enrollment_type,
+          enrollment_detail.enrollment_payer,
+          provider&.new_provider_notification,
+          provider&.welcome_letter_sent,
+          provider&.notification_enrollment_submit,
+          enrollment_detail.payor_username,
+          enrollment_detail.enrollment_type,
+          enrollment_detail.payer_state,
+          enrollment_detail.enrollment_status,
+          enrollment_detail.start_date,
+          enrollment_detail.enrollment_effective_date,
+          enrollment_detail.provider_id,
+          enrollment_detail.revalidation_date,
+          enrollment_detail.revalidation_due_date,
+          enrollment_detail.comment,
+          enrollment_detail.updated_at
+        ]
+      end
+    end
+  end
+
   def group_detail_report_to_csv
     enrollment_details = EnrollGroupsDetail.includes(enroll_group: :group)
     if @month.present?

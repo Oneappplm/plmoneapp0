@@ -262,7 +262,8 @@ module ApplicationHelper
 			['Group Revalidation(coming soon)','group_revalidation'],
 			['Provider Enrollment Detail Report', 'enrollment_details_report'],
 			['Qualifacts Inventory', 'qualifacts_inventory'],
-			['Qualifacts Enrollment Report', 'qualifacts_enrollment_report']
+			['Qualifacts Enrollment Report', 'qualifacts_enrollment_report'],
+			['Qualifacts Modified Providers', 'qualifacts_modified_providers']
     ]
 	end
 
