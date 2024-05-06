@@ -733,7 +733,7 @@ class EnrollmentClientsController < ApplicationController
           enrollment_detail.revalidation_date,
           enrollment_detail.revalidation_due_date,
           enrollment_detail.comment,
-          enrollment_detail.updated_at
+          enrollment_detail.audits&.first&.created_at || enrollment_detail.updated_at
         ]
       end
     end
