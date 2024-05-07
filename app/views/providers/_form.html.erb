@@ -762,9 +762,11 @@
       <div class="col-lg-12 mb-3">
         <%= HtmlUtils.multiple_file_uploads model: f.object, input_field_name: 'cv_copies', input_field_label: 'Curriculum Vitae (CV) Copies' %>
       </div>
-        <div class="col-lg-12 mb-3">
+						<% if !current_setting.dcs? # add more client if this input will not show %>
+       <div class="col-lg-12 mb-3">
         <%= HtmlUtils.multiple_file_uploads model: f.object, input_field_name: 'telehealth_license_copies' %>
-      </div>
+      	</div>
+						<% end %>
            <div class="col-lg-12">
             <!-- new field -->
             <label class="text-dark-grey"><%= Setting.take.t("enrollment_dashboard.providers.add_new_provider.upload_documents.other_document")%></label>
