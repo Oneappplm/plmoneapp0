@@ -1,5 +1,6 @@
 class VerificationPlatformController < ApplicationController
   before_action :set_hvhs_datum, only: [:show, :edit, :update, :destroy]
+		before_action :redirect_to_auto_verify, only: [:index]
 
   def index
     if params[:page]
@@ -21,4 +22,10 @@ class VerificationPlatformController < ApplicationController
   def set_hvhs_datum
     @hvhs_datum = HvhsDatum.find(params[:id])
   end
+
+		def redirect_to_auto_verify
+			if current_setting.dcs?
+				redirect_to auto_verifies_path and return
+			end
+		end
 end
