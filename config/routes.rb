@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   get 'terms', to: 'pages#terms'
   get 'privacy-policies', to: 'pages#privacy_policy'
   # get 'providers', to: 'pages#providers'
+  post '/updateRcmOnly', to: 'providers#update_rcm_only'
   get 'provider-enrollment', to: 'pages#provider_enrollment'
   # get 'enrollments', to: 'pages#enrollments'
   # get 'new-enrollment', to: 'pages#new_enrollment'
