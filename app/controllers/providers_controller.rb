@@ -1,7 +1,8 @@
 class ProvidersController < ApplicationController
 	before_action :set_provider, only: [:show, :edit, :update, :destroy, :update_from_notifications]
 	before_action :set_overview_details, only: [:overview]
-
+	skip_before_action :verify_authenticity_token, only: :update_rcm_only
+	
   def index
 		if params[:user_search].present?
 			search_term = params[:user_search].strip.downcase
@@ -94,6 +95,15 @@ class ProvidersController < ApplicationController
      ProvidersMissingFieldSubmissionNotification.with(submitted_fields: @submitted_fields, provider_full_name: @provider.fullname, provider_id: @provider.id).deliver(User.agents) if submission
 
     redirect_to enrollment_client_path(@provider, mode: 'notifications'), notice: 'Provider was successfully updated.'
+  end
+  
+
+  def update_rcm_only
+    @provider = Provider.find(params[:provider_id])
+    @provider.update(rcm_only: params[:rcm_only])
+    respond_to do |format|
+      format.js { render js: "alert('RCM only field updated successfully!')" }
+    end
   end
 
 	def update

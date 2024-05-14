@@ -1,6 +1,7 @@
 class EnrollmentProvidersController < ApplicationController
 	before_action :set_enrollment_provider, only: [:edit, :update, :destroy, :show]
   before_action :set_enrollment_providers, only: [:index, :show]
+	skip_before_action :verify_authenticity_token, only: :update_non_applicable_for_revalidation
 
   def index;end
 
@@ -52,6 +53,25 @@ class EnrollmentProvidersController < ApplicationController
 			render 'edit'
 		end
 	end
+
+	def update_non_applicable_for_revalidation
+		puts "Params: #{params.inspect}"
+		enrollment_provider_ids = params[:enrollment_provider_ids]
+		puts "Enrollment Provider IDs: #{enrollment_provider_ids.inspect}"
+		
+		# Add more debugging if needed
+		
+		# Ensure only one enrollment_provider is being processed at a time
+		enrollment_provider_ids.each do |id|
+			enrollment_provider = EnrollmentProvidersDetail.find(id)
+			puts "Processing Enrollment Provider: #{enrollment_provider.inspect}"
+			enrollment_provider.update(non_applicable_for_revalidation: params[:non_applicable_for_revalidation])
+		end
+		
+		respond_to do |format|
+			format.js { render js: "alert('non_applicable_for_revalidation field updated successfully!')" }
+		end
+	end	
 
 	def destroy
 		redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path

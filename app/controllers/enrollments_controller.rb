@@ -3,6 +3,7 @@ class EnrollmentsController < ApplicationController
 	before_action :get_states, only: %i[client_search client_portal virtual_review_committee provider_source all_clients new_dco new_group data_access edit_group]
 	before_action :get_provider_types, only: %i[client_search client_portal virtual_review_committee provider_source provider_enrollment new_group data_access edit_group]
 	before_action :set_pagination_params, only: [:new_user, :edit_user]
+	skip_before_action :verify_authenticity_token, only: :update_rcm_only
 
 	def index
 		@enrollment_group = Group.all
@@ -42,7 +43,7 @@ class EnrollmentsController < ApplicationController
 		@enrollment_users = User.where(from_source: 'enrollment').paginate(per_page: 10, page: params[:page] || 1)
 		render 'new_user'
 	end
-
+  
 	def delete_user
 		user = User.find params[:id]
 		if user.destroy
@@ -85,6 +86,14 @@ class EnrollmentsController < ApplicationController
 			@enrollment_group.qualifacts_contacts.build if (current_setting.qualifacts? || current_setting.dcs?) && !@enrollment_group.qualifacts_contacts.present?
 		end
 	end
+  
+	def update_rcm_only
+    @enrollment_group = EnrollmentGroup.find(params[:enrollment_group_id])
+    @enrollment_group.update(rcm_only: params[:rcm_only])
+    respond_to do |format|
+      format.js { render js: "alert('RCM only field updated successfully!')" }
+    end
+  end
 
 	def edit_group
 		@view_only = params[:view_only] ||	false

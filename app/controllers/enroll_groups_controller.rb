@@ -2,6 +2,8 @@ class EnrollGroupsController < ApplicationController
 	before_action :set_enroll_group, only: [:edit, :update, :destroy, :show]
  before_action :set_enroll_groups, only: [:index, :show]
 	before_action :set_enrollment_groups, only: [:new, :edit, :update]
+	skip_before_action :verify_authenticity_token, only: :update_non_applicable_for_revalidation
+
 
 	def index
 	end
@@ -44,6 +46,21 @@ class EnrollGroupsController < ApplicationController
 			render 'edit'
 		end
 	end
+
+	def update_non_applicable_for_revalidation
+		enroll_group_ids = params[:enroll_group_id]  # Use the correct parameter key
+	
+		# Update each EnrollGroupsDetail record individually
+		enroll_group_ids.each do |id|
+			enroll_group = EnrollGroupsDetail.find(id)
+			enroll_group.update(non_applicable_for_revalidation: params[:non_applicable_for_revalidation])
+		end
+	
+		respond_to do |format|
+			format.js { render js: "alert('non_applicable_for_revalidation field updated successfully!')" }
+		end
+	end	
+	
 
 	def destroy
 		redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enroll_groups_path
@@ -128,4 +145,3 @@ class EnrollGroupsController < ApplicationController
     end
   end
 end
-

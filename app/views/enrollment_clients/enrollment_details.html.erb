@@ -111,6 +111,10 @@
                       <label>Line of Business</label>
                       <p class="text-black fw-semibold"><%= detail.line_of_business rescue nil %></p>
                     </div>
+                    <span class="col-lg-2">
+                        <input type="checkbox" name="non_applicable_for_revalidation" id="non_applicable_for_revalidation" value="true">
+                        <small>non-applicable for revalidation</small>
+                    </span>
                   </div>
                 <% end %>
                 <div class="row mb-3">
@@ -161,3 +165,23 @@
   <% end %>
   </div>
 <% end %>
+ <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var checkbox = document.getElementById("non_applicable_for_revalidation");
+
+        checkbox.addEventListener("change", function() {
+            var isChecked = this.checked;
+
+            // Send AJAX request to update non_applicable_for_revalidation only field in database
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/enrollment_provider/update-non-applicable-for-revalidation", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log("non applicable for revalidation only field updated successfully!");
+                }
+            };
+            xhr.send(JSON.stringify({ enrollment_provider_ids: <%= @provider.enrollments.map { |enrollment| enrollment.details.pluck(:id) }.flatten %> , non_applicable_for_revalidation: isChecked }));
+        });
+    });
+</script>
