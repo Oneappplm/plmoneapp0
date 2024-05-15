@@ -16,7 +16,9 @@ class EnrollmentClientsController < ApplicationController
     set_comment
   end
 
-  def reports;end
+  def reports
+    @agents = User.where(user_role: 'agent')
+  end
 
   def notifications
     @provider = if params[:provider_id]
@@ -53,10 +55,61 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def download_documents
-    @month = params[:month].present? ? DateTime.parse(params[:month].split("-").join("/")) : nil
-  
+    selected_start_date = nil
+    selected_end_date = nil
+
+    if params[:daterange].present?
+      start_date, end_date = params[:daterange].split(' - ')
+
+      # Parse start and end dates from the date range string
+      selected_start_date = DateTime.parse(start_date)
+      selected_end_date = DateTime.parse(end_date)
+    end
+
     respond_to do |format|
-      format.csv { send_data eval("#{params[:template]}_to_csv"), filename: csv_filename }
+      if params[:template].to_i.to_s == params[:template] && User.exists?(params[:template])
+        format.csv { send_data agent_report_to_csv(params[:template], selected_start_date, selected_end_date), filename: "agent_report_#{params[:template]}_#{Time.now.strftime('%Y%m%d_%H%M%S')}.csv" }
+      else
+        format.csv { send_data eval("#{params[:template]}_to_csv"), filename: csv_filename }
+      end
+    end
+  end
+
+  # generate the csv of agent
+  def agent_report_to_csv(agent_id, start_date, end_date)
+    agent = User.find(agent_id)
+
+    # Parse start and end dates if they are not already in DateTime format
+    if params[:daterange].present?
+      start_date = DateTime.parse(start_date) unless start_date.is_a?(DateTime)
+      end_date = DateTime.parse(end_date) unless end_date.is_a?(DateTime)
+    end
+
+    # Filter audit logs by the selected date range
+    audit_logs = if start_date && end_date
+    # If both start and end dates are provided, filter by the specified range
+      agent.audits.where(action: ['update'], created_at: start_date.beginning_of_day..end_date.end_of_day).order(created_at: :desc)
+    else
+      # If start and end dates are not provided, retrieve all audit logs for the agent
+      agent.audits.where(action: ['update']).order(created_at: :desc)
+    end
+
+
+    report_count = 0
+
+    CSV.generate(headers: true, write_headers: true) do |csv|
+      csv << ["Agent Email", "Action", "Time", "Report Count", "Report Generation Date"]
+
+      audit_logs.each do |log|
+        action = log.audited_changes["logout_on_close"] ? "Logged out on close" : "Logged in"
+        csv << [
+          agent.email,
+          action,
+          log.created_at.strftime('%b %d, %Y %H:%M:%S'),
+          (report_count += 1),
+          Time.now.strftime('%b %d, %Y %H:%M:%S')
+        ]
+      end
     end
   end
 
@@ -944,6 +997,7 @@ class EnrollmentClientsController < ApplicationController
       return '="' + "#{value.to_s}" + '"'
     end
   end
+
   private
 
   def csv_filename

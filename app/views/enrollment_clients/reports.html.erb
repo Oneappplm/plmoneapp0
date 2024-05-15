@@ -20,20 +20,33 @@
                      <% qualifacts_provider_generate_report_options.each do |option|%>
                         <option value=<%= option[1]%>><%= option[0] %></option>
                      <% end %>
-                  <% else%>
+                  <% else %>
                      <% provider_generate_report_options.each do |option|%>
                         <option value=<%= option[1]%>><%= option[0] %></option>
                      <% end %>
                   <% end %>
+
+                  <% if current_user.productivity_manager? %>
+                    <% @agents.each do |agent| %>
+                      <option value="<%= agent.id %>"><%= agent.role %> - <%= agent.email %></option>
+                    <% end %>
+                  <% end %>
+                  
                </select>
                </div>
             </div>
+
             <div class="col-lg-6">
                <label class="text-dark-grey">Year & Month</label>
                <span>
-                  <input class="form-control border-dark" type="text" onfocus="(this.type='month')" id="start" name="month" placeholder="Select option" required/>
+                  <% if current_user.productivity_manager? %>
+                    <input type="text" id="daterange" class="form-control border-dark" placeholder="Select Date Range" autocomplete="off" name="daterange">
+                  <% else %>
+                    <input class="form-control border-dark" type="text" onfocus="(this.type='month')" id="start" name="month" placeholder="Select option" required/>
+                  <% end %>
                </span>
             </div>
+          
             <div class="col-lg-12 d-flex justify-content-center mt-3">
                <button class="btn btn-primary btn-sm px-5 py-1">Generate</button>
             </div>
@@ -46,16 +59,55 @@
   document.addEventListener("DOMContentLoaded", function() {
     var monthInput = document.getElementById('start');
 
+    var startDate = null;
+    var endDate = null;
+
     // Listen for changes in the template dropdown
     document.querySelector('[name="template"]').addEventListener('change', function() {
       // Check if the selected template is in the list where month is not required
       var isMonthNotRequired = ['group_detail_report', 'group_revalidation', 'provider_enrollment_details_report', 'provider_revalidation_report', 'dea', 'caqh', 'liability', 'qualifacts_inventory', 'qualifacts_enrollment_report'].includes(this.value);
 
+      // Check if the selected template is for an agent (assuming agent templates are represented as numbers)
+      var isAgentTemplate = !isNaN(parseInt(this.value)); // Check if the parsed value is not NaN
+      
       // Set the 'required' attribute based on the template
-      monthInput.required = !isMonthNotRequired;
+      monthInput.required = !isMonthNotRequired && !isAgentTemplate;
 
       // Change the input type to 'month' or 'text' based on the template
-      monthInput.type = isMonthNotRequired ? 'text' : 'month';
+      monthInput.type = isMonthNotRequired || isAgentTemplate ? 'text' : 'month';
+    });
+    $('#daterange').daterangepicker({
+      // Options here
+      autoUpdateInput: false, // Disable automatic update of input field
+      startDate: moment().subtract(7, 'days'), // Default start date
+      endDate: moment(), // Default end date (today)
+      ranges: {
+        'Today': [moment(), moment()],
+        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+        'This Month': [moment().startOf('month'), moment().endOf('month')],
+        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+        'Entire Year': [moment().startOf('year'), moment().endOf('year')] // Option for the entire year
+      }
+    });
+
+     $('#daterange').on('cancel.daterangepicker', function(ev, picker) {
+      $(this).val('');
+    });
+
+    $('#daterange').on('change', function() {
+      var selectedValue = $(this).val();
+      if (selectedValue.length === 4 && !isNaN(selectedValue)) {
+        // If the input is a 4-digit number (presumably a year), treat it as a custom year
+        var year = parseInt(selectedValue);
+        var startDate = moment(year, 'YYYY').startOf('year');
+        var endDate = moment(year, 'YYYY').endOf('year');
+        $(this).data('daterangepicker').setStartDate(startDate);
+        $(this).data('daterangepicker').setEndDate(endDate);
+      }
+    });
+    $('#daterange').on('apply.daterangepicker', function(ev, picker) {
+      $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
     });
   });
 </script>
