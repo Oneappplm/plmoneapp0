@@ -546,95 +546,114 @@
           </div>
       </div>
     </div>
+    
+    <div class="row mb-3 mt-2">
+      <% if params[:action] == 'edit' && @provider.prof_liability_form %>
+        <%= HtmlUtils.radio_toggle name: 'provider[prof_liability_form]',
+            label: 'Are you carrying a group Professional Liability Insurance?',
+            container_class: 'd-flex align-items-center my-3', button_class: 'btn btn-xs btn-toggle has-to-show to-change-value has-to-hide active prof-liability-toggle'
+        %>
+      <% else %>
+        <%= HtmlUtils.radio_toggle name: 'provider[prof_liability_form]',
+            label: 'Are you carrying a group Professional Liability Insurance?',
+            container_class: 'd-flex align-items-center my-3',
+            tohide: 'prof_liability_form'
+        %>
+      <% end %>
+    </div>
+    <%= f.hidden_field :prof_liability_form %>
 
+
+   <div id="prof_liability_form">
     <div class="row mb-3">
       <div class="col-lg-12 mt-3">
         <h3>Professional Liability Insurance</h3>
       </div>
       <div class="col-lg-6">
         <label class="text-dark-grey">Carrier or Self-Insured Name</label>
-        <%= f.text_field  :prof_liability_carrier_name, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+        <%= f.text_field  :prof_liability_carrier_name, placeholder: 'Type here...', class: 'form-control border border-dark liability-field', disabled: @provider.prof_liability_form ? true : false %>
       </div>
       <div class="col-lg-6">
         <label class="text-dark-grey">Self-Insured?</label>
-       <%= f.select  :prof_liability_self_insured, options_for_select([['Yes','yes'],['No','no']], @provider.prof_liability_self_insured), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
+       <%= f.select  :prof_liability_self_insured, options_for_select([['Yes','yes'],['No','no']], @provider.prof_liability_self_insured), { prompt: 'Select Option' }, {:class => 'form-select border border-dark liability-field', disabled: @provider.prof_liability_form ? true : false}  %>
       </div>
     </div>
-   <div class="row mb-3">
+    <div class="row mb-3">
       <div class="col-lg-6">
         <label class="text-dark-grey">Address</label>
-        <%= f.text_field :prof_liability_address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+        <%= f.text_field :prof_liability_address,  placeholder: 'Type here...', class: 'form-control border border-dark liability-field', disabled: @provider.prof_liability_form ? true : false %>
       </div>
       <div class="col-lg-6">
         <label class="text-dark-grey">City</label>
-        <%= f.text_field :prof_liability_city,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+        <%= f.text_field :prof_liability_city,  placeholder: 'Type here...', class: 'form-control border border-dark liability-field', disabled: @provider.prof_liability_form ? true : false %>
       </div>
     </div>
     <div class="row mb-3">
       <div class="col-lg-6">
         <label class="text-dark-grey">State</label>
-        <div class="search-select state-search-select form-control border border-dark" name="provider[prof_liability_state_id]" id="prof_liability_state_id">
+        <div class="search-select state-search-select form-control border border-dark liability-field" name="provider[prof_liability_state_id]" id="prof_liability_state_id" disabled='<%= @provider.prof_liability_form ? true : false %>' >
         </div>
       </div>
       <div class="col-lg-6">
         <label class="text-dark-grey">Zip Code (+4 Zip Code)</label>
-        <%= f.text_field :prof_liability_zipcode,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+        <%= f.text_field :prof_liability_zipcode,  placeholder: 'Type here...', class: 'form-control border border-dark liability-field', disabled: @provider.prof_liability_form ? true : false %>
       </div>
     </div>
     <div class="row mb-3">
       <div class="col-lg-6">
         <label class="text-dark-grey">Original Effective Date</label>
-        <%= f.text_field :prof_liability_orig_effective_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.prof_liability_orig_effective_date), onfocus: "(this.type = 'date')" %>
+        <%= f.text_field :prof_liability_orig_effective_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark liability-field', value: display_mdy(f.object.prof_liability_orig_effective_date), onfocus: "(this.type = 'date')", disabled: @provider.prof_liability_form ? true : false %>
       </div>
       <div class="col-lg-6">
         <label class="text-dark-grey">Effective Date</label>
-        <%= f.text_field :prof_liability_effective_date,  placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.prof_liability_effective_date), onfocus: "(this.type = 'date')" %>
+        <%= f.text_field :prof_liability_effective_date,  placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark liability-field', value: display_mdy(f.object.prof_liability_effective_date), onfocus: "(this.type = 'date')", disabled: @provider.prof_liability_form ? true : false %>
       </div>
     </div>
     <div class="row mb-3">
       <div class="col-lg-6">
         <label class="text-dark-grey">Expiration Date</label>
-        <%= f.text_field :prof_liability_expiration_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.prof_liability_expiration_date), onfocus: "(this.type = 'date')" %>
+        <%= f.text_field :prof_liability_expiration_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark liability-field', value: display_mdy(f.object.prof_liability_expiration_date), onfocus: "(this.type = 'date')", disabled: @provider.prof_liability_form ? true : false %>
       </div>
       <div class="col-lg-6">
         <label class="text-dark-grey">Type of Coverage</label>
-        <%= f.select :prof_liability_coverage_type, options_for_select([['Individual','individual'],['Shared','shared']], @provider.prof_liability_coverage_type), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
-    </div>
+        <%= f.select :prof_liability_coverage_type, options_for_select([['Individual','individual'],['Shared','shared']], @provider.prof_liability_coverage_type), { prompt: 'Select Option' }, { class: 'form-select border border-dark liability-field', disabled: @provider.prof_liability_form ? true : false } %>
+      </div>
     </div>
     <div class="row mb-3">
      <div class="col-lg-6">
         <label class="text-dark-grey">Do you have unlimited coverage with this insurance carrier?</label>
-        <%= f.select :prof_liability_unlimited_coverage, options_for_select([['Yes','yes'],['No','no']], @provider.prof_liability_unlimited_coverage), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
-    </div>
-     <div class="col-lg-6">
-        <label class="text-dark-grey">Policy includes tail coverage?</label>
-        <%= f.select :prof_liability_tail_coverage, options_for_select([['Yes','yes'],['No','no']], @provider.prof_liability_tail_coverage), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
-    </div>
+        <%= f.select :prof_liability_unlimited_coverage, options_for_select([['Yes','yes'],['No','no']], @provider.prof_liability_unlimited_coverage), { prompt: 'Select Option' }, {:class => 'form-select border border-dark liability-field', disabled: @provider.prof_liability_form ? true : false}  %>
+       </div>
+       <div class="col-lg-6">
+          <label class="text-dark-grey">Policy includes tail coverage?</label>
+          <%= f.select :prof_liability_tail_coverage, options_for_select([['Yes','yes'],['No','no']], @provider.prof_liability_tail_coverage), { prompt: 'Select Option' }, {:class => 'form-select border border-dark liability-field', disabled: @provider.prof_liability_form ? true : false}  %>
+      </div>
     </div>
     <div class="row mb-3">
      <div class="col-lg-6">
         <label class="text-dark-grey">Amount of coverage per occurence (must be at least $1,000,000/$3,000,000)</label>
-        <%= f.text_field :prof_liability_coverage_amount, placeholder: 'Type here...', class: 'form-control border border-dark' %>
-    </div>
-     <div class="col-lg-6">
-        <label class="text-dark-grey">Amount of coverage aggregate (must be at least $1,000,000/$3,000,000)</label>
-        <%= f.text_field :prof_liability_coverage_amount_aggregate, placeholder: 'Type here...', class: 'form-control border border-dark' %>
-    </div>
+        <%= f.text_field :prof_liability_coverage_amount, placeholder: 'Type here...', class: 'form-control border border-dark liability-field', disabled: @provider.prof_liability_form ? true : false %>
+      </div>
+       <div class="col-lg-6">
+          <label class="text-dark-grey">Amount of coverage aggregate (must be at least $1,000,000/$3,000,000)</label>
+          <%= f.text_field :prof_liability_coverage_amount_aggregate, placeholder: 'Type here...', class: 'form-control border border-dark liability-field', disabled: @provider.prof_liability_form ? true : false %>
+      </div>
     </div>
      <div class="row mb-3">
-     <div class="col-lg-6">
-        <label class="text-dark-grey">Policy Number</label>
-        <%= f.text_field :prof_liability_policy_number, placeholder: 'Type here...', class: 'form-control border border-dark' %>
-    </div>
+       <div class="col-lg-6">
+          <label class="text-dark-grey">Policy Number</label>
+          <%= f.text_field :prof_liability_policy_number, placeholder: 'Type here...', class: 'form-control border border-dark liability-field', disabled: @provider.prof_liability_form ? true : false %>
+      </div>
      </div>
+   </div>
 
-				<% if current_user.provider? || current_user.clinic_admin? %>
-				<div class="row mb-3 mt-3">
-					<div class="col-lg-12 mt-3">
-						<%= render "enrollment_clients/show/client"%>
-					</div>
-				</div>
-				<% else %>
+		<% if current_user.provider? || current_user.clinic_admin? %>
+  		<div class="row mb-3 mt-3">
+  			<div class="col-lg-12 mt-3">
+  				<%= render "enrollment_clients/show/client"%>
+  			</div>
+  		</div>
+		<% else %>
      <div class="row mb-3 mt-3">
      <div class="col-lg-12 mt-3">
         <h3>Practice Information</h3>
@@ -911,7 +930,7 @@
             $(this).removeAttr('required');
           })
         });
-
+        
         // kindly ask rave about this behavior. need to allow to save the form without validation even required fields are enabled
         // $('#provider-form').on('submit', function(e) {
         //   var birth_state = $("input[name='provider[birth_state]']").val();
@@ -1134,8 +1153,18 @@
 									$('.section select, .section input[type="checkbox"], .section input[type="file"]').prop('disabled', true);
 								}
 						}
+            // for liability toggle
+            $('.prof-liability-toggle').on('click', function(){
+              if(($('#provider_prof_liability_form').val()) == 'true') {
+                $('.liability-field').removeAttr('disabled');
+              }else {
+                $('.liability-field').attr('disabled', 'disabled');
+              }
+            });
+
     </script>
   <% end %>
+
 
 <style type="text/css">
   .multi-select, .search-select, .single-select {

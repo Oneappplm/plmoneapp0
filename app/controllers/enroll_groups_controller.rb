@@ -1,6 +1,6 @@
 class EnrollGroupsController < ApplicationController
 	before_action :set_enroll_group, only: [:edit, :update, :destroy, :show]
- before_action :set_enroll_groups, only: [:index, :show]
+ 	before_action :set_enroll_groups, only: [:index, :show]
 	before_action :set_enrollment_groups, only: [:new, :edit, :update]
 
 	def index
