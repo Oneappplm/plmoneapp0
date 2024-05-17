@@ -498,6 +498,88 @@
     </div>
 	<% end %>
    <hr>
+   <!-- group liability insurance -->
+   <div class="row mb-3">
+      <div class="col-lg-12 mt-3">
+        <h3>Group Liability Insurance</h3>
+      </div>
+      <div class="col-lg-6">
+         <label class="text-dark-grey">Carrier or Self-Insured Name</label>
+         <%= f.text_field  :group_liability_carrier_name, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+         <label class="text-dark-grey">Self-Insured?</label>
+         <%= f.select  :group_liability_self_insured, options_for_select([['Yes','yes'],['No','no']], @enrollment_group.group_liability_self_insured), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+       <label class="text-dark-grey">Address</label>
+       <%= f.text_field :group_liability_address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+         <label class="text-dark-grey">City</label>
+         <%= f.text_field :group_liability_city,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+   </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+         <label class="text-dark-grey">State</label>
+         <div class="search-select state-search-select form-control border border-dark" name="enrollment_group[group_liability_state_id]" id="group_liability_state_id">
+         </div>
+      </div>
+      <div class="col-lg-6">
+         <label class="text-dark-grey">Zip Code (+4 Zip Code)</label>
+         <%= f.text_field :group_liability_zipcode,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+   </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+         <label class="text-dark-grey">Original Effective Date</label>
+         <%= f.text_field :group_liability_orig_effective_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.group_liability_orig_effective_date), onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+         <label class="text-dark-grey">Effective Date</label>
+         <%= f.text_field :group_liability_effective_date,  placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.group_liability_effective_date), onfocus: "(this.type = 'date')" %>
+      </div>
+   </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+         <label class="text-dark-grey">Expiration Date</label>
+         <%= f.text_field :group_liability_expiration_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.group_liability_expiration_date), onfocus: "(this.type = 'date')" %>
+      </div>
+      <div class="col-lg-6">
+         <label class="text-dark-grey">Type of Coverage</label>
+         <%= f.select :group_liability_coverage_type, options_for_select([['Individual','individual'],['Shared','shared']], @enrollment_group.group_liability_coverage_type), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
+      </div>
+   </div>
+   <div class="row mb-3">
+      <div class="col-lg-6">
+         <label class="text-dark-grey">Do you have unlimited coverage with this insurance carrier?</label>
+         <%= f.select :group_liability_unlimited_coverage, options_for_select([['Yes','yes'],['No','no']], @enrollment_group.group_liability_unlimited_coverage), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
+      </div>
+      <div class="col-lg-6">
+       <label class="text-dark-grey">Policy includes tail coverage?</label>
+       <%= f.select :group_liability_tail_coverage, options_for_select([['Yes','yes'],['No','no']], @enrollment_group.group_liability_tail_coverage), { prompt: 'Select Option' }, {:class => 'form-select border border-dark'}  %>
+      </div>
+   </div>
+   <div class="row mb-3">
+     <div class="col-lg-6">
+        <label class="text-dark-grey">Amount of coverage per occurence (must be at least $1,000,000/$3,000,000)</label>
+        <%= f.text_field :group_liability_coverage_amount, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+     </div>
+     <div class="col-lg-6">
+        <label class="text-dark-grey">Amount of coverage aggregate (must be at least $1,000,000/$3,000,000)</label>
+        <%= f.text_field :group_liability_coverage_amount_aggregate, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+     </div>
+   </div>
+   <div class="row mb-3">
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Policy Number</label>
+      <%= f.text_field :group_liability_policy_number, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+    </div>
+   </div>
+   <hr>
    <div class="documents">
       <h3>Documents</h3>
       <%= link_to 'Deleted Logs', 'javascript:void(0);', class: 'btn btn-xs m-auto text-black', style: "background-color: #E9E9E9;font-size: 12px;font-weight: 600;", "data-bs-toggle": 'modal', "data-bs-target": '#deletedLogsModal' %>

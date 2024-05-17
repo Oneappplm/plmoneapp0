@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
+ActiveRecord::Schema[7.0].define(version: 2024_05_18_103010) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -446,6 +446,21 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.string "billing_address_autofill"
     t.string "remittance_address_autofill"
     t.datetime "welcome_letter_sent_at"
+    t.string "group_liability_carrier_name"
+    t.string "group_liability_self_insured"
+    t.string "group_liability_address"
+    t.string "group_liability_city"
+    t.integer "group_liability_state_id"
+    t.string "group_liability_zipcode"
+    t.date "group_liability_orig_effective_date"
+    t.date "group_liability_effective_date"
+    t.date "group_liability_expiration_date"
+    t.string "group_liability_coverage_type"
+    t.string "group_liability_unlimited_coverage"
+    t.string "group_liability_tail_coverage"
+    t.string "group_liability_coverage_amount"
+    t.string "group_liability_coverage_amount_aggregate"
+    t.string "group_liability_policy_number"
   end
 
   create_table "enrollment_groups_contact_details", force: :cascade do |t|
@@ -1466,6 +1481,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.string "supervising_npi"
     t.string "primary_location"
     t.string "payer_login", default: "no"
+    t.boolean "prof_liability_form"
   end
 
   create_table "providers_missing_field_submissions", force: :cascade do |t|

@@ -69,6 +69,10 @@ class ProvidersController < ApplicationController
 		# render json: @provider and return
 		@provider.encoded_by = current_user&.full_name
 		@provider.updated_by = current_user&.full_name
+    
+    # populate group liability insurance in provider
+    populate_group_liability_insurance if liability_insurance_required?
+
 		if @provider.save
 			PlmMailer.with(
 				email: Setting.take.t('system_notification_email'),
@@ -197,6 +201,31 @@ class ProvidersController < ApplicationController
 
 	def set_provider
 			@provider = Provider.find(params[:id] || params[:provider_id])
+	end
+
+	def liability_insurance_required?
+	  params[:provider][:prof_liability_form] == "yes"
+	end
+
+	def populate_group_liability_insurance
+	  group = EnrollmentGroup.find(params[:provider][:enrollment_group_id])
+	  @provider.assign_attributes({
+	    prof_liability_carrier_name: group.group_liability_carrier_name,
+	    prof_liability_self_insured: group.group_liability_self_insured,
+	    prof_liability_address: group.group_liability_address,
+	    prof_liability_city: group.group_liability_city,
+	    prof_liability_state_id: group.group_liability_state_id,
+	    prof_liability_zipcode: group.group_liability_zipcode,
+	    prof_liability_orig_effective_date: group.group_liability_orig_effective_date,
+	    prof_liability_effective_date: group.group_liability_effective_date,
+	    prof_liability_expiration_date: group.group_liability_expiration_date,
+	    prof_liability_coverage_type: group.group_liability_coverage_type,
+	    prof_liability_unlimited_coverage: group.group_liability_unlimited_coverage,
+	    prof_liability_tail_coverage: group.group_liability_tail_coverage,
+	    prof_liability_coverage_amount: group.group_liability_coverage_amount,
+	    prof_liability_coverage_amount_aggregate: group.group_liability_coverage_amount_aggregate,
+	    prof_liability_policy_number: group.group_liability_policy_number
+	  })
 	end
 
 	def build_associations
@@ -333,6 +362,7 @@ class ProvidersController < ApplicationController
 					:supervising_name,
 					:supervising_npi,
 					:primary_location,
+					:prof_liability_form,
 					:welcome_letter_status, :welcome_letter_subject, :welcome_letter_message, :check_welcome_letter, :check_co_caqh, :check_mn_caqh_state_release_form, :check_mn_caqh_authorization_form, :check_caqh_standard_authorization,
 					{ welcome_letter_attachments: [], state_license_copies: [], dea_copies: [], w9_form_copies: [], certificate_insurance_copies: [], driver_license_copies: [], board_certification_copies: [], caqh_app_copies: [], cv_copies: [], telehealth_license_copies: [] },
 					#taxonomies_attributes: [:id, :taxonomy_code, :specialty, :_destroy],

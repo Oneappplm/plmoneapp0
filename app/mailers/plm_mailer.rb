@@ -25,7 +25,7 @@ class PlmMailer < ApplicationMailer
 		subject	= params[:subject] || "Request for Credentialing Documentation"
 		@message	= params[:body]
 		cc	= params[:cc]
-
+		
 		file_attachments.each do |filename|
 			if filename.include? "https"
 				attachments.inline[filename] = open(URI.open(filename)).read
