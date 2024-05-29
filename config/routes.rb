@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   get 'show-virtual-review-committee/:id', to: 'pages#show_virtual_review_committee', as: "show_virtual_review_committee"
 
 		get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
-		get 'app-tracker', to: 'pages#app_tracker'
+		# get 'app-tracker', to: 'pages#app_tracker'
   get 'encompass', to: 'pages#encompass'
   get 'microsite', to: 'pages#microsite'
   get 'ps-office-manager', to: 'pages#ps_office_manager'
@@ -32,7 +32,7 @@ Rails.application.routes.draw do
   get 'new-group', to: 'pages#new_group'
   get 'new-group-enrollment', to: 'pages#new_group_enrollment'
   get 'data-access', to: 'pages#data_access' #made this to not conflict with active state of client portal but for now same view
-  
+
   match '/virtual_review_committee/update_review_committee_dates', to: 'pages#update_review_committee_dates', via: [:put, :patch], as: 'update_review_committee_dates'
   match '/virtual_review_committee/unassigned_records', to: 'pages#unassigned_records', via: [:put, :patch], as: 'unassigned_records'
   post 'delete-record', to: 'ajax#delete_record'
@@ -333,6 +333,15 @@ Rails.application.routes.draw do
       post :request_otp_code
     end
   end
+
+		resources :app_trackers, path: 'app-tracker' do
+			member do
+				get :upload_documents
+				post :upload_documents
+				delete :delete_uploaded_document
+				get :view_uploaded_documents
+			end
+		end
 
   namespace :api do
     namespace :v1 do

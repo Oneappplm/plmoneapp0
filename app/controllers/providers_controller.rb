@@ -107,7 +107,7 @@ class ProvidersController < ApplicationController
 	  @new_provider_data = @provider
 
     profile_update(@old_provider_data,@new_provider_data)
-    
+
   	if @provider.save(validate: false)
 			@provider.update_columns updated_by: current_user&.full_name
 
@@ -138,16 +138,16 @@ class ProvidersController < ApplicationController
 
 	def profile_update(old_data, new_data)
 		  changed_attributes = []
-		  
+
 		  old_data.attributes.each do |attribute, old_value|
 		    new_value = new_data[attribute]
 		    if old_value != new_value
 		      changed_attributes << attribute.to_s
 		    end
 		  end
-	  
+
 	    changed_attributes
-	   
+
 	   EnrollmentChangesNotification.with(changed_attributes_array: changed_attributes, provider_full_name: old_data.fullname).deliver(User.all)
 	end
 	def destroy
