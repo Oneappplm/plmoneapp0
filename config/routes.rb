@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   get 'show-virtual-review-committee/:id', to: 'pages#show_virtual_review_committee', as: "show_virtual_review_committee"
 
 		get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
-		get 'app-tracker', to: 'pages#app_tracker'
+		# get 'app-tracker', to: 'pages#app_tracker'
   get 'encompass', to: 'pages#encompass'
   get 'microsite', to: 'pages#microsite'
   get 'ps-office-manager', to: 'pages#ps_office_manager'
@@ -334,7 +334,15 @@ Rails.application.routes.draw do
     end
   end
 
-		resources :audit_trails, only: [:index, :show], path: 'audit-trail'
+  resources :audit_trails, only: [:index, :show], path: 'audit-trail'
+  resources :app_trackers, path: 'app-tracker' do
+    member do
+      get :upload_documents
+      post :upload_documents
+      delete :delete_uploaded_document
+      get :view_uploaded_documents
+    end
+  end
 
   namespace :api do
     namespace :v1 do
