@@ -10,9 +10,9 @@ Rails.application.routes.draw do
   get 'show-virtual-review-committee/:id', to: 'pages#show_virtual_review_committee', as: "show_virtual_review_committee"
 
 		get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
-		get 'app-tracker', to: 'pages#app_tracker'
   post 'caqh/upload', to: 'caqh#upload'
   get 'caqh/upload', to: 'caqh#show'
+		# get 'app-tracker', to: 'pages#app_tracker'
   get 'encompass', to: 'pages#encompass'
   get 'microsite', to: 'pages#microsite'
   get 'ps-office-manager', to: 'pages#ps_office_manager'
@@ -342,6 +342,14 @@ Rails.application.routes.draw do
   namespace :mhc do
     resources :verification_platform, only: [:index, :show], path: 'verification-platform'
     resources :client_portal, only: [:index, :show], path: 'client-portal'
+  end
+  resources :app_trackers, path: 'app-tracker' do
+    member do
+      get :upload_documents
+      post :upload_documents
+      delete :delete_uploaded_document
+      get :view_uploaded_documents
+    end
   end
 
   namespace :api do

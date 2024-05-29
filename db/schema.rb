@@ -2466,6 +2466,19 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_30_065530) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "provider_uploaded_documents", force: :cascade do |t|
+    t.bigint "provider_id"
+    t.string "image_classification"
+    t.string "sub_section"
+    t.string "record_item"
+    t.text "description"
+    t.boolean "exclude_from_profile"
+    t.string "file_upload"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_provider_uploaded_documents_on_provider_id"
+  end
+
   create_table "provider_wi_medicaids", force: :cascade do |t|
     t.bigint "provider_id"
     t.string "wi_medicaid"
