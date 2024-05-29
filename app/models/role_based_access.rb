@@ -100,7 +100,8 @@ class RoleBasedAccess < ApplicationRecord
     "Edit Access",
     "Delete Role",
     "Associate Location",
-	  "Settings"
+	   "Settings",
+				"App Tracker"
 	]
 
 	default_scope { order(:id) }
