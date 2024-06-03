@@ -651,7 +651,7 @@ class EnrollmentClientsController < ApplicationController
     end
   end
 
-  def enrollment_details_report_to_csv
+  def provider_enrollment_details_report_to_csv
     enrollment_details = EnrollmentProvidersDetail.includes(:application_status_logs, enrollment_provider: [provider: :group])
     if @month.present?
       enrollment_details = enrollment_details.where(created_at: @month.beginning_of_month..@month.end_of_month)
@@ -665,19 +665,7 @@ class EnrollmentClientsController < ApplicationController
               "Enrollment Type", "State", "Initial Application Status", "Date Initial Application Submitted", "Effective Date", "Provider ID", "Most Current Revalidation Date", "Revalidation Next Due Date", "Notes",]
       enrollment_details.each do |enrollment_detail|
         provider = enrollment_detail.enrollment_provider&.provider
-        missing_fields = []
-        provider&.required_fields&.each do |field|
-          if (provider&.send(field[1]).nil? || provider&.send(field[1]).blank?) && !provider&.submitted_missing_fields.include?(field[1])
-            missing_fields.push(field[0])
-          end
-        end
-        if !provider&.licenses&.any?(&:persisted?) || provider&.has_missing_state_licenses_fields?
-          provider&.required_state_licenses_fields&.each do |field|
-            if !provider&.submitted_missing_fields.include?(field[1])
-              missing_fields.push(field[0])
-            end
-          end
-        end
+
         csv << [
           provider&.group&.group_name,
           provider&.last_name,
@@ -734,6 +722,47 @@ class EnrollmentClientsController < ApplicationController
           enrollment_detail.revalidation_due_date,
           enrollment_detail.comment,
           enrollment_detail.audits&.first&.created_at || enrollment_detail.updated_at
+        ]
+      end
+    end
+  end
+
+  def provider_revalidation_report_to_csv
+    @enrollment_details = EnrollmentProvidersDetail.includes(enrollment_provider: [provider: :group])
+                              .where(enrollment_status: 'approved')
+    if @month.present?
+      @enrollment_details = @enrollment_details.where(created_at: @month.beginning_of_month..@month.end_of_month)
+    end
+    if current_user.clinic_admin? || current_user.clinic_super_admin?
+      @enrollment_details = enrollment_details.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
+    end
+
+    CSV.generate(headers: true, write_headers: true) do |csv|
+      csv << ["Group", "Provider Last Name", "Provider First Name", "Enrollment Type", "Payor Name", "Notification of New Provider",
+      "Date Group Notification of Provider (Welcome Letter)", "Date Notification to begin submitting enrollment (Contract signed/Profile/Documents Complete)", " Payor",
+      "Enrollment Type", "State", "Initial Application Status", "Date Initial Application Submitted", "Effective Date", "Provider ID", "Most Current Revalidation Date", "Revalidation Next Due Date", "Notes"]
+      @enrollment_details.each do |enrollment_detail|
+        provider = enrollment_detail.enrollment_provider&.provider
+
+        csv << [
+          provider&.group&.group_name,
+          provider&.last_name,
+          enrollment_detail.enrollment_provider&.provider&.first_name,
+          enrollment_detail.enrollment_type,
+          enrollment_detail.enrollment_payer,
+          provider&.new_provider_notification,
+          provider&.welcome_letter_sent,
+          provider&.notification_enrollment_submit,
+          enrollment_detail.payor_username,
+          enrollment_detail.enrollment_type,
+          enrollment_detail.payer_state,
+          enrollment_detail.enrollment_status,
+          enrollment_detail.application_status_logs&.where(status: 'application-submitted')&.last&.created_at&.strftime('%b %d, %Y'),
+          enrollment_detail.enrollment_effective_date,
+          enrollment_detail.provider_id,
+          enrollment_detail.revalidation_date,
+          enrollment_detail.revalidation_due_date,
+          enrollment_detail.comment
         ]
       end
     end
@@ -850,7 +879,7 @@ class EnrollmentClientsController < ApplicationController
       providers = providers.where.not(group: {id: nil}).where(group: { group_name: current_user&.enrollment_groups&.pluck(:group_name)})
     end
     CSV.generate(headers: true, write_headers: true) do |csv|
-      csv << ["Platform", "Services", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "Date Profile Created in One App",]
+      csv << ["Platform", "Services", "Group Name", "First Name", "Last Name", "Practitioner Type", "NPI", "Date Profile Created in One App"]
       providers.each do |provider|
 
         csv << [
@@ -861,8 +890,7 @@ class EnrollmentClientsController < ApplicationController
           provider.last_name,
           provider.practitioner_type,
           format_number_for_leading_zeroes(provider.npi),
-          provider.created_at&.strftime('%b %d, %Y'),
-          provider.notes.pluck(:description).join(", ")
+          provider.created_at&.strftime('%b %d, %Y')
         ]
       end
     end
