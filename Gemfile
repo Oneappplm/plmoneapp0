@@ -100,3 +100,5 @@ gem "geocoder" # https://github.com/alexreisner/geocoder
 gem 'caxlsx'
 gem 'caxlsx_rails'
 gem "audited" # https://github.com/collectiveidea/audited
+gem 'pdf-reader', '~> 2.12.0' # https://rubygems.org/gems/pdf-reader/versions/2.11.0?locale=en
+
