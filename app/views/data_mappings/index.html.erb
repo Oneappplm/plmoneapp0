@@ -1,0 +1,83 @@
+<!-- search form profile id -->
+<%= form_with url: request.url, method: :get, class: "flex items-center mb-4 mt-4 p-4" do |form| %>
+<%= form.select :filename, options_for_select([
+['guardian-ppo-abboushi.pdf','guardian-ppo-abboushi.pdf'],
+['careington-app-and-agreement.pdf', 'careington-app-and-agreement.pdf'],
+], params[:filename]), { }, {:class => 'form-select', onchange: "this.form.submit()" }   %>
+<% end %>
+<!-- JSON viewer -->
+<div class="json-viewer">
+	<pre id="json-output" style="background-color: #eee; margin: 2rem; padding: 1rem"></pre>
+</div>
+
+<% content_for :css do %>
+<style>
+	/* CSS for JSON viewer styling */
+	body {
+					font-family: Arial, sans-serif;
+					margin: 0;
+					padding: 0;
+	}
+
+	header {
+					background-color: #333;
+					color: white;
+					padding: 10px 0;
+					text-align: center;
+	}
+
+	header a {
+					color: white;
+					margin: 0 15px;
+					text-decoration: none;
+	}
+
+	header a:hover {
+					text-decoration: underline;
+	}
+
+	.json-viewer {
+			padding: 20px;
+			background-color: #f5f5f5;
+	}
+
+	.json-key {
+			color: brown;
+	}
+
+	.json-value {
+			color: navy;
+	}
+
+	.json-string {
+			color: olive;
+	}
+</style>
+<% end %>
+
+<% content_for :js do %>
+<script>
+	const jsonData = <%= raw @data.to_json %>;
+	document.getElementById("json-output").innerHTML = syntaxHighlight(jsonData);
+
+	function syntaxHighlight(json) {
+			json = JSON.stringify(json, undefined, 4);
+			json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:\s*)?|\b(true|false|null)\b|\b(\d+)\b)/g, function (match) {
+							var cls = 'json-value';
+							if (/^"/.test(match)) {
+											if (/:$/.test(match)) {
+															cls = 'json-key';
+											} else {
+															cls = 'json-string';
+											}
+							} else if (/true|false/.test(match)) {
+											cls = 'json-boolean';
+							} else if (/null/.test(match)) {
+											cls = 'json-null';
+							}
+							return '<span class="' + cls + '">' + match + '</span>';
+			});
+	}
+</script>
+<% end %>
