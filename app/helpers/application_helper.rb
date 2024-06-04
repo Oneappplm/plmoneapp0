@@ -241,8 +241,7 @@ module ApplicationHelper
 			['OIG(coming soon)','oig'],
 			['Liability','liability'],
 			['Group Revalidation','group_revalidation'],
-			['Provider Enrollment Detail Report', 'provider_enrollment_details_report'],
-			['Provider Revalidation Report', 'provider_revalidation_report']
+			['Provider Enrollment Detail Report', 'provider_enrollment_details_report']
     ]
 	end
 
@@ -262,6 +261,7 @@ module ApplicationHelper
 			['Liability','liability'],
 			['Group Revalidation','group_revalidation'],
 			['Provider Enrollment Detail Report', 'provider_enrollment_details_report'],
+			['Provider Revalidation Report', 'provider_revalidation_report'],
 			['Qualifacts Inventory', 'qualifacts_inventory'],
 			['Qualifacts Enrollment Report', 'qualifacts_enrollment_report'],
 			['Qualifacts Modified Providers', 'qualifacts_modified_providers']
