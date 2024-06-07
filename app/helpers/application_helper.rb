@@ -201,7 +201,6 @@ module ApplicationHelper
 		  ['Establishing communication with carrier', 'Establishing communication with carrier'],
 		  ['Applications to provider to signature', 'Applications to provider to signature'],
 		  ['Effective', 'effective']
-
     ]
   end
 
