@@ -13,7 +13,9 @@
 				</form>
 			</div>
 			<div class="col-lg-6 d-flex justify-content-end gap-2">
-				<%= link_to 'Autoverify', auto_verifies_path, class: "btn btn-md border-0 btn-secondary text-black bg-alt-grey"%>
+				<% unless current_setting.sprout? && current_user.user_role == "admin_staff" %>
+					<%= link_to 'Autoverify', auto_verifies_path, class: "btn btn-md border-0 btn-secondary text-black bg-alt-grey"%>
+				<% end %>
 				<% if current_user.can_access?('Add New Provider') %>
 					<%= link_to new_provider_url, class: "d-flex btn btn-primary btn-md" do %>
 									<i class="bi bi-plus-lg me-2"></i>

@@ -1,120 +1,122 @@
 <div class="content container-fluid">
-  <div class="row">
-    <%= render "enrollment_clients_nav"%>
-  </div>
+	<div class="row">
+		<%= render "enrollment_clients_nav"%>
+	</div>
 </div>
 <%= render 'user_restriction', locals: { access_key: 'Groups' } do %>
-  <div class="content container-fluid">
-    <div class="row">
-        <div class="col-xl-12 px-0">
-          <div class="card card-payer">
-              <div class="card-body">
-                <%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |f| %>
-                    <h5>Search</h5>
-                    <div class="row mt-3">
-                      <div class="col-xl-4">
-                          <label for="">Platform</label>
-                          <%= select_tag('flatform', options_for_select(flatforms, params[:field]), class: 'form-control',  prompt: 'Select option')%>
-                      </div>
-                      <div class="col-xl-4">
-                          <label for="">Group Name</label>
-                          <input type="text" name="group_name" value="<%=params[:name] %>" id="name" class="form-control" placeholder="Type here...">
-                      </div>
+	<div class="content container-fluid">
+		<div class="row">
+				<div class="col-xl-12 px-0">
+					<div class="card card-payer">
+							<div class="card-body">
+								<%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |f| %>
+										<h5>Search</h5>
+										<div class="row mt-3">
+											<% unless current_setting.sprout? && current_user.user_role == "admin_staff" %>
+												<div class="col-xl-4">
+														<label for="">Platform</label>
+														<%= select_tag('flatform', options_for_select(flatforms, params[:field]), class: 'form-control',  prompt: 'Select option')%>
+												</div>
+											<% end %>
+											<div class="col-xl-4">
+													<label for="">Group Name</label>
+													<input type="text" name="group_name" value="<%=params[:name] %>" id="name" class="form-control" placeholder="Type here...">
+											</div>
 
-                      <div class="col-xl-4">
-                          <label for="">State</label>
-                            <div class="state-select d-block" name="state" id="group_state">
-                            </div>
-                        </div>
-                    </div>
+											<div class="col-xl-4">
+													<label for="">State</label>
+														<div class="state-select d-block" name="state" id="group_state">
+														</div>
+												</div>
+										</div>
 
-                    <div class="d-flex justify-content-center mt-4">
-                      <button class="btn btn-primary py-1">Submit</button>
-                    </div>
-                <% end %>
-              </div>
-          </div>
-        </div>
+										<div class="d-flex justify-content-center mt-4">
+											<button class="btn btn-primary py-1">Submit</button>
+										</div>
+								<% end %>
+							</div>
+					</div>
+				</div>
 
-    </div>
-  </div>
+		</div>
+	</div>
 
-  <div class="content container-fluid" style="overflow: auto;">
-    <div class="row mt-3">
-      <% if !@enrollment_groups.blank? %>
-      <table class="table table table-striped table-bordered table-responsive">
-        <thead>
-          <tr>
-            <th scope="col" class="bg-primary text-white">
-              <div class="form-check">
-                <div class="align-items-center">
-                  <input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
-                </div>
-              </div>
-            </th>
-            <th scope="col" class="bg-primary text-white">Platform</th>
-            <th scope="col" class="bg-primary text-white">Group</th>
-            <th scope="col" class="bg-primary text-white">Taxonomy Code</th>
-            <th scope="col" class="bg-primary text-white">State</th>
-            <th scope="col" class="bg-primary text-white">Number of Location</th>
-            <th scope="col" class="bg-primary text-white">Number of Providers</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @enrollment_groups&.each do |enrollment_group| %>
-            <tr>
-              <td>
-                <div class="form-check">
-                  <div class="align-items-center">
-                    <input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
-                  </div>
-                </div>
-              </td>
-              <td><%= flatforms.detect{|flatform| flatform.last == enrollment_group&.flatform }.first rescue nil %></td>
-              <td>
-                <%= link_to enrollment_group.group_name, alt_enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
-              </td>
-              <td>
-                <%= link_to enrollment_group.group_code, alt_enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
-              </td>
-              <td>
-                <%= link_to "#{enrollment_group.state.blank? ? '' : enrollment_group.state}", alt_enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
-              </td>
-              <td>
-                <%= link_to enrollment_group.dco_count_display,alt_enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
-              </td>
-              <td><button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button><%= link_to "#{enrollment_group&.providers&.count} Provider(s)", alt_enrollment_group_providers_path(enrollment_group), class: 'text-dark-grey' rescue "0 Provider(s)" %></td>
-            </tr>
-          <% end %>
-        </tbody>
-        </table>
-      <% else %>
-      <div class="alert alert-info">
-        No search result found
-      </div>
-      <% end %>
-    </div>
-  </div>
-  <style>
-    .state-select {
-      max-width: 100%;
-    }
-  </style>
-  <script>
+	<div class="content container-fluid" style="overflow: auto;">
+		<div class="row mt-3">
+			<% if !@enrollment_groups.blank? %>
+			<table class="table table table-striped table-bordered table-responsive">
+				<thead>
+					<tr>
+						<th scope="col" class="bg-primary text-white">
+							<div class="form-check">
+								<div class="align-items-center">
+									<input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
+								</div>
+							</div>
+						</th>
+						<th scope="col" class="bg-primary text-white">Platform</th>
+						<th scope="col" class="bg-primary text-white">Group</th>
+						<th scope="col" class="bg-primary text-white">Taxonomy Code</th>
+						<th scope="col" class="bg-primary text-white">State</th>
+						<th scope="col" class="bg-primary text-white">Number of Location</th>
+						<th scope="col" class="bg-primary text-white">Number of Providers</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% @enrollment_groups&.each do |enrollment_group| %>
+						<tr>
+							<td>
+								<div class="form-check">
+									<div class="align-items-center">
+										<input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
+									</div>
+								</div>
+							</td>
+							<td><%= flatforms.detect{|flatform| flatform.last == enrollment_group&.flatform }.first rescue nil %></td>
+							<td>
+								<%= link_to enrollment_group.group_name, alt_enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
+							</td>
+							<td>
+								<%= link_to enrollment_group.group_code, alt_enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
+							</td>
+							<td>
+								<%= link_to "#{enrollment_group.state.blank? ? '' : enrollment_group.state}", alt_enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
+							</td>
+							<td>
+								<%= link_to enrollment_group.dco_count_display,alt_enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
+							</td>
+							<td><button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button><%= link_to "#{enrollment_group&.providers&.count} Provider(s)", alt_enrollment_group_providers_path(enrollment_group), class: 'text-dark-grey' rescue "0 Provider(s)" %></td>
+						</tr>
+					<% end %>
+				</tbody>
+				</table>
+			<% else %>
+			<div class="alert alert-info">
+				No search result found
+			</div>
+			<% end %>
+		</div>
+	</div>
+	<style>
+		.state-select {
+			max-width: 100%;
+		}
+	</style>
+	<script>
 
 
-          $('.state-select').each(function(){
-            var id = $(this).attr('id');
-            var value = $(this).data('value');
+					$('.state-select').each(function(){
+						var id = $(this).attr('id');
+						var value = $(this).data('value');
 
-            setTimeout(function(){
-              $.get('<%= group_states_multi_select_data_path %>', function(data){
-                  VirtualSelect.init({ele: '#' + id, search: true });
-                  document.querySelector('#' + id).setOptions(data['result']);
-                  document.querySelector('#' + id).setValue(value);
-              });
-            }, 1000);
-          });
+						setTimeout(function(){
+							$.get('<%= group_states_multi_select_data_path %>', function(data){
+									VirtualSelect.init({ele: '#' + id, search: true });
+									document.querySelector('#' + id).setOptions(data['result']);
+									document.querySelector('#' + id).setValue(value);
+							});
+						}, 1000);
+					});
 
-  </script>
+	</script>
 <% end %>
