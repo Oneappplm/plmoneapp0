@@ -35,10 +35,29 @@ class EnrollmentProvidersController < ApplicationController
 	end
 
 	def update
+		detail_params = enrollment_provider_params[:details_attributes].values.first
+	  detail = @enrollment_provider.details.find(detail_params[:id])
+
+	   # Capture the old status before changes
+	  old_status = detail.enrollment_status
+
+	  # Assign the new attributes to the provider
+  	@enrollment_provider.assign_attributes(enrollment_provider_params)
+
 		@enrollment_provider.assign_attributes(enrollment_provider_params)
 		@enrollment_provider.remove_upload_payor_files! # remove upload payor files if not present, for handling all files deletion
 
 		if @enrollment_provider.save(validate: false)
+
+			new_status = detail_params[:enrollment_status]
+
+			 # Send the email if the status has changed
+	    if old_status != new_status
+	      provider_name = @enrollment_provider.full_name
+	      payer = detail.enrollment_payer
+
+	      EnrollmentProviderMailer.status_changed(provider_name, payer, old_status, new_status, current_user.email).deliver_later
+	    end
 
 			@enrollment_provider.update_columns(
 				provider_id: params[:provider_id],
