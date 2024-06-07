@@ -50,6 +50,9 @@ class EnrollmentProvider < ApplicationRecord
 
  after_create :create_client_provider_enrollment
 
+ # Define the enrollment_status attribute 
+	attribute :enrollment_status, :string
+
 	def provider_name
 		if self.outreach_type.present?
 			if self.outreach_type == "provider-from-enrollment"
