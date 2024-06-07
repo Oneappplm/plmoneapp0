@@ -380,8 +380,10 @@ class AjaxController < ApplicationController
 
   def mark_notification_read
     notification = Notification.find(params[:notification_id])
-    notification.mark_as_read!
-    head :ok
+    notification.update(read_at: DateTime.now)
+    render json: { success: true }
+  rescue StandardError => e
+    render json: { success: false, error: e.message }, status: :unprocessable_entity
   end
 
   def logout_on_close

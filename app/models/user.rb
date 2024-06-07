@@ -17,6 +17,7 @@ class User < ApplicationRecord
     client_admin: 'Client Admin',
     vrc_scheduler_staff: 'VRC Scheduler Staff',
     vrc_scheduler_director: 'VRC Scheduler Director',
+    provider: 'Provider',
     # docsynch: 'DocSynch',
     # medversant_admin: 'Medversant Admin',
     # ncqagroup: 'NCQA Group',
