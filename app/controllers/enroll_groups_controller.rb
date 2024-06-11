@@ -44,7 +44,21 @@ class EnrollGroupsController < ApplicationController
 			render 'edit'
 		end
 	end
+  
+	def update_non_applicable_for_revalidation
+		enroll_group_ids = params[:enroll_group_id]  # Use the correct parameter key
 
+		# Update each EnrollGroupsDetail record individually
+		enroll_group_ids.each do |id|
+			enroll_group = EnrollGroupsDetail.find(id)
+			enroll_group.update(non_applicable_for_revalidation: params[:non_applicable_for_revalidation])
+		end
+
+		respond_to do |format|
+			format.js { render js: "alert('non_applicable_for_revalidation field updated successfully!')" }
+		end
+	end
+	
 	def destroy
 		redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enroll_groups_path
 		if @enroll_group.destroy
