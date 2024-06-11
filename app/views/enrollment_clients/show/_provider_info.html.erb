@@ -32,10 +32,6 @@
                <label>Services</label>
                <p class="text-black fw-semibold"><%= @provider.notification_services&.split(',')&.map { |val| provider_notification_services.to_h.key(val) }&.join(", ") rescue nil%></p>
             </div>
-            <span class="col-lg-6">
-               <input type="checkbox" name="rcm_only" id="rcm_only" value="true">
-               <small>Rcm only</small>
-            </span>
          </div>
          <div class="row mb-1">
             <div class="col-lg-6">
@@ -178,26 +174,3 @@
       </div>
    </div>
 </div>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    var checkbox = document.getElementById("rcm_only");
-    var providerId = <%= @provider.id %>; // Include the provider ID dynamically
-    var csrfToken = document.querySelector('meta[name="csrf-token"]').content; // Fetch CSRF token from meta tags
-    
-    checkbox.addEventListener("change", function() {
-        var isChecked = this.checked;
-         
-        // Send AJAX request to update RCM only field in database
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/providers/" + providerId + "/update-rcm-only", true); // Include the provider ID in the URL
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.setRequestHeader("X-CSRF-Token", csrfToken); // Include CSRF token in the request headers
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                console.log("RCM only field updated successfully!");
-            }
-        };
-        xhr.send(JSON.stringify({ provider_id: providerId, rcm_only: isChecked }));
-    });
-});
-</script>
