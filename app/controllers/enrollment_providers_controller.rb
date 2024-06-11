@@ -57,6 +57,25 @@ class EnrollmentProvidersController < ApplicationController
 	  end
 	end
 
+	def update_non_applicable_for_revalidation
+		puts "Params: #{params.inspect}"
+		enrollment_provider_ids = params[:enrollment_provider_ids]
+		puts "Enrollment Provider IDs: #{enrollment_provider_ids.inspect}"
+
+		# Add more debugging if needed
+
+		# Ensure only one enrollment_provider is being processed at a time
+		enrollment_provider_ids.each do |id|
+			enrollment_provider = EnrollmentProvidersDetail.find(id)
+			puts "Processing Enrollment Provider: #{enrollment_provider.inspect}"
+			enrollment_provider.update(non_applicable_for_revalidation: params[:non_applicable_for_revalidation])
+		end
+
+		respond_to do |format|
+			format.js { render js: "alert('non_applicable_for_revalidation field updated successfully!')" }
+		end
+	end	
+
   def note_comparison(old_note, new_note)
   	if old_note != new_note
   		EnrollmentChangesNotification.with(provider_full_name: @enrollment_provider.full_name, payer: @enrollment_provider.details.first.enrollment_payer, note: "true").deliver(User.all)

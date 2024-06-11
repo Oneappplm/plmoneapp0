@@ -103,7 +103,15 @@ class ProvidersController < ApplicationController
 
     redirect_to enrollment_client_path(@provider, mode: 'notifications'), notice: 'Provider was successfully updated.'
   end
-
+  
+	def update_rcm_only
+    @provider = Provider.find(params[:provider_id])
+    @provider.update(rcm_only: params[:rcm_only])
+    respond_to do |format|
+      format.js { render js: "alert('RCM only field updated successfully!')" }
+    end
+  end
+	
 	def update
 		@provider.assign_attributes(provider_params)
 		@provider.remove_state_license_copies
