@@ -88,11 +88,11 @@ class EnrollmentsController < ApplicationController
 	end
   
 	def update_rcm_only
-    @enrollment_group = EnrollmentGroup.find(params[:enrollment_group_id])
-    @enrollment_group.update(rcm_only: params[:rcm_only])
-    respond_to do |format|
-      format.js { render js: "alert('RCM only field updated successfully!')" }
-    end
+			@enrollment_group = EnrollmentGroup.find(params[:enrollment_group_id])
+			@enrollment_group.update(rcm_only: params[:rcm_only])
+			respond_to do |format|
+				format.js { render js: "alert('RCM only field updated successfully!')" }
+			end
   end
 	
 	def edit_group

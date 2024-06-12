@@ -25,7 +25,6 @@ Rails.application.routes.draw do
   get 'provider-enrollment', to: 'pages#provider_enrollment'
   post '/providers/:id/update-rcm-only', to: 'providers#update_rcm_only'
   post '/enrollments/:id/update-rcm-only', to: 'enrollments#update_rcm_only'
-  # post '/enroll_groups/:id/update-rcm-only', to: 'enroll_groups#update_rcm_only'
   post '/enroll_groups/update-non-applicable-for-revalidation', to: 'enroll_groups#update_non_applicable_for_revalidation'
   post '/enrollment_provider/update-non-applicable-for-revalidation', to: 'enrollment_providers#update_non_applicable_for_revalidation'
   # get 'enrollments', to: 'pages#enrollments'
