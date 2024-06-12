@@ -92,11 +92,11 @@ class ProvidersController < ApplicationController
   end
   
 	def update_rcm_only
-    @provider = Provider.find(params[:provider_id])
-    @provider.update(rcm_only: params[:rcm_only])
-    respond_to do |format|
-      format.js { render js: "alert('RCM only field updated successfully!')" }
-    end
+			@provider = Provider.find(params[:provider_id])
+			@provider.update(rcm_only: params[:rcm_only])
+			respond_to do |format|
+				format.js { render js: "alert('RCM only field updated successfully!')" }
+			end
   end
 	
 	def update
