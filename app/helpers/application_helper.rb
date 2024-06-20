@@ -200,7 +200,7 @@ module ApplicationHelper
 		  ['Not Part of Contract','none-contract'],
 		  ['Establishing communication with carrier'],
 		  ['Applications to provider to signature'],
-		  ['Effective']
+		  ['Effective', 'effective']
 
     ]
   end
