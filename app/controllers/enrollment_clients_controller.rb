@@ -673,6 +673,32 @@ class EnrollmentClientsController < ApplicationController
     end
   end
 
+  def daily_activity_detail_report_to_csv
+    today = Date.today
+    audit_trails = CustomAudit.where(created_at: today.beginning_of_day..today.end_of_day).order(created_at: :desc).select do |audit_trail|
+      !audit_trail.empty_changes?
+    end
+  
+    CSV.generate(headers: true) do |csv|
+      csv << ["Source", "Source Type", "Action Taken", "Action By", "Date Created", "Changes"]
+  
+      audit_trails.each do |audit_trail|
+        changes = audit_trail.dislay_changes.each_with_index.map do |changes, index|
+          "#{index + 1}.) #{changes}"
+        end.join("\n")
+  
+        csv << [
+          audit_trail.display_source,
+          audit_trail.auditable_type,
+          audit_trail.action,
+          audit_trail.user&.full_name,
+          audit_trail.created_at.strftime("%m/%d/%Y"),
+          changes
+        ]
+      end
+    end
+  end
+
   def group_revalidation_to_csv
     enrollment_details = EnrollGroupsDetail.includes(enroll_group: :group)
     enrollment_details = enrollment_details.where("enroll_groups_details.application_status = ?", 'approved') 
