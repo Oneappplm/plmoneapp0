@@ -308,6 +308,24 @@ class EnrollmentClientsController < ApplicationController
     end
   end
 
+  def active_providers_report_to_csv
+    providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
+                        .where(status: 'active')
+    CSV.generate(headers: true, write_headers: true) do |csv|
+      csv << ["First Name", "Middle Name" , "Last Name",  "Status" , "Date Profile Created in One App"]
+      providers.each do |provider|
+
+        csv << [
+          provider.first_name,
+          provider.middle_name,
+          provider.last_name,
+          provider.status,
+          provider.created_at&.strftime('%b %d, %Y')
+        ]
+      end
+    end
+  end 
+
   def flatforms
     @flatforms ||=  [['Credible','credible'], ['CareLogic','carelogic'], ['Insync','insync']]
   end
