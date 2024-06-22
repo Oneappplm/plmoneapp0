@@ -3,7 +3,7 @@ class CustomAudit < Audited::Audit
 			audited_changes.map do |attribute, changes|
 				next if changes.present? && changes[0].nil? && changes[1].nil? || changes[0] == changes[1] || excluded_atts.include?(attribute)
 
-				"<strong>#{attribute}</strong> changed from <strong style='color: red'>#{changes[0]}</strong> to <strong style='color: green'>#{changes[1]}</strong>"
+				"<strong>#{attribute}</strong> changed from <strong style='color: red'>#{changes[0]}</strong> to <strong style='color: green'>#{changes[1]}</strong>".gsub(/<\/?[^>]*>/, "")
 			end.compact
 	rescue
 		[]
