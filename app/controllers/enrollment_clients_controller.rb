@@ -16,7 +16,9 @@ class EnrollmentClientsController < ApplicationController
     set_comment
   end
 
-  def reports;end
+  def reports
+    @agents = User.where(user_role: 'agent')
+  end
 
   def notifications
     @provider = if params[:provider_id]
@@ -61,6 +63,64 @@ class EnrollmentClientsController < ApplicationController
       file_name = "#{file_name}_#{params[:month]}"
     end
     render xlsx: file_name, template: "enrollment_clients/report_templates/#{current_setting.client_name}/#{params[:template]}_to_csv"
+  end
+
+  def download_agent_report
+    agent_id = params[:template]
+    @month = params[:month].present? ? DateTime.parse(params[:month].split("-").join("/")) : nil
+
+    selected_start_date = nil
+    selected_end_date = nil
+
+    if params[:daterange].present?
+      start_date, end_date = params[:daterange].split(' - ')
+
+      # Parse start and end dates from the date range string
+      selected_start_date = DateTime.parse(start_date)
+      selected_end_date = DateTime.parse(end_date)
+    end
+
+    respond_to do |format|
+      format.xlsx do
+        agent_report = agent_report_to_xlsx(agent_id, selected_start_date, selected_end_date)
+        send_data agent_report, filename: "agent_report_#{agent_id}_#{Time.now.strftime('%Y%m%d_%H%M%S')}.xlsx"
+      end
+    end
+  end
+
+  def agent_report_to_xlsx(agent_id, start_date, end_date)
+    agent = User.find(agent_id)
+
+    # Parse start and end dates if they are not already in DateTime format
+    if start_date.present? && end_date.present?
+      start_date = DateTime.parse(start_date) unless start_date.is_a?(DateTime)
+      end_date = DateTime.parse(end_date) unless end_date.is_a?(DateTime)
+    end
+
+    # Filter audit logs by the selected date range
+    audit_logs = if start_date && end_date
+      agent.audits.where(action: 'update', created_at: start_date.beginning_of_day..end_date.end_of_day).order(created_at: :desc)
+    else
+      agent.audits.where(action: 'update').order(created_at: :desc)
+    end
+
+    # Generate XLSX using Axlsx gem
+    package = Axlsx::Package.new
+    package.workbook.add_worksheet(name: "Agent Report") do |sheet|
+      sheet.add_row ["Agent Email", "Action", "Time", "Report Generation Date"]
+
+      audit_logs.each do |log|
+        action = log.audited_changes["logout_on_close"] ? "Logged out on close" : "Logged in"
+        sheet.add_row [
+          agent.email,
+          action,
+          log.created_at.strftime('%b %d, %Y %H:%M:%S'),
+          Time.now.strftime('%b %d, %Y %H:%M:%S')
+        ]
+      end
+    end
+
+    package.to_stream.read
   end
 
   def dashboard

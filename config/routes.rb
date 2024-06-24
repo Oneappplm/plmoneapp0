@@ -206,6 +206,7 @@ Rails.application.routes.draw do
       get :dashboard
       get :groups
       get :view_group
+      get :download_agent_report
     end
   end
 
