@@ -9,7 +9,7 @@ class Role < ApplicationRecord
 
 	class << self
 		def load_data
-			['Super Administrator', 'Administrator', 'Admin Staff', 'Calls Agent', 'Agent', 'Encoder', 'Director'].each do |role|
+			['Super Administrator', 'Administrator', 'Admin Staff', 'Calls Agent', 'Agent', 'Encoder', 'Director', 'Productivity Manager'].each do |role|
 				find_or_create_by!(name: role)
 			end
 		end
