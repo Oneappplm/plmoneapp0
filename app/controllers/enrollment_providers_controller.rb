@@ -159,6 +159,7 @@ class EnrollmentProvidersController < ApplicationController
                            :enrollment_tracking_id, :enrollment_effective_date,
                            :association_start_date, :business_end_date, :association_end_date,
                            :line_of_business, :revalidation_status, :cpt_code, :descriptor,
+                            :portal_link,
                            :provider_id, :group_id, :upload_payor_file, :processing_date, :na_for_revalidation, :terminated_date, :payor_username, :payor_password, :_destroy, {upload_payor_file: []}, questions_attributes: [:id, :question, :answer, :_destroy] ],
 
 		)
