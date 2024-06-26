@@ -242,7 +242,8 @@ module ApplicationHelper
 			['Liability','liability'],
 			['Group Revalidation(coming soon)','group_revalidation'],
 			['Provider Enrollment Detail Report', 'provider_enrollment_details_report'],
-			['Provider Revalidation Report', 'provider_revalidation_report']
+			['Provider Revalidation Report', 'provider_revalidation_report'],
+			['Active Providers Report', 'active_providers_report']
     ]
 	end
 
