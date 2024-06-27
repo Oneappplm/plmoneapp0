@@ -1,5 +1,5 @@
 # config valid for current version and patch releases of Capistrano
-lock "~> 3.17.3"
+lock "~> 3.19.0"
 
 set :application, "plmoneapp"
 set :repo_url, "git@github.com:Oneapp-Dev-Team/#{fetch(:application)}.git"
@@ -14,7 +14,7 @@ set :repo_url, "git@github.com:Oneapp-Dev-Team/#{fetch(:application)}.git"
 # plm-dev - https://dev.plmhealth.net/
 # plm-prod - https://plmhealth.net/
 # qualifacts - https://qualifacts.plmhealth.net/
-set :deploy_to, "/home/deploy/demo-app" # change demo-app to plm-dev, plm-prod, qualifacts for switching instance
+set :deploy_to, "/home/deploy/qualifacts" # change demo-app to plm-dev, plm-prod, qualifacts for switching instance
 
 # command
 # cap production db:pull - for pulling the database | live to local
