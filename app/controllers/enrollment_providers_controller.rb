@@ -56,7 +56,7 @@ class EnrollmentProvidersController < ApplicationController
 	      provider_name = @enrollment_provider.full_name
 	      payer = detail.enrollment_payer
 
-	      EnrollmentProviderMailer.status_changed(provider_name, payer, old_status, new_status, current_user.email).deliver_later
+	      EnrollmentProviderMailer.status_changed(provider_name, payer, old_status, new_status, current_user.email).deliver_now
 	    end
 
 			@enrollment_provider.update_columns(
