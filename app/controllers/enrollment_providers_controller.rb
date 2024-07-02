@@ -58,17 +58,20 @@ class EnrollmentProvidersController < ApplicationController
 
 	      EnrollmentProviderMailer.status_changed(provider_name, payer, old_status, new_status, current_user.email).deliver_now
 	    end
+	  if @enrollment_provider.save(validate: false)
+	    @enrollment_provider.update_columns(
+	      provider_id: params[:provider_id],
+	      outreach_type: params[:outreach_type],
+	      updated_by: current_user&.full_name
+	    )
 
-			@enrollment_provider.update_columns(
-				provider_id: params[:provider_id],
-				outreach_type:	params[:outreach_type],
-				updated_by: current_user&.full_name
-			)
-			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
-			redirect_to redirect_url, notice: "Enrollment #{@enrollment_provider.full_name} has been successfully updated."
-		else
-			render 'edit'
-		end
+	    EnrollmentProvider::FollowUpReminderService.call(@enrollment_provider)
+
+	    redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
+	    redirect_to redirect_url, notice: "Enrollment #{@enrollment_provider.full_name} has been successfully updated."
+	  else
+	    render 'edit'
+	  end
 	end
 
 	def update_non_applicable_for_revalidation
@@ -157,9 +160,11 @@ class EnrollmentProvidersController < ApplicationController
                            :enrollment_tracking_id, :enrollment_effective_date,
                            :association_start_date, :business_end_date, :association_end_date,
                            :line_of_business, :revalidation_status, :cpt_code, :descriptor,
-                           :portal_link,
-                           :provider_id, :group_id, :upload_payor_file, :processing_date, :terminated_date, :payor_username, :payor_password, :_destroy, {upload_payor_file: []}, questions_attributes: [:id, :question, :answer, :_destroy] ],
-
+                            :portal_link,
+                            :follow_up_date,
+                            :last_follow_up_date,
+                            :completed,
+                           :provider_id, :group_id, :upload_payor_file, :processing_date, :na_for_revalidation, :terminated_date, :payor_username, :payor_password, :_destroy, {upload_payor_file: []}, questions_attributes: [:id, :question, :answer, :_destroy] ],
 		)
 	end
 
