@@ -198,8 +198,8 @@ module ApplicationHelper
 	  	['Not Eligible','not-eligible'],
 	  	['Revalidation','revalidation'],
 		  ['Not Part of Contract','none-contract'],
-		  ['Establishing communication with carrier'],
-		  ['Applications to provider to signature'],
+		  ['Establishing communication with carrier', 'Establishing communication with carrier'],
+		  ['Applications to provider to signature', 'Applications to provider to signature'],
 		  ['Effective', 'effective']
 
     ]
