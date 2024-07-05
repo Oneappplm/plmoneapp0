@@ -64,6 +64,9 @@ class EnrollmentProvidersController < ApplicationController
 				outreach_type:	params[:outreach_type],
 				updated_by: current_user&.full_name
 			)
+
+			EnrollmentProvider::FollowUpReminderService.call(@enrollment_provider)
+
 			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
 			redirect_to redirect_url, notice: "Enrollment #{@enrollment_provider.full_name} has been successfully updated."
 		else
@@ -158,6 +161,9 @@ class EnrollmentProvidersController < ApplicationController
                            :association_start_date, :business_end_date, :association_end_date,
                            :line_of_business, :revalidation_status, :cpt_code, :descriptor,
                            :portal_link,
+													 :follow_up_date,
+													 :last_follow_up_date,
+													 :completed,
                            :provider_id, :group_id, :upload_payor_file, :processing_date, :terminated_date, :payor_username, :payor_password, :_destroy, {upload_payor_file: []}, questions_attributes: [:id, :question, :answer, :_destroy] ],
 
 		)

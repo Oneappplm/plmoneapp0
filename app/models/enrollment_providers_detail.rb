@@ -27,7 +27,17 @@ class EnrollmentProvidersDetail < ApplicationRecord
 
   after_save :create_application_status_log, if: :saved_change_to_enrollment_status?
   before_update :validate_start_date, :if => proc { start_date_changed? && start_date_was.present? }
+  
 
+  # add this for the follow-up date and reminder
+  before_save :update_last_follow_up_date, if: :follow_up_date_changed?
+
+  private
+
+  def update_last_follow_up_date
+    self.last_follow_up_date = self.follow_up_date_was if follow_up_date_changed? && follow_up_date.present?
+  end
+  
   protected
   def create_application_status_log
     self.application_status_logs.create(status: self.enrollment_status)
