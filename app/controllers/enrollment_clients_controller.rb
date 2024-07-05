@@ -55,6 +55,8 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def download_documents
+    @month = params[:month].present? ? DateTime.parse(params[:month].split("-").join("/")) : nil
+
     selected_start_date = nil
     selected_end_date = nil
 
