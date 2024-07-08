@@ -56,6 +56,7 @@ group :development, :test do
   gem 'pry', '~> 0.14.2'
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
+  gem "letter_opener"
 end
 
 group :development do
@@ -97,3 +98,4 @@ gem "figaro" # https://github.com/laserlemon/figaro
 gem 'exception_notification' # https://github.com/smartinez87/exception_notification
 gem "geocoder" # https://github.com/alexreisner/geocoder
 gem "audited" # https://github.com/collectiveidea/audited
+gem 'whenever', require: false

@@ -1,6 +1,7 @@
 class ProvidersController < ApplicationController
 	before_action :set_provider, only: [:show, :edit, :update, :destroy, :update_from_notifications]
 	before_action :set_overview_details, only: [:overview]
+	after_action :schedule_renewal_notifications, only: [:update]
 
   def index
 		if params[:user_search].present?
@@ -206,6 +207,29 @@ class ProvidersController < ApplicationController
 		end
 
 	private
+
+	def schedule_renewal_notifications
+    # Fetch the provider license using provider_id
+    provider_license = ProviderLicense.find_by(provider_id: params[:id])
+    
+    if provider_license.nil?
+      Rails.logger.error "ProviderLicense for Provider with ID #{params[:id]} not found."
+      return
+    end
+
+    renewal_date = provider_license.license_state_renewal_date
+    return if renewal_date.blank?
+
+    # Convert the renewal_date to a Time object
+    renewal_time = renewal_date.to_time.in_time_zone
+
+    # Schedule notifications
+    [30, 20, 10].each do |days_before|
+      RenewalNotificationJob.set(wait_until: renewal_time - days_before.days).perform_later(provider_license.id, days_before)
+    end
+
+    RenewalNotificationJob.set(wait_until: renewal_time).perform_later(provider_license.id, 0)
+  end
 
 	def set_provider
 			@provider = Provider.find(params[:id] || params[:provider_id])
