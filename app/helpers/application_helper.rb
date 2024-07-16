@@ -268,7 +268,8 @@ module ApplicationHelper
 			['Provider Revalidation Report', 'provider_revalidation_report'],
 			['Qualifacts Inventory', 'qualifacts_inventory'],
 			['Qualifacts Enrollment Report', 'qualifacts_enrollment_report'],
-			['Qualifacts Modified Providers', 'qualifacts_modified_providers']
+			['Qualifacts Modified Providers', 'qualifacts_modified_providers'],
+			['Active Providers Report', 'active_providers_report']
     ]
 	end
 

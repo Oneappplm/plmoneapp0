@@ -54,6 +54,25 @@ class EnrollmentClientsController < ApplicationController
     end
   end
 
+  #add this for active providers report
+  def active_providers_report
+    @month = params[:month].present? ? DateTime.parse(params[:month].split("-").join("/")) : nil
+    providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month).where(status: 'active')
+
+    CSV.generate(headers: true) do |csv|
+      csv << ["First Name", "Middle Name", "Last Name", "Status", "Date Profile Created in One App"]
+      providers.each do |provider|
+        csv << [
+          provider.first_name,
+          provider.middle_name,
+          provider.last_name,
+          provider.status,
+          provider.created_at&.strftime('%b %d, %Y')
+        ]
+      end
+    end
+  end
+
   def download_documents
     @month = params[:month].present? ? DateTime.parse(params[:month].split("-").join("/")) : nil
 
@@ -66,6 +85,17 @@ class EnrollmentClientsController < ApplicationController
       # Parse start and end dates from the date range string
       selected_start_date = DateTime.parse(start_date)
       selected_end_date = DateTime.parse(end_date)
+    end
+
+    #add this for active providers report
+    if current_setting.dcs? || current_setting.qualifacts?
+      if params[:template] == 'active_providers_report'
+        csv_content = active_providers_report
+
+        file_name = "active_providers_report_#{params[:month]}.csv"
+        send_data csv_content, filename: file_name, type: 'text/csv'
+        return
+      end
     end
 
     respond_to do |format|
