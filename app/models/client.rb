@@ -99,7 +99,7 @@ class Client < ApplicationRecord
 	end
 
 	def address
-		"#{self.street_address}, #{self.city}, #{self.state_abbr}, #{self.zipcode}"
+		[self.street_address, self.city, self.state_abbr, self.zipcode].compact.join(", ")
 	end
 
 	def full_name
