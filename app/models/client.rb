@@ -74,23 +74,44 @@ class Client < ApplicationRecord
 		end
 	end
 
+	# def self.to_csv
+	# 	attributes = ['Full Name', 'Provider Name', 'Birthday', 'Address', 'NPI', 'SSN', 'Provider Type', 'Specialty', 'Cred Status', 'Cred Cycle', 'VRC Status' , 'Attested Date' , 'MedvId']
+	# 	 CSV.generate(headers: true) do |csv|
+  #      csv << attributes
+  #      all.each do |client|
+  #      		csv << {
+  #      			'Full Name' => client&.full_name,
+  #      			'Provider Name' => client&.provider_name,
+  #      			'Birthday' => client&.birth_date&.strftime('%B %d, %Y'),
+  #      			'Address' => client&.address,
+  #      			'NPI' => client&.npi,
+  #      			'SSN' => client&.ssn,
+  #      			'Provider Type' => client.provider_type,
+  #      			'Specialty' => client&.specialty,
+  #      			'Cred Status' => client&.cred_status&.titleize&.upcase,
+  #      			'Cred Cycle' => client&.cred_cycle,
+  #      			'VRC Status' => client&.vrc_status,
+  #      			'Attested Date' => client&.attested_date&.strftime('%B %d, %Y'),
+  #      			'MedvId' => client&.medv_id
+  #      		}
+  #      end
+  #    end
+	# end
+
 	def self.to_csv
-		attributes = ['Full Name', 'Provider Name', 'Birthday', 'Address', 'NPI', 'SSN', 'Provider Type', 'Specialty', 'Cred Status', 'Cred Cycle', 'VRC Status' , 'Attested Date' , 'MedvId']
+		attributes = ['Full Name', 'Provider Type', 'Address', 'NPI', 'Practitioner Type', 'Specialty','Cred Cycle', 'Attested Date' , 'MedvId']
 		 CSV.generate(headers: true) do |csv|
        csv << attributes
        all.each do |client|
        		csv << {
        			'Full Name' => client&.full_name,
-       			'Provider Name' => client&.provider_name,
-       			'Birthday' => client&.birth_date&.strftime('%B %d, %Y'),
+       			'Provider Type' => client&.provider_type,
        			'Address' => client&.address,
        			'NPI' => client&.npi,
        			'SSN' => client&.ssn,
-       			'Provider Type' => client.provider_type,
+       			'Practitioner Type' => client.prac_type,
        			'Specialty' => client&.specialty,
-       			'Cred Status' => client&.cred_status&.titleize&.upcase,
        			'Cred Cycle' => client&.cred_cycle,
-       			'VRC Status' => client&.vrc_status,
        			'Attested Date' => client&.attested_date&.strftime('%B %d, %Y'),
        			'MedvId' => client&.medv_id
        		}
@@ -99,11 +120,11 @@ class Client < ApplicationRecord
 	end
 
 	def address
-		"#{self.street_address}, #{self.city}, #{self.state_abbr}, #{self.zipcode}"
+		"#{address1} #{address2} #{self.street_address}, #{self.city}, #{self.state_abbr}, #{self.zipcode}"
 	end
 
 	def full_name
-		"#{self.first_name} #{self.last_name}"
+		"#{self.first_name} #{middle_name} #{self.last_name}"
 	end
 
 	def social

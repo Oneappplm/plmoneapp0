@@ -266,6 +266,8 @@ Rails.application.routes.draw do
     passwords: 'users/passwords',
   }
 
+  resource :profile, only: [:show, :edit, :update]
+
   get 'organization-profile', to: 'users#organization_profile'
   get 'new-user', to: 'users#new'
   get 'organization-users', to: 'users#organization_users'

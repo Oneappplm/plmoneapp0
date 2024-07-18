@@ -51,7 +51,15 @@ class UsersController < ApplicationController
 
 		@user.accessible_provider = nil if user_params[:is_provider_account] == "false"
 
-		if @user.update(updated_params.except(:enrollment_group_ids))
+		if user_params[:password].present?
+	    if @user.update_with_password(updated_params.except(:enrollment_group_ids))
+	      bypass_sign_in(@user)  # Bypass sign in to update the session
+	      redirect_to users_path, notice: 'Password has been successfully updated.'
+	    else
+	      flash[:alert] = @user.errors.full_messages.join('. ')
+	      render :index
+	    end
+		elsif @user.update(updated_params.except(:enrollment_group_ids))
 			redirect_to users_path, notice: 'User has been successfully updated.'
 		else
 			render :index
@@ -102,7 +110,8 @@ class UsersController < ApplicationController
 			:enrollment_group_id, :email, :password, :password_confirmation,
 			:following_request, :user_type, :status, :user_role,
 			:temporary_password, :temporary_password_confirmation, :title,
-			:enrollment_group_ids, :accessible_provider, :is_provider_account
+			:enrollment_group_ids, :accessible_provider, :is_provider_account, 
+			:current_password 
 		)
 	end
 

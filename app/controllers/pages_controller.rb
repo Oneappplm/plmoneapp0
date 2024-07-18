@@ -226,10 +226,17 @@ class PagesController < ApplicationController
   end
 
   def download_clients
-  	@clients = Client.where.not(id: nil)
-  	respond_to do |format|
-  		format.csv { send_data @clients.to_csv, filename: "Clients-#{Time.now.to_date}.csv" }
-  	end
+    if params[:month].present?
+      start_date = Date.parse(params[:month] + "-01")
+      end_date = start_date.end_of_month
+      @clients = Client.where(created_at: start_date..end_date)
+    else
+      @clients = Client.all
+    end
+
+    respond_to do |format|
+      format.csv { send_data @clients.to_csv, filename: "Clients-#{Time.now.to_date}.csv" }
+    end
   end
 
   def show_virtual_review_committee
@@ -313,6 +320,11 @@ class PagesController < ApplicationController
        Client.where(cred_status: @status).paginate(per_page: @per_page, page: @page)
     else
     	 Client.all.paginate(per_page: @per_page, page: @page)
+    end
+
+    # Sorting
+    if params[:sort].present? && params[:direction].present?
+      @clients = @clients.order("#{params[:sort]} #{params[:direction]}")
     end
   end
 

@@ -185,7 +185,7 @@
 							</select>
 						</div>
 					</div>
-					<div class="row mb-3">
+					<%# <div class="row mb-3">
 						<div class="col-lg-12">
 							<label class="text-sm text-black">File Upload <i class="ms-2 bi bi-question-circle-fill text-primary" title="File type .csv (comma delimited). 200 rows maximum click here to see example."></i></label>
 							<label for="search_upload" class="d-grid align-items-center justify-content-center rounded border border-dark" style="height:100px;">
@@ -194,10 +194,10 @@
 
 							</label>
 						</div>
-					</div>
+					</div> %>
 
 					<div class="row mb-3">
-						<div class="col-lg-12">
+						<div class="col-lg-12 mt-2">
 							<label class="text-sm text-black">History Search</label>
 						</div>
 						<div class="col-lg-6">
@@ -207,6 +207,21 @@
 							<input type="text" name="from" class="form-control py-1" placeholder="To" onfocus="(this.type = 'date')">
 						</div>
 					</div>
+					<div class = "row mb-2">
+		 					<div class="col-lg-6">
+		 						<label for="month" class="form-label">Report</label>
+		 						<input type="month" id="month" name="month" class="form-control">
+		 					</div>
+		 					<div class="col-lg-6">
+			 					<%= link_to download_clients_path(format: 'csv'), class: 'btn btn-sm btn-primary mt-5 w-100', id: 'download_button' do %>
+			 					<!-- <  class="btn btn-sm btn-primary"> -->
+			 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 16px;height: 16px;">
+									  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+									</svg>
+									<span>Download Report</span>
+			 					<% end %>
+		 					</div>
+		 				</div>
 				</div>
 			</div>
 			<!-- end of row for fields -->
@@ -228,3 +243,14 @@
 	</div>
 </div>
 
+<script>
+  document.getElementById('download_button').addEventListener('click', function(event) {
+    event.preventDefault();
+    var month = document.getElementById('month').value;
+    var url = this.href;
+    if (month) {
+      url += '?month=' + month;
+    }
+    window.location.href = url;
+  });
+</script>
