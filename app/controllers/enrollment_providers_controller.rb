@@ -44,7 +44,6 @@ class EnrollmentProvidersController < ApplicationController
 	  # Assign the new attributes to the provider
   	@enrollment_provider.assign_attributes(enrollment_provider_params)
 
-		@enrollment_provider.assign_attributes(enrollment_provider_params)
 		@enrollment_provider.remove_upload_payor_files! # remove upload payor files if not present, for handling all files deletion
 
 		if @enrollment_provider.save(validate: false)
