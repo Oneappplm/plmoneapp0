@@ -299,6 +299,24 @@ class EnrollmentClientsController < ApplicationController
       end
     end
   end
+  
+  def active_providers_report_to_csv
+    providers = Provider.where(created_at: @month.beginning_of_month..@month.end_of_month)
+                        .where(status: 'active')
+    CSV.generate(headers: true, write_headers: true) do |csv|
+      csv << ["First Name", "Middle Name" , "Last Name",  "Status" , "Date Profile Created in One App"]
+      providers.each do |provider|
+
+        csv << [
+          provider.first_name,
+          provider.middle_name,
+          provider.last_name,
+          provider.status,
+          provider.created_at&.strftime('%b %d, %Y')
+        ]
+      end
+    end
+  end
 
   def qualifacts_inventory_to_csv
     if current_user.can_access_all_groups? || current_user.super_administrator?

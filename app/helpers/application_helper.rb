@@ -244,7 +244,8 @@ module ApplicationHelper
 			['Liability','liability'],
 			['Group Revalidation','group_revalidation'],
 			['Provider Enrollment Detail Report', 'provider_enrollment_details_report'],
-			['Daily Activity Detail Report', 'daily_activity_detail_report']
+			['Daily Activity Detail Report', 'daily_activity_detail_report'],
+			['Active Providers Report', 'active_providers_report']
     ]
 	end
 
