@@ -8,10 +8,10 @@
   <div class="row mb-3">
     <div class="col-lg-6">
       <label class="text-dark-grey">Enrollment Payor</label>
-      <%= f.text_field :enrollment_payer, placeholder: 'Type here', class: 'form-control border border-dark' %>
-    <!--
-     <%= f.select :enrollment_payer, options_for_select([]), { prompt: 'Enrollment Payer' }, {:class => 'form-select border border-dark enrollment-payor single-select',  data: { value: f.object.enrollment_payer } }  %>
-     -->
+      <button type="button" class="btn btn-xs btn-link p-0" id="add-new-py" data-bs-toggle="modal" data-bs-target="#addNewPayorName" style="float:right;font-size:12px;">
+        Add new payor
+      </button>
+      <%= f.select :enrollment_payer, options_for_select([]), { prompt: 'Enrollment Payor' }, {:class => 'form-select border border-dark payer-name single-select',  data: { value: f.object.enrollment_payer } } %>
     </div>
     <div class="col-lg-6">
       <label class="text-dark-grey">State</label>
@@ -153,6 +153,24 @@
         <%= f.select :era, options_for_select([['Yes','yes'],['No', 'no']], f.object.era), { prompt: 'Select option' }, {:class => 'form-select border-dark'}  %>
       </div>
   </div>
+
+  <% if current_setting.dcs? %>
+    <div class="attempts">
+      <div class="attempts-fields">
+        <%
+          f.object.enrollment_groups_detail_attempts.build if f.object.enrollment_groups_detail_attempts.blank?
+        %>
+        <%= f.fields_for :enrollment_groups_detail_attempts do |attempts| %>
+            <%= render 'attempts_fields', q: attempts %>
+        <% end %>
+      </div>
+      <div class="d-flex buttons gap-2 mt-2">
+        <div class="links m-auto">
+          <a type="button" class="add_attempts py-1" onclick="addAttempts(this)"><u>Add New Attempt</u></a>
+        </div>
+      </div>
+    </div>
+  <% end %>
   <div class="row mb-3">
     <div class="col-lg-12">
       <label class="text-dark-grey">Client Notes</label>

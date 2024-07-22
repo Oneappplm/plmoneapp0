@@ -1,0 +1,21 @@
+<div class="attempt-field mb-1 py-3">
+  <div class="row">
+    <div class="col-lg-2">
+      <label class="text-dark-grey">Date</label>
+       <%= q.text_field :attempt_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(q.object.attempt_date), onfocus: "(this.type = 'date')" %>
+    </div>
+    <div class="col-lg-2">
+      <label class="text-dark-grey">Attempt Status</label>
+      <%= q.select :status, options_for_select(EnrollmentProvidersDetailAttempt::STATUS, q.object.status), { prompt: 'Attempt Status' }, {:class => 'form-select multi-application-status border border-dark '}  %>
+    </div>
+    <div class="col-lg-4">
+      <label class="text-dark-grey">Note</label>
+      <%= q.text_field :note, placeholder: 'Type here', class: 'form-control border-dark' %>
+    </div>
+    <div class="col-lg-4">
+      <label class="text-dark-grey">Agent</label>
+      <%= q.text_field :user_full_name, value: q.object.persisted? ? User.find_by(id: q.object.user_id).full_name : current_user.full_name, class: 'form-control border-dark', disabled: true %>
+    </div>
+    <%= q.text_field :user_id, value: q.object.persisted? ? q.object.user_id : current_user.id, hidden: true %>
+  </div>
+</div>

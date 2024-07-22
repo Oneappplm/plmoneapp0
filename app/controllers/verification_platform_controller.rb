@@ -2,7 +2,7 @@ class VerificationPlatformController < ApplicationController
   before_action :set_hvhs_datum, only: [:show, :edit, :update, :destroy]
 
   def index
-    if params[:page]
+    if params[:page].to_i == 0 && !params[:page].nil?
       render params[:page]
     else
       @hvhs_data = if params[:search].present?
