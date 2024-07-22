@@ -26,6 +26,28 @@ class MultiSelectDataController < ApplicationController
     end
   end
 
+	def payor_names
+		send_result payor_names = PayorName.all.map{|m| { label: m.title, value: m.title} }
+  end
+
+	def enrollment_provivder_enrollment_status
+		send_result [
+	  	{ label: 'Application Not Submitted', value: 'application-not-submitted'},
+      { label: 'Application Submitted', value: 'application-submitted' },
+      { label: 'Processing', value: 'processing' },
+      { label: 'Approved', value: 'approved'},
+      { label: 'Denied', value: 'denied' },
+      { label: 'Terminated', value: 'terminated' },
+	  	{ label: 'Not Eligible', value: 'not-eligible' },
+	  	{ label: 'Revalidation', value: 'revalidation' },
+		  { label: 'Not Part of Contract', value: 'none-contract' }
+    ], selected_enrollment_status: params[:current_enrollment_status]
+  end
+
+	def enrollment_provivder_enrollment_type
+		send_result EnrollmentProvider.enrollment_types.map{|type| { label: type[0], value: type[1]} }, selected_enrollment_type: params[:current_enrollment_type]
+  end
+
   def group_states
     send_result State.all.map{ |state| { label: "#{state.name} - #{state.alpha_code}", value: state.name } }
   end

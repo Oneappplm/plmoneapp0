@@ -4,6 +4,7 @@ class EnrollGroupsDetail < ApplicationRecord
   before_create :hash_password
 
   has_many :questions, class_name: 'EnrollGroupsDetailsQuestion', dependent: :destroy
+  has_many :enrollment_groups_detail_attempts, dependent: :destroy
   has_many :application_status_logs, class_name: 'EgdLog', dependent: :destroy
   accepts_nested_attributes_for :questions, allow_destroy: true
   after_save :create_application_status_log, if: :saved_change_to_application_status?
@@ -27,6 +28,10 @@ class EnrollGroupsDetail < ApplicationRecord
   scope :meridian, -> {where(enrollment_payer: 'meridian')}
   scope :priority_health, -> {where(enrollment_payer: 'priority_health')}
   scope :medicaid, -> {where(enrollment_payer: 'medicaid')}
+
+  accepts_nested_attributes_for :enrollment_groups_detail_attempts, allow_destroy: true, reject_if: proc { |attributes|
+    attributes['attempt_date'].blank? && attributes['status'].blank? && attributes['note'].blank?
+  }
 
   def state
     State.find_by(id: self.state_id)
