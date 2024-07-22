@@ -3,7 +3,7 @@ class VerificationPlatformController < ApplicationController
 		before_action :redirect_to_auto_verify, only: [:index]
 
   def index
-    if params[:page]
+    if params[:page].to_i == 0 && !params[:page].nil?
       render params[:page]
     else
       @hvhs_data = if params[:search].present?

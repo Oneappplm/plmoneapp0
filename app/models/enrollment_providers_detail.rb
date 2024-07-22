@@ -23,8 +23,12 @@ class EnrollmentProvidersDetail < ApplicationRecord
   belongs_to :enrollment_provider
   has_many :application_status_logs, class_name: 'EpdLog', dependent: :destroy
   has_many :questions, class_name: 'EpdQuestion', dependent: :destroy
+  has_many :enrollment_providers_detail_attempts, dependent: :destroy
 
   accepts_nested_attributes_for :questions, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :enrollment_providers_detail_attempts, allow_destroy: true, reject_if: proc { |attributes|
+    attributes['attempt_date'].blank? && attributes['status'].blank? && attributes['note'].blank?
+  }
 
   after_save :create_application_status_log, if: :saved_change_to_enrollment_status?
   before_update :validate_start_date, :if => proc { start_date_changed? && start_date_was.present? }

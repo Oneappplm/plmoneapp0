@@ -9,8 +9,8 @@ Rails.application.routes.draw do
   get 'provider-engage', to: 'provider_app#provider_source', as: :custom_provider_source # Provider Engage page
   get 'show-virtual-review-committee/:id', to: 'pages#show_virtual_review_committee', as: "show_virtual_review_committee"
 
-		get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
-		get 'app-tracker', to: 'pages#app_tracker'
+  get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
+  get 'app-tracker', to: 'pages#app_tracker'
   get 'encompass', to: 'pages#encompass'
   get 'microsite', to: 'pages#microsite'
   get 'ps-office-manager', to: 'pages#ps_office_manager'
@@ -72,6 +72,7 @@ Rails.application.routes.draw do
   post 'update-collapse', to: 'ajax#update_collapse'
   get 'monthly-visits', to: 'ajax#get_monthly_visits'
   get 'browser-visits', to: 'ajax#browser_visits'
+  post 'payor-name', to: 'ajax#create_payor_name'
   get 'state-providers', to: 'ajax#state_providers'
   get 'providers-gender', to: 'ajax#providers_gender'
   get 'get-specialties', to: 'ajax#get_specialties'
@@ -299,7 +300,10 @@ Rails.application.routes.draw do
   resources :multi_select_data, only: [], path: 'multi-select-data' do
     collection do
       get :states
+      get :enrollment_provivder_enrollment_status
+      get :enrollment_provivder_enrollment_type
       get :provider_types
+      get :payor_names
       get :countries
       get :visa_types
       get :languages
