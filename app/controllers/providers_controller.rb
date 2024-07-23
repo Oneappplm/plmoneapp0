@@ -66,8 +66,12 @@ class ProvidersController < ApplicationController
 				subject: "Add Provider",
 				body: "#{@provider.encoded_by} added a new provider: #{@provider.provider_name}"
 			).send_system_notification.deliver_later
-      ProviderEmailCreationNotification.with(provider_full_name: @provider.fullname, provider_id: @provider.id).deliver(User.all)
-      ProviderCreationNotification.with(provider_full_name: @provider.fullname, provider_id: @provider.id).deliver(User.all)
+
+			# Only send notification to those that are related to the provider's group
+			users = User.includes(:users_enrollment_groups).where(users_enrollment_groups: { id: @provider.enrollment_group_id })
+
+      ProviderEmailCreationNotification.with(provider_full_name: @provider.fullname, provider_id: @provider.id).deliver(users)
+      ProviderCreationNotification.with(provider_full_name: @provider.fullname, provider_id: @provider.id).deliver(users)
 			redirect_to providers_path, notice: 'Provider has been successfully created.'
 		else
 			build_associations
@@ -86,7 +90,7 @@ class ProvidersController < ApplicationController
         end
      end
 
-     ProvidersMissingFieldSubmissionNotification.with(submitted_fields: @submitted_fields, provider_full_name: @provider.fullname, provider_id: @provider.id).deliver(User.agents) if submission
+		ProvidersMissingFieldSubmissionNotification.with(submitted_fields: @submitted_fields, provider_full_name: @provider.fullname, provider_id: @provider.id).deliver(User.agents) if submission
 
     redirect_to enrollment_client_path(@provider, mode: 'notifications'), notice: 'Provider was successfully updated.'
   end
@@ -148,7 +152,9 @@ class ProvidersController < ApplicationController
 
 	    changed_attributes
 
-	   EnrollmentChangesNotification.with(changed_attributes_array: changed_attributes, provider_full_name: old_data.fullname).deliver(User.all)
+		users = User.includes(:users_enrollment_groups).where(users_enrollment_groups: { id: @provider.enrollment_group_id })
+
+		EnrollmentChangesNotification.with(changed_attributes_array: changed_attributes, provider_full_name: old_data.fullname).deliver(users)
 	end
 	def destroy
 		if @provider.destroy
