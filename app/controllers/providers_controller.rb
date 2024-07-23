@@ -1,5 +1,5 @@
 class ProvidersController < ApplicationController
-	before_action :set_provider, only: [:show, :edit, :update, :destroy, :update_from_notifications]
+	before_action :set_provider, only: [:edit, :update, :destroy, :update_from_notifications]
 	before_action :set_overview_details, only: [:overview]
 
   def index
@@ -174,7 +174,14 @@ class ProvidersController < ApplicationController
 		if !current_user.can_access_all_groups? && !current_user.super_administrator?
 			@providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
 		end
-    @provider = Provider.find(params[:id])
+		if !current_user.can_access_all_groups? && !current_user.super_administrator?
+    	@provider = Provider.includes(:group).where(group: { id: current_user.enrollment_groups.pluck(:id) }).where(id: params[:id]).last
+			if !@provider.present?
+				redirect_to providers_path, alert: "You don't have access to the provider."
+			end
+		else
+			@provider = Provider.find(params[:id])
+		end
     @comment = EnrollmentComment.new
     @comment.provider = @provider
     @comment.user = current_user
@@ -214,7 +221,7 @@ class ProvidersController < ApplicationController
 	private
 
 	def set_provider
-			@provider = Provider.find(params[:id] || params[:provider_id])
+		@provider = Provider.find(params[:id] || params[:provider_id])
 	end
 
 	def build_associations
