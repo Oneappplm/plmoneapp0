@@ -1,9 +1,18 @@
 class AltEnrollmentGroupsController < ApplicationController
-  before_action :get_enrollment_group, only: [:show, :locations, :documents, :enrollments, :providers]
+  before_action :get_enrollment_group, only: [:locations, :documents, :enrollments, :providers]
   before_action :get_enroll_groups, only: [:enrollments]
   before_action :get_enrollment_group_providers, only: [:providers]
 
-  def show; end
+  def show
+    if !current_user.can_access_all_groups? && !current_user.super_administrator?
+    	@enrollment_group = EnrollmentGroup.where(id: current_user.enrollment_groups.pluck(:id)).where(id: params[:id] || params[:alt_enrollment_group_id]).last
+			if !@enrollment_group.present?
+				redirect_back(fallback_location: root_path, alert: "You don't have access to the group.")
+			end
+		else
+			@enrollment_group = EnrollmentGroup.find(params[:id] || params[:alt_enrollment_group_id])
+		end
+  end
 
   def documents; end
 

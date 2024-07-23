@@ -175,12 +175,12 @@ class ProvidersController < ApplicationController
 			@providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
 		end
 		if !current_user.can_access_all_groups? && !current_user.super_administrator?
-    	@provider = Provider.includes(:group).where(group: { id: current_user.enrollment_groups.pluck(:id) }).where(id: params[:id]).last
+    	@provider = Provider.includes(:group).where(group: { id: current_user.enrollment_groups.pluck(:id) }).where(id: params[:id] || params[:provider_id]).last
 			if !@provider.present?
-				redirect_to providers_path, alert: "You don't have access to the provider."
+				redirect_back(fallback_location: root_path, alert: "You don't have access to the provider.")
 			end
 		else
-			@provider = Provider.find(params[:id])
+			@provider = Provider.find(params[:id] || params[:provider_id])
 		end
     @comment = EnrollmentComment.new
     @comment.provider = @provider
