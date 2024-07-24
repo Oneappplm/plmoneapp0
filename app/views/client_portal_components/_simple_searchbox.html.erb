@@ -38,19 +38,6 @@
 
                   </div>
                </div>
-               <div class="row mb-3">
-                  <div class="col-lg-6">
-                     <label class="text-sm text-black" for="">From Attest Date:</label>
-                        <%= f.date_field :from_attest_date, value: "#{@search_inputs['from_attest_date']}", class: "form-control py-1" %>
-
-                  </div>
-                  <div class="col-lg-6">
-                     <label class="text-sm text-black" for="">To Attest Date:</label>
-                     <!-- <input type="text" class="form-control py-1" placeholder=""> -->
-                        <%= f.date_field :to_attest_date, value: "#{@search_inputs['to_attest_date']}", class: "form-control py-1" %>
-
-                  </div>
-               </div>
             </div>
             <div class="col-lg-6">
                <div class="row mb-3">
@@ -69,55 +56,21 @@
                            <option value="">Select option</option>
                            <% specialties.each do |specialty|%>
                            <option value="<%= specialty.bcbs%>" <%= @search_inputs['specialty'] == specialty.bcbs ? 'selected' : '' %>><%= specialty.bcbs %></option>
-                           >
                            <% end %>
                         </select>
                   </div>
                </div>
                <div class="row mb-3">
                   <div class="col-lg-6">
-                     <label class="text-sm text-black" for="">Cred Status:</label>
-                        <select class="form-select py-1" name="cred_status">
-                           <% cred_statuses = ['attested', 'in-process', 'pending', 'incomplete', 'complete-application', 'no-application', 'psv', 'returned']%>
-                           <option value="">Select option</option>
-                           <% cred_statuses.each do |stat|%>
-                              <% if stat != 'pending'%>
-                              <option value="<%= stat %>" <%= @search_inputs['cred_status'] == stat ? 'selected' : ''%>><%= stat != 'psv' ? stat.titleize : stat.upcase %></option>
-                              <% else %>
-                              <option value="<%= stat %>" <%= @search_inputs['cred_status'] == stat ? 'selected' : ''%>>Pending Data Entry</option>
-                              <% end %>
-                           <% end %>
-                        </select>
+                     <label class="text-sm text-black" for="">From Attest Date:</label>
+                        <%= f.date_field :from_attest_date, value: "#{@search_inputs['from_attest_date']}", class: "form-control py-1" %>
+
                   </div>
                   <div class="col-lg-6">
-                     <label class="text-sm text-black" for="">Cred Cycle:</label>
-                       <select class="form-select py-1" name="cred_or_recred">
-                           <option value="">Select option</option>
-                           <option value="Cred" <%= @search_inputs['cred_or_recred'] == 'Cred' ? 'Selected' : ''%>>Cred</option>
-                           <option value="Recred" <%= @search_inputs['cred_or_recred'] == 'Recred' ? 'Selected' : ''%>>Recred</option>
-                       </select>
-                  </div>
-               </div>
-               <div class="row mb-3">
-                  <div class="col-lg-6">
-                     <label class="text-sm text-black" for="">VRC Status:</label>
-                        <select class="form-select py-1" name="vrc_status">
-                           <% vrc_statuses = ['approved', 'denied', 'pending', 'tabled', 'terminated']%>
-                              <option value="">Select option</option>
-                           <% vrc_statuses.each do |stat|%>
-                              <option value="<%= stat %>" <%= @search_inputs['vrc_status'] == stat ? 'Selected' : ''%>><%= stat.titleize %></option>
-                           <% end %>
-                        </select>
-                  </div>
-                  <div class="col-lg-6">
-                     <label class="text-sm text-black" for="">PSV Flag:</label>
-                        <% psv_flag_options = ['With PSV', 'Without PSV']%>
-                        <select class="form-select py-1" name="psv_flag">
-                           <option value="">Select option</option>
-                           <% psv_flag_options.each do |flg|%>
-                              <option value="<%= flg %>" <%= @search_inputs['psv_flag'] == flg ? 'Selected' : ''%>><%= flg %></option>
-                           <% end %>
-                        </select>
+                     <label class="text-sm text-black" for="">To Attest Date:</label>
+                     <!-- <input type="text" class="form-control py-1" placeholder=""> -->
+                        <%= f.date_field :to_attest_date, value: "#{@search_inputs['to_attest_date']}", class: "form-control py-1" %>
+
                   </div>
                </div>
             </div>
