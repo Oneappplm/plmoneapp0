@@ -14,7 +14,7 @@
 			</div>
 			<div class="col-lg-6 d-flex justify-content-end gap-2">
 				<%= link_to 'Autoverify', auto_verifies_path, class: "btn btn-md border-0 btn-secondary text-black bg-alt-grey"%>
-				<% if current_user.can_access?('Add New Provider') %>
+				<% if current_user.can_access?('Add New Provider') && current_user.user_role != 'provider' %>
 					<%= link_to new_provider_url, class: "d-flex btn btn-primary btn-md" do %>
 									<i class="bi bi-plus-lg me-2"></i>
 							Add New Provider
@@ -33,22 +33,31 @@
 								</tr>
 						</thead>
 						<tbody>
-							<%= render @providers %>
+							<% @providers.each do |provider| %>
+								<%= render partial: 'provider', locals: { provider: provider } %>
+							<% end %>
 						</tbody>
 				</table>
-				<% if @providers %>
-				<div class="col-lg-12">
-								<div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
-								<div class="page_info ms-3 text-black">
-																<%= page_entries_info @providers %>
-								</div>
-								<% if params[:per_page ].present? %>
-												<%= will_paginate @providers, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+				<% if @providers.present? %>
+					<div class="col-lg-12">
+						<div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+							<div class="page_info ms-3 text-black">
+								<%#= page_entries_info @providers %>
+								<% if current_user.user_role == "provider" %>
+									<%= "Providers Count : #{Provider.where(email_address: current_user.email).count}" %>
 								<% else %>
-												<%= will_paginate @providers, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+									<%= "Providers Count : #{current_user.providers.count} " %>
 								<% end %>
-								</div>
-				</div>
+							</div>
+							<% if @providers.size > 50 %>
+								<% if params[:per_page ].present? %>
+									<%= will_paginate @providers, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+								<% else %>
+									<%= will_paginate @providers, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+								<% end %>
+							<% end %>
+						</div>
+					</div>
 				<% end %>
 			</div>
 			<div id="show-provider-container">

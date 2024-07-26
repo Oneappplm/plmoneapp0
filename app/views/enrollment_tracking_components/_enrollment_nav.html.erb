@@ -7,14 +7,14 @@
 				<a href="<%= providers_path %>" class="btn btn-md  border-0 <%= enrollment_nav_active('providers', 'index,new,edit,show')%>">Providers</a>
 			<% end %>
 
-			<% if current_user.can_access?('Enrollment') %>
+			<% if current_user.can_access?('Enrollment') && current_user.user_role != 'provider' %>
 				<% if current_setting.qualifacts? %>
 					<a href="<%= client_provider_enrollments_path %>" class="btn btn-md border-0 <%= enrollment_nav_active('enrollment_providers,enroll_groups,client_provider_enrollments')%>">Enrollment</a>
 				<%else%>
 					<a href="<%= enrollment_providers_path %>" class="btn btn-md border-0 <%= enrollment_nav_active('enrollment_providers,enroll_groups')%>">Enrollment</a>
 				<% end %>
 			<% end %>
-			<% if current_user.can_access?('Group') %>
+			<% if current_user.can_access?('Group') && current_user.user_role != 'provider' %>
 				<a href="<%= groups_enrollments_path %>" class="btn btn-md border-0 <%= enrollment_nav_active('enrollments,pages,dcos','groups,new_group,index,new,create,edit,update,edit_group')%> <%= current_setting.qualifacts? ? active_menu('dcos','show') : "" %>">Groups</a>
 			<% end %>
 			<!-- <a href="<%= new_user_enrollments_path %>" class="btn btn-md border-0 <%= enrollment_nav_active('enrollments', 'new_user,edit_user')%>">Users</a> -->

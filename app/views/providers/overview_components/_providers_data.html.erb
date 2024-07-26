@@ -1,62 +1,87 @@
 <div class="row mb-3 g-2">
-  <div class="col-lg-3">
-  <%= link_to enrollment_clients_path, :class => "button" do %>
-    <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
-      <h5 class="text-black text-left">All Providers</h5>
-      <div class="w-100 d-flex d-flex align-items-end">
-         <h1 style="font-size: 40px;" class="text-black mt-2" id="provider_count_container">
-          <% if current_user.can_access_all_groups? || current_user.super_administrator? %>
-            <%= Provider.count %>
-          <%else%>
-            <%= Provider.where(enrollment_group_id: current_user.enrollment_groups&.pluck(:id))&.count%>
-          <%end%>
-        </h1>
-      </div>
-    </div>
-  <% end %>
-  </div>
-  <div class="col-lg-3">
+  <% if current_user.user_role == 'provider' %>
+    <div class="col-lg-3">
+    <%= link_to enrollment_clients_path, :class => "button" do %>
       <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
-        <select class="enrollment-group-select position-absolute bg-transparent fw-semibold text-right pe-1" style="right: 1%;text-align: right;">
-          <option value="all">All</option>
-          <% enrollment_group_options.each do |group|%>
-            <option value="<%= group[1]%>"><%= group[0]%></option>
-          <% end %>
-        </select>
-        <%= link_to groups_enrollment_clients_path, :class => "button" do %>
-          <h5 class="text-black text-left">All Groups</h5>
-          <div class="w-100 d-flex d-flex align-items-end">
-            <h1 style="font-size: 40px;" class="text-black mt-2">
-              <% if current_user.can_access_all_groups? || current_user.super_administrator? %>
-                <%= EnrollmentGroup.count %>
-              <% else %>
-                <%= current_user.enrollment_groups&.count%>
-              <% end %>
-            </h1>
-          </div>
-        <% end %>
-
-      </div>
-  </div>
-  <div class="col-lg-3">
-    <%= link_to "javascript:void(0)", :class => "button", :id => "group_locations_link_to" do %>
-      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
-        <%# <div id="dco_select_container"> %>
-          <%#render "providers/overview_components/group_dco_dropdown"%>
-        <%# </div> %>
-          <h5 class="text-black text-left">Group's Location</h5>
-          <div class="w-100 d-flex d-flex align-items-end">
-            <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
-              <% if current_user.can_access_all_groups? || current_user.super_administrator?%>
-                <%= GroupDco.count %>
-              <%else%>
-                <%= GroupDco.where(enrollment_group_id: current_user.enrollment_groups&.pluck(:id))&.count%>
-              <%end%>
-            </h1>
-          </div>
+        <h5 class="text-black text-left">All</h5>
+        <div class="w-100 d-flex d-flex align-items-end">
+           <h1 style="font-size: 40px;" class="text-black mt-2" id="provider_count_container">
+            <%# if current_user.can_access_all_groups? || current_user.super_administrator? %>
+              <%#= Provider.count %>
+            <%#else%>
+              <%#= Provider.where(enrollment_group_id: current_user.enrollment_groups&.pluck(:id))&.count%>
+            <%#end%>
+            <%= Provider.where(email_address: current_user.email).count %>
+          </h1>
+        </div>
       </div>
     <% end %>
-  </div>
+    </div>
+  <% else %>
+    <div class="col-lg-3">
+    <%= link_to enrollment_clients_path, :class => "button" do %>
+      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
+        <h5 class="text-black text-left">All Providers</h5>
+        <div class="w-100 d-flex d-flex align-items-end">
+           <h1 style="font-size: 40px;" class="text-black mt-2" id="provider_count_container">
+            <%# if current_user.can_access_all_groups? || current_user.super_administrator? %>
+              <%#= Provider.count %>
+            <%#else%>
+              <%#= Provider.where(enrollment_group_id: current_user.enrollment_groups&.pluck(:id))&.count%>
+            <%#end%>
+            <%= current_user.providers.count > 0 ? current_user.providers.count : 0 %>
+          </h1>
+        </div>
+      </div>
+    <% end %>
+    </div>
+  <% end %>
+
+  <% if current_user.user_role != 'provider' %>
+    <div class="col-lg-3">
+        <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
+          <select class="enrollment-group-select position-absolute bg-transparent fw-semibold text-right pe-1" style="right: 1%;text-align: right;">
+            <option value="all">All</option>
+            <% enrollment_group_options.each do |group|%>
+              <option value="<%= group[1]%>"><%= group[0]%></option>
+            <% end %>
+          </select>
+          <%= link_to groups_enrollment_clients_path, :class => "button" do %>
+            <h5 class="text-black text-left">All Groups</h5>
+            <div class="w-100 d-flex d-flex align-items-end">
+              <h1 style="font-size: 40px;" class="text-black mt-2">
+                <% if current_user.can_access_all_groups? || current_user.super_administrator? %>
+                  <%= EnrollmentGroup.count %>
+                <% else %>
+                  <%= current_user.enrollment_groups&.count%>
+                <% end %>
+              </h1>
+            </div>
+          <% end %>
+
+        </div>
+    </div>
+
+    <div class="col-lg-3">
+      <%= link_to "javascript:void(0)", :class => "button", :id => "group_locations_link_to" do %>
+        <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
+          <%# <div id="dco_select_container"> %>
+            <%#render "providers/overview_components/group_dco_dropdown"%>
+          <%# </div> %>
+            <h5 class="text-black text-left">Group's Location</h5>
+            <div class="w-100 d-flex d-flex align-items-end">
+              <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
+                <% if current_user.can_access_all_groups? || current_user.super_administrator?%>
+                  <%= GroupDco.count %>
+                <%else%>
+                  <%= GroupDco.where(enrollment_group_id: current_user.enrollment_groups&.pluck(:id))&.count%>
+                <%end%>
+              </h1>
+            </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
 
   <div class="col-lg-3">
     <%= link_to notifications_enrollment_clients_path, :class => "button" do %>
@@ -177,37 +202,40 @@
     <% end %>
   </div>
 </div>
-<div class="row mb-3 g-2">
-  <div class="col-lg-3">
-    <%= link_to enrollment_clients_path(status: 'active'), :class => "button" do %>
-      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
-        <h5 class="text-black text-left">Active Providers</h5>
-        <div class="w-100 d-flex d-flex align-items-end">
-          <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
-            <% if current_user.can_access_all_groups? || current_user.super_administrator? %>
-              <%= Provider.active.count %>
-            <%else%>
-              <%= Provider.where(enrollment_group_id: current_user.enrollment_groups&.pluck(:id)).active&.count %>
-            <%end%>
-          </h1>
+
+<% if current_user.user_role != 'provider' %>
+  <div class="row mb-3 g-2">
+    <div class="col-lg-3">
+      <%= link_to enrollment_clients_path(status: 'active'), :class => "button" do %>
+        <div class="card p-2 rounded-15 pale-blue ps-3 pb-0 position-relative" style="min-height: 112px;">
+          <h5 class="text-black text-left">Active Providers</h5>
+          <div class="w-100 d-flex d-flex align-items-end">
+            <h1 style="font-size: 40px;" class="text-black mt-2" id="group_dco_counter">
+              <% if current_user.can_access_all_groups? || current_user.super_administrator? %>
+                <%= Provider.active.count %>
+              <%else%>
+                <%= Provider.where(enrollment_group_id: current_user.enrollment_groups&.pluck(:id)).active&.count %>
+              <%end%>
+            </h1>
+          </div>
         </div>
-      </div>
-    <% end %>
-  </div>
-  <div class="col-lg-3">
-    <%= link_to enrollment_clients_path(status: 'inactive-termed'), :class => "button" do %>
-      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
-        <h5 class="text-black text-left">Inactive Providers</h5>
-        <div class="w-100 d-flex d-flex align-items-end">
-          <h1 style="font-size: 40px;" class="text-black mt-2">
-            <% if current_user.can_access_all_groups? || current_user.super_administrator? %>
-              <%= Provider.inactive.count %>
-            <%else%>
-              <%= Provider.where(enrollment_group_id: current_user.enrollment_groups&.pluck(:id)).inactive&.count %>
-            <%end%>
-          </h1>
+      <% end %>
+    </div>
+    <div class="col-lg-3">
+      <%= link_to enrollment_clients_path(status: 'inactive-termed'), :class => "button" do %>
+        <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
+          <h5 class="text-black text-left">Inactive Providers</h5>
+          <div class="w-100 d-flex d-flex align-items-end">
+            <h1 style="font-size: 40px;" class="text-black mt-2">
+              <% if current_user.can_access_all_groups? || current_user.super_administrator? %>
+                <%= Provider.inactive.count %>
+              <%else%>
+                <%= Provider.where(enrollment_group_id: current_user.enrollment_groups&.pluck(:id)).inactive&.count %>
+              <%end%>
+            </h1>
+          </div>
         </div>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
   </div>
-</div>
+<% end %>

@@ -47,6 +47,8 @@ class Provider < ApplicationRecord
   # validates_format_of :telephone_number, with: /\A\d{3}-\d{4}\z/, message: "should be in the format xxx-xxxx"
   # validates_format_of :ext, with: /\A\d{2}\z/, message: "should be in the format xx"
 
+  belongs_to :user
+
   belongs_to :group, class_name: 'EnrollmentGroup', foreign_key: 'enrollment_group_id', optional: true
   # relationhsip to be removed - update: provider can have many group_dcos
   belongs_to :group_dco, class_name: 'GroupDco', foreign_key: 'dco', optional: true
@@ -106,7 +108,7 @@ class Provider < ApplicationRecord
   scope :active, -> { where(status: 'active') }
   scope :inactive, -> { where(status: 'inactive-termed') }
 
-  after_save :send_welcome_letter
+  after_save :send_welcome_letter, :create_provider_user
 
   # this is for all required fields including uploads
   def self.with_missing_required_attributes
@@ -462,9 +464,17 @@ class Provider < ApplicationRecord
     # attachments
   end
 
-		def sent_welcome_letter?
-			welcome_letter_status? && welcome_letter_sent.present?
-		end
+  def create_provider_user
+    unless User.exists?(email: email_address)
+      User.create!(email: email_address, password: password, first_name: first_name, last_name: last_name, middle_name: middle_name, user_role: 'provider')
+    else
+      raise "User with email #{email_address} already exists"
+    end
+  end
+
+	def sent_welcome_letter?
+		welcome_letter_status? && welcome_letter_sent.present?
+	end
 
   def group_dcos
     GroupDco.where(id: self.dcos.split(",")) rescue []

@@ -2,21 +2,25 @@
 	<td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true"><%=provider.provider_name%></a></td>
 	<td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true"><%=provider.practitioner_type%></a></td>
 	<td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true"><%=provider.npi %></a>
-			<div class="d-flex gap-2" style="float:right;">
-				<%= link_to audit_trail_path(provider, type: 'provider'), target: '_blank', class: 'btn btn-xs btn-secondary' do %>
-				<i class="bi bi-graph-up"></i>
-				<% end %>
-				<% if current_user.can_access?('Edit Provider') %>
-					<%= link_to edit_provider_path(provider), class: 'btn btn-xs btn-primary' do %>
-							<i class="bi bi-pencil"></i>
-					<% end %>
-				<% end %>
-				<% if current_user.can_access?('Delete Provider') %>
-				<%= button_to provider_path(provider), method: :delete, class: 'btn btn-xs btn-danger delete-button', data: { confirm: 'Are you sure you want to delete this provider?' }, id: "delete-provider-#{provider.id}" do %>
-						<i class="bi bi-trash"></i>
-				<% end %>
-				<% end %>
-</div>
+
+    <% if ['administrator', 'super_administrator'].include?(current_user.user_role) %>
+  		<div class="d-flex gap-2" style="float:right;">
+  			<%= link_to audit_trail_path(provider, type: 'provider'), target: '_blank', class: 'btn btn-xs btn-secondary' do %>
+  			<i class="bi bi-graph-up"></i>
+  			<% end %>
+  			<% if current_user.can_access?('Edit Provider') %>
+  				<%= link_to edit_provider_path(provider), class: 'btn btn-xs btn-primary' do %>
+  						<i class="bi bi-pencil"></i>
+  				<% end %>
+  			<% end %>
+  			<% if current_user.can_access?('Delete Provider') %>
+  			<%= button_to provider_path(provider), method: :delete, class: 'btn btn-xs btn-danger delete-button', data: { confirm: 'Are you sure you want to delete this provider?' }, id: "delete-provider-#{provider.id}" do %>
+  					<i class="bi bi-trash"></i>
+  			<% end %>
+  			<% end %>
+      </div>
+    <% end %>
+    
     <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
 		</td>
 </tr>

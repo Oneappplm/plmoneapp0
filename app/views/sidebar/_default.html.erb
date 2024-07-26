@@ -23,7 +23,7 @@
 							<div class="navbar-vertical-content">
 										<div id="navbarVerticalMenu" class="nav nav-pills nav-vertical card-navbar-nav px-0">
 													<!-- Collapse -->
-													<% if current_user.can_access?('Overview') %>
+													<% if current_user.can_access?('Overview') && current_user.user_role != 'provider'  %>
 													<div class="nav-item mb-2 nav-item-active">
 																<!-- ph-active -->
 																<a class="nav-link <%= active_menu('dashboard', 'dashboard') %>" href="<%= root_path %>">
@@ -33,7 +33,7 @@
 													</div>
 													<% end %>
 
-													<% if current_user.can_access?('dashboard')%>
+													<% if current_user.can_access?('dashboard') && current_user.user_role != 'provider' %>
 													<div class="nav-item mb-2">
 																			<div class="d-flex with-submenu align-items-center justify-content-between pe-3 <%= active_menu('pages,users', 'client_portal,virtual_review_committee,data_access,all_users,new') %>">
 																											<a class="nav-link has-submenu" href="javascript:void(0);" data-placement="left" data-submenu="client_submenu">
@@ -101,7 +101,7 @@
 																</a>
 													</div>
 													<% end %>
-													<% if current_user.can_access?('provider_engage')%>
+													<% if current_user.can_access?('provider_engage') && current_user.user_role != 'provider' %>
 													<div class="nav-item mb-2">
 																<a class="nav-link <%= active_menu('provider_engage', 'provider_source') %>" href="<%= custom_provider_source_path %>" data-placement="left">
 																			<!-- <i class="bi-receipt nav-icon"></i> -->
@@ -111,7 +111,7 @@
 													</div>
 													<% end %>
 
-													<% if current_user.can_access?('group_engage') %>
+													<% if current_user.can_access?('group_engage') && current_user.user_role != 'provider' %>
 													<div class="nav-item mb-2">
 																<a class="nav-link <%= active_menu('office_managers', 'index') %>" href="<%= office_managers_path %>" data-placement="left">
 																			<!-- <i class="bi-receipt nav-icon"></i> -->
@@ -122,7 +122,7 @@
 													<% end %>
 
 
-													<% if current_user.can_access?('verification_platform')%>
+													<% if current_user.can_access?('verification_platform') && current_user.user_role != 'provider' %>
 														<div class="nav-item mb-1">
 																	<a class="nav-link <%= active_menu('verification_platform', 'index') %> <%= active_menu('manage_tools') %>" href="<%= verification_platform_index_path %>" data-placement="left">
 																				<!-- <i class="bi-receipt nav-icon"></i> -->
@@ -156,7 +156,7 @@
 													</div>
 													<% end %>
 
-												<% if current_user.can_access?('Role Based Access') %>
+												<% if current_user.can_access?('Role Based Access') && current_user.user_role != 'provider' %>
 													<div class="nav-item mb-1">
 														<a class="nav-link <%= active_menu('role_based_accesses,roles,users') %> <%= active_menu('index') %>" href="<%= role_based_accesses_path %>" data-placement="left">
 															<i class="bi bi-gear nav-icon"></i>

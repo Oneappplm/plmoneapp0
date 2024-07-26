@@ -1,8 +1,8 @@
 <%
-  providers = if action_name == 'notifications'
-    @incomplete_providers
+  providers = if current_user.user_role == 'provider'
+    Provider.where(email_address: current_user.email) # Filter to current user's provider if role is 'provider'
   else
-    @providers
+    action_name == 'notifications' ? @incomplete_providers : current_user.providers
   end
 %>
 
@@ -52,18 +52,29 @@
       </tbody>
    </table>
 
-  <div class="col-lg-12">
-        <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+   <% if providers.present? %>
+    <div class="col-lg-12">
+      <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
         <div class="page_info ms-3 text-black">
-            <%= page_entries_info providers %>
+            <%#= page_entries_info @providers %>
+
+          <% if current_user.user_role == 'provider' %>
+            <%= "Providers Count : #{Provider.where(email_address: current_user.email).count}" %>
+          <% else %>
+            <%= "Providers Count : #{current_user.providers.count}" %>
+          <% end %>
+            
         </div>
-        <% if params[:per_page ].present? %>
-          <%= will_paginate providers, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-        <% else %>
-          <%= will_paginate providers, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+        <% if providers.size > 50 %>
+          <% if params[:per_page ].present? %>
+            <%= will_paginate @providers, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+          <% else %>
+            <%= will_paginate @providers, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+          <% end %>
         <% end %>
-        </div>
       </div>
+    </div>
+  <% end %>
 
 <script>
    function toggleBackToTopButton() {

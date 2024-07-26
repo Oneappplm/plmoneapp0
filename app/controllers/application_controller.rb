@@ -7,6 +7,15 @@ class ApplicationController < ActionController::Base
 
   # before_action :force_logout_on_close_if_expired, except: [:logout_on_close] # TODO: uncomment this line
 
+  # add this - providers are redirected to the dashboard_enrollment_clients_path after logging in.
+  def after_sign_in_path_for(resource)
+  	if resource.user_role == 'provider'
+  		dashboard_enrollment_clients_path
+  	else
+  		super
+  	end
+  end
+
 	include ApplicationHelper
 
 	protected
