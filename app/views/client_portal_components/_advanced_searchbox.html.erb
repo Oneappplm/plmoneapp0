@@ -16,167 +16,185 @@
 				<%= f.hidden_field :grid, value: 'grid'%>
 			<% end %>
 			<div class="row">
-				<div class="col-lg-4">
-	            	<div class="row mb-3">
-		               <div class="form-group">
-		                  <label class="text-sm text-black">Full Name</label>
-		                  <!-- <input type="text" class="form-control py-1" > -->
-		                  <%= f.text_field :full_name, value: "#{@search_inputs['full_name']}", class: "form-control py-1" %>
-		               </div>
-	            	</div>
-	               <div class="row mb-3">
-	                  <div class="col-lg-6">
-	                     <label class="text-sm text-black" for="">First Name:</label>
-	                     <!-- <input type="text" class="form-control py-1" placeholder=""> -->
-		                  <%= f.text_field :first_name, value: "#{@search_inputs['first_name']}", class: "form-control py-1" %>
+				<div class="col-lg-6">
+					<div class="row mb-3">
+							<div class="form-group">
+								<label class="text-sm text-black">Name</label>
+								<!-- <input type="text" class="form-control py-1" > -->
+								<%= f.text_field :full_name, value: "#{@search_inputs['full_name']}", class: "form-control py-1" %>
+							</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-6">
+							<label class="text-sm text-black" for="">First Name</label>
+							<!-- <input type="text" class="form-control py-1" placeholder=""> -->
+							<%= f.text_field :first_name, value: "#{@search_inputs['first_name']}", class: "form-control py-1" %>
+						</div>
+						<div class="col-lg-6">
+								<label class="text-sm text-black" for="">Last Name</label>
+							<%= f.text_field :last_name, value: "#{@search_inputs['last_name']}", class: "form-control py-1" %>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-6">
+								<label class="text-sm text-black" for="">From Attest Date</label>
+								<!-- <input type="text" class="form-control py-1" placeholder=""> -->
+							<%= f.date_field :from_attest_date, value: "#{@search_inputs['from_attest_date']}", class: "form-control py-1" %>
+						</div>
+						<div class="col-lg-6">
+								<label class="text-sm text-black" for="">To Attest Date</label>
+								<!-- <input type="text" class="form-control py-1" placeholder=""> -->
+							<%= f.date_field :to_attest_date, value: "#{@search_inputs['to_attest_date']}", class: "form-control py-1" %>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-6">
+								<label class="text-sm text-black" for="">Provider Type</label>
+								<!-- <input type="text" class="form-control py-1" placeholder=""> -->
+							<%#= f.text_field :provider_type, value: "#{@search_inputs['provider_type']}", class: "form-control py-1" %>
+							<select name="provider_type" class="form-select">
+								<option value="">-- All --</option>
+								<% @provider_types.each do |provider_type|%>
+									<option value=<%= provider_type.fch %> <%= @search_inputs['provider_type'] == provider_type.fch ? 'selected' : '' %>><%= provider_type.fch%></option>
+								<% end %>
+							</select>
 
-	                  </div>
-	                  <div class="col-lg-6">
-	                     <label class="text-sm text-black" for="">Last Name:</label>
-		                  <%= f.text_field :last_name, value: "#{@search_inputs['last_name']}", class: "form-control py-1" %>
-	                  </div>
-	               </div>
-	               <div class="row mb-3">
-	                  <div class="col-lg-6">
-	                     <label class="text-sm text-black" for="">From Attest Date:</label>
-	                     <!-- <input type="text" class="form-control py-1" placeholder=""> -->
-		                  <%= f.date_field :from_attest_date, value: "#{@search_inputs['from_attest_date']}", class: "form-control py-1" %>
-
-	                  </div>
-	                  <div class="col-lg-6">
-	                     <label class="text-sm text-black" for="">To Attest Date:</label>
-	                     <!-- <input type="text" class="form-control py-1" placeholder=""> -->
-		                  <%= f.date_field :to_attest_date, value: "#{@search_inputs['to_attest_date']}", class: "form-control py-1" %>
-
-	                  </div>
-	               </div>
-	               <div class="row mb-3">
-	                  <div class="col-lg-6">
-	                     <label class="text-sm text-black" for="">Provider Type:</label>
-	                     <!-- <input type="text" class="form-control py-1" placeholder=""> -->
-		                  <%#= f.text_field :provider_type, value: "#{@search_inputs['provider_type']}", class: "form-control py-1" %>
-		                  <select name="provider_type" class="form-select">
-		                  	<option value="">Select option</option>
-		                  	<% @provider_types.each do |provider_type|%>
-		                  		<option value=<%= provider_type.fch %> <%= @search_inputs['provider_type'] == provider_type.fch ? 'selected' : '' %>><%= provider_type.fch%></option>
-		                  	<% end %>
-		                  </select>
-
-	                  </div>
-	                  <div class="col-lg-6">
-	                     <label class="text-sm text-black" for="">Specialty:</label>
-	                     <select class="form-select" name="specialty">
-	                     	<option value="">Select option</option>
-	                     	<% specialties.each do |specialty|%>
-	                        <option value="<%= specialty.bcbs%>" <%= @search_inputs['specialty'] == specialty.bcbs ? 'selected' : '' %>><%= specialty.bcbs %></option>
-	                        <% end %>
-	                     </select>
-	                  </div>
-	               </div>
-	               <div class="row mb-3">
-	                  <div class="col-lg-6">
-	                     <label class="text-sm text-black" for="">Cred Status:</label>
-	                     <select class="form-select" name="cred_status">
-	                     	<% cred_statuses = ['attested', 'in-process', 'pending', 'incomplete', 'complete-application', 'no-application', 'psv', 'returned']%>
-	                     	<option value="">Select option</option>
-	                     	<% cred_statuses.each do |stat|%>
-	                     		<% if stat != 'pending'%>
-	                        	<option value="<%= stat %>" <%= @search_inputs['cred_status'] == stat ? 'selected' : ''%>><%= stat != 'psv' ? stat.titleize : stat.upcase %></option>
-	                        	<% else %>
-	                        	<option value="<%= stat %>" <%= @search_inputs['cred_status'] == stat ? 'selected' : ''%>>Pending Data Entry</option>
-	                        	<% end %>
-	                        <% end %>
-	                     </select>
-	                  </div>
-	                  <div class="col-lg-6">
-	                     <label class="text-sm text-black" for="">Cred Cycle:</label>
-	                     <select class="form-select" name="cred_or_recred">
-	                     	<option value="">Select option</option>
-	                        <option value="Cred" <%= @search_inputs['cred_or_recred'] == 'Cred' ? 'Selected' : ''%>>Cred</option>
-	                        <option value="Recred" <%= @search_inputs['cred_or_recred'] == 'Recred' ? 'Selected' : ''%>>Recred</option>
-	                     </select>
-	                  </div>
-	               </div>
-	               <div class="row mb-3">
-	                  <div class="col-lg-6">
-	                     <label class="text-sm text-black" for="">VRC Status:</label>
-	                     <select class="form-select" name="vrc_status">
-	                     	<% vrc_statuses = ['approved', 'denied', 'pending', 'tabled', 'terminated']%>
-	                     		<option value="">Select option</option>
-	                     	<% vrc_statuses.each do |stat|%>
-	                     		<option value="<%= stat %>" <%= @search_inputs['vrc_status'] == stat ? 'Selected' : ''%>><%= stat.titleize %></option>
-	                     	<% end %>
-	                     </select>
-	                  </div>
-	                  <div class="col-lg-6">
-	                     <label class="text-sm text-black" for="">PSV Flag:</label>
-	                     <% psv_flag_options = ['With PSV', 'Without PSV']%>
-	                     <select class="form-select" name="psv_flag">
-	                     	<option value="">Select option</option>
-	                     	<% psv_flag_options.each do |flg|%>
-	                     		<option value="<%= flg %>" <%= @search_inputs['psv_flag'] == flg ? 'Selected' : ''%>><%= flg %></option>
-	                     	<% end %>
-	                     </select>
-	                  </div>
-	               </div>
+						</div>
+						<div class="col-lg-6">
+								<label class="text-sm text-black" for="">Specialty</label>
+								<select class="form-select" name="specialty">
+								<option value="">-- All --</option>
+								<% specialties.each do |specialty|%>
+									<option value="<%= specialty.bcbs%>" <%= @search_inputs['specialty'] == specialty.bcbs ? 'selected' : '' %>><%= specialty.bcbs %></option>
+									<% end %>
+								</select>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-6">
+								<label class="text-sm text-black" for="">Cred Status</label>
+								<select class="form-select" name="cred_status">
+								<% cred_statuses = ['attested', 'in-process', 'pending', 'incomplete', 'complete-application', 'no-application', 'psv', 'returned']%>
+								<option value="">-- All --</option>
+								<% cred_statuses.each do |stat|%>
+									<% if stat != 'pending'%>
+										<option value="<%= stat %>" <%= @search_inputs['cred_status'] == stat ? 'selected' : ''%>><%= stat != 'psv' ? stat.titleize : stat.upcase %></option>
+										<% else %>
+										<option value="<%= stat %>" <%= @search_inputs['cred_status'] == stat ? 'selected' : ''%>>Pending Data Entry</option>
+										<% end %>
+									<% end %>
+								</select>
+						</div>
+						<div class="col-lg-6">
+								<label class="text-sm text-black" for="">Cred Cycle</label>
+								<select class="form-select" name="cred_or_recred">
+								<option value="">-- All --</option>
+									<option value="Cred" <%= @search_inputs['cred_or_recred'] == 'Cred' ? 'Selected' : ''%>>Cred</option>
+									<option value="Recred" <%= @search_inputs['cred_or_recred'] == 'Recred' ? 'Selected' : ''%>>Recred</option>
+								</select>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-6">
+							<label class="text-sm text-black" for="">VRC Status</label>
+							<select class="form-select" name="vrc_status">
+							<% vrc_statuses = ['approved', 'denied', 'pending', 'tabled', 'terminated']%>
+								<option value="">-- All --</option>
+							<% vrc_statuses.each do |stat|%>
+								<option value="<%= stat %>" <%= @search_inputs['vrc_status'] == stat ? 'Selected' : ''%>><%= stat.titleize %></option>
+							<% end %>
+							</select>
+						</div>
+						<div class="col-lg-6">
+							<label class="text-sm text-black" for="">PSV Flag</label>
+							<% psv_flag_options = ['With PSV', 'Without PSV']%>
+							<select class="form-select" name="psv_flag">
+							<option value="">-- All --</option>
+							<% psv_flag_options.each do |flg|%>
+								<option value="<%= flg %>" <%= @search_inputs['psv_flag'] == flg ? 'Selected' : ''%>><%= flg %></option>
+							<% end %>
+							</select>
+						</div>
+					</div>
 				</div>
-				<div class="col-lg-4">
-	               <div class="row mb-3">
-	                  <div class="col-lg-6">
-	                     <label class="text-sm text-black" for="">State:</label>
-	                     <select class="form-select" name="state_abbr">
-	                     	<option value="">Select option</option>
-	                     	<% @states.each do |state|%>
-	                     		<option value="<%= state.alpha_code %>" <%= state.alpha_code == @search_inputs['state_abbr'] ? 'selected' : '' %>><%= state.name %> - <%= state.alpha_code %></option>
-	                     	<% end %>
-	                     </select>
-	                  </div>
-	               </div>
-	               <div class="row mb-3">
-	                  <div class="col-lg-6">
-	                     <label class="text-sm text-black" for="">City:</label>
-		                  <%= f.text_field :city, value: "#{@search_inputs['city']}", class: "form-control py-1" %>
-	                  </div>
-	                  <div class="col-lg-6">
-	                     <label class="text-sm text-black" for="">Postal Zipcode:</label>
-	                     <!-- <input type="text" name="" class="form-control py-1"> -->
-		                  <%= f.text_field :zipcode, value: "#{@search_inputs['zipcode']}", class: "form-control py-1" %>
+				<div class="col-lg-6">
+					<div class="row mb-3">
+						<div class="col-lg-6">
+								<label class="text-sm text-black" for="">State</label>
+								<select class="form-select" name="state_abbr">
+								<option value="">-- All --</option>
+								<% @states.each do |state|%>
+									<option value="<%= state.alpha_code %>" <%= state.alpha_code == @search_inputs['state_abbr'] ? 'selected' : '' %>><%= state.name %> - <%= state.alpha_code %></option>
+								<% end %>
+								</select>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-6">
+								<label class="text-sm text-black" for="">City</label>
+							<%= f.text_field :city, value: "#{@search_inputs['city']}", class: "form-control py-1" %>
+						</div>
+						<div class="col-lg-6">
+								<label class="text-sm text-black" for="">Postal/Zip Code</label>
+								<!-- <input type="text" name="" class="form-control py-1"> -->
+							<%= f.text_field :zipcode, value: "#{@search_inputs['zipcode']}", class: "form-control py-1" %>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-6">
+								<label class="text-sm text-black" for="">NPI</label>
+								<!-- <input type="text" name="" class="form-control py-1"> -->
+							<%= f.text_field :npi, value: "#{@search_inputs['npi']}", class: "form-control py-1" %>
+						</div>
+						<div class="col-lg-6">
+								<label class="text-sm text-black" for="">SSN</label>
+								<!-- <input type="text" name="" class="form-control py-1"> -->
+							<%= f.text_field :ssn, value: "#{@search_inputs['ssn']}", class: "form-control py-1" %>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-12">
+							<label class="text-sm text-black" for="">Birth Date</label>
+							<!-- <input type="text" class="form-control py-1" placeholder=""> -->
+							<%= f.date_field :birth_date, value: "#{@search_inputs['birth_date']}", class: "form-control py-1" %>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-6">
+								<label class="text-sm text-black" for="">TIN #</label>
+								<!-- <input type="text" name="" class="form-control py-1"> -->
+							<%= f.text_field :tin, value: "#{@search_inputs['tin']}", class: "form-control py-1" %>
 
-	                  </div>
-	               </div>
-	               <div class="row mb-3">
-	                  <div class="col-lg-6">
-	                     <label class="text-sm text-black" for="">NPI:</label>
-	                     <!-- <input type="text" name="" class="form-control py-1"> -->
-		                  <%= f.text_field :npi, value: "#{@search_inputs['npi']}", class: "form-control py-1" %>
+						</div>
+						<div class="col-lg-6">
+								<label class="text-sm text-black" for="">Entity ID</label>
+								<!-- <input type="text" name="" class="form-control py-1"> -->
+							<%= f.text_field :entity, value: "#{@search_inputs['entity']}", class: "form-control py-1" %>
 
-	                  </div>
-	               </div>
-	               <div class="row mb-3">
-	                  <div class="col-lg-6">
-	                     <label class="text-sm text-black" for="">TIN #:</label>
-	                     <!-- <input type="text" name="" class="form-control py-1"> -->
-		                  <%= f.text_field :tin, value: "#{@search_inputs['tin']}", class: "form-control py-1" %>
-
-	                  </div>
-	                  <div class="col-lg-6">
-	                     <label class="text-sm text-black" for="">Entity:</label>
-	                     <!-- <input type="text" name="" class="form-control py-1"> -->
-		                  <%= f.text_field :entity, value: "#{@search_inputs['entity']}", class: "form-control py-1" %>
-
-	                  </div>
-	               </div>
-	               <div class="row">
-	               		<div class="col-lg-12">
-	               			<div class="d-flex justify-content-between">
-	               				<label class="text-sm text-black">Medv ID:</label>
-	               			</div>
-	               			<%= f.text_area :medv_ids, value:  "#{@search_inputs['medv_ids']}", style: "width: 100%;", rows: 4, class: "form-control py-1" %>
-	               			<!-- <textarea class="h-full w-full" style="width: 100%;" rows="4"></textarea> -->
-	               		</div>
-	               </div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="d-flex justify-content-between">
+								<label class="text-sm text-black">Medv ID</label>
+							</div>
+							<%= f.text_field :medv_ids, value:  "#{@search_inputs['medv_ids']}", style: "width: 100%;", rows: 4, class: "form-control py-1" %>
+							<!-- <textarea class="h-full w-full" style="width: 100%;" rows="4"></textarea> -->
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-lg-12">
+								<label class="text-sm text-black" for="">Category</label>
+								<select class="form-select" name="state_abbr">
+								<option value="">-- All --</option>
+								<% ['PCP', 'Specialist'].each do |category|%>
+									<option value="<%= category.underscore %>"%><%= category %></option>
+								<% end %>
+								</select>
+						</div>
+					</div>
 				</div>
-				<div class="col-lg-4">
+				<%# <div class="col-lg-4">
 					<div class="row mb-3">
 						<div class="col-lg-12">
 							<label class="text-sm text-black">List Search</label>
@@ -187,7 +205,7 @@
 					</div>
 					<div class="row mb-3">
 						<div class="col-lg-12">
-							<label class="text-sm text-black">File Upload <i class="ms-2 bi bi-question-circle-fill text-primary" title="File type .csv (comma delimited). 200 rows maximum click here to see example."></i></label>
+							<label class="text-sm text-black">File Upload<i class="ms-2 bi bi-question-circle-fill text-primary" title="File type .csv (comma delimited). 200 rows maximum click here to see example."></i></label>
 							<label for="search_upload" class="d-grid align-items-center justify-content-center rounded border border-dark" style="height:100px;">
 								<span>Upload file here</span>
 							<input type="file" name="" id="search_upload" style="visibility: hidden;">
@@ -207,7 +225,7 @@
 							<input type="text" name="from" class="form-control py-1" placeholder="To" onfocus="(this.type = 'date')">
 						</div>
 					</div>
-				</div>
+				</div> %>
 			</div>
 			<!-- end of row for fields -->
 			<!-- start of row for btton -->

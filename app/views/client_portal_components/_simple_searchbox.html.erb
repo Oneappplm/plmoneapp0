@@ -22,7 +22,7 @@
             <div class="col-lg-6">
                <div class="row mb-3">
                   <div class="form-group">
-                     <label class="text-sm text-black">Full Name</label>
+                     <label class="text-sm text-black">Name</label>
                         <%= f.text_field :full_name, value: "#{@search_inputs['full_name']}", class: "form-control py-1" %>
                   </div>
                </div>
@@ -57,7 +57,7 @@
                   <div class="col-lg-6">
                      <label class="text-sm text-black" for="">Provider Type:</label>
                         <select name="provider_type" class="form-select py-1">
-                           <option value="">Select option</option>
+                           <option value="">-- All --</option>
                            <% @provider_types.each do |provider_type|%>
                               <option value=<%= provider_type.fch %> <%= @search_inputs['provider_type'] == provider_type.fch ? 'selected' : '' %>><%= provider_type.fch%></option>
                            <% end %>
@@ -66,7 +66,7 @@
                   <div class="col-lg-6">
                      <label class="text-sm text-black" for="">Specialty:</label>
                         <select class="form-select py-1" name="specialty" id="tset_selct">
-                           <option value="">Select option</option>
+                           <option value="">-- All --</option>
                            <% specialties.each do |specialty|%>
                            <option value="<%= specialty.bcbs%>" <%= @search_inputs['specialty'] == specialty.bcbs ? 'selected' : '' %>><%= specialty.bcbs %></option>
                            >
@@ -79,7 +79,7 @@
                      <label class="text-sm text-black" for="">Cred Status:</label>
                         <select class="form-select py-1" name="cred_status">
                            <% cred_statuses = ['attested', 'in-process', 'pending', 'incomplete', 'complete-application', 'no-application', 'psv', 'returned']%>
-                           <option value="">Select option</option>
+                           <option value="">-- All --</option>
                            <% cred_statuses.each do |stat|%>
                               <% if stat != 'pending'%>
                               <option value="<%= stat %>" <%= @search_inputs['cred_status'] == stat ? 'selected' : ''%>><%= stat != 'psv' ? stat.titleize : stat.upcase %></option>
@@ -92,7 +92,7 @@
                   <div class="col-lg-6">
                      <label class="text-sm text-black" for="">Cred Cycle:</label>
                        <select class="form-select py-1" name="cred_or_recred">
-                           <option value="">Select option</option>
+                           <option value="">-- All --</option>
                            <option value="Cred" <%= @search_inputs['cred_or_recred'] == 'Cred' ? 'Selected' : ''%>>Cred</option>
                            <option value="Recred" <%= @search_inputs['cred_or_recred'] == 'Recred' ? 'Selected' : ''%>>Recred</option>
                        </select>
@@ -103,7 +103,7 @@
                      <label class="text-sm text-black" for="">VRC Status:</label>
                         <select class="form-select py-1" name="vrc_status">
                            <% vrc_statuses = ['approved', 'denied', 'pending', 'tabled', 'terminated']%>
-                              <option value="">Select option</option>
+                              <option value="">-- All --</option>
                            <% vrc_statuses.each do |stat|%>
                               <option value="<%= stat %>" <%= @search_inputs['vrc_status'] == stat ? 'Selected' : ''%>><%= stat.titleize %></option>
                            <% end %>
@@ -113,7 +113,7 @@
                      <label class="text-sm text-black" for="">PSV Flag:</label>
                         <% psv_flag_options = ['With PSV', 'Without PSV']%>
                         <select class="form-select py-1" name="psv_flag">
-                           <option value="">Select option</option>
+                           <option value="">-- All --</option>
                            <% psv_flag_options.each do |flg|%>
                               <option value="<%= flg %>" <%= @search_inputs['psv_flag'] == flg ? 'Selected' : ''%>><%= flg %></option>
                            <% end %>
