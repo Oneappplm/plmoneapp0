@@ -107,7 +107,7 @@ class User < ApplicationRecord
     end
   end
 
-		def provider = Provider.find_by_id(accessible_provider)
+	def provider = Provider.find_by_id(accessible_provider)
 
   def not_allowed_to_view?(role = nil)
     find_excluded_roles.include?(role)
@@ -135,6 +135,7 @@ class User < ApplicationRecord
   end
 
   def role = user_role&.titleize
+  def provider? = role == "Provider"
 
   # temporarily commented to cater only using temporary password
   # def password_match

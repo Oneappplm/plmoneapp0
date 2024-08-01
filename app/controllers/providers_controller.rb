@@ -14,11 +14,13 @@ class ProvidersController < ApplicationController
 		else
 			@providers = if current_user.provider?
 				# Provider.where(id: current_user.accessible_provider)
+				accessible_provider_id = current_user.accessible_provider.blank? ? 0 : current_user.accessible_provider
+
 				Provider.unscoped
 				.select("CASE WHEN first_name = '' THEN NULL ELSE first_name END as f,
 								 CASE WHEN last_name = '' THEN NULL ELSE last_name END as l,
 								 CASE WHEN middle_name = '' THEN NULL ELSE middle_name END as m, *")
-				.where("id = ?", current_user.accessible_provider)
+				.where("id = ?", accessible_provider_id)
 				.all
 			else
 				Provider.unscoped
