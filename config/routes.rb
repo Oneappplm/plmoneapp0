@@ -129,6 +129,12 @@ Rails.application.routes.draw do
       post :remove_provider
     end
   end
+  
+  resources :clients do
+    member do
+      get :download_pdfs
+    end
+  end  
 
   resources :practice_locations
   resources :group_engage_providers, path: 'group-engage-providers' do

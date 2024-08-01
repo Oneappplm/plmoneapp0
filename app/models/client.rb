@@ -114,6 +114,11 @@ class Client < ApplicationRecord
 		all.pluck(:state_abbr)
 	end
 
+	def pdf_file_paths
+    # Assuming `file_path` column stores the relative path to the PDF file
+    self.file_path.split(',') # Split the file_path string if it contains multiple paths
+  end
+
 	private
 
 	def set_full_name
