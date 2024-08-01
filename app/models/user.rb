@@ -40,6 +40,8 @@ class User < ApplicationRecord
     # user.validates_confirmation_of :password
   end
 
+  before_validation :set_user_role
+
   before_validation :set_temporary_password_as_password
   before_create :generate_api_token
   after_create :set_sidebar_preferences
@@ -64,7 +66,7 @@ class User < ApplicationRecord
 
   accepts_nested_attributes_for :users_enrollment_groups, allow_destroy: true, reject_if: :all_blank
 
-  attr_accessor :email_cc, :email_subject, :email_message
+  attr_accessor :email_cc, :email_subject, :email_message, :hidden_role
 
   class << self
     def set_user_sidebar_preferences
@@ -302,6 +304,10 @@ class User < ApplicationRecord
   end
 
   private
+
+  def set_user_role
+    self.user_role = hidden_role if hidden_role.present?
+  end
 
   def set_sidebar_preferences
     sidebar_cards = ['enrollment_details', 'licenses', 'documents','group', 'practice_location', 'enrollments', 'enrollment_payer', 'dco_outreach' ,'schedules']
