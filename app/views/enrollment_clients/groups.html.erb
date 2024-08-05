@@ -12,10 +12,12 @@
                 <%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |f| %>
                     <h5>Search</h5>
                     <div class="row mt-3">
-                      <div class="col-xl-4">
-                          <label for="">Platform</label>
-                          <%= select_tag('flatform', options_for_select(flatforms, params[:field]), class: 'form-control',  prompt: 'Select option')%>
-                      </div>
+                      <% unless current_setting.sprout? && current_user.user_role == "admin_staff" %>
+                        <div class="col-xl-4">
+                            <label for="">Platform</label>
+                            <%= select_tag('flatform', options_for_select(flatforms, params[:field]), class: 'form-control',  prompt: 'Select option')%>
+                        </div>
+                      <% end %>
                       <div class="col-xl-4">
                           <label for="">Group Name</label>
                           <input type="text" name="group_name" value="<%=params[:name] %>" id="name" class="form-control" placeholder="Type here...">
@@ -52,7 +54,9 @@
                 </div>
               </div>
             </th>
-            <th scope="col" class="bg-primary text-white">Platform</th>
+            <% unless current_setting.sprout? && current_user.user_role == "admin_staff" %>
+              <th scope="col" class="bg-primary text-white">Platform</th>
+            <% end %>
             <th scope="col" class="bg-primary text-white">Group</th>
             <th scope="col" class="bg-primary text-white">Taxonomy Code</th>
             <th scope="col" class="bg-primary text-white">State</th>
@@ -70,7 +74,9 @@
                   </div>
                 </div>
               </td>
-              <td><%= flatforms.detect{|flatform| flatform.last == enrollment_group&.flatform }.first rescue nil %></td>
+              <% unless current_setting.sprout? && current_user.user_role == "admin_staff" %>
+                <td><%= flatforms.detect{|flatform| flatform.last == enrollment_group&.flatform }.first rescue nil %></td>
+              <% end %>
               <td>
                 <%= link_to enrollment_group.group_name, alt_enrollment_group_path(enrollment_group), class: 'text-dark-grey' %>
               </td>

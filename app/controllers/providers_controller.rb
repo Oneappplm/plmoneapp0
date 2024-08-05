@@ -31,7 +31,7 @@ class ProvidersController < ApplicationController
 			end
 		end
 
-		if !current_user.can_access_all_groups? && !current_user.super_administrator? && !current_user.provider?
+		if !current_user.can_access_all_groups? && !current_user.super_administrator? && !current_user.provider? && !sprout_staff_admin(current_user)
 			@providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
 		end
 
@@ -173,10 +173,10 @@ class ProvidersController < ApplicationController
 
   def show
     @providers = Provider.all
-		if !current_user.can_access_all_groups? && !current_user.super_administrator?
+		if !current_user.can_access_all_groups? && !current_user.super_administrator? && !sprout_staff_admin(current_user)
 			@providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
 		end
-		if !current_user.can_access_all_groups? && !current_user.super_administrator?
+		if !current_user.can_access_all_groups? && !current_user.super_administrator? && !sprout_staff_admin(current_user)
     	@provider = Provider.includes(:group).where(group: { id: current_user.enrollment_groups.pluck(:id) }).where(id: params[:id] || params[:provider_id]).last
 			if !@provider.present?
 				redirect_back(fallback_location: root_path, alert: "You don't have access to the provider.")
@@ -251,7 +251,7 @@ class ProvidersController < ApplicationController
 
 
   def set_overview_details
-    if current_user.can_access_all_groups? || current_user.super_administrator?
+    if current_user.can_access_all_groups? || current_user.super_administrator? || sprout_staff_admin(current_user)
       @providers_with_missing_details ||= Provider.with_missing_required_fields.count
       @providers_with_missing_documents ||= Provider.with_missing_required_docs.count
     else

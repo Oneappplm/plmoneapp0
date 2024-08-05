@@ -127,7 +127,7 @@ module ApplicationHelper
 	end
 
   def groups
-		if current_user.can_access_all_groups? || current_user.super_administrator?
+		if current_user.can_access_all_groups? || current_user.super_administrator? || current_user.admin_staff?
     	@groups ||= EnrollmentGroup.all
 		else
 			@groups ||= current_user.enrollment_groups
@@ -327,7 +327,7 @@ module ApplicationHelper
   end
 
   def enrollment_group_options
-		if current_user.can_access_all_groups? || current_user.super_administrator?
+		if current_user.can_access_all_groups? || current_user.super_administrator? || current_user.admin_staff?
     	EnrollmentGroup.all.pluck(:group_name, :id)
 		else
 			current_user.enrollment_groups&.pluck(:group_name, :id)
@@ -493,8 +493,12 @@ module ApplicationHelper
 		current_user&.is_card_open?(card_name) ? '' : 'display: none;' rescue ''
 	end
 
+	def sprout_staff_admin(user)
+		current_setting.sprout? && user.admin_staff?
+	end
+
 	def application_status_count status
-		if current_user.can_access_all_groups? || current_user.super_administrator?
+		if current_user.can_access_all_groups? || current_user.super_administrator? || current_user.admin_staff? || current_user.admin_staff?
 			@enrollment_provider_details = EnrollmentProvidersDetail
 		else
 			@enrollment_provider_details = EnrollmentProvidersDetail.includes(enrollment_provider: :provider).where(provider: {enrollment_group_id: current_user.enrollment_groups.pluck(:id)})
