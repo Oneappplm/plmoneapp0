@@ -1,49 +1,62 @@
-<div class="content container-fluid ps-0">
-	<%= render "provider_source_components/top_buttons"%>
-	<div  class="row">
+	<div class="content container-fluid ps-0">
+		<%= render "provider_source_components/top_buttons"%>
+		<div  class="row">
 
-		<div class="col-lg-3">
-			<%= render "provider_source_components/sub_navbar"%>
-		</div>
-		<div class="col-lg-9">
-			<div class="row">
-				<div class="col-lg-12">
-					<h6>Attestation and Signature</h6>
-					<p class="text-black">
-						To complete your application, please read and agree to the following attestation and release agreement. You must click the “I Attest” button to certify that you have carefully reviewed all information, including supporting  documentation, contained within your Provider App application and that all information provided is true, correct, current and complete, to the best of your knowledge by clicking “I Attest”, you also acknowledge that you must create an electronic signature in order to complete your application.
-					</p>
-					<div class="alert alert-danger w-75 d-flex align-items-center">
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="svg-icon text-white">
-						  <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
-						</svg>
-						<label class="text-dark-grey">Your attestation is not complete until you see the confirmation screen.</label>
-					</div>
-				</div>
+			<div class="col-lg-3">
+				<%= render "provider_source_components/sub_navbar"%>
 			</div>
-			<div class="row">
-				<div class="col-lg-12">
-					<div class="d-flex rounded border border-2 border-primary p-3">
-						<p class="text-black">Authorization refers to the process of granting permission or approval for someone to access certain information or resources. In many organizations, authorization is an essential component of security protocols, particularly for sensitive data or systems. Authorization is typically granted based on the individual's role or responsibilities, and access is usually limited to the minimum necessary to carry out their duties. Authorization can be granted through various means, such as passwords, security tokens, or biometric identification. By controlling who has access to what, organizations can protect their assets and minimize the risk of data breaches or other security incidents.
-Attestation is a process of confirming or verifying that something is true or accurate. In the context of legal or financial documents, attestation involves a witness confirming the authenticity of a signature or document. In the context of IT security, attestation can refer to the process of verifying the integrity of a software or hardware component. For example, attestation might involve verifying that a particular device or system is running the expected firmware or software version, and that it has not been tampered with or compromised in any way. Attestation can be an important tool for ensuring the security and trustworthiness of IT systems and devices, particularly in the context of sensitive applications or critical infrastructure.
-Release refers to the process of making something available to the public or a specific audience. In the context of software development, release refers to making a new version of a software product available for download or distribution. A release might include new features, bug fixes, or other improvements. Prior to a release, software is typically subjected to extensive testing and quality assurance to ensure that it is stable and reliable</p>
+			<div class="col-lg-9">
+				<div class="row">
+					<div class="col-lg-12">
+						<h6>Attestation and Signature</h6>
+						<p class="text-black">
+							To complete your application, please read and agree to the following attestation and release agreement. You must click the “I Attest” button to certify that you have carefully reviewed all information, including supporting  documentation, contained within your Provider App application and that all information provided is true, correct, current and complete, to the best of your knowledge by clicking “I Attest”, you also acknowledge that you must create an electronic signature in order to complete your application.
+						</p>
+						<% if all_information_completed?(@provider) %>
+							<div class="alert alert-success w-75 d-flex align-items-center">
+								<%# <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="svg-icon text-white">
+								  <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
+								</svg> %>
+								<label class="text-dark-grey">Your attestation document is attached. Please fill all the form</label>
+							</div>
+						<% else %>
+							<div class="alert alert-danger w-75 d-flex align-items-center">
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="svg-icon text-white">
+								  <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
+								</svg>
+								<label class="text-dark-grey">Your attestation is not complete until you see the confirmation screen.</label>
+							</div>
+						<% end %>	
 					</div>
-
 				</div>
-				<div class="col-lg-12 my-3">
-					<div class="d-flex justify-content-between align-items-center">
-						<div class="form-check">
-							  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-							  <label class="form-check-label" for="flexCheckDefault">
-							   I have received the Authorization, Attestation and Release.
-							  </label>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="d-flex rounded border border-2 border-primary p-3">
+							<p class="text-black">Authorization refers to the process of granting permission or approval for someone to access certain information or resources. In many organizations, authorization is an essential component of security protocols, particularly for sensitive data or systems. Authorization is typically granted based on the individual's role or responsibilities, and access is usually limited to the minimum necessary to carry out their duties. Authorization can be granted through various means, such as passwords, security tokens, or biometric identification. By controlling who has access to what, organizations can protect their assets and minimize the risk of data breaches or other security incidents.
+	Attestation is a process of confirming or verifying that something is true or accurate. In the context of legal or financial documents, attestation involves a witness confirming the authenticity of a signature or document. In the context of IT security, attestation can refer to the process of verifying the integrity of a software or hardware component. For example, attestation might involve verifying that a particular device or system is running the expected firmware or software version, and that it has not been tampered with or compromised in any way. Attestation can be an important tool for ensuring the security and trustworthiness of IT systems and devices, particularly in the context of sensitive applications or critical infrastructure.
+	Release refers to the process of making something available to the public or a specific audience. In the context of software development, release refers to making a new version of a software product available for download or distribution. A release might include new features, bug fixes, or other improvements. Prior to a release, software is typically subjected to extensive testing and quality assurance to ensure that it is stable and reliable</p>
 						</div>
-						<a  href="<%= custom_provider_source_path(page: "signature_page")%>"class="btn btn-sm btn-primary fw-bold">Next</a>
+
+					</div>
+					<div class="col-lg-12 my-3">
+						<div class="d-flex justify-content-between align-items-center">
+							<div class="form-check">
+								  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+								  <label class="form-check-label" for="flexCheckDefault">
+								   I have received the Authorization, Attestation and Release.
+								  </label>
+							</div>
+							<% if all_information_completed?(@current_provider_source) %>
+								<a  href="<%= custom_provider_source_path(page: "signature_page")%>"class="btn btn-sm btn-primary fw-bold">Next</a>
+							<% else %>
+								<a  href="#", class="btn btn-sm btn-danger fw-bold">Next</a>
+							<% end %>
+						</div>
 					</div>
 				</div>
-			</div>
 
+			</div>
 		</div>
 	</div>
-</div>
 
 
