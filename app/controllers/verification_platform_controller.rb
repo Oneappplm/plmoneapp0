@@ -10,6 +10,7 @@ class VerificationPlatformController < ApplicationController
       else
         HvhsDatum.paginate(per_page: 10, page: params[:page] || 1)
       end
+      @practitioners = Practitioner.paginate(per_page: 10, page: params[:page] || 1)
     end
   end
 

@@ -1,62 +1,94 @@
-<div class="form-row row">
-   <div class="col-xl-6 mt-3">
-      <label for="">Organization Name</label>
-      <%= f.text_field :organization_name, class: 'form-control', placeholder: 'Type here...', required: true%>
-   </div>
-   <div class="col-xl-6 mt-3 ">
-      <label for="">Organization Type</label>
-      <%= f.text_field :organization_type, class: 'form-control', placeholder: 'Type here...', required: true%>
-   </div>
-   <div class="col-xl-6 ">
-      <label for="">Organization NPI</label>
-      <%= f.text_field :organization_npi, class: 'form-control', placeholder: 'Type here...', required: true%>
-   </div>
-</div>
-<div class="form-row row">
- <h6 class="mt-3">Organization Physical Address</h6>
-   <div class="col-xl-6 mt-3 ">
-      <label for="">Address 1</label>
-      <%= f.text_field :organization_address_1, class: 'form-control', placeholder: 'Type here...', required: true%>
-   </div>
-   <div class="col-xl-6 mt-3 ">
-      <label for="">Address 2</label>
-      <%= f.text_field :organization_address_2, class: 'form-control', placeholder: 'Type here...'%>
-   </div>
-</div>
-<div class="form-row row">
-   <div class="col-xl-6 ">
-      <label for="">City</label>
-      <%= f.text_field :organization_city, class: 'form-control', placeholder: 'Type here...', required: true%>
-   </div>
-   <div class="col-xl-6">
-      <label for="">State</label>
-      <input type="hidden" id="current_organization_state_id" value=<%= f.object.organization_state_id %>>
-      <div class="form-control" name="client_organization[organization_state_id]" id="dropdown-states">
-      </div>
-   </div>
-   <div class="col-xl-6 ">
-      <label for="">Zip Code</label>
-      <%= f.text_field :organization_zipcode, class: 'form-control', placeholder: 'Type here...', required: true%>
-   </div>
-</div>
-<div class="form-row row">
-<div class="col-xl-6 mt-3 ">
-      <label for="">Phone Number</label>
-      <%= f.text_field :organization_phone_number, class: 'form-control', placeholder: 'Type here...', required: true%>
-   </div>
-   <div class="col-xl-6 mt-3 ">
-      <label for="">Fax Number</label>
-      <%= f.text_field :organization_fax_number, class: 'form-control', placeholder: 'Type here...', required: true%>
-   </div>
-</div>
-<div class="form-row row">
-   <div class="col-xl-6 ">
-      <label for="">Organization DBA Name</label>
-      <%= f.text_field :organization_dba_name, class: 'form-control', placeholder: 'Type here...', required: true%>
-   </div>
-   <div class="col-xl-6 ">
-      <label for="">Organization Tax ID</label>
-      <%= f.text_field :organization_tax_id, class: 'form-control', placeholder: 'Type here...', required: true%>
-   </div>
- </div>
+<div class="enc-content">
+	<%= form_with model: @client_organization, url: client_organizations_path, local: true do |f| %>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-xl-12">
+					<%#= render partial: "verification_platform/encompass_nav" %>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<div class="col-xl-12 mb-1">
+					<h2>
+						<a href="<%= manage_clients_path %>" class="d-flex gap-2 text-secondary">
+							<i class="bi bi-arrow-left h5 d-flex align-items-center"></i>
+							<span class="h1"><%= local_assigns[:header_text] || 'Add/Edit Client Organization' %></span>
+						</a>
+					</h2>
+				</div>
+			</div>
+			<div class="form-row row mb-3">
+				<div class="col-xl-4 mt-2 mb-2">
+					<label for="">Organization Name</label>
+	      	<%= f.text_field :organization_name, class: 'form-control', placeholder: 'Type here...', required: true%>
+				</div>
+				<div class="col-xl-4 mt-2 mb-2">
+					<label for="">Organization Type</label>
+	      	<%= f.text_field :organization_type, class: 'form-control', placeholder: 'Type here...', required: true%>
+				</div>
+				<div class="col-xl-4 mt-2 mb-2">
+					<label for="">Organization NPI</label>
+      		<%= f.text_field :organization_npi, class: 'form-control', placeholder: 'Type here...', required: true%>
+				</div>
+			</div>
+
+			<div class="form-row row">
+			 <h6 class="mt-3">Organization Physical Address</h6>
+			   <div class="col-xl-6 mt-2 mb-2">
+			      <label for="">Address 1</label>
+			      <%= f.text_field :organization_address_1, class: 'form-control', placeholder: 'Type here...', required: true%>
+			   </div>
+			   <div class="col-xl-6 mt-2 mb-2">
+			      <label for="">Address 2</label>
+			      <%= f.text_field :organization_address_2, class: 'form-control', placeholder: 'Type here...'%>
+			   </div>
+			</div>
+
+			<div class="form-row row">
+		   <div class="col-xl-6 mt-2 mb-2">
+		      <label for="">City</label>
+		      <%= f.text_field :organization_city, class: 'form-control', placeholder: 'Type here...', required: true%>
+		   </div>
+		   <div class="col-xl-6 mt-2 mb-2">
+		      <label for="">State</label>
+		      <%# <input type="hidden" id="current_organization_state_id" value=<%= f.object.organization_state_id %>
+		     <%#  <div class="form-control" name="client_organization[organization_state_id]" id="dropdown-states">
+		      </div> %>
+		   </div>
+		   <div class="col-xl-6 mt-2 mb-2">
+		      <label for="">Zip Code</label>
+		      <%= f.text_field :organization_zipcode, class: 'form-control', placeholder: 'Type here...', required: true%>
+		   </div>
+			</div>
+
+			<div class="form-row row">
+			   <div class="col-xl-6 mt-2 mb-2 ">
+			      <label for="">Phone Number</label>
+			      <%= f.text_field :organization_phone_number, class: 'form-control', placeholder: 'Type here...', required: true%>
+			   </div>
+			   <div class="col-xl-6 mt-2 mb-2 ">
+			      <label for="">Fax Number</label>
+			      <%= f.text_field :organization_fax_number, class: 'form-control', placeholder: 'Type here...', required: true%>
+			   </div>
+			</div>
+
+			<div class="form-row row">
+		   <div class="col-xl-6 mt-2 mb-2">
+		      <label for="">Organization DBA Name</label>
+		      <%= f.text_field :organization_dba_name, class: 'form-control', placeholder: 'Type here...', required: true%>
+		   </div>
+		   <div class="col-xl-6 mt-2 mb-2">
+		      <label for="">Organization Tax ID</label>
+		      <%= f.text_field :organization_tax_id, class: 'form-control', placeholder: 'Type here...', required: true%>
+		   </div>
+		  </div>
+
+			<div class="row mt-5 ms-5">
+				<div class="col-xl-3 ms-auto">
+					<div class="col-xl-9 ms-5">
+						<%= f.submit class:"btn btn-primary ms-5"%>
+					</div>
+				</div>
+			</div>
+		</div>
+	<% end %>
 </div>
