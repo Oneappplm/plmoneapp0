@@ -1,83 +1,273 @@
 <div class="content container-fluid">
-    <%= render partial: "verification_platform/encompass_nav"%>
+	<%= render partial: "verification_platform/encompass_nav"%>
 </div>
 <%= render 'user_restriction', locals: { access_key: 'Manage Client' } do %>
-    <div class="enc-content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-xl-3">
-                    <%= render partial: "verification_platform/encompass_sidebar"%>
-                </div>
-                <div class="col-xl-9">
-                    <div class="d-flex page-applicable align-items-center gap-2 mb-2">
-																							<%= link_to "Add New Practitioner", new_manage_client_path, class: "btn btn-primary py-1 page-applicable" %>
-                        <button class="btn btn-primary py-1 page-applicable">
-                            Modify Practitioner Record
-                        </button>
-                        <button class="btn btn-primary py-1 page-applicable">
-                            Append and Remove Practitioner from Client Group
-                        </button>
-                        <button class="btn btn-primary py-1 page-applicable">
-                            Reply Practitioner’s Question
-                        </button>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-xl-6">
-                            <div class="form-control enc-search-wrp  border-dark">
-                                <input type="text" class="enc-search-input" placeholder="Search by Committee Date">
-                                <!-- <i class='bx bx-search'></i> -->
-                            </div>
-                        </div>
-                    </div>  
-                    <table class="table table-bordered practice-table mt-3">
-                        <thead>
-                            <tr>
-                                <th class="text-white" scope="col">Client Organization</th>
-                                <th class="text-white">Current Client Organization</th>
-                                <th class="text-white">Encompass ID</th>
-                                <th class="text-white">Practitioner Name</th>
-                                <th class="text-white">Verification Status</th>
-                                <th class="text-white">Department/ Division</th>
-                                <th class="text-white">Status</th>
-                                <th class="text-white">Image Management</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Lorem</td>
-                                <td>Lorem</td>
-                                <td>Lorem</td>
-                                <td>Lorem</td>
-                                <td>Lorem</td>
-                                <td>Lorem</td>
-                                <td>Lorem</td>
-                                <td>
-                                    <button class="btn btn-primary button-sm px-3 py-2 mx-2">
-                                        <i class="fa-solid fa-upload"></i>
-                                    </button>
-                                    <button class="btn btn-primary button-sm px-3 py-2">
-                                            <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <% if @practitioner %>
-                        <div class="col-lg-12">
-                            <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-0">
-                                <div class="page_info ms-3 text-black">
-                                     <%= page_entries_info @practitioner %>
-                                </div>
-                                <% if params[:per_page ].present? %>
-                                    <%= will_paginate @practitioner, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                                <% else %>
-                                    <%= will_paginate @practitioner, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                                <% end %>
-                            </div>
-                        </div>
-                    <% end %>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="enc-content">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-xl-3">
+					<%= render partial: "verification_platform/encompass_sidebar"%>
+				</div>
+				<div class="col-xl-9">
+					<div class="d-flex page-applicable gap-2 mb-2">
+						<%= link_to "Add New Organization", new_client_organizations_path, class: "btn btn-primary py-3 page-applicable" %>
+						<button id="modify-organization-button" class="btn btn-primary py-1 page-applicable">Modify Organization Record</button>
+						<%= link_to "Add New Practitioner", new_manage_practitioner_path, class: "btn btn-primary py-3 page-applicable" %>
+						<button id="modify-practitioner-button" class="btn btn-primary py-1 page-applicable">Modify Practitioner Record</button>
+						<button class="btn btn-primary py-1 page-applicable">
+							Append and Remove Practitioner from Client Group
+						</button>
+						<button class="btn btn-primary py-1 page-applicable">
+							Reply Practitioner’s Question
+						</button>
+					</div>
+					<%# <div class="row mt-3">
+						<div class="col-xl-6">
+							<div class="form-control enc-search-wrp  border-dark">
+								<input type="text" class="enc-search-input" placeholder="Search by Committee Date">
+								<!-- <i class='bx bx-search'></i> -->
+							</div>
+						</div>
+					</div> %>  
+					<div class="table-responsive mt-3 mb-3">
+						<table class="table table-bordered practice-table mt-3">
+							<thead>
+								<tr>
+									<th class="text-white" scope="col">Select</th>
+									<th class="text-white" scope="col">Client Organization</th>
+									<th class="text-white">Current Client Organization</th>
+									<th class="text-white">Encompass ID</th>
+									<th class="text-white">Practitioner Name</th>
+									<th class="text-white">Verification Status</th>
+									<th class="text-white">Department/ Division</th>
+									<th class="text-white">Status</th>
+									<th class="text-white">Image Management</th>
+								</tr>
+							</thead>
+							<tbody>
+								<% @practitioners.each do |practitioner| %>
+									<% organization = practitioner.client_organization %>
+									<tr>
+										<td>
+											<input type="checkbox" class="practitioner-checkbox" value="<%= practitioner.id %>">
+										</td>
+										<td><%= organization&.organization_name || "N/A" %></td>
+										<td><%= organization&.organization_type || "N/A" %></td>
+										<td></td>
+										<td><%= link_to practitioner.practitioner_name, manage_practitioner_path(practitioner) %></td>
+										<td></td>
+										<td></td>
+										<td><%= practitioner.status %></td>
+										<td>
+											<!-- Button trigger modal for uploading the file -->
+											<button type="button" class="btn btn-primary px-3 py-2" data-bs-toggle="modal" data-bs-target="#downloadmodal_<%= practitioner.id %>" data-practitioner-id="<%= practitioner.id %>" >
+											  <i class="fa-solid fa-upload"></i>
+											</button>
+
+											<!-- Modal -->
+											<div class="modal fade" id="downloadmodal_<%= practitioner.id %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+											  <div class="modal-dialog">
+											    <div class="modal-content">
+											      <div class="modal-header">
+											        <h1 class="modal-title" id="exampleModalLabel">Image Management</h1>
+											        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+											      </div>
+											      <div class="modal-body">
+															  <div class="row">
+															    <div class="col-lg-12 card">
+															      <%= form_for @document, url: upload_document_manage_clients_path, html: { multipart: true } do |f| %>
+
+																      <% if @document.errors.any? %>
+																        <div id="error_explanation" class="row my-2 text-red">
+																          <div class="col-lg-12">
+																            <h2><%= pluralize(@document.errors.count, "error") %> prohibited this document from being saved:</h2>
+																            <ul>
+																              <% @document.errors.full_messages.each do |message| %>
+																                <li><%= message %></li>
+																              <% end %>
+																            </ul>
+																          </div>
+																        </div>
+																      <% end %>
+
+																      <%= f.hidden_field :practitioner_id, value: practitioner.id %>
+																      
+																      <div class="form-group my-2">
+																        <label for="">Image Classification: </label>
+																        <%= f.select :image_classification, options_for_select(['', ''] + PractitionerUploadedDocument.image_classifications.keys.map(&:titleize), f.object.image_classification), {}, class: 'form-select', placeholder: 'Image Classification' %>
+																      </div>
+																      <div class="form-group my-2">
+																        <label for="">Sub Section: </label>
+																        <%= f.select :sub_section, options_for_select(['', ''] + PractitionerUploadedDocument.enum_list('sub_sections'), f.object.sub_section), {}, class: 'form-select', placeholder: 'Sub Section' %>
+																      </div>
+																      <div class="form-group my-2">
+																        <label for="">Description: </label>
+																        <%= f.text_area :description, class: 'form-control' %>
+																      </div>
+																      <div class="form-group my-2">
+																        <label for="">Exclude From Profile: </label>
+																        <%= f.check_box :exclude_from_profile %>
+																      </div>
+																      <div class="form-group my-2">
+																        <label for="">File Upload:</label>
+																        <%= f.file_field :file_upload, class: 'form-control' %>
+																      </div>
+																      <div class="form-group my-2">
+																        <%= link_to 'Back', manage_clients_path, class: 'btn btn-default'  %>
+																        <%= f.submit "Upload & Save", class: 'btn btn-success' %>
+																      </div>
+															      <% end %>
+															    </div>
+															  </div>
+											      </div>
+											    </div>
+											  </div>
+											</div>
+
+										<!-- Button trigger modal for viewing the uploaded file -->							
+											<button type="button" class="btn btn-primary px-3 py-2" data-bs-toggle="modal" data-bs-target="#viewModal_<%= practitioner.id %>" data-practitioner-id="<%= practitioner.id %>">
+											  <i class="fa-solid fa-eye"></i>
+											</button>
+
+											<!-- Modal -->
+											<div class="modal fade" id="viewModal_<%= practitioner.id %>" tabindex="-1" aria-labelledby="viewModalLabel_<%= practitioner.id %>" aria-hidden="true">
+										    <div class="modal-dialog modal-lg">
+										      <div class="modal-content">
+										        <div class="modal-header">
+										          <h1 class="modal-title" id="viewModalLabel_<%= practitioner.id %>">View Document List</h1>
+										          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+										        </div>
+										        <div class="modal-body">
+										          <table class="table table-striped table-bordered table-responsive">
+										            <thead>
+										              <tr>
+										                <th scope="col" class="bg-primary text-white">
+										                  <div class="form-check">
+										                    <input class="form-check-input" type="checkbox" onclick="checkAll();" id="checkAllCbs_<%= practitioner.id %>">
+										                  </div>
+										                </th>
+										                <th scope="col" class="bg-primary text-white">Image Classification</th>
+										                <th scope="col" class="bg-primary text-white">Sub Section</th>
+										                <th scope="col" class="bg-primary text-white">File</th>
+										                <th scope="col" class="bg-primary text-white">Action</th>
+										              </tr>
+										            </thead>
+										            <tbody>
+										              <% practitioner.uploaded_documents.each do |doc| %>
+										                <% next unless doc.persisted? %>
+										                <tr>
+										                  <td>
+										                    <div class="form-check">
+										                      <input class="form-check-input user-cbs" type="checkbox">
+										                    </div>
+										                  </td>
+										                  <td><%= doc.image_classification %></td>
+										                  <td><%= doc.sub_section %></td>
+										                  <td><%= link_to doc.file_upload.identifier, doc.file_upload.url, target: '_blank' %></td>
+										                  <td>
+										                    <%= button_to delete_uploaded_document_manage_clients_path(doc_id: doc), method: :delete, data: { confirm: 'Are you sure you want to delete?' }, class: 'btn btn-xs btn-danger' do %>
+										                      <i class="bi bi-trash"></i>
+										                    <% end %>
+										                  </td>
+										                </tr>
+										              <% end %>
+										              <% if practitioner.uploaded_documents.empty? %>
+										                <tr>
+										                  <td colspan="5">No documents available.</td>
+										                </tr>
+										              <% end %>
+										            </tbody>
+										          </table>
+										        </div>
+										      </div>
+										    </div>
+										  </div>
+										</td>
+									</tr>
+								<% end %>
+							</tbody>
+						</table>
+					</div>
+					<% if @practitioners %>
+						<div class="col-lg-12">
+							<div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-0">
+								<div class="page_info ms-3 mt-2 mb-2 text-black">
+									 <%#= page_entries_info @practitioners %>
+									 <%= "Practitioners's Count : #{@practitioners.count}" if @practitioners.count > 0 %>
+								</div>
+								<% if @practitioners.size > 50 %>
+									<% if params[:per_page ].present? %>
+										<%= will_paginate @practitioners, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+									<% else %>
+										<%= will_paginate @practitioners, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+									<% end %>
+								<% end %>
+							</div>
+						</div>
+					<% end %>
+				</div>
+			</div>
+		</div>
+	</div>
+<% end %>
+
+<style type="text/css">
+	.table-responsive{
+		overflow: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.table{
+		width: 100%;
+		max-width: 1200px;
+	}
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var fileUpload = document.getElementById("file-upload");
+    var form = document.getElementById("upload-form");
+
+    fileUpload.addEventListener("change", function() {
+      event.preventDefault();
+    });
+
+    const modifyButton = document.getElementById("modify-practitioner-button");
+
+    modifyButton.addEventListener("click", function() {
+      const checkboxes = document.querySelectorAll(".practitioner-checkbox:checked");
+      if (checkboxes.length > 0) {
+        const practitionerId = checkboxes[0].value;
+        console.log("Redirecting to:", `/manage_practitioners/${practitionerId}/edit`);
+        window.location.href = `/manage_practitioners/${practitionerId}/edit`;
+      } else {
+        alert("Please select a practitioner to modify.");
+      }
+    });
+    const exampleModal = document.getElementById('exampleModal');
+    exampleModal.addEventListener('show.bs.modal', function (event) {
+	    const button = event.relatedTarget; // Button that triggered the modal
+	    const practitionerId = button.getAttribute('data-practitioner-id'); // Extract practitioner ID from data-* attribute
+	    const modalPractitionerIdField = exampleModal.querySelector('#practitioner_id'); // Find the hidden input/span in the modal
+	    modalPractitionerIdField.value = practitionerId; // Set the practitioner ID in the modal
+	  });
+  });
+</script>
+
+<% content_for :js do %>
+	<script>
+	  function checkAll() {
+	    var checkBox = document.getElementById("checkAllCbs");
+	    (checkBox.checked == true) ? updateCbs(true) : updateCbs(false);
+	  }
+
+	  function updateCbs(status) {
+	    var cbs = document.querySelectorAll('.user-cbs');
+	    for (var i = cbs.length - 1; i >= 0; i--) {
+	      if(cbs[i].type == "checkbox") {
+	        cbs[i].checked = status;
+	      }
+	    }
+	  }
+	</script>
 <% end %>

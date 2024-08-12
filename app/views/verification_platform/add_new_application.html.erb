@@ -1,195 +1,250 @@
-    <div class="enc-content">
+    <div class="enc-content mx-1">
         <div class="container">
           <%= render "top_nav_buttons"%>
             
-            <div class="form-row row mt-3">
+            <div class="form-row mt-3">
                 <div class="col-xl-6 d-flex align-items-center">
                     <div class="d-flex align-items-center gap-3">
-                        <a href="<%= verification_platform_index_path(page: 'app_tracking')%>" class="link-back">
+                        <a href="<%= verification_platform_index_path(page: 'app_tracking', practitioner: @practitioner )%>" class="link-back">
                             <i class='bx bx-left-arrow-alt'></i>
                         </a>
                         <h4 class="page-heading">Add New Application</h4>
                     </div>
                 </div>
             </div>
-            <form action="">
-                <div class="form-row row mt-3">
-                    <div class="col-xl-6">
-                        <label for="app-type" class="">Application Type:</label>
-                        <select name="app-type" id="app-type" class="form-select">
-                            <option value="">Select option</option>
-                        </select>
-                    </div>
-                    <div class="col-xl-6">
-                        <label for="owner" class="">Owner (Last Name, First Name)</label>
-                        <select name="owner" id="owner" class="form-select">
-                            <option value="">Select option</option>
-                        </select>
-                    </div>
+            <%= form_for @app_tracker, url: add_new_application_verification_platform_index_path, method: :post, local: true do |f| %>
+              <%= f.hidden_field :practitioner_id, value: @practitioner.id %>
+              <div class="form-row row mt-3">
+                <div class="col-xl-6">
+                  <%= f.label :application_type, "Application Type:" %>
+                  <%= f.select :application_type, options_for_select(["Credential", "Re-Credential"]), {prompt: true}, class: "form-select" %>
                 </div>
-                <div class="form-row row">
-                    <div class="col-xl-4">
-                        <label for="app-reciept-date" class="">Application Receipt Date:</label>
-                        <input type="date" name="app-reciept-date" id="app-reciept-date" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="app-complete-date" class="">App Receive Complete Date:</label>
-                        <input type="date" name="app-complete-date" id="app-complete-date" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="app-submitted-date" class="">Application Submitted Date:</label>
-                        <input type="date" name="app-submitted-date" id="app-submitted-date" class="form-control">
-                    </div>
+                <div class="col-xl-6">
+                  <%= f.label :owner, "Owner (Last Name, First Name)" %>
+                  <%= f.select :owner, options_for_select(AppTracker::OWNER_LIST, selected: f.object.owner), { prompt: "Select an Owner" }, class: "form-select" %>
                 </div>
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label for="verif-complete-date" class="">Verification Complete Date:</label>
-                        <input type="date" name="verif-complete-date" id="verif-complete-date" class="form-control">
-                    </div>
-                    <div class="col-xl-6">
-                        <label for="file-return-date" class="">File Return to Client Date:</label>
-                        <input type="date" name="file-return-date" id="file-return-date" class="form-control">
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <div class=" form-check d-flex align-items-center gap-2">
-                            <input class="form-check-input" type="checkbox" id="expedite" value="Expedite">
-                            <label class="form-check-label" for="expedite">Expedite</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-12">
-                        <label for="comments" class="">Please list any comments:</label>
-                        <textarea name="comments" id="comments" cols="30" rows="5" class="form-control"></textarea>
-                    </div>
-                </div>
+              </div>
 
-                <div class="form-row mt-3 page-applicable">
-                    <div class="row">
-                        <div class="col-xl-6">
-                            <label for="">Master Issue List</label>
-                            <div class="left-pane bg-gray">
-                                <div class="form-control enc-search-wrp">
-                                    <input type="" name="" class="enc-search-input" placeholder="Search">
-                                    <i class='bx bx-search'></i>
-                                </div>
-                                <div class="form-row d-flex gap-2 flex-wrap mt-2">
-                                    <span class="provider-check">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="acc-cert-not-received">
-                                            <label class="form-check-label" for="acc-cert-not-received">
-                                                Accreditation Certification Not Received
-                                            </label>
-                                        </div>
-                                    </span>
-                                    <span class="provider-check">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="incomp-app">
-                                            <label class="form-check-label" for="flexCheckDefault2">
-                                                Incomplete App: Continuing Education Requirement
-                                            </label>
-                                        </div>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-end mt-2">
-                                <button type="button" class="btn btn-primary py-1">
-                                    Add
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-xl-6">
-                            <label for="">Client Flag</label>
-                            <div class="right-pane border-dash bg-gray">
-                                <div class="form-row d-flex gap-2 flex-wrap">
-                                    <span class="provider-check">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="DEA-not-valid">
-                                            <label class="form-check-label" for="DEA-not-valid">
-                                                DEA Not Verified
-                                            </label>
-                                        </div>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-end mt-2">
-                                <button type="button" class="btn btn-danger">
-                                    Remove
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+              <div class="form-row row">
+                <div class="col-xl-4">
+                  <%= f.label :application_receipt_date, "Application Receipt Date:" %>
+                  <%= f.date_field :application_receipt_date, class: "form-control" %>
                 </div>
+                <div class="col-xl-4">
+                  <%= f.label :application_receive_complete_date, "App Receive Complete Date:" %>
+                  <%= f.date_field :application_receive_complete_date, class: "form-control" %>
+                </div>
+                <div class="col-xl-4">
+                  <%= f.label :application_submitted_date, "Application Submitted Date:" %>
+                  <%= f.date_field :application_submitted_date, class: "form-control" %>
+                </div>
+              </div>
 
-                <div class="form-row mt-3 page-applicable">
-                    <div class="row">
-                        <div class="col-xl-6">
-                            <label for="">Master Review List</label>
-                            <div class="left-pane bg-gray">
-                                <div class="form-control enc-search-wrp">
-                                    <input type="" name="" class="enc-search-input" placeholder="Search">
-                                    <i class='bx bx-search'></i>
-                                </div>
-                                <div class="form-row d-flex gap-2 flex-wrap mt-2">
-                                    <span class="provider-check">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="acc-cert-not-received">
-                                            <label class="form-check-label" for="acc-cert-not-received">
-                                                Accreditation Certification Not Received
-                                            </label>
-                                        </div>
-                                    </span>
-                                    <span class="provider-check">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="incomp-app">
-                                            <label class="form-check-label" for="flexCheckDefault2">
-                                                Incomplete App: Continuing Education Requirement
-                                            </label>
-                                        </div>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-end mt-2">
-                                <button type="button" class="btn btn-primary py-1">
-                                    Add
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-xl-6">
-                            <label for="">Client Flag</label>
-                            <div class="right-pane border-dash bg-gray">
-                                <div class="form-row d-flex gap-2 flex-wrap">
-                                    <span class="provider-check">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="DEA-not-valid">
-                                            <label class="form-check-label" for="DEA-not-valid">
-                                                DEA Not Verified
-                                            </label>
-                                        </div>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-end mt-2">
-                                <button type="button" class="btn btn-danger">
-                                    Remove
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+              <div class="form-row row">
+                <div class="col-xl-6">
+                  <%= f.label :verifications_complete_date, "Verification Complete Date:" %>
+                  <%= f.date_field :verifications_complete_date, class: "form-control" %>
                 </div>
-                <div class="form-row row">
-                    <div class="col-xl-12">
-                        <label for="comments" class="">File Status:</label>
-                    </div>
+                <div class="col-xl-6">
+                  <%= f.label :file_return_to_client_date, "File Return to Client Date:" %>
+                  <%= f.date_field :file_return_to_client_date, class: "form-control" %>
                 </div>
-                <div class="form-row row">
-                    <div class="col-xl-12">
-                        <label for="comments2" class="">Please list any comments:</label>
-                        <textarea name="comments2" id="comments2" cols="30" rows="5" class="form-control"></textarea>
-                    </div>
+              </div>
+
+              <div class="form-row row">
+                <div class="col-xl-6 mt-2 mb-2">
+                  <div class="form-check d-flex align-items-center gap-2">
+                    <%= f.check_box :expedite, class: 'form-check-input', type: "checkbox", id: "expedite", value: "expedite" %>
+                    <%= f.label :expedite, class: "form-check-label" %>
+                  </div>
                 </div>
-            </form>
+              </div>
+
+              <div class="form-row row">
+                <div class="col-xl-12">
+                  <%= f.label "please list any comments : ", class: "" %>
+                  <%= f.text_area :comments, name:"comments", id: "comments", cols:"30", rows:"5", class:"form-control" %>
+              </div>
+                </div>
+              </div>
+
+              <div class="form-row mt-3 mx-3 page-applicable">
+                <div class="row">
+                  <div class="col-xl-6">
+                    <%= f.label :master_issue_list, "Master Issue List" %>
+                    <div class="left-pane bg-gray">
+                      <div class="form-control enc-search-wrp">
+                        <%= text_field_tag :search, nil, placeholder: "Search", class: "enc-search-input", id: "issue-search" %>
+                        <i class='bx bx-search'></i>
+                      </div>
+                      <div class="form-row d-flex gap-1 flex-wrap mt-2 row issue-list-container" id="master-issue-list">
+                        <% AppTracker.master_issue_list.each do |issue| %>
+                          <div class="provider-check form-check issue-item">
+                            <%= check_box_tag "master_issue_#{issue}", issue, false, class: "form-check-input mx-2 issue-checkbox" %>
+                            <%= label_tag "master_issue_#{issue}", issue, class: 'form-check-label mx-2' %>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                    <div class="d-flex justify-content-end mt-2">
+                      <%= button_tag "Add", type: "button", id: "add-button", class: "btn btn-primary py-1" %>
+                    </div>
+                  </div>
+
+                  <div class="col-xl-6">
+                    <%= f.label :client_flag, "Issue" %>
+                    <div class="right-pane border-dash bg-gray">
+                      <div class="form-row d-flex gap-2 flex-wrap" id="client-flag-list">
+                        <!-- Initially empty, will be populated with selected issues -->
+                      </div>
+                    </div>
+                    <div class="d-flex justify-content-end mt-2">
+                      <%= button_tag "Remove", type: "button", id: "remove-button", class: "btn btn-danger" %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+
+              <div class="form-row mt-3 mx-3 page-applicable">
+                <div class="row">
+                  <div class="col-xl-6">
+                    <%= f.label :master_review_list, "Master Review List" %>
+                    <div class="left-pane bg-gray">
+                      <div class="form-control enc-search-wrp">
+                        <%= text_field_tag :search_review, nil, placeholder: "Search", class: "enc-search-input", id: "review-search" %>
+                        <i class='bx bx-search'></i>
+                      </div>
+                      <div class="form-row d-flex gap-2 flex-wrap mt-2 row issue-list-container" id="master-review-list">
+                        <% AppTracker.master_review_list.each do |review| %>
+                          <div class="provider-check form-check review-item">
+                            <%= f.check_box :review, { multiple: true, class: "form-check-input mx-1" }, review, nil %>
+                            <%= f.label review, class: 'form-check-label mx-1 mt-1 mb-1' %>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                    <div class="d-flex justify-content-end mt-2">
+                      <%= button_tag "Add", type: "button", class: "btn btn-primary py-1" %>
+                    </div>
+                  </div>
+
+                  <div class="col-xl-6">
+                    <%= f.label :client_flag_review, "Review" %>
+                    <div class="right-pane border-dash bg-gray">
+                      <div class="form-row d-flex gap-2 flex-wrap">
+                        <span class="provider-check">
+                          <div class="form-check">
+                            <%= check_box_tag "DEA_not_valid_review", "", false, class: "form-check-input" %>
+                            <%= label_tag "DEA_not_valid_review", "DEA Not Verified", class: "form-check-label" %>
+                          </div>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="d-flex justify-content-end mt-2">
+                      <%= button_tag "Remove", type: "button", class: "btn btn-danger" %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="form-row mx-3">
+                <div class="col-xl-12">
+                  <%= f.label :file_status, "File Status:" %>
+                  <%= f.select :file_status, options_for_select(['Clean', 'Issue', 'Review', 'Review & Issue'], selected: f.object.file_status), { prompt: true }, class: 'form-select' %>
+                </div>
+              </div>
+
+              <div class="form-row mx-3">
+                <div class="col-xl-12">
+                  <%= f.label "please list any comments : ", class: "" %>
+                  <%= f.text_area :comments, name:"comments", id: "comments", cols:"30", rows:"5", class:"form-control" %>
+                </div>
+              </div>
+
+              <div class="form-row row">
+                <div class="col-xl-12">
+                  <%= f.submit class: "btn btn-primary mt-3 mx-3" %>
+                </div>
+              </div>
+            <% end %>
+
         </div>
     </div>
+
+    <style type="text/css">
+      .issue-list-container {
+          max-height: 250px; /* Adjust the height as needed */
+          overflow-y: auto;
+        }
+    </style>
+
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', function () {
+        const addButton = document.getElementById('add-button');
+        const removeButton = document.getElementById('remove-button');
+        const masterIssueList = document.getElementById('master-issue-list');
+        const clientFlagList = document.getElementById('client-flag-list');
+
+        // Add selected issues to the client flag list
+        addButton.addEventListener('click', function () {
+          const selectedIssues = masterIssueList.querySelectorAll('input.issue-checkbox:checked');
+          selectedIssues.forEach(issue => {
+            const issueLabel = issue.nextElementSibling;
+            const clonedIssue = issue.parentElement.cloneNode(true);
+            clientFlagList.appendChild(clonedIssue);
+            issue.checked = false; // Uncheck the checkbox after moving
+          });
+        });
+
+        // Remove selected issues from the client flag list
+        removeButton.addEventListener('click', function () {
+          const selectedIssues = clientFlagList.querySelectorAll('input.issue-checkbox:checked');
+          selectedIssues.forEach(issue => {
+            const issueElement = issue.parentElement;
+            clientFlagList.removeChild(issueElement);
+          });
+        });
+
+        //for search the master_issue_list
+        const searchInput = document.getElementById('issue-search');
+        const issueItems = document.querySelectorAll('#master-issue-list .issue-item');
+
+        searchInput.addEventListener('input', function () {
+          const searchQuery = searchInput.value.toLowerCase();
+          
+          issueItems.forEach(function (item) {
+            const issueText = item.textContent.toLowerCase();
+            
+            if (issueText.includes(searchQuery)) {
+              item.style.display = ''; // Show the item if it matches the search query
+            } else {
+              item.style.display = 'none'; // Hide the item if it doesn't match the search query
+            }
+          });
+        });
+
+        //for search the master_review_list
+        const reviewSearchInput = document.getElementById('review-search');
+        const reviewItems = document.querySelectorAll('#master-review-list .review-item');
+
+        reviewSearchInput.addEventListener('input', function () {
+          const searchQuery = reviewSearchInput.value.toLowerCase();
+          
+          reviewItems.forEach(function (item) {
+            const reviewText = item.textContent.toLowerCase();
+            
+            if (reviewText.includes(searchQuery)) {
+              item.style.display = ''; // Show the item if it matches the search query
+            } else {
+              item.style.display = 'none'; // Hide the item if it doesn't match the search query
+            }
+          });
+        });
+
+
+      });
+
+    </script>

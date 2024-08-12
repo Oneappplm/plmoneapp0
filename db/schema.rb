@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
+ActiveRecord::Schema[7.0].define(version: 2024_08_14_083352) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -62,6 +62,19 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.datetime "started_at"
     t.index ["user_id"], name: "index_ahoy_visits_on_user_id"
     t.index ["visit_token"], name: "index_ahoy_visits_on_visit_token", unique: true
+  end
+
+  create_table "app_trackers", force: :cascade do |t|
+    t.string "application_type"
+    t.date "application_receipt_date"
+    t.date "application_receive_complete_date"
+    t.date "verifications_complete_date"
+    t.date "file_return_to_client_date"
+    t.date "output_file_date"
+    t.bigint "practitioner_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["practitioner_id"], name: "index_app_trackers_on_practitioner_id"
   end
 
   create_table "audits", force: :cascade do |t|
@@ -214,6 +227,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "egd_attempts", force: :cascade do |t|
+    t.string "attempt_date"
+    t.string "status"
+    t.string "note"
+    t.bigint "user_id"
+    t.bigint "enroll_groups_detail_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enroll_groups_detail_id"], name: "index_egd_attempts_on_enroll_groups_detail_id"
+    t.index ["user_id"], name: "index_egd_attempts_on_user_id"
+  end
+
   create_table "egd_logs", force: :cascade do |t|
     t.bigint "enroll_groups_detail_id", null: false
     t.string "status"
@@ -303,6 +328,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "payer_state"
     t.string "payor_submission_type"
     t.string "payor_link"
+    t.boolean "non_applicable_for_revalidation", default: false
     t.index ["enroll_group_id"], name: "index_enroll_groups_details_on_enroll_group_id"
   end
 
@@ -446,6 +472,22 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "billing_address_autofill"
     t.string "remittance_address_autofill"
     t.datetime "welcome_letter_sent_at"
+    t.boolean "rcm_only", default: false
+    t.string "group_liability_carrier_name"
+    t.string "group_liability_self_insured"
+    t.string "group_liability_address"
+    t.string "group_liability_city"
+    t.integer "group_liability_state_id"
+    t.string "group_liability_zipcode"
+    t.date "group_liability_orig_effective_date"
+    t.date "group_liability_effective_date"
+    t.date "group_liability_expiration_date"
+    t.string "group_liability_coverage_type"
+    t.string "group_liability_unlimited_coverage"
+    t.string "group_liability_tail_coverage"
+    t.string "group_liability_coverage_amount"
+    t.string "group_liability_coverage_amount_aggregate"
+    t.string "group_liability_policy_number"
   end
 
   create_table "enrollment_groups_contact_details", force: :cascade do |t|
@@ -477,24 +519,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "group_role"
     t.string "email_address"
     t.index ["enrollment_group_id"], name: "index_enrollment_groups_details_on_enrollment_group_id"
-  end
-
-  create_table "enrollment_groups_svc_locations", force: :cascade do |t|
-    t.bigint "enrollment_groups_id"
-    t.string "primary_service_non_office_area"
-    t.string "primary_service_location_apps"
-    t.string "primary_service_zip_code"
-    t.string "primary_service_office_email"
-    t.string "primary_service_fax"
-    t.string "primary_service_office_website"
-    t.string "primary_service_crisis_phone"
-    t.string "primary_service_location_other_phone"
-    t.string "primary_service_appt_scheduling"
-    t.string "primary_service_interpreter_language"
-    t.string "primary_service_telehealth_only_state"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["enrollment_groups_id"], name: "index_enrollment_groups_svc_locations_on_enrollment_groups_id"
   end
 
   create_table "enrollment_payers", force: :cascade do |t|
@@ -587,7 +611,27 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "terminated_date"
     t.date "denied_date"
     t.string "payer_state"
+    t.boolean "non_applicable_for_revalidation", default: false
+    t.string "portal_link"
+    t.boolean "na_for_revalidation", default: false
+    t.string "payor_email"
+    t.string "payor_phone"
+    t.date "follow_up_date"
+    t.date "last_follow_up_date"
+    t.boolean "completed", default: false
     t.index ["enrollment_provider_id"], name: "index_enrollment_providers_details_on_enrollment_provider_id"
+  end
+
+  create_table "epd_attempts", force: :cascade do |t|
+    t.string "attempt_date"
+    t.string "status"
+    t.string "note"
+    t.bigint "user_id"
+    t.bigint "enrollment_providers_detail_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enrollment_providers_detail_id"], name: "index_epd_attempts_on_enrollment_providers_detail_id"
+    t.index ["user_id"], name: "index_epd_attempts_on_user_id"
   end
 
   create_table "epd_logs", force: :cascade do |t|
@@ -801,6 +845,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["recipient_type", "recipient_id"], name: "index_notifications_on_recipient"
   end
 
+  create_table "payor_names", force: :cascade do |t|
+    t.string "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "practice_locations", force: :cascade do |t|
     t.string "location"
     t.string "legal_name"
@@ -934,6 +984,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "application_method"
     t.string "availability"
     t.string "county"
+    t.bigint "client_organization_id"
+    t.index ["client_organization_id"], name: "index_practitioners_on_client_organization_id"
   end
 
   create_table "privilege_statuses", force: :cascade do |t|
@@ -1465,11 +1517,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "welcome_letter_subject"
     t.text "welcome_letter_message"
     t.json "welcome_letter_attachments"
-    t.boolean "check_welcome_letter", default: false
-    t.boolean "check_co_caqh", default: false
-    t.boolean "check_mn_caqh_state_release_form", default: false
-    t.boolean "check_mn_caqh_authorization_form", default: false
-    t.boolean "check_caqh_standard_authorization", default: false
     t.string "dea_not_applicable"
     t.string "cds_not_applicable"
     t.string "rn_not_applicable"
@@ -1480,6 +1527,11 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "rn_explain"
     t.string "cnp_explain"
     t.string "license_explain"
+    t.boolean "check_welcome_letter", default: false
+    t.boolean "check_co_caqh", default: false
+    t.boolean "check_mn_caqh_state_release_form", default: false
+    t.boolean "check_mn_caqh_authorization_form", default: false
+    t.boolean "check_caqh_standard_authorization", default: false
     t.json "state_license_copies"
     t.json "dea_copies"
     t.json "w9_form_copies"
@@ -1497,6 +1549,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "supervising_npi"
     t.string "primary_location"
     t.string "payer_login", default: "no"
+    t.boolean "rcm_only", default: false
+    t.boolean "prof_liability_form"
+    t.bigint "user_id"
+    t.string "username"
+    t.string "password"
+    t.index ["user_id"], name: "index_providers_on_user_id"
   end
 
   create_table "providers_missing_field_submissions", force: :cascade do |t|
@@ -1683,9 +1741,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "otp_token"
     t.string "otp_code"
     t.datetime "otp_code_expires_at"
-    t.boolean "can_access_all_groups"
     t.boolean "logout_on_close", default: false
     t.datetime "last_logout_on_close"
+    t.boolean "can_access_all_groups"
     t.boolean "is_provider_account"
     t.string "accessible_provider"
     t.string "password_change_status_via_invite"
@@ -1779,6 +1837,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "app_trackers", "practitioners"
   add_foreign_key "director_providers", "users"
   add_foreign_key "director_providers", "virtual_review_committees"
   add_foreign_key "egd_logs", "enroll_groups_details"
@@ -1786,10 +1845,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
   add_foreign_key "epd_questions", "enrollment_providers_details"
   add_foreign_key "group_contacts", "enrollment_groups"
   add_foreign_key "group_dcos", "enrollment_groups"
+  add_foreign_key "practitioners", "client_organizations"
   add_foreign_key "provider_licenses", "providers"
   add_foreign_key "provider_np_licenses", "providers"
   add_foreign_key "provider_rn_licenses", "providers"
   add_foreign_key "provider_source_data", "provider_sources"
   add_foreign_key "provider_source_documents", "provider_sources"
   add_foreign_key "provider_taxonomies", "providers"
+  add_foreign_key "providers", "users"
 end

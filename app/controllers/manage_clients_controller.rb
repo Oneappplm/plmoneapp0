@@ -1,30 +1,59 @@
 class ManageClientsController < ApplicationController
+  before_action :set_practitioner, only: [:upload_document, :practitioner, :view_uploaded_documents]
 
-	def index
-    @practitioner = Practitioner.paginate(page: params[:page])
+  def index
+    @practitioners = Practitioner.all
+    @client_organizations = ClientOrganization.paginate(per_page: 10, page: params[:page] || 1)
+    @document = PractitionerUploadedDocument.new
   end
 
-  def new 
-    @practitioner = Practitioner.new
-  end
-
-  def create
-    @practitioner = Practitioner.new(practitioner_params)
-
-    if @practitioner.save
-      redirect_to action: "index"
-      else
-      render :new, status: :unprocessable_entity
+  def upload_document
+    @document = PractitionerUploadedDocument.new(practitioner_uploaded_document_params)
+    if @document.save
+      redirect_to manage_clients_path, notice: "Document uploaded successfully."
+    else
+      flash.now[:alert] = "Error uploading document."
+      render :index
     end
   end
 
-  private
-  def practitioner_params
-    params.require(:practitioner).permit(:first_name, :middle_name, :last_name, :suffix, :gender, :date_of_birth, :social_security_number,
-           :contact_method, :phone_number, :fax_number, :email_address, :address, :suit_or_apt,
-           :additional_address, :city, :country, :state_or_province, :zipcode, :practitioner_type,
-           :credentials_committee_date, :credentials_batch_date, :client_batch_name, :client_batch_id,
-           :market, :status, :application_method, :availability, :county, :first_name_of_credentialing_contact,
-           :middle_name_of_credentialing_contact, :last_name_of_credentialing_contact, :suffix_of_credentialing_contact)
+  def delete_uploaded_document
+    doc_id = params.dig(:doc_id)
+    doc_file = PractitionerUploadedDocument.find_by_id(doc_id)
+    
+    if doc_file&.destroy
+      redirect_to request.referrer, notice: "Successfully deleted."
+    else
+      redirect_to request.referrer, alert: "Something went wrong."
+    end
   end
+
+  def view_uploaded_documents
+    # This action can be used for rendering specific documents if needed
+  end
+
+  protected
+
+  def practitioner_uploaded_document_params
+    params.require(:practitioner_uploaded_document).permit(
+      :practitioner_id,
+      :image_classification,
+      :sub_section,
+      :description,
+      :exclude_from_profile,
+      :file_upload
+    )
+  end
+
+  private
+
+  def practitioner_uploaded_document_params
+    params.require(:practitioner_uploaded_document).permit(:practitioner_id, :image_classification, :sub_section, :description, :exclude_from_profile, :file_upload)
+  end
+
+  def set_practitioner
+    @practitioner = Practitioner.find_by_id params.dig(:id)
+  end
+
 end
+

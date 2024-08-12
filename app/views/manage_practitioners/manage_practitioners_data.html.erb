@@ -1,0 +1,100 @@
+<div class="content container-fluid">
+	<%= render partial: "verification_platform/encompass_nav"%>
+</div>
+<%= render 'user_restriction', locals: { access_key: 'Manage Practitioner' } do %>
+	<div class="container-fluid">
+		<div class="row mb-3">
+      <div class="col-lg-12">
+        <h2>
+          <span>Practitioners</span>
+        </h2>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
+        <div class="">
+          <input type="text" name="search" value="<%= params[:search] %>" class="form-control">
+          <i class="bi bi-search"></i>
+        </div>
+        <% end %>
+      </div>
+      <div class="col-lg-6 d-flex justify-content-end">
+        <%= link_to "New Practitioner", new_manage_practitioner_path, class:"d-flex btn btn-primary btn-md" %>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-lg-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+                <th scope="col" class="bg-primary text-white">Fullname</th>
+                <th scope="col" class="bg-primary text-white">NPI</th>
+                <th scope="col" class="bg-primary text-white">License Number</th>
+                <th scope="col" class="bg-primary text-white">Taxonomy Code</th>
+                <th scope="col" class="bg-primary text-white">Phone</th>
+                <th scope="col" class="bg-primary text-white">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+						<% @practitioners.each do |practitioner| %>
+							<tr>
+								<td><%= link_to practitioner.practitioner_name, manage_practitioner_path(practitioner) %></td>
+								<td><%#= practitioner.npi %></td>
+								<td><%#= practitioner.license_number %></td>
+								<td><%#= practitioner.taxonomy_code %></td>
+								<td><%#= practitioner.phone_number %></td>
+								<td scope="row">
+							    <div class="d-flex gap-1">
+							      <%= link_to edit_manage_practitioner_path(practitioner), class: 'btn btn-sm btn-primary' do %>
+							        <i class="bi bi-pencil"></i>
+							      <% end %>
+							      <%= button_to manage_practitioner_path(practitioner), method: :delete, class: 'btn btn-sm btn-danger delete-button', data: {confirm: 'Are you sure?'} do %>
+							        <i class="bi bi-trash"></i>
+							      <% end %>
+							    </div>
+							  </td>
+							</tr>
+						<% end %>
+					</tbody>
+        </table>
+
+        <% if @hvhs_data %>
+          <div class="col-lg-12">
+            <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+            <div class="page_info ms-3 text-black">
+                <%= page_entries_info @hvhs_data %>
+            </div>
+            <% if params[:per_page ].present? %>
+              <%= will_paginate @hvhs_data, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+            <% else %>
+              <%= will_paginate @hvhs_data, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+            <% end %>
+            </div>
+          </div>
+        <% end %>
+
+      </div>
+    </div>
+	</div>
+<% end %>
+
+<script type="text/javascript">
+	document.getElementById('display-all-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+
+    // Fetch all practitioners
+    fetch('<%= url_for(action: :index, display_all: true) %>', {
+      method: 'GET',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => response.text())
+    .then(html => {
+      // Replace the table content
+      document.getElementById('practitioner-table').innerHTML = html;
+    });
+  });
+</script>

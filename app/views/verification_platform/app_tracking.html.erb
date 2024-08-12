@@ -1,115 +1,121 @@
-<body>
+<div class="enc-content">
+	<div class="container">
+		<%= render partial: "top_nav_buttons", locals: { practitioner: @practitioner } %>
 
-    <div class="enc-content">
-        <div class="container">
-          <%= render "top_nav_buttons"%>
+		<div class="mt-4 d-flex align-items-end justify-content-between gap-3">
+			<div class="d-flex align-items-center gap-3">
+				<h4 class="page-heading">App Tracking</h4>
+				<div class="form-check form-switch">
+					<input class="form-check-input" type="checkbox" id="board-cert-switch">
+					<label class="form-check-label" for="board-cert-switch">Not Applicable</label>
+				</div>
+			</div>
+			<a href="<%= verification_platform_index_path(page: 'add_new_application', practitioner: @practitioner)%>" class="btn btn-primary page-applicable AddBoardCertificate py-1"
+					id="AddBoardCertificate">
+				<i class='bx bx-plus'></i>
+				Add New Application
+			</a>
+		</div>
+		<%# if @not_applicable_explain == true %>
+			<div class="row mt-3 page-applicable">
+				<div class="col-xl-12">
+					<label for="">Reinstatement</label>
+				</div>
+			</div>
+			<div class="row page-applicable">
+				<div class="col-xl-12">
+					<div class=" form-check d-flex align-items-center gap-2">
+						<input class="form-check-input" type="checkbox" id="indicator" value="indicator">
+						<label class="form-check-label" for="indicator">Indicator</label>
+					</div>
+				</div>
+			</div>
+			<div class="form-row mt-3 page-applicable">
+				<div class="row">
+					<div class="col-xl-6">
+						<label for="">Master Client Flag List</label>
+						<div class="left-pane bg-gray">
+							<div class="form-control enc-search-wrp">
+								<input type="" name="" class="enc-search-input" placeholder="Search">
+							</div>
+						</div>
+						<div class="d-flex justify-content-end mt-2">
+							<button type="button" class="btn btn-primary">
+								Define Privileges Category
+							</button>
+						</div>
+					</div>
+					<div class="col-xl-6">
+						<label for="">Client Flag</label>
+						<div class="right-pane border-dash bg-gray">
 
-            <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <h4 class="page-heading">App Tracking</h4>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="board-cert-switch">
-                        <label class="form-check-label" for="board-cert-switch">Not Applicable</label>
-                    </div>
-                </div>
-                <a href="<%= verification_platform_index_path(page: 'add_new_application')%>" class="btn btn-primary page-applicable AddBoardCertificate py-1"
-                    id="AddBoardCertificate">
-                    <i class='bx bx-plus'></i>
-                    Add New Application
-                </a>
-            </div>
-            <div class="row mt-3 page-applicable">
-                <div class="col-xl-12">
-                    <label for="">Reinstatement</label>
-                </div>
-            </div>
-            <div class="row page-applicable">
-                <div class="col-xl-12">
-                    <div class=" form-check d-flex align-items-center gap-2">
-                        <input class="form-check-input" type="checkbox" id="indicator" value="indicator">
-                        <label class="form-check-label" for="indicator">Indicator</label>
-                    </div>
-                </div>
-            </div>
-            <div class="form-row mt-3 page-applicable">
-                <div class="row">
-                    <div class="col-xl-6">
-                        <label for="">Master Client Flag List</label>
-                        <div class="left-pane bg-gray">
-                            <div class="form-control enc-search-wrp">
-                                <input type="" name="" class="enc-search-input" placeholder="Search">
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-end mt-2">
-                            <button type="button" class="btn btn-primary">
-                                Define Privileges Category
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <label for="">Client Flag</label>
-                        <div class="right-pane border-dash bg-gray">
-
-                        </div>
-                        <div class="d-flex justify-content-end mt-2">
-                            <button type="button" class="btn btn-danger">
-                                Remove
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row result-controls page-applicable mt-4">
-                <div class="col-xl-6 filter-result">
-                    <h6 class="">Result: 2 records</h6>
-                </div>
-                <div class="col-xl-6">
-                    <div class="table-controls">
-                        <div class="control-wrp">
-                            <label for="limit">Show limit</label>
-                            <input type="text" id="limit" class="form-control" value="20">
-                        </div>
-                        <div class="control-wrp">
-                            <label for="page">Page 1 of 32</label>
-                            <input type="text" id="page" class="form-control" value="1">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <table class="table table-bordered practice-table mt-3 page-applicable ">
-                <thead>
-                    <tr>
-                        <th  class="text-white" scope="col">Application Type</th>
-                        <th class="text-white">Application Receipt Date</th>
-                        <th class="text-white">App Receive Complete Date</th>
-                        <th class="text-white">Verifications Complete Date</th>
-                        <th class="text-white">File Return to Client Date</th>
-                        <th class="text-white">Output File Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Lorem</td>
-                        <td>Lorem</td>
-                        <td>Lorem ipsum</td>
-                        <td>Lorem ipsum</td>
-                        <td>Lorem ipsum</td>
-                        <td>Lorem ipsum</td>
-                    </tr>
-
-                </tbody>
-            </table>
-            <form action="" class="page-not-applicable">
-                <div class="form-row mt-4">
-                    <label for="">Please explain:<span class="font-red">*</span></label>
-                    <textarea name="not-applicable-explain" id="" cols="30" rows="5" class="form-control"
-                        required></textarea>
-                </div>
-                <div class="form-row mt-2 d-flex justify-content-end">
-                    <button type="submit" name="save-not-app-explain" class="btn btn-primary">
-                        Save
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+						</div>
+						<div class="d-flex justify-content-end mt-2">
+							<button type="button" class="btn btn-danger">
+								Remove
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row result-controls page-applicable mt-4">
+				<div class="col-xl-6 filter-result">
+					<h6 class=""><%= " Result : #{@app_trackers.count} Count" if @app_trackers.count > 0 %></h6>
+				</div>
+				<div class="col-xl-6">
+					<div class="table-controls">
+						<div class="control-wrp">
+							<label for="limit">Show limit</label>
+							<input type="text" id="limit" class="form-control" value="20">
+						</div>
+						<div class="control-wrp">
+							<label for="page">Page 1 of 32</label>
+							<input type="text" id="page" class="form-control" value="1">
+						</div>
+					</div>
+				</div>
+			</div>
+			<% if @app_trackers.present? %>
+				<table class="table table-bordered practice-table mt-3 page-applicable ">
+						<thead>
+							<tr>
+								<th class="text-white" scope="col">Sr. No.</th>
+								<th  class="text-white" scope="col">Application Type</th>
+								<th class="text-white">Application Receipt Date</th>
+								<th class="text-white">App Receive Complete Date</th>
+								<th class="text-white">Verifications Complete Date</th>
+								<th class="text-white">File Return to Client Date</th>
+								<th class="text-white">Output File Date</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% @app_trackers.each_with_index do |app_tracker, index| %>
+								<tr>
+									<td><%= link_to index + 1, edit_application_verification_platform_index_path(app_tracker), class: 'btn btn-primary btn-xs mx-2' %></td>
+									<td><%= app_tracker.application_type %></td>
+									<td><%= app_tracker.application_receipt_date %></td>
+									<td><%= app_tracker.application_receive_complete_date %></td>
+									<td><%= app_tracker.verifications_complete_date %></td>
+									<td><%= app_tracker.file_return_to_client_date %></td>
+									<td><%= app_tracker.output_file_date %></td>
+								</tr>
+							<% end %>  
+						</tbody>
+				</table>
+			<% end %>
+		<%# end %>
+		<form action="<%= save_not_applicable_verification_platform_index_path(practitioner_id: @practitioner.id) %>" method="post" class="page-not-applicable">
+			<%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+			<div class="form-row mt-4">
+					<label for="">Please explain:<span class="font-red">*</span></label>
+					<textarea name="not_applicable_explain" id="" cols="30" rows="5" class="form-control"
+							required></textarea>
+			</div>
+			<div class="form-row mt-2 d-flex justify-content-end">
+				<button type="submit" name="save-not-app-explain" class="btn btn-primary">
+						Save
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
