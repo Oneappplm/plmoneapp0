@@ -45,6 +45,7 @@ class WebscraperService < ApplicationService
 
 		options.add_argument('--disable-gpu')
 		options.add_argument('--no-sandbox')
+		options.add_argument('--window-size=1024,768')
 
 		@crawler ||= Selenium::WebDriver.for :chrome, options: options
 	end
@@ -57,7 +58,6 @@ class WebscraperService < ApplicationService
 		crawler.execute_script('window.scrollTo(0,0);')
 		crawler.manage.window.resize_to(1024, 1024)
 
-		save_path = PUBLIC_PATH.join(crawler_folder_name, SCREENSHOT_FILENAME)
 		crawler.save_screenshot(save_path)
 
 		# Generate a new PDF document
@@ -84,6 +84,14 @@ class WebscraperService < ApplicationService
 					status: 'failed'
 			)
 			nil
+	end
+
+	def folder_path
+		PUBLIC_PATH.join(crawler_folder_name)
+	end
+
+	def save_path
+		PUBLIC_PATH.join(crawler_folder_name, SCREENSHOT_FILENAME)
 	end
 
 	def initialize_folder_path!

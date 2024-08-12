@@ -12,6 +12,8 @@ class AutoVerifiesController < ApplicationController
 				Webscraper::OigService.call(params[:last_name], params[:first_name])
 			elsif	search_state == 'sam'
 				Webscraper::SamService.call(params[:last_name], params[:first_name])
+			elsif search_state == 'report generation' && params[:license_number].present?
+				Webscraper::ReportGenerationService.call(params[:license_number])
 			else
 				[]
 			end
