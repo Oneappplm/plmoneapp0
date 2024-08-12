@@ -1,83 +1,261 @@
 <div class="content container-fluid">
-    <%= render partial: "verification_platform/encompass_nav"%>
+	<%= render partial: "verification_platform/encompass_nav"%>
 </div>
 <%= render 'user_restriction', locals: { access_key: 'Manage Client' } do %>
-    <div class="enc-content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-xl-3">
-                    <%= render partial: "verification_platform/encompass_sidebar"%>
-                </div>
-                <div class="col-xl-9">
-                    <div class="d-flex page-applicable align-items-center gap-2 mb-2">
-																							<%= link_to "Add New Practitioner", new_manage_client_path, class: "btn btn-primary py-1 page-applicable" %>
-                        <button class="btn btn-primary py-1 page-applicable">
-                            Modify Practitioner Record
-                        </button>
-                        <button class="btn btn-primary py-1 page-applicable">
-                            Append and Remove Practitioner from Client Group
-                        </button>
-                        <button class="btn btn-primary py-1 page-applicable">
-                            Reply Practitioner’s Question
-                        </button>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-xl-6">
-                            <div class="form-control enc-search-wrp  border-dark">
-                                <input type="text" class="enc-search-input" placeholder="Search by Committee Date">
-                                <!-- <i class='bx bx-search'></i> -->
-                            </div>
-                        </div>
-                    </div>  
-                    <table class="table table-bordered practice-table mt-3">
-                        <thead>
-                            <tr>
-                                <th class="text-white" scope="col">Client Organization</th>
-                                <th class="text-white">Current Client Organization</th>
-                                <th class="text-white">Encompass ID</th>
-                                <th class="text-white">Practitioner Name</th>
-                                <th class="text-white">Verification Status</th>
-                                <th class="text-white">Department/ Division</th>
-                                <th class="text-white">Status</th>
-                                <th class="text-white">Image Management</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Lorem</td>
-                                <td>Lorem</td>
-                                <td>Lorem</td>
-                                <td>Lorem</td>
-                                <td>Lorem</td>
-                                <td>Lorem</td>
-                                <td>Lorem</td>
-                                <td>
-                                    <button class="btn btn-primary button-sm px-3 py-2 mx-2">
-                                        <i class="fa-solid fa-upload"></i>
-                                    </button>
-                                    <button class="btn btn-primary button-sm px-3 py-2">
-                                            <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <% if @practitioner %>
-                        <div class="col-lg-12">
-                            <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-0">
-                                <div class="page_info ms-3 text-black">
-                                     <%= page_entries_info @practitioner %>
-                                </div>
-                                <% if params[:per_page ].present? %>
-                                    <%= will_paginate @practitioner, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                                <% else %>
-                                    <%= will_paginate @practitioner, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                                <% end %>
-                            </div>
-                        </div>
-                    <% end %>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="enc-content">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-xl-3">
+					<%= render partial: "verification_platform/encompass_sidebar"%>
+				</div>
+				<div class="col-xl-9">
+					<div class="d-flex page-applicable gap-2 mb-2">
+						<%= link_to "Add New Organization", new_client_organizations_path, class: "btn btn-primary py-3 page-applicable" %>
+						<button id="modify-organization-button" class="btn btn-primary py-1 page-applicable">Modify Organization Record</button>
+						<%= link_to "Add New Practitioner", new_manage_practitioner_path, class: "btn btn-primary py-3 page-applicable" %>
+						<button id="modify-practitioner-button" class="btn btn-primary py-1 page-applicable">Modify Practitioner Record</button>
+						<button class="btn btn-primary py-1 page-applicable">
+							Append and Remove Practitioner from Client Group
+						</button>
+						<button class="btn btn-primary py-1 page-applicable">
+							Reply Practitioner’s Question
+						</button>
+					</div>
+					<%# <div class="row mt-3">
+						<div class="col-xl-6">
+							<div class="form-control enc-search-wrp  border-dark">
+								<input type="text" class="enc-search-input" placeholder="Search by Committee Date">
+								<!-- <i class='bx bx-search'></i> -->
+							</div>
+						</div>
+					</div> %>  
+					<div class="table-responsive mt-3 mb-3">
+						<table class="table table-bordered practice-table mt-3">
+							<thead>
+								<tr>
+									<th class="text-white" scope="col">Select</th>
+									<th class="text-white" scope="col">Client Organization</th>
+									<th class="text-white">Current Client Organization</th>
+									<th class="text-white">Encompass ID</th>
+									<th class="text-white">Practitioner Name</th>
+									<th class="text-white">Verification Status</th>
+									<th class="text-white">Department/ Division</th>
+									<th class="text-white">Status</th>
+									<th class="text-white">Image Management</th>
+								</tr>
+							</thead>
+							<tbody>
+								<% @practitioners.each do |practitioner| %>
+									<% organization = practitioner.client_organization %>	
+									<tr>
+										<td>
+											<input type="checkbox" class="practitioner-checkbox" value="<%= practitioner.id %>">
+										</td>
+										<td><%= organization&.organization_name || "N/A" %></td>
+										<td><%= organization&.organization_type || "N/A" %></td>
+										<td></td>
+										<td><%= link_to practitioner.practitioner_name, manage_practitioner_path(practitioner) %></td>
+										<td></td>
+										<td></td>
+										<td><%= practitioner.status %></td>
+										<td>
+											<!-- Button trigger modal for uploading the file -->
+											<button type="button" class="btn btn-primary px-3 py-2" data-bs-toggle="modal" data-bs-target="#exampleModal" data-practitioner-id="<%= practitioner.id %>" >
+											  <i class="fa-solid fa-upload"></i>
+											</button>
+
+											<!-- Modal -->
+											<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+											  <div class="modal-dialog">
+											    <div class="modal-content">
+											      <div class="modal-header">
+											        <h1 class="modal-title" id="exampleModalLabel">Upload Document</h1>
+											        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+											      </div>
+											      <div class="modal-body">
+											        <%= form_with url: upload_documents_manage_practitioners_path, local: true, html: { multiple: true } do |form| %>
+											          <%= hidden_field_tag :practitioner_id, '' %>
+																<div>
+																	<%= form.label :image_classification %>
+																	<%= select_tag :image_classification, options_for_select(['Client Uploaded Document', 'Received Request', 'Received Verification', 'Profile', 'Personal Signature', 'Personal Photo', 'Release', 'Application', 'DOP']), prompt: 'Select Option', class: 'form-select mt-2 mb-2' %>
+																</div>
+																<div class="mt-3">
+																	<%= form.label :description %>
+																	<%= text_area :description, nil,  rows: 4, class: 'form-control mt-2 mb-2', placeholder: 'Enter description here' %>
+																	<small class="form-text text-muted">Less than 600 characters</small>
+																</div>
+																<div class="mt-3">
+																	<%= form.label :file_upload %>
+																	<%= form.file_field :file, id: 'file-upload', class: 'form-control' %>
+																</div>
+																<div class="modal-footer mt-3">
+																	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+																	<%= form.submit 'Upload & Save', class: 'btn btn-primary'%>
+																</div>
+															<% end %>
+											      </div>
+											    </div>
+											  </div>
+											</div>
+
+										<!-- Button trigger modal for viewing the uploaded file -->							
+											<button type="button" class="btn btn-primary px-3 py-2" data-bs-toggle="modal" data-bs-target="#viewModal" data-practitioner-id="<%= practitioner.id %>" onclick="loadFiles(<%= practitioner.id %>)">
+											  <i class="fa-solid fa-eye"></i>
+											</button>
+
+											<!-- Modal -->
+											<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+											  <div class="modal-dialog modal-lg">
+											    <div class="modal-content">
+											      <div class="modal-header">
+											        <h1 class="modal-title" id="viewModalLabel">View Image List</h1>
+											        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+											      </div>
+											      <div class="modal-body" id="file-list">
+											        <form id="delete-files-form" method="post" action="<%= delete_files_manage_practitioners_path %>">
+
+											          <% files = Dir.glob(Rails.root.join('public', 'uploads', practitioner.id.to_s, '*')) %>
+																	<% if files.any? %>
+																	  <% files.each do |file| %>
+																	    <div class="row">
+																	      <div class="col-lg-6">
+																	        <%= link_to File.basename(file), "/uploads/#{practitioner.id}/#{File.basename(file)}", target: "_blank" %>
+																	      </div>
+																	      <div class="col-lg-6">
+																	        <span class="text-muted">Uploaded on <%= File.mtime(file).strftime('%Y-%m-%d %H:%M:%S') %></span>
+																	      </div>
+																	    </div>
+																	  <% end %>
+																	<% else %>
+																	  <div class="alert alert-warning" role="alert">
+																	    No files uploaded for this practitioner.
+																	  </div>
+																	<% end %>
+											          <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+											          <%= hidden_field_tag :practitioner_id, practitioner.id %>
+											        </form>
+											      </div>
+											      <div class="modal-footer">
+											        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+											        <button type="button" class="btn btn-danger" onclick="document.getElementById('delete-files-form').submit();">Remove Selected Files</button>
+											      </div>
+											    </div>
+											  </div>
+											</div>
+										</td>
+									</tr>
+								<% end %>
+							</tbody>
+						</table>
+					</div>
+					<% if @practitioners %>
+						<div class="col-lg-12">
+							<div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-0">
+								<div class="page_info ms-3 mt-2 mb-2 text-black">
+									 <%#= page_entries_info @practitioners %>
+									 <%= "Practitioners's Count : #{@practitioners.count}" if @practitioners.count > 0 %>
+								</div>
+								<% if @practitioners.size > 50 %>
+									<% if params[:per_page ].present? %>
+										<%= will_paginate @practitioners, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+									<% else %>
+										<%= will_paginate @practitioners, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+									<% end %>
+								<% end %>
+							</div>
+						</div>
+					<% end %>
+				</div>
+			</div>
+		</div>
+	</div>
 <% end %>
+
+<style type="text/css">
+	.table-responsive{
+		overflow: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.table{
+		width: 100%;
+		max-width: 1200px;
+	}
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var fileUpload = document.getElementById("file-upload");
+    var form = document.getElementById("upload-form");
+
+    fileUpload.addEventListener("change", function() {
+      event.preventDefault();
+    });
+
+    const modifyButton = document.getElementById("modify-practitioner-button");
+
+    modifyButton.addEventListener("click", function() {
+      const checkboxes = document.querySelectorAll(".practitioner-checkbox:checked");
+      if (checkboxes.length > 0) {
+        const practitionerId = checkboxes[0].value;
+        console.log("Redirecting to:", `/manage_practitioners/${practitionerId}/edit`);
+        window.location.href = `/manage_practitioners/${practitionerId}/edit`;
+      } else {
+        alert("Please select a practitioner to modify.");
+      }
+    });
+    const exampleModal = document.getElementById('exampleModal');
+    exampleModal.addEventListener('show.bs.modal', function (event) {
+	    const button = event.relatedTarget; // Button that triggered the modal
+	    const practitionerId = button.getAttribute('data-practitioner-id'); // Extract practitioner ID from data-* attribute
+	    const modalPractitionerIdField = exampleModal.querySelector('#practitioner_id'); // Find the hidden input/span in the modal
+	    modalPractitionerIdField.value = practitionerId; // Set the practitioner ID in the modal
+	  });
+  });
+
+  function loadFiles(practitionerId) {
+    fetch(`/manage_practitioners/show_uploaded_files?practitioner_id=${practitionerId}`)
+      .then(response => response.json())
+      .then(data => {
+        const fileList = document.getElementById('file-list');
+        fileList.innerHTML = '';
+
+        const headerRow = document.createElement('div');
+        headerRow.classList.add('row', 'bg-medium-grey', 'mb-2', 'mt-2');
+        headerRow.innerHTML = `
+          <div class="col-lg-6 mt-2">
+            <h5>File Name</h5>  
+          </div>
+          <div class="col-lg-6 mt-2">
+            <h5>Create Date</h5>
+          </div>
+	       `;
+	       fileList.appendChild(headerRow);
+
+        if (data.files.length > 0) {
+          data.files.forEach(file => {
+            const fileItem = document.createElement('div');
+            fileItem.classList.add('row');
+            fileItem.innerHTML = `
+              <div class="col-lg-6">
+   		          <input type="checkbox" name="files[]" value="${file.name}" class="form-check-input mx-2">
+                <a href="/uploads/${practitionerId}/${file.name}" target="_blank">${file.name}</a>
+              </div>
+              <div class="col-lg-6">
+                <span class="text-muted">Uploaded on ${file.mtime}</span>
+              </div>
+            `;
+            fileList.appendChild(fileItem);
+          });
+        } else {
+          fileList.innerHTML = '<div class="alert alert-warning" role="alert">No files uploaded for this practitioner.</div>';
+        }
+      })
+      .catch(error => console.error('Error loading files:', error));
+  }
+
+  function removeSelectedFiles() {
+    // Implementation for removing selected files
+  }
+</script>
+

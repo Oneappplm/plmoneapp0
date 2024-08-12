@@ -144,7 +144,16 @@ Rails.application.routes.draw do
 
   resources :time_lines, path: 'time-lines'
   resources :manage_clients, path: 'manage-clients'
-  resources :manage_practitioners, path: 'manage-practitioners'
+  
+  resources :manage_practitioners do
+    collection do
+      get :manage_practitioners_data
+      post :upload_documents
+      post :delete_files
+      get :show_uploaded_files
+    end
+  end
+
   resources :work_ticklers, path: 'work-ticklers'
 
   resources :comments
