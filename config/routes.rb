@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resources :hvhs_data
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
+   
   # Defines the root path route ("/")
   root 'dashboard#dashboard' # Overview	page
   get 'client-portal', to: 'pages#client_portal' # Data Access page
@@ -90,7 +90,8 @@ Rails.application.routes.draw do
   get '/virtual_review_committee/minutes', to: 'pages#minutes', as: 'minutes'
 
   resources :manage_clients
-
+  
+  resources :client_organizations, only: [:edit, :update]
 
   resources :provider_sources do
     collection do

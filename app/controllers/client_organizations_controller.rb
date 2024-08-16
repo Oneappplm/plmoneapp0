@@ -22,7 +22,7 @@ class ClientOrganizationsController < ApplicationController
     # client_organization = ClientOrganization.take
     @client_organization = ClientOrganization.find(params[:id])
 
-    if client_organization.update(client_organization_params)
+    if @client_organization.update(client_organization_params)
       redirect_to manage_clients_path, notice: 'Client organization successfully added.'
     else
       render :edit, alert: 'Something went wrong. Please try again.'

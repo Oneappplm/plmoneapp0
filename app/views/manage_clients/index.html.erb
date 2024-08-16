@@ -45,19 +45,19 @@
 								</tr>
 							</thead>
 							<tbody>
-								<% @practitioners.each do |practitioner| %>
-									<% organization = practitioner.client_organization %>	
+								<% @client_organizations.each do |practitioner| %>
+									<%# <% organization = practitioner.client_organization %>
 									<tr>
 										<td>
 											<input type="checkbox" class="practitioner-checkbox" value="<%= practitioner.id %>">
 										</td>
-										<td><%= organization&.organization_name || "N/A" %></td>
-										<td><%= organization&.organization_type || "N/A" %></td>
+										<td><%= practitioner&.organization_name || "N/A" %></td>
+										<td><%= practitioner&.organization_type || "N/A" %></td>
 										<td></td>
-										<td><%= link_to practitioner.practitioner_name, manage_practitioner_path(practitioner) %></td>
+										<%# <td><%= link_to practitioner.practitioner_name, manage_practitioner_path(practitioner) %>
 										<td></td>
 										<td></td>
-										<td><%= practitioner.status %></td>
+										<%# <td><%= practitioner.status %>
 										<td>
 											<!-- Button trigger modal for uploading the file -->
 											<button type="button" class="btn btn-primary px-3 py-2" data-bs-toggle="modal" data-bs-target="#exampleModal" data-practitioner-id="<%= practitioner.id %>" >
@@ -257,4 +257,21 @@
     // Implementation for removing selected files
   }
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const modifyButton = document.getElementById("modify-organization-button");
 
+  modifyButton.addEventListener("click", function(event) {
+    event.preventDefault(); // Prevent default button behavior
+
+    const selectedCheckbox = document.querySelector(".practitioner-checkbox:checked");
+    if (selectedCheckbox) {
+      const practitionerId = selectedCheckbox.value;
+      // Assuming the route for editing a ClientOrganization is something like this:
+      window.location.href = `/client_organizations/${practitionerId}/edit`;
+    } else {
+      alert("Please select an organization to modify.");
+    }
+  });
+});
+</script>
