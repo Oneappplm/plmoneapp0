@@ -45,19 +45,18 @@
 								</tr>
 							</thead>
 							<tbody>
-								<% @practitioners.each do |practitioner| %>
-									<% organization = practitioner.client_organization %>	
+								<% @client_organizations.each do |practitioner| %>
 									<tr>
 										<td>
 											<input type="checkbox" class="practitioner-checkbox" value="<%= practitioner.id %>">
 										</td>
-										<td><%= organization&.organization_name || "N/A" %></td>
-										<td><%= organization&.organization_type || "N/A" %></td>
+										<td><%= practitioner&.organization_name || "N/A" %></td>
+										<td><%= practitioner&.organization_type || "N/A" %></td>
 										<td></td>
-										<td><%= link_to practitioner.practitioner_name, manage_practitioner_path(practitioner) %></td>
+										<%# <td><%= link_to practitioner.practitioner_name, manage_practitioner_path(practitioner) %></td> %>
 										<td></td>
 										<td></td>
-										<td><%= practitioner.status %></td>
+										<%# <td><%= practitioner.status %></td> %>
 										<td>
 											<!-- Button trigger modal for uploading the file -->
 											<button type="button" class="btn btn-primary px-3 py-2" data-bs-toggle="modal" data-bs-target="#exampleModal" data-practitioner-id="<%= practitioner.id %>" >
@@ -112,8 +111,7 @@
 											        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 											      </div>
 											      <div class="modal-body" id="file-list">
-											        <form id="delete-files-form" method="post" action="<%= delete_files_manage_practitioners_path %>">
-
+															<form id="delete-files-form" method="post" action="<%= delete_practitioner_files_path(practitioner.id) %>">
 											          <% files = Dir.glob(Rails.root.join('public', 'uploads', practitioner.id.to_s, '*')) %>
 																	<% if files.any? %>
 																	  <% files.each do |file| %>
@@ -137,7 +135,7 @@
 											      </div>
 											      <div class="modal-footer">
 											        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-											        <button type="button" class="btn btn-danger" onclick="document.getElementById('delete-files-form').submit();">Remove Selected Files</button>
+															<button type="button" class="btn btn-danger" onclick="removeSelectedFiles(<%= practitioner.id %>);">Remove Selected Files</button>
 											      </div>
 											    </div>
 											  </div>
@@ -253,8 +251,44 @@
       .catch(error => console.error('Error loading files:', error));
   }
 
-  function removeSelectedFiles() {
-    // Implementation for removing selected files
-  }
+		function removeSelectedFiles(practitionerId) {
+		const checkboxes = document.querySelectorAll('input[name="files[]"]:checked');
+		if (checkboxes.length === 0) {
+			alert("Please select at least one file to remove.");
+			return;
+		}
+
+		const form = document.createElement('form');
+		form.method = 'post';
+		form.action = `/manage_practitioners/${practitionerId}/delete_files`;
+
+		// Add the authenticity token for Rails
+		const authenticityToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+		const tokenInput = document.createElement('input');
+		tokenInput.type = 'hidden';
+		tokenInput.name = 'authenticity_token';
+		tokenInput.value = authenticityToken;
+		form.appendChild(tokenInput);
+
+		// Add practitioner ID as a hidden field
+		const practitionerIdInput = document.createElement('input');
+		practitionerIdInput.type = 'hidden';
+		practitionerIdInput.name = 'practitioner_id';
+		practitionerIdInput.value = practitionerId;
+		form.appendChild(practitionerIdInput);
+
+		// Add the selected files to the form
+		checkboxes.forEach(checkbox => {
+			const input = document.createElement('input');
+			input.type = 'hidden';
+			input.name = 'files_to_delete[]';
+			input.value = checkbox.value;
+			form.appendChild(input);
+		});
+
+		// Submit the form
+		document.body.appendChild(form);
+		form.submit();
+	}
 </script>
 

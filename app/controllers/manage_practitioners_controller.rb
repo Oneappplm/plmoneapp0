@@ -79,16 +79,19 @@ class ManagePractitionersController < ApplicationController
   end
 
   def delete_files
-    if params[:files].present?
-      practitioner_id = params[:practitioner_id]
-      params[:files].each do |filename|
-        file_path = Rails.root.join('public', 'uploads', practitioner_id.to_s, filename)
+    practitioner_id = params[:practitioner_id]
+    files_to_delete = params[:files_to_delete]
+
+    if files_to_delete.present?
+      files_to_delete.each do |file|
+        file_path = Rails.root.join('public', 'uploads', practitioner_id.to_s, file)
         File.delete(file_path) if File.exist?(file_path)
       end
-      flash[:success] = "Selected files removed successfully!"
+      flash[:success] = "Selected files have been deleted successfully."
     else
-      flash[:error] = "No files selected for removal."
+      flash[:alert] = "No files were selected for deletion."
     end
+
     redirect_to manage_clients_path
   end
 

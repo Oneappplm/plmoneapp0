@@ -146,6 +146,9 @@ Rails.application.routes.draw do
     end
   end
   resource :client_organizations
+  
+
+  post 'manage_practitioners/:id/delete_files', to: 'manage_practitioners#delete_files', as: 'delete_practitioner_files'
 
 
   resources :time_lines, path: 'time-lines'
@@ -155,7 +158,6 @@ Rails.application.routes.draw do
     collection do
       get :manage_practitioners_data
       post :upload_documents
-      post :delete_files
       get :show_uploaded_files
     end
   end
