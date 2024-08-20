@@ -119,7 +119,16 @@ Rails.application.routes.draw do
   resources :missing_field_submissions
 
   # added these two resources just to make it different to pages_controller for now it doesn't have any model
-  resources :verification_platform, path: 'verification-platform'
+  resources :verification_platform, path: 'verification-platform' do
+    collection do
+      post :add_new_application
+      get 'edit_application/:id', to: 'verification_platform#edit_application', as: 'edit_application'
+      post 'save_not_applicable', to: 'manage_practitioners#save_not_applicable', as: 'save_not_applicable'
+    end
+  end
+
+
+
   resources :office_managers, path: 'group-engage' do
     collection do
       post :send_invitation
@@ -147,6 +156,7 @@ Rails.application.routes.draw do
   end
   resource :client_organizations
 
+   post 'manage_practitioners/:id/delete_files', to: 'manage_practitioners#delete_files', as: 'delete_practitioner_files'
 
   resources :time_lines, path: 'time-lines'
   resources :manage_clients, path: 'manage-clients'

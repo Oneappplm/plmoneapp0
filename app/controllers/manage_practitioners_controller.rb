@@ -75,15 +75,17 @@ class ManagePractitionersController < ApplicationController
   end
 
   def delete_files
-    if params[:files].present?
-      practitioner_id = params[:practitioner_id]
-      params[:files].each do |filename|
-        file_path = Rails.root.join('public', 'uploads', practitioner_id.to_s, filename)
+    practitioner_id = params[:practitioner_id]
+    files_to_delete = params[:files_to_delete]
+
+    if files_to_delete.present?
+      files_to_delete.each do |file|
+        file_path = Rails.root.join('public', 'uploads', practitioner_id.to_s, file)
         File.delete(file_path) if File.exist?(file_path)
       end
-      flash[:success] = "Selected files removed successfully!"
+      flash[:success] = "Selected files have been deleted successfully."
     else
-      flash[:error] = "No files selected for removal."
+      flash[:alert] = "No files were selected for deletion."
     end
     redirect_to manage_clients_path
   end
@@ -105,6 +107,18 @@ class ManagePractitionersController < ApplicationController
     end
   end
 
+  def save_not_applicable
+    @practitioner = Practitioner.find(params[:practitioner_id])
+    @practitioner.update(not_applicable_explain: params[:not_applicable_explain])
+
+    if @practitioner.save
+      flash[:success] = "Form saved successfully."
+    else
+      flash[:error] = "There was an error saving the form."
+    end
+    redirect_to verification_platform_index_path(page: 'app_tracking', practitioner: @practitioner)
+  end
+
   private
 
   def set_practitioners
@@ -119,7 +133,8 @@ class ManagePractitionersController < ApplicationController
       :country, :state_or_province, :zipcode, :practitioner_type, 
       :credentials_committee_date, :client_batch_name, 
       :client_batch_id, :market, :status, :application_method, :availability, 
-      :county
+      :county,
+      :not_applicable_explain
     )
   end
 end

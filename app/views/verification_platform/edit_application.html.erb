@@ -1,0 +1,187 @@
+<div class="enc-content">
+  <div class="container">
+    <%= render "top_nav_buttons"%>
+      
+  <div class="form-row row mt-3">
+    <div class="col-xl-6 d-flex align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <a href="<%= verification_platform_index_path(page: 'app_tracking', practitioner: @practitioner )%>" class="link-back">
+          <i class='bx bx-left-arrow-alt'></i>
+        </a>
+        <h4 class="page-heading">Edit Application</h4>
+      </div>
+    </div>
+  </div>
+  <%= form_for :app_tracker, url: edit_application_verification_platform_index_path, method: :post, local: true do |f| %>
+    <%= f.hidden_field :practitioner_id, value: @practitioner.id %>
+    <div class="form-row row mt-3">
+      <div class="col-xl-6">
+        <%= f.label :application_type, "Application Type:" %>
+        <%= f.select :application_type, options_for_select(["Credential", "Re-Credential"]), {prompt: true}, class: "form-select" %>
+      </div>
+      <div class="col-xl-6">
+        <%= f.label :owner, "Owner (Last Name, First Name)" %>
+        <%= f.select :owner, options_for_select([""]), {prompt: true}, class: "form-select" %>
+      </div>
+    </div>
+
+    <div class="form-row row">
+      <div class="col-xl-4">
+        <%= f.label :application_receipt_date, "Application Receipt Date:" %>
+        <%= f.date_field :application_receipt_date, class: "form-control" %>
+      </div>
+      <div class="col-xl-4">
+        <%= f.label :application_receive_complete_date, "App Receive Complete Date:" %>
+        <%= f.date_field :application_receive_complete_date, class: "form-control" %>
+      </div>
+      <div class="col-xl-4">
+        <%= f.label :application_submitted_date, "Application Submitted Date:" %>
+        <%= f.date_field :application_submitted_date, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row row">
+      <div class="col-xl-6">
+        <%= f.label :verifications_complete_date, "Verification Complete Date:" %>
+        <%= f.date_field :verifications_complete_date, class: "form-control" %>
+      </div>
+      <div class="col-xl-6">
+        <%= f.label :file_return_to_client_date, "File Return to Client Date:" %>
+        <%= f.date_field :file_return_to_client_date, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row row">
+      <div class="col-xl-6 mt-2 mb-2">
+        <div class="form-check d-flex align-items-center gap-2">
+          <input class="form-check-input" type="checkbox" id="expedite" value="Expedite">
+          <label class="form-check-label" for="expedite">Expedite</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row row">
+      <div class="col-xl-12">
+        <label for="comments" class="">Please list any comments:</label>
+        <textarea name="comments" id="comments" cols="30" rows="5" class="form-control"></textarea>
+    </div>
+      </div>
+    </div>
+
+    <div class="form-row mt-3 mx-3 page-applicable">
+      <div class="row">
+        <div class="col-xl-6">
+          <%= f.label :master_issue_list, "Master Issue List" %>
+          <div class="left-pane bg-gray">
+            <div class="form-control enc-search-wrp">
+              <%= text_field_tag :search, nil, placeholder: "Search", class: "enc-search-input" %>
+              <i class='bx bx-search'></i>
+            </div>
+            <div class="form-row d-flex gap-2 flex-wrap mt-2">
+              <span class="provider-check">
+                <div class="form-check">
+                  <%= check_box_tag "acc_cert_not_received", "", false, class: "form-check-input" %>
+                  <%= label_tag "acc_cert_not_received", "Accreditation Certification Not Received", class: "form-check-label" %>
+                </div>
+              </span>
+              <span class="provider-check">
+                <div class="form-check">
+                  <%= check_box_tag "incomp_app", "", false, class: "form-check-input" %>
+                  <%= label_tag "incomp_app", "Incomplete App: Continuing Education Requirement", class: "form-check-label" %>
+                </div>
+              </span>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end mt-2">
+            <%= button_tag "Add", type: "button", class: "btn btn-primary py-1" %>
+          </div>
+        </div>
+
+        <div class="col-xl-6">
+          <%= f.label :client_flag, "Client Flag" %>
+          <div class="right-pane border-dash bg-gray">
+            <div class="form-row d-flex gap-2 flex-wrap">
+              <span class="provider-check">
+                <div class="form-check">
+                  <%= check_box_tag "DEA_not_valid", "", false, class: "form-check-input" %>
+                  <%= label_tag "DEA_not_valid", "DEA Not Verified", class: "form-check-label" %>
+                </div>
+              </span>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end mt-2">
+            <%= button_tag "Remove", type: "button", class: "btn btn-danger" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row mt-3 mx-3 page-applicable">
+      <div class="row">
+        <div class="col-xl-6">
+          <%= f.label :master_review_list, "Master Review List" %>
+          <div class="left-pane bg-gray">
+            <div class="form-control enc-search-wrp">
+              <%= text_field_tag :search_review, nil, placeholder: "Search", class: "enc-search-input" %>
+              <i class='bx bx-search'></i>
+            </div>
+            <div class="form-row d-flex gap-2 flex-wrap mt-2">
+              <span class="provider-check">
+                <div class="form-check">
+                  <%= check_box_tag "acc_cert_not_received_review", "", false, class: "form-check-input" %>
+                  <%= label_tag "acc_cert_not_received_review", "Accreditation Certification Not Received", class: "form-check-label" %>
+                </div>
+              </span>
+              <span class="provider-check">
+                <div class="form-check">
+                  <%= check_box_tag "incomp_app_review", "", false, class: "form-check-input" %>
+                  <%= label_tag "incomp_app_review", "Incomplete App: Continuing Education Requirement", class: "form-check-label" %>
+                </div>
+              </span>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end mt-2">
+            <%= button_tag "Add", type: "button", class: "btn btn-primary py-1" %>
+          </div>
+        </div>
+
+        <div class="col-xl-6">
+          <%= f.label :client_flag_review, "Client Flag" %>
+          <div class="right-pane border-dash bg-gray">
+            <div class="form-row d-flex gap-2 flex-wrap">
+              <span class="provider-check">
+                <div class="form-check">
+                  <%= check_box_tag "DEA_not_valid_review", "", false, class: "form-check-input" %>
+                  <%= label_tag "DEA_not_valid_review", "DEA Not Verified", class: "form-check-label" %>
+                </div>
+              </span>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end mt-2">
+            <%= button_tag "Remove", type: "button", class: "btn btn-danger" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row mx-3">
+      <div class="col-xl-12">
+        <%= f.label :file_status, "File Status:" %>
+      </div>
+    </div>
+
+    <div class="form-row mx-3">
+      <div class="col-xl-12">
+        <label for="comments2" class="">Please list any comments:</label>
+        <textarea name="comments2" id="comments2" cols="30" rows="5" class="form-control"></textarea>
+      </div>
+    </div>
+
+    <div class="form-row row">
+      <div class="col-xl-12">
+        <%= f.submit class: "btn btn-primary mt-3 mx-3" %>
+      </div>
+    </div>
+  <% end %>
+  </div>
+</div>
