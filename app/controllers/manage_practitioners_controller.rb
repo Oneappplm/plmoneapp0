@@ -105,6 +105,18 @@ class ManagePractitionersController < ApplicationController
     end
   end
 
+  def save_not_applicable
+    @practitioner = Practitioner.find(params[:practitioner_id])
+    @practitioner.update(not_applicable_explain: params[:not_applicable_explain])
+
+    if @practitioner.save
+      flash[:success] = "Form saved successfully."
+    else
+      flash[:error] = "There was an error saving the form."
+    end
+    redirect_to verification_platform_index_path(page: 'app_tracking', practitioner: @practitioner)
+  end
+
   private
 
   def set_practitioners
@@ -119,7 +131,8 @@ class ManagePractitionersController < ApplicationController
       :country, :state_or_province, :zipcode, :practitioner_type, 
       :credentials_committee_date, :client_batch_name, 
       :client_batch_id, :market, :status, :application_method, :availability, 
-      :county
+      :county,
+      :not_applicable_explain
     )
   end
 end

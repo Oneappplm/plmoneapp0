@@ -10,5 +10,5 @@ class Practitioner < ApplicationRecord
   end
 
   belongs_to :client_organization, optional: true
- 
+  has_many :app_trackers
 end
