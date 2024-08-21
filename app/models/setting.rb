@@ -27,6 +27,8 @@ class Setting < ApplicationRecord
 	def qualifacts? = client_name == 'qualifacts'
  def cignahealth? = client_name == 'cignahealth'
 	def dcs? = client_name == 'dcs'
+	def sprout? = client_name == 'sprout'
+	def mhc? = client_name == 'mhc'
 
 	def t(key)
 		I18n.t("#{client_name}.#{key}")

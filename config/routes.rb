@@ -11,6 +11,8 @@ Rails.application.routes.draw do
 
 		get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
 		# get 'app-tracker', to: 'pages#app_tracker'
+  post 'caqh/upload', to: 'caqh#upload'
+  get 'caqh/upload', to: 'caqh#show'
   get 'encompass', to: 'pages#encompass'
   get 'microsite', to: 'pages#microsite'
   get 'ps-office-manager', to: 'pages#ps_office_manager'
@@ -348,6 +350,11 @@ Rails.application.routes.draw do
       delete :delete_uploaded_document
       get :view_uploaded_documents
     end
+  end
+
+
+  namespace :mhc do
+    resources :verification_platform, only: [:index, :show], path: 'verification-platform'
   end
 
   namespace :api do
