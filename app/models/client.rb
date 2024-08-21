@@ -17,6 +17,8 @@ class Client < ApplicationRecord
    scope :returned, -> { where(cred_status: 'returned') }
    # scope :published, -> { where(:published => true)}
 
+   has_many :providers
+
 	def self.create_dummies
 		providers = ['Hospice Home Care', 'Mercy Medical Center', 'Baptist Health', 'Mayo Clinic', 'Cleveland Clinic', 'Standford Health Care', 'UCLA Health', 'University of Michigan']
 	 	statuses = ['attested', 'no-application', 'complete-application', 'incomplete','pending', 'in-process', 'psv', 'returned']
