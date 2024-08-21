@@ -31,7 +31,7 @@ class Setting < ApplicationRecord
 	def affordablecare? = client_name == 'affordablecare'
 	def groups? = client_name == 'groups'
 	def dcm? = client_name == 'dcm'
-
+	def mhc? = client_name == 'mhc'
 	def t(key)
 		I18n.t("#{client_name}.#{key}")
 	end
