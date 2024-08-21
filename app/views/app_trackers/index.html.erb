@@ -1,60 +1,448 @@
 <%= render 'user_restriction', locals: { access_key: 'App Tracker' } do %>
 
 <div class="content container-fluid">
+	<div class="dropdown-container mb-3">
+	  <div class="btn-group">
+	    <button type="button" class="btn btn-primary dropdown-toggle rounded-0" data-bs-toggle="dropdown" aria-expanded="false">
+	      Application Collection
+	    </button>
+	    <ul class="dropdown-menu rounded-0">
+	      <li><a class="dropdown-item" href="#">Facility Attempt Report</a></li>
+	      <li><a class="dropdown-item" href="#">Provider Attempt Report</a></li>
+	      <li><a class="dropdown-item" href="#">Reports</a></li>
+	      <li><a class="dropdown-item" href="#">Mass Upload Attempt</a></li>
+	    </ul>
+	  </div>
+
+	  <div class="btn-group">
+	    <button type="button" class="btn btn-primary dropdown-toggle rounded-0" data-bs-toggle="dropdown" aria-expanded="false">
+	      Manage Facility
+	    </button>
+	    <ul class="dropdown-menu rounded-0">
+	      <li><a class="dropdown-item" href="#">Query Facility Report</a></li>
+	      <li><a class="dropdown-item" href="#">Show Faciltiy</a></li>
+	    </ul>
+	  </div>
+
+	  <div class="btn-group">
+	    <button type="button" class="btn btn-primary dropdown-toggle rounded-0" data-bs-toggle="dropdown" aria-expanded="false">
+	      Manage Provider
+	    </button>
+	    <ul class="dropdown-menu rounded-0">
+	      <li><a class="dropdown-item" href="#">Query Provider Report</a></li>
+	      <li><a class="dropdown-item" href="#">Show Provider</a></li>
+	    </ul>
+	  </div>
+	</div>
+
 	<div class="row mb-3">
-		<div class="col-lg-6">
-			<h2>Search Provider
-			</h2>
-			<form class="form_search_with_icon">
-			<div class="">
-				<input type="text" name="user_search" class="form-control" placeholder="Search by Name or NPI" value="<%=  params[:user_search] %>">
-				<i class="bi bi-search"></i>
-			</div>
-			</form>
-			<small><code>(npi, first name, middle name, last name, full name)</code></small>
+		<div class="col-lg-12">
+			<h2>Provider</h2>
+			<%= form_with url: app_trackers_path, method: :get, local: true, class: "form_search_with_icon" do |form| %>
+			  <div class="">
+			    <%= text_field_tag :user_search, params[:user_search], class: "form-control", placeholder: "Search..." %>
+			    <i class="bi bi-search"></i>
+			  </div>
+			  <small><code>( search with provider id )</code></small>
+
+			  <div class="row">
+			    <div class="col-lg-6 mt-2 form-group">
+			      <%= form.label :app_reviewed, "App Reviewed", class: "form-label" %>
+			      <%= form.select :application_reviewed, options_for_select(['False', 'True']), { prompt: true },  {class: "form-select auto-submit"} %>
+			    </div>
+			    <div class="col-lg-6 mt-2">
+			      <%= form.label :provider_status, class: "form-label" %>
+			      <%= form.select :provider_status, options_for_select(['Change of Ownership', 'Credential Once', 'Deceased', 'Delegated', 'Incomplete App', 'No Application Received', 'No Longer in Private Sector', 'No Longer Practices Medicine', 'Non-Participant', 'Non-Responder', 'On Leave', 'Out of Network', 'Paper App', 'Relocated Out of State', 'Retired', 'Terminated', 'Undeliverable' ]), { prompt: true },  {class: "form-select auto-submit"} %>
+			    </div>
+			  </div>
+
+			  <div class="row">
+			    <div class="col-lg-6 mt-2">
+			      <%= form.label :credential_cycle, "Credential Cycle", class: "form-label" %>
+			      <%= form.select :cred_cycle, options_for_select(['Cred', 'Recred']), { prompt: true },  {class: "form-select auto-submit"} %>
+			    </div>
+			    <div class="col-lg-6 mt-2">
+			      <%= form.label :client_name, "Client Name", class: "form-label" %>
+			      <%= form.collection_select(:client_name, Client.all, :id, :full_name, { prompt: true }, { class: "form-select auto-submit" })  %>
+			    </div>
+			  </div>
+
+			  <div class="row">
+			    <div class="col-lg-6 mt-2">
+			      <%= form.label :batch_description, "Batch Description", class: "form-label" %>
+			      <%= form.select :batch_description, options_for_select(['']), { prompt: true },  {class: "form-select auto-submit"} %>
+			    </div>
+			    <div class="col-lg-6 mt-2">
+			      <%= form.label :file_due_date, "File Due Date", class: "form-label" %>
+			      <%= form.date_field :file_due_date, class: "form-control auto-submit" %>
+			    </div>
+			  </div>
+
+			  <div class="row mt-3">
+			    <div class="col-lg-12">
+			      <% if flash[:alert] %>
+			        <div class="alert alert-warning">
+			          <%= flash[:alert] %>
+			        </div>
+			      <% end %>
+			    </div>
+			  </div>
+			<% end %>
+
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-lg">
-			<table class="table table-striped table-bordered table-responsive">
+		<div class="col-lg table-responsive">
+			<table class="table table-bordered">
 					<thead>
 							<tr>
-								<th scope="col" class="bg-primary text-white">Provider Name</th>
-								<th scope="col" class="bg-primary text-white">Practitioner/Provider Type</th>
-								<th scope="col" class="bg-primary text-white">NPI</th>
-								<th scope="col" class="bg-primary text-white">Action</th>
+								<th scope="col" class="bg-primary text-white">Provider ID</th>
+								<th scope="col" class="bg-primary text-white">Clients</th>
+								<th scope="col" class="bg-primary text-white">First Name</th>
+								<th scope="col" class="bg-primary text-white">Middle Name</th>
+								<th scope="col" class="bg-primary text-white">Last Name</th>
+								<th scope="col" class="bg-primary text-white">Provider Information</th>
+								<th scope="col" class="bg-primary text-white"></th>
+								<th scope="col" class="bg-primary text-white"></th>
+								<th scope="col" class="bg-primary text-white"></th>
+								<th scope="col" class="bg-primary text-white"></th>
+								<th scope="col" class="bg-primary text-white"></th>
+								<th scope="col" class="bg-primary text-white"></th>
+								<th scope="col" class="bg-primary text-white"></th>	
+								<th scope="col" class="bg-primary text-white"></th>	
+								<th scope="col" class="bg-primary text-white"></th>							
 							</tr>
 					</thead>
 					<tbody>
 						<% @providers.each do |provider| %>
-						<tr>
-							<td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true"><%=provider.provider_name%></a></td>
-							<td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true"><%=provider.practitioner_type%></a></td>
-							<td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true"><%=provider.npi %></a>
-							<td>
-								<%= link_to 'Upload Document', upload_documents_app_tracker_path(provider) %>
-								<% if provider.uploaded_documents.size != 0 %>
-								<br>
-									<%= link_to pluralize(provider.uploaded_documents.size, "Uploaded Document"), view_uploaded_documents_app_tracker_path(provider) %>
-								<% end %>
-							</td>
-						</tr>
+							<tr>
+								<td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true"><%= provider.id %></a></td>
+								<td>
+									<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%#= provider.id %> data-remote="true">
+										<p><%#= provider.client.full_name %></p>	
+									</a>
+								</td>
+								<td>
+									<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true">
+										<p><%= provider.first_name %></p>	
+									</a>
+								</td>
+								<td>
+									<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true">
+										<p><%= provider.middle_name %></p>	
+									</a>
+								</td>
+								<td>
+									<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true">
+										<p><%= provider.last_name %></p>	
+									</a>
+								</td>
+
+								<td colspan="2">
+									<%= form_with model: provider, url: provider_path(provider), locals: true do |form| %>
+										<div class="form-group">
+											<%= form.label :address %>
+											<%= form.text_field :address_line_1, class: "form-control mt-1 mb-1" %>
+											<%= form.text_field :address_line_2, class: "form-control mt-1 mb-1" %>
+											<%= form.text_field :city, class: "form-control mt-1 mb-1" %>
+											<label class="text-dark-grey">State <span class="text-red">*</span></label>
+							        <%= form.collection_select :state_id, State.all, :id, :name, { prompt: 'Select State' }, class: 'form-control mt-1 mb-1' %>
+										</div>
+
+										<div>
+											<div class="form-group">
+												<%= form.label :fax %>
+												<%= form.text_field :fax, class: "form-control mt-1 mb-1" %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :phone %>
+												<%= form.text_field :telephone_number, class: "form-control mt-1 mb-1" %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :email_address %>
+												<%= form.text_field :email_address, class: "form-control mt-1 mb-1" %>
+											</div>
+
+											<div class="row">
+												<div class="col-lg-6 form-group mt-1 mb-1">
+													<%= form.label :provider_type %>
+													<%= form.text_field :provider_type, class: "form-control mt-1 mb-1" %>
+												</div>
+												<div class="col-lg-6 form-group mt-1 mb-1">
+													<%= form.label :cred_cycle %>
+													<%= form.text_field :cred_cycle, class: "form-control mt-1 mb-1" %>
+												</div>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :birth_date %>
+												<%= form.date_field :birth_date, class: "form-control mt-1 mb-1" %>
+											</div>
+
+											<div class="row">
+												<div class="col-lg-6 form-group mt-1 mb-1">
+													<%= form.label :ssn %>
+													<%= form.text_field :ssn, class: "form-control mt-1 mb-1" %>
+												</div>
+												<div class="col-lg-6 form-group mt-1 mb-1">
+													<%= form.label :caqhid %>
+													<%= form.text_field :caqhid, class: "form-control mt-1 mb-1" %>
+												</div>
+											</div>
+
+											<div class="row">
+												<div class="col-lg-6 form-group mt-1 mb-1">
+													<%= form.label :encompass_id %>
+													<%= form.text_field :encompass_id, class: "form-control mt-1 mb-1" %>
+												</div>
+												<div class="col-lg-6 form-group mt-1 mb-1">
+													<%= form.label :npi %>
+													<%= form.text_field :npi, class: "form-control mt-1 mb-1" %>
+												</div>
+											</div>
+
+											<div class="form-group">
+												<%= form.label :provider_status %>
+			      						<%= form.select :provider_status, options_for_select(['Change of Ownership', 'Credential Once', 'Deceased', 'Delegated', 'Incomplete App', 'No Application Received', 'No Longer in Private Sector', 'No Longer Practices Medicine', 'Non-Participant', 'Non-Responder', 'On Leave', 'Out of Network', 'Paper App', 'Relocated Out of State', 'Retired', 'Terminated', 'Undeliverable' ]), { prompt: true },  {class: "form-select"} %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :attested_date %>
+												<%= form.date_field :attested_date, class: "form-control mt-1 mb-1" %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :file_due_date %>
+												<%= form.date_field :file_due_date, class: "form-control mt-1 mb-1" %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :app_complete_date %>
+												<%= form.date_field :application_complete_date, class: "form-control mt-1 mb-1" %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :app_reviewed %>
+												<%= form.check_box :application_reviewed, class: "form-input-check mt-1 mb-1" %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :batch_description %>
+												<%= form.text_area :batch_description, class: "form-control mt-1 mb-1" %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :comments %>
+												<%= form.text_area :comments, value: provider&.comments.first&.body, rows: 4, cols: 50, class: 'form-control mt-1 mb-1' %>
+											</div>
+										</div>
+
+										<div>
+											<%= form.submit "Save", class: 'btn btn-primary mt-2 mb-2 rounded-0' %>
+										</div>
+									<% end %>
+								</td>
+
+								<td colspan="8">
+									<ul class="nav nav-pills" id="myTab" role="tablist">
+									  <li class="nav-item" role="presentation">
+									    <button class="nav-link active" id="attempt-details-<%= provider.id %>" data-bs-toggle="tab" data-bs-target="#attempt-details-<%= provider.id %>-pane" type="button" role="tab" aria-controls="attempt-details-<%= provider.id %>-pane" aria-selected="true">Attempt Details</button>
+									  </li>
+									  <li class="nav-item" role="presentation">
+									    <button class="nav-link" id="docs-upload-<%= provider.id %>" data-bs-toggle="tab" data-bs-target="#docs-upload-<%= provider.id %>-pane" type="button" role="tab" aria-controls="docs-upload-<%= provider.id %>-pane" aria-selected="false">Docs Upload</button>
+									  </li>
+									  <li class="nav-item" role="presentation">
+									    <button class="nav-link" id="facility-<%= provider.id %>" data-bs-toggle="tab" data-bs-target="#facility-<%= provider.id %>-pane" type="button" role="tab" aria-controls="facility-<%= provider.id %>-pane" aria-selected="false">Facility</button>
+									  </li>
+									</ul>
+									<div class="tab-content mt-3" id="myTabContent">
+									  <div class="tab-pane fade show active" id="attempt-details-<%= provider.id %>-pane" role="tabpanel" aria-labelledby="attempt-details-<%= provider.id %>" tabindex="0">
+									  	
+									  	<table class="table table-striped table-bordered">
+									  		<thead>
+									  			<tr>
+									  				<th scope="col" class="bg-primary text-white">Provider</th>
+									  				<th scope="col" class="bg-primary text-white">Contact Method</th>
+									  				<th scope="col" class="bg-primary text-white">Attempt Status</th>
+									  				<th scope="col" class="bg-primary text-white">Contact Date</th>
+									  				<th scope="col" class="bg-primary text-white">Comments</th>
+									  			</tr>
+									  		</thead>
+									  		<%= form_with url: provider_path(provider), locals: true do |form| %>
+										  		<tbody>
+										  			<tr>
+										  				<td>
+										  					<p><%= provider.id %></p>
+										  				</td>
+										  				<td>
+										  					<%= form.select :contact_method, options_for_select(['Application Review', 'Approval Letter', 'BCPhone', 'Document Load']), { prompt: true }, {class: 'form-select mt-1 mb-1'} %>
+										  				</td>
+										  				<td>
+										  					<%= form.select :attempt_status, options_for_select(['A', 'AM', 'AM-Final', 'AM-Final']), { prompt: true }, {class: 'form-select mt-1 mb-1'} %>
+										  				</td>
+										  				<td>
+										  					<%= form.date_field :contact_date, class: 'form-control' %>
+										  				</td>
+										  				<td>
+										  					<%= form.text_area :comments,  value: provider&.comments.first&.body,  rows: 4, cols: 50, class: 'form-control' %>
+										  				</td>
+										  			</tr>
+										  		</tbody>
+									  		<%= form.submit 'Add Attempt', class: 'btn btn-primary mt-2 mb-2 rounded-0' %>
+									  		<% end %>
+									  	</table>
+
+									  	<table class="table table-striped table-bordered">
+									  		<thead>
+									  			<tr>
+									  				<th scope="col" class="bg-primary text-white">Provider</th>
+									  				<th scope="col" class="bg-primary text-white">Contact Method</th>
+									  				<th scope="col" class="bg-primary text-white">Attempt Status</th>
+									  				<th scope="col" class="bg-primary text-white">Comments</th>
+									  				<th scope="col" class="bg-primary text-white">Contact Date</th>
+									  				<th scope="col" class="bg-primary text-white">Create By - Create Date</th>
+									  				<th scope="col" class="bg-primary text-white">Update By - Update Date</th>
+									  			</tr>
+									  		</thead>
+									  		<tbody>
+									  			<tr>
+									  				<td>
+									  					<%= provider.id %>
+									  				</td>
+									  				<td>
+									  					<%= provider.contact_method %>
+									  				</td>
+									  				<td>
+									  					<%= provider.attempt_status %>
+									  				</td>
+									  				<td>
+									  					<%= provider&.comments.first&.body %>
+									  				</td>
+									  				<td>
+									  					<%= provider.contact_date %>
+									  				</td>
+									  				<td>
+									  					<%= provider.encoded_by %> - <%= provider.created_at.strftime('%Y-%m-%d') %>
+									  				</td>
+									  				<td>
+									  					<%= provider.updated_by %> - <%= provider.updated_at.strftime('%Y-%m-%d') if provider.updated_at %>
+									  				</td>
+									  			</tr>
+									  		</tbody>
+									  	</table>
+
+									  </div>
+									  <div class="tab-pane fade" id="docs-upload-<%= provider.id %>-pane" role="tabpanel" aria-labelledby="docs-upload-<%= provider.id %>" tabindex="0">
+										  <%= form_with model: @document, url: upload_documents_app_tracker_path(provider), html: { multipart: true }, method: :post do |form| %>
+											  <div class="form-group">
+											  	<%= form.hidden_field :provider, value: provider.id %>
+											    <%= form.label "provider_uploaded_document[file_upload]", 'Upload Document' %>
+											    <%= form.file_field "provider_uploaded_document[file_upload]", class: 'form-control' %>
+											  </div>
+											  <%= form.submit 'Upload Document', class: 'btn btn-primary mt-2 mb-2 rounded-0' %>
+											<% end %>
+		
+
+										  <table class="table table-striped table-bordered">
+										  	<thead>
+										  		<tr>
+										  			<th scope="col" class="bg-primary text-white">
+										  				<input type="checkbox" name="checkbox" class="form-check-input" >
+										  			</th>
+										  			<th scope="col" class="bg-primary text-white">Document Name</th>
+										  			<th scope="col" class="bg-primary text-white">Upload Date</th>
+										  			<th scope="col" class="bg-primary text-white">Upload By</th>
+										  		</tr>
+										  	</thead>
+										  	<tbody>
+										  		<% if provider.uploaded_documents.present? %>
+											  		<% provider.uploaded_documents.each do |doc| %>
+												  		<tr>
+												  			<td>
+												  				<div class="form-check">
+																		<div class="align-items-center">
+																			<input class="form-check-input user-cbs" type="checkbox" value=""  >
+																		</div>
+																</div>
+												  			</td>
+												  			<td><%= link_to doc.file_upload.identifier, doc.file_upload.url, target: '_blank' %></td>
+												  			<td><%= doc.created_at.strftime("%Y-%m-%d") %></td>
+												  			<td><%= provider.provider_name %></td>
+												  		</tr>
+											  		<% end %>
+											  	<% end %>
+										  	</tbody>
+										  </table>
+									  	<%= link_to 'Download', 'javascript:void(0)', class: 'btn btn-primary mt-2 mb-2 rounded-0' %>
+									  </div>
+									  <div class="tab-pane fade" id="facility-<%= provider.id %>-pane" role="tabpanel" aria-labelledby="facility-<%= provider.id %>" tabindex="0">
+										  <table class="table table-striped table-bordered">
+										    <thead>
+										      <tr>
+										        <th scope="col" class="bg-primary text-white">Completion Item</th>
+										        <th scope="col" class="bg-primary text-white">Received Date</th>
+										        <th scope="col" class="bg-primary text-white">
+										          <input type="checkbox" name="checkbox" class="form-check-input">
+										          Received Flag
+										        </th>
+										        <th scope="col" class="bg-primary text-white">Received Incomplete Flag</th>
+										        <th scope="col" class="bg-primary text-white">Comments</th>
+										      </tr>
+										    </thead>
+										    <tbody>
+										    	<%= form_with model: provider, url: provider_path(provider), local: true do |form| %>
+											      <% completion_items = [
+											          'Application', 'Release', 'Disclosure Questions Explanation', 
+											          'Face Sheet', 'Employment Gap', 'Practice Information', 
+											          'NPDB Findings Explanation', 'Training', 'Education', 
+											          'Professional Resource Network', 'DEA', 'PA Sponsor Request Form', 
+											          'Collaborative Agreement'
+											        ] %>
+
+											      <% completion_items.each do |item| %>
+											        <tr>
+											          <td><%= item %></td>
+											          <td>
+											          	<%= form.date_field "#{item.downcase.gsub(' ', '_')}_date", class: 'form-control' %>
+											          </td>
+											          <td>
+											          	<%= form.check_box "#{item.downcase.gsub(' ', '_')}_received_flag", class: 'form-check-input' %>
+											          </td>
+											          <td>
+											          	<%= form.check_box "#{item.downcase.gsub(' ', '_')}_received_incomplete_flag", class: 'form-check-input' %>
+											          </td>
+											          <td>
+											            <%= form.text_area "#{item.downcase.gsub(' ', '_')}_comments",  value: provider&.comments.first&.body,  rows: 4, cols: 50, class: 'form-control' %>
+											          </td>
+											        </tr>
+											      <% end %>
+											      <%= form.submit "Save", class: 'btn btn-primary mt-2 mb-2 rounded-0' %>
+										      <% end %>
+										    </tbody>
+										  </table>
+										</div>
+
+									</div>
+								</td>
+							</tr>
 						<% end %>
 					</tbody>
 			</table>
 			<% if @providers %>
-			<div class="col-lg-12">
-							<div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
-							<div class="page_info ms-3 text-black">
-															<%= page_entries_info @providers %>
-							</div>
-							<% if params[:per_page ].present? %>
-											<%= will_paginate @providers, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-							<% else %>
-											<%= will_paginate @providers, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-							<% end %>
-							</div>
-			</div>
+				<div class="col-lg-12">
+					<div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+						<div class="page_info ms-3 text-black">
+							<%= page_entries_info @providers %>
+						</div>
+						<% if params[:per_page ].present? %>
+							<%= will_paginate @providers, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+						<% else %>
+							<%= will_paginate @providers, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+						<% end %>
+					</div>
+				</div>
 			<% end %>
 		</div>
 		<div id="show-provider-container">
@@ -63,3 +451,14 @@
 	</div>
 </div>
 <% end %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const autoSubmitElements = document.querySelectorAll('.auto-submit');
+    autoSubmitElements.forEach(function(element) {
+      element.addEventListener('change', function() {
+        this.form.submit();
+      });
+    });
+  });
+</script>

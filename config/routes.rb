@@ -363,6 +363,7 @@ Rails.application.routes.draw do
       post :upload_documents
       delete :delete_uploaded_document
       get :view_uploaded_documents
+      post :download_documents
     end
   end
 
