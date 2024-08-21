@@ -1,0 +1,102 @@
+<div class="content container-fluid">
+    <%= render "encompass_nav"%>
+</div>
+<%= render 'user_restriction', locals: { access_key: 'Client Home' } do %>
+    <div class="enc-content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-3">
+                        <%= render "encompass_sidebar"%>
+                    </div>
+                    <div class="col-xl-9">
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <%= form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
+                                <div class="">
+                                    <input type="text" name="search" value="<%= params[:search] %>" placeholder="Search" class="form-control">
+                                    <i class="bi bi-search"></i>
+                                </div>
+                                <% end %>
+                            </div>
+                        </div>
+                        <% if @provider_personal_informations %>
+                        <div class="col-lg-12 mt-2">
+                            <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center ">
+                            <div class="page_info ms-3 text-black">
+                                <%= page_entries_info @provider_personal_informations %>
+                            </div>
+                            <% if params[:per_page ].present? %>
+                            <%= will_paginate @provider_personal_informations, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                            <% else %>
+                            <%= will_paginate @provider_personal_informations, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                            <% end %>
+                            </div>
+                        </div>
+                        <% end %>
+
+                        <div class="d-flex">
+                            <div class="legend-wrp mt-3">
+                                <span class="enc-legend">
+                                    <i class='bx bxs-check-circle enc-orange-icon'></i>
+                                    In Process
+                                </span>
+                                <span class="enc-legend">
+                                    <i class='bx bxs-error enc-red-icon'></i>
+                                    With Adverse Actions
+                                </span>
+                                <span class="enc-legend">
+                                    <i class='bx bxs-error  enc-orange-icon'></i>
+                                    With Expiring Credentials
+                                </span>
+                            </div>
+                        </div>
+                        <table class="table practice-table mt-3">
+                            <thead>
+                                <tr>
+                                    <th class="text-white" scope="col">Practitioner Name</th>
+                                    <th class="text-white">Ready for download</th>
+                                    <th class="text-white">In Process</th>
+                                    <th class="text-white">Submitted</th>
+                                    <th class="text-white">Incomplete Application</th>
+                                    <th class="text-white">Application Not Received</th>
+                                    <th class="text-white">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <% @provider_personal_informations.each do |provider_personal_information| %>
+                                <tr>
+                                    <td>
+                                    <%= link_to mhc_verification_platform_path(provider_personal_information) do %>
+                                    <%= provider_personal_information&.fullname %>
+                                    <% end %>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            <% end %>
+                            </tbody>
+                        </table>
+
+                        <% if @provider_personal_informations %>
+                            <div class="col-lg-12">
+                                <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center">
+                                <div class="page_info ms-3 text-black">
+                                    <%= page_entries_info @provider_personal_informations %>
+                                </div>
+                                <% if params[:per_page ].present? %>
+                                <%= will_paginate @provider_personal_informations, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                                <% else %>
+                                <%= will_paginate @provider_personal_informations, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                                <% end %>
+                                </div>
+                            </div>
+                        <% end %>
+                    </div>
+                </div>
+            </div>
+    </div>
+<% end %>
