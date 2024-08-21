@@ -1,9 +1,34 @@
 class AppTrackersController < ProvidersController
 	before_action :set_providers, only: [:index]
 	before_action :set_provider, only: [:upload_documents, :delete_uploaded_document, :view_uploaded_documents]
+
 	def index
-		@providers = @providers.paginate(per_page: 10, page: params[:page] || 1)
+	  @providers = Provider.paginate(per_page: 10, page: params[:page] || 1)
+	  @clients = Client.paginate(per_page: 10, page: params[:page] || 1)
+	  @app_trackers = AppTracker.all
+
+	  # Filtering for @clients
+	  @clients = @clients.where(client_name: params[:client_name]) if params[:client_name].present?
+
+	  # Filtering for @app_trackers
+	  @providers = @providers.where(id: params[:user_search]) if params[:user_search].present?
+	  @providers = @providers.where(cred_cycle: params[:cred_cycle]) if params[:cred_cycle].present?
+	  @providers = @providers.where(provider_status: params[:provider_status]) if params[:provider_status].present?
+	  @providers = @providers.where(application_reviewed: params[:application_reviewed]) if params[:application_reviewed].present?
+	  @providers = @providers.where(batch_description: params[:batch_description]) if params[:batch_description].present?
+	  @providers = @providers.where(file_due_date: params[:file_due_date]) if params[:file_due_date].present?
+
+	  # Paginate after filtering
+	  @clients = @clients.paginate(per_page: 10, page: params[:page] || 1)
+	  @providers = @providers.paginate(per_page: 10, page: params[:page] || 1)
+
+	  # Check if there are no results
+    if @providers.empty? && @clients.empty?
+      flash.now[:alert] = "No results found for your search criteria."
+    end
+
 	end
+
 
 	def upload_documents
 		@document = @provider.uploaded_documents.new
