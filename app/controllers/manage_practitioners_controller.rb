@@ -53,44 +53,67 @@ class ManagePractitionersController < ApplicationController
       @practitioners = Practitioner.paginate(page: params[:page])
     end
   end
-
-   def upload_documents
+  
+  def upload_documents
+    # Ensure you have strong parameters to permit required fields
     practitioner_id = params[:practitioner_id]
+    image_classification = params[:image_classification]
+    sub_section = params[:sub_section]
+    description = params[:description]
+  
+    # Check if file is present
     if params[:file].present?
-      upload_path = Rails.root.join('public', 'uploads', practitioner_id.to_s)
-      FileUtils.mkdir_p(upload_path) unless File.directory?(upload_path)
-
       uploaded_file = params[:file]
-      file_path = Rails.root.join(upload_path, uploaded_file.original_filename)
-
-      # Debugging output
-      puts "Saving file to: #{file_path}"
-
-      File.open(file_path, 'wb') do |file|
-        file.write(uploaded_file.read)
+      
+      # Create a new record in the database
+      document = ClientUploadedDocument.new(
+        practitioner_id: practitioner_id,
+        image_classification: image_classification,
+        sub_section: sub_section,
+        description: description
+      )
+      
+      # Assign and save the uploaded file
+      document.file_upload = uploaded_file
+      if document.save
+        flash[:success] = "File uploaded and record saved successfully!"
+      else
+        flash[:error] = "Error saving record."
       end
-
-      flash[:success] = "File uploaded successfully!"
     else
       flash[:error] = "Please select a file to upload."
     end
-
+  
     redirect_to manage_clients_path
   end
 
-  def delete_files
-    if params[:files].present?
-      practitioner_id = params[:practitioner_id]
-      params[:files].each do |filename|
-        file_path = Rails.root.join('public', 'uploads', practitioner_id.to_s, filename)
-        File.delete(file_path) if File.exist?(file_path)
-      end
-      flash[:success] = "Selected files removed successfully!"
-    else
-      flash[:error] = "No files selected for removal."
+  def load_files
+    practitioner_id = params[:practitioner_id]
+    @documents = ClientUploadedDocument.where(practitioner_id: practitioner_id)
+
+    respond_to do |format|
+      format.html { render partial: 'uploaded_documents_table', locals: { documents: @documents } }
     end
-    redirect_to manage_clients_path
   end
+  
+  def delete_files
+    if params[:doc_id].present?
+      document = ClientUploadedDocument.find(params[:doc_id])
+      file_path = document.file_upload.path
+  
+      if File.exist?(file_path)
+        File.delete(file_path)
+        document.destroy
+        flash[:success] = "File deleted successfully!"
+      else
+        flash[:error] = "File not found."
+      end
+    else
+      flash[:error] = "No file selected for deletion."
+    end
+  
+    redirect_to manage_clients_path
+  end  
 
   def show_uploaded_files
     practitioner_id = params[:practitioner_id]

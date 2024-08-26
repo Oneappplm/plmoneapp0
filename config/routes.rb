@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
+  get 'manage_practitioners/load_files', to: 'manage_practitioners#load_files'
   root 'dashboard#dashboard' # Overview	page
   get 'client-portal', to: 'pages#client_portal' # Data Access page
   get 'virtual-review-committee', to: 'pages#virtual_review_committee' # Decision Point page
@@ -116,6 +117,7 @@ Rails.application.routes.draw do
     resources :locations
   end
 
+
   resources :notifications, only: [:index]
 
   resources :missing_field_submissions
@@ -156,8 +158,8 @@ Rails.application.routes.draw do
   resources :manage_practitioners do
     collection do
       get :manage_practitioners_data
+      delete 'delete_files'
       post :upload_documents
-      post :delete_files
       get :show_uploaded_files
     end
   end
