@@ -9,6 +9,15 @@ class PracticeAccessibility < ApplicationRecord
 
   before_validation :set_provider_attest_id
 
+  def assign_attributes_from_csv_row(row)
+    self.assign_attributes({
+      "accessibility_flag": row["AccessibilityFlag"],
+      "other_accessibility_description": row["OtherAccessibilityDescription"],
+      "accessibility_accessibility_description": row["Accessibility_AccessibilityDescription"],
+      "provider_practice_id": row["ProviderPracticeID"]
+    })
+  end
+
   private
 
   def set_provider_attest_id
