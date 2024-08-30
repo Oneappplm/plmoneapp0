@@ -1,7 +1,8 @@
 class ApplicationRecord < ActiveRecord::Base
   primary_abstract_class
-		include ActionView::Helpers::TextHelper
-		# audited
+  include ActionView::Helpers::TextHelper
+  include CsvAttributesAssignment
+  # audited
 
   class << self
     def enum_list(enum)
