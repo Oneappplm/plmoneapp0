@@ -98,3 +98,4 @@ gem 'exception_notification' # https://github.com/smartinez87/exception_notifica
 gem "geocoder" # https://github.com/alexreisner/geocoder
 gem "audited" # https://github.com/collectiveidea/audited
 gem 'chunky_png', '~> 1.3', '>= 1.3.5'
+gem "iprog_string_utils", "~> 0.1.0" # https://github.com/iprog21/iprog_string_utils

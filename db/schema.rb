@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
+ActiveRecord::Schema[7.0].define(version: 2024_08_30_065530) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -297,12 +297,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.string "client_notes"
     t.string "notes"
     t.string "password_digest"
-    t.string "portal_username"
-    t.string "portal_password"
-    t.json "upload_payor_file"
     t.string "payer_state"
     t.string "payor_submission_type"
     t.string "payor_link"
+    t.string "portal_username"
+    t.string "portal_password"
+    t.json "upload_payor_file"
     t.index ["enroll_group_id"], name: "index_enroll_groups_details_on_enroll_group_id"
   end
 
@@ -474,9 +474,27 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "roles"
-    t.string "group_role"
     t.string "email_address"
+    t.string "group_role"
     t.index ["enrollment_group_id"], name: "index_enrollment_groups_details_on_enrollment_group_id"
+  end
+
+  create_table "enrollment_groups_svc_locations", force: :cascade do |t|
+    t.bigint "enrollment_groups_id"
+    t.string "primary_service_non_office_area"
+    t.string "primary_service_location_apps"
+    t.string "primary_service_zip_code"
+    t.string "primary_service_office_email"
+    t.string "primary_service_fax"
+    t.string "primary_service_office_website"
+    t.string "primary_service_crisis_phone"
+    t.string "primary_service_location_other_phone"
+    t.string "primary_service_appt_scheduling"
+    t.string "primary_service_interpreter_language"
+    t.string "primary_service_telehealth_only_state"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enrollment_groups_id"], name: "index_enrollment_groups_svc_locations_on_enrollment_groups_id"
   end
 
   create_table "enrollment_payers", force: :cascade do |t|
@@ -562,13 +580,15 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.string "descriptor"
     t.string "provider_id"
     t.string "group_id"
+    t.string "payer_state"
     t.json "upload_payor_file"
     t.string "payor_username"
     t.string "payor_password"
     t.string "processing_date"
     t.string "terminated_date"
     t.date "denied_date"
-    t.string "payer_state"
+    t.string "payor_email"
+    t.string "payor_phone"
     t.index ["enrollment_provider_id"], name: "index_enrollment_providers_details_on_enrollment_provider_id"
   end
 
@@ -672,26 +692,26 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.string "inpatient_facility"
     t.string "is_clinic"
     t.string "telehealth_provider"
-    t.boolean "is_primary_location"
+    t.string "old_address"
+    t.string "old_city"
+    t.string "old_state"
+    t.string "old_county"
+    t.string "old_zipcode"
+    t.boolean "is_old_location_primary"
     t.string "website"
-    t.string "telehealth_video_conferencing_technology"
     t.string "tax_id"
     t.string "facility_billing_npi"
     t.string "mn_medicaid_number"
     t.string "wi_medicaid_number"
     t.string "medicare_id_ptan"
     t.string "taxonomy"
+    t.string "telehealth_video_conferencing_technology"
     t.string "is_gender_affirming_treatment"
     t.string "panel_size"
     t.string "medicare_authorized_official"
     t.string "collab_name"
     t.string "collab_npi"
-    t.string "is_old_location_primary"
-    t.string "old_zipcode"
-    t.string "old_county"
-    t.string "old_state"
-    t.string "old_city"
-    t.string "old_address"
+    t.boolean "is_primary_location"
     t.date "effective_date"
     t.string "location_status"
     t.string "location_npi"
@@ -781,6 +801,232 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.datetime "updated_at", null: false
     t.index ["read_at"], name: "index_notifications_on_read_at"
     t.index ["recipient_type", "recipient_id"], name: "index_notifications_on_recipient"
+  end
+
+  create_table "practice_accessibilities", primary_key: "provider_practice_accessibility_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.boolean "accessibility_flag"
+    t.text "other_accessibility_description"
+    t.text "accessibility_accessibility_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.index ["provider_attest_id"], name: "index_practice_accessibilities_on_provider_attest_id"
+    t.index ["provider_practice_id"], name: "index_practice_accessibilities_on_provider_practice_id"
+  end
+
+  create_table "practice_associate_other_questions", primary_key: "provider_practice_associate_other_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "coverage_availability"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.integer "provider_practice_associate_id"
+    t.index ["provider_attest_id"], name: "index_practice_associate_other_questions_on_provider_attest_id"
+    t.index ["provider_practice_associate_id"], name: "paoq_ppa_id"
+    t.index ["provider_practice_id"], name: "paoq_pp_id"
+  end
+
+  create_table "practice_associate_specialties", primary_key: "provider_practice_associate_specialty_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "specialty_specialty_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.integer "provider_practice_associate_id"
+    t.index ["provider_attest_id"], name: "index_practice_associate_specialties_on_provider_attest_id"
+    t.index ["provider_practice_associate_id"], name: "pas_ppa_id"
+    t.index ["provider_practice_id"], name: "pas_pp_id"
+  end
+
+  create_table "practice_associates", primary_key: "provider_practice_associate_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "associate_first_name"
+    t.string "associate_last_name"
+    t.string "associate_middle_initial"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "state"
+    t.string "zip"
+    t.string "county"
+    t.string "phone_number"
+    t.string "fax_number"
+    t.string "email_address"
+    t.string "license_number"
+    t.string "license_state"
+    t.string "hospital_department_name"
+    t.string "check_payable_to"
+    t.boolean "electronic_billing_flag"
+    t.boolean "coverage_flag"
+    t.string "billing_company"
+    t.string "coverage_arrangement_explanation"
+    t.string "tax_id"
+    t.string "other_skills"
+    t.string "emergency_phone_number"
+    t.string "answering_service_phone_number"
+    t.string "title"
+    t.string "tax_id_name"
+    t.string "phone_extension"
+    t.string "degree_degree_abbreviation"
+    t.string "provider_type_provider_type_abbreviation"
+    t.string "associate_type_associate_type_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.index ["provider_attest_id"], name: "index_practice_associates_on_provider_attest_id"
+    t.index ["provider_practice_id"], name: "index_practice_associates_on_provider_practice_id"
+  end
+
+  create_table "practice_business_arrangements", primary_key: "provider_practice_business_arrangement_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "business_arrangement_name"
+    t.string "business_arrangement_type"
+    t.string "tax_id"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "state"
+    t.string "postal_code"
+    t.string "phone_number"
+    t.string "country_country_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.index ["provider_attest_id"], name: "index_practice_business_arrangements_on_provider_attest_id"
+    t.index ["provider_practice_id"], name: "pba_pp_id"
+  end
+
+  create_table "practice_certifications", primary_key: "provider_practice_certification_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.boolean "certification_flag"
+    t.datetime "expiration_date"
+    t.text "other_certification_explanation"
+    t.boolean "staff_certified_flag"
+    t.boolean "provider_certified_flag"
+    t.text "certification_description"
+    t.datetime "certification_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.index ["provider_attest_id"], name: "index_practice_certifications_on_provider_attest_id"
+    t.index ["provider_practice_id"], name: "pc_pp_id"
+  end
+
+  create_table "practice_hours", primary_key: "provider_practice_hours_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.boolean "no_office_hours_flag"
+    t.string "morning_hours"
+    t.string "afternoon_hours"
+    t.string "evening_hours"
+    t.string "office_hours"
+    t.string "evening_weekend_hours"
+    t.boolean "evening_hours_flag"
+    t.boolean "weekend_hours_flag"
+    t.string "start_hours_hours"
+    t.text "hours_type_hours_type_description"
+    t.string "end_hours_hours"
+    t.string "day_of_week_day_of_week_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.index ["provider_attest_id"], name: "index_practice_hours_on_provider_attest_id"
+    t.index ["provider_practice_id"], name: "ph_pp_id"
+  end
+
+  create_table "practice_informations", primary_key: "provider_practice_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "practice_name"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "state"
+    t.string "zip"
+    t.string "ext_zip"
+    t.string "county"
+    t.string "phone_number"
+    t.string "after_hours_phone_number"
+    t.string "fax_number"
+    t.string "email_address"
+    t.boolean "correspondence_flag"
+    t.boolean "partners_flag"
+    t.boolean "other_associates_flag"
+    t.boolean "currently_practicing_flag"
+    t.datetime "start_date"
+    t.boolean "coverage24x7_flag"
+    t.boolean "practice_limitation_flag"
+    t.boolean "ada_approved_flag"
+    t.boolean "minority_business_flag"
+    t.boolean "interpreter_available_flag"
+    t.string "medicare_number"
+    t.string "medicaid_number"
+    t.boolean "epsdt_certified_flag"
+    t.string "epsdt_number"
+    t.string "practice_organization_type"
+    t.string "phone_number2"
+    t.string "patient_appointment_phone_number"
+    t.string "answering_service_phone_number"
+    t.string "pager_beeper_number"
+    t.boolean "list_in_directory_flag"
+    t.string "w9_practice_name"
+    t.boolean "in_practice_flag"
+    t.text "practice_intention_explanation"
+    t.string "emergency_phone_number"
+    t.text "practice_description"
+    t.string "patients_enrolled"
+    t.string "patient_visits"
+    t.string "appointments_per_hour"
+    t.string "average_waiting_time"
+    t.string "call_response_time"
+    t.boolean "electronic_billing_flag"
+    t.string "bwc_number"
+    t.string "workers_compensation_risk_number"
+    t.text "ownership_description"
+    t.string "emergency_procedure"
+    t.string "npi"
+    t.text "practice_type_description"
+    t.text "service_type_description"
+    t.string "department_name"
+    t.string "cell_phone_number"
+    t.string "pager_beeper_number2"
+    t.datetime "end_date"
+    t.string "phone_extension"
+    t.string "patient_appointment_phone_extension"
+    t.string "answering_service_phone_extension"
+    t.string "correspondence_method"
+    t.text "address_type_address_type_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_practice_informations_on_provider_attest_id"
+  end
+
+  create_table "practice_languages", primary_key: "provider_practice_language_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "language_type"
+    t.string "linguist_name"
+    t.string "language_language_name"
+    t.text "employee_type_employee_type_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.index ["provider_attest_id"], name: "index_practice_languages_on_provider_attest_id"
+    t.index ["provider_practice_id"], name: "plang_pp_id"
+  end
+
+  create_table "practice_limitations", primary_key: "provider_practice_limitation_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.boolean "age_limitation_flag"
+    t.integer "age_limitation_minimum"
+    t.integer "age_limitation_maximum"
+    t.text "other_limitation_description"
+    t.boolean "specialty_limitation_flag"
+    t.text "specialty_limitation_description"
+    t.text "gender_limitation_gender_limitation_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.index ["provider_attest_id"], name: "index_practice_limitations_on_provider_attest_id"
+    t.index ["provider_practice_id"], name: "plimit_pp_id"
   end
 
   create_table "practice_locations", force: :cascade do |t|
@@ -874,6 +1120,144 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "practice_other_addresses", primary_key: "provider_practice_address_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "county"
+    t.string "state"
+    t.string "postal_code"
+    t.string "province"
+    t.string "phone_number"
+    t.string "fax_number"
+    t.string "emergency_phone_number"
+    t.string "answering_service_phone_number"
+    t.string "email_address"
+    t.string "check_payable_to"
+    t.string "company_name"
+    t.string "attention"
+    t.text "address_type_address_type_description"
+    t.text "country_country_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.index ["provider_attest_id"], name: "index_practice_other_addresses_on_provider_attest_id"
+    t.index ["provider_practice_id"], name: "poa_pp_id"
+  end
+
+  create_table "practice_other_questions", primary_key: "provider_practice_other_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.boolean "para_professional_flag"
+    t.boolean "para_professional_supervision_flag"
+    t.boolean "para_professional_billing_flag"
+    t.boolean "provider_practice_answer_flag"
+    t.string "provider_practice_answer_text"
+    t.datetime "provider_practice_answer_date"
+    t.text "other_question_other_question_summary"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.index ["provider_attest_id"], name: "index_practice_other_questions_on_provider_attest_id"
+    t.index ["provider_practice_id"], name: "poq_pp_id"
+  end
+
+  create_table "practice_other_tax_ids", primary_key: "provider_practice_other_tax_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "tax_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.integer "provider_practice_other_id"
+    t.index ["provider_attest_id"], name: "index_practice_other_tax_ids_on_provider_attest_id"
+    t.index ["provider_practice_id"], name: "poti_pp_id"
+    t.index ["provider_practice_other_id"], name: "poti_poq_id"
+  end
+
+  create_table "practice_patient_types", primary_key: "provider_practice_patient_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.boolean "patient_flag"
+    t.text "patient_explanation"
+    t.text "patient_type_patient_type_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.index ["provider_attest_id"], name: "index_practice_patient_types_on_provider_attest_id"
+    t.index ["provider_practice_id"], name: "ppt_id"
+  end
+
+  create_table "practice_phone_coverages", primary_key: "provider_practice_phone_coverage_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.boolean "phone_coverage_flag"
+    t.text "phone_coverage_type_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.index ["provider_attest_id"], name: "index_practice_phone_coverages_on_provider_attest_id"
+    t.index ["provider_practice_id"], name: "ppc_id"
+  end
+
+  create_table "practice_services", primary_key: "provider_practice_service_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.boolean "service_provided_flag"
+    t.string "anesthesia_category"
+    t.string "anesthesia_first_name"
+    t.string "anesthesia_last_name"
+    t.text "other_service_description"
+    t.string "xray_certification_type"
+    t.string "laboratory_certification_program"
+    t.datetime "new_patient_wait_time"
+    t.datetime "existing_patient_wait_time"
+    t.datetime "call_response_time"
+    t.text "laboratory_services_description"
+    t.boolean "clia_waiver_flag"
+    t.datetime "clia_waiver_expiration_date"
+    t.boolean "clia_certification_flag"
+    t.string "clia_number"
+    t.string "clia_waiver_number"
+    t.datetime "clia_expiration_date"
+    t.string "tax_id"
+    t.string "billing_name"
+    t.text "omitted_service_description"
+    t.string "laboratory_name"
+    t.string "service_service_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.index ["provider_attest_id"], name: "index_practice_services_on_provider_attest_id"
+    t.index ["provider_practice_id"], name: "pserve_pp_id"
+  end
+
+  create_table "practice_specialties", primary_key: "provider_practice_specialty_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.integer "specialty_percent"
+    t.boolean "primary_care_flag"
+    t.boolean "specialty_care_flag"
+    t.boolean "multi_care_flag"
+    t.string "specialty_specialty_name"
+    t.string "sub_specialty_specialty_name"
+    t.text "specialty_type_specialty_type_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.index ["provider_attest_id"], name: "index_practice_specialties_on_provider_attest_id"
+    t.index ["provider_practice_id"], name: "pspecial_pp_id"
+  end
+
+  create_table "practice_tax_ids", primary_key: "provider_practice_tax_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "group_name"
+    t.string "tax_id"
+    t.boolean "primary_flag"
+    t.string "group_number"
+    t.text "tax_type_tax_type_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_practice_id"
+    t.index ["provider_attest_id"], name: "index_practice_tax_ids_on_provider_attest_id"
+    t.index ["provider_practice_id"], name: "p_tax_pp_id"
+  end
+
   create_table "practice_types", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -924,6 +1308,60 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "provider_adverse_actions", primary_key: "provider_adverse_action_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.datetime "occurrence_date"
+    t.text "occurrence_explanation"
+    t.datetime "action_date"
+    t.text "action_explanation"
+    t.string "current_status"
+    t.string "contact_name"
+    t.string "department_name"
+    t.string "address"
+    t.string "city"
+    t.string "state"
+    t.string "phone_number"
+    t.string "postal_code"
+    t.string "location"
+    t.string "organization_name"
+    t.datetime "end_date"
+    t.text "disclosure_question_disclosure_summary"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_adverse_actions_on_provider_attest_id"
+  end
+
+  create_table "provider_associates", primary_key: "provider_associate_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "associate_first_name"
+    t.string "associate_last_name"
+    t.string "associate_middle_initial"
+    t.string "associate_name"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "state"
+    t.string "postal_code"
+    t.string "province"
+    t.string "phone_number"
+    t.string "phone_extension"
+    t.string "fax_number"
+    t.string "email_address"
+    t.string "title"
+    t.string "country_country_name"
+    t.string "specialty_specialty_name"
+    t.string "degree_degree_abbreviation"
+    t.text "associate_type_associate_type_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_associates_on_provider_attest_id"
+  end
+
+  create_table "provider_attests", primary_key: "provider_attest_id", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "provider_board_certifications", force: :cascade do |t|
     t.bigint "provider_id"
     t.string "bc_board_certification"
@@ -936,6 +1374,20 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_id"], name: "index_provider_board_certifications_on_provider_id"
+  end
+
+  create_table "provider_cds", primary_key: "provider_cdsid", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "cds_number"
+    t.string "state"
+    t.datetime "expiration_date"
+    t.datetime "issue_date"
+    t.boolean "currently_practicing_flag"
+    t.text "cds_limitation_explanation"
+    t.string "cds_status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_cds_on_provider_attest_id"
   end
 
   create_table "provider_cds_licenses", force: :cascade do |t|
@@ -951,6 +1403,26 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.index ["provider_id"], name: "index_provider_cds_licenses_on_provider_id"
   end
 
+  create_table "provider_certifications", primary_key: "provider_certification_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "certification_flag"
+    t.string "expiration_date"
+    t.datetime "classification_description"
+    t.datetime "certification_type"
+    t.boolean "certification_status"
+    t.text "certification_number"
+    t.string "state"
+    t.string "obtained_date"
+    t.string "relinquished_date"
+    t.string "relinquished_explanation"
+    t.string "other_certification_explanation"
+    t.string "certification_description"
+    t.string "country_country_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_certifications_on_provider_attest_id"
+  end
+
   create_table "provider_cnp_licenses", force: :cascade do |t|
     t.bigint "provider_id"
     t.string "cnp_license_number"
@@ -962,6 +1434,26 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.string "no_cnp_license"
     t.integer "state_id"
     t.index ["provider_id"], name: "index_provider_cnp_licenses_on_provider_id"
+  end
+
+  create_table "provider_criminal_actions", primary_key: "provider_criminal_action_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.datetime "incident_date"
+    t.datetime "complaint_date"
+    t.datetime "resolution_date"
+    t.string "resolution_type"
+    t.boolean "allegations"
+    t.text "incident_details"
+    t.string "actions_taken"
+    t.string "current_status"
+    t.string "privileges_affected"
+    t.boolean "sentence_flag"
+    t.string "sentence_length"
+    t.string "location"
+    t.text "disclosure_question_disclosure_summary"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_criminal_actions_on_provider_attest_id"
   end
 
   create_table "provider_dea_licenses", force: :cascade do |t|
@@ -977,6 +1469,28 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.index ["provider_id"], name: "index_provider_dea_licenses_on_provider_id"
   end
 
+  create_table "provider_deas", primary_key: "provider_deaid", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "dea_number"
+    t.string "state"
+    t.datetime "expiration_date"
+    t.boolean "dea_license_limitation_flag"
+    t.text "dea_license_limitation_explanation"
+    t.text "no_dea_explanation"
+    t.datetime "application_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_deas_on_provider_attest_id"
+  end
+
+  create_table "provider_degrees", primary_key: "provider_degree_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "degree_degree_abbreviation"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_degrees_on_provider_attest_id"
+  end
+
   create_table "provider_deleted_document_logs", force: :cascade do |t|
     t.bigint "provider_id", null: false
     t.string "document_key"
@@ -989,6 +1503,164 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.index ["provider_id"], name: "index_provider_deleted_document_logs_on_provider_id"
   end
 
+  create_table "provider_disclosures", primary_key: "provider_disclosure_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.boolean "disclosure_answer_flag"
+    t.datetime "disclosure_date"
+    t.text "disclosure_explanation"
+    t.text "disclosure_question_disclosure_summary"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_disclosures_on_provider_attest_id"
+  end
+
+  create_table "provider_education_associates", primary_key: "provider_education_associate_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.bigint "provider_education_id"
+    t.string "associate_first_name"
+    t.string "associate_last_name"
+    t.string "associate_middle_initial"
+    t.string "title"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "state"
+    t.string "province"
+    t.string "postal_code"
+    t.string "phone_number"
+    t.string "phone_extension"
+    t.string "fax_number"
+    t.string "email_address"
+    t.string "country_country_name"
+    t.text "associate_type_associate_type_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_education_associates_on_provider_attest_id"
+    t.index ["provider_education_id"], name: "index_provider_education_associates_on_provider_education_id"
+  end
+
+  create_table "provider_educations", primary_key: "provider_education_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "institution_name"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "province"
+    t.string "state"
+    t.string "postal_code"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.string "affiliated_university_name"
+    t.string "hospital_department_name"
+    t.string "training_area"
+    t.string "email_address"
+    t.string "certificate_issued_by"
+    t.string "program_title"
+    t.boolean "apa_approved_flag"
+    t.boolean "program_completed_flag"
+    t.string "program_director"
+    t.datetime "completion_date"
+    t.string "certificate_awarded"
+    t.string "teaching_position"
+    t.string "current_program_director"
+    t.text "incomplete_explanation"
+    t.string "phone_number"
+    t.string "fax_number"
+    t.boolean "disciplinary_action_flag"
+    t.text "disciplinary_action_explanation"
+    t.string "program_director_degree"
+    t.string "program_type"
+    t.text "additional_training_description"
+    t.string "education_type_name"
+    t.string "hours"
+    t.string "country_country_name"
+    t.string "degree_degree_abbreviation"
+    t.string "specialty_specialty_name"
+    t.text "institution_type_institution_type_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_educations_on_provider_attest_id"
+  end
+
+  create_table "provider_hospital_associates", primary_key: "provider_hospital_associate_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "associate_first_name"
+    t.string "associate_last_name"
+    t.string "associate_middle_initial"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "state"
+    t.string "zip"
+    t.string "county"
+    t.string "postal_code"
+    t.string "phone_number"
+    t.string "fax_number"
+    t.string "email_address"
+    t.string "associate_type_associate_type_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_hospital_id"
+    t.index ["provider_attest_id"], name: "index_provider_hospital_associates_on_provider_attest_id"
+    t.index ["provider_hospital_id"], name: "pha_ph_id"
+  end
+
+  create_table "provider_hospital_privileges", primary_key: "provider_hospital_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.integer "aha_hospital_id"
+    t.string "hospital_name"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "state"
+    t.string "zip_code"
+    t.string "phone_number"
+    t.boolean "unrestricted_privileges_flag"
+    t.text "privilege_description"
+    t.boolean "temporary_privileges_flag"
+    t.integer "admission_percent"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.string "staff_category"
+    t.text "privilege_restriction_explanation"
+    t.boolean "application_date"
+    t.text "no_privileges_explanation"
+    t.string "fax_number"
+    t.string "email_address"
+    t.text "exit_explanation"
+    t.boolean "admit_inpatient_flag"
+    t.string "contact_name"
+    t.string "province"
+    t.string "department_telephone_number"
+    t.string "medical_staff_fax_number"
+    t.string "department_name"
+    t.text "specialty_limitation_explanation"
+    t.string "website"
+    t.text "coverage_arrangement_explanation"
+    t.integer "admits_per_month"
+    t.text "hospital_affiliation_type_hospital_affiliation_type_description"
+    t.string "country_country_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_hospital_privileges_on_provider_attest_id"
+  end
+
+  create_table "provider_identification_numbers", primary_key: "provider_identifier_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "identifier_value"
+    t.string "identifier_status"
+    t.boolean "identifier_flag"
+    t.string "state"
+    t.datetime "issue_date"
+    t.datetime "expiration_date"
+    t.string "sponsor"
+    t.string "country_country_name"
+    t.text "identifier_type_identifier_type_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_identification_numbers_on_provider_attest_id"
+  end
+
   create_table "provider_ins_policies", force: :cascade do |t|
     t.bigint "provider_id"
     t.string "ins_policy_number"
@@ -997,6 +1669,85 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_id"], name: "index_provider_ins_policies_on_provider_id"
+  end
+
+  create_table "provider_insurance_coverages", primary_key: "provider_insurance_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "insurance_carrier_name"
+    t.datetime "original_start_date"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.boolean "self_insured_flag"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "state"
+    t.string "province"
+    t.string "postal_code"
+    t.string "phone_number"
+    t.string "policy_number"
+    t.boolean "individual_coverage_flag"
+    t.string "coverage_amount_occurrence"
+    t.string "coverage_amount_aggregate"
+    t.string "agent_last_name"
+    t.string "agent_first_name"
+    t.string "policy_holder"
+    t.boolean "no_malpractice_claims_flag"
+    t.datetime "retroactive_date"
+    t.boolean "tail_nose_coverage_flag"
+    t.text "tail_nose_coverage_explanation"
+    t.string "time_with_carrier"
+    t.boolean "coverage_limit_exceeded_flag"
+    t.boolean "unlimited_coverage_flag"
+    t.string "fax_number"
+    t.string "website"
+    t.boolean "renewal_date"
+    t.string "agent_address"
+    t.string "agent_address2"
+    t.string "agent_city"
+    t.string "agent_state"
+    t.string "agent_postal_code"
+    t.string "agent_province"
+    t.text "surcharge_explanation"
+    t.string "excess_coverage_amount"
+    t.string "phone_extension"
+    t.string "underwriter_name"
+    t.string "affiliated_organization_name"
+    t.string "agent_country_country_name"
+    t.string "country_country_name"
+    t.text "insurance_type_insurance_type_description"
+    t.text "insurance_coverage_type_insurance_coverage_type_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_insurance_coverages_on_provider_attest_id"
+  end
+
+  create_table "provider_languages", primary_key: "provider_language_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "language_type"
+    t.string "language_language_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_languages_on_provider_attest_id"
+  end
+
+  create_table "provider_liability_actions", primary_key: "provider_liability_action_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "insurance_history"
+    t.string "carrier_name"
+    t.string "policy_number"
+    t.string "address"
+    t.string "city"
+    t.string "state"
+    t.string "postal_code"
+    t.string "phone_number"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.text "circumstances_description"
+    t.text "disclosure_question_disclosure_summary"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_liability_actions_on_provider_attest_id"
   end
 
   create_table "provider_licenses", force: :cascade do |t|
@@ -1011,6 +1762,96 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.string "no_state_license"
     t.string "license_type"
     t.index ["provider_id"], name: "index_provider_licenses_on_provider_id"
+  end
+
+  create_table "provider_malpractice_case_statuses", primary_key: "provider_malpractice_claim_status_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "claim_status"
+    t.float "settlement_amount"
+    t.float "settlement_amount_paid"
+    t.string "defense_attorney"
+    t.datetime "status_date"
+    t.float "sought_amount"
+    t.float "total_amount"
+    t.string "defense_attorney_phone_number"
+    t.string "defense_attorney_address"
+    t.string "defense_attorney_address2"
+    t.string "defense_attorney_city"
+    t.string "defense_attorney_state"
+    t.string "defense_attorney_postal_code"
+    t.string "defense_attorney_province"
+    t.string "defense_attorney_county"
+    t.string "defense_attorney_country_country_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_malpractice_id"
+    t.index ["provider_attest_id"], name: "index_provider_malpractice_case_statuses_on_provider_attest_id"
+    t.index ["provider_malpractice_id"], name: "pmcs_pm_id"
+  end
+
+  create_table "provider_malpractice_histories", primary_key: "provider_malpractice_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "insurance_carrier_name"
+    t.datetime "occurrence_date"
+    t.string "claim_date"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "state"
+    t.string "zip"
+    t.string "phone_number"
+    t.string "policy_number"
+    t.text "allegation_description"
+    t.boolean "primary_defendant_flag"
+    t.string "number_other_codefendant"
+    t.string "case_involvement"
+    t.text "patient_injury_description"
+    t.boolean "npdb_case_flag"
+    t.boolean "court_suit_filed_flag"
+    t.datetime "court_date"
+    t.string "case_number"
+    t.string "case_state"
+    t.string "case_county"
+    t.string "district"
+    t.string "federal_case_number"
+    t.string "defendant_name"
+    t.string "plaintiff_name"
+    t.string "plaintiff_age"
+    t.string "other_defendant_names"
+    t.string "patient_outcome"
+    t.boolean "still_pending_flag"
+    t.boolean "still_pending_date"
+    t.boolean "trial_date_set_flag"
+    t.string "province"
+    t.string "provider_status"
+    t.string "provider_role"
+    t.datetime "case_closed_date"
+    t.string "patient_name"
+    t.string "patient_age"
+    t.string "case_city"
+    t.string "incident_location"
+    t.boolean "carrier_flag"
+    t.string "contact_name"
+    t.string "claim_number"
+    t.text "other_case_description"
+    t.string "court"
+    t.string "court_address"
+    t.boolean "legal_counsel_flag"
+    t.boolean "patient_died_flag"
+    t.string "court_address2"
+    t.string "court_city"
+    t.string "license_number"
+    t.string "court_state"
+    t.string "court_province"
+    t.string "court_zip"
+    t.string "country_country_name"
+    t.text "disclosure_question_disclosure_summary"
+    t.text "patient_gender_gender_description"
+    t.string "court_country_country_name"
+    t.string "malpractice_resolution_malpractice_resolution_method"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_malpractice_histories_on_provider_attest_id"
   end
 
   create_table "provider_mccs", force: :cascade do |t|
@@ -1031,7 +1872,79 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.string "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "provider_medicaid_id"
+    t.integer "provider_attest_id"
+    t.string "medicaid_number"
+    t.string "state"
     t.index ["provider_id"], name: "index_provider_medicaids_on_provider_id"
+  end
+
+  create_table "provider_medical_associations", primary_key: "provider_medical_association_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "association_name"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "county"
+    t.string "state"
+    t.string "postal_code"
+    t.string "ext_zip"
+    t.string "phone_number"
+    t.string "fax_number"
+    t.string "answering_service_phone_number"
+    t.string "association_type"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.text "explanation"
+    t.text "geographic_range_geographic_range_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_medical_associations_on_provider_attest_id"
+  end
+
+  create_table "provider_medical_condition_providers", primary_key: "provider_medical_condition_provider_id", force: :cascade do |t|
+    t.string "last_name"
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "degree"
+    t.text "phone_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "provider_attest_id"
+    t.integer "provider_medical_condition_id"
+    t.index ["provider_attest_id"], name: "pmcp_pa_id"
+    t.index ["provider_medical_condition_id"], name: "pmcp_pmc_id"
+  end
+
+  create_table "provider_medical_conditions", primary_key: "provider_medical_condition_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "medical_condition"
+    t.string "practice_ability"
+    t.string "current_status"
+    t.text "disclosure_question_disclosure_summary"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_medical_conditions_on_provider_attest_id"
+  end
+
+  create_table "provider_medical_licenses", primary_key: "provider_license_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.bigint "license_number_id"
+    t.string "state"
+    t.boolean "currently_practicing_flag"
+    t.datetime "expiration_date"
+    t.string "license_type"
+    t.datetime "issue_date"
+    t.boolean "license_unlimited_flag"
+    t.text "license_limitation_explanation"
+    t.string "sponsor_name"
+    t.datetime "relinquish_date"
+    t.text "relinquish_explanation"
+    t.text "license_status_license_status_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["license_number_id"], name: "index_provider_medical_licenses_on_license_number_id"
+    t.index ["provider_attest_id"], name: "index_provider_medical_licenses_on_provider_attest_id"
   end
 
   create_table "provider_medicares", force: :cascade do |t|
@@ -1047,7 +1960,29 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.string "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "provider_medicare_id"
+    t.integer "provider_attest_id"
+    t.string "medicare_number"
+    t.string "state"
     t.index ["provider_id"], name: "index_provider_medicares_on_provider_id"
+  end
+
+  create_table "provider_militaries", primary_key: "provider_military_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "last_location"
+    t.string "discharge_rank"
+    t.string "branch"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.boolean "honorable_discharge_flag"
+    t.text "discharge_explanation"
+    t.boolean "reserve_guard_flag"
+    t.boolean "court_martial_flag"
+    t.text "court_martial_explanation"
+    t.string "active_duty"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_militaries_on_provider_attest_id"
   end
 
   create_table "provider_mn_licenses", force: :cascade do |t|
@@ -1072,6 +2007,27 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.index ["provider_id"], name: "index_provider_mn_medicaids_on_provider_id"
   end
 
+  create_table "provider_non_practice_addresses", primary_key: "provider_address_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "state"
+    t.string "postal_code"
+    t.string "years_at_this_address"
+    t.string "province"
+    t.string "phone_number"
+    t.string "fax_number"
+    t.string "email_address"
+    t.string "county"
+    t.boolean "unlisted_flag"
+    t.text "address_type_address_type_description"
+    t.string "country_country_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_non_practice_addresses_on_provider_attest_id"
+  end
+
   create_table "provider_notes", force: :cascade do |t|
     t.bigint "provider_id"
     t.string "title"
@@ -1094,6 +2050,58 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.index ["provider_id"], name: "index_provider_np_licenses_on_provider_id"
   end
 
+  create_table "provider_other_business_interests", primary_key: "provider_other_business_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "organization_name"
+    t.string "organization_type"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "state"
+    t.string "zip"
+    t.string "ext_zip"
+    t.string "phone_number"
+    t.string "tax_id"
+    t.string "percent_owned"
+    t.boolean "investment_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_other_business_interests_on_provider_attest_id"
+  end
+
+  create_table "provider_other_interests", primary_key: "provider_other_interest_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.text "other_interest_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_other_interests_on_provider_attest_id"
+  end
+
+  create_table "provider_other_names", primary_key: "provider_other_name_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "last_name"
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "suffix"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.text "other_name_explanation"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_other_names_on_provider_attest_id"
+  end
+
+  create_table "provider_other_questions", primary_key: "provider_other_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.boolean "provider_answer_flag"
+    t.text "provider_answer_text"
+    t.datetime "provider_answer_date"
+    t.text "other_question_other_question_summary"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_other_questions_on_provider_attest_id"
+  end
+
   create_table "provider_pa_licenses", force: :cascade do |t|
     t.bigint "provider_id"
     t.string "pa_license_number"
@@ -1105,6 +2113,129 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.string "no_pa_license"
     t.integer "state_id"
     t.index ["provider_id"], name: "index_provider_pa_licenses_on_provider_id"
+  end
+
+  create_table "provider_personal_informations", primary_key: "provider_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "last_name"
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "suffix"
+    t.string "primary_practice_state"
+    t.boolean "other_name_flag"
+    t.datetime "birth_date"
+    t.boolean "us_eligible_flag"
+    t.string "ssn"
+    t.string "nid"
+    t.string "dea_flag"
+    t.string "cds_flag"
+    t.string "upin"
+    t.string "upin_flag"
+    t.string "npi_flag"
+    t.string "npi"
+    t.boolean "medicare_provider_flag"
+    t.boolean "medicaid_provider_flag"
+    t.boolean "other_graduate_education_flag"
+    t.boolean "fellowship_training_flag"
+    t.boolean "teaching_appointment_flag"
+    t.boolean "secondary_specialty_flag"
+    t.boolean "other_specialty_flag"
+    t.boolean "hospital_privilege_flag"
+    t.string "hospital_admitting_arrangements"
+    t.boolean "work_history_gap_flag"
+    t.boolean "active_military_flag"
+    t.string "citizenship_status"
+    t.string "visa_number"
+    t.string "federal_employee_id"
+    t.boolean "no_malpractice_claims_flag"
+    t.string "application_type"
+    t.boolean "ecfmg_flag"
+    t.string "ecfmg_number"
+    t.datetime "ecfmg_issue_date"
+    t.boolean "hospital_based_flag"
+    t.string "email_address"
+    t.string "visa_type"
+    t.string "visa_status"
+    t.string "birth_city"
+    t.string "birth_state"
+    t.string "tax_id"
+    t.string "spouse_last_name"
+    t.string "spouse_first_name"
+    t.string "other_correspondence_address"
+    t.string "emergency_contact_last_name"
+    t.string "emergency_contact_first_name"
+    t.string "emergency_contact_middle_name"
+    t.string "emergency_contact_phone"
+    t.string "pager_beeper_number"
+    t.string "answering_service_phone_number"
+    t.string "cell_phone_number"
+    t.boolean "pager_beeper_digital_flag"
+    t.datetime "visa_expiration_date"
+    t.string "ethnicity_description"
+    t.datetime "visa_issue_date"
+    t.datetime "ecfmg_expiration_date"
+    t.string "work_permit_status"
+    t.string "spouse_middle_name"
+    t.datetime "state_residence_date"
+    t.string "citizenship_country_country_name"
+    t.text "marital_status_marital_status_description"
+    t.text "gender_gender_description"
+    t.string "birth_country_country_name"
+    t.text "correspondence_address_type_correspondence_address_type_descrip"
+    t.string "provider_type_provider_type_abbreviation"
+    t.text "graduate_type_graduate_type_description"
+    t.string "nid_country_country_name"
+    t.datetime "attest_date"
+    t.string "plan_provider_id"
+    t.datetime "last_recredential_date"
+    t.datetime "next_recredential_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_personal_informations_on_provider_attest_id"
+  end
+
+  create_table "provider_race_ethnicities", primary_key: "provider_race_ethnicity_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "race_ethnicity_level_1"
+    t.string "race_ethnicity_level_2"
+    t.string "race_ethnicity_level_3"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_race_ethnicities_on_provider_attest_id"
+  end
+
+  create_table "provider_references", primary_key: "provider_reference_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "state"
+    t.string "province"
+    t.string "postal_code"
+    t.string "phone_number"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.string "title"
+    t.string "fax_number"
+    t.string "relationship"
+    t.string "years_known"
+    t.string "middle_name"
+    t.string "employer_name"
+    t.string "email_address"
+    t.string "cell_phone_number"
+    t.string "phone_extension"
+    t.string "phone_number2"
+    t.string "phone_number2_extension"
+    t.string "department"
+    t.string "country_country_name"
+    t.string "specialty_specialty_name"
+    t.string "reference_type_provider_type_abbreviation"
+    t.string "degree_degree_abbreviation"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_references_on_provider_attest_id"
   end
 
   create_table "provider_rn_licenses", force: :cascade do |t|
@@ -1214,6 +2345,89 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.index ["provider_source_id"], name: "index_provider_sources_registrations_on_provider_source_id"
   end
 
+  create_table "provider_specialties", primary_key: "provider_specialty_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "board_certified_flag"
+    t.datetime "certification_date"
+    t.datetime "recertification_date"
+    t.datetime "expiration_date"
+    t.datetime "future_board_exam_date"
+    t.boolean "hmo_flag"
+    t.boolean "ppo_flag"
+    t.boolean "pos_flag"
+    t.boolean "board_certification_expires_flag"
+    t.boolean "recertified_flag"
+    t.datetime "status_expiration_date"
+    t.boolean "results_pending_flag"
+    t.boolean "list_in_directory_flag"
+    t.string "specialty_board_name"
+    t.boolean "failed_board_exam_flag"
+    t.string "failed_board_exam_board_name"
+    t.datetime "failed_board_exam_date"
+    t.boolean "apply_certification_flag"
+    t.boolean "intend_apply_certification_flag"
+    t.datetime "intend_apply_certification_date"
+    t.boolean "exam_accepted_flag"
+    t.text "no_certification_explanation"
+    t.datetime "admissibility_expiration_date"
+    t.boolean "partial_exam_flag"
+    t.string "exam_name"
+    t.boolean "intending_board_flag"
+    t.boolean "not_intending_board_flag"
+    t.datetime "exam_taken_date"
+    t.boolean "current_certification_flag"
+    t.datetime "initial_certification_date"
+    t.text "failed_board_exam_explanation"
+    t.datetime "future_board_exam_date_oral"
+    t.datetime "future_board_exam_date_written"
+    t.string "certification_number"
+    t.string "specialty_percent"
+    t.datetime "status_date"
+    t.boolean "abms_flag"
+    t.string "results_pending_specialty_board_name"
+    t.string "failed_board_exam_attempts"
+    t.boolean "not_eligible_board_flag"
+    t.datetime "apply_certification_date"
+    t.string "specialty_board_address"
+    t.string "specialty_board_address2"
+    t.string "specialty_board_city"
+    t.string "specialty_board_state"
+    t.string "specialty_board_postal_code"
+    t.text "non_certified_status_non_certified_status_description"
+    t.text "specialty_classification_specialty_classification_description"
+    t.text "specialty_status_specialty_status_description"
+    t.string "sub_specialty_specialty_name"
+    t.string "specialty_specialty_name"
+    t.text "specialty_type_specialty_type_description"
+    t.string "special_experience_skillsand_training_section"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_specialties_on_provider_attest_id"
+  end
+
+  create_table "provider_substance_abuses", primary_key: "provider_substance_abuse_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.text "substance_description"
+    t.string "current_ability"
+    t.string "monitor_entity_name"
+    t.string "address"
+    t.string "city"
+    t.string "state"
+    t.string "postal_code"
+    t.string "current_status"
+    t.datetime "abstinent_date"
+    t.string "provider_name"
+    t.string "provider_address"
+    t.string "provider_city"
+    t.string "provider_telephone"
+    t.string "provider_state"
+    t.string "monitor_type"
+    t.text "disclosure_question_disclosure_summary"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_substance_abuses_on_provider_attest_id"
+  end
+
   create_table "provider_taxonomies", force: :cascade do |t|
     t.bigint "provider_id", null: false
     t.string "taxonomy_code"
@@ -1221,6 +2435,17 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_id"], name: "index_provider_taxonomies_on_provider_id"
+  end
+
+  create_table "provider_time_gaps", primary_key: "provider_time_gap_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.text "gap_explanation"
+    t.text "gap_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_time_gaps_on_provider_attest_id"
   end
 
   create_table "provider_types", force: :cascade do |t|
@@ -1253,6 +2478,38 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_id"], name: "index_provider_wi_medicaids_on_provider_id"
+  end
+
+  create_table "provider_work_histories", primary_key: "provider_work_history_id", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.string "employer_name"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "state"
+    t.string "province"
+    t.string "postal_code"
+    t.string "contact_last_name"
+    t.string "contact_first_name"
+    t.string "phone_number"
+    t.text "exit_explanation"
+    t.string "fax_number"
+    t.string "title"
+    t.text "affiliation_description"
+    t.text "operating_status_description"
+    t.string "phone_extension"
+    t.string "department"
+    t.string "email_address"
+    t.text "status_description"
+    t.string "prof_liability_carrier"
+    t.boolean "current_employer_flag"
+    t.text "work_history_type_work_history_type_description"
+    t.string "country_country_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_work_histories_on_provider_attest_id"
   end
 
   create_table "providers", force: :cascade do |t|
@@ -1390,6 +2647,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.string "caqh_answer"
     t.string "caqh_notes"
     t.integer "licensed_registered_state_id"
+    t.string "payer_login", default: "no"
     t.string "license_state_number"
     t.string "license_state_effective_date"
     t.string "license_state_id"
@@ -1434,6 +2692,11 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.string "welcome_letter_subject"
     t.text "welcome_letter_message"
     t.json "welcome_letter_attachments"
+    t.boolean "check_welcome_letter", default: false
+    t.boolean "check_co_caqh", default: false
+    t.boolean "check_mn_caqh_state_release_form", default: false
+    t.boolean "check_mn_caqh_authorization_form", default: false
+    t.boolean "check_caqh_standard_authorization", default: false
     t.string "dea_not_applicable"
     t.string "cds_not_applicable"
     t.string "rn_not_applicable"
@@ -1444,11 +2707,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.string "rn_explain"
     t.string "cnp_explain"
     t.string "license_explain"
-    t.boolean "check_welcome_letter", default: false
-    t.boolean "check_co_caqh", default: false
-    t.boolean "check_mn_caqh_state_release_form", default: false
-    t.boolean "check_mn_caqh_authorization_form", default: false
-    t.boolean "check_caqh_standard_authorization", default: false
     t.json "state_license_copies"
     t.json "dea_copies"
     t.json "w9_form_copies"
@@ -1465,7 +2723,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.string "supervising_name"
     t.string "supervising_npi"
     t.string "primary_location"
-    t.string "payer_login", default: "no"
   end
 
   create_table "providers_missing_field_submissions", force: :cascade do |t|
@@ -1652,9 +2909,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
     t.string "otp_token"
     t.string "otp_code"
     t.datetime "otp_code_expires_at"
+    t.boolean "can_access_all_groups"
     t.boolean "logout_on_close", default: false
     t.datetime "last_logout_on_close"
-    t.boolean "can_access_all_groups"
     t.boolean "is_provider_account"
     t.string "accessible_provider"
     t.string "password_change_status_via_invite"
@@ -1752,9 +3009,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_224353) do
   add_foreign_key "director_providers", "virtual_review_committees"
   add_foreign_key "egd_logs", "enroll_groups_details"
   add_foreign_key "enrollment_group_deleted_doc_logs", "enrollment_groups"
+  add_foreign_key "epd_logs", "enrollment_providers_details"
   add_foreign_key "epd_questions", "enrollment_providers_details"
   add_foreign_key "group_contacts", "enrollment_groups"
+  add_foreign_key "group_dco_old_location_addresses", "group_dcos"
   add_foreign_key "group_dcos", "enrollment_groups"
+  add_foreign_key "provider_deleted_document_logs", "providers"
   add_foreign_key "provider_licenses", "providers"
   add_foreign_key "provider_np_licenses", "providers"
   add_foreign_key "provider_rn_licenses", "providers"
