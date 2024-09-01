@@ -1,7 +1,7 @@
 class CreateProviderMedicalAssociations < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_medical_associations, id: false do |t|
-      t.primary_key    :provider_medical_association_id
+    create_table :provider_medical_associations, primary_key: [:provider_attest_id,:provider_medical_association_id] do |t|
+      t.integer        :provider_medical_association_id
       t.references     :provider_attest
       t.string         :association_name
       t.string         :address

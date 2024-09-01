@@ -1,59 +1,59 @@
 class ProviderAttest < ApplicationRecord
   self.primary_key = 'provider_attest_id'
 
-  has_many :practice_accessibilities
-  has_many :practice_associates
-  has_many :practice_associate_other_questions
-  has_many :practice_associate_specialties
-  has_many :practice_business_arrangements
-  has_many :practice_certifications
-  has_many :practice_hours
-  has_many :practice_informations
-  has_many :practice_languages
-  has_many :practice_limitations
-  has_many :practice_other_addresses
-  has_many :practice_other_questions
-  has_many :practice_other_tax_ids
-  has_many :practice_patient_types
-  has_many :practice_phone_coverages
-  has_many :practice_services
-  has_many :practice_specialties
-  has_many :practice_tax_ids
-  has_many :provider_adverse_actions
-  has_many :provider_associates
-  has_many :provider_cds
-  has_many :provider_certifications
-  has_many :provider_criminal_actions
-  has_many :provider_deas
-  has_many :provider_degrees
-  has_many :provider_disclosures
-  has_many :provider_educations
-  has_many :provider_education_associates
-  has_many :provider_hospital_associates
-  has_many :provider_hospital_privileges
-  has_many :provider_identification_numbers
-  has_many :provider_insurance_coverages
-  has_many :provider_languages
-  has_many :provider_liability_actions
-  has_many :provider_malpractice_case_statuses
-  has_many :provider_malpractice_histories
-  has_many :provider_medicaids
-  has_many :provider_medical_associations
-  has_many :provider_medical_conditions
-  has_many :provider_medical_condition_providers
-  has_many :provider_medical_licenses
-  has_many :provider_medicares
-  has_many :provider_militaries
-  has_many :provider_non_practice_addresses
-  has_many :provider_other_business_interests
-  has_many :provider_other_interests
-  has_many :provider_other_names
-  has_many :provider_other_questions
-  has_many :provider_personal_informations
-  has_many :provider_race_ethnicities
-  has_many :provider_references
-  has_many :provider_specialties
-  has_many :provider_substance_abuses
-  has_many :provider_time_gaps
-  has_many :provider_work_histories
+  has_many :practice_accessibilities, dependent: :destroy
+  has_many :practice_associates, dependent: :destroy
+  has_many :practice_associate_other_questions, dependent: :destroy
+  has_many :practice_associate_specialties, dependent: :destroy
+  has_many :practice_business_arrangements, dependent: :destroy
+  has_many :practice_certifications, dependent: :destroy
+  has_many :practice_hours, dependent: :destroy
+  has_many :practice_informations, dependent: :destroy
+  has_many :practice_languages, dependent: :destroy
+  has_many :practice_limitations, dependent: :destroy
+  has_many :practice_other_addresses, dependent: :destroy
+  has_many :practice_other_questions, dependent: :destroy
+  has_many :practice_other_tax_ids, dependent: :destroy
+  has_many :practice_patient_types, dependent: :destroy
+  has_many :practice_phone_coverages, dependent: :destroy
+  has_many :practice_services, dependent: :destroy
+  has_many :practice_specialties, dependent: :destroy
+  has_many :practice_tax_ids, dependent: :destroy
+  has_many :provider_adverse_actions, dependent: :destroy
+  has_many :provider_associates, dependent: :destroy
+  has_many :provider_cds, dependent: :destroy
+  has_many :provider_certifications, dependent: :destroy
+  has_many :provider_criminal_actions, dependent: :destroy
+  has_many :provider_deas, dependent: :destroy
+  has_many :provider_degrees, dependent: :destroy
+  has_many :provider_disclosures, dependent: :destroy
+  has_many :provider_educations, dependent: :destroy
+  has_many :provider_education_associates, dependent: :destroy
+  has_many :provider_hospital_associates, dependent: :destroy
+  has_many :provider_hospital_privileges, dependent: :destroy
+  has_many :provider_identification_numbers, dependent: :destroy
+  has_many :provider_insurance_coverages, dependent: :destroy
+  has_many :provider_languages, dependent: :destroy
+  has_many :provider_liability_actions, dependent: :destroy
+  has_many :provider_malpractice_case_statuses, dependent: :destroy
+  has_many :provider_malpractice_histories, dependent: :destroy
+  has_many :provider_medicaids, dependent: :destroy
+  has_many :provider_medical_associations, dependent: :destroy
+  has_many :provider_medical_conditions, dependent: :destroy
+  has_many :provider_medical_condition_providers, dependent: :destroy
+  has_many :provider_medical_licenses, dependent: :destroy
+  has_many :provider_medicares, dependent: :destroy
+  has_many :provider_militaries, dependent: :destroy
+  has_many :provider_non_practice_addresses, dependent: :destroy
+  has_many :provider_other_business_interests, dependent: :destroy
+  has_many :provider_other_interests, dependent: :destroy
+  has_many :provider_other_names, dependent: :destroy
+  has_many :provider_other_questions, dependent: :destroy
+  has_many :provider_personal_informations, dependent: :destroy
+  has_many :provider_race_ethnicities, dependent: :destroy
+  has_many :provider_references, dependent: :destroy
+  has_many :provider_specialties, dependent: :destroy
+  has_many :provider_substance_abuses,class_name: 'ProviderSubstanceAbuse', dependent: :destroy
+  has_many :provider_time_gaps, dependent: :destroy
+  has_many :provider_work_histories, dependent: :destroy
 end

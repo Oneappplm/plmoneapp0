@@ -1,5 +1,7 @@
 class PracticeInformation < ApplicationRecord
-  self.primary_key = :provider_practice_id
+  self.primary_key = [:provider_attest_id,:provider_practice_id]
+
+  PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID','ProviderPracticeID']
 
   belongs_to :provider_attest
   has_many   :practice_accessibilities, foreign_key: [:provider_attest_id, :provider_practice_id]

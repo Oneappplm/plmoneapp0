@@ -1,7 +1,7 @@
 class CreateProviderHospitalPrivileges < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_hospital_privileges, id: false do |t|
-      t.primary_key    :provider_hospital_id
+    create_table :provider_hospital_privileges, primary_key: [:provider_attest_id,:provider_hospital_id] do |t|
+      t.integer        :provider_hospital_id
       t.references     :provider_attest
       t.integer        :aha_hospital_id
       t.string         :hospital_name

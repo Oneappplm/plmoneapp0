@@ -1,7 +1,7 @@
 class CreateProviderCds < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_cds, id: false do |t|
-      t.primary_key  :provider_cdsid
+    create_table :provider_cds, primary_key: [:provider_attest_id,:provider_cdsid] do |t|
+      t.integer      :provider_cdsid
       t.references   :provider_attest
       t.string       :cds_number
       t.string       :state

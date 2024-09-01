@@ -1,7 +1,7 @@
 class CreatePracticeAssociates < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :practice_associates, id: false do |t|
-      t.primary_key   :provider_practice_associate_id
+    create_table :practice_associates, primary_key: [:provider_attest_id, :provider_practice_associate_id, :provider_practice_id] do |t|
+      t.integer       :provider_practice_associate_id
       t.references    :provider_attest
       t.string        :associate_first_name
       t.string        :associate_last_name
@@ -33,11 +33,10 @@ class CreatePracticeAssociates < ActiveRecord::Migration[7.0]
       t.string        :degree_degree_abbreviation
       t.string        :provider_type_provider_type_abbreviation
       t.string        :associate_type_associate_type_description
-
+      t.integer       :provider_practice_id
       t.timestamps
     end
 
-    add_column :practice_associates, :provider_practice_id, :integer
     add_index  :practice_associates, :provider_practice_id
   end
 

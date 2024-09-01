@@ -1,7 +1,7 @@
 class CreateProviderDeas < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_deas, id: false do |t|
-      t.primary_key    :provider_deaid
+    create_table :provider_deas, primary_key: [:provider_attest_id,:provider_deaid] do |t|
+      t.integer        :provider_deaid
       t.references     :provider_attest
       t.string         :dea_number
       t.string         :state
