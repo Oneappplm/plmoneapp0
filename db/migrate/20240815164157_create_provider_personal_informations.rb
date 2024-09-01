@@ -1,7 +1,7 @@
 class CreateProviderPersonalInformations < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_personal_informations, id: false do |t|
-      t.primary_key      :provider_id
+    create_table :provider_personal_informations, primary_key: [:provider_attest_id,:provider_id] do |t|
+      t.integer          :provider_id
       t.references       :provider_attest
       t.string           :last_name
       t.string           :first_name

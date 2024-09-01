@@ -1,7 +1,7 @@
 class CreatePracticeOtherAddresses < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :practice_other_addresses, id: false do |t|
-      t.primary_key   :provider_practice_address_id
+    create_table :practice_other_addresses, primary_key: [:provider_attest_id,:provider_practice_address_id,:provider_practice_id] do |t|
+      t.integer       :provider_practice_address_id
       t.references    :provider_attest
       t.string        :address
       t.string        :address2
@@ -20,11 +20,11 @@ class CreatePracticeOtherAddresses < ActiveRecord::Migration[7.0]
       t.string        :attention
       t.text          :address_type_address_type_description
       t.text          :country_country_name
+      t.integer       :provider_practice_id
 
       t.timestamps
     end
 
-    add_column :practice_other_addresses, :provider_practice_id, :integer
     add_index  :practice_other_addresses, :provider_practice_id, :name => 'poa_pp_id'
   end
 

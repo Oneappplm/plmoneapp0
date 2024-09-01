@@ -1,7 +1,7 @@
 class CreateProviderEducationAssociates < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_education_associates, id: false do |t|
-      t.primary_key    :provider_education_associate_id
+    create_table :provider_education_associates, primary_key: [:provider_attest_id,:provider_education_associate_id,:provider_education_id] do |t|
+      t.integer        :provider_education_associate_id
       t.references     :provider_attest
       t.references     :provider_education
       t.string         :associate_first_name

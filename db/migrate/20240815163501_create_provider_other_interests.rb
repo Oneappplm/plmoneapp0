@@ -1,7 +1,7 @@
 class CreateProviderOtherInterests < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_other_interests, id: false do |t|
-      t.primary_key    :provider_other_interest_id
+    create_table :provider_other_interests, primary_key: [:provider_attest_id,:provider_other_interest_id] do |t|
+      t.integer        :provider_other_interest_id
       t.references     :provider_attest
       t.text           :other_interest_description
 
