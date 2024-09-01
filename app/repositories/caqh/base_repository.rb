@@ -8,6 +8,7 @@ class Caqh::BaseRepository < ApplicationService
     @model                     = model.constantize
     @primary_foreign_key_names = row.headers.first(headers_limit)
     @keys_replacement          = keys_replacement
+    @provider_attest           = ProviderAttest.first_or_create(provider_attest_id: row["ProviderAttestID"])
   end
 
   def call
@@ -15,8 +16,6 @@ class Caqh::BaseRepository < ApplicationService
     # Find an existing object or initialize a new one using the primary foreign keys from the CSV row
     # 'model_class' is assumed to be the class of the object being worked with
     # 'primary_foreign_keys' returns a hash of primary foreign keys derived from the CSV row
-    provider_attest = ProviderAttest.first_or_create(provider_attest_id: row["ProviderAttestID"])
-
     object = model.find_or_initialize_by(primary_foreign_keys(row, model::PRIMARY_KEY_ROW_NAMES))
     # Assign attributes to the object from the CSV row, excluding primary foreign keys and using any key replacements
     object.assign_attributes_from_csv_row(row, exclude_keys: model::PRIMARY_KEY_ROW_NAMES, keys_replacement: keys_replacement)
