@@ -11,4 +11,5 @@ puts `git fetch origin metlife-app && git checkout metlife-app && git rebase mas
 puts `git fetch origin mhc-app && git checkout mhc-app && git rebase master && git push origin mhc-app`
 puts `git fetch origin sprout-app && git checkout sprout-app && git rebase master && git push origin sprout-app`
 puts `git fetch origin affordblecare-app && git checkout affordblecare-app && git rebase master && git push origin affordblecare-app`
+puts `git fetch origin uhc-app && git checkout uhc-app && git rebase master && git push origin uhc-app`
 puts `git checkout master && git push origin master`
