@@ -35,6 +35,12 @@
             <%= user.status  %>
             <div class="d-flex gap-2" style="margin-left: auto;">
               <% if current_user.can_access?('Edit User') %>
+                <% if user.access_locked? %>
+                  <button type="button" class="d-flex btn btn-warning btn-md" data-bs-toggle="modal" data-bs-target="#unlockAccountModal_<%= user.id %>">
+                    <i class="bi bi-unlock"></i>
+                  </button>
+                  <%= render "users/unlock_confirmation_modal", user: user %>	
+                <% end %>
                 <%= link_to edit_user_path(user), class: 'btn btn-sm btn-primary' do %>
                   <i class="bi bi-pencil"></i>
                 <% end %>
