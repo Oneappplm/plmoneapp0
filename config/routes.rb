@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
+  resources :practice_informations, only: [:new, :create]
   root 'dashboard#dashboard' # Overview	page
   get 'client-portal', to: 'pages#client_portal' # Data Access page
   get 'virtual-review-committee', to: 'pages#virtual_review_committee' # Decision Point page
