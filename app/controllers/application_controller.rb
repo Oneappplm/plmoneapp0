@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
 	before_action :authenticate_user!, except: %i[terms privacy_policy]
 	before_action :configure_permitted_parameters, if: :devise_controller?
+	before_action :ensure_security_questions_set, if: :user_signed_in?
   # exceptions for track_event are mostly ajax requests
 	before_action :track_event
 	before_action { filter_params params }
@@ -16,7 +17,7 @@ class ApplicationController < ActionController::Base
   end
 
 	 def configure_permitted_parameters
-    update_params = [:first_name, :last_name, :user_type, :password, :password_confirmation, :current_password]
+    update_params = [:first_name, :last_name, :user_type, :password, :password_confirmation, :current_password, :security_question, :security_answer]
     devise_parameter_sanitizer.permit(:account_update, keys: update_params)
 				devise_parameter_sanitizer.permit(:sign_up, keys: update_params)
   end
@@ -92,6 +93,14 @@ class ApplicationController < ActionController::Base
       device_name: client.device_name,
       id: params[:id]
     }
+  end
+
+  def ensure_security_questions_set
+    return if request.path == edit_security_question_path(current_user) || request.path == security_question_path(current_user)
+
+    if current_user.security_question.blank? || current_user.security_answer.blank?
+      redirect_to edit_security_question_path(current_user)
+    end
   end
 end
 

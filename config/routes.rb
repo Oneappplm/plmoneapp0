@@ -89,6 +89,8 @@ Rails.application.routes.draw do
   patch '/record_approval', to: 'pages#record_approval', as: 'record_approval'
   get '/virtual_review_committee/minutes', to: 'pages#minutes', as: 'minutes'
 
+  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
+
   resources :manage_clients
 
 
@@ -269,6 +271,8 @@ Rails.application.routes.draw do
     sessions: 'users/sessions',
     passwords: 'users/passwords',
   }
+
+  resources :security_question, only: [:edit, :update], controller: 'users/security_question'
 
   get 'organization-profile', to: 'users#organization_profile'
   get 'new-user', to: 'users#new'

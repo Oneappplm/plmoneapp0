@@ -37,20 +37,8 @@ module PlmhealthoneApp
 
     config.eager_load_paths << Rails.root.join('lib')
 
-    # SMTP settings for gmail
-    config.action_mailer.delivery_method = :smtp
-    config.action_mailer.default_url_options = { host: Figaro.env.smtp_host }
-    config.action_mailer.smtp_settings = {
-      :address              => Figaro.env.smtp_address,
-      :port                 => Figaro.env.smtp_port,
-      :user_name            => Figaro.env.smtp_email,
-      :password             => Figaro.env.smtp_password,
-      :authentication       => "plain",
-      :enable_starttls_auto => true
-    }
-
-				config.active_record.yaml_column_permitted_classes = [Symbol, Date, Time, ActiveSupport::TimeWithZone, ActiveSupport::TimeZone, ActiveSupport::HashWithIndifferentAccess, BigDecimal]
-				# config.time_zone = 'Pacific Time (US & Canada)'
- 			# config.active_record.default_timezone = :local
+		config.active_record.yaml_column_permitted_classes = [Symbol, Date, Time, ActiveSupport::TimeWithZone, ActiveSupport::TimeZone, ActiveSupport::HashWithIndifferentAccess, BigDecimal]
+		# config.time_zone = 'Pacific Time (US & Canada)'
+ 	  # config.active_record.default_timezone = :local
   end
 end
