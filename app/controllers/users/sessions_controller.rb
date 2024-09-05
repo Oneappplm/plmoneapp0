@@ -1,10 +1,10 @@
 class Users::SessionsController < Devise::SessionsController
   def create
     if current_user.present?
-       if current_setting.qualifacts? && !["deborah.jodway@qualifacts.com"].include?(current_user.email)
-         sign_out current_user
-         redirect_to root_path, alert: "You are not allowed to authenticate the system." and return
-       end
+      # if current_setting.qualifacts? && !["deborah.jodway@qualifacts.com"].include?(current_user.email)
+      #   sign_out current_user
+      #   redirect_to root_path, alert: "You are not allowed to authenticate the system." and return
+      # end
 
      if Rails.env.production? && current_setting.enable_otp?
         current_user.generate_otp_code_and_expiration
