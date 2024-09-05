@@ -4,7 +4,6 @@ class PracticeInformation < ApplicationRecord
   PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID','ProviderPracticeID']
 
   belongs_to :provider_attest
-
   has_many   :practice_accessibilities, foreign_key: [:provider_attest_id, :provider_practice_id]
   has_many   :practice_associates, foreign_key: [:provider_attest_id, :provider_practice_id]
   has_many   :practice_associate_other_questions, foreign_key: [:provider_attest_id, :provider_practice_id]
@@ -24,4 +23,8 @@ class PracticeInformation < ApplicationRecord
   has_many   :practice_tax_ids, foreign_key: [:provider_attest_id, :provider_practice_id]
 
   validates :provider_attest_id, presence: true
+
+  def complete_address
+    "#{address}, #{city}, #{state} #{zip}"
+  end
 end
