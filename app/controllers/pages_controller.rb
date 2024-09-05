@@ -190,6 +190,9 @@ class PagesController < ApplicationController
   end 
 
 	def client_portal
+    if current_setting.mhc?
+      redirect_to mhc_client_portal_index_path
+    end
 		@simple_search = (params[:none].present? && params[:none]['simple_search'])
 		@grid = (params[:grid].present? or (params[:none].present? &&params[:none]['grid'].present?))
 	end

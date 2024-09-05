@@ -1,0 +1,174 @@
+<div class="row my-3 px-3">
+	<div class="col-lg-12">
+		<!-- start of table info like page and limit -->
+		<div class="row">
+		 	<div class="col-lg-12">
+		 		<div class="d-flex justify-content-between align-items-center">
+		 			<div><strong>Search Results: <%= @provider_personal_informations&.count %> records</strong></div>
+		 			<%= form_for :none, url: client_portal_path, id: "per_page_selector" ,method: :get do |f| %>
+		 			<% if @status %>
+		 				<%= f.hidden_field :status, value: @status %>
+		 			<% end %>
+		 			<div class="d-flex gap-4 align-items-center">
+		 				<div>
+		 					<label class="text-dark-grey">Show limit</label>
+		 					<% per_page_limits = [5,10,15,20,25,30,35,40,45,50]%>
+		 					<select name="per_page" class="border ms-2 px-1 <%= dark_mode %>" onchange="document.getElementById('per_page_selector').submit();">
+		 						<% per_page_limits.each do |per_page| %>
+		 							<% if per_page == @per_page.to_i%>
+		 								<option selected><%= per_page %></option>
+		 							<% else %>
+		 								<option><%= per_page %></option>
+		 							<% end %>
+		 						<% end %>
+		 					</select>
+		 				</div>
+		 				<div>
+		 					<% end %>
+
+		 					<label class="text-dark-grey">Page <%= @page %> of <%= @provider_personal_informations.total_pages %></label>
+		 					<!-- <span class="border px-3"></span> -->
+
+							<input type="text" value="<%= @page %>" style="width: 35px; text-align: center; font-size: 12px;" class="">
+		 				</div>
+		 				<div class = "mb-2">
+		 					<%= link_to download_clients_path(format: 'csv'), class: 'btn btn-sm btn-primary' do %>
+		 					<!-- <  class="btn btn-sm btn-primary"> -->
+		 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 16px;height: 16px;">
+								  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+								</svg>
+								<span>Download Documents</span>
+		 					<% end %>
+		 				</div>
+		 			</div>
+		 		</div>
+		 	</div>
+		</div>
+		<!-- end of table info like page and limit -->
+
+		<!-- start of table header -->
+	 <div style="overflow-x: scroll; overflow-x: scroll; white-space: nowrap; height: 600px;">
+		<div class="row mt-1 mb-3">
+			<div class="col-lg-12">
+				<table class="table table-striped table-bordered table-responsive " id="">
+					<thead class="bg-primary" style="position: sticky; top: 0; z-index: 999;">
+						<tr class=" rounded">
+						<th class="text-white">
+							<div class="form-check">
+								<div class="align-items-center">
+									<input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
+									<span class="status-indicator-round bg-primary"></span>
+								</div>
+							</div>
+						</th>
+
+						<th class="text-white">
+ 			 				<div class="d-flex gap-2 align-items-center">
+    					<span>NPI</span>
+  						</div>
+						</th>
+						<th class="text-white">
+ 			 				<div class="d-flex gap-2 align-items-center">
+    					<span>Provider Name</span>
+  						</div>
+						</th>
+						<th class="text-white">
+ 			 				<div class="d-flex gap-2 align-items-center">
+    					<span>Address</span>
+  						</div>
+						</th>
+						<th class="text-white">
+ 			 				<div class="d-flex gap-2 align-items-center">
+    					<span>MedvID</span>
+  						</div>
+						</th>
+
+						<th class="text-white">
+							<div class="d-flex gap-2 align-items-center">
+								<span>Cred Cycle</span>
+							</div>
+						</th>
+						</tr>
+					</thead>
+
+					<tbody class="">
+						<% @provider_personal_informations.each do |provider_personal_information| %>
+							<% practice_information = provider_personal_information.provider_attest.practice_informations.first %>
+							<%# <tr class="p-3 <%= (provider_personal_information.present? && provider_personal_information.id == client.id) ? '' : 'bg-alt-grey'%>
+								<td>
+									<div class="form-check">
+										<input class="form-check-input user-cbs" type="checkbox" value="" id="flexCheckDefault">
+										<div class="py-1">
+											<span class="status-indicator-round <%= nil %>" style="margin-left: 10px;"></span>
+										</div>
+									</div>
+								</td>
+
+								<td>
+									<div class="py-1">
+										<span><%= provider_personal_information.npi %></span>
+									</div>
+								</td>
+
+								<td style="text-wrap: wrap">
+									<div class="py-1">
+										<span><%= provider_personal_information.fullname %></span>
+									</div>
+								</td>
+
+								<td style="text-wrap: wrap">
+									<div class="py-1">
+										<span><%= practice_information.complete_address %></span>
+									</div>
+								</td>
+
+								<td>
+									<div class="py-1">
+										<span><%= provider_personal_information.provider_attest_id %></span>
+									</div>
+								</td>
+
+								<td>
+									<div class="py-1">
+										<span><%= nil %></span>
+									</div>
+								</td>
+							</tr>
+						<% end %>
+					</tbody>
+				</table>
+			</div>
+			<div class="col-lg-12">
+				<div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+				<div class="page_info ms-3 text-black">
+						<%= page_entries_info @provider_personal_informations %>
+				</div>
+				<% if params[:per_page ].present? %>
+					<%= will_paginate @provider_personal_informations, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+				<% else %>
+					<%= will_paginate @provider_personal_informations, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+				<% end %>
+				</div>
+			</div>
+		</div>
+		<!-- end of table header -->
+</div>
+</div>
+</div>
+<% content_for :js do %>
+<script>
+ function checkAll() {
+  var checkBox = document.getElementById("checkAllCbs");
+  (checkBox.checked == true) ? updateCbs(true) : updateCbs(false);
+}
+
+function updateCbs(status) {
+	var cbs = document.querySelectorAll('.user-cbs');
+	for (var i = cbs.length - 1; i >= 0; i--) {
+		if(cbs[i].type == "checkbox") {
+			cbs[i].checked = status;
+		}
+	}
+}
+</script>
+<% end %>

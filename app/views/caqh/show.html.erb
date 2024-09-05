@@ -1,27 +1,28 @@
-<%# <form id="caqh-upload-form" method='post'> %>
-  <p>Select The Directory:
+<div class="content container-fluid">
+  <%= render partial: "verification_platform/encompass_nav" %>
+</div>
+<div class="container-fluid text-center">
+  <h3>Select the folder containing the flat files:
     <input id="file_id" type="file" webkitdirectory mozdirectory name="files" multiple=true/>
-  </p>
-  <p>You can select any directory with multiple files or multiple child directories in it.</p>
-  <button class="button" id="submit-files">submit</button>
-<%# </form> %>
+  </h3>
+  <button class="button btn btn-primary" id="submit-files" disabled>Submit</button>
+</div>
 <script>
   $(document).ready(function() {
     var inps = document.querySelectorAll('#file_id');
     [].forEach.call(inps, function(inp) {
       inp.onchange = function(e) {
-        console.log(this.files);
+        if(this.files.length > 0){
+          $('#submit-files').prop('disabled', false)
+        }
       };
     });
 
-
     $('#submit-files').on("click", function(e){
       var data = new FormData();
-      console.log($("input[id='file_id']")[0].files)
       $.each($("input[id='file_id']")[0].files, function(i, file) {
         data.append(file.name.split(".")[0], file);
       });
-      console.log(data)
 
       $.ajax({
         type: 'POST',
@@ -30,34 +31,23 @@
         contentType: false,
         processData: false,
         data : data,
+        beforeSend: function() {
+          $('#submit-files').prop('disabled', true)
+          $('#submit-files').html('Processing')
+        },
         success: function(result){
           console.log(result);
         },
         error: function(err){
           console.log(err);
-        }
-    })
-      return false;
-    })
-    var data = new FormData();
-
-    $.each($("input[id='file_id']")[0].files, function(i, file) {
-      data.append('file', file);
-    });
-
-    $.ajax({
-        type: 'POST',
-        url: '/caqh/upload',
-        cache: false,
-        contentType: false,
-        processData: false,
-        data : data,
-        success: function(result){
-            console.log(result);
         },
-        error: function(err){
-            console.log(err);
+        complete: function() {
+          $("#file_id").val('')
+          $('#submit-files').prop('disabled', true)
+          $('#submit-files').html('Submit')
         }
+      })
+      return false;
     })
   });
 </script>

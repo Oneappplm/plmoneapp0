@@ -1,0 +1,39 @@
+<!-- Content -->
+<div class="content container-fluid">
+	<div class="row">
+		<div class="col-lg-12">
+			<%#= render "client_portal_components/header_searchbar"%>
+		</div>
+	<!-- 	<div class="col-lg-4">
+			<%#= render "client_portal_components/document_list_buttons"%>
+		</div> -->
+	</div>
+	<div class="row mb-5">
+		<div class="col-lg-12">
+      <% if params[:reports].present? %>
+      <%# render "mhc/client_portal/client_portal_components/report_searchbox"%>
+      <%# render "mhc/client_portal/client_portal_components/report_table_info"%>
+      <% else %>
+        <%= render (params[:advanced_search].present? || params.dig(:q, :advanced_search) ? "mhc/client_portal/client_portal_components/advanced_searchbox" : "mhc/client_portal/client_portal_components/simple_searchbox") %>
+    <% end %>
+		</div>
+		<!-- <div class="col-lg-4">
+			<%#= render "client_portal_components/document_list"%>
+		</div> -->
+	</div>
+	   <% if !params[:reports].present? %>
+   <%# render ((params[:grid].present? or @grid)  ? "mhc/client_portal/client_portal_components/status_bar_with_count" : "mhc/client_portal/client_portal_components/status_bar" )%>
+   <%= render ((params[:grid].present? or @grid) ? "mhc/client_portal/client_portal_components/grid_table" : "mhc/client_portal/client_portal_components/custom_table")%>
+   <% end %>
+</div>
+
+<!-- End Content -->
+<style>
+	div.bg-medium-grey > nav ul.pagination {
+		margin: 0 1rem !important;
+	}
+</style>
+
+<script>
+$('.form-select border-dark').select2();
+</script>
