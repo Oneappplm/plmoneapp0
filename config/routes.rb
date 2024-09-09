@@ -272,7 +272,7 @@ Rails.application.routes.draw do
     passwords: 'users/passwords',
   }
 
-  resources :security_question, only: [:edit, :update], controller: 'users/security_question'
+  resources :security_questions, only: [:edit, :update], controller: 'users/security_questions', path: 'security-questions'
 
   get 'organization-profile', to: 'users#organization_profile'
   get 'new-user', to: 'users#new'

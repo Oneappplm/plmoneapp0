@@ -1,4 +1,4 @@
-class Users::SecurityQuestionController < ApplicationController
+class Users::SecurityQuestionsController < ApplicationController
   layout 'authentication'
   before_action :authenticate_user!
 
@@ -8,7 +8,7 @@ class Users::SecurityQuestionController < ApplicationController
     if current_user.update(security_questions_params)
       redirect_to root_path, notice: "Security questions set successfully."
     else
-      redirect_to edit_security_questions_path(current_user), error: "Something went wrong."
+      redirect_to edit_security_question_path(current_user), error: "Something went wrong."
     end
   end
 
