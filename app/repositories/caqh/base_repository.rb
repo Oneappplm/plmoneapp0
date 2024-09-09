@@ -8,7 +8,7 @@ class Caqh::BaseRepository < ApplicationService
     @model                     = model.constantize
     @primary_foreign_key_names = row.headers.first(headers_limit)
     @keys_replacement          = keys_replacement
-    @provider_attest           = ProviderAttest.first_or_create(provider_attest_id: row["ProviderAttestID"])
+    ProviderAttest.find_or_create_by(provider_attest_id: row["ProviderAttestID"])
   end
 
   def call
