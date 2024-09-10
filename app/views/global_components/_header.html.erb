@@ -35,6 +35,8 @@
 
                   <% if current_user.present? %>
                     <% current_user.notifications&.unread&.limit(5)&.reverse.each do |notif|%>
+                     <% next if ["UserLockedOutNotification"].include?(notif.to_notification.class.to_s)%>
+
                       <div class="dropdown-item-text">
                         <div class="d-flex align-items-center">
                           <div class="avatar avatar-sm avatar-circle">
@@ -48,7 +50,8 @@
                           </div>
                           <div class="flex-grow-1">
                             <p class="card-text text-body d-flex ms-2">
-                              <%= link_to notif.to_notification.message, notif.to_notification.url %></p>
+                              <%= link_to notif.to_notification.message, notif.to_notification.url %>
+                            </p>
                           </div>
                         </div>
                         <div class="dropdown-divider"></div>
