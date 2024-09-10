@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
 	# layout "application", only: %i[new edit show all_users organization_users]
 	before_action :get_states, only: %i[edit create new show all_users organization_profile]
-	before_action :set_user, only: %i[edit update show unlock]
+	before_action :set_user, only: %i[edit update show]
 	before_action :set_groups, only: %i[edit create new show all_users organization_profile index update]
 
 	def index
@@ -64,16 +64,6 @@ class UsersController < ApplicationController
 			redirect_to users_path, notice: 'User has been successfully deleted.'
 		else
 			redirect_to users_path, alert: 'Something went wrong.'
-		end
-	end
-
-	def unlock
-		if @user.access_locked?
-			if @user.unlock_access!
-      	redirect_to users_path, notice: 'User has been successfully unlocked.'
-			else
-				redirect_to users_path, alert: 'Something went wrong.'
-			end
 		end
 	end
 

@@ -1,12 +1,10 @@
 class User < ApplicationRecord
   include PgSearch::Model
-  include Noticed::Model
   include DynamicRolesInitializer
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :invitable, :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :timeoutable,
-         :lockable
+         :recoverable, :rememberable, :validatable, :timeoutable
 
 		audited
 
@@ -56,7 +54,6 @@ class User < ApplicationRecord
   before_validation :set_temporary_password_as_password
   before_create :generate_api_token
   after_create :set_sidebar_preferences
-  after_update :notify_admin_if_locked_out, if: :saved_change_to_locked_at?
 
   scope :from_enrollment, -> { where(from_source: 'enrollment')}
   scope :not_admin, -> { where.not(user_role: ['super_administrator', 'administrator']) }
@@ -319,14 +316,6 @@ class User < ApplicationRecord
 
   def set_user_role
     self.user_role = hidden_role if hidden_role.present?
-  end
-
-  def notify_admin_if_locked_out
-    if locked_at.present? && saved_change_to_locked_at?
-      admins = User.admins
-
-      UserLockedOutNotification.with(user: self).deliver(admins)
-    end
   end
 
   def set_sidebar_preferences

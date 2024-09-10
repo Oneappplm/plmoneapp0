@@ -219,12 +219,8 @@ Rails.application.routes.draw do
   resources :settings do
     collection do
       resources :roles
-      resources :users do
-        member do
-          patch :unlock
-        end
-      end
-		  resources :user_visits, only: [:index]
+      resources :users
+						resources :user_visits, only: [:index]
     end
   end
   resources :role_based_accesses, only: [:index], path: 'role-based-access' do
