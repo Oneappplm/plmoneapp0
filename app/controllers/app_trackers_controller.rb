@@ -3,63 +3,210 @@ class AppTrackersController < ProvidersController
 	before_action :set_provider, only: [:upload_documents, :delete_uploaded_document, :view_uploaded_documents]
 
 	def index
-	  @providers = Provider.paginate(per_page: 10, page: params[:page] || 1)
+	  @provider_personal_information = ProviderPersonalInformation.paginate(per_page: 10, page: params[:page] || 1)
 	  @clients = Client.paginate(per_page: 10, page: params[:page] || 1)
-	  @app_trackers = AppTracker.all
-
-	  # Filtering for @clients
-	  @clients = @clients.where(client_name: params[:client_name]) if params[:client_name].present?
-
-	  # Filtering for @app_trackers
-	  @providers = @providers.where(id: params[:user_search]) if params[:user_search].present?
-	  @providers = @providers.where(cred_cycle: params[:cred_cycle]) if params[:cred_cycle].present?
-	  @providers = @providers.where(provider_status: params[:provider_status]) if params[:provider_status].present?
-	  @providers = @providers.where(application_reviewed: params[:application_reviewed]) if params[:application_reviewed].present?
-	  @providers = @providers.where(batch_description: params[:batch_description]) if params[:batch_description].present?
-	  @providers = @providers.where(file_due_date: params[:file_due_date]) if params[:file_due_date].present?
-
-	  # Paginate after filtering
-	  @clients = @clients.paginate(per_page: 10, page: params[:page] || 1)
-	  @providers = @providers.paginate(per_page: 10, page: params[:page] || 1)
-
-	  # Check if there are no results
-    if @providers.empty? && @clients.empty?
-      flash.now[:alert] = "No results found for your search criteria."
-    end
-
+	  @provider_personal_attempt = ProviderPersonalAttempt.new
+	  @provider_personal_docs_receive = ProviderPersonalDocsReceive.new
+	  @practice_information = PracticeInformation.new
 	end
 
+	# for uploading the documents
+	def provider_personal_docs_uploaded_documents
+		provider_id = params[:provider_personal_docs_upload][:provider_id]
 
-	def upload_documents
-		@document = @provider.uploaded_documents.new
+		@documents = ProviderPersonalDocsUpload.where(provider_id: params[:provider_id])
+		@document = ProviderPersonalDocsUpload.new
+
 		if request.post?
-			@document = @provider.uploaded_documents.new(document_params)
+			@document = ProviderPersonalDocsUpload.new(provider_personal_docs_upload_params)
 			if @document.save
 				redirect_to app_trackers_path, notice: 'Document uploaded successfully.'
 			end
 		end
 	end
 
-	def delete_uploaded_document
-		doc_id = params.dig(:doc_id)
-		doc_file = @provider.uploaded_documents.find_by_id(doc_id)
-		if doc_file.destroy
-			redirect_to request.referrer, notice: "Successfully deleted."
-		else
-			redirect_to request.referrer, alert: "Something went wrong."
+
+	# def upload_documents
+	# 	@document = @provider.uploaded_documents.new
+	# 	if request.post?
+	# 		@document = @provider.uploaded_documents.new(document_params)
+	# 		if @document.save
+	# 			redirect_to app_trackers_path, notice: 'Document uploaded successfully.'
+	# 		end
+	# 	end
+	# end
+
+	# def delete_uploaded_document
+	# 	doc_id = params.dig(:doc_id)
+	# 	doc_file = @provider.uploaded_documents.find_by_id(doc_id)
+	# 	if doc_file.destroy
+	# 		redirect_to request.referrer, notice: "Successfully deleted."
+	# 	else
+	# 		redirect_to request.referrer, alert: "Something went wrong."
+	# 	end
+	# end
+
+	# def view_uploaded_documents; end
+
+	# for provider_personal_attempt 
+	def save_attempt_details
+		@provider_personal_attempt = ProviderPersonalAttempt.new(attempt_params)
+		if @provider_personal_attempt.save
+			redirect_to app_trackers_path, notice: "Provider Personal Attempt created successfully."
 		end
 	end
 
-	def view_uploaded_documents; end
+	# for provider_personal_docs_receives in this update & create both methods are present
+	def save_provider_personal_docs_receives
+	  provider_id, provider_attest_id = params[:doc_recived_id].split(" ")
+
+	  @provider_personal_docs_receive = ProviderPersonalDocsReceive.find_by(provider_id: provider_id, provider_attest_id: provider_attest_id)
+    
+	  if @provider_personal_docs_receive.present?
+	    if @provider_personal_docs_receive.update(provider_personal_docs_receive_params)
+	      redirect_to app_trackers_path, notice: "Provider Personal Docs Receives updated successfully."
+	    else
+	      render :edit, alert: "Failed to update Provider Personal Docs Receives."
+	    end
+	  else
+	    @provider_personal_docs_receive = ProviderPersonalDocsReceive.new(provider_personal_docs_receive_params)
+	    if @provider_personal_docs_receive.save
+	      redirect_to app_trackers_path, notice: "Provider Personal Docs Receives created successfully."
+	    else
+	      render :new, alert: "Failed to create Provider Personal Docs Receives."
+	    end
+	  end
+	end
+	
+	# # for provider_practice_informations in this update & create both methods are present
+	def save_provider_practice_informations
+		provider_attest_id, provider_practice_id = params[:doc_recived_id].split(" ")
+
+	 	@practice_information = PracticeInformation.find_by(provider_practice_id: provider_practice_id, provider_attest_id: provider_attest_id)
+
+		if @practice_information.present?
+			if @practice_information.update(practice_information_params)
+				redirect_to app_trackers_path, notice: 'Practice Information updated successfully.'
+			else
+		     render :edit, alert: "Failed to create Practice Information."
+			end
+		else
+			@practice_information = PracticeInformation.new(practice_information_params)
+			if @practice_information.save
+				redirect_to app_trackers_path, notice: 'Practice Information created successfully.'
+			else
+		     render :new, alert: "Failed to create Practice Information."
+			end
+		end
+	end
+
+
 
 	protected
-	def document_params
-		params.require(:provider_uploaded_document).permit(
-			:image_classification,
-			:sub_section,
-			:description,
-			:exclude_from_profile,
-			:file_upload
+
+	def provider_personal_docs_upload_params
+		params.require(:provider_personal_docs_upload).permit(
+			:file_upload,
+			:provider_id,
+			:provider_attest_id
+		)
+	end
+
+
+	# def document_params
+	# 	params.require(:provider_uploaded_document).permit(
+	# 		:image_classification,
+	# 		:sub_section,
+	# 		:description,
+	# 		:exclude_from_profile,
+	# 		:file_upload
+	# 	)
+	# end
+
+	def attempt_params
+		params.require(:provider_personal_attempt).permit(
+			:provider_id,
+			:provider_attest_id,
+			:contact_method,
+			:attempt_status,
+			:contact_date,
+			:comments
+		)
+	end
+
+	def provider_personal_docs_receive_params
+		params.require(:provider_personal_docs_receive).permit(
+			:provider_id,
+	    :provider_attest_id,
+	    :application_received_date,
+			:release_received_date,
+			:disclosure_questions_explanation_received_date,
+			:face_sheet_received_date,
+			:employment_gap_received_date,
+			:practice_information_received_date,
+			:npdb_findings_explanation_received_date,
+			:training_received_date,
+			:education_received_date,
+			:professional_resource_network_received_date,
+			:dea_received_date,
+			:pa_sponsor_request_form_received_date,
+			:collaborative_agreement_received_date,
+			:application_received_flag,
+			:release_received_flag,
+			:disclosure_questions_explanation_received_flag,
+			:face_sheet_received_flag,
+			:employment_gap_received_flag,
+			:practice_information_received_flag,
+			:npdb_findings_explanation_received_flag,
+			:training_received_flag,
+			:education_received_flag,
+			:professional_resource_network_received_flag,
+			:dea_received_flag,
+			:pa_sponsor_request_form_received_flag,
+			:collaborative_agreement_received_flag,
+			:application_received_incomplete_flag,
+			:release_received_incomplete_flag,
+			:disclosure_questions_explanation_received_incomplete_flag,
+			:face_sheet_received_incomplete_flag,
+			:employment_gap_received_incomplete_flag,
+			:practice_information_received_incomplete_flag,
+			:npdb_findings_explanation_received_incomplete_flag,
+			:training_received_incomplete_flag,
+			:education_received_incomplete_flag,
+			:professional_resource_network_received_incomplete_flag,
+			:dea_received_incomplete_flag,
+			:pa_sponsor_request_form_received_incomplete_flag,
+			:collaborative_agreement_received_incomplete_flag,
+			:application_comments,
+			:release_comments,
+			:disclosure_questions_explanation_comments,
+			:face_sheet_comments,
+			:employment_gap_comments,
+			:practice_information_comments,
+			:npdb_findings_explanation_comments,
+			:training_comments,
+			:education_comments,
+			:professional_resource_network_comments,
+			:dea_comments,
+			:pa_sponsor_request_form_comments,
+			:collaborative_agreement_comments
+	   )
+	end
+
+	def practice_information_params
+		params.require(:practice_information).permit(
+			:provider_attest_id,
+			:provider_practice_id,
+			:address,
+			:address2,
+			:city,
+			:state,
+			:fax_number,
+			:phone_number,
+			:email_address,
+			:birth_date,
+			:ssn,
+			:npi
 		)
 	end
 
