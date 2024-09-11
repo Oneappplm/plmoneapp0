@@ -8,7 +8,7 @@ class ProviderAttest < ApplicationRecord
   has_many :practice_business_arrangements, dependent: :destroy
   has_many :practice_certifications, dependent: :destroy
   has_many :practice_hours, dependent: :destroy
-  has_one  :practice_information, dependent: :destroy
+  has_many  :practice_informations, dependent: :destroy
   has_many :practice_languages, dependent: :destroy
   has_many :practice_limitations, dependent: :destroy
   has_many :practice_other_addresses, dependent: :destroy
