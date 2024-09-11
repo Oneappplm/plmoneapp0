@@ -352,6 +352,10 @@ Rails.application.routes.draw do
     end
   end
 
+  post '/save_attempt_details', to: 'app_trackers#save_attempt_details'
+  post '/provider_personal_docs_uploaded_documents', to: 'app_trackers#provider_personal_docs_uploaded_documents'
+  post '/save_provider_personal_docs_receives', to: 'app_trackers#save_provider_personal_docs_receives'
+  post '/save_provider_practice_informations', to: 'app_trackers#save_provider_practice_informations'
 
   namespace :mhc do
     resources :verification_platform, only: [:index, :show], path: 'verification-platform'

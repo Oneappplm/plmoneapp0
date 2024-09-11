@@ -8,7 +8,7 @@ class ProviderAttest < ApplicationRecord
   has_many :practice_business_arrangements, dependent: :destroy
   has_many :practice_certifications, dependent: :destroy
   has_many :practice_hours, dependent: :destroy
-  has_many :practice_informations, dependent: :destroy
+  has_one  :practice_information, dependent: :destroy
   has_many :practice_languages, dependent: :destroy
   has_many :practice_limitations, dependent: :destroy
   has_many :practice_other_addresses, dependent: :destroy
@@ -56,4 +56,7 @@ class ProviderAttest < ApplicationRecord
   has_many :provider_substance_abuses,class_name: 'ProviderSubstanceAbuse', dependent: :destroy
   has_many :provider_time_gaps, dependent: :destroy
   has_many :provider_work_histories, dependent: :destroy
+  has_many :provider_personal_attempts, dependent: :destroy
+  has_many :provider_personal_docs_uploaded_documents, dependent: :destroy
+  has_one :provider_personal_docs_receive, dependent: :destroy
 end
