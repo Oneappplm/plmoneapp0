@@ -9,7 +9,7 @@ class ProviderPersonalInformation < ApplicationRecord
 
   belongs_to :provider_attest
 
-  has_one :practice_information, through: :provider_attest
+  has_many :practice_informations, through: :provider_attest
 
   has_many :provider_personal_attempts, through: :provider_attest
 
