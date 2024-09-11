@@ -141,19 +141,19 @@
 								<td colspan="2">
 									<%= form_with model: @practice_information, url: save_provider_practice_informations_path, local: true do |form| %>
 									  <%= form.hidden_field :provider_attest_id, value: provider.provider_attest_id %>
-									  <%= form.hidden_field :provider_practice_id, value: provider.practice_information.present? ? provider.practice_information.provider_practice_id : nil %>
+									  <%= form.hidden_field :provider_practice_id, value: provider.practice_informations.first.present? ? provider.practice_informations.first.provider_practice_id : nil %>
 
-									  <%= hidden_field_tag :doc_recived_id, provider.practice_information.present? ? provider.practice_information.id : nil %>
+									  <%= hidden_field_tag :doc_recived_id, provider.practice_informations.first.present? ? provider.practice_informations.first.id : nil %>
 
 										 <div class="form-group">
 											<%= form.label :address %>
-											<%= form.text_field :address, class: "form-control mt-1 mb-1", value: provider.practice_information.address %>
-											<%= form.text_field :address2, class: "form-control mt-1 mb-1", value: provider.practice_information.address2 %>
-											<%= form.text_field :city, class: "form-control mt-1 mb-1", value: provider.practice_information.city %>
+											<%= form.text_field :address, class: "form-control mt-1 mb-1", value: provider.practice_informations.first.address %>
+											<%= form.text_field :address2, class: "form-control mt-1 mb-1", value: provider.practice_informations.first.address2 %>
+											<%= form.text_field :city, class: "form-control mt-1 mb-1", value: provider.practice_informations.first.city %>
 											<label class="text-dark-grey">State <span class="text-red">*</span></label>
 											<%#= form.collection_select :state, State.all, :alpha_code, :name, { prompt: 'Select State' }, class: 'form-control mt-1 mb-1' %>
 											<%= form.select :state,
-				                options_from_collection_for_select(State.all, :alpha_code, :name, provider.practice_information.state),
+				                options_from_collection_for_select(State.all, :alpha_code, :name, provider.practice_informations.first.state),
 				                { prompt: 'Select State' },
 				                class: 'form-control' %>
 										</div>
@@ -161,17 +161,17 @@
 										<div>
 											<div class="form-group">
 												<%= form.label :fax %>
-												<%= form.text_field :fax_number, class: "form-control mt-1 mb-1", value: provider.practice_information.fax_number %>
+												<%= form.text_field :fax_number, class: "form-control mt-1 mb-1", value: provider.practice_informations.first.fax_number %>
 											</div>
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :phone %>
-												<%= form.text_field :phone_number, class: "form-control mt-1 mb-1", value: provider.practice_information.phone_number  %>
+												<%= form.text_field :phone_number, class: "form-control mt-1 mb-1", value: provider.practice_informations.first.phone_number  %>
 											</div>
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :email_address %>
-												<%= form.text_field :email_address, class: "form-control mt-1 mb-1", value: provider.practice_information.email_address  %>
+												<%= form.text_field :email_address, class: "form-control mt-1 mb-1", value: provider.practice_informations.first.email_address  %>
 											</div>
 
 											<div class="row">
@@ -187,7 +187,7 @@
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :npi %>
-												<%= form.text_field :npi, class: "form-control mt-1 mb-1", value: provider.practice_information.npi %>
+												<%= form.text_field :npi, class: "form-control mt-1 mb-1", value: provider.practice_informations.first.npi %>
 											</div>
 
 											<div class="row">
