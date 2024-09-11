@@ -142,6 +142,17 @@
 														</div>
 													<% end %>
 
+													<% if current_setting.dcm? %>
+														<div class="nav-item mb-1">
+														  <a class="nav-link <%= active_menu('app_trackers') %> <%= ['app_trackers'].include?(params[:page_tab]) || request.path == '/app_trackers' ? 'active bg-primary text-white' : '' %>" 
+														     href="<%= current_setting.dcm? ? '/app_trackers' : '#' %>" 
+														     data-placement="left">
+														    <i class="bi bi-folder nav-icon"></i>
+														    <span class="nav-link-title">App Tracker</span>
+														  </a>
+														</div>
+													<% end %>
+
 													<% if !current_setting.dcm? %>
 													<% if current_user.can_access?('verification_platform')%>
 														<div class="nav-item mb-1">
