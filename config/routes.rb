@@ -10,7 +10,8 @@ Rails.application.routes.draw do
   get 'show-virtual-review-committee/:id', to: 'pages#show_virtual_review_committee', as: "show_virtual_review_committee"
 
 		get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
-		get 'app-tracker', to: 'pages#app_tracker'
+		# get 'app-tracker', to: 'pages#app_tracker'
+    resources :app_trackers
   post 'caqh/upload', to: 'caqh#upload'
   get 'caqh/upload', to: 'caqh#show'
   get 'encompass', to: 'pages#encompass'
@@ -376,7 +377,6 @@ Rails.application.routes.draw do
   post '/provider_personal_docs_uploaded_documents', to: 'app_trackers#provider_personal_docs_uploaded_documents'
   post '/save_provider_personal_docs_receives', to: 'app_trackers#save_provider_personal_docs_receives'
   post '/save_provider_practice_informations', to: 'app_trackers#save_provider_practice_informations'
-
 
   # for generating the report on client home
   get '/generate_report', to: 'mhc/verification_platform#generate_report', defaults: { format: :csv }

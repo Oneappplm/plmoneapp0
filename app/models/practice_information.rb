@@ -1,5 +1,5 @@
 class PracticeInformation < ApplicationRecord
-  self.primary_key = [:provider_attest_id,:provider_practice_id]
+  # self.primary_key = [:provider_attest_id,:provider_practice_id]
 
   PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID','ProviderPracticeID']
 
