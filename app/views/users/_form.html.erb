@@ -7,8 +7,8 @@
 			<div class="col-lg-12">
 					<h2><%= pluralize(@user.errors.count, "error") %> prohibited this enrollment user from being saved:</h2>
 					<ul>
-						<% @user.errors.full_messages.each do |message| %>
-							<li><%= message %></li>
+						<% @user.errors.each do |error| %>
+							<li><%= error.attribute == :email ? 'Invalid email' : error.full_message %></li>
 						<% end %>
 					</ul>
 			</div>
@@ -95,7 +95,7 @@
 				<div class="row">
 					<div class="col-lg-12 d-flex justify-content-end gap-2">
 						<%= f.hidden_field :hidden_role, value: '' %>
-						<% if current_user.can_access?('Add New User') && action_name == 'index' %>
+						<% if current_user.can_access?('Add New User') && (action_name == 'index' || action_name == 'create') %>
 							<button type="submit" class="d-flex btn btn-primary btn-md">
 								<i class="bi bi-plus-lg me-2"></i>
 								<span>Add User</span>

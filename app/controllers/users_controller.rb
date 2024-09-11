@@ -15,13 +15,20 @@ class UsersController < ApplicationController
 	end
 
 	def create
+		initialize_users
 		enrollment_group_ids = user_params.delete(:enrollment_group_ids)&.split(",")
 		updated_params = user_params.except(:enrollment_group_ids)
 		if enrollment_group_ids.present? && enrollment_group_ids.length > 0
 			users_enrollment_group_attributes = enrollment_group_ids.map { |id| { enrollment_group_id: id, _destroy: false }}
 			updated_params = user_params.merge!({ users_enrollment_groups_attributes: users_enrollment_group_attributes })
 		end
-		@user = User.new(updated_params.except(:enrollment_group_ids))
+		@user = User.where(email: updated_params[:email]).first_or_initialize(updated_params.except(:enrollment_group_ids))
+		if @user.persisted?
+			@user = User.new(updated_params.except(:enrollment_group_ids))
+			@user.errors.add(:base, 'Invalid account')
+			render :index and return
+		end
+
 		if @user.save
 			redirect_to users_path, notice: 'User has been successfully created.'
 		else
