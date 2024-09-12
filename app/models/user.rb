@@ -49,9 +49,7 @@ class User < ApplicationRecord
     # user.validates_confirmation_of :password
   end
 
-  before_validation :set_user_role
-
-  before_validation :set_temporary_password_as_password
+  before_save :set_temporary_password_as_password, :set_user_role
   before_create :generate_api_token
   after_create :set_sidebar_preferences
 
@@ -185,8 +183,8 @@ class User < ApplicationRecord
   end
 
   def set_temporary_password_as_password
-    if self.temporary_password_changed?
-      self.password = self.temporary_password
+    if temporary_password_changed?
+      self.password = temporary_password
     end
   end
 
