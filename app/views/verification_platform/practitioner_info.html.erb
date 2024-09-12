@@ -1,625 +1,388 @@
- <div class="enc-content">
+<%= form_with model: @practice_information, local: true do |f| %>
+    <div class="enc-content">
         <div class="container">
             <%= render "top_nav_buttons"%>
-
-            <div class="mt-4 d-flex align-items-center gap-3">
-                <h4 class="page-heading">Practitioner Information</h4>
-                <button class="btn btn-primary btn-sm py-1">
-                    Edit
-                </button>
-            </div>
-            <div class="mt-3 d-flex align-items-center gap-2">
-                <button class="btn btn-primary btn-sm"  data-bs-toggle="modal"
-                data-bs-target="#verifLetterModal">
-                    Verification Letter
-                </button>
-                <button class="btn btn-primary btn-sm">
-                    Send Contact
-                </button>
+   
+            <div class="mt-4">
+                <div class="d-flex align-items-center gap-3">
+                    <h4 class="page-heading">Add New Practitioner Information</h4>
+                </div>
             </div>
             <form action="">
                 <div class="form-row row mt-4">
-                    <div class="col-xl-3">
-                        <label for="title">Title:</label>
-                        <select name="title" id="title" class="form-select">
-                          <option value="" disabled selected>Select a title</option>
-                          <option value="Dr.">Dr.</option>
-                          <option value="Madam">Madam</option>
-                          <option value="Maj.">Maj.</option>
-                          <option value="Miss">Miss</option>
-                          <option value="Mr">Mr</option>
-                          <option value="Mrs">Mrs</option>
-                          <option value="Ms">Ms</option>
-                          <option value="Sir">Sir</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-4">
-                        <label for="firstname">First Name:</label>
-                        <input type="text" id="firstname" class="form-control" required>
-                    </div>
-                    <div class="col-xl-2">
-                        <label for="middlename">Middle Name:</label>
-                        <input type="text" id="middlename" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="lastname">Last Name:</label>
-                        <input type="text" id="lastname" class="form-control" required>
-                    </div>
-                    <div class="col-xl-2">
-                        <label for="suffix">Suffix:</label>
-                        <select name="" id="suffix" class="form-select"></select>
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-4">
-                        <label for="practitioner-id">Practitioner ID:</label>
-                        <input type="text" id="practitioner-id" class="form-control" required>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="practitioner-type">Practitioner Type:</label>
-                        <input type="text" id="practitioner-type" class="form-control" required>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="practitioner-sig">Practitioner Signatory:</label>
-                        <input type="text" id="practitioner-sig" class="form-control" required>
-                    </div>
-                </div>
-                <div class="form-row row mt-2">
-                    <div class="col-xl-12">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="other-names-switch">
-                            <label class="form-check-label" for="other-names-switch">Are there any other names under which you have been known?</label>
-                          </div>
-                    </div>
-                </div>
-                <div class="form-row row mt-3">
                     <div class="col-xl-12">
                         <div class="card other-name-card">
                             <div class="card-body">
-                                <h6 class="form-heading">Other Name Used</h6>
-                                <div class="form-row row">
-                                    <div class="col-xl-4">
-                                        <label for="other-firstname">First Name:</label>
-                                        <input type="text" id="other-firstname" class="form-control" required>
-                                    </div>
-                                    <div class="col-xl-2">
-                                        <label for="other-middlename">Middle Name:</label>
-                                        <input type="text" id="other-middlename" class="form-control">
-                                    </div>
-                                    <div class="col-xl-4">
-                                        <label for="other-lastname">Last Name:</label>
-                                        <input type="text" id="other-lastname" class="form-control" required>
-                                    </div>
-                                    <div class="col-xl-2">
-                                        <label for="other-suffix">Suffix:</label>
-                                        <select name="" id="other-suffix" class="form-select"></select>
-                                    </div>
-                                </div>
-                                <div class="form-row row">
-                                    <div class="col-xl-6">
-                                        <div class="form-row row">
-                                            <div class="col-xl-6">
-                                                <label for="">Date From</label>
-                                                <input type="date" id="" class="form-control">
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <label for="">Date To</label>
-                                                <input type="date" id="" class="form-control">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="form-row row mt-2">
-                                    <div class="col-xl-12">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="maiden-switch">
-                                            <label class="form-check-label" for="maiden-switch">Is this a maiden name?</label>
-                                          </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-row mt-4">
-                    <h6 class="form-heading">Home Mailing Address</h6>
-                </div>
-                <div class="form-row row mt-3">
-                    <div class="col-xl-6">
-                        <div class="form-row row">
-                            <label for="">Dates at this Residence (MM-YYYY):</label>
-                            <div class="col-xl-5">
-                                <label for="">Date From</label>
-                                <input type="date" id="" class="form-control">
-                            </div>
-                            <div class="col-xl-5">
-                                <label for="">Date To</label>
-                                <input type="date" id="" class="form-control">
-                            </div>
-                            <div class="col-xl-2 d-flex align-items-end">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="present-switch">
-                                    <label class="form-check-label" for="present-switch">Present</label>
-                                  </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-4">
-                        <label for="">Phone Number:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="">Mobile Phone:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="">Fax Number:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label for="">Email Address:</label>
-                        <input type="email" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-6">
-                        <label for="">Secondary Email Address:</label>
-                        <input type="email" id="" class="form-control">
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label for="">Home Address:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-6">
-                        <label for="">Additional Address:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-4">
-                        <label for="">Suite/Apt:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="">City:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="">County:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-4">
-                        <label for="state">State/Province:</label>
-                        <select name="" id="state" class="form-select"></select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="">Zip Code:</label>
-                        <input type="email" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="country">Country:</label>
-                        <select name="" id="country" class="form-select"></select>
-                    </div>
-                </div>
-                <div class="form-row mt-4">
-                    <h6 class="form-heading">Credentialing Contact</h6>
-                </div>
-                <div class="form-row row mt-3">
-                    <div class="col-xl-4">
-                        <label for="contact-method">Contact Method::</label>
-                        <select name="" id="contact-method" class="form-select"></select>
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-2">
-                        <label for="method-title">Title:</label>
-                        <select name="" id="method-title" class="form-select"></select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="other-middlename">First Name:</label>
-                        <input type="text" id="method-firstname" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="other-lastname">Last Name:</label>
-                        <input type="text" id="method-lastname" class="form-control">
-                    </div>
-                    <div class="col-xl-2">
-                        <label for="method-suffix">Suffix:</label>
-                        <select name="" id="method-suffix" class="form-select"></select>
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-4">
-                        <label for="">Phone Number:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="">Fax Number:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="">Email Address:</label>
-                        <input type="text" id="" class="form-control" >
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label for="">Home Address:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-6">
-                        <label for="">Additional Address:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-4">
-                        <label for="">Suite/Apt:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="">City:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="">County:</label>
-                        <input type="text" id="" class="form-control" >
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-4">
-                        <label for="">State/Province:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="">Zip Code:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="">Country:</label>
-                        <input type="text" id="" class="form-control" >
-                    </div>
-                </div>
-                <div class="form-row mt-4">
-                    <h6 class="form-heading">Pager</h6>
-                </div>
-                <div class="form-row row mt-3">
-                    <div class="col-xl-6">
-                        <label for="">Pager:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-6">
-                        <label for="">Pager Pin:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                </div>
-                <div class="form-row mt-4">
-                    <h6 class="form-heading">Your Foreign Languages</h6>
-                </div>
-                <div class="form-row row mt-3">
-                    <div class="col-xl-4">
-                        <label for="language">Languages you speak:</label>
-                        <select name="" id="language" class="form-select"></select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="language-read">Languages you read:</label>
-                        <select name="" id="language-read" class="form-select"></select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="language-write">Languages you write:</label>
-                        <select name="" id="language-write" class="form-select"></select>
-                    </div>
-                </div>
-                <div class="form-row mt-4">
-                    <h6 class="form-heading">Others</h6>
-                </div>
-                <div class="form-row row mt-3">
-                    <div class="col-xl-4">
-                        <label for="">Birth Date:</label>
-                        <input type="date" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="">Birth City:</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="birth-state">Birth State:</label>
-                        <select name="" id="birth-state" class="form-select"></select>
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-4">
-                        <label for="birth-country">Birth Country:</label>
-                        <select name="" id="birth-country" class="form-select"></select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="us-citizen">US Citizen?</label>
-                        <select name="" id="us-citizen" class="form-select">
-                            <option value=""></option>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                        </select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="country-citizenship">If No, List Country of Citizenship:</label>
-                        <select name="" id="country-citizenship" class="form-select"></select>
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-4">
-                        <label for="work-us">Are you eligible to work in the US?</label>
-                        <select name="" id="work-us" class="form-select">
-                            <option value=""></option>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                        </select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="">Alien Registration Number (If Non-US Citizen):</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="visa-status">Visa Status (If Non-US Citizen):</label>
-                        <select name="" id="visa-status" class="form-select"></select>
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-4">
-                        <label for="">Visa Number (If Non-US Citizen):</label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="gender">Gender:</label>
-                        <select name="" id="gender" class="form-select"></select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="ethnicity">Ethnicity (Optional):</label>
-                        <select name="" id="ethnicity" class="form-select"></select>
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-4">
-                        <label for="religion">Religion:</label>
-                        <select name="" id="religion" class="form-select"></select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="planning-relocate">Planning to relocate?</label>
-                        <select name="" id="planning-relocate" class="form-select">
-                            <option value=""></option>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                        </select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="ethnicity">If Yes, planned relocation date:</label>
-                        <input type="date" id="" class="form-control">
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-4">
-                        <label for="matiral-status">Marital Status:</label>
-                        <select name="" id="matiral-status" class="form-select"></select>
-                    </div>
-                </div>
-                <div class="form-row row mt-3">
-                    <div class="col-xl-12">
-                        <div class="card other-name-card">
-                            <div class="card-body">
-                                <h6 class="form-heading">Driver’s License Number/State Identification Number</h6>
-                                <div class="form-row row">
-                                    <div class="col-xl-5">
-                                        <label for="drivers-state">State:</label>
-                                        <select name="" id="drivers-state" class="form-select"></select>
-                                    </div>
-                                    <div class="col-xl-5">
-                                        <label for="">Driver’s License Number/State Identification Number:</label>
-                                        <input type="text" id="" class="form-control">
-                                    </div>
-                                    <div class="col-xl-2 d-flex align-items-end">
-                                        <div class="form-check d-flex align-items-center gap-3">
-                                            <input class="form-check-input" type="checkbox" value="" id="remove-check">
-                                            <label class="form-check-label" for="remove-check">
-                                              Remove
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-row d-flex justify-content-center mt-4">
-                                    <button type="button" class="btn btn-primary btn-sm">
-                                        Add Number
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-row row mt-4">
-                    <div class="col-xl-6">
-                        <label for="">Federal Employee ID:</label>
-                        <input type="date" id="" class="form-control">
-                    </div>
-                    <div class="col-xl-6">
-                        <label for="">Social Security Number:</label>
-                        <input type="date" id="" class="form-control">
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-4">
-                        <label for="primary-care">Primary Care Practitioner:</label>
-                        <select name="" id="primary-care" class="form-select">
-                            <option value=""></option>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                        </select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="specialist">Specialist:</label>
-                        <select name="" id="specialist" class="form-select">
-                            <option value=""></option>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                        </select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="allied-health">Allied Health Practitioner:</label>
-                        <select name="" id="allied-health" class="form-select">
-                            <option value=""></option>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row mt-4">
-                    <h6 class="form-heading">Specialty Info</h6>
-                </div>
-                <div class="form-row row mt-3">
-                    <div class="col-xl-4">
-                        <label for="specialty1">Specialty 1:</label>
-                        <select name="" id="specialty1" class="form-select"></select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="specialty2">Specialty 2:</label>
-                        <select name="" id="specialty2" class="form-select"></select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="specialty3">Specialty 3:</label>
-                        <select name="" id="specialty3" class="form-select"></select>
-                    </div>
-                </div>
-                <div class="form-row row mt-3">
-                    <div class="col-xl-4">
-                        <label for="specialty4">Specialty 4:</label>
-                        <select name="" id="specialty4" class="form-select"></select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="specialty5">Specialty 5:</label>
-                        <select name="" id="specialty5" class="form-select"></select>
-                    </div>
-                </div>
-                <div class="form-row row mt-3">
-                    <div class="col-xl-12">
-                        <label for="">Please list other areas of professional practice interest or focus: </label>
-                        <input type="text" id="" class="form-control">
-                    </div>
-                </div>
-                <div class="form-row row mt-3">
-                    <div class="col-xl-12">
-                        <div class="card other-name-card">
-                            <div class="card-body">
-                                <h6 class="form-heading">Provider Group</h6>
-                                <div class="form-row row">
                                     <div class="col-xl-6">
-                                        <label for="provider-group">Provider Group:</label>
-                                        <select name="" id="provider-group" class="form-select"></select>
+                                                <label class="text-dark-grey">Provider Id:</label>
+                                                <%= f.text_field :provider_id,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                                     </div>
-                                    <div class="col-xl-6 d-flex align-items-end">
-                                        <div class="form-check d-flex align-items-center gap-3">
-                                            <input class="form-check-input" type="checkbox" value="" id="group-remove-check">
-                                            <label class="form-check-label" for="group-remove-check">
-                                              Remove
-                                            </label>
-                                        </div>
+                                    <div class="col-lg-6">
+                                        <label class="text-dark-grey">Provider Attest:</label>
+                                        <%= f.text_field :provider_attest,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                                     </div>
                                 </div>
-                                <div class="form-row d-flex justify-content-center mt-4">
-                                    <button type="button" class="btn btn-primary btn-sm">
-                                        Add Provider Group
-                                    </button>
+                                <div class="form-row row">
+                                    <div class="col-lg-6">
+                                        <label class="text-dark-grey">Suffix:</label>
+                                        <%= f.text_field :suffix,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                    </div>                                                                   
+                                    <div class="col-lg-6">
+                                        <label class="text-dark-grey">Primary Practice State:</label>
+                                        <%= f.text_field :primary_practice_state,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                    </div>                                   
+                                </div>
+                                <div class="form-row row">
+                                    <div class="col-lg-4">
+                                        <label class="text-dark-grey">First Name:</label>
+                                        <%= f.text_field :first_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <label class="text-dark-grey">Middle Name:</label>
+                                        <%= f.text_field :middle_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <label class="text-dark-grey">Last Name:</label>
+                                        <%= f.text_field :last_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                    </div>
+                                </div>
+                                <div class="form-row row">                                   
+                                    <div class="col-lg-4">
+                                        <label class="text-dark-grey">Birth Date:</label>
+                                        <%= f.date_field :birth_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <label class="text-dark-grey">Ssn:</label>
+                                        <%= f.text_field :ssn,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                    </div>                    
+                                    <div class="col-lg-4">
+                                        <label class="text-dark-grey">Nid:</label>
+                                        <%= f.text_field :nid,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="form-row row mt-4">
-                    <div class="col-xl-4">
-                        <label for="house-calls">Do you make house calls?</label>
-                        <select name="" id="house-calls" class="form-select">
-                            <option value=""></option>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                        </select>
                     </div>
                 </div>
                 <div class="form-row row">
-                    <div class="col-xl-12">
-                        <label for="">Please list any comments:</label>
-                        <input type="text" id="" class="form-control">
+                    <div class="col-lg-4">
+                        <label class="text-dark-grey">Dea Flag:</label>
+                        <%= f.text_field :dea_flag,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                        <label class="text-dark-grey">Cds Flag:</label>
+                        <%= f.text_field :cds_flag,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>                   
+                    <div class="col-lg-4">
+                        <label class="text-dark-grey">Upin:</label>
+                        <%= f.text_field :upin, placeholder: 'Type here...', class: 'form-control border border-dark' %>
                     </div>
                 </div>
-            </form>
-        </div>
-    </div>
+                <div class="form-row row">
+                    <div class="col-lg-4">
+                        <label class="text-dark-grey">Upin Flag:</label>
+                        <%= f.text_field :upin_flag,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                        <label class="text-dark-grey">Npi Flag:</label>
+                        <%= f.text_field :npi_flag,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>                   
+                    <div class="col-lg-4">
+                        <label class="text-dark-grey">Npi:</label>
+                        <%= f.text_field :npi, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                </div>
+                <div class="checkboxes" style="display: flex; gap: 10px; margin-top: 20px;">
+                  <div>
+                    <%= f.label :other_name_flag, "Other Name Flag" %>
+                    <%= f.check_box :other_name_flag %>
+                  </div>
 
-        <!-- Verification Letter Modal -->
-    <div class="modal fade" id="verifLetterModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div class="content">
-                        <div class="modal-title">
-                            <h6 class="offset-md-3">Practitioner Info Verification Letter</h6>
-                            <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
-                        </div>
-                        <div class="mt-3 left-pane">
-                            <h6>Preview Letter</h6>
-                        </div>
-                        <div class="form-row row page-applicable mt-3">
-                            <div class="col-xl-12">
-                                <div class="card other-name-card">
-                                    <div class="card-body">
-                                        <h6 class="form-heading">Send Fax</h6>
-                                        <span class="page-note mt-1">
-                                            <i class='bx bx-error-circle font-red'></i> <span>Please correct the invalid fax number. Fields will be enabled once corrected.</span>
-                                        </span>
-                                        <div class="form-row mt-2">
-                                            <label for="">Fax2Mail Email Address:</label>
-                                            <input type="text" id="fax-email" name="fax-email" class="form-control" placeholder="Type here...">
-                                        </div>
-                                        <div class="form-row d-flex justify-content-end mt-4">
-                                            <button class="btn btn-primary py-1">
-                                                Send Fax
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-row row page-applicable mt-3">
-                            <div class="col-xl-12">
-                                <div class="card other-name-card">
-                                    <div class="card-body">
-                                        <h6 class="form-heading">Send Email</h6>
-                                        <span class="page-note mt-1">
-                                            <i class='bx bx-error-circle font-red'></i> <span>Please correct the invalid email address. Fields will be enabled once corrected.</span>
-                                        </span>
-                                        <div class="form-row mt-2">
-                                            <label for="">Email Address To:</label>
-                                            <input type="text" id="email-to" name="email-to" class="form-control" placeholder="Type here...">
-                                        </div>
-                                        <div class="form-row">
-                                            <label for="">Email Address CC:</label>
-                                            <input type="text" id="email-cc" name="email-cc" class="form-control" placeholder="Type here...">
-                                        </div>
-                                        <div class="form-row d-flex justify-content-end mt-4">
-                                            <button class="btn btn-primary py-1">
-                                                Send Email
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                  <div>
+                    <%= f.label :us_eligible_flag, "Us Eligible Flag" %>
+                    <%= f.check_box :us_eligible_flag %>
+                  </div>
+
+                  <div>
+                    <%= f.label :medicare_provider_flag, "medicare provider flag " %>
+                    <%= f.check_box :medicare_provider_flag %>
+                  </div>
+
+                  <div>
+                    <%= f.label :medicaid_provider_flag, "Medicaid Provider Flag" %>
+                    <%= f.check_box :medicaid_provider_flag %>
+                  </div>
+                  <div>
+                    <%= f.label :other_graduate_education_flag, "Other Graduate Education Flag" %>
+                    <%= f.check_box :other_graduate_education_flag %>
+                  </div>
+
+                  <div>
+                    <%= f.label :fellowship_training_flag, "Fellowship Taining Flag" %>
+                    <%= f.check_box :fellowship_training_flag %>
+                  </div>
+
+                  <div>
+                    <%= f.label :teaching_appointment_flag, "teaching_appointment_flag" %>
+                    <%= f.check_box :teaching_appointment_flag %>
+                  </div>
+
+                  <div>
+                    <%= f.label :secondary_specialty_flag, "Secondary Specialty Flag" %>
+                    <%= f.check_box :secondary_specialty_flag %>
+                  </div>
+
+                  <div>
+                    <%= f.label :other_specialty_flag, "Other Specialty Flag" %>
+                    <%= f.check_box :other_specialty_flag %>
+                  </div>
+                  <div>
+                    <%= f.label :hospital_privilege_flag, "Hospital Privilege Flag" %>
+                    <%= f.check_box :hospital_privilege_flag %>
+                  </div>
+                </div>
+                <div class="mt-4">
+                    <span class="page-note">
+                        <i class='bx bx-error-circle font-red'></i> <span>Please check all that apply before completing
+                            the rest of this section.</span>
+                    </span>
+                </div>
+                <div class="form-row row mt-4">
+                    <div class="col-lg-6">
+                        <label class="text-dark-grey">Hospital Admitting Arrangements</label>
+                        <%= f.text_field :hospital_admitting_arrangements,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>                   
+                    <div class="col-lg-6">
+                        <label class="text-dark-grey">Citizenship Status:</label>
+                        <%= f.text_field :citizenship_status,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                </div>            
+                <div class="form-row row mt-3">
+                     <div class="col-lg-6">
+                        <label class="text-dark-grey">Visa Number:</label>
+                        <%= f.text_field :visa_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="text-dark-grey">Federal Employee Id:</label>
+                        <%= f.text_field :federal_employee_id,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                     </div>
                 </div>
+                <div class="form-row row mt-3">
+                     <div class="col-lg-6">
+                        <label class="text-dark-grey">Application Type:</label>
+                        <%= f.text_field :application_type,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="text-dark-grey">Ecfmg Number:</label>
+                        <%= f.text_field :ecfmg_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                </div>
+                <div class="form-row row mt-3">
+                     <div class="col-lg-6">
+                        <label class="text-dark-grey">Answeecfmg Issue Date:</label>
+                        <%= f.date_field :ecfmg_issue_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="text-dark-grey">Email Address:</label>
+                        <%= f.text_field :email_address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                </div>
+                <div class="form-row row mt-3">
+                     <div class="col-lg-6">
+                        <label class="text-dark-grey">Visa Type:</label>
+                        <%= f.text_field :visa_type,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="text-dark-grey">Visa Status:</label>
+                        <%= f.text_field :visa_status,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                </div>
+                <div class="checkboxes" style="display: flex; gap: 30px; margin-top: 20px;">
+                  <div>
+                    <%= f.label :pager_beeper_digital_flag, "Page Breeper Digital Flag" %>
+                    <%= f.check_box :pager_beeper_digital_flag %>
+                  </div>
+
+                  <div>
+                    <%= f.label :hospital_based_flag, "Hospital Based Flag" %>
+                    <%= f.check_box :hospital_based_flag %>
+                  </div>
+
+                  <div>
+                    <%= f.label :ecfmg_flag, "Ecfmg Flag" %>
+                    <%= f.check_box :ecfmg_flag %>
+                  </div>
+
+                  <div>
+                    <%= f.label :no_malpractice_claims_flag, "No Malpractice Claims Flag" %>
+                    <%= f.check_box :no_malpractice_claims_flag %>
+                  </div>
+                  <div>
+                    <%= f.label :active_military_flag, "Active Military Flag" %>
+                    <%= f.check_box :active_military_flag %>
+                  </div>
+                  <div>
+                    <%= f.label :work_history_gap_flag, "Work History Gap Flag" %>
+                    <%= f.check_box :work_history_gap_flag %>
+                  </div>
+              </div>
+              <div class="form-row row mt-3">
+                     <div class="col-lg-6">
+                        <label class="text-dark-grey">Birth City:</label>
+                        <%= f.text_field :birth_city,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="text-dark-grey">Birth State:</label>
+                        <%= f.text_field :birth_state,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+              </div>
+              <div class="form-row row mt-3">
+                     <div class="col-lg-6">
+                        <label class="text-dark-grey">Tax Id:</label>
+                        <%= f.text_field :tax_id,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="text-dark-grey">Spouse Last Name:</label>
+                        <%= f.text_field :spouse_last_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+              </div>
+              <div class="form-row row mt-3">
+                     <div class="col-lg-4">
+                        <label class="text-dark-grey">Spouse First Name:</label>
+                        <%= f.text_field :spouse_first_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                        <label class="text-dark-grey">Other Correspondence Address:</label>
+                        <%= f.text_field :other_correspondence_address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                        <label class="text-dark-grey">Emergency Contact Last Name:</label>
+                        <%= f.text_field :emergency_contact_last_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+              </div>
+              <div class="form-row row mt-3">
+                     <div class="col-lg-4">
+                        <label class="text-dark-grey">Emergency Contact First Name:</label>
+                        <%= f.text_field :emergency_contact_first_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                        <label class="text-dark-grey">Emergency Contact Middle Name:</label>
+                        <%= f.text_field :emergency_contact_middle_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                        <label class="text-dark-grey">Emergency Contact Phone:</label>
+                        <%= f.text_field :emergency_contact_phone,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+              </div>
+              <div class="form-row row mt-3">
+                     <div class="col-lg-4">
+                        <label class="text-dark-grey">Pager Beeper Number:</label>
+                        <%= f.text_field :pager_beeper_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                        <label class="text-dark-grey">Answering Service Phone Number:</label>
+                        <%= f.text_field :answering_service_phone_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                        <label class="text-dark-grey">Cell Phone Number:</label>
+                        <%= f.text_field :cell_phone_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+              </div>
+              <div class="form-row row mt-3">
+                     <div class="col-lg-4">
+                        <label class="text-dark-grey">Visa Expiration Date:</label>
+                        <%= f.date_field :visa_expiration_date,  placeholder: 'select date...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                        <label class="text-dark-grey">Ethnicity Description:</label>
+                        <%= f.text_field :ethnicity_description,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                        <label class="text-dark-grey">Visa Issue Date:</label>
+                        <%= f.date_field :visa_issue_date,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+              </div>
+              <div class="form-row row mt-3">
+                     <div class="col-lg-6">
+                        <label class="text-dark-grey">Ecfmg Expiration Date:</label>
+                        <%= f.date_field :ecfmg_expiration_date,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-6">
+                      <label class="text-dark-grey">Work Permit Status:</label>
+                      <%= f.text_field :work_permit_status,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+              </div>
+              <div class="form-row row mt-3">
+                     <div class="col-lg-6">
+                        <label class="text-dark-grey">Spouse Middle Name:</label>
+                        <%= f.text_field :spouse_middle_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-6">
+                      <label class="text-dark-grey">State Residence Date:</label>
+                      <%= f.text_field :state_residence_date,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+              </div>
+              <div class="form-row row mt-3">
+                     <div class="col-lg-4">
+                        <label class="text-dark-grey">Citizenship Country Name:</label>
+                        <%= f.text_field :citizenship_country_country_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                      <label class="text-dark-grey">Marital Status Description:</label>
+                      <%= f.text_field :marital_status_marital_status_description,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                      <label class="text-dark-grey">Gender Description:</label>
+                      <%= f.text_field :gender_gender_description,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+              </div>
+              <div class="form-row row mt-3">
+                     <div class="col-lg-4">
+                        <label class="text-dark-grey">Birth Country Country Name:</label>
+                        <%= f.text_field :birth_country_country_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                      <label class="text-dark-grey">Provider Type Provider Type Abbreviation:</label>
+                      <%= f.text_field :provider_type_provider_type_abbreviation,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                      <label class="text-dark-grey">Graduate Type Graduate Type Description:</label>
+                      <%= f.text_field :graduate_type_graduate_type_description,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+              </div>
+              <div class="form-row row mt-3">
+                     <div class="col-lg-4">
+                        <label class="text-dark-grey">Nid Country Country Name:</label>
+                        <%= f.text_field :nid_country_country_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                      <label class="text-dark-grey">Attest Date:</label>
+                      <%= f.date_field :attest_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                      <label class="text-dark-grey">Plan Provider Id:</label>
+                      <%= f.text_field :plan_provider_id,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+              </div>
+              <div class="form-row row mt-3">
+                     <div class="col-lg-4">
+                        <label class="text-dark-grey">Last Recredential Date:</label>
+                        <%= f.date_field :last_recredential_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                      <label class="text-dark-grey">Next Recredential Date:</label>
+                      <%= f.date_field :next_recredential_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-lg-4">
+                      <label class="text-dark-grey">CAT Correspondence Address Type Description:</label>
+                      <%= f.text_field :correspondence_address_type_correspondence_address_type_description,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+              </div>
+            </form>
+            <div class="col-xl-6 text-left" style="margin-top: 20px;">
+              <%= f.submit 'Submit', class: 'btn btn-primary', style: 'width: 200px;' %> 
             </div>
         </div>
     </div>
+<% end %>
