@@ -629,29 +629,47 @@
      </div>
 
 				<% if current_user.provider? || current_user.clinic_admin? %>
-				<div class="row mb-3 mt-3">
-					<div class="col-lg-12 mt-3">
-						<%= render "enrollment_clients/show/client"%>
-					</div>
-				</div>
-				<% else %>
-     <div class="row mb-3 mt-3">
-     <div class="col-lg-12 mt-3">
-        <h3>Practice Information</h3>
-      </div>
-      <div class="col-lg-6">
-      <!-- new field -->
-      <label class="text-dark-grey">Group <span class="text-red">*</span></label>
-      <%= f.select :enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, { id: "provider_dcos_select", class: "#{form_select_classes(danger: @provider.enrollment_group_id.blank? && @provider.persisted?)} select-with-show", data: {show: 'provider_dco_div'}, required: true } %>
-      </div>
-      <div class="col-lg-6 <%= @provider.no_group? ? 'd-none' : '' %>" id="provider_dco_div">
-        <!-- new field -->
-        <label class="text-dark-grey">Primary Location</label>
-        <%= HtmlUtils.multi_select_dropdown name: 'provider[primary_location]', class:'mb-1', id: 'dcos_id'%>
-        <label class="text-dark-grey"> Additional Locations</label>
-        <%= HtmlUtils.multi_select_dropdown name: 'provider[dcos]', id: 'other_dcos_id'%>
-      </div>
-    	</div>
+  				<div class="row mb-3 mt-3">
+  					<div class="col-lg-12 mt-3">
+  						<%= render "enrollment_clients/show/client"%>
+  					</div>
+  				</div>
+  			<% else %>
+         <div class="row mb-3 mt-3">
+           <div class="col-lg-12 mt-3">
+              <h3>Practice Information</h3>
+            </div>
+            <div class="col-lg-6">
+              <!-- new field -->
+              <label class="text-dark-grey">Group 1<span class="text-red">*</span></label>
+              <%= f.select :enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, { id: "provider_dcos_select", class: "#{form_select_classes(danger: @provider.enrollment_group_id.blank? && @provider.persisted?)} select-with-show", data: {show: 'provider_dco_div'}, required: true } %>
+            </div>
+            <div class="col-lg-6 <%= @provider.no_group? ? 'd-none' : '' %>" id="provider_dco_div">
+              <!-- new field -->
+              <label class="text-dark-grey">Primary Location</label>
+              <%= HtmlUtils.multi_select_dropdown name: 'provider[primary_location]', class:'mb-1', id: 'dcos_id'%>
+              <label class="text-dark-grey"> Additional Locations</label>
+              <%= HtmlUtils.multi_select_dropdown name: 'provider[dcos]', id: 'other_dcos_id'%>
+            </div>
+        	</div>
+
+          <% if current_setting.affordablecare? %>
+            <div class="row mb-3 mt-3">
+              <div class="col-lg-6">
+                <!-- new field -->
+                <label class="text-dark-grey">Group 2<span class="text-red">*</span></label>
+                <%= f.select :enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, { id: "provider_dcos_select_1", class: "#{form_select_classes(danger: @provider.enrollment_group_id.blank? && @provider.persisted?)} select-with-show", data: {show: 'provider_dco_div_1'}, required: true } %>
+              </div>
+              <div class="col-lg-6 <%= @provider.no_group? ? 'd-none' : '' %>" id="provider_dco_div_1">
+                <!-- new field -->
+                <label class="text-dark-grey">Primary Location</label>
+                <%= HtmlUtils.multi_select_dropdown name: 'provider[primary_location]', class:'mb-1', id: 'dcos_id_1'%>
+                <label class="text-dark-grey"> Additional Locations</label>
+                <%= HtmlUtils.multi_select_dropdown name: 'provider[dcos]', id: 'other_dcos_id_1'%>
+              </div>
+            </div>
+          <% end %>
+          
 				<% end %>
 
         <%
@@ -849,14 +867,14 @@
 
     <script>
       $(document).ready(function() {
-								var user_role = "<%= current_user.user_role %>";
-								var action_name = "<%= action_name %>";
+        var user_role = "<%= current_user.user_role %>";
+        var action_name = "<%= action_name %>";
         var csrfToken = $('meta[name="csrf-token"]').attr('content');
         var selected_primary_dco  = stringArrayModifier('<%= @provider.primary_location.split(",") rescue "" %>');
         var selected_dcos  = stringArrayModifier('<%= @provider.dcos.split(",") %>');
         var selected_notification_services  = stringArrayModifier('<%= @provider.notification_services&.split(",") %>');
 
-								readonlyFields(action_name, user_role);
+        readonlyFields(action_name, user_role);
 
         $.ajax({
           url: '<%= get_provider_notification_services_path %>',
@@ -881,12 +899,12 @@
             data: { authenticity_token: csrfToken, group_id: id },
             success: function(data) {
               VirtualSelect.init({
-                ele: '#dcos_id',
+                ele: '#dcos_id, #dcos_id_1',
                 multiple: false,
                 showSelectedOptionsFirst: true
               });
-              document.querySelector('#dcos_id').setOptions(data['practice_locations'])
-              document.querySelector('#dcos_id').setValue(selected_primary_dco);
+              document.querySelector('#dcos_id, #dcos_id_1').setOptions(data['practice_locations'])
+              document.querySelector('#dcos_id, #dcos_id_1').setValue(selected_primary_dco);
             }
           })
           $.ajax({
@@ -895,12 +913,12 @@
             data: { authenticity_token: csrfToken, group_id: id },
             success: function(data) {
               VirtualSelect.init({
-                ele: '#other_dcos_id',
+                ele: '#other_dcos_id, #other_dcos_id_1',
                 multiple: true,
                 showSelectedOptionsFirst: true
               });
-              document.querySelector('#other_dcos_id').setOptions(data['practice_locations'])
-              document.querySelector('#other_dcos_id').setValue(selected_dcos);
+              document.querySelector('##other_dcos_id, #other_dcos_id_1').setOptions(data['practice_locations'])
+              document.querySelector('##other_dcos_id, #other_dcos_id_1').setValue(selected_dcos);
             }
           })
         });
@@ -950,12 +968,12 @@
           var value = $(this).data('value');
 
           setTimeout(function(){
-             $.get('<%= provider_states_multi_select_data_path %>', function(data){
-                VirtualSelect.init({ele: '#' + id, search: true });
-                document.querySelector('#' + id).setOptions(data['result']);
-                document.querySelector('#' + id).setValue(value);
-             });
-          }, 1000);
+           $.get('<%= provider_states_multi_select_data_path %>', function(data){
+            VirtualSelect.init({ele: '#' + id, search: true });
+            document.querySelector('#' + id).setOptions(data['result']);
+            document.querySelector('#' + id).setValue(value);
+          });
+         }, 1000);
         });
 
         $('.state-select').each(function(){
@@ -963,12 +981,12 @@
           var value = $(this).data('value');
 
           setTimeout(function(){
-             $.get('<%= provider_states_multi_select_data_path %>', function(data){
-                VirtualSelect.init({ele: '#' + id, search: true });
-                document.querySelector('#' + id).setOptions(data['result']);
-                document.querySelector('#' + id).setValue(value);
-             });
-          }, 1000);
+           $.get('<%= provider_states_multi_select_data_path %>', function(data){
+            VirtualSelect.init({ele: '#' + id, search: true });
+            document.querySelector('#' + id).setOptions(data['result']);
+            document.querySelector('#' + id).setValue(value);
+          });
+         }, 1000);
         });
 
         $(document).ready(function(){
@@ -978,9 +996,9 @@
 
             setTimeout(function(){
               $.get('<%= board_names_multi_select_data_path %>', function(data){
-                  VirtualSelect.init({ele: '#' + id, search: true });
-                  document.querySelector('#' + id).setOptions(data['result']);
-                  document.querySelector('#' + id).setValue(value);
+                VirtualSelect.init({ele: '#' + id, search: true });
+                document.querySelector('#' + id).setOptions(data['result']);
+                document.querySelector('#' + id).setValue(value);
               });
             }, 1000);
           });
@@ -990,65 +1008,65 @@
         $(document).on('change', '.provider-status', function () {
          var status = $(this).val();
          if (status == 'inactive-termed') {
-            showHideDetailFields($(this), '.status-inactive-field', 'show')
-         } else {
-            showHideDetailFields($(this), '.status-inactive-field', 'hide')
-         }
+          showHideDetailFields($(this), '.status-inactive-field', 'show')
+        } else {
+          showHideDetailFields($(this), '.status-inactive-field', 'hide')
+        }
       })
 
         function showHideDetailFields(dropDown, divClass, mode) {
           if (mode == 'show')
-              dropDown.parent().parent().parent().find(divClass).removeClass('d-none');
+            dropDown.parent().parent().parent().find(divClass).removeClass('d-none');
           else
-              dropDown.parent().parent().parent().find(divClass).addClass('d-none');
+            dropDown.parent().parent().parent().find(divClass).addClass('d-none');
         }
 
 
-         $(document).on('change', '.collab-provider', function () {
+        $(document).on('change', '.collab-provider', function () {
          var supervisor = $(this).val();
          if ( supervisor == 'yes') {
-            showHideDetailFields($(this), '.supervising-provider-field', 'show')
-         } else {
-            showHideDetailFields($(this), '.supervising-provider-field', 'hide')
-         }
+          showHideDetailFields($(this), '.supervising-provider-field', 'show')
+        } else {
+          showHideDetailFields($(this), '.supervising-provider-field', 'hide')
+        }
       })
 
         function showHideDetailFields(dropDown, divClass, mode) {
           if (mode == 'show')
-              dropDown.parent().parent().parent().find(divClass).removeClass('d-none');
+            dropDown.parent().parent().parent().find(divClass).removeClass('d-none');
           else
-              dropDown.parent().parent().parent().find(divClass).addClass('d-none');
+            dropDown.parent().parent().parent().find(divClass).addClass('d-none');
         }
 
 
 
-         $(document).on('click','#questions-fields .add_questions',function() {
-            var index_of = $(this).data('index');
-            var detailsFields = $("#questions-fields .question-field");
-             var newEnrollmentdetails = detailsFields.last().clone();
-             var lastId = detailsFields.length - 1;
-             var newId = lastId + 1;
+        $(document).on('click','#questions-fields .add_questions',function() {
+          var index_of = $(this).data('index');
+          var detailsFields = $("#questions-fields .question-field");
+          var newEnrollmentdetails = detailsFields.last().clone();
+          var lastId = detailsFields.length - 1;
+          var newId = lastId + 1;
              // alert(newId);
              // provider_payer_logins_attributes_0_questions_attributes_0_question
-             newEnrollmentdetails.find("[id^='provider_payer_logins_attributes_']").each(function() {
-                var oldId = $(this).attr("id");
-                var newIdValue = oldId.replace(/\d+/, newId).replace(/\d+/,newId);
-                var oldName = $(this).attr('name');
-                var newName = 'provider[payer_logins_attributes]['+index_of+'][questions_attributes]['+newId+'][question]';
-                var anewName = 'provider[payer_logins_attributes]['+index_of+'][questions_attributes]['+newId+'][answer]';
+          newEnrollmentdetails.find("[id^='provider_payer_logins_attributes_']").each(function() {
+            var oldId = $(this).attr("id");
+            var newIdValue = oldId.replace(/\d+/, newId).replace(/\d+/,newId);
+            var oldName = $(this).attr('name');
+            var newName = 'provider[payer_logins_attributes]['+index_of+'][questions_attributes]['+newId+'][question]';
+            var anewName = 'provider[payer_logins_attributes]['+index_of+'][questions_attributes]['+newId+'][answer]';
 
                 // checks if input is answer field
-                if($(this).hasClass('answer')) {
-                  newName = anewName;
-                }
+            if($(this).hasClass('answer')) {
+              newName = anewName;
+            }
 
-                $(this).attr("id", newIdValue);
-                $(this).attr("name", newName);
-                $(this).val('');
-             });
+            $(this).attr("id", newIdValue);
+            $(this).attr("name", newName);
+            $(this).val('');
+          });
 
-            $(this).closest("#questions-fields .q-fields").append(newEnrollmentdetails);
-          })
+          $(this).closest("#questions-fields .q-fields").append(newEnrollmentdetails);
+        })
 
         $('#payer_login_form').on('click','.add_association',function() {
          var detailsFields = $("#payer_login_form .field");
@@ -1060,31 +1078,31 @@
         // var enrollment_payer_id = "provider_payer_logins_attributes_" + newId + "_enrollment_payer";
          var payer_state_id = "provider_payer_logins_attributes_" + newId + "_state_id";
 
-          newEnrollmentdetails.find("[id^='provider_payer_logins_attributes_']").each(function() {
-            var oldId = $(this).attr("id");
-            var newIdValue = oldId.replace(/\d+/, newId);
-            $(this).attr("id", newIdValue);
-            $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
-            $(this).val('');
-         });
+         newEnrollmentdetails.find("[id^='provider_payer_logins_attributes_']").each(function() {
+          var oldId = $(this).attr("id");
+          var newIdValue = oldId.replace(/\d+/, newId);
+          $(this).attr("id", newIdValue);
+          $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
+          $(this).val('');
+        });
 
 
          setTimeout(function(){
-            $.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
+          $.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
                VirtualSelect.init({ele: '#' + enrollment_payer_id, search: true }); // initialze virtual select first
                document.querySelector('#' + enrollment_payer_id).setOptions(data['result']); // other alternative for initializing collection data
                document.querySelector('#' + enrollment_payer_id).setValue(data['value']); // other alternative for setting the value
-            });
+             });
 
-            $.get('<%= provider_states_multi_select_data_path %>', function(data){
-               VirtualSelect.init({ele: '#' + payer_state_id, search: true });
-               document.querySelector('#' + payer_state_id).setOptions(data['result']);
-               document.querySelector('#' + payer_state_id).setValue(value);
-            });
-         }, 500);
+          $.get('<%= provider_states_multi_select_data_path %>', function(data){
+           VirtualSelect.init({ele: '#' + payer_state_id, search: true });
+           document.querySelector('#' + payer_state_id).setOptions(data['result']);
+           document.querySelector('#' + payer_state_id).setValue(value);
+         });
+        }, 500);
 
-          $("#payer_login_form .fields").append(newEnrollmentdetails);
-        })
+         $("#payer_login_form .fields").append(newEnrollmentdetails);
+       })
 
 
         $(document).on('click','.remove-question',function(){
@@ -1100,44 +1118,44 @@
         })
 
         function deleteDynamicAttr(id,model,button) {
-        $.ajax({
-          url: '<%= delete_record_path %>',
-          method: 'POST',
-          data: { authenticity_token: csrfToken, id: id, model: model },
-          success: function(data) {
+          $.ajax({
+            url: '<%= delete_record_path %>',
+            method: 'POST',
+            data: { authenticity_token: csrfToken, id: id, model: model },
+            success: function(data) {
               button.parent().parent().remove();
-          }
-        })
-      }
+            }
+          })
+        }
       });
-      function updateCompletionDate() {
-        const startDateField = document.getElementById('start-date');
-        const completionDateField = document.getElementById('completion-date');
+function updateCompletionDate() {
+  const startDateField = document.getElementById('start-date');
+  const completionDateField = document.getElementById('completion-date');
 
-        if (startDateField && completionDateField) {
-          const startDateValue = startDateField.value;
+  if (startDateField && completionDateField) {
+    const startDateValue = startDateField.value;
 
-          if (startDateValue) {
-            const startDate = new Date(startDateValue);
-            startDate.setDate(startDate.getDate() + 120);
+    if (startDateValue) {
+      const startDate = new Date(startDateValue);
+      startDate.setDate(startDate.getDate() + 120);
 
-            const completionDate = startDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      const completionDate = startDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
 
-            completionDateField.value = completionDate;
-          } else {
+      completionDateField.value = completionDate;
+    } else {
             completionDateField.value = ''; // Clear the completion date if the start date is empty.
           }
         }
       }
 
-						function readonlyFields(action_name, user_role){
-							 if(['provider', 'clinic_admin'].includes(user_role) && action_name == 'edit'){
-									$('.section input, .section textarea').prop({onfocus: null, readonly: true});
-									$('.section select, .section input[type="checkbox"], .section input[type="file"]').prop('disabled', true);
-								}
-						}
-    </script>
-  <% end %>
+      function readonlyFields(action_name, user_role){
+        if(['provider', 'clinic_admin'].includes(user_role) && action_name == 'edit'){
+         $('.section input, .section textarea').prop({onfocus: null, readonly: true});
+         $('.section select, .section input[type="checkbox"], .section input[type="file"]').prop('disabled', true);
+       }
+     }
+   </script>
+   <% end %>
 
 <style type="text/css">
   .multi-select, .search-select, .single-select {
