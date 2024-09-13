@@ -96,6 +96,20 @@
       <%= f.text_field :provider_id, placeholder: 'Medicare and Medicaid,  PIN, etc.', class: 'form-control border border-dark' %>
     </div>
   </div>
+
+  <% if current_setting.affordablecare? %>
+    <div class="row mb-3 application-not-submitted-field">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Tax ID</label>
+        <%= f.text_field :tax_id, placeholder: 'Enter Tax ID', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Location</label>
+        <%= f.text_field :location, placeholder: 'Enter Location', class: 'form-control border border-dark' %>
+      </div>
+    </div>
+  <% end %>
+  
   <div class="row mb-3 processing-field <%= f.object&.enrollment_status == 'processing' ? '' : 'd-none'%>">
     <div class="col-lg-6">
       <label class="text-dark-grey">Processing Date</label>
