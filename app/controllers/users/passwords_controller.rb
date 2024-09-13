@@ -1,4 +1,9 @@
 class Users::PasswordsController < Devise::PasswordsController
+  def new
+    redirect_to root_path if current_setting.qualifacts?
+
+    super
+  end
   def edit
     super
     @user_security_question = User.with_reset_password_token(params[:reset_password_token])&.security_question
