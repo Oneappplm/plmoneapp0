@@ -13,6 +13,8 @@ class Caqh::BaseRepository < ApplicationService
 
   def call
    ActiveRecord::Base.transaction do
+    # return early if one of the primary key is not present or not numbers
+    return if model::PRIMARY_KEY_ROW_NAMES.map { |key| row[key] =~ /\A\d+\Z/ }.include?(nil)
     # Find an existing object or initialize a new one using the primary foreign keys from the CSV row
     # 'model_class' is assumed to be the class of the object being worked with
     # 'primary_foreign_keys' returns a hash of primary foreign keys derived from the CSV row

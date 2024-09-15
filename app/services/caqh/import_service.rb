@@ -16,7 +16,7 @@ class Caqh::ImportService < ApplicationService
       next unless model_param && Object.const_defined?(model_class)
 
       file = File.read(model_param)
-      csv  = CSV.parse(file, :headers => true, col_sep: "|")
+      csv  = CSV.parse(file, :headers => true, quote_char: "|", col_sep: "|")
 
       csv.each do |row|
         Caqh::BaseRepository.call(row, model_class, keys_replacement(model_class))
