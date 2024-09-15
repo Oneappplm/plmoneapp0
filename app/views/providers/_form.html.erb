@@ -658,14 +658,13 @@
               <div class="col-lg-6">
                 <!-- new field -->
                 <label class="text-dark-grey">Group 2<span class="text-red">*</span></label>
-                <%= f.select :enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, { id: "provider_dcos_select_1", class: "#{form_select_classes(danger: @provider.enrollment_group_id.blank? && @provider.persisted?)} select-with-show", data: {show: 'provider_dco_div_1'}, required: true } %>
+                <%= f.select :secondary_enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.secondary_enrollment_group_id), {prompt: 'Select option'}, { id: "provider_dcos_select_1", class: "#{form_select_classes(danger: @provider.secondary_enrollment_group_id.blank? && @provider.persisted?)} select-with-show", data: {show: 'provider_dco_div_1'}, required: true } %>
               </div>
               <div class="col-lg-6 <%= @provider.no_group? ? 'd-none' : '' %>" id="provider_dco_div_1">
-                <!-- new field -->
                 <label class="text-dark-grey">Primary Location</label>
-                <%= HtmlUtils.multi_select_dropdown name: 'provider[primary_location]', class:'mb-1', id: 'dcos_id_1'%>
+                <%= HtmlUtils.multi_select_dropdown name: 'provider[secondary_primary_location]', class: 'mb-1', id: 'dcos_id_1' %>
                 <label class="text-dark-grey"> Additional Locations</label>
-                <%= HtmlUtils.multi_select_dropdown name: 'provider[dcos]', id: 'other_dcos_id_1'%>
+                <%= HtmlUtils.multi_select_dropdown name: 'provider[secondary_dcos]', id: 'other_dcos_id_1' %>
               </div>
             </div>
           <% end %>
@@ -899,12 +898,12 @@
             data: { authenticity_token: csrfToken, group_id: id },
             success: function(data) {
               VirtualSelect.init({
-                ele: '#dcos_id, #dcos_id_1',
+                ele: '#dcos_id',
                 multiple: false,
                 showSelectedOptionsFirst: true
               });
-              document.querySelector('#dcos_id, #dcos_id_1').setOptions(data['practice_locations'])
-              document.querySelector('#dcos_id, #dcos_id_1').setValue(selected_primary_dco);
+              document.querySelector('#dcos_id').setOptions(data['practice_locations'])
+              document.querySelector('#dcos_id').setValue(selected_primary_dco);
             }
           })
           $.ajax({
@@ -913,18 +912,53 @@
             data: { authenticity_token: csrfToken, group_id: id },
             success: function(data) {
               VirtualSelect.init({
-                ele: '#other_dcos_id, #other_dcos_id_1',
+                ele: '#other_dcos_id',
                 multiple: true,
                 showSelectedOptionsFirst: true
               });
-              document.querySelector('##other_dcos_id, #other_dcos_id_1').setOptions(data['practice_locations'])
-              document.querySelector('##other_dcos_id, #other_dcos_id_1').setValue(selected_dcos);
+              document.querySelector('#other_dcos_id').setOptions(data['practice_locations'])
+              document.querySelector('#other_dcos_id').setValue(selected_dcos);
             }
           })
         });
-        if('<%= @provider.persisted? %>' == 'true') {
-          $('#provider_dcos_select').trigger( "change" );
+
+        $('#provider_dcos_select_1').on('change',function(){
+          var id = $(this).val();
+          $.ajax({
+            url: '<%= get_group_locations_path %>',
+            type: 'get',
+            data: { authenticity_token: csrfToken, group_id: id },
+            success: function(data) {
+              VirtualSelect.init({
+                ele: '#dcos_id_1',
+                multiple: false,
+                showSelectedOptionsFirst: true
+              });
+              document.querySelector('#dcos_id_1').setOptions(data['practice_locations'])
+              document.querySelector('#dcos_id_1').setValue(selected_primary_dco);
+            }
+          })
+          $.ajax({
+            url: '<%= get_group_locations_path %>',
+            type: 'get',
+            data: { authenticity_token: csrfToken, group_id: id },
+            success: function(data) {
+              VirtualSelect.init({
+                ele: '#other_dcos_id_1',
+                multiple: true,
+                showSelectedOptionsFirst: true
+              });
+              document.querySelector('#other_dcos_id_1').setOptions(data['practice_locations'])
+              document.querySelector('#other_dcos_id_1').setValue(selected_dcos);
+            }
+          })
+        });
+        
+        if ('<%= @provider.persisted? %>' == 'true') {
+          $('#provider_dcos_select').trigger('change');
+          $('#provider_dcos_select_1').trigger('change');
         }
+
         // force to invalidate all required fields
         $('#btn-provider-form-submit').on('click', function(e) {
           $('input[required], select[required], textarea[required]').each(function() {

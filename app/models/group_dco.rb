@@ -38,6 +38,10 @@ class GroupDco < ApplicationRecord
     self.is_primary_location ? "Yes" : "No"
   end
 
+  def secondary_primary_location
+    self.is_primary_location ? "Yes" : "No"
+  end
+
   def selected_specialties
     self.specialty ? self.specialty.split(',') : ''
   rescue
