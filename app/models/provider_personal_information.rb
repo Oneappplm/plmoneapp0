@@ -10,12 +10,10 @@ class ProviderPersonalInformation < ApplicationRecord
   belongs_to :provider_attest
 
   has_many :practice_informations, through: :provider_attest
-
-  has_many :provider_personal_attempts, through: :provider_attest
-
-  has_many :provider_personal_docs_uploaded_documents, class_name: 'ProviderPersonalDocsUpload', through: :provider_attest
-
-  has_one :provider_personal_docs_receive, through: :provider_attest
+  has_many :provider_personal_attempts, foreign_key: [:provider_attest_id, :provider_id]
+  has_many :provider_personal_docs_uploaded_documents, class_name: 'ProviderPersonalDocsUpload', foreign_key: [:provider_attest_id, :provider_id]
+  has_many :provider_personal_uploaded_docs, class_name: 'ProviderPersonalUploadedDoc', foreign_key: [:provider_attest_id, :provider_id]
+  has_one :provider_personal_docs_receive, foreign_key: [:provider_attest_id, :provider_id]
 
   validates :provider_attest_id, presence: true
 

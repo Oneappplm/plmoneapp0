@@ -360,7 +360,15 @@ Rails.application.routes.draw do
   namespace :mhc do
     resources :verification_platform, only: [:index, :show], path: 'verification-platform'
     resources :client_portal, only: [:index, :show], path: 'client-portal'
+    resources :manage_practitioners, only: [:index], path: 'manage-practitioners'
+    resources :manage_clients, only: [:index], path: 'manage-clients' do
+      collection do
+        post :provider_personal_uploaded_docs, path: 'provider-personal-uploaded-docs'
+        delete :delete_provider_personal_docs, path: 'delete_provider_personal_docs'
+      end
+    end
   end
+
   resources :app_trackers, path: 'app-tracker' do
     member do
       get :upload_documents
