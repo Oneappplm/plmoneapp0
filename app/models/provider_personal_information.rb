@@ -13,9 +13,13 @@ class ProviderPersonalInformation < ApplicationRecord
 
   has_many :provider_personal_attempts, through: :provider_attest
 
+  # for app_tracker
   has_many :provider_personal_docs_uploaded_documents, class_name: 'ProviderPersonalDocsUpload', through: :provider_attest
 
   has_one :provider_personal_docs_receive, through: :provider_attest
+
+  # for verification_platform
+  has_many :provider_personal_uploaded_docs, class_name: 'ProviderPersonalUploadedDoc', through: :provider_attest 
 
   validates :provider_attest_id, presence: true
 

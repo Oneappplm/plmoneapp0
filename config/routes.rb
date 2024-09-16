@@ -93,6 +93,9 @@ Rails.application.routes.draw do
 
   resources :manage_clients
 
+  post '/provider_personal_uploaded_docs', to: 'manage_clients#provider_personal_uploaded_docs'
+  delete '/delete_provider_personal_docs', to: 'manage_clients#delete_provider_personal_docs'
+
 
   resources :provider_sources do
     collection do
