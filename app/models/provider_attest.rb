@@ -59,4 +59,5 @@ class ProviderAttest < ApplicationRecord
   has_many :provider_personal_attempts, dependent: :destroy
   has_many :provider_personal_docs_uploaded_documents, class_name: 'ProviderPersonalDocsUpload', dependent: :destroy
   has_one :provider_personal_docs_receive, dependent: :destroy
+  has_many :provider_personal_uploaded_docs, dependent: :destroy
 end
