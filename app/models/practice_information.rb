@@ -31,7 +31,7 @@ class PracticeInformation < ApplicationRecord
   private
 
   def set_provider_attest
-    return if self.provider_attest_id.blank?
+    return if self.provider_attest_id.present?
     self.provider_attest = ProviderAttest.where(caqh_provider_attest_id: self.caqh_provider_attest_id).last
   end
 end
