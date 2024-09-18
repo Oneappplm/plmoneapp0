@@ -10,8 +10,8 @@ class Mhc::ClientPortalController < ApplicationController
   end
 
   def show
-    if params[:page]
-      render params[:page]
+    if params[:page_tab]
+      render params[:page_tab]
     else
       render 'overview'
     end

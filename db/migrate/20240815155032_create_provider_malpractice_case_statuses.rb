@@ -1,8 +1,9 @@
 class CreateProviderMalpracticeCaseStatuses < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_malpractice_case_statuses, primary_key: [:provider_attest_id,:provider_malpractice_claim_status_id,:provider_malpractice_id] do |t|
-      t.integer         :provider_malpractice_claim_status_id
+    create_table :provider_malpractice_case_statuses do |t|
+      t.integer         :caqh_provider_malpractice_claim_status_id
       t.references      :provider_attest
+      t.integer         :caqh_provider_attest_id
       t.string          :claim_status
       t.float           :settlement_amount
       t.float           :settlement_amount_paid
@@ -19,11 +20,12 @@ class CreateProviderMalpracticeCaseStatuses < ActiveRecord::Migration[7.0]
       t.string          :defense_attorney_province
       t.string          :defense_attorney_county
       t.string          :defense_attorney_country_country_name
-      t.integer         :provider_malpractice_id
+      t.references      :provider_malpractice_history, index:false
+      t.integer         :caqh_provider_malpractice_id
       t.timestamps
     end
 
-    add_index  :provider_malpractice_case_statuses, :provider_malpractice_id, :name => 'pmcs_pm_id'
+    add_index  :provider_malpractice_case_statuses, :provider_malpractice_history_id, :name => 'pmcs_pm_id'
   end
 
   def self.down

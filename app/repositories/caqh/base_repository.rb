@@ -8,7 +8,7 @@ class Caqh::BaseRepository < ApplicationService
     @model                     = model.constantize
     @primary_foreign_key_names = row.headers.first(headers_limit)
     @keys_replacement          = keys_replacement
-    ProviderAttest.find_or_create_by(provider_attest_id: row["ProviderAttestID"])
+    ProviderAttest.find_or_create_by(caqh_provider_attest_id: row["ProviderAttestID"])
   end
 
   def call
@@ -37,7 +37,7 @@ class Caqh::BaseRepository < ApplicationService
    # Iterate through each key in the keys array
    keys.each do |key|
     # Convert the key to a snake_case string and set its value from the row
-    hash[key.snake_case.to_s] = row[key]
+    hash["caqh_#{key.snake_case.to_s}"] = row[key]
    end
 
    # Return the hash containing the primary foreign keys

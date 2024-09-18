@@ -7,8 +7,12 @@ class Mhc::VerificationPlatformController < ApplicationController
   end
 
   def show
-    if params[:page]
-      render params[:page]
+    if params[:page_tab]
+      if params[:page_tab] == 'add_practice_info'
+        @practice_information = PracticeInformation.new(provider_attest_id: @provider_personal_information.provider_attest_id, caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id )
+      end
+
+      render params[:page_tab]
     else
       render 'overview'
     end

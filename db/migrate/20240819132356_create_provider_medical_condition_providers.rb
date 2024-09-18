@@ -1,14 +1,16 @@
 class CreateProviderMedicalConditionProviders < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_medical_condition_providers, primary_key: [:provider_attest_id,:provider_medical_condition_provider_id,:provider_medical_condition_id] do |t|
-      t.integer        :provider_medical_condition_provider_id
+    create_table :provider_medical_condition_providers do |t|
+      t.integer        :caqh_provider_medical_condition_provider_id
       t.string         :last_name
       t.string         :first_name
       t.string         :middle_name
       t.string         :degree
       t.text           :phone_number
-      t.integer        :provider_attest_id
-      t.integer        :provider_medical_condition_id
+      t.references     :provider_attest, index: false
+      t.integer        :caqh_provider_attest_id
+      t.references     :provider_medical_condition, index: false
+      t.integer        :caqh_provider_medical_condition_id
 
       t.timestamps
     end

@@ -1,8 +1,9 @@
 class CreateProviderLanguages < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_languages, primary_key: [:provider_attest_id,:provider_language_id] do |t|
-      t.integer        :provider_language_id
+    create_table :provider_languages do |t|
+      t.integer        :caqh_provider_language_id
       t.references     :provider_attest
+      t.integer        :caqh_provider_attest_id
       t.string         :language_type
       t.string         :language_language_name
 

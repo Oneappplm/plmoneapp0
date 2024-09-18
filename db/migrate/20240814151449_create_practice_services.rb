@@ -1,8 +1,9 @@
 class CreatePracticeServices < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :practice_services, primary_key: [:provider_attest_id,:provider_practice_service_id,:provider_practice_id] do |t|
-      t.integer       :provider_practice_service_id
+    create_table :practice_services do |t|
+      t.integer       :caqh_provider_practice_service_id
       t.references    :provider_attest
+      t.integer       :caqh_provider_attest_id
       t.boolean       :service_provided_flag
       t.string        :anesthesia_category
       t.string        :anesthesia_first_name
@@ -25,11 +26,10 @@ class CreatePracticeServices < ActiveRecord::Migration[7.0]
       t.text          :omitted_service_description
       t.string        :laboratory_name
       t.string        :service_service_name
-      t.integer       :provider_practice_id
+      t.references    :practice_information
+      t.integer       :caqh_provider_practice_id
       t.timestamps
     end
-
-    add_index  :practice_services, :provider_practice_id, :name => 'pserve_pp_id'
   end
 
   def self.down

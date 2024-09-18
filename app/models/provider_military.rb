@@ -1,9 +1,14 @@
 class ProviderMilitary < ApplicationRecord
-  self.primary_key = [:provider_attest_id,:provider_military_id]
-
   PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID','ProviderMilitaryID']
 
   belongs_to :provider_attest
 
   validates :provider_attest_id, presence: true
+
+  before_validation :set_provider_attest
+  private
+
+  def set_provider_attest
+    self.provider_attest = ProviderAttest.where(caqh_provider_attest_id: self.caqh_provider_attest_id).last
+  end
 end

@@ -1,8 +1,9 @@
 class CreateProviderWorkHistories < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_work_histories, primary_key: [:provider_attest_id,:provider_work_history_id] do |t|
-      t.integer        :provider_work_history_id
+    create_table :provider_work_histories do |t|
+      t.integer        :caqh_provider_work_history_id
       t.references     :provider_attest
+      t.integer        :caqh_provider_attest_id
       t.string         :employer_name
       t.datetime       :start_date
       t.datetime       :end_date

@@ -1,8 +1,9 @@
 class CreateProviderSubstanceAbuses < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_substance_abuses, primary_key: [:provider_attest_id,:provider_substance_abuse_id] do |t|
-      t.integer        :provider_substance_abuse_id
+    create_table :provider_substance_abuses do |t|
+      t.integer        :caqh_provider_substance_abuse_id
       t.references     :provider_attest
+      t.integer        :caqh_provider_attest_id
       t.text           :substance_description
       t.string         :current_ability
       t.string         :monitor_entity_name

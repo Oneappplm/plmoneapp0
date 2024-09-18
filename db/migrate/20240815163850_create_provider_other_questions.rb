@@ -1,8 +1,9 @@
 class CreateProviderOtherQuestions < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_other_questions, primary_key: [:provider_attest_id,:provider_other_id] do |t|
-      t.integer        :provider_other_id
+    create_table :provider_other_questions do |t|
+      t.integer        :caqh_provider_other_id
       t.references     :provider_attest
+      t.integer        :caqh_provider_attest_id
       t.boolean        :provider_answer_flag
       t.text           :provider_answer_text
       t.datetime       :provider_answer_date

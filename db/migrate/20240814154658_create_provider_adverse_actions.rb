@@ -1,8 +1,9 @@
 class CreateProviderAdverseActions < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_adverse_actions, primary_key: [:provider_attest_id,:provider_adverse_action_id] do |t|
-      t.integer      :provider_adverse_action_id
+    create_table :provider_adverse_actions do |t|
+      t.integer      :caqh_provider_adverse_action_id
       t.references   :provider_attest
+      t.integer      :caqh_provider_attest_id
       t.datetime     :occurrence_date
       t.text         :occurrence_explanation
       t.datetime     :action_date
