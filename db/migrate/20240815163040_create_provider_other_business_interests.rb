@@ -1,8 +1,9 @@
 class CreateProviderOtherBusinessInterests < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_other_business_interests, primary_key: [:provider_attest_id,:provider_other_business_id] do |t|
-      t.integer        :provider_other_business_id
+    create_table :provider_other_business_interests do |t|
+      t.integer        :caqh_provider_other_business_id
       t.references     :provider_attest
+      t.integer        :caqh_provider_attest_id
       t.string         :organization_name
       t.string         :organization_type
       t.string         :address

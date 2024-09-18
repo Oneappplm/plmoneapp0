@@ -1,6 +1,4 @@
 class ProviderAttest < ApplicationRecord
-  self.primary_key = 'provider_attest_id'
-
   has_many :practice_accessibilities, dependent: :destroy
   has_many :practice_associates, dependent: :destroy
   has_many :practice_associate_other_questions, dependent: :destroy

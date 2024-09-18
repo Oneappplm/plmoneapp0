@@ -1,8 +1,9 @@
 class CreateProviderIdentificationNumbers < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_identification_numbers, primary_key: [:provider_attest_id,:provider_identifier_id] do |t|
-      t.integer        :provider_identifier_id
+    create_table :provider_identification_numbers do |t|
+      t.integer        :caqh_provider_identifier_id
       t.references     :provider_attest
+      t.integer        :caqh_provider_attest_id
       t.string         :identifier_value
       t.string         :identifier_status
       t.boolean        :identifier_flag

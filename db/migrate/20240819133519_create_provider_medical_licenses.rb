@@ -1,9 +1,10 @@
 class CreateProviderMedicalLicenses < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_medical_licenses, primary_key: [:provider_attest_id,:provider_license_id] do |t|
-      t.integer        :provider_license_id
+    create_table :provider_medical_licenses do |t|
+      t.integer        :caqh_provider_license_id
       t.references     :provider_attest
-      t.integer        :license_number
+      t.integer        :caqh_provider_attest_id
+      t.string         :license_number
       t.string         :state
       t.boolean        :currently_practicing_flag
       t.datetime       :expiration_date

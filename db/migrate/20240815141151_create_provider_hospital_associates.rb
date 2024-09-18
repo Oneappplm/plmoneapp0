@@ -1,8 +1,9 @@
 class CreateProviderHospitalAssociates < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_hospital_associates, primary_key: [:provider_attest_id,:provider_hospital_associate_id,:provider_hospital_id] do |t|
-      t.integer        :provider_hospital_associate_id
+    create_table :provider_hospital_associates do |t|
+      t.integer        :caqh_provider_hospital_associate_id
       t.references     :provider_attest
+      t.integer        :caqh_provider_attest_id
       t.string         :associate_first_name
       t.string         :associate_last_name
       t.string         :associate_middle_initial
@@ -17,11 +18,10 @@ class CreateProviderHospitalAssociates < ActiveRecord::Migration[7.0]
       t.string         :fax_number
       t.string         :email_address
       t.text           :associate_type_associate_type_description
-      t.integer        :provider_hospital_id
+      t.references     :provider_hospital_privilege, index: false
+      t.integer        :caqh_provider_hospital_id
       t.timestamps
     end
-
-    add_index  :provider_hospital_associates, :provider_hospital_id, :name => 'pha_ph_id'
   end
 
   def self.down

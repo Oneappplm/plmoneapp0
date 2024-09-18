@@ -37,6 +37,6 @@ class Mhc::ManageClientsController < ApplicationController
       :exclude_from_profile,
       :file_upload,
       :provider_attest_id,
-      :provider_id)
+      :provider_personal_information_id)
   end
 end

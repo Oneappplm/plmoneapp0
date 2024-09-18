@@ -1,8 +1,7 @@
 class CreateProviderAttests < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_attests, id: false do |t|
-      t.primary_key :provider_attest_id
-
+    create_table :provider_attests do |t|
+      t.integer     :caqh_provider_attest_id
       t.timestamps
     end
   end

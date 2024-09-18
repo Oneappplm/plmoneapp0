@@ -1,8 +1,9 @@
 class CreateProviderMalpracticeHistories < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_malpractice_histories, primary_key: [:provider_attest_id,:provider_malpractice_id] do |t|
-      t.integer         :provider_malpractice_id
+    create_table :provider_malpractice_histories do |t|
+      t.integer         :caqh_provider_malpractice_id
       t.references      :provider_attest
+      t.integer         :caqh_provider_attest_id
       t.string          :insurance_carrier_name
       t.datetime        :occurrence_date
       t.string          :claim_date

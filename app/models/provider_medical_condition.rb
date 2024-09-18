@@ -1,11 +1,16 @@
 class ProviderMedicalCondition < ApplicationRecord
-  self.primary_key = [:provider_attest_id,:provider_medical_condition_id]
-
   PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID','ProviderMedicalConditionID']
 
   belongs_to :provider_attest
 
-  has_many :provider_medical_condition_providers, foreign_key: [:provider_attest_id,:provider_medical_condition_id]
+  has_many :provider_medical_condition_providers
 
   validates :provider_attest_id, presence: true
+
+  before_validation :set_provider_attest
+  private
+
+  def set_provider_attest
+    self.provider_attest = ProviderAttest.where(caqh_provider_attest_id: self.caqh_provider_attest_id).last
+  end
 end

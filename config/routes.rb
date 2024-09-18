@@ -344,6 +344,8 @@ Rails.application.routes.draw do
   post '/save_provider_practice_informations', to: 'app_trackers#save_provider_practice_informations'
 
   namespace :mhc do
+    resources :practice_informations, only: [:index, :create], path: 'practice-information'
+    resources :provider_personal_informations, only: [:index, :create], path: 'provider-personal-information'
     resources :verification_platform, only: [:index, :show], path: 'verification-platform'
     resources :client_portal, only: [:index, :show], path: 'client-portal'
     resources :manage_practitioners, only: [:index], path: 'manage-practitioners'

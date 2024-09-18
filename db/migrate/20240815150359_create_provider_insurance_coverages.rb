@@ -1,8 +1,9 @@
 class CreateProviderInsuranceCoverages < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_insurance_coverages, primary_key: [:provider_attest_id,:provider_insurance_id] do |t|
-      t.integer          :provider_insurance_id
+    create_table :provider_insurance_coverages do |t|
+      t.integer          :caqh_provider_insurance_id
       t.references       :provider_attest
+      t.integer          :caqh_provider_attest_id
       t.string           :insurance_carrier_name
       t.datetime         :original_start_date
       t.datetime         :start_date
