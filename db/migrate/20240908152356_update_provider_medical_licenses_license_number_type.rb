@@ -4,6 +4,6 @@ class UpdateProviderMedicalLicensesLicenseNumberType < ActiveRecord::Migration[7
   end
 
   def self.down
-    change_column :provider_medical_licenses, :license_number, :integer
+    change_column :provider_medical_licenses, :license_number, 'integer USING CAST(license_number AS integer)'
   end
 end
