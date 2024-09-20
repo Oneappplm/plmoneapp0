@@ -58,6 +58,21 @@
 						<div class="collapsible" style="<%= can_view?('Overview', @role_based) ? '' : 'display: none;' %>">
 						</div>
 					</div>
+
+					<% if current_setting.affordablecare? %>
+						<div class="card rounded shadow-lg p-3 mb-3">
+							<%= render partial: "global_components/collapsible_sidebar_header_with_checkbox", locals: { title: 'Notification-bell', collapse_name: 'role_access_notification_bell'} %>
+							<div class="collapsible" style="<%= can_view?('Notification-bell', @role_based) ? '' : 'display: none;' %>">
+							</div>
+						</div>
+
+						<div class="card rounded shadow-lg p-3 mb-3">
+							<%= render partial: "global_components/collapsible_sidebar_header_with_checkbox", locals: { title: 'Enrollment Details Notes', collapse_name: 'role_access_enrollment_details_notes'} %>
+							<div class="collapsible" style="<%= can_view?('Enrollment Details Notes', @role_based) ? '' : 'display: none;' %>">
+							</div>
+						</div>
+					<% end %>
+
 					<div class="card rounded shadow-lg p-3 mb-3">
 						<%= render partial: "global_components/collapsible_sidebar_header_with_checkbox", locals: { title: 'Dashboard', collapse_name: 'role_access_dashbord'} %>
 						<div class="collapsible mt-3" style="<%= can_view?('Dashboard', @role_based) ? '' : 'display: none;' %> ">

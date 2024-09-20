@@ -14,6 +14,8 @@ class RoleBasedAccess < ApplicationRecord
 		:work_ticklers,
 		:enrollment_clients,
 		:notifications,
+    :notification_bell,
+    :enrollment_details_notes,
 		:enrollment_groups,
 		:locations,
 		:alt_enrollment_groups,
@@ -22,6 +24,8 @@ class RoleBasedAccess < ApplicationRecord
 
 	ROLE_ACCESS = [
     "Overview",
+    "Notification-bell",
+    "Enrollment Details Notes",
     "Dashboard",
     "Data Access",
     "Decision Point",

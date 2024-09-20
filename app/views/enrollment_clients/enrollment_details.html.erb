@@ -135,10 +135,12 @@
                     </div>
                   </div>
                 <% end %>
-                <div class="col-lg-2">
-                  <label>Notes</label>
-                  <p class="text-black fw-semibold"><%= detail.comment %></p>
-                </div>
+                <% if current_setting.affordablecare? && current_user.can_access?('Enrollment Details Notes') %>
+                  <div class="col-lg-2">
+                    <label>Notes</label>
+                    <p class="text-black fw-semibold"><%= detail.comment %></p>
+                  </div>
+                <% end %>
                 <div class="row mb-3">
                   <div class="col-lg-12">
                     <div class="d-flex gap-2">
