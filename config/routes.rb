@@ -163,6 +163,7 @@ Rails.application.routes.draw do
 
   resources :providers do
     put :update_from_notifications, path: 'update-from-notifications'
+    resources :peer_recommendations, path: 'peer-recommendations'
 
     collection do
       get "overview"

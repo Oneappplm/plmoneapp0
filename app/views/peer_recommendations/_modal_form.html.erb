@@ -1,0 +1,63 @@
+<div class="modal fade" id="peerRecommendation_<%= peer_recommendation.id %>" tabindex="-1" aria-labelledby="peerRecommendation_<%= peer_recommendation.id %>" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="peerRecommendation_<%= peer_recommendation.id %>">Peer Recommendation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_for peer_recommendation, url: request_path, method: request_type do |f| %>
+          <div class="form-group my-3">
+            <%= f.label :allow_recommendation %><br />
+            <%= f.select :allow_recommendation, options_for_select([["No", false], ["Yes", true]], peer_recommendation.allow_recommendation), { autofocus: true }, { class: 'form-select', id: "allow_recommendation_#{peer_recommendation.id}" } %>
+          </div>
+          <div class="form-group my-3" id="recommendation_field_<%= peer_recommendation.id %>">
+            <%= f.label :recommendation %><br />
+            <%= f.text_area :recommendation, id: "recommendation_input_#{peer_recommendation.id}", autofocus: true, class: 'form-control', rows: '5', placeholder: 'Recommendation' %>
+          </div>
+          <div class="form-group my-3">
+            <%= f.label :document %><br />
+            <% if peer_recommendation.document? %>
+              <p>
+                <a href="<%= peer_recommendation.document.url %>" target="_blank" class="d-block mb-2">
+                  View Current Document
+                </a>
+              </p>
+            <% end %>
+            <%= f.file_field :document, autofocus: true, class: 'form-control' %>
+          </div>
+          <div class="form-group my-3">
+            <%= f.label :notes %><br />
+            <%= f.text_area :notes, autofocus: true, class: 'form-control', rows: '5', placeholder: 'Notes' %>
+          </div>
+          <div class="actions d-flex justify-content-end align-items-center my-3 mb-4">
+            <%= f.submit "Save", class: 'btn btn-primary px-5' %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const selectField = document.getElementById('allow_recommendation_<%= peer_recommendation.id %>');
+    const recommendationField = document.getElementById('recommendation_field_<%= peer_recommendation.id %>');
+    const recommendationInput = document.getElementById('recommendation_input_<%= peer_recommendation.id %>');
+
+    function toggleRecommendationField() {
+      if (selectField.value === 'false') {
+        recommendationField.style.display = 'none';
+        recommendationInput.required = false;
+        recommendationInput.value = '';
+      } else {
+        recommendationField.style.display = 'block';
+        recommendationInput.required = true; // require recommendation text field input if user allowed recommendation
+      }
+    }
+
+    toggleRecommendationField();
+
+    selectField.addEventListener('change', toggleRecommendationField);
+  });
+</script>

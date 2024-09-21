@@ -25,10 +25,14 @@ module ApplicationHelper
 	def current_provider_source
 		current_user.provider_source_lookup
 	end
+  
+	def allowed_to_access_peer_recommendations?
+	 %i(super_administrator admin director).each do |role|
+	  return true if current_user.send("#{role}?")
 
-	# def active_menu_old cname, aname
-	# 	cname == controller_name && aname.split(',').include?(action_name) ? 'ph-active' : ''
-	# end
+		false
+	 end
+	end
 
 	def active_submenu cname, aname = ''
 		(cname.split(',').include?(controller_name) && aname.split(',').include?(action_name)) ? '' : 'd-none'

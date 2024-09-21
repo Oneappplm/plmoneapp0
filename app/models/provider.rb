@@ -79,6 +79,7 @@ class Provider < ApplicationRecord
   has_many :payer_logins, class_name: 'ProvidersPayerLogin', dependent: :destroy
   has_many :enrollments, class_name: 'EnrollmentProvider', dependent: :destroy
   has_many :notes, class_name: 'ProviderNote', dependent: :destroy
+  has_many :peer_recommendations, dependent: :destroy
   # accepts_nested_attributes_for :taxonomies, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :licenses, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :np_licenses, allow_destroy: true, reject_if: :all_blank
