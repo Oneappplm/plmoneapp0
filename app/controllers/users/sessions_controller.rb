@@ -1,7 +1,7 @@
 class Users::SessionsController < Devise::SessionsController
   def create
     if current_user.present?
-      if current_setting.qualifacts?
+      if current_setting.qualifacts? && !current_user&.super_administrator?
         sign_out current_user
         redirect_to root_path, alert: "You are not allowed to authenticate the system. Please contact the administrator." and return
       end
