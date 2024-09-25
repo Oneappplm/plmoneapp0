@@ -36,6 +36,7 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
       :state_residence_date, :citizenship_country_country_name, :marital_status_marital_status_description,
       :gender_gender_description, :birth_country_country_name, :correspondence_address_type_correspondence_address_type_descrip,
       :provider_type_provider_type_abbreviation, :graduate_type_graduate_type_description,
-      :nid_country_country_name, :attest_date, :plan_provider_id, :last_recredential_date, :next_recredential_date)
+      :nid_country_country_name, :attest_date, :plan_provider_id, :last_recredential_date, :next_recredential_date,
+      :npi_verification_status)
   end
 end
