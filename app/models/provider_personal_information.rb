@@ -8,6 +8,14 @@ class ProviderPersonalInformation < ApplicationRecord
   belongs_to :provider_attest
 
   has_many :practice_informations, through: :provider_attest
+  has_many :provider_educations, through: :provider_attest
+  has_many :provider_deas, through: :provider_attest
+  has_many :provider_cds, through: :provider_attest
+  has_many :provider_insurance_coverages, through: :provider_attest
+  has_many :practice_associates, through: :provider_attest
+  has_many :provider_work_histories, through: :provider_attest
+  has_many :provider_medical_licenses, through: :provider_attest
+  has_many :provider_specialties, through: :provider_attest
   has_many :provider_personal_attempts
   has_many :provider_personal_docs_uploaded_documents, class_name: 'ProviderPersonalDocsUpload'
   has_many :provider_personal_uploaded_docs, class_name: 'ProviderPersonalUploadedDoc'
