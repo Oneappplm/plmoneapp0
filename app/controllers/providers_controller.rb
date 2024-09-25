@@ -239,15 +239,16 @@ class ProvidersController < ApplicationController
 	# @provider.np_licenses.build if @provider.np_licenses.blank?
 	@provider.dea_licenses.build if @provider.dea_licenses.blank?
 	@provider.licenses.build if @provider.licenses.blank?
-  	@provider.rn_licenses.build if @provider.rn_licenses.blank?
-  	@provider.service_locations.build if @provider.service_locations.blank?
-    @provider.pa_licenses.build if @provider.pa_licenses.blank?
-    @provider.cnp_licenses.build if @provider.cnp_licenses.blank?
+	@provider.rn_licenses.build if @provider.rn_licenses.blank?
+	@provider.service_locations.build if @provider.service_locations.blank?
+	@provider.pa_licenses.build if @provider.pa_licenses.blank?
+	@provider.cnp_licenses.build if @provider.cnp_licenses.blank?
 	@provider.cds_licenses.build if @provider.cds_licenses.blank?
 	@provider.board_certifications.build if @provider.board_certifications.blank?
-    payer_login = @provider.payer_logins.build if @provider.payer_logins.blank?
-    payer_login.questions.build if payer_login
-  end
+	payer_login = @provider.payer_logins.build if @provider.payer_logins.blank?
+	payer_login.questions.build if payer_login
+	@provider.work_history_providers.build if @provider.work_history_providers.blank?
+end
 
 
   def set_overview_details
@@ -331,6 +332,8 @@ class ProvidersController < ApplicationController
 					:status,
 					:end_date,
 					:payer_login,
+					:work_history_not_applicable,
+					:work_history_explain,
 					:license_state_number,
 					:license_state_effective_date,
 					:license_state_id,
@@ -372,6 +375,9 @@ class ProvidersController < ApplicationController
 					service_locations_attributes: [:id, :primary_service_non_office_area, :primary_service_location_apps, :primary_service_zip_code, :primary_service_office_email, :primary_service_fax, :primary_service_office_website, :primary_service_crisis_phone, :primary_service_location_other_phone, :primary_service_appt_scheduling, :primary_service_interpreter_language, :primary_service_telehealth_only_state],
 					#pa_licenses_attributes: [:id, :pa_license_number, :state_id, :pa_license_effective_date, :pa_license_expiration_date, :pa_license_rcleaenewal_effective_date, :no_pa_license, :_destroy],
 					dea_licenses_attributes: [:id, :dea_license_number, :dea_license_effective_date, :dea_license_expiration_date, :dea_license_renewal_effective_date, :state_id, :no_dea_license,  :_destroy],
+
+					work_history_providers_attributes: [:id, :practice_name, :location, :start_date, :end_date, :reasone_of_leaving, :tax_id, :_destroy ],
+
 					cds_licenses_attributes: [:id, :cds_license_number, :state_id, :cds_license_issue_date, :cds_license_expiration_date, :cds_renewal_effective_date, :no_cds_license, :_destroy],
 					mn_licenses_attributes: [:id, :mn_license_number, :mn_license_expiration_date, :_destroy],
 					mccs_attributes: [:id, :mcc_username, :password, :mcc_electronic_signature_code, :_destroy],

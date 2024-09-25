@@ -90,33 +90,62 @@
 
           //RN License
           $(document).ready(function () {
-         $("#rn_licenses").on("click", ".add_association", function () {
-         var detailsFields = $("#rn_licenses .field");
-         var newEnrollmentdetails = detailsFields.last().clone();
-         var lastId = detailsFields.length - 1;
-         var newId = lastId + 1;
-         var rn_state_id = "provider_rn_licenses_attributes_" + newId + "_state_id";
+           $("#rn_licenses").on("click", ".add_association", function () {
+           var detailsFields = $("#rn_licenses .field");
+           var newEnrollmentdetails = detailsFields.last().clone();
+           var lastId = detailsFields.length - 1;
+           var newId = lastId + 1;
+           var rn_state_id = "provider_rn_licenses_attributes_" + newId + "_state_id";
 
-          newEnrollmentdetails.find("[id^='provider_rn_licenses_attributes_']").each(function() {
-            var oldId = $(this).attr("id");
-            var newIdValue = oldId.replace(/\d+/, newId);
-            $(this).attr("id", newIdValue);
-            $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
-            $(this).val('');
-         });
-            
-         setTimeout(function(){
+            newEnrollmentdetails.find("[id^='provider_rn_licenses_attributes_']").each(function() {
+              var oldId = $(this).attr("id");
+              var newIdValue = oldId.replace(/\d+/, newId);
+              $(this).attr("id", newIdValue);
+              $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
+              $(this).val('');
+           });
+              
+           setTimeout(function(){
 
-            $.get('<%= provider_states_multi_select_data_path %>', function(data){
-               VirtualSelect.init({ele: '#' + rn_state_id, search: true });
-               document.querySelector('#' + rn_state_id).setOptions(data['result']);
-               document.querySelector('#' + rn_state_id).setValue(value);
-            });
-         }, 1000);
-         
-          $("#rn_licenses .fields").append(newEnrollmentdetails);
-         })
-        });
+              $.get('<%= provider_states_multi_select_data_path %>', function(data){
+                 VirtualSelect.init({ele: '#' + rn_state_id, search: true });
+                 document.querySelector('#' + rn_state_id).setOptions(data['result']);
+                 document.querySelector('#' + rn_state_id).setValue(value);
+              });
+           }, 1000);
+           
+            $("#rn_licenses .fields").append(newEnrollmentdetails);
+           })
+          });
+
+          //work history providers
+          $(document).ready(function () {
+           $("#work_history_providers").on("click", ".add_association", function () {
+           var detailsFields = $("#work_history_providers .field");
+           var newWorkHistory = detailsFields.last().clone();
+           var lastId = detailsFields.length - 1;
+           var newId = lastId + 1;
+
+            newWorkHistory.find("[id^='provider_work_history_providers_attributes_']").each(function() {
+              var oldId = $(this).attr("id");
+              var newIdValue = oldId.replace(/\d+/, newId);
+              $(this).attr("id", newIdValue);
+              $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
+              $(this).val('');
+           });
+              
+           setTimeout(function(){
+
+              $.get('<%= provider_states_multi_select_data_path %>', function(data){
+                 VirtualSelect.init({ele: '#' + rn_state_id, search: true });
+                 document.querySelector('#' + rn_state_id).setOptions(data['result']);
+                 document.querySelector('#' + rn_state_id).setValue(value);
+              });
+           }, 1000);
+           
+            $("#work_history_providers .fields").append(newWorkHistory);
+           })
+          });
 
           //APRN License
            $(document).ready(function () {
@@ -196,6 +225,29 @@
 
             // Listen for changes on the checkbox
             $("#no-board-cert").change(updateButtonState);
+
+            // Update the button state on page load
+            updateButtonState();
+          });
+
+          //work history checkbox disable function
+          $(document).ready(function() {
+            function updateButtonState() { // Function to update elements based on the checkbox state
+               var isChecked = $("#no-work").is(":checked");
+              
+              if (isChecked) { // Disable or enable the select element based on the checkbox state
+                $("#work_history_providers").prop("hidden", true);
+                $("#work_history_providers :input").prop("hidden", true);
+                $("#work-history-explain").prop("hidden", false);
+              } else { // Enable the dea-explain field (regardless of the checkbox state)
+                $("#work_history_providers").prop("hidden", false);
+                $("#work_history_providers :input").prop("hidden", false);
+                $("#work-history-explain").prop("hidden", true);
+              }
+            }
+
+            // Listen for changes on the checkbox
+            $("#no-work").change(updateButtonState);
 
             // Update the button state on page load
             updateButtonState();
