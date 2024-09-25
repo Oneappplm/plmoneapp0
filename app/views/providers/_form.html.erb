@@ -424,10 +424,41 @@
       </div>
    </div>
 
+   <% if current_setting.affordablecare? %>
+    <div class="row mb-5 mt-2">
+      <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
+        <div class="d-flex gap-2">
+          <div class="form-row  d-flex align-items-center">
+            <h3>Work History</h3>
+          </div>
+          <div class="form-row  d-flex align-items-center gap-1">
+            <%= f.check_box :work_history_not_applicable, id:'no-work' %>
+            <%= f.label :work_history_not_applicable, "N/A", class: 'text-dark-grey' %>
+          </div>
+        </div>
+      </div>
+      <div class="form-row  d-flex align-items-start">
+        <%= f.text_area :work_history_explain,  placeholder: 'Explain if you do not have Work History (required if no Work History)', class: 'form-control border border-dark', rows: '8', id: 'work-history-explain'%>
+      </div>
+      <div id="work_history_providers">
+        <div class="fields">
+          <%= f.fields_for :work_history_providers do |work_history_provider_fields| %>
+            <%= render 'work_history_provider_fields', f: work_history_provider_fields %>
+          <% end %>
+        </div>
+        <div class="row">
+          <div class="col-lg-12 text-start">
+            <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add Work History </button>
+          </div>
+        </div>
+      </div>
+    </div>
+   <% end %>
+
 
 
      <div class="row mb-5 mt-2">
-     <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
+      <div class="col-lg-12 mb-1 d-flex justify-content-start gap-4">
         <div class="d-flex gap-2">
           <div class="form-row  d-flex align-items-center">
             <h3>Controlled Dangerous Substance Registration Number</h3>
@@ -442,16 +473,16 @@
         <%= f.text_area :cds_explain,  placeholder: 'Explain if you do not have CDS Registration Number(required if no CDS Number)', class: 'form-control border border-dark', rows: '8', id: 'cds-explain'%>
       </div>
       <div id="cds_licenses">
-          <div class="fields">
-            <%= f.fields_for :cds_licenses do |cds_license_fields| %>
-              <%= render 'cds_license_fields', f: cds_license_fields %>
-            <% end %>
+        <div class="fields">
+          <%= f.fields_for :cds_licenses do |cds_license_fields| %>
+            <%= render 'cds_license_fields', f: cds_license_fields %>
+          <% end %>
+        </div>
+        <div class="row">
+          <div class="col-lg-12 text-start">
+            <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add CDS License </button>
           </div>
-          <div class="row">
-                  <div class="col-lg-12 text-start">
-                        <button type="button" class="add_association  py-1 btn btn-primary" > <i class="bi bi-plus-circle-fill"></i> Add CDS License </button>
-                  </div>
-          </div>
+        </div>
       </div>
     </div>
 
