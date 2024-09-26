@@ -4,10 +4,16 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
   def update
     @provider_personal_information.assign_attributes(provider_personal_information_params)
 
-    if @provider_personal_information.save
-      redirect_to mhc_verification_platform_path(page_tab: 'practitioner_info',id: params[:provider_personal_information][:provider_attest_id]), notice: 'Practice information saved successfully.'
+    if params[:page_tab].present?
+      page_tab = params[:page_tab]
     else
-      redirect_to mhc_verification_platform_path(page_tab: 'practitioner_info',id: params[:provider_personal_information][:provider_attest_id]), alert: 'Failed to save practice information.'
+      page_tab = 'practitioner_info'
+    end
+
+    if @provider_personal_information.save
+      redirect_to mhc_verification_platform_path(page_tab: page_tab,id: params[:provider_personal_information][:provider_attest_id]), notice: 'Practice information saved successfully.'
+    else
+      redirect_to mhc_verification_platform_path(page_tab: page_tab,id: params[:provider_personal_information][:provider_attest_id]), alert: 'Failed to save practice information.'
     end
   end
 
