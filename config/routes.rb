@@ -361,6 +361,9 @@ Rails.application.routes.draw do
   # for generating the report on client home
   get '/generate_report', to: 'mhc/verification_platform#generate_report', defaults: { format: :csv }
 
+  # for generating the cme_practitioner_profile_report on query_report tab in verification platform
+  get '/cme_practitioner_report', to: 'query_reports#cme_practitioner_report', defaults: { format: :csv }
+
   # for verification-work-tickler
   get '/work_tickler_page', to: 'mhc/verification_platform#work_tickler_page'
   get '/privileges_work_tickler_page', to: 'mhc/verification_platform#privileges_work_tickler_page'
