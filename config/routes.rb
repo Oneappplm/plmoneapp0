@@ -343,6 +343,10 @@ Rails.application.routes.draw do
   post '/save_provider_personal_docs_receives', to: 'app_trackers#save_provider_personal_docs_receives'
   post '/save_provider_practice_informations', to: 'app_trackers#save_provider_practice_informations'
 
+
+  # for generating the report on client home
+  get '/generate_report', to: 'mhc/verification_platform#generate_report', defaults: { format: :csv }
+
   namespace :mhc do
     resources :client_portal, only: [:index] do
       collection do

@@ -50,6 +50,22 @@
                                 </span>
                             </div>
                         </div>
+
+                        <div class="row mb-3">
+                          <div class="col-md-6">
+                            <%= form_with url: generate_report_path(format: :csv), method: :get, class: "form-inline", id: 'download-report-form' do %>
+                              <%= hidden_field_tag :provider_attest_id, @provider_personal_informations.first.provider_attest_id %>
+                              <div class="form-group mr-2">
+                                <label for="date_range" class="mr-2 text-white">Select Date Range</label>
+                                <%= text_field_tag :date_range, params[:date_range], class: "form-control", placeholder: "Select date range" %>
+                              </div>
+                              <div class="form-group">
+                                <%= submit_tag 'Generate Report', class: "btn btn-primary mt-2" %>
+                              </div>
+                            <% end %>
+                          </div>
+                        </div>
+                        
                         <table class="table practice-table mt-3">
                             <thead>
                                 <tr>
@@ -100,3 +116,21 @@
             </div>
     </div>
 <% end %>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('input[name="date_range"]').daterangepicker({
+      opens: 'left',
+      locale: {
+        format: 'YYYY-MM-DD'
+      }
+    });
+  });
+  $('#download-report-form').on('submit', function(event) {
+    setTimeout(function() {
+      $('.loading-overlay').css('display', 'none'); // Hide overlay after timeout
+        window.location.href = '/mhc/verification-platform'; // Redirect after CSV download
+    }, 1000); // Adjust timeout as needed
+  });
+
+</script>
