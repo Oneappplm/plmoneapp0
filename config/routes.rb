@@ -343,6 +343,14 @@ Rails.application.routes.draw do
   post '/save_provider_personal_docs_receives', to: 'app_trackers#save_provider_personal_docs_receives'
   post '/save_provider_practice_informations', to: 'app_trackers#save_provider_practice_informations'
 
+  # for generating the report on client home
+  get '/generate_report', to: 'mhc/verification_platform#generate_report', defaults: { format: :csv }
+
+  # for verification-work-tickler
+  get '/work_tickler_page', to: 'mhc/verification_platform#work_tickler_page'
+  get '/privileges_work_tickler_page', to: 'mhc/verification_platform#privileges_work_tickler_page'
+  get '/enrollment_work_tickler_page', to: 'mhc/verification_platform#enrollment_work_tickler_page'
+
   namespace :mhc do
     resources :practice_informations, only: [:index, :create], path: 'practice-information'
     resources :provider_educations, only: [:index, :create], path: 'provider-education'
@@ -360,6 +368,17 @@ Rails.application.routes.draw do
     resources :provider_deas, only: [:create, :update, :destroy], path: 'provider-dea'
     resources :verification_platform, only: [:index, :show], path: 'verification-platform'
     resources :client_portal, only: [:index, :show], path: 'client-portal'
+    resources :verification_platform, only: [:index, :show], path: 'verification-platform'
+    
+    resources :client_portal, only: [:index, :show], path: 'client-portal' do
+      collection do
+        get :upload_csv
+        post :process_csv
+        get :clear_csv
+        get :download_csv
+      end
+    end
+
     resources :manage_practitioners, only: [:index], path: 'manage-practitioners'
     resources :manage_clients, only: [:index], path: 'manage-clients' do
       collection do
