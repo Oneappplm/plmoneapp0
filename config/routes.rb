@@ -344,6 +344,17 @@ Rails.application.routes.draw do
   post '/save_provider_practice_informations', to: 'app_trackers#save_provider_practice_informations'
 
   namespace :mhc do
+    resources :client_portal, only: [:index] do
+      collection do
+        get :upload_csv
+        post :process_csv
+        get :clear_csv
+        get :download_csv
+      end
+    end
+  end
+
+  namespace :mhc do
     resources :practice_informations, only: [:index, :create], path: 'practice-information'
     resources :provider_educations, only: [:index, :create], path: 'provider-education'
     resources :provider_personal_informations, only: [:update], path: 'provider-personal-information'
