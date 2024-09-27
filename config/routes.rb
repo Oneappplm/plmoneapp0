@@ -343,6 +343,26 @@ Rails.application.routes.draw do
   post '/save_provider_personal_docs_receives', to: 'app_trackers#save_provider_personal_docs_receives'
   post '/save_provider_practice_informations', to: 'app_trackers#save_provider_practice_informations'
 
+
+  # for generating the report on client home
+  get '/generate_report', to: 'mhc/verification_platform#generate_report', defaults: { format: :csv }
+
+  # for verification-work-tickler
+  get '/work_tickler_page', to: 'mhc/verification_platform#work_tickler_page'
+  get '/privileges_work_tickler_page', to: 'mhc/verification_platform#privileges_work_tickler_page'
+  get '/enrollment_work_tickler_page', to: 'mhc/verification_platform#enrollment_work_tickler_page'
+
+  namespace :mhc do
+    resources :client_portal, only: [:index] do
+      collection do
+        get :upload_csv
+        post :process_csv
+        get :clear_csv
+        get :download_csv
+      end
+    end
+  end
+
   namespace :mhc do
     resources :practice_informations, only: [:index, :create], path: 'practice-information'
     resources :provider_educations, only: [:index, :create], path: 'provider-education'
