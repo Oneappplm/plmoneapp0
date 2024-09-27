@@ -367,7 +367,12 @@ Rails.application.routes.draw do
   get '/enrollment_work_tickler_page', to: 'mhc/verification_platform#enrollment_work_tickler_page'
 
   namespace :mhc do
-    resources :client_portal, only: [:index] do
+    resources :practice_informations, only: [:index, :create], path: 'practice-information'
+    resources :provider_educations, only: [:index, :create], path: 'provider-education'
+    resources :provider_personal_informations, only: [:update], path: 'provider-personal-information'
+    resources :verification_platform, only: [:index, :show], path: 'verification-platform'
+    
+    resources :client_portal, only: [:index, :show], path: 'client-portal' do
       collection do
         get :upload_csv
         post :process_csv
@@ -375,14 +380,7 @@ Rails.application.routes.draw do
         get :download_csv
       end
     end
-  end
 
-  namespace :mhc do
-    resources :practice_informations, only: [:index, :create], path: 'practice-information'
-    resources :provider_educations, only: [:index, :create], path: 'provider-education'
-    resources :provider_personal_informations, only: [:update], path: 'provider-personal-information'
-    resources :verification_platform, only: [:index, :show], path: 'verification-platform'
-    resources :client_portal, only: [:index, :show], path: 'client-portal'
     resources :manage_practitioners, only: [:index], path: 'manage-practitioners'
     resources :manage_clients, only: [:index], path: 'manage-clients' do
       collection do
