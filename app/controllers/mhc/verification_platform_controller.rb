@@ -16,6 +16,38 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
   end
 
+  def generate_report
+    provider_attest_id = params[:provider_attest_id]
+    
+    # Get date range from the params using the date_range method
+    start_date, end_date = params[:date_range].split(" - ").map(&:to_date)
+
+    # Find provider personal information with the matching provider_attest_id and within the date range
+    @provider_personal_informations = ProviderPersonalInformation.where(provider_attest_id: provider_attest_id).where(created_at: start_date.beginning_of_day..end_date.end_of_day)
+
+    # Generate CSV content
+    csv_data = CSV.generate(headers: true) do |csv|
+      csv << ["Practitioner Name", "Ready for download", "In Process", "Submitted", "Incomplete Application", "Application Not Received", "Status"]
+      
+      @provider_personal_informations.each do |provider|
+        csv << [
+          "#{provider.fullname}, #{provider.provider_type_provider_type_abbreviation}",
+          '', # Placeholder for "Ready for download"
+          '', # Placeholder for "In Process"
+          '', # Placeholder for "Submitted"
+          '', # Placeholder for "Incomplete Application"
+          '', # Placeholder for "Application Not Received"
+          ''  # Placeholder for "Status"
+        ]
+      end
+    end
+
+    # Send CSV data as a downloadable file
+   respond_to do |format|
+      format.csv { send_data csv_data, filename: "provider_report_#{Date.today}.csv" }
+    end
+  end
+
   protected
   def set_provider_personal_informations
     @provider_personal_information = ProviderPersonalInformation.find_by(provider_attest_id: params[:id])
