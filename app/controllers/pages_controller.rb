@@ -229,10 +229,28 @@ class PagesController < ApplicationController
   end
 
   def download_clients
-  	@clients = Client.where.not(id: nil)
-  	respond_to do |format|
-  		format.csv { send_data @clients.to_csv, filename: "Clients-#{Time.now.to_date}.csv" }
-  	end
+    provider_attest_id = params[:provider_attest_id]
+    
+    @provider_personal_informations = ProviderPersonalInformation.where(provider_attest_id: provider_attest_id)
+
+    @q = ProviderPersonalInformation.ransack(params[:q]&.except(:advanced_search))
+
+    csv_data = CSV.generate(headers: true) do |csv|
+      csv << ['NPI', 'Provider Name', 'Address', 'MedvId', 'Cred Cycle']
+      
+      @provider_personal_informations.each do |provider|
+        practice_information = provider.provider_attest.practice_informations.first
+        csv << [
+          "#{provider.npi}",
+          "#{provider.fullname}, #{provider.provider_type_provider_type_abbreviation}",
+          "#{practice_information.complete_address}",
+          "#{provider.caqh_provider_attest_id}"
+        ]
+      end
+    end
+    respond_to do |format|
+      format.csv { send_data csv_data, filename: "provider_report_#{Date.today}.csv" }
+    end
   end
 
   def show_virtual_review_committee
