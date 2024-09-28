@@ -369,6 +369,11 @@ Rails.application.routes.draw do
   get '/privileges_work_tickler_page', to: 'mhc/verification_platform#privileges_work_tickler_page'
   get '/enrollment_work_tickler_page', to: 'mhc/verification_platform#enrollment_work_tickler_page'
 
+  # for profile & application button on practitioner show page
+  get '/profile_page', to: 'mhc/verification_platform#profile_page'
+  get '/application_page', to: 'mhc/verification_platform#application_page'
+  get '/enrollment_report_page', to: 'mhc/verification_platform#enrollment_report_page'
+
   namespace :mhc do
     resources :practice_informations, only: [:index, :create], path: 'practice-information'
     resources :provider_educations, only: [:index, :create], path: 'provider-education'
