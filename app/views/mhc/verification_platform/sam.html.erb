@@ -1,45 +1,55 @@
-    <div class="enc-content">
-        <div class="container">
-            <%= render "top_nav_buttons"%>
-            <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <h4 class="page-heading">SAM (System for Award Management)</h4>
-                </div>
+<div class="enc-content">
+    <div class="container">
+        <%= render "top_nav_buttons"%>
+        <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <h4 class="page-heading">SAM (System for Award Management)</h4>
             </div>
-            <div class="mt-3 d-flex page-applicable align-items-center justify-content-end gap-2 mb-2">
-                <button class="btn btn-primary py-1  page-applicable d-flex align-items-center gap-1">
-                    <i class="bx bx-plus"></i>
-                    Auto Create Records
-                </button>
-                <a href="<%= verification_platform_index_path(page: 'add_new_sam')%>" class="btn btn-primary py-1  page-applicable d-flex align-items-center gap-1">
-                    <i class="bx bx-plus"></i>
-                    Manually Create Records
-                </a>
-            </div>
-
-            <table class="table table-bordered practice-table mt-3 page-applicable ">
-                <thead>
-                    <tr>
-                        <th class="text-white" scope="col">Name Type</th>
-                        <th class="text-white">First Name</th>
-                        <th class="text-white">Middle Name</th>
-                        <th class="text-white">Last Name</th>
-                        <th class="text-white">Suffix</th>
-                        <th class="text-white">SSN</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Primary</td>
-                        <td><a href="<%= verification_platform_index_path(page: 'sam_record')%>" id="OigDisplayGeneral"
-                                class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none">Reyv</a>
-                        </td>
-                        <td>Moreno</td>
-                        <td>Flores</td>
-                        <td>Jr.</td>
-                        <td>XXX-XX-1234</td>
-                    </tr>
-                </tbody>
-            </table>
-          </div>
         </div>
+        <div class="mt-3 d-flex page-applicable align-items-center justify-content-end gap-2 mb-2">
+            <a href="<%= auto_create_mhc_provider_personal_information_sam_record_path(page_tab: 'sam', provider_personal_information_id: @provider_personal_information.id) %>" class="btn btn-primary py-1  page-applicable d-flex align-items-center gap-1">
+                <i class="bx bx-plus"></i>
+                Auto Create Records
+            </a>
+            <%= link_to 'Autoverify', auto_verifies_path(search_state: 'sam'), class: "btn enc-btn-nav #{encompass_nav_active('auto_verifies','index')}" if current_user.can_access?('Autoverify')%>
+
+            <a href="<%= mhc_verification_platform_path(page: 'add_new_sam')%>" class="btn btn-primary py-1  page-applicable d-flex align-items-center gap-1">
+                <i class="bx bx-plus"></i>
+                Manually Create Records
+            </a>
+        </div>
+
+        <table class="table table-bordered practice-table mt-3 page-applicable ">
+            <thead>
+                <tr>
+                    <th class="text-white" scope="col">Name Type</th>
+                    <th class="text-white">First Name</th>
+                    <th class="text-white">Middle Name</th>
+                    <th class="text-white">Last Name</th>
+                    <th class="text-white">Suffix</th>
+                    <th class="text-white">SSN</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% @provider_personal_information_sam_records.each do |provider_personal_information_sam_record| %>
+                    <tr>
+                        <td><a href="<%= mhc_verification_platform_path(provider_personal_information_sam_record_id: provider_personal_information_sam_record.id, page_tab: 'sam_record')%>" id="OigDisplayGeneral"
+                                class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none"><%= provider_personal_information_sam_record.name_type %></a>
+                        </td>
+                        <td><a href="<%= mhc_verification_platform_path(page_tab: 'sam_record')%>" id="OigDisplayGeneral"
+                                class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none"><%= provider_personal_information_sam_record.first_name %></a>
+                        </td>
+                        <td><a href="<%= mhc_verification_platform_path(page_tab: 'sam_record')%>" id="OigDisplayGeneral"
+                                class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none"><%= provider_personal_information_sam_record.middle_name %></a></td>
+                        <td><a href="<%= mhc_verification_platform_path(page_tab: 'sam_record')%>" id="OigDisplayGeneral"
+                                class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none"><%= provider_personal_information_sam_record.last_name %></a></td>
+                        <td><a href="<%= mhc_verification_platform_path(page_tab: 'sam_record')%>" id="OigDisplayGeneral"
+                                class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none"><%= provider_personal_information_sam_record.suffix %></a></td>
+                        <td><a href="<%= mhc_verification_platform_path(page_tab: 'sam_record')%>" id="OigDisplayGeneral"
+                                class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none"><%= provider_personal_information_sam_record.ssn %></a></td>
+                    </tr>
+                <% end %>
+            </tbody>
+        </table>
+    </div>
+</div>

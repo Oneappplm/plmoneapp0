@@ -190,6 +190,14 @@ module ApplicationHelper
     ]
   end
 
+	def verification_search_results
+    [["Match", "match"],
+			["Possible match", "possible_match"],
+			["No match", "no_match"],
+			["Unable to verify", "unable_to_verify"]
+		]
+  end
+
   # not sure why but for some reason this has different options
   def enrollment_status
     [
