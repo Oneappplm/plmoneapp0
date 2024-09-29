@@ -37,6 +37,23 @@ class Mhc::VerificationPlatformController < ApplicationController
     if params[:page_tab] == 'education'
       @provider_educations = @provider_personal_information.provider_attest.provider_educations.paginate(per_page: 10, page: params[:page])
     end
+
+    if params[:page_tab] == 'sam'
+      @provider_personal_information_sam_records = @provider_personal_information.provider_personal_information_sam_records
+    end
+
+    if params[:page_tab] == 'sam_record'
+      @provider_personal_information_sam_record = ProviderPersonalInformationSamRecord.find(params[:provider_personal_information_sam_record_id])
+    end
+
+    if params[:page_tab] == 'show_sam_record'
+      @provider_personal_information_sam_rva_record = ProviderPersonalInformationSamRvaRecord.find_or_initialize_by(id: params[:provider_personal_information_sam_rva_record_id], provider_personal_information_sam_record_id: params[:provider_personal_information_sam_record_id])
+    end
+
+    if params[:page_tab] == 'registration'
+      @provider_deas = @provider_personal_information.provider_deas.order(:id)
+      @states = State.all
+    end
   end
 
   def redirect_to_auto_verify

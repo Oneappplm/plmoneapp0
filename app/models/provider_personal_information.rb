@@ -16,10 +16,13 @@ class ProviderPersonalInformation < ApplicationRecord
   has_many :provider_work_histories, through: :provider_attest
   has_many :provider_medical_licenses, through: :provider_attest
   has_many :provider_specialties, through: :provider_attest
+  has_many :provider_deas, through: :provider_attest
   has_many :provider_personal_attempts
   has_many :provider_personal_docs_uploaded_documents, class_name: 'ProviderPersonalDocsUpload'
   has_many :provider_personal_uploaded_docs, class_name: 'ProviderPersonalUploadedDoc'
   has_one :provider_personal_docs_receive
+
+  has_many :provider_personal_information_sam_records
 
   validates :provider_attest_id, presence: true
 

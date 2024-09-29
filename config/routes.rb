@@ -347,6 +347,17 @@ Rails.application.routes.draw do
     resources :practice_informations, only: [:index, :create], path: 'practice-information'
     resources :provider_educations, only: [:index, :create], path: 'provider-education'
     resources :provider_personal_informations, only: [:update], path: 'provider-personal-information'
+    resources :provider_personal_information_sam_records, only: [:create, :show], path: 'provider-personal-information-sam-record' do
+      member do
+        get :auto_create, path: 'auto-create'
+      end
+    end
+    resources :provider_personal_information_sam_rva_records, only: [:create, :update], path: 'provider-personal-information-sam-rva-record' do
+      member do
+        get :auto_create, path: 'auto-create'
+      end
+    end
+    resources :provider_deas, only: [:create, :update, :destroy], path: 'provider-dea'
     resources :verification_platform, only: [:index, :show], path: 'verification-platform'
     resources :client_portal, only: [:index, :show], path: 'client-portal'
     resources :manage_practitioners, only: [:index], path: 'manage-practitioners'
