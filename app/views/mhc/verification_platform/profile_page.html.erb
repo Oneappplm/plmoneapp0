@@ -1,0 +1,417 @@
+<div class="container mt-5">
+  <div class="card mb-4">
+    <div class="card-header">Profile</div>
+    <div class="card-body">
+      <!-- Verified Profile Button trigger modal -->
+      <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#verifiedProfileModal">
+        Verified Profile
+      </button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="verifiedProfileModal" tabindex="-1" aria-labelledby="verifiedProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p class="fs-4 text-dark">This Practitioner Verified Profile version is obsolete.</p>
+              <p class="fs-4 text-dark">Please use Verified Profile 2.0 instead.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Verified Profile 2.0 (beta) Button trigger modal -->
+      <button type="button" class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#verifiedeModal">
+        Verified Profile 2.0 (beta)
+      </button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="verifiedeModal" tabindex="-1" aria-labelledby="verifiedeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-dark">
+              <%= render 'mhc/verification_platform/credential_committee_content' %>
+              <%= render 'mhc/verification_platform/verified_profile_content' %>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Log Section -->
+  <div class="card mb-4">
+    <div class="card-header">Notification Log</div>
+    <div class="card-body">
+      <button type="button" class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#letterLibraryModal">
+        Letter Library
+      </button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="letterLibraryModal" tabindex="-1" aria-labelledby="letterLibraryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title" id="exampleModalLabel">Send Notification Item</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <%= form_with url: '#', method: :post, local: true do |f| %>
+                <!-- Current Facility -->
+                <div class="mb-3 row">
+                  <label class="col-sm-3 col-form-label fw-bold">Current Facility:</label>
+                  <div class="col-sm-9">
+                    <%= f.text_field :facility, class: 'form-control', value: 'CHCTest', readonly: true %>
+                  </div>
+                </div>
+                
+                <!-- Current Practitioner Type -->
+                <div class="mb-3 row">
+                  <label class="col-sm-3 col-form-label fw-bold">Current Practitioner Type:</label>
+                  <div class="col-sm-9">
+                    <%= f.text_field :practitioner_type, class: 'form-control', readonly: true %>
+                  </div>
+                </div>
+                
+                <!-- List All Letter Names -->
+                <div class="mb-3 row">
+                  <label class="col-sm-3 col-form-label fw-bold">List All Letter Names:</label>
+                  <div class="col-sm-9">
+                    <%= f.select :letter_name, 
+                      ['---- Select All Letter Here ----', 
+                       'Active Appointment Approval', 
+                       'Alameda Alliance Application Final Request',
+                       'Alameda Alliance Application First Request',
+                       'Alameda Alliance Application Second Request',
+                       'Cigna Outreach July',
+                       'Cigna Outreach June',
+                       'Cigna Recred 1',
+                       'Cigna Recred 2',
+                       'Humana - Collection Outreach Letter 90 Days',
+                       'Humana - Cred Collection Letter',
+                       'Humana - Recred Collection Letter',
+                       'Humana - Termination Letter',
+                       'Humana - Welcome Letter',
+                       'Humana Additionla Information',
+                       'Humana Application Receipt',
+                       'Liability Coverage Expired Notification',
+                       'Liability Coverage Expiring Notification',
+                       'Malpractice Face Sheet Request'
+                      ], 
+                      {}, class: 'form-select' %>
+                  </div>
+                </div>
+                
+                <!-- Send Method -->
+                <fieldset class="mb-3">
+                  <legend class="col-form-label col-sm-3 pt-0 fw-bold">Send Method:</legend>
+                  <div class="col-sm-9">
+                    <div class="form-check">
+                      <%= f.radio_button :send_method, 'Letter', id: 'letter', checked: true, class: 'form-check-input' %>
+                      <label class="form-check-label" for="letter">Letter</label>
+                    </div>
+                    <div class="form-check">
+                      <%= f.radio_button :send_method, 'Email', id: 'email', class: 'form-check-input' %>
+                      <label class="form-check-label" for="email">Email</label>
+                    </div>
+                    <div class="form-check">
+                      <%= f.radio_button :send_method, 'Fax', id: 'fax', class: 'form-check-input' %>
+                      <label class="form-check-label" for="fax">Fax</label>
+                    </div>
+                  </div>
+                </fieldset>
+                
+                <!-- From -->
+                <div class="mb-3 row">
+                  <label class="col-sm-3 col-form-label fw-bold">From:</label>
+                  <div class="col-sm-9">
+                    <%= f.text_area :from, rows: 2, class: 'form-control' %>
+                  </div>
+                </div>
+                
+                <!-- To -->
+                <div class="mb-3 row">
+                  <label class="col-sm-3 col-form-label fw-bold">To:</label>
+                  <div class="col-sm-9">
+                    <%= f.text_area :to, rows: 2, class: 'form-control' %>
+                  </div>
+                </div>
+                
+                <!-- Include Delineation of Privileges -->
+                <div class="mb-3 form-check">
+                  <%= f.check_box :include_privileges, class: 'form-check-input' %>
+                  <label class="form-check-label" for="includePrivileges">Include Delineation of Privileges</label>
+                </div>
+                
+                <!-- Buttons -->
+                <div class="modal-footer">
+                  <div class="d-flex justify-content-between">
+                    <%= button_tag 'Preview', type: 'button', class: 'btn btn-secondary mx-2' %>
+                    <%= f.submit 'Send/Print', class: 'btn btn-primary' %>
+                  </div>
+                </div>
+              <% end %>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="text-white fw-bold bg-primary">File</th>
+            <th class="text-white fw-bold bg-primary">Type</th>
+            <th class="text-white fw-bold bg-primary">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Image Files Section -->
+  <div class="card mb-4">
+    <div class="card-header">Image Files</div>
+    <div class="card-body">
+      <!-- Button trigger modal -->
+      <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewImageModal">
+        View Images
+      </button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="viewImageModal" tabindex="-1" aria-labelledby="viewImageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title" id="viewImageModalLabel">View Images</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              No Image is available.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Web Crawler Files Section -->
+  <div class="card mb-4">
+    <div class="card-header">Web Crawler Files</div>
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="sub-section" class="form-label">Sub Section Name List:</label>
+          <select id="sub-section" class="form-select">
+            <option>Licensure</option>
+            <option>Certification</option>
+            <option>Background County Check</option>
+            <option>NJ Debartment</option>
+            <option>Background Driver License</option>
+            <option>EPLS</option>
+            <option>Background Misdemeanor</option>
+            <option>NPI</option>
+            <option>OGI</option>
+            <option>Ownership</option>
+            <option>Prescreen Delinquency NC</option>
+            <option>Prescreen IRS Tax Liens</option>
+            <option>SAM</option>
+            <option>Background Sexual Offender</option>
+            <option>SSDMF</option>
+            <option>Background SSN Verification</option>
+            <option>Background State Check</option>
+            <option>Board Certification</option>
+            <option>CDS/DPS</option>
+            <option>DEA</option>
+            <option>Other Licensure</option>
+            <option>Board Certification</option>
+          </select>
+        </div>
+      </div>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="text-white fw-bold bg-primary">Web Crawler File Name</th>
+            <th class="text-white fw-bold bg-primary">Query Date Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Collect Paper Copy Section -->
+  <div class="card mb-4">
+    <div class="card-header">Collect Paper Copy</div>
+    <div class="card-body">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="text-white fw-bold bg-primary">Paper Copy Item</th>
+            <th class="text-white fw-bold bg-primary">Operation</th>
+            <th class="text-white fw-bold bg-primary">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Saved Profiles Section -->
+  <div class="card mb-4">
+    <div class="card-header">Saved Profiles</div>
+    <div class="card-body">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="text-white fw-bold bg-primary">File</th>
+            <th class="text-white fw-bold bg-primary">Type</th>
+            <th class="text-white fw-bold bg-primary">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="btn btn-danger mt-3">Delete</button>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">Generate Profile</div>
+      <div class="card-body">
+        <!-- Generate Profile Button trigger modal -->
+      <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#generateProfileModal">
+        Generate Profile
+      </button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="generateProfileModal" tabindex="-1" aria-labelledby="generateProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="container text-center">
+                <h1 class="text-center mb-3">Profile Order</h1>
+                <div class="table-container">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th class="fw-bold text-dark">File Name</th>
+                        <th class="fw-bold text-dark">Create Date</th>
+                        <th class="fw-bold text-dark">File Type</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><input type="checkbox"></td>
+                        <td><a href="#" class="text-primary">Verified Profile</a></td>
+                        <td>09/26/2024 8:17:09 AM</td>
+                        <td>HTML</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="btn-container">
+                  <button class="btn btn-outline-secondary btn-sm">Close</button>
+                  <button class="btn btn-outline-secondary btn-sm">Download Profile as PDF</button>
+                  <button class="btn btn-outline-secondary btn-sm">Print Profile</button>
+                </div>
+                <div class="checkbox-container">
+                  <input type="checkbox" id="saveProfile">
+                  <label for="saveProfile">Save it to Profile</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+        <button class="btn btn-secondary">Generate Profile (.NET)</button>
+      </div>
+      <div class="card-body">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th class="text-white fw-bold bg-primary">No.</th>
+              <th class="text-white fw-bold bg-primary">Status</th>
+              <th class="text-white fw-bold bg-primary">Queued Date</th>
+              <th class="text-white fw-bold bg-primary">Generated Date</th>
+              <th class="text-white fw-bold bg-primary">Message</th>
+              <th class="text-white fw-bold bg-primary">Details</th>
+              <th class="text-white fw-bold bg-primary">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  </div>
+</div>
+
+<style>
+  .table-container {
+    display: inline-block;
+    text-align: left;
+  }
+  .table {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  .btn-container {
+    margin-top: 20px;
+  }
+  .btn {
+    margin: 0 10px;
+  }
+  .checkbox-container {
+    margin-top: 10px;
+  }
+</style>

@@ -347,16 +347,18 @@ Rails.application.routes.draw do
   # for generating the report on client home
   get '/generate_report', to: 'mhc/verification_platform#generate_report', defaults: { format: :csv }
 
-  namespace :mhc do
-    resources :client_portal, only: [:index] do
-      collection do
-        get :upload_csv
-        post :process_csv
-        get :clear_csv
-        get :download_csv
-      end
-    end
-  end
+  # for verification-work-tickler
+  get '/work_tickler_page', to: 'mhc/verification_platform#work_tickler_page'
+  get '/privileges_work_tickler_page', to: 'mhc/verification_platform#privileges_work_tickler_page'
+  get '/enrollment_work_tickler_page', to: 'mhc/verification_platform#enrollment_work_tickler_page'
+
+  # for generating the cme_practitioner_profile_report on query_report tab in verification platform
+  get '/cme_practitioner_report', to: 'query_reports#cme_practitioner_report', defaults: { format: :csv }
+
+  # for profile & application button on practitioner show page
+  get '/profile_page', to: 'mhc/verification_platform#profile_page'
+  get '/application_page', to: 'mhc/verification_platform#application_page'
+  get '/enrollment_report_page', to: 'mhc/verification_platform#enrollment_report_page'
 
   namespace :mhc do
     resources :practice_informations, only: [:index, :create], path: 'practice-information'
@@ -374,7 +376,16 @@ Rails.application.routes.draw do
     end
     resources :provider_deas, only: [:create, :update, :destroy], path: 'provider-dea'
     resources :verification_platform, only: [:index, :show], path: 'verification-platform'
-    resources :client_portal, only: [:index, :show], path: 'client-portal'
+    
+    resources :client_portal, only: [:index, :show], path: 'client-portal' do
+      collection do
+        get :upload_csv
+        post :process_csv
+        get :clear_csv
+        get :download_csv
+      end
+    end
+
     resources :manage_practitioners, only: [:index], path: 'manage-practitioners'
     resources :manage_clients, only: [:index], path: 'manage-clients' do
       collection do
