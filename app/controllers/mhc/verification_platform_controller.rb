@@ -41,6 +41,17 @@ class Mhc::VerificationPlatformController < ApplicationController
         ]
       end
     end
+      # Define the file name dynamically based on date or other logic
+      file_name = "provider_report_#{Date.today}.csv"
+      file_path = Rails.root.join('public', 'csv_reports', file_name)
+      File.write(file_path, csv_data)
+
+      # Log the download to the DownloadHistory table
+      DownloadHistory.create(
+        file_name: file_name,           # Dynamically use the actual file name
+        downloaded_at: Time.now,
+        user_id: current_user.id        # If user authentication is present
+      )
 
     # Send CSV data as a downloadable file
    respond_to do |format|
@@ -48,6 +59,19 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
   end
 
+  def download_existing_file
+    file_name = params[:file_name]
+    file_path = Rails.root.join('public', 'csv_reports', file_name)
+    
+    if File.exist?(file_path)
+      send_file file_path, type: 'text/csv', disposition: 'attachment', filename: file_name
+    else
+      flash[:alert] = "File not found."
+      redirect_to history_mhc_client_portal_index_path # Replace with actual history page path
+    end
+  end
+  
+  
   protected
   def set_provider_personal_informations
     @provider_personal_information = ProviderPersonalInformation.find_by(provider_attest_id: params[:id])

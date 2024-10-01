@@ -360,6 +360,8 @@ Rails.application.routes.draw do
 
   # for generating the report on client home
   get '/generate_report', to: 'mhc/verification_platform#generate_report', defaults: { format: :csv }
+  get 'download_existing_file', to: 'mhc/verification_platform#download_existing_file', as: 'download_existing_file'
+
 
   # for generating the cme_practitioner_profile_report on query_report tab in verification platform
   get '/cme_practitioner_report', to: 'query_reports#cme_practitioner_report', defaults: { format: :csv }
@@ -399,6 +401,13 @@ Rails.application.routes.draw do
         get :download_csv
       end
     end
+
+    resources :client_portal do
+      collection do
+        get 'history', to: 'client_portal#history'
+      end
+    end
+    
 
     resources :manage_practitioners, only: [:index], path: 'manage-practitioners'
     resources :manage_clients, only: [:index], path: 'manage-clients' do

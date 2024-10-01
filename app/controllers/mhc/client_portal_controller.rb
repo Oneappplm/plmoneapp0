@@ -70,6 +70,10 @@ end
     end
   end
 
+  def history
+    @download_histories = DownloadHistory.all.order(downloaded_at: :desc)
+  end
+
   protected
   def get_provider_types
   	@provider_types = ProviderType.all
