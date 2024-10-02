@@ -171,6 +171,13 @@ Rails.application.routes.draw do
       post :delete_document
     end
   end
+
+  resources :providers do
+    member do
+      get :download_all_pdfs
+    end
+  end
+  
   resources :enrollments do
     collection do
       get :new_user, path: 'new-user'

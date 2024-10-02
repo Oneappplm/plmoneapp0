@@ -1,3 +1,5 @@
+require 'open-uri' 
+require 'zip'  
 class ProvidersController < ApplicationController
 	before_action :set_provider, only: [:edit, :update, :destroy, :update_from_notifications]
 	before_action :set_overview_details, only: [:overview]
@@ -190,6 +192,49 @@ class ProvidersController < ApplicationController
     if @provider
       @time_line = @provider.time_lines.new
     end
+  end
+
+	def download_all_pdfs
+    @provider = Provider.find(params[:id])
+
+    documents = ['state_license_copies', 'dea_copies', 'w9_form_copies', 'certificate_insurance_copies', 'driver_license_copies', 'board_certification_copies', 'caqh_app_copies', 'cv_copies', 'telehealth_license_copies', 'school_certificate']
+
+    temp_zip = Tempfile.new("all_documents.zip")
+
+    # Create a ZIP file
+    Zip::OutputStream.open(temp_zip) do |zip|
+      documents.each do |doc|
+        begin
+          if @provider.send(doc).present?
+            if doc == "school_certificate"
+              url = @provider.send(doc).url
+              Rails.logger.info "Opening URL: #{url}"  # Debug log
+              file_content = URI.open(url).read
+              zip.put_next_entry("#{doc}.pdf")
+              zip.write(file_content)
+            else
+              @provider.send(doc).each_with_index do |file, idx|
+                url = file.url
+                Rails.logger.info "Opening URL: #{url}"  # Debug log
+                file_content = URI.open(url).read
+                zip.put_next_entry("#{doc}_#{idx + 1}.pdf")
+                zip.write(file_content)
+              end
+            end
+          end
+        rescue => e
+          Rails.logger.error "Error processing #{doc}: #{e.message}"
+        end
+      end
+    end
+
+    temp_zip.rewind  # Rewind the file for reading
+
+    # Send the zip file to the browser
+    send_data temp_zip.read, filename: 'all_documents.zip', type: 'application/zip', disposition: 'attachment'
+
+    temp_zip.close
+    temp_zip.unlink  # Ensure the temporary file is deleted after download
   end
 
 		def document_deleted_logs
