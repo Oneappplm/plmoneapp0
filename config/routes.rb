@@ -148,6 +148,7 @@ Rails.application.routes.draw do
   resources :manage_clients, path: 'manage-clients'
   resources :manage_practitioners, path: 'manage-practitioners'
   resources :work_ticklers, path: 'work-ticklers'
+  resources :peer_reviews, path: 'peer-reviews', only: [ :create, :update, :destroy ]
 
   resources :comments
   resources :query_reports, path: 'query-reports' do

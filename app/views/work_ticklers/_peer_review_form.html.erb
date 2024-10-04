@@ -1,0 +1,33 @@
+<div class="modal fade" id="peerReview_<%= peer_review.id %>" tabindex="-1" aria-labelledby="peerReview_<%= peer_review.id %>" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="peerReview_<%= peer_review.id %>">Add/Edit Peer Review</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_for peer_review, url: request_path, method: request_type do |f| %>
+          <%= f.hidden_field :provider_id, value: provider.id %>
+          <%= f.hidden_field :committee_date, value: committee_date %>
+          <div class="form-group mb-3">
+            <%= f.label :review_status %><br />
+            <%= f.select :review_status, options_for_select(PeerReview.review_statuses.keys.map { |status| [status.humanize, status] }, peer_review.review_status), { autofocus: true }, { class: 'form-select' } %>
+          </div>
+          <div class="form-group my-3">
+            <%= f.label :Feedback %><br />
+            <%= f.text_area :feedback, autofocus: true, class: 'form-control', rows: '5', placeholder: 'Notes', required: true %>
+          </div>
+          <div class="actions float-end">
+            <%= f.submit "Save", class: 'btn btn-primary px-5' %>
+          </div>
+        <% end %>
+
+        <% if peer_review.id.present? %>
+          <%= button_to peer_review_path(peer_review), method: :delete, class: 'btn btn-danger px-5 float-start' do %>
+            <span>Delete</span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
