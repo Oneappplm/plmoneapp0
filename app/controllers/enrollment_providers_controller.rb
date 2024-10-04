@@ -1,4 +1,7 @@
+require 'zip'
+require 'open-uri'
 class EnrollmentProvidersController < ApplicationController
+	include ActionController::Live  # Enables live streaming
 	before_action :set_enrollment_provider, only: [:edit, :update, :destroy, :show]
   before_action :set_enrollment_providers, only: [:index, :show]
 
@@ -69,6 +72,58 @@ class EnrollmentProvidersController < ApplicationController
 			render 'edit'
 		end
 	end
+
+	def download_all_pdfs
+    pdf_urls = params[:pdf_urls] || []
+    
+    if pdf_urls.blank?
+      render plain: "No PDF URLs provided", status: :unprocessable_entity
+      return
+    end
+    
+    Rails.logger.info "Attempting to download PDFs: #{pdf_urls.inspect}"
+    
+    # Create a temporary ZIP file
+    temp_file = Tempfile.new(['all_pdfs', '.zip'])
+    
+    begin
+      # Download and package PDFs in ZIP
+      Zip::File.open(temp_file.path, Zip::File::CREATE) do |zipfile|
+        pdf_urls.each_with_index do |url, index|
+          Rails.logger.info "Downloading PDF from #{url}"
+          pdf_data = URI.open(url, open_timeout: 10, read_timeout: 10, ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE).read
+          if pdf_data.present?
+            zipfile.get_output_stream("file_#{index + 1}.pdf") { |f| f.write(pdf_data) }
+          else
+            Rails.logger.error "Downloaded PDF from #{url} was empty"
+          end
+        end
+      end
+
+      # Check if the ZIP file is valid and non-empty
+      if File.size(temp_file.path) > 0
+        response.headers['Content-Type'] = 'application/zip'
+        response.headers['Content-Disposition'] = 'attachment; filename="all_pdfs.zip"'
+        response.headers['Content-Length'] = File.size(temp_file.path).to_s
+        
+        # Stream the file
+        File.open(temp_file.path, 'rb') do |file|
+          response.stream.write(file.read)
+        end
+      else
+        render plain: "Failed to create ZIP file", status: :unprocessable_entity
+      end
+      
+    rescue => e
+      Rails.logger.error "Error creating or sending ZIP file: #{e.message}"
+      render plain: "Error occurred during ZIP creation or download", status: :internal_server_error
+    ensure
+      temp_file.close
+      temp_file.unlink  # Deletes the file
+      response.stream.close  # Ensure to close the stream
+    end
+  end
+	
 
 	def destroy
 		redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path

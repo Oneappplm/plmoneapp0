@@ -173,6 +173,8 @@ Rails.application.routes.draw do
     end
   end
 
+  post 'download_all_pdfs', to: 'enrollment_providers#download_all_pdfs'
+
   resources :providers do
     member do
       get :download_all_pdfs
