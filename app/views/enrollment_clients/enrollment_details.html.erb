@@ -1,6 +1,11 @@
 <div class="content container-fluid">
   <%= render "enrollment_clients/nav"%>
 </div>
+<div class="row mb-3">
+  <div class="col-lg-12">
+  <button class="btn btn-primary" id="download-all-pdfs">Download All PDFS</button>
+</div>
+</div>
 <%= render 'user_restriction', locals: { access_key: 'Provider Enrollment Details' } do %>
   <div class="content container-fluid">
   <% if @provider.enrollments%>
@@ -163,3 +168,40 @@
   <% end %>
   </div>
 <% end %>
+
+<script>
+document.getElementById("download-all-pdfs").addEventListener("click", function() {
+  let pdfUrls = [];
+  
+  document.querySelectorAll('a.btn-outline-primary').forEach(function(link) {
+    pdfUrls.push(link.href);
+  });
+
+  if (pdfUrls.length === 0) {
+    console.error("No PDF URLs found");
+    return;
+  }
+
+  const form = document.createElement('form');
+  form.method = 'POST';  // Use POST
+  form.action = '/download_all_pdfs';
+
+  const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+  const csrfInput = document.createElement('input');
+  csrfInput.type = 'hidden';
+  csrfInput.name = 'authenticity_token';
+  csrfInput.value = csrfToken;
+  form.appendChild(csrfInput);
+
+  pdfUrls.forEach(function(url) {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'pdf_urls[]';
+    input.value = url;
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+});
+</script>
