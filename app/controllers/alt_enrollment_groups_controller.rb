@@ -1,4 +1,6 @@
+require 'zip' 
 class AltEnrollmentGroupsController < ApplicationController
+  include ActionController::Live  # Enables live streaming
   before_action :get_enrollment_group, only: [:locations, :documents, :enrollments, :providers]
   before_action :get_enroll_groups, only: [:enrollments]
   before_action :get_enrollment_group_providers, only: [:providers]
@@ -13,6 +15,42 @@ class AltEnrollmentGroupsController < ApplicationController
 			@enrollment_group = EnrollmentGroup.find(params[:id] || params[:alt_enrollment_group_id])
 		end
   end
+  
+  def download_all_as_zip
+    enrollment_groups = EnrollmentGroup.all
+    temp_zip = Tempfile.new("enrollment_groups.zip")
+  
+    begin
+      Zip::OutputStream.open(temp_zip.path) do |zip|
+        enrollment_groups.each do |group|
+          csv_data = CSV.generate(headers: true) do |csv|
+            csv << ["Group Name", "Taxonomy Code", "State", "Number of Location", "Number of Providers"]
+            csv << [
+              group.group_name,
+              group.group_code,
+              group.state,
+              group.dco_count_display,
+              group.providers.count
+            ]
+          end
+  
+          zip.put_next_entry("#{group.group_name}.csv")
+          zip.print csv_data
+        end
+      end
+  
+      logger.info "ZIP file created at: #{temp_zip.path}" # Log the location of the temp file
+  
+      send_file temp_zip.path, type: 'application/zip', disposition: 'attachment', filename: "enrollment_groups.zip"
+    rescue StandardError => e
+      logger.error "Error while downloading: #{e.message}" # Log any errors
+      flash[:error] = "There was an error downloading the file. Please try again."
+      redirect_to some_path # Redirect to an appropriate path
+    ensure
+      temp_zip.close
+      temp_zip.unlink
+    end
+  end  
 
   def documents; end
 

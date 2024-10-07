@@ -172,7 +172,14 @@ Rails.application.routes.draw do
       post :delete_document
     end
   end
+ 
 
+  resources :alt_enrollment_groups do
+    collection do
+      get 'download_all_as_zip' # New route to download all groups as ZIP
+    end
+  end
+  
   post 'download_all_pdfs', to: 'enrollment_providers#download_all_pdfs'
 
   resources :providers do
