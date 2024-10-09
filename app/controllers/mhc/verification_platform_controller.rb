@@ -16,9 +16,19 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
   end
 
+  def send_contact
+    contact_form = ContactForm.new(
+      email: params[:to],
+      subject: params[:subject],
+      message: params[:message],
+      attachments: params[:attachments]
+    )
+    contact_form.deliver
+  end
+
   def generate_report
     provider_attest_id = params[:provider_attest_id]
-    
+
     # Get date range from the params using the date_range method
     start_date, end_date = params[:date_range].split(" - ").map(&:to_date)
 
@@ -28,7 +38,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     # Generate CSV content
     csv_data = CSV.generate(headers: true) do |csv|
       csv << ["Practitioner Name", "Ready for download", "In Process", "Submitted", "Incomplete Application", "Application Not Received", "Status"]
-      
+
       @provider_personal_informations.each do |provider|
         csv << [
           "#{provider.fullname}, #{provider.provider_type_provider_type_abbreviation}",
@@ -54,12 +64,21 @@ class Mhc::VerificationPlatformController < ApplicationController
   end
 
   def get_data
+
+    if params[:page_tab] == 'practitioner_info'
+      @provider_personal_information_credentialing_contact = @provider_personal_information.provider_personal_information_credentialing_contact
+      @provider_personal_information_credentialing_contact ||= @provider_personal_information.build_provider_personal_information_credentialing_contact.save
+
+      @provider_personal_information_confidential_contact = @provider_personal_information.provider_personal_information_confidential_contact
+      @provider_personal_information_confidential_contact ||= @provider_personal_information.build_provider_personal_information_confidential_contact.save
+    end
+
     if params[:page_tab] == 'add_practice_info'
       @practice_information = PracticeInformation.new(provider_attest_id: @provider_personal_information.provider_attest_id, caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id )
     end
 
-    if params[:page_tab] == 'add_education_info'
-      @provider_education = ProviderEducation.new(provider_attest_id: @provider_personal_information.provider_attest_id, caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id )
+    if params[:page_tab] == 'education_record'
+      @provider_education = ProviderEducation.find_or_initialize_by(id: params[:provider_education_id], provider_attest_id: @provider_personal_information.provider_attest_id, caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id)
     end
 
     if params[:page_tab] == 'practice_info'

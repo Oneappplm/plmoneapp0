@@ -1,4 +1,6 @@
 class Mhc::ProviderEducationsController < ApplicationController
+  before_action :set_provider_education, only: [:update]
+
   def index
     @provider_educations = ProviderEducation.all
   end
@@ -9,11 +11,25 @@ class Mhc::ProviderEducationsController < ApplicationController
     if @provider_education.save
       redirect_to mhc_verification_platform_path(page_tab: 'education',id: params[:provider_education][:provider_attest_id]), notice: 'Education detail saved successfully.'
     else
-      redirect_to mhc_verification_platform_path(page_tab: 'add_education_info',id: params[:provider_education][:provider_attest_id]), alert: 'Failed to save education detail.'
+      redirect_to mhc_verification_platform_path(page_tab: 'education_record',id: params[:provider_education][:provider_attest_id]), alert: 'Failed to save education detail.'
+    end
+  end
+
+  def update
+   @provider_education.assign_attributes(practice_information_params)
+
+    if @provider_education.save
+      redirect_to mhc_verification_platform_path(page_tab: 'education',id: params[:provider_education][:provider_attest_id]), notice: 'Education detail saved successfully.'
+    else
+      redirect_to mhc_verification_platform_path(page_tab: 'education_record',id: params[:provider_education][:provider_attest_id]), alert: 'Failed to save education detail.'
     end
   end
 
   private
+
+  def set_provider_education
+    @provider_education = ProviderEducation.find(params[:id])
+  end
 
   # Strong parameters for security
   def practice_information_params

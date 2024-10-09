@@ -116,7 +116,7 @@
 					<tbody>
 						<% @provider_personal_information.each do |provider| %>
 							<tr>
-								<td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true"><%= provider.provider_id %></a></td>
+								<td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.caqh_provider_id %> data-remote="true"><%= provider.caqh_provider_id %></a></td>
 								<td>
 									<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%#= provider.id %> data-remote="true">
 										<p><%#= provider.client.full_name %></p>	
@@ -141,7 +141,6 @@
 								<td colspan="2">
 									<%= form_with model: @practice_information, url: save_provider_practice_informations_path, local: true do |form| %>
 									  <%= form.hidden_field :provider_attest_id, value: provider.provider_attest_id %>
-									  <%= form.hidden_field :provider_practice_id, value: provider.practice_informations.first.present? ? provider.practice_informations.first.provider_practice_id : nil %>
 
 									  <%= hidden_field_tag :doc_recived_id, provider.practice_informations.first.present? ? provider.practice_informations.first.id : nil %>
 
@@ -280,7 +279,7 @@
 									  			</tr>
 									  		</thead>
 									  			<%= form_with model: @provider_personal_attempt, url: save_attempt_details_path, local: true do |form| %>
-									  			  <%= form.hidden_field :provider_id, value: provider.provider_id %>
+									  			  <%= form.hidden_field :caqh_provider_id, value: provider.caqh_provider_id %>
 														<%= form.hidden_field :provider_attest_id, value: provider.provider_attest_id %>
 
 									  				<tbody>
@@ -331,7 +330,7 @@
 									  <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
 									  	<%= form_with model: @document, url: provider_personal_docs_uploaded_documents_path, html: { multipart: true }, method: :post do |form| %>
 											  <div class="form-group">
-											  	<%= form.hidden_field "provider_personal_docs_upload[provider_id]", value: provider.provider_id %>
+											  	<%= form.hidden_field "provider_personal_docs_upload[provider_personal_information_id]", value: provider.id %>
     											<%= form.hidden_field "provider_personal_docs_upload[provider_attest_id]", value: provider.provider_attest_id %>
 											    <%= form.label "provider_personal_docs_upload[file_upload]", 'Upload Document' %>
 											    <%= form.file_field "provider_personal_docs_upload[file_upload]", class: 'form-control' %>
@@ -390,8 +389,6 @@
 										    </thead>
 										    <tbody>
 										    	<%= form_with model: @provider_personal_docs_receive, url: save_provider_personal_docs_receives_path, local: true do |form| %>
-
-										    	 	<%= form.hidden_field :provider_id, value: provider.provider_id %>
  														<%= form.hidden_field :provider_attest_id, value: provider.provider_attest_id %>
  														<%= hidden_field_tag :doc_recived_id, provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.id : nil %>
 											      <tr>
