@@ -378,7 +378,7 @@ Rails.application.routes.draw do
 
   namespace :mhc do
     resources :practice_informations, only: [:index, :create], path: 'practice-information'
-    resources :provider_educations, only: [:index, :create], path: 'provider-education'
+    resources :provider_educations, only: [:index, :create, :update], path: 'provider-education'
     resources :provider_personal_informations, only: [:update], path: 'provider-personal-information'
     resources :provider_personal_information_sam_records, only: [:create, :show], path: 'provider-personal-information-sam-record' do
       member do
@@ -417,6 +417,8 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  post 'mhc/verification-platform/send-contact', to: 'mhc/verification_platform#send_contact'
 
   resources :app_trackers, path: 'app-tracker' do
     member do

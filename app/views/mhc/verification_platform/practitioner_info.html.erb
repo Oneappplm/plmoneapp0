@@ -9,365 +9,547 @@
                     <h4 class="page-heading">Update Practitioner Information</h4>
                 </div>
             </div>
-            <form action="">
-                <div class="form-row row mt-4">
-                    <div class="col-xl-12">
-                        <div class="form-row row">
-                            <div class="col-lg-4">
-                                <label class="text-dark-grey">First Name:</label>
-                                <%= f.text_field :first_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                            </div>
-                            <div class="col-lg-4">
-                                <label class="text-dark-grey">Middle Name:</label>
-                                <%= f.text_field :middle_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                            </div>
-                            <div class="col-lg-4">
-                                <label class="text-dark-grey">Last Name:</label>
-                                <%= f.text_field :last_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                            </div>
+            <div class="form-row row mt-4">
+                <div class="col-xl-12">
+                    <div class="form-row row">
+                        <div class="col-lg-4">
+                            <label class="text-dark-grey">First Name:</label>
+                            <%= f.text_field :first_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                         </div>
-                        <div class="form-row row">
-                            <div class="col-lg-6">
-                                <label class="text-dark-grey">Suffix:</label>
-                                <%= f.text_field :suffix,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                            </div>
-                            <div class="col-lg-6">
-                                <label class="text-dark-grey">Primary Practice State:</label>
-                                <%= f.text_field :primary_practice_state,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                            </div>
+                        <div class="col-lg-4">
+                            <label class="text-dark-grey">Middle Name:</label>
+                            <%= f.text_field :middle_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                         </div>
-                        <div class="form-row row">
-                            <div class="col-lg-4">
-                                <label class="text-dark-grey">Birth Date:</label>
-                                <%= f.date_field :birth_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
-                            </div>
-                            <div class="col-lg-4">
-                                <label class="text-dark-grey">Ssn:</label>
-                                <%= f.text_field :ssn,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                            </div>
-                            <div class="col-lg-4">
-                                <label class="text-dark-grey">Nid:</label>
-                                <%= f.text_field :nid,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                            </div>
+                        <div class="col-lg-4">
+                            <label class="text-dark-grey">Last Name:</label>
+                            <%= f.text_field :last_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                        </div>
+                    </div>
+                    <div class="form-row row">
+                        <div class="col-lg-6">
+                            <label class="text-dark-grey">Suffix:</label>
+                            <%= f.text_field :suffix,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="text-dark-grey">Primary Practice State:</label>
+                            <%= f.select :primary_practice_state, options_for_select(states.pluck(:name, :alpha_code), f.object.primary_practice_state), { prompt: 'Select option' }, { class: 'form-select border-dark mb-3' } %>
+                        </div>
+                    </div>
+                    <div class="form-row row">
+                        <div class="col-lg-4">
+                            <label class="text-dark-grey">Birth Date:</label>
+                            <%= f.date_field :birth_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
+                        </div>
+                        <div class="col-lg-4">
+                            <label class="text-dark-grey">Ssn:</label>
+                            <%= f.text_field :ssn,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                        </div>
+                        <div class="col-lg-4">
+                            <label class="text-dark-grey">Nid:</label>
+                            <%= f.text_field :nid,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                         </div>
                     </div>
                 </div>
-                <div class="form-row row">
-                    <div class="col-lg-6">
-                        <label class="text-dark-grey">Upin:</label>
-                        <%= f.text_field :upin, placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-                    <div class="col-lg-6">
-                        <label class="text-dark-grey">Npi:</label>
-                        <%= f.text_field :npi, placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+            </div>
+            <div class="form-row row">
+                <div class="col-lg-6">
+                    <label class="text-dark-grey">Upin:</label>
+                    <%= f.text_field :upin, placeholder: 'Type here...', class: 'form-control border border-dark' %>
                 </div>
-                <div class="form-row row">
-                    <div class="col-lg">
-                        <%= f.label :dea_flag, "Dea Flag" %>
-                        <%= f.check_box :dea_flag %>
-                    </div>
-                    <div class="col-lg">
-                        <%= f.label :cds_flag, "Cds Flag" %>
-                        <%= f.check_box :cds_flag %>
-                    </div>
-                    <div class="col-lg">
-                        <%= f.label :upin_flag, "Upin Flag" %>
-                        <%= f.check_box :upin_flag %>
-                    </div>
-                    <div class="col-lg">
-                        <%= f.label :npi_flag, "Npi Flag" %>
-                        <%= f.check_box :npi_flag %>
-                    </div>
-                    <div class="col-lg">
-                        <%= f.label :other_name_flag, "Other Name Flag" %>
-                        <%= f.check_box :other_name_flag %>
-                    </div>
-                    <div class="col-lg">
-                        <%= f.label :us_eligible_flag, "Us Eligible Flag" %>
-                        <%= f.check_box :us_eligible_flag %>
-                    </div>
-                    <div class="col-lg">
-                        <%= f.label :other_name_flag, "Other Name Flag" %>
-                        <%= f.check_box :other_name_flag %>
-                    </div>
-                    <div class="col-lg">
-                        <%= f.label :us_eligible_flag, "Us Eligible Flag" %>
-                        <%= f.check_box :us_eligible_flag %>
-                    </div>
-                    <div class="col-lg">
-                        <%= f.label :medicare_provider_flag, "Medicare Provider flag " %>
-                        <%= f.check_box :medicare_provider_flag %>
-                    </div>
+                <div class="col-lg-6">
+                    <label class="text-dark-grey">Npi:</label>
+                    <%= f.text_field :npi, placeholder: 'Type here...', class: 'form-control border border-dark' %>
                 </div>
-                <div class="form-row row">
-                    <div class="col-lg">
-                        <%= f.label :medicaid_provider_flag, "Medicaid Provider Flag" %>
-                        <%= f.check_box :medicaid_provider_flag %>
-                    </div>
-                    <div class="col-lg">
-                        <%= f.label :other_graduate_education_flag, "Other Graduate Education Flag" %>
-                        <%= f.check_box :other_graduate_education_flag %>
-                    </div>
-                    <div class="col-lg">
-                        <%= f.label :fellowship_training_flag, "Fellowship Taining Flag" %>
-                        <%= f.check_box :fellowship_training_flag %>
-                    </div>
-                    <div class="col-lg">
-                        <%= f.label :teaching_appointment_flag, "teaching_appointment_flag" %>
-                        <%= f.check_box :teaching_appointment_flag %>
-                    </div>
-                    <div class="col-lg">
-                        <%= f.label :secondary_specialty_flag, "Secondary Specialty Flag" %>
-                        <%= f.check_box :secondary_specialty_flag %>
-                    </div>
-                    <div class="col-lg">
-                        <%= f.label :other_specialty_flag, "Other Specialty Flag" %>
-                        <%= f.check_box :other_specialty_flag %>
-                    </div>
-                    <div class="col-lg">
-                        <%= f.label :hospital_privilege_flag, "Hospital Privilege Flag" %>
-                        <%= f.check_box :hospital_privilege_flag %>
-                    </div>
+            </div>
+            <div class="form-row row">
+                <div class="col-lg">
+                    <%= f.label :dea_flag, "Dea Flag" %>
+                    <%= f.check_box :dea_flag %>
                 </div>
-                <div class="mt-4">
-                    <span class="page-note">
-                        <i class='bx bx-error-circle font-red'></i> <span>Please check all that apply before completing
-                            the rest of this section.</span>
-                    </span>
+                <div class="col-lg">
+                    <%= f.label :cds_flag, "Cds Flag" %>
+                    <%= f.check_box :cds_flag %>
                 </div>
-                <div class="form-row row mt-4">
+                <div class="col-lg">
+                    <%= f.label :upin_flag, "Upin Flag" %>
+                    <%= f.check_box :upin_flag %>
+                </div>
+                <div class="col-lg">
+                    <%= f.label :npi_flag, "Npi Flag" %>
+                    <%= f.check_box :npi_flag %>
+                </div>
+                <div class="col-lg">
+                    <%= f.label :other_name_flag, "Other Name Flag" %>
+                    <%= f.check_box :other_name_flag %>
+                </div>
+                <div class="col-lg">
+                    <%= f.label :us_eligible_flag, "Us Eligible Flag" %>
+                    <%= f.check_box :us_eligible_flag %>
+                </div>
+                <div class="col-lg">
+                    <%= f.label :other_name_flag, "Other Name Flag" %>
+                    <%= f.check_box :other_name_flag %>
+                </div>
+                <div class="col-lg">
+                    <%= f.label :us_eligible_flag, "Us Eligible Flag" %>
+                    <%= f.check_box :us_eligible_flag %>
+                </div>
+                <div class="col-lg">
+                    <%= f.label :medicare_provider_flag, "Medicare Provider flag " %>
+                    <%= f.check_box :medicare_provider_flag %>
+                </div>
+            </div>
+            <div class="form-row row">
+                <div class="col-lg">
+                    <%= f.label :medicaid_provider_flag, "Medicaid Provider Flag" %>
+                    <%= f.check_box :medicaid_provider_flag %>
+                </div>
+                <div class="col-lg">
+                    <%= f.label :other_graduate_education_flag, "Other Graduate Education Flag" %>
+                    <%= f.check_box :other_graduate_education_flag %>
+                </div>
+                <div class="col-lg">
+                    <%= f.label :fellowship_training_flag, "Fellowship Taining Flag" %>
+                    <%= f.check_box :fellowship_training_flag %>
+                </div>
+                <div class="col-lg">
+                    <%= f.label :teaching_appointment_flag, "teaching_appointment_flag" %>
+                    <%= f.check_box :teaching_appointment_flag %>
+                </div>
+                <div class="col-lg">
+                    <%= f.label :secondary_specialty_flag, "Secondary Specialty Flag" %>
+                    <%= f.check_box :secondary_specialty_flag %>
+                </div>
+                <div class="col-lg">
+                    <%= f.label :other_specialty_flag, "Other Specialty Flag" %>
+                    <%= f.check_box :other_specialty_flag %>
+                </div>
+                <div class="col-lg">
+                    <%= f.label :hospital_privilege_flag, "Hospital Privilege Flag" %>
+                    <%= f.check_box :hospital_privilege_flag %>
+                </div>
+            </div>
+            <div class="mt-4">
+                <span class="page-note">
+                    <i class='bx bx-error-circle font-red'></i> <span>Please check all that apply before completing
+                        the rest of this section.</span>
+                </span>
+            </div>
+            <div class="form-row row mt-4">
+                <div class="col-lg-6">
+                    <label class="text-dark-grey">Hospital Admitting Arrangements</label>
+                    <%= f.text_field :hospital_admitting_arrangements,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>                   
+                <div class="col-lg-6">
+                    <label class="text-dark-grey">Citizenship Status:</label>
+                    <%= f.text_field :citizenship_status,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+            </div>            
+            <div class="form-row row mt-3">
                     <div class="col-lg-6">
-                        <label class="text-dark-grey">Hospital Admitting Arrangements</label>
-                        <%= f.text_field :hospital_admitting_arrangements,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>                   
-                    <div class="col-lg-6">
-                        <label class="text-dark-grey">Citizenship Status:</label>
-                        <%= f.text_field :citizenship_status,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-                </div>            
-                <div class="form-row row mt-3">
-                     <div class="col-lg-6">
-                        <label class="text-dark-grey">Visa Number:</label>
-                        <%= f.text_field :visa_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-                    <div class="col-lg-6">
-                        <label class="text-dark-grey">Federal Employee Id:</label>
-                        <%= f.text_field :federal_employee_id,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                    <label class="text-dark-grey">Visa Number:</label>
+                    <%= f.text_field :visa_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                 </div>
-                <div class="form-row row mt-3">
-                     <div class="col-lg-6">
-                        <label class="text-dark-grey">Application Type:</label>
-                        <%= f.text_field :application_type,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-                    <div class="col-lg-6">
-                        <label class="text-dark-grey">Ecfmg Number:</label>
-                        <%= f.text_field :ecfmg_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                <div class="col-lg-6">
+                    <label class="text-dark-grey">Federal Employee Id:</label>
+                    <%= f.text_field :federal_employee_id,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                 </div>
-                <div class="form-row row mt-3">
-                     <div class="col-lg-6">
-                        <label class="text-dark-grey">Answeecfmg Issue Date:</label>
-                        <%= f.date_field :ecfmg_issue_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
-                    </div>
+            </div>
+            <div class="form-row row mt-3">
                     <div class="col-lg-6">
-                        <label class="text-dark-grey">Email Address:</label>
-                        <%= f.text_field :email_address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                    <label class="text-dark-grey">Application Type:</label>
+                    <%= f.text_field :application_type,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                 </div>
-                <div class="form-row row mt-3">
-                     <div class="col-lg-6">
-                        <label class="text-dark-grey">Visa Type:</label>
-                        <%= f.text_field :visa_type,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                <div class="col-lg-6">
+                    <label class="text-dark-grey">Ecfmg Number:</label>
+                    <%= f.text_field :ecfmg_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+            </div>
+            <div class="form-row row mt-3">
                     <div class="col-lg-6">
-                        <label class="text-dark-grey">Visa Status:</label>
-                        <%= f.text_field :visa_status,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                    <label class="text-dark-grey">Answeecfmg Issue Date:</label>
+                    <%= f.date_field :ecfmg_issue_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
                 </div>
-                <div class="checkboxes" style="display: flex; gap: 30px; margin-top: 20px;">
-                  <div>
-                    <%= f.label :pager_beeper_digital_flag, "Page Breeper Digital Flag" %>
-                    <%= f.check_box :pager_beeper_digital_flag %>
-                  </div>
+                <div class="col-lg-6">
+                    <label class="text-dark-grey">Email Address:</label>
+                    <%= f.text_field :email_address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+            </div>
+            <div class="form-row row mt-3">
+                    <div class="col-lg-6">
+                    <label class="text-dark-grey">Visa Type:</label>
+                    <%= f.text_field :visa_type,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-6">
+                    <label class="text-dark-grey">Visa Status:</label>
+                    <%= f.text_field :visa_status,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+            </div>
+            <div class="checkboxes" style="display: flex; gap: 30px; margin-top: 20px;">
+                <div>
+                <%= f.label :pager_beeper_digital_flag, "Page Breeper Digital Flag" %>
+                <%= f.check_box :pager_beeper_digital_flag %>
+                </div>
 
-                  <div>
-                    <%= f.label :hospital_based_flag, "Hospital Based Flag" %>
-                    <%= f.check_box :hospital_based_flag %>
-                  </div>
+                <div>
+                <%= f.label :hospital_based_flag, "Hospital Based Flag" %>
+                <%= f.check_box :hospital_based_flag %>
+                </div>
 
-                  <div>
-                    <%= f.label :ecfmg_flag, "Ecfmg Flag" %>
-                    <%= f.check_box :ecfmg_flag %>
-                  </div>
+                <div>
+                <%= f.label :ecfmg_flag, "Ecfmg Flag" %>
+                <%= f.check_box :ecfmg_flag %>
+                </div>
 
-                  <div>
-                    <%= f.label :no_malpractice_claims_flag, "No Malpractice Claims Flag" %>
-                    <%= f.check_box :no_malpractice_claims_flag %>
-                  </div>
-                  <div>
-                    <%= f.label :active_military_flag, "Active Military Flag" %>
-                    <%= f.check_box :active_military_flag %>
-                  </div>
-                  <div>
-                    <%= f.label :work_history_gap_flag, "Work History Gap Flag" %>
-                    <%= f.check_box :work_history_gap_flag %>
-                  </div>
-              </div>
-              <div class="form-row row mt-3">
-                     <div class="col-lg-6">
-                        <label class="text-dark-grey">Birth City:</label>
-                        <%= f.text_field :birth_city,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                <div>
+                <%= f.label :no_malpractice_claims_flag, "No Malpractice Claims Flag" %>
+                <%= f.check_box :no_malpractice_claims_flag %>
+                </div>
+                <div>
+                <%= f.label :active_military_flag, "Active Military Flag" %>
+                <%= f.check_box :active_military_flag %>
+                </div>
+                <div>
+                <%= f.label :work_history_gap_flag, "Work History Gap Flag" %>
+                <%= f.check_box :work_history_gap_flag %>
+                </div>
+            </div>
+            <div class="form-row row mt-3">
                     <div class="col-lg-6">
-                        <label class="text-dark-grey">Birth State:</label>
-                        <%= f.text_field :birth_state,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-              </div>
-              <div class="form-row row mt-3">
-                     <div class="col-lg-6">
-                        <label class="text-dark-grey">Tax Id:</label>
-                        <%= f.text_field :tax_id,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                    <label class="text-dark-grey">Birth City:</label>
+                    <%= f.text_field :birth_city,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-6">
+                    <label class="text-dark-grey">Birth State:</label>
+                    <%= f.select :birth_state, options_for_select(states.pluck(:name, :alpha_code), f.object.birth_state), { prompt: 'Select option' }, { class: 'form-select border-dark mb-3' } %>
+                </div>
+            </div>
+            <div class="form-row row mt-3">
                     <div class="col-lg-6">
-                        <label class="text-dark-grey">Spouse Last Name:</label>
-                        <%= f.text_field :spouse_last_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-              </div>
-              <div class="form-row row mt-3">
-                     <div class="col-lg-4">
-                        <label class="text-dark-grey">Spouse First Name:</label>
-                        <%= f.text_field :spouse_first_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                    <label class="text-dark-grey">Tax Id:</label>
+                    <%= f.text_field :tax_id,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-6">
+                    <label class="text-dark-grey">Spouse Last Name:</label>
+                    <%= f.text_field :spouse_last_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+            </div>
+            <div class="form-row row mt-3">
                     <div class="col-lg-4">
-                        <label class="text-dark-grey">Other Correspondence Address:</label>
-                        <%= f.text_field :other_correspondence_address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                    <label class="text-dark-grey">Spouse First Name:</label>
+                    <%= f.text_field :spouse_first_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-4">
+                    <label class="text-dark-grey">Other Correspondence Address:</label>
+                    <%= f.text_field :other_correspondence_address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-4">
+                    <label class="text-dark-grey">Emergency Contact Last Name:</label>
+                    <%= f.text_field :emergency_contact_last_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+            </div>
+            <div class="form-row row mt-3">
                     <div class="col-lg-4">
-                        <label class="text-dark-grey">Emergency Contact Last Name:</label>
-                        <%= f.text_field :emergency_contact_last_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-              </div>
-              <div class="form-row row mt-3">
-                     <div class="col-lg-4">
-                        <label class="text-dark-grey">Emergency Contact First Name:</label>
-                        <%= f.text_field :emergency_contact_first_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                    <label class="text-dark-grey">Emergency Contact First Name:</label>
+                    <%= f.text_field :emergency_contact_first_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-4">
+                    <label class="text-dark-grey">Emergency Contact Middle Name:</label>
+                    <%= f.text_field :emergency_contact_middle_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-4">
+                    <label class="text-dark-grey">Emergency Contact Phone:</label>
+                    <%= f.text_field :emergency_contact_phone,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+            </div>
+            <div class="form-row row mt-3">
                     <div class="col-lg-4">
-                        <label class="text-dark-grey">Emergency Contact Middle Name:</label>
-                        <%= f.text_field :emergency_contact_middle_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                    <label class="text-dark-grey">Pager Beeper Number:</label>
+                    <%= f.text_field :pager_beeper_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-4">
+                    <label class="text-dark-grey">Answering Service Phone Number:</label>
+                    <%= f.text_field :answering_service_phone_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-4">
+                    <label class="text-dark-grey">Cell Phone Number:</label>
+                    <%= f.text_field :cell_phone_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+            </div>
+            <div class="form-row row mt-3">
                     <div class="col-lg-4">
-                        <label class="text-dark-grey">Emergency Contact Phone:</label>
-                        <%= f.text_field :emergency_contact_phone,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-              </div>
-              <div class="form-row row mt-3">
-                     <div class="col-lg-4">
-                        <label class="text-dark-grey">Pager Beeper Number:</label>
-                        <%= f.text_field :pager_beeper_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-                    <div class="col-lg-4">
-                        <label class="text-dark-grey">Answering Service Phone Number:</label>
-                        <%= f.text_field :answering_service_phone_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-                    <div class="col-lg-4">
-                        <label class="text-dark-grey">Cell Phone Number:</label>
-                        <%= f.text_field :cell_phone_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-              </div>
-              <div class="form-row row mt-3">
-                     <div class="col-lg-4">
-                        <label class="text-dark-grey">Visa Expiration Date:</label>
-                        <%= f.date_field :visa_expiration_date,  placeholder: 'select date...', class: 'form-control border border-dark' %>
-                    </div>
-                    <div class="col-lg-4">
-                        <label class="text-dark-grey">Ethnicity Description:</label>
-                        <%= f.text_field :ethnicity_description,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-                    <div class="col-lg-4">
-                        <label class="text-dark-grey">Visa Issue Date:</label>
-                        <%= f.date_field :visa_issue_date,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-              </div>
-              <div class="form-row row mt-3">
-                     <div class="col-lg-6">
-                        <label class="text-dark-grey">Ecfmg Expiration Date:</label>
-                        <%= f.date_field :ecfmg_expiration_date,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                    <label class="text-dark-grey">Visa Expiration Date:</label>
+                    <%= f.date_field :visa_expiration_date,  placeholder: 'select date...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-4">
+                    <label class="text-dark-grey">Ethnicity Description:</label>
+                    <%= f.text_field :ethnicity_description,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-4">
+                    <label class="text-dark-grey">Visa Issue Date:</label>
+                    <%= f.date_field :visa_issue_date,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+            </div>
+            <div class="form-row row mt-3">
                     <div class="col-lg-6">
-                      <label class="text-dark-grey">Work Permit Status:</label>
-                      <%= f.text_field :work_permit_status,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-              </div>
-              <div class="form-row row mt-3">
-                     <div class="col-lg-6">
-                        <label class="text-dark-grey">Spouse Middle Name:</label>
-                        <%= f.text_field :spouse_middle_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                    <label class="text-dark-grey">Ecfmg Expiration Date:</label>
+                    <%= f.date_field :ecfmg_expiration_date,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-6">
+                    <label class="text-dark-grey">Work Permit Status:</label>
+                    <%= f.text_field :work_permit_status,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+            </div>
+            <div class="form-row row mt-3">
                     <div class="col-lg-6">
-                      <label class="text-dark-grey">State Residence Date:</label>
-                      <%= f.text_field :state_residence_date,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-              </div>
-              <div class="form-row row mt-3">
-                     <div class="col-lg-4">
-                        <label class="text-dark-grey">Citizenship Country Name:</label>
-                        <%= f.text_field :citizenship_country_country_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                    <label class="text-dark-grey">Spouse Middle Name:</label>
+                    <%= f.text_field :spouse_middle_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-6">
+                    <label class="text-dark-grey">State Residence Date:</label>
+                    <%= f.text_field :state_residence_date,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+            </div>
+            <div class="form-row row mt-3">
                     <div class="col-lg-4">
-                      <label class="text-dark-grey">Marital Status Description:</label>
-                      <%= f.text_field :marital_status_marital_status_description,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                    <label class="text-dark-grey">Citizenship Country Name:</label>
+                    <%= f.text_field :citizenship_country_country_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-4">
+                    <label class="text-dark-grey">Marital Status Description:</label>
+                    <%= f.text_field :marital_status_marital_status_description,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-4">
+                    <label class="text-dark-grey">Gender Description:</label>
+                    <%= f.text_field :gender_gender_description,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+            </div>
+            <div class="form-row row mt-3">
                     <div class="col-lg-4">
-                      <label class="text-dark-grey">Gender Description:</label>
-                      <%= f.text_field :gender_gender_description,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-              </div>
-              <div class="form-row row mt-3">
-                     <div class="col-lg-4">
-                        <label class="text-dark-grey">Birth Country Country Name:</label>
-                        <%= f.text_field :birth_country_country_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                    <label class="text-dark-grey">Birth Country Country Name:</label>
+                    <%= f.text_field :birth_country_country_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-4">
+                    <label class="text-dark-grey">Provider Type Provider Type Abbreviation:</label>
+                    <%= f.text_field :provider_type_provider_type_abbreviation,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-4">
+                    <label class="text-dark-grey">Graduate Type Graduate Type Description:</label>
+                    <%= f.text_field :graduate_type_graduate_type_description,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+            </div>
+            <div class="form-row row mt-3">
                     <div class="col-lg-4">
-                      <label class="text-dark-grey">Provider Type Provider Type Abbreviation:</label>
-                      <%= f.text_field :provider_type_provider_type_abbreviation,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
+                    <label class="text-dark-grey">Nid Country Country Name:</label>
+                    <%= f.text_field :nid_country_country_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-4">
+                    <label class="text-dark-grey">Attest Date:</label>
+                    <%= f.date_field :attest_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-4">
+                    <label class="text-dark-grey">Plan Provider Id:</label>
+                    <%= f.text_field :plan_provider_id,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+            </div>
+            <div class="form-row row mt-3">
                     <div class="col-lg-4">
-                      <label class="text-dark-grey">Graduate Type Graduate Type Description:</label>
-                      <%= f.text_field :graduate_type_graduate_type_description,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    <label class="text-dark-grey">Last Recredential Date:</label>
+                    <%= f.date_field :last_recredential_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-4">
+                    <label class="text-dark-grey">Next Recredential Date:</label>
+                    <%= f.date_field :next_recredential_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
+                </div>
+                <div class="col-lg-4">
+                    <label class="text-dark-grey">CAT Correspondence Address Type Description:</label>
+                    <%= f.text_field :correspondence_address_type_correspondence_address_type_descrip,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                </div>
+            </div>
+            <div class="row-mb-5">
+                <div class="col-lg-12 mb-2">
+                    <h3 class="mt-5 mb-2">Credentialing Contact</h3>
+                </div>
+                <%= f.fields_for :provider_personal_information_credentialing_contact_attributes, @provider_personal_information_credentialing_contact do |provider_personal_information_credentialing_contact_form| %>
+                    <div class="col-lg-12">
+                        <div class="row mb-3">
+                            <div class="col-lg-4">
+                                <label class="text-dark-grey">Contact Method:</label>
+                                <%= provider_personal_information_credentialing_contact_form.select :contact_method, options_for_select([['Email', 'email'], ['Fax', 'fax'], ['Letter', 'letter']]), { prompt: '' }, {:class => 'form-select border border-dark single-select',  data: { value: provider_personal_information_credentialing_contact_form.object.contact_method } }  %>
+                            </div>
+                        </div>
                     </div>
-              </div>
-              <div class="form-row row mt-3">
-                     <div class="col-lg-4">
-                        <label class="text-dark-grey">Nid Country Country Name:</label>
-                        <%= f.text_field :nid_country_country_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    <div class="col-lg-12">
+                        <div class="row mb-3">
+                            <div class="col-lg-12">
+                                <label class="text-dark-grey">Contact Name (Title-F-L-Suffix):</label>
+                                <div class="row">
+                                    <div class="col-2">
+                                        <%= provider_personal_information_credentialing_contact_form.select :title, options_for_select(titles), { prompt: 'Title' }, {:class => 'form-select border border-dark payer-state single-select',  data: { value: provider_personal_information_credentialing_contact_form.object.title } }  %>
+                                    </div>
+                                    <div class="col-4">
+                                        <%= provider_personal_information_credentialing_contact_form.text_field :firstname,  placeholder: 'Firstname', class: 'form-control border border-dark' %>
+                                    </div>
+                                    <div class="col-4">
+                                        <%= provider_personal_information_credentialing_contact_form.text_field :lastname,  placeholder: 'Lastname', class: 'form-control border border-dark' %>
+                                    </div>
+                                    <div class="col-2">
+                                        <%= provider_personal_information_credentialing_contact_form.select :suffix, options_for_select(suffix), { prompt: 'Suffix' }, {:class => 'form-select border border-dark payer-state single-select',  data: { value: provider_personal_information_credentialing_contact_form.object.suffix } }  %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-lg-4">
-                      <label class="text-dark-grey">Attest Date:</label>
-                      <%= f.date_field :attest_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
+                    <div class="row mt-3">
+                            <div class="col-lg-4">
+                            <label class="text-dark-grey">Phone:</label>
+                            <%= provider_personal_information_credentialing_contact_form.text_field :phone_number, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
+                        <div class="col-lg-4">
+                            <label class="text-dark-grey">Fax:</label>
+                            <%= provider_personal_information_credentialing_contact_form.text_field :fax, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
+                        <div class="col-lg-4">
+                            <label class="text-dark-grey">Email address:</label>
+                            <%= provider_personal_information_credentialing_contact_form.text_field :email, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
                     </div>
-                    <div class="col-lg-4">
-                      <label class="text-dark-grey">Plan Provider Id:</label>
-                      <%= f.text_field :plan_provider_id,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    <div class="row mt-3">
+                        <div class="col-lg-12">
+                            <label class="text-dark-grey">Address:</label>
+                            <%= provider_personal_information_credentialing_contact_form.text_field :address, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
                     </div>
-              </div>
-              <div class="form-row row mt-3">
-                     <div class="col-lg-4">
-                        <label class="text-dark-grey">Last Recredential Date:</label>
-                        <%= f.date_field :last_recredential_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
+                    <div class="row mt-3">
+                        <div class="col-lg-12">
+                            <label class="text-dark-grey">Suite/Apt:</label>
+                            <%= provider_personal_information_credentialing_contact_form.text_field :suite, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
                     </div>
-                    <div class="col-lg-4">
-                      <label class="text-dark-grey">Next Recredential Date:</label>
-                      <%= f.date_field :next_recredential_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
+                    <div class="row mt-3">
+                        <div class="col-lg-12">
+                            <label class="text-dark-grey">Additional Address:</label>
+                            <%= provider_personal_information_credentialing_contact_form.text_field :address2, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
                     </div>
-                    <div class="col-lg-4">
-                      <label class="text-dark-grey">CAT Correspondence Address Type Description:</label>
-                      <%= f.text_field :correspondence_address_type_correspondence_address_type_descrip,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    <div class="row mt-3">
+                        <div class="col-lg-6">
+                            <label class="text-dark-grey">City:</label>
+                            <%= provider_personal_information_credentialing_contact_form.text_field :city, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="text-dark-grey">County:</label>
+                            <%= provider_personal_information_credentialing_contact_form.text_field :county, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
                     </div>
-              </div>
-            </form>
+                    <div class="row mt-3">
+                        <div class="col-lg-2">
+                            <label class="text-dark-grey">State/Province:</label>
+                            <%= provider_personal_information_credentialing_contact_form.select :state, options_for_select(states.pluck(:name, :alpha_code), provider_personal_information_credentialing_contact_form.object.state), { prompt: 'Select option' }, { class: 'form-select border-dark mb-3 state_dropdown' } %>
+                        </div>
+                        <div class="col-lg-5">
+                            <label class="text-dark-grey">Zip/Postal Code:</label>
+                            <%= provider_personal_information_credentialing_contact_form.text_field :zip, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
+                        <div class="col-lg-5">
+                            <label class="text-dark-grey">Country:</label>
+                            <%= provider_personal_information_credentialing_contact_form.select :country, options_for_select(countries), { prompt: 'Select option' }, { class: 'form-select border-dark mb-3 state_dropdown' } %>
+                        </div>
+                    </div>
+                <% end %>
+            </div>
+            <div class="row-mb-5">
+                <div class="col-lg-12 mb-2">
+                    <h3 class="mt-5 mb-2">Confidential Contact</h3>
+                </div>
+                <%= f.fields_for :provider_personal_information_confidential_contact_attributes, @provider_personal_information_confidential_contact do |provider_personal_information_confidential_contact_form| %>
+                    <div class="col-lg-12">
+                        <div class="row mb-3">
+                            <div class="col-lg-4">
+                                <label class="text-dark-grey">Contact Method:</label>
+                                <%= provider_personal_information_confidential_contact_form.select :contact_method, options_for_select([['Email', 'email'], ['Fax', 'fax'], ['Letter', 'letter']]), { prompt: '' }, {:class => 'form-select border border-dark single-select'}  %>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="row mb-3">
+                            <div class="col-lg-12">
+                                <label class="text-dark-grey">Contact Name (Title-F-L-Suffix):</label>
+                                <div class="row">
+                                    <div class="col-2">
+                                        <%= provider_personal_information_confidential_contact_form.select :title, options_for_select(titles), { prompt: 'Title' }, {:class => 'form-select border border-dark payer-state single-select'}  %>
+                                    </div>
+                                    <div class="col-4">
+                                        <%= provider_personal_information_confidential_contact_form.text_field :firstname,  placeholder: 'Firstname', class: 'form-control border border-dark' %>
+                                    </div>
+                                    <div class="col-4">
+                                        <%= provider_personal_information_confidential_contact_form.text_field :lastname,  placeholder: 'Lastname', class: 'form-control border border-dark' %>
+                                    </div>
+                                    <div class="col-2">
+                                        <%= provider_personal_information_confidential_contact_form.select :suffix, options_for_select(suffix), { prompt: 'Suffix' }, {:class => 'form-select border border-dark payer-state single-select'}  %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                            <div class="col-lg-4">
+                            <label class="text-dark-grey">Phone:</label>
+                            <%= provider_personal_information_confidential_contact_form.text_field :phone_number, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
+                        <div class="col-lg-4">
+                            <label class="text-dark-grey">Fax:</label>
+                            <%= provider_personal_information_confidential_contact_form.text_field :fax, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
+                        <div class="col-lg-4">
+                            <label class="text-dark-grey">Email address:</label>
+                            <%= provider_personal_information_confidential_contact_form.text_field :email, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-lg-12">
+                            <label class="text-dark-grey">Address:</label>
+                            <%= provider_personal_information_confidential_contact_form.text_field :address, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-lg-12">
+                            <label class="text-dark-grey">Suite/Apt:</label>
+                            <%= provider_personal_information_confidential_contact_form.text_field :suite, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-lg-12">
+                            <label class="text-dark-grey">Additional Address:</label>
+                            <%= provider_personal_information_confidential_contact_form.text_field :address2, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-lg-6">
+                            <label class="text-dark-grey">City:</label>
+                            <%= provider_personal_information_confidential_contact_form.text_field :city, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="text-dark-grey">County:</label>
+                            <%= provider_personal_information_confidential_contact_form.text_field :county, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-lg-2">
+                            <label class="text-dark-grey">State/Province:</label>
+                            <%= provider_personal_information_confidential_contact_form.select :state, options_for_select(states.pluck(:name, :alpha_code), provider_personal_information_confidential_contact_form.object.state), { prompt: 'Select option' }, { class: 'form-select border-dark mb-3' } %>
+                        </div>
+                        <div class="col-lg-5">
+                            <label class="text-dark-grey">Zip/Postal Code:</label>
+                            <%= provider_personal_information_confidential_contact_form.text_field :zip, placeholder: '', class: 'form-control border border-dark' %>
+                        </div>
+                        <div class="col-lg-5">
+                            <label class="text-dark-grey">Country:</label>
+                            <%= provider_personal_information_confidential_contact_form.select :country, options_for_select(countries), { prompt: 'Select option' }, { class: 'form-select border-dark mb-3' } %>
+                        </div>
+                    </div>
+                <% end %>
+            </div>
             <div class="col-xl-6 text-left" style="margin-top: 20px;">
               <%= f.submit 'Submit', class: 'btn btn-primary', style: 'width: 200px;' %>
             </div>

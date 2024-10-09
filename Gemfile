@@ -101,3 +101,4 @@ gem 'chunky_png', '~> 1.3', '>= 1.3.5'
 gem "iprog_string_utils", "~> 0.1.0" # https://github.com/iprog21/iprog_string_utils
 gem 'composite_primary_keys'
 gem 'ransack'
+gem 'mail_form'

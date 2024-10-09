@@ -311,6 +311,19 @@ module ApplicationHelper
     ]
   end
 
+	def suffix
+    [
+      ['Sr.','sr'],
+      ['Jr.','jr'],
+      ['II','ii'],
+      ['III','iii'],
+      ['IV','iv'],
+      ['V','v'],
+      ['VI','vi'],
+      ['VII','vii']
+    ]
+  end
+
   def enrollment_provider_options
     EnrollmentProvider.all.pluck(:name, :id)
   end
