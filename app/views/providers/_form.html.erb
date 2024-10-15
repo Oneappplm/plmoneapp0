@@ -15,6 +15,11 @@
     </div>
   <% end %>
 
+  <!-- Attach admin id if provider is created by an administrator -->
+  <% if current_user.administrator? && current_setting.groups? %>
+    <%= f.hidden_field :admin_id, value: current_user.id %>
+  <% end %>
+
   <div class="row-mb-5">
       <div class="section row mb-3">
         <div class="col-lg-6">

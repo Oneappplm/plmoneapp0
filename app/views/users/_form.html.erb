@@ -92,6 +92,14 @@
 							</div>
 				</div>
 				</div>
+				<% if current_setting.groups? %>
+					<div id="assignedAccessOnlyChecBox" class="d-none">
+						<%= f.check_box :assigned_access_only, class: 'form-check-input border border-dark optional'%>
+						<label class="text-primary" for="check-12">
+							Enable Assigned Access Only
+						</label>
+					</div>
+				<% end %>
 				<div class="row">
 					<div class="col-lg-12 d-flex justify-content-end gap-2">
 						<%= f.hidden_field :hidden_role, value: '' %>
@@ -145,6 +153,7 @@
 		var selected_enrollment_groups= stringArrayModifier('<%= @user.enrollment_groups&.pluck(:id) %>');
 		var csrfToken = $('meta[name="csrf-token"]').attr('content');
 		getEnrollmentGroups();
+		showAssignedAccessOnlyCheckbox($('#user_user_role'))
 
 		var form = document.getElementById('new-role-form');
     form.onsubmit = function(event){
@@ -213,6 +222,19 @@
   			$('#user_user_role').find('option[value="provider"]').prop('disabled', false);
   		}
   	})
+
+		$('#user_user_role').on('change', function() {
+			showAssignedAccessOnlyCheckbox($(this))
+		})
+
+		function showAssignedAccessOnlyCheckbox(user_role_input) {
+		if(user_role_input.val() === 'administrator') {
+				$('#assignedAccessOnlyChecBox').removeClass("d-none")
+			} else {
+				$('#assignedAccessOnlyChecBox').addClass("d-none")
+				$('input[name="user[assigned_access_only]"]').prop('checked', false);
+			}
+		}
 
 		function createRole(name, form) {
       $.ajax({

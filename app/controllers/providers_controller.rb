@@ -34,7 +34,11 @@ class ProvidersController < ApplicationController
 		end
 
 		if !current_user.can_access_all_groups? && !current_user.super_administrator? && !current_user.provider? && !sprout_staff_admin(current_user)
-			@providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
+			if current_user.administrator? && current_user.assigned_access_only? && current_setting.groups? 
+				@providers = @providers.where(admin_id: current_user.id)
+			else
+				@providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
+			end
 		end
 
 
@@ -308,6 +312,7 @@ end
 
 	def provider_params
 			params.require(:provider).permit(
+					:admin_id,
 					:first_name,
 					:middle_name,
 					:last_name,
