@@ -1,0 +1,54 @@
+<div class="modal fade" id="peerRecommendationModal" tabindex="-1" aria-labelledby="peerRecommendationModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="peerRecommendationModal">Peer Recommendation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_with url: create_peer_recommendation_providers_path, method: :post do |f| %>
+          <%= hidden_field_tag 'selected_ids[]', '', id: 'selected-ids-input' %>
+          <div class="form-group my-3">
+            <%= f.label :allow_recommendation %><br />
+            <%= f.select :allow_recommendation, options_for_select([["Yes", true], ["No", false]]), { autofocus: true }, { class: 'form-select', id: "allow_recommendation" } %>
+          </div>
+          <div class="form-group my-3" id="recommendation_field">
+            <%= f.label :recommendation %><br />
+            <%= f.text_area :recommendation, id: "recommendation_input", autofocus: true, class: 'form-control', rows: '5', placeholder: 'Recommendation' %>
+          </div>
+          <div class="form-group my-3">
+            <%= f.label :document %><br />
+            <%= f.file_field :document, autofocus: true, class: 'form-control' %>
+          </div>
+          <div class="form-group my-3">
+            <%= f.label :notes %><br />
+            <%= f.text_area :notes, autofocus: true, class: 'form-control', rows: '5', placeholder: 'Notes' %>
+          </div>
+          <div class="actions d-flex justify-content-end align-items-center my-3 mb-4">
+            <%= f.submit "Save", class: 'btn btn-primary px-5' %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% content_for :js do %>
+  <script>
+    $(document).ready(function() {
+      const recommendationField = $('#recommendation_field');
+      const recommendationInput = $('#recommendation_input');
+
+      $('#allow_recommendation').on('change', function() {
+        if ($(this).val() === 'false') {
+          recommendationField.hide();
+          recommendationInput.prop('required', false);
+          recommendationInput.val('');
+        } else {
+          recommendationField.show();
+          recommendationInput.prop('required', true);
+        }
+      });
+    });
+  </script>
+<% end %>

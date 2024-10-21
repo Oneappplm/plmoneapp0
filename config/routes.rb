@@ -169,6 +169,7 @@ Rails.application.routes.draw do
     collection do
       get "overview"
       get :document_deleted_logs
+      post :create_peer_recommendation
       post :delete_document
     end
   end
