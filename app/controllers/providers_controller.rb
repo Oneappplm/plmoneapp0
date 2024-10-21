@@ -241,6 +241,33 @@ class ProvidersController < ApplicationController
     temp_zip.unlink  # Ensure the temporary file is deleted after download
   end
 
+  def create_peer_recommendation
+    selected_ids = params[:selected_ids][0].split(',').map(&:to_i)
+  
+    ActiveRecord::Base.transaction do
+      selected_ids.each do |provider_id|
+        peer_recommendation = PeerRecommendation.new(
+          provider_id: provider_id,
+          allow_recommendation: params[:allow_recommendation],
+          recommendation: params[:recommendation],
+          document: params[:document],
+          notes: params[:notes]
+        )
+  
+        # Rollback transaction if any  peer recommendation fails to save
+        unless peer_recommendation.save
+          raise ActiveRecord::Rollback
+        end
+      end
+    end
+  
+    redirect_to providers_path, notice: 'Recommendation(s) submitted successfully.'
+  rescue ActiveRecord::Rollback
+    redirect_to providers_path, alert: 'An error occurred while creating Recommendation(s). Please try again.'
+  end
+  
+	
+
 		def document_deleted_logs
 			provider = Provider.find_by(id: params[:provider_id])
 

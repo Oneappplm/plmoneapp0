@@ -23,6 +23,11 @@
 							Add New Provider
 					<% end %>
 				<% end %>
+
+				<button id="peerRecommendationModalBtn" type="button" class="btn btn-primary btn-md float-end disabled" data-bs-toggle="modal" data-bs-target="#peerRecommendationModal">
+					<span class="mx-1">Review Committee Recommendation</span>
+				</button>
+				<%= render partial: 'peer_recommendation_modal' %>
 			</div>
 		</div>
 		<div class="row">
@@ -30,9 +35,14 @@
 				<table class="table table-striped table-bordered table-responsive">
 						<thead>
 								<tr>
-										<th scope="col" class="bg-primary text-white">Provider Name</th>
-										<th scope="col" class="bg-primary text-white">Practitioner/Provider Type</th>
-								<th scope="col" class="bg-primary text-white">NPI</th>
+									<th width="10%">
+										<div class="form-check">
+												<input class="form-check-input" type="checkbox" value="" id="providerSelectAllCheckbox">
+										</div>
+									</th>
+									<th scope="col" class="bg-primary text-white">Provider Name</th>
+									<th scope="col" class="bg-primary text-white">Practitioner/Provider Type</th>
+									<th scope="col" class="bg-primary text-white">NPI</th>
 								</tr>
 						</thead>
 						<tbody>
@@ -59,4 +69,47 @@
 			</div>
 		</div>
 	</div>
+<% end %>
+<% content_for :js do %>
+  <script>
+    $(document).ready(function() {
+      const selectedIdsInput = $('#selected-ids-input');
+      const checkboxes = $("input[name='selected_ids[]']");
+      const selectAllCheckbox = $('#providerSelectAllCheckbox');
+      const actionButton = $('#peerRecommendationModalBtn');
+
+      selectAllCheckbox.on('click', function() {
+        const isChecked = $(this).is(':checked');
+        checkboxes.prop('checked', isChecked);
+        updateSelectedIds();
+      });
+
+      $(document).on('click', '.provider-select-checkbox', function() {
+        updateSelectedIds();
+      });
+
+      function toggleActionButton(isEnabled) {
+        if (isEnabled) {
+          actionButton.removeClass('disabled');
+        } else {
+          actionButton.addClass('disabled');
+        }
+      }
+
+      function updateSelectedIds() {
+        let selectedIds = [];
+        let anyChecked = false;
+
+        checkboxes.each(function() {
+          if ($(this).is(':checked')) {
+            selectedIds.push($(this).val());
+            anyChecked = true;
+          }
+        });
+
+        selectedIdsInput.val(selectedIds.join(','));
+        toggleActionButton(anyChecked);
+      }
+    });
+  </script>
 <% end %>
