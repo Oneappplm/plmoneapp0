@@ -19,6 +19,7 @@ class PracticeInformation < ApplicationRecord
   has_many   :practice_services
   has_many   :practice_specialties
   has_many   :practice_tax_ids
+  has_many   :personally_employed_practitioners
 
   validates :provider_attest_id, presence: true
 
