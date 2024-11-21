@@ -330,6 +330,15 @@ class AjaxController < ApplicationController
     }
   end
 
+  def get_schools
+    @q = School.ransack(params[:q])
+    @schools = @q.result(distinct: true).map { |school| { label: school.name, value: school.id } }
+
+    render json: {
+      'schools' => @schools
+    }
+  end
+
   def get_states
     states = State.all.map{|m| { label: "#{m.name} - #{m.alpha_code}", value: m.name} }
     render json: {
@@ -369,7 +378,7 @@ class AjaxController < ApplicationController
     render json: {
       'group_roles' => group_roles
     }
-  end   
+  end
 
   def update_timeline
     timeline_id = params[:timeline_id]

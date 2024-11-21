@@ -24,10 +24,14 @@
         </div>
         <div class="row mt-3 page-applicable">
             <div class="col-xl-4">
-                <div class="form-control enc-search-wrp">
-                    <input type="" class="enc-search-input" placeholder="Search">
-                    <i class='bx bx-search' ></i>
-                </div>
+                <%= search_form_for @q, url: mhc_verification_platform_url(page_tab: 'education'), method: :get, html: { class: 'form_search_with_icon'} do |f|%>
+                    <input type="hidden" name="id" value=<%= @provider_personal_information.provider_attest_id %>>
+                    <input type="hidden" name="page_tab" value="education">
+                    <div>
+                        <%= f.text_field :institution_name_cont, value: "#{params[:q][:institution_name_cont] rescue ''}", placeholder: 'Search Education record', class: "form-control py-1" %>
+                        <i class="bx bx-search"></i>
+                    </div>
+                <% end %>
             </div>
         </div>
         <% if @provider_educations %>

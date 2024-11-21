@@ -3,7 +3,8 @@ class Mhc::VerificationPlatformController < ApplicationController
   before_action :redirect_to_auto_verify, only: [:index]
 
   def index
-    @provider_personal_informations = ProviderPersonalInformation.paginate(per_page: 10, page: params[:page] || 1)
+    @q = ProviderPersonalInformation.ransack(params[:q])
+    @provider_personal_informations = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
   end
 
   def show
@@ -102,6 +103,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'education_record'
+      @q = School.ransack(params[:q])
       @provider_education = ProviderEducation.find_or_initialize_by(id: params[:provider_education_id], provider_attest_id: @provider_personal_information.provider_attest_id, caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id)
     end
 
@@ -109,8 +111,13 @@ class Mhc::VerificationPlatformController < ApplicationController
       @practice_informations = @provider_personal_information.provider_attest.practice_informations.paginate(per_page: 10, page: params[:page])
     end
 
+    if params[:page_tab] == 'practice_info_record'
+      @practice_information = @provider_personal_information.provider_attest.practice_informations.where(id: params[:practice_information_id]).last
+    end
+
     if params[:page_tab] == 'education'
-      @provider_educations = @provider_personal_information.provider_attest.provider_educations.paginate(per_page: 10, page: params[:page])
+      @q = @provider_personal_information.provider_attest.provider_educations.ransack(params[:q]&.except(:page_tab))
+      @provider_educations = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
     end
 
     if params[:page_tab] == 'sam'
@@ -119,6 +126,18 @@ class Mhc::VerificationPlatformController < ApplicationController
 
     if params[:page_tab] == 'sam_record'
       @provider_personal_information_sam_record = ProviderPersonalInformationSamRecord.find(params[:provider_personal_information_sam_record_id])
+    end
+
+    if params[:page_tab] == 'add_new_sam'
+      @provider_personal_information_sam_record = ProviderPersonalInformationSamRecord.new(provider_personal_information_id:  @provider_personal_information.id)
+    end
+
+    if params[:page_tab] == 'oig'
+      @provider_personal_information_reinstatements = ProviderPersonalInformationReinstatement.where(provider_personal_information_id:  @provider_personal_information.id)
+    end
+
+    if params[:page_tab] == 'add_oig_info'
+      @provider_personal_information_reinstatement = ProviderPersonalInformationReinstatement.new(provider_personal_information_id:  @provider_personal_information.id)
     end
 
     if params[:page_tab] == 'show_sam_record'
