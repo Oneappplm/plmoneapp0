@@ -51,6 +51,7 @@ Rails.application.routes.draw do
   get 'get-group-locations', to: 'ajax#get_enrollment_group_locations'
   get 'get-provider-notification-services', to: 'ajax#get_provider_notification_services'
   get 'get-group-notification-services', to: 'ajax#get_group_notification_services'
+  post 'get-schools', to: 'ajax#get_schools'
   post 'get-selected-provider-types', to: 'ajax#get_selected_provider_types'
   post 'get-selected-practitioner-types', to: 'ajax#get_selected_practitioner_types'
   get 'get-ps-provider-types', to: 'ajax#get_ps_provider_types'
@@ -365,10 +366,11 @@ Rails.application.routes.draw do
     resources :provider_educations, only: [:index, :create, :update], path: 'provider-education'
     resources :provider_personal_informations, only: [:update], path: 'provider-personal-information'
     resources :provider_personal_information_sam_records, only: [:create, :show], path: 'provider-personal-information-sam-record' do
-      member do
+      collection do
         get :auto_create, path: 'auto-create'
       end
     end
+    resources :provider_personal_information_reinstatements, only: [:create], path: 'provider-personal-information-reinstatements'
     resources :provider_personal_information_sam_rva_records, only: [:create, :update], path: 'provider-personal-information-sam-rva-record' do
       member do
         get :auto_create, path: 'auto-create'
@@ -376,7 +378,7 @@ Rails.application.routes.draw do
     end
     resources :provider_deas, only: [:create, :update, :destroy], path: 'provider-dea'
     resources :verification_platform, only: [:index, :show], path: 'verification-platform'
-    
+
     resources :client_portal, only: [:index, :show], path: 'client-portal' do
       collection do
         get :upload_csv
@@ -393,6 +395,7 @@ Rails.application.routes.draw do
         delete :delete_provider_personal_docs, path: 'delete_provider_personal_docs'
       end
     end
+    resources :schools
   end
 
   post 'mhc/verification-platform/send-contact', to: 'mhc/verification_platform#send_contact'
