@@ -11,18 +11,6 @@
 			</div>
 		</div>
 		<div class="mt-3 d-flex align-items-center justify-content-between mb-2">
-			<div class="d-flex align-items-center gap-2">
-				<button class="btn btn-primary py-1" data-bs-toggle="modal"
-				data-bs-target="#verifLetterModal">
-					Verification Letter
-				</button>
-				<button class="btn btn-primary py-1">
-					Send Contact
-				</button>
-				<button class="btn btn-primary py-1">
-					View Scanned Images
-				</button>
-			</div>
 			<div class="d-flex justify-content-end">
 				<%= button_to mhc_provider_insurance_coverage_path(@provider_insurance_coverages.id, provider_attest_id: @provider_attest_id), method: :delete, data: { turbo_confirm: 'Are you sure?' }, class: 'btn btn-danger' do %>
 					<i class="bx bx-trash"></i>
@@ -30,361 +18,345 @@
 				<% end %>
 			</div>
 		</div>
-		<div class="mt-3 row page-applicable">
-			<div class="col-xl-5">
-				<div class="left-pane">
-					<h6 class="text-center">RVA Information</h6>
-					<div class="form-row row justify-content-center">
-						<div class="col-xl-4">
-							<button class="btn btn-RVA bg-alt-grey py-1">
-								Request
-							</button>
-						</div>
+		<div class="row">
+			<div class="col-xl-8 row">
+				<div class="form-row row mt-3">
+					<div class="col-xl-4">
+						<label for="SelfIssued">Self Issued:</label>
+						<span class="form-control form-control-lg">
+							<%= @provider_insurance_coverages.self_insured_flag ? "Yes" : "No" %>
+						</span>
 					</div>
-					<div class="form-row row justify-content-center">
-						<label for="" class="  my-2 text-center">Professional Liability Coverage</label>
-						<div class="col-xl-6">
-							<button class="btn btn-RVA bg-alt-grey py-1">
-								Verification
-							</button>
-						</div>
-						<div class="col-xl-6">
-							<button class="btn btn-RVA bg-alt-grey py-1">
-								Audit
-							</button>
-						</div>
+					<div class="col-xl-4">
+						<label for="CoverageType">Type of Coverage:</label>
+						<span class="form-control form-control-lg">
+							<%= @provider_insurance_coverages.insurance_coverage_type_insurance_coverage_type_description ? "Individual" : "Shared" %>
+						</span>
 					</div>
-					<div class="form-row row mt-2">
-						<div class="col-xl-6">
-							<button class="btn btn-RVA bg-alt-grey py-1" data-bs-toggle="modal"
-							data-bs-target="#QAModal">
-								Quality Audit
-							</button>
-						</div>
-						<div class="col-xl-6">
-							<button class="btn btn-RVA bg-alt-grey py-1">
-								Skip RVA
-							</button>
-						</div>
-					</div>
-					<div class="form-row row justify-content-center">
-						<label for="" class="  my-2 text-center">Professional Liability Carrier Claims
-							Histor</label>
-						<div class="col-xl-6">
-							<button class="btn btn-RVA bg-alt-grey py-1">
-								Verification
-							</button>
-						</div>
-						<div class="col-xl-6">
-							<button class="btn btn-RVA bg-alt-grey py-1">
-								Audit
-							</button>
-						</div>
-					</div>
-					<div class="form-row row mt-2">
-						<div class="col-xl-6">
-							<button class="btn btn-RVA bg-alt-grey py-1" data-bs-toggle="modal"
-							data-bs-target="#QAModal">
-								Quality Audit
-							</button>
-						</div>
-						<div class="col-xl-6">
-							<button class="btn btn-RVA bg-alt-grey py-1">
-								Skip RVA
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-xl-7">
-				<div class="right-pane">
-					<div class="d-flex align-items-center justify-content-between">
-						<h6>Message Board</h6>
-						<button class="btn btn-primary py-1" data-bs-toggle="modal" data-bs-target="#addCommentModal">
-							Add Comment
-						</button>
-					</div>
-					<div class="form-row mt-2">
-						<span class="btn span-pane bg-alt-grey py-1" data-bs-toggle="modal" data-bs-target="#deleteCommentModal">
-							Subject: Incomplete Record
+					<div class="col-xl-4">
+						<label for="PolicyType">Policy Type:</label>
+						<span class="form-control form-control-lg">
+							<%= @provider_insurance_coverages.type_of_policy ? "Occurrence" : "Claims Made" %>
 						</span>
 					</div>
 				</div>
-			</div>
-		</div>
-		<form action="">
-			<div class="form-row row mt-3">
-				<div class="col-xl-4">
-					<label for="SelfIssued">Self Issued:</label>
-					<span class="form-control form-control-lg">
-			      <%= @provider_insurance_coverages.self_insured_flag ? "Yes" : "No" %>
-			    </span>
-				</div>
-				<div class="col-xl-4">
-					<label for="CoverageType">Type of Coverage:</label>
-					<span class="form-control form-control-lg">
-			      <%= @provider_insurance_coverages.insurance_coverage_type_insurance_coverage_type_description ? "Individual" : "Shared" %>
-			    </span>
-				</div>
-				<div class="col-xl-4">
-					<label for="PolicyType">Policy Type:</label>
-					<span class="form-control form-control-lg">
-			      <%= @provider_insurance_coverages.type_of_policy ? "Occurrence" : "Claims Made" %>
-			    </span>
-				</div>
-			</div>
-
-			<div class="page-applicable">
-				<div class="card mt-3">
-					<div class="form-row row p-2">
-						<span class="page-note">
-							<i class='bx bx-error-circle font-lightblue'></i> <span>To search for a School name,
-								please
-								click the search button.</span>
-						</span>
-						<div class="form-row row mt-2">
-							<div class="col-xl-6">
-							  <label for="CarrierName" class="">Carrier Name:</label>
-							  <div class="input-group gap-2">
-							    <span class="form-control form-control-lg">
-							      <%= @provider_insurance_coverages.insurance_carrier_name %>
-							    </span>
-							    <button class="btn btn-primary py-1 rounded" type="button">Search</button>
-							  </div>
-							</div>
-							<div class="col-xl-6">
-								<label for="address" class=" ">Address:</label>
-								<span class="form-control form-control-lg">
-						      <%= @provider_insurance_coverages.address.presence || "NA" %>
-						    </span>
-							</div>
-						</div>
-						<div class="form-row row">
-							<div class="col-xl-6">
-								<label for="suitestop" class=" ">Suite/Dept/Mail Stop:</label>
-								<span class="form-control form-control-lg">
-						      <%= @provider_insurance_coverages.address2.presence || 'NA' %>
-						    </span>
-							</div>
-							<div class="col-xl-6">
-								<label for="AdditionalAddress" class=" ">Additional Address:</label>
-								<span class="form-control form-control-lg">
-						      <%= @provider_insurance_coverages.additional_address.presence || 'NA' %>
-						    </span>
-							</div>
-						</div>
-						<div class="form-row row">
-							<div class="col-xl-6">
-								<label for="city" class=" ">City:</label>
-								<span class="form-control form-control-lg">
-						      <%= @provider_insurance_coverages.city.presence || 'NA' %>
-						    </span>
-							</div>
-							<div class="col-xl-6">
-								<label for="county" class=" ">County:</label>
-								<span class="form-control form-control-lg">
-						      <%= @provider_insurance_coverages.country_country_name.presence || 'NA' %>
-						    </span>
-							</div>
-						</div>
-						<div class="form-row row">
-							<div class="col-xl-4">
-								<label for="State" class=" ">State/Province:</label>
-								<span class="form-control form-control-lg">
-						      <%= @provider_insurance_coverages.state.presence || 'NA' %>
-						    </span>
-							</div>
-							<div class="col-xl-4">
-								<label for="Zip" class=" ">Zip/Postal Code:</label>
-								<span class="form-control form-control-lg">
-						      <%= @provider_insurance_coverages.postal_code.presence || 'NA' %>
-						    </span>
-							</div>
-							<%# <div class="col-xl-4">
-								<label for="Country" class=" ">Country:</label>
-								<select name="country" id="country" class="form-select ">
-									<option value="">Select option</option>
-								</select>
-							</div> %>
-						</div>
-						<div class="form-row row">
-							<div class="col-xl-4">
-								<label for="CarrierNumber" class=" ">Carrier Phone Number:</label>
-								<span class="form-control form-control-lg">
-						      <%= @provider_insurance_coverages.phone_number.presence || 'NA' %>
-						    </span>
-							</div>
-							<div class="col-xl-4">
-								<label for="CarrierFax" class=" ">Carrier Fax Number:</label>
-								<span class="form-control form-control-lg">
-						      <%= @provider_insurance_coverages.fax_number.presence || 'NA' %>
-						    </span>
-							</div>
-							<div class="col-xl-4">
-								<label for="Country" class=" ">Email Address:</label>
-								<span class="form-control form-control-lg">
-						      <%= @provider_insurance_coverages.email_address.presence || 'NA' %>
-						    </span>
-							</div>
-						</div>
-						<div class="form-row row">
-							<div class="col-xl-6">
-								<label class=" " for="OriginalEffectiveDate">Original Effective
-									Date:</label>
-								<span class="form-control form-control-lg">
-						      <%= @provider_insurance_coverages.effective_date.presence || 'NA' %>
-						    </span>
-							</div>
-							<div class="col-xl-6">
-								<label class=" " for="expiredate">Expiration Date:</label>
-								<div class="input-group gap-3 d-flex align-items-center">
+				<div class="page-applicable">
+					<div class="card mt-3">
+						<div class="form-row row p-2">
+							<span class="page-note">
+								<i class='bx bx-error-circle font-lightblue'></i> <span>To search for a Carrier name,
+									please
+									click the search button.</span>
+							</span>
+							<div class="form-row row mt-2">
+								<div class="col-xl-6">
+									<label for="CarrierName" class="">Carrier Name:</label>
+									<div class="input-group gap-2">
+										<span class="form-control form-control-lg">
+											<%= @provider_insurance_coverages.insurance_carrier_name %>
+										</span>
+										<button class="btn btn-primary py-1 rounded" type="button">Search</button>
+									</div>
+								</div>
+								<div class="col-xl-6">
+									<label for="address" class=" ">Address:</label>
 									<span class="form-control form-control-lg">
-							      <%= @provider_insurance_coverages.end_date.presence || 'NA' %>
-							    </span>
-									<div class="form-check">
-										<input class="form-check-input" type="checkbox" id="present-switch">
-										<label class=" " class="form-check-label" for="present-switch">Does
-											Not Expire</label>
+										<%= @provider_insurance_coverages.address.presence || "NA" %>
+									</span>
+								</div>
+							</div>
+							<div class="form-row row">
+								<div class="col-xl-6">
+									<label for="suitestop" class=" ">Suite/Dept/Mail Stop:</label>
+									<span class="form-control form-control-lg">
+										<%= @provider_insurance_coverages.address2.presence || 'NA' %>
+									</span>
+								</div>
+								<div class="col-xl-6">
+									<label for="AdditionalAddress" class=" ">Additional Address:</label>
+									<span class="form-control form-control-lg">
+										<%= @provider_insurance_coverages.additional_address.presence || 'NA' %>
+									</span>
+								</div>
+							</div>
+							<div class="form-row row">
+								<div class="col-xl-6">
+									<label for="city" class=" ">City:</label>
+									<span class="form-control form-control-lg">
+										<%= @provider_insurance_coverages.city.presence || 'NA' %>
+									</span>
+								</div>
+								<div class="col-xl-6">
+									<label for="county" class=" ">County:</label>
+									<span class="form-control form-control-lg">
+										<%= @provider_insurance_coverages.country_country_name.presence || 'NA' %>
+									</span>
+								</div>
+							</div>
+							<div class="form-row row">
+								<div class="col-xl-4">
+									<label for="State" class=" ">State/Province:</label>
+									<span class="form-control form-control-lg">
+										<%= @provider_insurance_coverages.state.presence || 'NA' %>
+									</span>
+								</div>
+								<div class="col-xl-4">
+									<label for="Zip" class=" ">Zip/Postal Code:</label>
+									<span class="form-control form-control-lg">
+										<%= @provider_insurance_coverages.postal_code.presence || 'NA' %>
+									</span>
+								</div>
+								<%# <div class="col-xl-4">
+									<label for="Country" class=" ">Country:</label>
+									<select name="country" id="country" class="form-select ">
+										<option value="">Select option</option>
+									</select>
+								</div> %>
+							</div>
+							<div class="form-row row">
+								<div class="col-xl-4">
+									<label for="CarrierNumber" class=" ">Carrier Phone Number:</label>
+									<span class="form-control form-control-lg">
+										<%= @provider_insurance_coverages.phone_number.presence || 'NA' %>
+									</span>
+								</div>
+								<div class="col-xl-4">
+									<label for="CarrierFax" class=" ">Carrier Fax Number:</label>
+									<span class="form-control form-control-lg">
+										<%= @provider_insurance_coverages.fax_number.presence || 'NA' %>
+									</span>
+								</div>
+								<div class="col-xl-4">
+									<label for="Country" class=" ">Email Address:</label>
+									<span class="form-control form-control-lg">
+										<%= @provider_insurance_coverages.email_address.presence || 'NA' %>
+									</span>
+								</div>
+							</div>
+							<div class="form-row row">
+								<div class="col-xl-6">
+									<label class=" " for="OriginalEffectiveDate">Original Effective
+										Date:</label>
+									<span class="form-control form-control-lg">
+										<%= @provider_insurance_coverages.effective_date.presence || 'NA' %>
+									</span>
+								</div>
+								<div class="col-xl-6">
+									<label class=" " for="expiredate">Expiration Date:</label>
+									<div class="input-group gap-3 d-flex align-items-center">
+										<span class="form-control form-control-lg">
+											<%= @provider_insurance_coverages.end_date.presence || 'NA' %>
+										</span>
+										<div class="form-check">
+											<input class="form-check-input" type="checkbox" id="present-switch">
+											<label class=" " class="form-check-label" for="present-switch">Does
+												Not Expire</label>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-row row mb-2">
+						<div class="col-xl-4">
+							<label class=" " for="PerClaimAmount">Per Claim Amount:</label>
+							<span class="form-control form-control-lg">
+								<%= @provider_insurance_coverages.claim_amount.presence || 'NA' %>
+							</span>
+						</div>
+						<div class="col-xl-4">
+							<label class=" " for="AggregateAmount">Aggregate Amount:</label>
+							<span class="form-control form-control-lg">
+								<%= @provider_insurance_coverages.coverage_amount_aggregate.presence || 'NA' %>
+							</span>
+						</div>
+						<div class="col-xl-4">
+							<label class=" " for="UmbrellaCoverage">Umbrella Coverage (amount):</label>
+							<span class="form-control form-control-lg">
+								<%= @provider_insurance_coverages.umbrella_coverage_amount.presence || 'NA' %>
+							</span>
+						</div>
+					</div>
+
+					<div class="form-row row mb-2">
+						<div class="col-xl-6">
+							<div class="input-group d-flex align-items-center gap-2">
+								<label for="tail_coverage" class="">Do you have tail coverage (extended reporting endorsement)?</label>
+								
+								<div class="form-check">
+									<input 
+										class="form-check-input" 
+										type="radio" 
+										name="provider_insurance_coverage[tail_coverage]" 
+										value="true" 
+										id="yesTailCoverage" 
+										<%= 'checked' if @provider_insurance_coverages.tail_coverage == true %>>
+									<label class="form-check-label" for="yesTailCoverage">Yes</label>
+								</div>
+								
+								<div class="form-check">
+									<input 
+										class="form-check-input" 
+										type="radio" 
+										name="provider_insurance_coverage[tail_coverage]" 
+										value="false" 
+										id="noTailCoverage" 
+										<%= 'checked' if @provider_insurance_coverages.tail_coverage == false %>>
+									<label class="form-check-label" for="noTailCoverage">No</label>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+					<div class="form-row row mb-2">
+						<div class="col-xl-8">
+							<div class="input-group d-flex align-items-center gap-2">
+								<label for="" class=" ">Has your current carrier excluded any specific area of
+									practice or procedures from your coverage?</label>
+								<div class="form-check">
+									<input 
+										class="form-check-input" 
+										type="radio" 
+										name="provider_insurance_coverage[current_carrier_excluded]" 
+										value="true" 
+										id="yesExcludedAreaOfPractice"
+										<%= 'checked' if @provider_insurance_coverages.current_carrier_excluded == true %>>
+									<label class="form-check-label" for="yesExcludedAreaOfPractice">Yes</label>
+								</div>
+								<div class="form-check">
+									<input 
+										class="form-check-input" 
+										type="radio" 
+										name="provider_insurance_coverage[current_carrier_excluded]" 
+										value="false" 
+										id="noExcludedAreaOfPractice"
+										<%= 'checked' if @provider_insurance_coverages.current_carrier_excluded == false %>>
+									<label class="form-check-label" for="noExcludedAreaOfPractice">No</label>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-row row ListOfExclusions" id="exclusions-container" style="display: none;">
+						<label for="ListOfExclusions" class=" ">If Yes, please list the exclusions with
+							explanation:</label>
+						<div class="col-xl-12">
+							<span class="form-control form-control-lg">
+								<%= @provider_insurance_coverages.current_carrier_excluded_explanation %>
+							</span>
+						</div>
+					</div>
+
+					<div class="form-row row mb-2 mt-2">
+						<div class="col-xl-8">
+							<div class="input-group d-flex align-items-center gap-2">
+								<label for="" class=" ">Show on Tickler?</label>
+								<div class="form-check">
+									<input 
+										class="form-check-input" 
+										type="radio" 
+										name="provider_insurance_coverage[show_on_tickler]" 
+										value="true" 
+										id="yesTickler"
+										<%= 'checked' if @provider_insurance_coverages.show_on_tickler == true %>>
+									<label class="form-check-label" for="yesTickler">Yes</label>
+								</div>
+								<div class="form-check">
+									<input 
+										class="form-check-input" 
+										type="radio" 
+										name="provider_insurance_coverage[show_on_tickler]" 
+										value="false" 
+										id="noTickler"
+										<%= 'checked' if @provider_insurance_coverages.show_on_tickler == false %>>
+									<label class="form-check-label" for="noTickler">No</label>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-row row mb-3">
+						<label for="comment">Please list any comments:</label>
+						<div class="col-xl-12">
+							<span class="form-control form-control-lg">
+								<%= @provider_insurance_coverages.comment.presence || 'NA' %>
+							</span>
+						</div>
+					</div>
+					<div class="form-row row justify-content-end">
+						<div class="col-xl-2">
+							<%= link_to 'Back', mhc_verification_platform_path(page_tab: 'liability'), class: 'btn btn-primary form-control' %>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xl-4 p-2 text-center">
+				<div class="row">
+						<div class="col-12 m-2">
+								<button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
+										Verification Letter
+								</button>
+						</div>
+						<div class="col-12 m-2">
+								<button  type="button" class="btn btn-primary btn-sm" id="asdf" style="min-width: 100px; font-size: 12px" data-bs-toggle="modal" data-bs-target="#send_contact_template">
+										Send Contact
+								</button>
+						</div>
+				</div>
+				<div class="card other-name-card">
+					<div class="card-body">
+						<h2 class="">RVA Information</h2>
+						<div class="mt-3 row">
+							<div class="col-12 m-2">
+								<button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
+									Request
+								</button>
+							</div>
+							<div class="col-12 m-2">
+								<button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
+									Verification
+								</button>
+							</div>
+							<div class="col-12 m-2">
+								<button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
+									Audit
+								</button>
+							</div>
+							<div class="col-12 m-2">
+								<button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
+									Quality Audit
+								</button>
+							</div>
+							<div class="col-12 m-2">
+								<button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
+									Skip RVA
+								</button>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12 m-2">
+								<button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
+									View Scanned Images
+								</button>
+							</div>
+						</div>
+						<div class="card other-name-card">
+							<div class="card-body">
+								<h2 class="">Message Board</h2>
+								<div class="mt-3 row">
+									<div class="col-12 m-2">
+										<button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
+											Add Comment
+										</button>
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="form-row row mb-2">
-					<div class="col-xl-4">
-						<label class=" " for="PerClaimAmount">Per Claim Amount:</label>
-						<span class="form-control form-control-lg">
-				      <%= @provider_insurance_coverages.claim_amount.presence || 'NA' %>
-				    </span>
-					</div>
-					<div class="col-xl-4">
-						<label class=" " for="AggregateAmount">Aggregate Amount:</label>
-						<span class="form-control form-control-lg">
-				      <%= @provider_insurance_coverages.coverage_amount_aggregate.presence || 'NA' %>
-				    </span>
-					</div>
-					<div class="col-xl-4">
-						<label class=" " for="UmbrellaCoverage">Umbrella Coverage (amount):</label>
-						<span class="form-control form-control-lg">
-				      <%= @provider_insurance_coverages.umbrella_coverage_amount.presence || 'NA' %>
-				    </span>
-					</div>
-				</div>
-
-				<div class="form-row row mb-2">
-				  <div class="col-xl-6">
-				    <div class="input-group d-flex align-items-center gap-2">
-				      <label for="tail_coverage" class="">Do you have tail coverage (extended reporting endorsement)?</label>
-				      
-				      <div class="form-check">
-				        <input 
-				          class="form-check-input" 
-				          type="radio" 
-				          name="provider_insurance_coverage[tail_coverage]" 
-				          value="true" 
-				          id="yesTailCoverage" 
-				          <%= 'checked' if @provider_insurance_coverages.tail_coverage == true %>>
-				        <label class="form-check-label" for="yesTailCoverage">Yes</label>
-				      </div>
-				      
-				      <div class="form-check">
-				        <input 
-				          class="form-check-input" 
-				          type="radio" 
-				          name="provider_insurance_coverage[tail_coverage]" 
-				          value="false" 
-				          id="noTailCoverage" 
-				          <%= 'checked' if @provider_insurance_coverages.tail_coverage == false %>>
-				        <label class="form-check-label" for="noTailCoverage">No</label>
-				      </div>
-				    </div>
-				  </div>
-				</div>
-
-
-				<div class="form-row row mb-2">
-				  <div class="col-xl-8">
-				    <div class="input-group d-flex align-items-center gap-2">
-				      <label for="" class=" ">Has your current carrier excluded any specific area of
-				        practice or procedures from your coverage?</label>
-				      <div class="form-check">
-				        <input 
-				          class="form-check-input" 
-				          type="radio" 
-				          name="provider_insurance_coverage[current_carrier_excluded]" 
-				          value="true" 
-				          id="yesExcludedAreaOfPractice"
-				          <%= 'checked' if @provider_insurance_coverages.current_carrier_excluded == true %>>
-				        <label class="form-check-label" for="yesExcludedAreaOfPractice">Yes</label>
-				      </div>
-				      <div class="form-check">
-				        <input 
-				          class="form-check-input" 
-				          type="radio" 
-				          name="provider_insurance_coverage[current_carrier_excluded]" 
-				          value="false" 
-				          id="noExcludedAreaOfPractice"
-				          <%= 'checked' if @provider_insurance_coverages.current_carrier_excluded == false %>>
-				        <label class="form-check-label" for="noExcludedAreaOfPractice">No</label>
-				      </div>
-				    </div>
-				  </div>
-				</div>
-
-				<div class="form-row row ListOfExclusions" id="exclusions-container" style="display: none;">
-					<label for="ListOfExclusions" class=" ">If Yes, please list the exclusions with
-						explanation:</label>
-					<div class="col-xl-12">
-						<span class="form-control form-control-lg">
-				      <%= @provider_insurance_coverages.current_carrier_excluded_explanation %>
-				    </span>
-					</div>
-				</div>
-
-				<div class="form-row row mb-2 mt-2">
-				  <div class="col-xl-8">
-				    <div class="input-group d-flex align-items-center gap-2">
-				      <label for="" class=" ">Show on Tickler?</label>
-				      <div class="form-check">
-				        <input 
-				          class="form-check-input" 
-				          type="radio" 
-				          name="provider_insurance_coverage[show_on_tickler]" 
-				          value="true" 
-				          id="yesTickler"
-				          <%= 'checked' if @provider_insurance_coverages.show_on_tickler == true %>>
-				        <label class="form-check-label" for="yesTickler">Yes</label>
-				      </div>
-				      <div class="form-check">
-				        <input 
-				          class="form-check-input" 
-				          type="radio" 
-				          name="provider_insurance_coverage[show_on_tickler]" 
-				          value="false" 
-				          id="noTickler"
-				          <%= 'checked' if @provider_insurance_coverages.show_on_tickler == false %>>
-				        <label class="form-check-label" for="noTickler">No</label>
-				      </div>
-				    </div>
-				  </div>
-				</div>
-
-				<div class="form-row row mb-3">
-					<label for="comment">Please list any comments:</label>
-					<div class="col-xl-12">
-						<span class="form-control form-control-lg">
-				      <%= @provider_insurance_coverages.comment.presence || 'NA' %>
-				    </span>
-					</div>
-				</div>
-				<div class="form-row row justify-content-end">
-					<div class="col-xl-2">
-						<%= link_to 'Back', mhc_verification_platform_path(page_tab: 'liability'), class: 'btn btn-primary form-control' %>
-					</div>
-				</div>
 			</div>
-		</form>
+		</div>
 	</div>
 </div>
 
