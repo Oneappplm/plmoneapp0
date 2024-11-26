@@ -1,241 +1,279 @@
-    <div class="enc-content">
-        <div class="container">
-           <%= render "top_nav_buttons"%>
+<div class="enc-content">
+	<div class="container">
+	   <%= render "top_nav_buttons"%>
 
+		<div class="row mt-4">
+			<div class="col-xl-6 d-flex align-items-center">
+				<div class="d-flex align-items-center gap-3">
+					<a href="<%= verification_platform_index_path(page: 'liability')%>" class="link-back">
+						<i class='bx bx-left-arrow-alt'></i>
+					</a>
+					<% if params[:page_action] == 'new' %>
+						<h4 class="page-heading">Add New Liability</h4>
+			    <% elsif params[:page_action] == 'edit'%>
+			    	<h4 class="page-heading">Edit Liability</h4>
+			    <% end %>  
+				</div>
+			</div>
+		</div>
+    <% if params[:page_action] == 'new' %>
+      <% url = mhc_provider_insurance_coverages_path(id: @provider_insurance_coverage.id, page_tab: 'liability') %>
+    <% elsif params[:page_action] == 'edit'%>
+      <% url = mhc_provider_insurance_coverage_path(@provider_insurance_coverage.id) %>
+    <% end %>  
 
-            <div class="row mt-4">
-                <div class="col-xl-6 d-flex align-items-center">
-                    <div class="d-flex align-items-center gap-3">
-                        <a href="<%= verification_platform_index_path(page: 'liability')%>" class="link-back">
-                            <i class='bx bx-left-arrow-alt'></i>
-                        </a>
-                        <h4 class="page-heading">Add New Liability</h4>
-                    </div>
-                </div>
-            </div>
+		<%= form_with(model: @provider_insurance_coverage, url: url) do |f| %>
+			
+			<%= f.hidden_field :caqh_provider_attest_id %>
+      <%= f.hidden_field :provider_attest_id %>
+			
+			<div class="form-row row mt-3">
+				<div class="col-xl-4">
+					<%= f.label :self_insured_flag, "Self Insured" %>
+					<%= f.select :self_insured_flag, [["Yes", true], ["No", false]], { include_blank: "Select Option" }, class: "form-select form-select-lg" %>
+				</div>
+				<div class="col-xl-4">
+					<%= f.label :insurance_coverage_type_insurance_coverage_type_description, "Type of Coverage" %>
+					<%= f.select :insurance_coverage_type_insurance_coverage_type_description, [["Individual", "individual"], ["Shared", "shared"]], { include_blank: "Select Coverage Type" }, class: "form-select form-select-lg" %>
+				</div>
+				<div class="col-xl-4">
+					<%= f.label :type_of_policy, "Type of Policy" %>
+					<%= f.select :type_of_policy, [["Occurrence", "occurrence"], ["Claims Made", "claims made"]], { include_blank: "Select Policy Type" }, class: "form-select form-select-lg" %>
+				</div>
+			</div>
 
-            <form action="">
-                <div class="form-row row mt-3">
-                    <div class="col-xl-4">
-                        <label for="SelfIssued">Self Issued:</label>
-                        <select name="SelfIssued" class="form-select " id="SelfIssued">
-                            <option value="">Select option</option>
-                        </select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="CoverageType">Type of Coverage:</label>
-                        <select name="CoverageType" class="form-select " id="CoverageType">
-                            <option value="">Select option</option>
-                        </select>
-                    </div>
-                    <div class="col-xl-4">
-                        <label for="PolicyType">Policy Type:</label>
-                        <select name="PolicyType" class="form-select " id="PolicyType">
-                            <option value="">Select option</option>
-                        </select>
-                    </div>
-                </div>
+			<div class="page-applicable">
+				<div class="card mt-3">
+					<div class="form-row row p-2">
+						<span class="page-note">
+							<i class='bx bx-error-circle font-lightblue'></i> <span>To search for a School name,
+								please
+								click the search button.</span>
+						</span>
+						<div class="form-row row">
+							<div class="col-xl-6 ">
+								<%= f.label :insurance_carrier_name, "Carrier Name" %>
+								<div class="input-group gap-1">
+									<%= f.text_field :insurance_carrier_name, class: "form-control form-control-lg" %>
+									<button class="btn btn-primary" type="button">Search</button>
+								</div>
+							</div>
+							<div class="col-xl-6">
+								<%= f.label :address, "Address" %>
+								<%= f.text_field :address, class: "form-control form-control-lg", placeholder: "Type here.." %>
+							</div>
+						</div>
+						<div class="form-row row">
+							<div class="col-xl-6">
+								<%= f.label :address2, "Suite/Dept/Mail Stop:" %>
+								<%= f.text_field :address2, class: "form-control form-control-lg", placeholder: "Type here.." %>
+							</div>
+							<div class="col-xl-6">
+								<%= f.label :additional_address, "Additional Address:" %>
+								<%= f.text_field :additional_address, class: "form-control form-control-lg", placeholder: "Type here.." %>
+							</div>
+						</div>
+						<div class="form-row row">
+							<div class="col-xl-6">
+								<%= f.label :city, "City" %>
+								<%= f.text_field :city, class: "form-control form-control-lg", placeholder: "Type here.." %>
+							</div>
+							<div class="col-xl-6">
+								<%= f.label :country_country_name, "Country" %>
+								<%= f.text_field :country_country_name, class: "form-control form-control-lg", placeholder: "Type here.." %>
+							</div>
+						</div>
+						<div class="form-row row">
+							<div class="col-xl-4">
+								<%= f.label :state, "State:" %>
+								<%= f.collection_select :state, State.all, :id, :name, { include_blank: "Select State" }, class: "form-select form-select-lg" %>
+							</div>
+							<div class="col-xl-4">
+								<%= f.label :postal_code, "Zip/Postal Code:" %>
+								<%= f.text_field :postal_code, class: "form-control form-control-lg", placeholder: "Type here.." %>
+							</div>
+							<div class="col-xl-4">
+								<%# <label for="Country" class="text-dark-grey">Country:</label>
+								<select name="country" id="country" class="form-select ">
+									<option value="">Select option</option>
+								</select> %>
+							</div>
+						</div>
+						<div class="form-row row">
+							<div class="col-xl-4">
+								<%= f.label :phone_number, "Carrier Phone Number:" %>
+								<%= f.text_field :phone_number, class: "form-control form-control-lg", placeholder: "xxx-xxx-xxxx" %>
+							</div>
+							<div class="col-xl-4">
+								<%= f.label :fax_number, "Carrier Fax Number:" %>
+								<%= f.text_field :fax_number, class: "form-control form-control-lg", placeholder: "xxx-xxx-xxxx" %>
+							</div>
+							<div class="col-xl-4">
+								<%= f.label :email_address, "Carrier Email Address:" %>
+								<%= f.text_field :email_address, class: "form-control form-control-lg", placeholder: "Type here.." %>
+							</div>
+						</div>
+						<div class="form-row row">
+							<div class="col-xl-6">
+							  <%= f.label :effective_date, "Original Effective Date:", class: "" %>
+							  <%= f.text_field :effective_date, 
+							                   class: "form-control form-control-lg", 
+							                   placeholder: "MM/DD/YYYY", 
+							                   onfocus: "this.type='date'", 
+							                   onblur: "this.type='text'" %>
+							</div>
 
-                <div class="page-applicable">
-                    <div class="card mt-3">
-                        <div class="form-row row p-2">
-                            <span class="page-note">
-                                <i class='bx bx-error-circle font-lightblue'></i> <span>To search for a School name,
-                                    please
-                                    click the search button.</span>
-                            </span>
-                            <div class="form-row row">
-                                <div class="col-xl-6 ">
-                                    <label for="CarrierName" class="text-dark-grey">Carrier Name:</label>
-                                    <div class="input-group gap-2">
-                                        <select name="CarrierName" id="CarrierName" class="form-select form-select-sm">
-                                            <option value="">Select option</option>
-                                        </select>
-                                        <button class="btn btn-primary" type="button">Search</button>
-                                    </div>
-                                </div>
-                                <div class="col-xl-6">
-                                    <label for="address" class="text-dark-grey">Address:</label>
-                                    <input type="text" name="address" id="address" class="form-control form-control-lg"
-                                        placeholder="Type here..">
-                                </div>
-                            </div>
-                            <div class="form-row row">
-                                <div class="col-xl-6">
-                                    <label for="suitestop" class="text-dark-grey">Suite/Dept/Mail Stop:</label>
-                                    <input type="text" class="form-control form-control-lg" name="suitestop"
-                                        id="suitestop" placeholder="Type here..">
-                                </div>
-                                <div class="col-xl-6">
-                                    <label for="AdditionalAddress" class="text-dark-grey">Additional Address:</label>
-                                    <input type="text" class="form-control form-control-lg" name="AdditionalAddress"
-                                        id="AdditionalAddress" placeholder="Type here..">
-                                </div>
-                            </div>
-                            <div class="form-row row">
-                                <div class="col-xl-6">
-                                    <label for="city" class="text-dark-grey">City:</label>
-                                    <input type="text" class="form-control form-control-lg" name="city" id="city"
-                                        placeholder="Type here..">
-                                </div>
-                                <div class="col-xl-6">
-                                    <label for="county" class="text-dark-grey">County:</label>
-                                    <input type="text" class="form-control form-control-lg" name="county" id="county"
-                                        placeholder="Type here..">
-                                </div>
-                            </div>
-                            <div class="form-row row">
-                                <div class="col-xl-4">
-                                    <label for="State" class="text-dark-grey">State/Province:</label>
-                                    <select name="state" id="state" class="form-select ">
-                                        <option value="">Select option</option>
-                                    </select>
-                                </div>
-                                <div class="col-xl-4">
-                                    <label for="Zip" class="text-dark-grey">Zip/Postal Code:</label>
-                                    <input type="text" name="city2" id="city2" class="form-control form-control-lg"
-                                        placeholder="Type here..">
-                                </div>
-                                <div class="col-xl-4">
-                                    <label for="Country" class="text-dark-grey">Country:</label>
-                                    <select name="country" id="country" class="form-select ">
-                                        <option value="">Select option</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-row row">
-                                <div class="col-xl-4">
-                                    <label for="CarrierNumber" class="text-dark-grey">Carrier Number:</label>
-                                    <input type="text" class="form-control form-control-lg" name="CarrierNumber"
-                                        id="CarrierNumber" placeholder="xxx-xxx-xxxx">
-                                </div>
-                                <div class="col-xl-4">
-                                    <label for="CarrierFax" class="text-dark-grey">Carrier Fax:</label>
-                                    <input type="text" class="form-control form-control-lg" name="CarrierFax"
-                                        id="CarrierFax" placeholder="xxx-xxx-xxxx">
-                                </div>
-                                <div class="col-xl-4">
-                                    <label for="Country" class="text-dark-grey">Country:</label>
-                                    <select name="country" id="country" class="form-select ">
-                                        <option value="">Select option</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-row row">
-                                <div class="col-xl-6">
-                                    <label class=" " for="OriginalEffectiveDate">Original Effective
-                                        Date:</label>
-                                    <input type="text" id="OriginalEffectiveDate" name="OriginalEffectiveDate"
-                                        class="form-control form-control-lg" placeholder="MM/DD/YYYY"
-                                        onfocus="(this.type='date')" onblur="(this.type='text')">
-                                    <!-- <input class="form-control form-control-lg" type="date" name="from" id="from" placeholder="From"> -->
-                                </div>
-                                <div class="col-xl-6">
-                                    <label class=" " for="expiredate">Expiration Date:</label>
-                                    <div class="input-group gap-3 d-flex align-items-center">
-                                        <input type="text" id="expiredate" name="expiredate"
-                                            class="form-control form-control-lg" placeholder="MM/DD/YYYY"
-                                            onfocus="(this.type='date')" onblur="(this.type='text')">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="present-switch">
-                                            <label class=" " class="form-check-label" for="present-switch">Does
-                                                Not Expire</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row row mb-2">
-                        <div class="col-xl-4">
-                            <label class=" " for="PerClaimAmount">Per Claim Amount:</label>
-                            <input type="text" class="form-control form-control-lg" id="PerClaimAmount"
-                                name="PerClaimAmount" placeholder="Type here..">
-                        </div>
-                        <div class="col-xl-4">
-                            <label class=" " for="AggregateAmount">Aggregate Amount:</label>
-                            <input type="text" class="form-control form-control-lg" id="AggregateAmount"
-                                name="AggregateAmount" placeholder="Type here..">
-                        </div>
-                        <div class="col-xl-4">
-                            <label class=" " for="UmbrellaCoverage">Umbrella Coverage (amount):</label>
-                            <input type="text" class="form-control form-control-lg" id="UmbrellaCoverage"
-                                name="UmbrellaCoverage" placeholder="Type here..">
-                        </div>
-                    </div>
-                    <div class="form-row row mb-2">
-                        <div class="col-xl-6">
-                            <div class="input-group d-flex align-items-center gap-2">
-                                <label for="" class="text-dark-grey">Do you have tail coverage (extended reporting
-                                    endorsement)?</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="TailCoverage"
-                                        value="yesTailCoverage">
-                                    <label class="form-check-label" for="yesTailCoverage">Yes</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="TailCoverage"
-                                        value="noTailCoverage">
-                                    <label class="form-check-label" for="noTailCoverage">No</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row row mb-2">
-                        <div class="col-xl-8">
-                            <div class="input-group d-flex align-items-center gap-2">
-                                <label for="" class="text-dark-grey">Has your current carrier excluded any specific area of practice
-                                    or procedures from your coverage?</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="ExcludedAreaOfPractice"
-                                        value="yesExcludedAreaOfPractice" checked>
-                                    <label class="form-check-label" for="yesExcludedAreaOfPractice">Yes</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="ExcludedAreaOfPractice"
-                                        value="noExcludedAreaOfPractice">
-                                    <label class="form-check-label" for="noExcludedAreaOfPractice">No</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row row ListOfExclusions">
-                        <label for="ListOfExclusions" class="text-dark-grey">If Yes, please list the exclusions with
-                            explanation:</label>
-                        <div class="col-xl-12">
-                            <input type="text" class="form-control form-control-lg" name="ListOfExclusions"
-                                id="ListOfExclusions" placeholder="Type here..">
-                        </div>
-                    </div>
-                    <div class="form-row row">
-                        <div class="col-xl-4">
-                            <div class="input-group gap-2">
-                                <label class="align-self-center" for="">Show on Tickler?</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tickler" value="yesTickler">
-                                    <label class="form-check-label" for="yesTickler">Yes</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tickler" value="yesTickler"
-                                        checked>
-                                    <label class="form-check-label" for="noTickler">No</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row row mb-3">
-                        <label for="comment">Please list any comments:</label>
-                        <div class="col-xl-12">
-                            <input type="text" class="form-control form-control-lg" name="comments" id="comments"
-                                placeholder="Type here..">
-                        </div>
-                    </div>
-                    <div class="form-row row justify-content-end">
-                        <div class="col-xl-2">
-                            <button class="btn btn-primary form-control">Save</button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
+							<div class="col-xl-6">
+							  <%= f.label :end_date, "Expiration Date:", class: "" %>
+							  <div class="input-group gap-3 d-flex align-items-center">
+							    <%= f.text_field :end_date, 
+							                     class: "form-control form-control-lg", 
+							                     placeholder: "MM/DD/YYYY", 
+							                     onfocus: "this.type='date'", 
+							                     onblur: "this.type='text'",
+							                     id: "expiredate" %>
+							    <div class="form-check">
+							      <%= check_box_tag :prof_liability_does_not_expire, "1", false, 
+							                        class: "form-check-input", 
+							                        id: "present-switch" %>
+							      <%= label_tag :prof_liability_does_not_expire, "Does Not Expire", class: "form-check-label" %>
+							    </div>
+							  </div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-row row mb-2">
+					<div class="col-xl-4">
+						<%= f.label :claim_amount, "Per Claim Amount:" %>
+						<%= f.text_field :claim_amount, class: "form-control form-control-lg", placeholder: "Type here.." %>
+					</div>
+					<div class="col-xl-4">
+						<%= f.label :coverage_amount_aggregate, "Aggregate Amount:" %>
+						<%= f.text_field :coverage_amount_aggregate, class: "form-control form-control-lg", placeholder: "Type here.." %>
+					</div>
+					<div class="col-xl-4">
+						<%= f.label :umbrella_coverage_amount, "Umbrella Coverage (amount):" %>
+						<%= f.text_field :umbrella_coverage_amount, class: "form-control form-control-lg", placeholder: "Type here.." %>
+					</div>
+				</div>
+
+				<div class="form-row row mb-2">
+					<div class="col-xl-6">
+						<label>Do you have tail coverage (extended reporting endorsement)?</label>
+				    <%= f.radio_button :tail_coverage, true, checked: @provider_insurance_coverage.tail_coverage.nil? ? true : @provider_insurance_coverage.tail_coverage %>
+				    <%= f.label :tail_coverage, "Yes", value: true %>
+				    <%= f.radio_button :tail_coverage, false, checked: @provider_insurance_coverage.tail_coverage == false %>
+				    <%= f.label :tail_coverage, "No", value: false %>
+					</div>
+				</div>
+
+				<div class="form-row row mb-2">
+					<div class="col-xl-8">
+					  <div class="input-group d-flex align-items-center gap-2">
+					    <%= f.label :current_carrier_excluded, 
+					                "Has your current carrier excluded any specific area of practice or procedures from your coverage?", 
+					                class: "text-dark-grey" %>
+					    
+					    <div class="form-check">
+					      <%= f.radio_button :current_carrier_excluded, "yesExcludedAreaOfPractice", 
+					                         class: "form-check-input", 
+					                         id: "yesExcludedAreaOfPractice", 
+					                         checked: true %>
+					      <%= f.label :current_carrier_excluded_yes, "Yes", 
+					                  class: "form-check-label", 
+					                  for: "yesExcludedAreaOfPractice" %>
+					    </div>
+
+					    <div class="form-check">
+					      <%= f.radio_button :current_carrier_excluded, "noExcludedAreaOfPractice", 
+					                         class: "form-check-input", 
+					                         id: "noExcludedAreaOfPractice" %>
+					      <%= f.label :prof_liability_current_carrier_excluded_no, "No", 
+					                  class: "form-check-label", 
+					                  for: "noExcludedAreaOfPractice" %>
+					    </div>
+					  </div>
+					</div>
+				</div>
+
+				<div class="form-row row ListOfExclusions" id="exclusions-container" style="display: none;">
+				  <%= f.label :current_carrier_excluded_explanation, 
+				              "If Yes, please list the exclusions with explanation:", 
+				              class: "text-dark-grey" %>
+				  <div class="col-xl-12">
+				    <%= f.text_field :current_carrier_excluded_explanation, 
+				                     class: "form-control form-control-lg", 
+				                     id: "ListOfExclusions", 
+				                     placeholder: "Type here.." %>
+				  </div>
+				</div>
+
+				<div class="form-row row mt-2 mb-2">
+				  <div class="col-xl-4">
+				    <div class="input-group gap-2">
+				      <%= f.label :show_on_tickler, "Show on Tickler?", class: "align-self-center" %>
+				      <div class="form-check">
+				        <%= f.radio_button :show_on_tickler, 'yesTickler', class: "form-check-input", id: "yesTickler" %>
+				        <%= f.label :show_on_tickler_yesTickler, "Yes", class: "form-check-label" %>
+				      </div>
+				      <div class="form-check">
+				        <%= f.radio_button :show_on_tickler, 'noTickler', class: "form-check-input", id: "noTickler", checked: true %>
+				        <%= f.label :prof_liability_show_on_tickler_noTickler, "No", class: "form-check-label" %>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+
+				<div class="form-row row mb-3">
+					<%= f.label :comment, "Please list any comments:" %>
+					<div class="col-xl-12">
+						<%= f.text_area :comment, class: "form-control form-control-lg", placeholder: "Type here.." %>
+					</div>
+				</div>
+
+				<div class="form-row row justify-content-end">
+					<div class="col-xl-3">
+						<%= f.submit class: "btn btn-primary form-control mt-2" %>
+					</div>
+				</div>
+			</div>
+		<% end %>
+	</div>
+</div>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+	  const checkbox = document.getElementById("present-switch");
+	  const endDateField = document.getElementById("expiredate");
+
+	  checkbox.addEventListener("change", () => {
+	    if (checkbox.checked) {
+	      endDateField.value = "";
+	      endDateField.disabled = true;
+	    } else {
+	      endDateField.disabled = false;
+	    }
+	  });
+
+	  // for hidden the current_carrier_excluded_explanation section
+	  const yesRadio = document.getElementById("yesExcludedAreaOfPractice");
+	  const noRadio = document.getElementById("noExcludedAreaOfPractice");
+	  const exclusionsContainer = document.getElementById("exclusions-container");
+
+	  const toggleExclusions = () => {
+	    if (yesRadio.checked) {
+	      exclusionsContainer.style.display = "block";
+	    } else {
+	      exclusionsContainer.style.display = "none";
+	    }
+	  };
+
+	  // Add event listeners to radio buttons
+	  yesRadio.addEventListener("change", toggleExclusions);
+	  noRadio.addEventListener("change", toggleExclusions);
+
+	  // Initial state check
+	  toggleExclusions();
+	});
+	</script>
