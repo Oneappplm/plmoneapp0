@@ -124,6 +124,28 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_deas = @provider_personal_information.provider_deas.order(:id)
       @states = State.all
     end
+
+    if params[:page_tab] == 'liability'
+      @q = ProviderInsuranceCoverage.ransack(params[:q])
+      @provider_insurance_coverages = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
+      @states = State.all
+      @limit = 10 # Set limit
+      @total_pages = (@provider_insurance_coverages_count.to_f / @limit.to_f).ceil
+    end
+    
+    if params[:page_tab] == 'add_new_liability'
+      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+      if params[:coverage_id].present? 
+        @provider_insurance_coverage = ProviderInsuranceCoverage.find(params[:coverage_id])
+      else
+        @provider_insurance_coverage = ProviderInsuranceCoverage.new(provider_attest_id: @provider_attest_id)
+      end
+    end
+
+    if params[:page_tab] == 'liability_info'
+      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+      @provider_insurance_coverages = ProviderInsuranceCoverage.find(params[:coverage_id])
+    end
   end
 
   def redirect_to_auto_verify

@@ -1,103 +1,127 @@
-    <div class="enc-content">
-        <div class="container">
-            
-          <%= render "top_nav_buttons"%>    
-            <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <h4 class="page-heading">Liability</h4>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="training-switch">
-                        <label class="form-check-label" for="training-switch">Not Applicable</label>
-                    </div>
-                </div>
-                <a href="<%= verification_platform_index_path(page: 'add_new_liability')%>" class="btn btn-primary py-1">
-                    <i class='bx bx-plus'></i>
-                    Add New Liability
-                </a>
-            </div>
-            <div class="mt-2 page-applicable">
-                <span class="page-note">
-                    <i class='bx bx-error-circle font-red'></i> <span>Please list each of your professional liability
-                        carriers for the last ten years, beginning with your current carrier(s). Required fields are
-                        marked with the symbol “<span class="font-red">*</span>”.</span>.
-                </span>
-                <span class="page-note">
-                    <i class='bx bx-error-circle font-red'></i> <span>Please check the Not Applicable button if you have
-                        do not currently have and have never had professional liability coverage.</span>
-                </span>
-            </div>
-            <div class="row mt-3 page-applicable">
-                <div class="col-xl-4">
-                    <div class="form-control enc-search-wrp">
-                        <input type="" class="enc-search-input" placeholder="Search">
-                        <i class='bx bx-search'></i>
-                    </div>
-                </div>
-            </div>
-            <div class="row result-controls page-applicable">
-                <div class="col-xl-6 filter-result">
-                    <h6 class="">Result: 2 records</h6>
-                </div>
-                <div class="col-xl-6">
-                    <div class="table-controls">
-                        <div class="control-wrp">
-                            <label for="limit">Show limit</label>
-                            <input type="text" id="limit" class="form-control" value="20">
-                        </div>
-                        <div class="control-wrp">
-                            <label for="page">Page 1 of 32</label>
-                            <input type="text" id="page" class="form-control" value="1">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <table class="table table-bordered practice-table mt-3 page-applicable ">
-                <thead>
-                    <tr>
-                        <th class="text-white" scope="col">Carrier Name</th>
-                        <th class="text-white">Policy Number</th>
-                        <th class="text-white">Expiration Date</th>
-                        <th class="text-white">Per Claim Amount</th>
-                        <th class="text-white">Aggregate Amount</th>
-                        <th class="text-white">Coverage Status</th>
-                        <th class="text-white">Claims History Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><a href="<%= verification_platform_index_path(page: 'liability_info')%>" id="BoardCertificateDisplay"
-                                class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none">ProAssurance
-                                Casualty Company</a></td>
-                        <td>MP78771</td>
-                        <td>1/22/2023</td>
-                        <td>250000</td>
-                        <td>750000</td>
-                        <td>Quality Audited</td>
-                        <td>Skip RVA</td>
-                    </tr>
-                    <tr>
-                        <td><a href="<%= verification_platform_index_path(page: 'liability_info')%>" id="BoardCertificateDisplay"
-                                class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none">ProAssurance
-                                Casualty Company</a></td>
-                        <td>MP78771</td>
-                        <td>1/22/2023</td>
-                        <td>250000</td>
-                        <td>750000</td>
-                        <td>Quality Audited</td>
-                        <td>Skip RVA</td>
-                    </tr>
-                </tbody>
-            </table>
-            <form action="" class="page-not-applicable">
-                <div class="form-row mt-4">
-                    <label for="">Please explain:<span class="font-red">*</span></label>
-                    <textarea name="" id="" cols="30" rows="5" class="form-control" required></textarea>
-                </div>
-                <div class="form-row mt-2 d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary">
-                        Save
-                    </button>
-                </div>
-            </form>
+<div class="enc-content">
+  <div class="container">
+
+    <%= render "top_nav_buttons"%>    
+    <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <h4 class="page-heading">Liability</h4>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="training-switch">
+          <label class="form-check-label" for="training-switch">Not Applicable</label>
         </div>
+      </div>
+      <%= link_to mhc_verification_platform_path(page_tab: 'add_new_liability', page_action: 'new'), class: 'btn btn-primary py-1' do %>
+        <i class='bx bx-plus'></i>
+        Add New Liability
+      <% end %>
     </div>
+    <div class="mt-2 page-applicable">
+        <span class="page-note">
+          <i class='bx bx-error-circle font-red'></i> <span>Please list each of your professional liability
+            carriers for the last ten years, beginning with your current carrier(s). Required fields are
+            marked with the symbol “<span class="font-red">*</span>”.</span>.
+        </span>
+        <span class="page-note">
+          <i class='bx bx-error-circle font-red'></i> <span>Please check the Not Applicable button if you have
+          do not currently have and have never had professional liability coverage.</span>
+        </span>
+    </div>
+
+    <div class="mt-3 mb-3">
+      <%= search_form_for @q, url: mhc_verification_platform_path(page_tab: 'liability'), method: :get, html: { class: 'form_search_with_icon'} do |f|%>
+          <%= hidden_field_tag "page_tab", "liability" %>
+          <div>
+             <%= f.text_field :insurance_carrier_name_cont, value: "#{params[:q][:insurance_carrier_name_cont] rescue ''}", placeholder: 'Search...', class: "form-control py-1" %>
+             <i class="bx bx-search"></i>
+          </div>
+       <% end %>
+    </div>
+
+<%#     <div class="row mt-3 page-applicable">
+      <div class="col-xl-4">
+        <div class="form-control enc-search-wrp">
+          <input type="" class="enc-search-input" placeholder="Search">
+          <i class='bx bx-search'></i>
+        </div>
+      </div>
+    </div> %>
+
+    <% if params[:page_tab] == 'liability' %>
+      <div class="row result-controls page-applicable">
+        <div class="col-xl-6 filter-result">
+          <h6>Result: <%= @provider_insurance_coverages.count %> records</h6>
+        </div>
+        <div class="col-xl-6">
+          <div class="table-controls">
+            <div class="control-wrp">
+              <label for="limit">Show limit</label>
+              <%= form_with(url: request.path, method: :get, local: true) do |f| %>
+                <%= f.select :limit, [10, 20, 50, 100],{ selected: @limit, onchange: 'this.form.submit()'}, {class: 'form-select'} %>
+              <% end %>
+            </div>
+            <div class="control-wrp">
+              <label for="page">Page <%= params[:page] || 1 %> of <%= @total_pages %></label>
+              <input type="text" id="page" class="form-control" value="<%= params[:page] || 1 %>" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <table class="table table-bordered practice-table mt-3 page-applicable ">
+      <thead>
+        <tr>
+          <th class="text-white" scope="col">Carrier Name</th>
+          <th class="text-white">Policy Number</th>
+          <th class="text-white">Expiration Date</th>
+          <th class="text-white">Per Claim Amount</th>
+          <th class="text-white">Aggregate Amount</th>
+          <th class="text-white">Coverage Status</th>
+          <th class="text-white">Claims History Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @provider_insurance_coverages.each do |provider| %>
+          <tr>
+            <td>
+              <%= link_to mhc_verification_platform_path(page_tab: 'liability_info', coverage_id: provider.id), id: "BoardCertificateDisplay", class: "text-dark text-start bg-transparent border-0 fw-bold text-decoration-none" do %>
+                <%= provider.insurance_carrier_name %>
+              <% end %>
+            </td>
+            <td><%= provider.policy_number %></td>
+            <td><%= provider.end_date %></td>
+            <td><%= provider.claim_amount %></td>
+            <td><%= provider.coverage_amount_aggregate %></td>
+            <td></td>
+            <td></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+     <% if @provider_insurance_coverages %>
+      <div class="col-lg-12">
+        <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-0">
+          <div class="page_info ms-3 text-black">
+            <%= page_entries_info @provider_insurance_coverages %>
+          </div>
+          <% if params[:per_page ].present? %>
+            <%= will_paginate @provider_insurance_coverages, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+          <% else %>
+            <%= will_paginate @provider_insurance_coverages, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+    <form action="" class="page-not-applicable">
+      <div class="form-row mt-4">
+        <label for="">Please explain:<span class="font-red">*</span></label>
+        <textarea name="" id="" cols="30" rows="5" class="form-control" required></textarea>
+      </div>
+      <div class="form-row mt-2 d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary">
+          Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
