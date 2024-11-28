@@ -12,179 +12,169 @@
                         </div>
                     </div>
                 </div>
-                <form action="">
-                    <div class="form-row row">
-                        <div class="col-xl-6">
-                            <label for="specialty">Specialty:</label>
-                            <select name="specialty" id="specialty" class="form-select ">
-                                <option value="">Select option</option>
-                            </select>
-                        </div>
+                <%= form_for(@provider_specialty, url: mhc_provider_specialties_path(page_tab: 'specialties')) do |f| %>
+                  <%= f.hidden_field :provider_attest_id, value: params[:id] %>
+                  <%= f.hidden_field :caqh_provider_attest_id, value: params[:id] %>
+
+                  <!-- Specialty and Board Certification Details -->
+                  <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                      <h5>Specialty and Board Certification Details</h5>
                     </div>
-                    <div class="form-row row">
-                        <div class="col-xl-6">
-                            <label for="certificatestatus">Board Certificate Status:</label>
-                            <select name="certificatestatus" id="certificatestatus" class="form-select ">
-                                <option value="">Select option</option>
-                            </select>
+                    <div class="card-body">
+                      <div class="row mb-3">
+                        <div class="col-md-6">
+                          <%= f.label :specialty_specialty_name, "Specialty" %>
+                          <%= f.text_field :specialty_specialty_name, class: "form-control", placeholder: "Enter Specialty" %>
                         </div>
-                        <div class="col-xl-6">
-                            <label for="issuingboard">Issuing Board:</label>
-                            <select name="issuingboard" id="issuingboard" class="form-select ">
-                                <option value="">Select option</option>
-                            </select>
+                        <div class="col-md-6">
+                          <%= f.label :board_certified_flag, "Board Certification Status" %>
+                          <%= f.text_field :board_certified_flag, class: "form-control", placeholder: "Enter Status" %>
                         </div>
+                      </div>
+                      <div class="row mb-3">
+                        <div class="col-md-6">
+                          <%= f.label :specialty_board_name, "Issuing Board" %>
+                          <%= f.text_field :specialty_board_name, class: "form-control", placeholder: "Enter Issuing Board" %>
+                        </div>
+                        <div class="col-md-3">
+                          <%= f.label :initial_certification_date, "Initial Certification Date" %>
+                          <%= f.date_field :initial_certification_date, class: "form-control" %>
+                        </div>
+                        <div class="col-md-3">
+                          <%= f.label :expiration_date, "Certification Expiration Date" %>
+                          <%= f.date_field :expiration_date, class: "form-control" %>
+                          <div class="form-check mt-2">
+                            <%= f.check_box :board_certification_expires_flag, class: "form-check-input" %>
+                            <%= f.label :board_certification_expires_flag, "Does Not Expire", class: "form-check-label" %>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="form-row row mb-4">
-                        <div class="col-xl-6">
-                            <label for="initialdate">Initial Certification Date:</label>
-                            <input type="text" id="initialdate" name="initialdate" class="form-control form-control-lg"
-                                placeholder="MM/DD/YYYY" onfocus="(this.type='date')" onblur="(this.type='text')">
-                            <!-- <input class="form-control form-control-lg" type="date" name="from" id="from" placeholder="From"> -->
-                        </div>
-                        <div class="col-xl-6">
-                            <label for="expiredate">Certification Expiration Date:</label>
-                            <div class="input-group gap-3 d-flex align-items-center">
-                                <input type="text" id="expiredate" name="expiredate"
-                                    class="form-control form-control-lg" placeholder="MM/DD/YYYY"
-                                    onfocus="(this.type='date')" onblur="(this.type='text')">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="present-switch">
-                                    <label class="form-check-label" for="present-switch">Does Not Expire</label>
-                                </div>
-                            </div>
-                        </div>
+                  </div>
+
+                  <!-- Examination Details -->
+                  <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                      <h5>Examination Details</h5>
                     </div>
-                    <div class="card p-3 mb-3">
-                        <div class="form-row row mb-2">
-                            <div class="col-xl-7">
-                                <label for="recertification">Recertification Date:</label>
-                                <div class="input-group gap-3 d-flex align-items-center">
-                                    <input type="text" id="recertification" name="recertification"
-                                        class="form-control form-control-lg" placeholder="MM/DD/YYYY"
-                                        onfocus="(this.type='date')" onblur="(this.type='text')">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="present-switch">
-                                        <label class="form-check-label" for="present-switch">Remove</label>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="card-body">
+                      <div class="row mb-3">
+                        <div class="col-12">
+                          <%= f.label :failed_board_exam_flag, "Have you ever been examined by this Board but failed to pass the examination?" %>
+                          <div class="form-check form-check-inline">
+                            <%= f.radio_button :failed_board_exam_flag, true, class: "form-check-input" %>
+                            <%= f.label :failed_board_exam_flag, "Yes", class: "form-check-label" %>
+                          </div>
+                          <div class="form-check form-check-inline">
+                            <%= f.radio_button :failed_board_exam_flag, false, class: "form-check-input" %>
+                            <%= f.label :failed_board_exam_flag, "No", class: "form-check-label" %>
+                          </div>
+                          <%= f.text_field :failed_board_exam_explanation, placeholder: "If Yes, explain", class: "form-control mt-2" %>
                         </div>
-                        <div class="form-row row justify-content-center">
-                            <div class="col-xl-2">
-                                <button class="btn btn-primary form-control">Add Other Date</button>
-                            </div>
-                        </div>
+                      </div>
                     </div>
-                    <div class="form-row row">
-                        <label for="" class="align-self-center">Have you ever been examined by this Board but failed to
-                            pass the examination?</label>
-                        <div class="input-group gap-2">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="Examined" value="yesExamined"
-                                    checked>
-                                <label class="form-check-label" for="yesExamined">Yes</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="Examined" value="noExamined">
-                                <label class="form-check-label" for="noExamined">No</label>
-                            </div>
-                        </div>
+                  </div>
+
+                  <!-- Directory Listing Preferences -->
+                  <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                      <h5>Directory Listing Preferences</h5>
                     </div>
-                    <div class="form-row row YesExamined">
-                        <label for="NotExamined" class=" ">If Yes, please explain:</label>
-                        <div class="col-xl-6">
-                            <input type="text" class="form-control form-control-lg" name="YesExamined" id="YesExamined"
-                                placeholder="Type here..">
+                    <div class="card-body">
+                      <label>Do you wish to be listed in the directory under this specialty?</label>
+                      <div class="row">
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <%= f.radio_button :hmo_flag, true, class: "form-check-input" %>
+                            <%= f.label :hmo_flag, "HMO: Yes", class: "form-check-label" %>
+                          </div>
+                          <div class="form-check">
+                            <%= f.radio_button :hmo_flag, false, class: "form-check-input" %>
+                            <%= f.label :hmo_flag, "HMO: No", class: "form-check-label" %>
+                          </div>
                         </div>
-                    </div>
-                    <div class="form-row row">
-                        <label for="">Do you wish to be listed in the directory under this specialty?</label>
-                        <div class="input-group gap-2">
-                            <label for="hmo" class="align-self-center">HMO</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="HMO" value="yesHMO" checked>
-                                <label class="form-check-label" for="yesHMO">Yes</label>
-                            </div>
-                            <div class="form-check me-2">
-                                <input class="form-check-input" type="radio" name="HMO" value="noHMO">
-                                <label class="form-check-label" for="noHMO">No</label>
-                            </div>
-                            <label for="ppo" class="align-self-center">PPO</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="ppo" value="yesppo" checked>
-                                <label class="form-check-label" for="yesppo">Yes</label>
-                            </div>
-                            <div class="form-check me-2">
-                                <input class="form-check-input" type="radio" name="ppo" value="noppo">
-                                <label class="form-check-label" for="noppo">No</label>
-                            </div>
-                            <label for="POS" class="align-self-center">POS</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="POS" value="yesPOS" checked>
-                                <label class="form-check-label" for="yesPOS">Yes</label>
-                            </div>
-                            <div class="form-check ">
-                                <input class="form-check-input" type="radio" name="POS" value="noPOS">
-                                <label class="form-check-label" for="noPOS">No</label>
-                            </div>
+                         <div class="col-md-4">
+                          <div class="form-check">
+                            <%= f.radio_button :ppo_flag, 'yesppo', class: "form-check-input" %>
+                            <%= f.label :ppo_flag, "PPO: Yes", class: "form-check-label" %>
+                          </div>
+                          <div class="form-check">
+                            <%= f.radio_button :ppo_flag, 'noppo', class: "form-check-input" %>
+                            <%= f.label :ppo_flag, "PPO: No", class: "form-check-label" %>
+                          </div>
                         </div>
-                    </div>
-                    <div class="form-row row">
-                        <label for="" class="align-self-center">Have you applied for board certification other than
-                            indicated above?</label>
-                        <div class="input-group gap-2">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="AppliedboardCertificate"
-                                    value="yesAppliedboardCertificate" checked>
-                                <label class="form-check-label" for="yesAppliedboardCertificate">Yes</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="AppliedboardCertificate"
-                                    value="noAppliedboardCertificate">
-                                <label class="form-check-label" for="noAppliedboardCertificate">No</label>
-                            </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <%= f.radio_button :pos_flag, 'yesPOS', class: "form-check-input" %>
+                            <%= f.label :pos_flag, "POS: Yes", class: "form-check-label" %>
+                          </div>
+                          <div class="form-check">
+                            <%= f.radio_button :pos_flag, 'noPOS', class: "form-check-input" %>
+                            <%= f.label :pos_flag, "POS: No", class: "form-check-label" %>
+                          </div>
                         </div>
+                        <!-- Similar structure for PPO and POS -->
+                      </div>
                     </div>
-                    <div class="form-row row YesAppliedboardCertificate">
-                        <label for="certificationname" class=" ">If Yes, Certification Name:</label>
-                        <div class="col-xl-6">
-                            <input type="text" class="form-control form-control-lg" name="certificationname"
-                                id="certificationname" placeholder="Type here..">
+                  </div>
+                   <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                      <h5>Additional Details</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="row mb-3">
+                        <div class="col-12">
+                          <%= f.label :applied_board_certificate, "Have you applied for board certification other than indicated above?" %>
+                          <div class="form-check form-check-inline">
+                            <%= f.radio_button :applied_board_certificate, 'yesAppliedboardCertificate', class: "form-check-input" %>
+                            <%= f.label :applied_board_certificate, "Yes", class: "form-check-label" %>
+                          </div>
+                          <div class="form-check form-check-inline">
+                            <%= f.radio_button :applied_board_certificate, 'noAppliedboardCertificate', class: "form-check-input" %>
+                            <%= f.label :applied_board_certificate, "No", class: "form-check-label" %>
+                          </div>
                         </div>
-                    </div>
-                    <div class="form-row row mb-4">
-                        <div class="col-xl-6">
-                            <label for="dateapplied" class=" ">Date Applied:</label>
-                            <input type="text" id="dateapplied" name="dateapplied" class="form-control form-control-lg"
-                                placeholder="MM/DD/YYYY" onfocus="(this.type='date')" onblur="(this.type='text')">
-                            <!-- <input class="form-control form-control-lg" type="date" name="from" id="from" placeholder="From"> -->
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <%= f.label :certification_name, "If Yes, Certification Name:" %>
+                          <%= f.text_field :certification_name, class: "form-control" %>
                         </div>
-                    </div>
-                    <div class="form-row row">
-                        <div class="col-xl-4">
-                            <div class="input-group gap-2">
-                                <label class="align-self-center" for="">Show on Tickler?</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tickler" value="yesTickler">
-                                    <label class="form-check-label" for="yesTickler">Yes</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tickler" value="yesTickler"
-                                        checked>
-                                    <label class="form-check-label" for="noTickler">No</label>
-                                </div>
-                            </div>
+                        <div class="col-md-6">
+                          <%= f.label :date_applied, "Date Applied:" %>
+                          <%= f.date_field :date_applied, class: "form-control" %>
                         </div>
+                      </div>
                     </div>
-                    <div class="form-row row mb-3">
-                        <label for="comment">Please list any comments:</label>
-                        <div class="col-xl-12">
-                            <input type="text" class="form-control form-control-lg" name="comments" id="comments"
-                                placeholder="Type here..">
-                        </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label>Show on Tickler?</label>
+                    <div class="form-check-inline">
+                      <%= f.radio_button :tickler, 'yesTickler', id: 'tickler_yes', class: "form-check-input" %>
+                      <%= f.label :tickler, "Yes", for: 'tickler_yes', class: "form-check-label me-3" %>
+                      <%= f.radio_button :tickler, 'noTickler', id: 'tickler_no', checked: true, class: "form-check-input" %>
+                      <%= f.label :tickler, "No", for: 'tickler_no', class: "form-check-label" %>
                     </div>
-                </form>
+                  </div>
+
+                  <!-- Comments Section -->
+                  <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                      <h5>Comments</h5>
+                    </div>
+                    <div class="card-body">
+                      <%= f.label :comments, "Additional Comments" %>
+                      <%= f.text_area :comments, class: "form-control", placeholder: "Enter comments here" %>
+                    </div>
+                  </div>
+
+                  <!-- Submit Button -->
+                  <div class="text-center">
+                    <%= f.submit "Save", class: "btn btn-success px-5" %>
+                  </div>
+                <% end %>
             </div>
 
             <!-- Add Comment Modal -->
