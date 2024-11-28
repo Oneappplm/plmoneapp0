@@ -9,6 +9,6 @@ class ProviderSpecialty < ApplicationRecord
   private
 
   def set_provider_attest
-    self.provider_attest = ProviderAttest.where(caqh_provider_attest_id: self.caqh_provider_attest_id).last
-  end
+    self.provider_attest = ProviderAttest.find_by(caqh_provider_attest_id: caqh_provider_attest_id) || ProviderAttest.last
+  end  
 end

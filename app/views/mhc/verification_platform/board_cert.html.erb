@@ -11,7 +11,7 @@
                         <label class="form-check-label" for="board-cert-switch">Not Applicable</label>
                     </div>
                 </div>
-                <a href="<%= verification_platform_index_path(page: 'add_new_board_cert')%>" class="btn btn-primary py-1 page-applicable">
+                 <a href="<%= mhc_verification_platform_path(page_tab: 'add_new_board_cert')%>" class="btn btn-primary py-1 page-applicable">
                     <i class='bx bx-plus' ></i>
                     Add New Board Cert
                 </a>
@@ -49,26 +49,37 @@
                     </div>
                 </div>
             </div>
-            <table class="table table-bordered practice-table mt-3 page-applicable ">
-                <thead>
+            <table class="table table-bordered practice-table mt-3 page-applicable">
+              <thead>
+                <tr>
+                  <th class="text-white" scope="col">Specialty</th>
+                  <th class="text-white">Board Certification Status</th>
+                  <th class="text-white">Issuing Board</th>
+                  <th class="text-white">Expiration Date</th>
+                  <th class="text-white">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if @provider_specialty.present? %>
+                  <% @provider_specialty.each do |certification| %>
                     <tr>
-                        <th class="text-white" scope="col">Specialty</th>
-                        <th class="text-white">Board Certification Status</th>
-                        <th class="text-white">Issuing Board</th>
-                        <th class="text-white">Expiration Date</th>
-                        <th class="text-white">Status</th>
+                      <td>
+                        <a href="<%= mhc_verification_platform_path(page_tab: 'board_cert_info', provider_specialty_id: certification.id) %>">
+                          <%= certification.specialty_specialty_name %>
+                        </a>
+                      </td>
+                      <td><%= certification.board_certified_flag %></td> <!-- Board Certification Status -->
+                      <td><%= certification.specialty_board_name %></td> <!-- Issuing Board -->
+                      <td><%= certification.expiration_date %></td> <!-- Expiration Date -->
+                      <%# <td><%= certification.status %></td> <!-- Status --> 
                     </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                          <a href="<%= verification_platform_index_path(page: 'board_cert_info')%>">Orthopaedic Surgery: Orthopaedic Sports Medicine</a></td>
-                        <td>Certified</td>
-                        <td>American Board of Orthopaedic Surgery</td>
-                        <td>12/31/2027</td>
-                        <td>Quality Audited</td>
-                    </tr>
-                </tbody>
+                  <% end %>
+                <% else %>
+                  <tr>
+                    <td colspan="5">No board certification records found.</td>
+                  </tr>
+                <% end %>
+              </tbody>
             </table>
             <form action="" class="page-not-applicable">
                 <div class="form-row mt-4">
