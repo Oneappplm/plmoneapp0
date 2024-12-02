@@ -75,7 +75,9 @@ class Mhc::ProviderSpecialtiesController < ApplicationController
       :certification_name,
       :date_applied,
       :tickler,
-      :comments
+      :comments,
+      :planning_to_take_board_exam_flag,
+      :board_exam_explanation
     )
   end  
 end
