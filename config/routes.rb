@@ -379,6 +379,7 @@ Rails.application.routes.draw do
 
   namespace :mhc do
     resources :provider_insurance_coverages
+    resources :provider_npdbs
     resources :practice_informations, only: [:index, :create], path: 'practice-information'
     resources :provider_educations, only: [:index, :create, :update], path: 'provider-education'
     resources :provider_specialties, only: [:index, :new, :create, :edit, :destroy, :update], path: 'provider-specialties'

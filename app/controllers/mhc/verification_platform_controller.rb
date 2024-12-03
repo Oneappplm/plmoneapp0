@@ -201,6 +201,21 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
       @provider_insurance_coverages = ProviderInsuranceCoverage.find(params[:coverage_id])
     end
+
+    if params[:page_tab] == 'npdb'
+      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+      @provider_npdb = ProviderNpdb.new(
+        provider_attest_id: @provider_attest_id,
+        caqh_provider_attest_id: @provider_personal_information&.caqh_provider_attest_id
+      )
+    end
+
+     if params[:page_tab] == 'npdb_record'
+      @provider_npdb = ProviderNpdb.find_or_initialize_by(
+        id: params[:provider_npdb_id], 
+        provider_attest_id: @provider_personal_information.provider_attest_id, 
+        caqh_provider_attest_id: @provider_personal_information&.caqh_provider_attest_id)
+    end
   end
 
   def redirect_to_auto_verify
