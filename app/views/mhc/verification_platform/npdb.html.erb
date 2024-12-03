@@ -10,9 +10,13 @@
                         <input class="form-check-input" type="checkbox" id="registration-switch">
                         <label class="form-check-label" for="registration-switch">Not Applicable</label>
                     </div>
-                    <button type="button" class="btn btn-primary page-applicable py-1" id="prac-info-btn-edit">
+                     <a href="<%= mhc_verification_platform_path(page_tab: 'npdb_record')%>" class="btn btn-primary page-applicable py-1" id="prac-info-btn-edit">
+                        <i class='bx bx-pencil' ></i>
                         Edit
-                    </button>
+                    </a>
+                  <%#   <button type="button" class="btn btn-primary page-applicable py-1" id="prac-info-btn-edit">
+                        Edit
+                    </button> %>
                     <div class="d-flex align-items-center gap-3 page-applicable">
                         <button type="submit" class="btn btn-primary py-1" id="prac-info-btn-save">
                             Save Changes
@@ -97,102 +101,113 @@
                     </div>
                 </div>
             </div>
-            <div class="form-row row page-applicable mt-3">
-                <div class="col-xl-12">
-                    <div class="card other-name-card">
-                        <div class="card-body">
-                            <h6 class="form-heading">Send request</h6>
-                            <div class="form-row row">
-                                <div class="col-xl-5">
-                                    <label for="practitioner-type">Practitioner Type:</label>
-                                    <select name="practitioner-type" id="practitioner-type"
-                                        class="form-select"></select>
+            <%= form_for(@provider_npdb, url: mhc_provider_npdbs_path(id: @provider_npdb.id, page_tab: 'npdb')) do |f| %>
+              <%= f.hidden_field :caqh_provider_attest_id %>
+              <%= f.hidden_field :provider_attest_id %>
+              <div class="form-row row page-applicable mt-3">
+                  <div class="col-xl-12">
+                      <div class="card other-name-card">
+                          <div class="card-body">
+                              <h6 class="form-heading">Send request</h6>
+                              <div class="form-row row">
+                                  <div class="col-xl-5">
+                                      <label for="practitioner-type">Practitioner Type:</label>
+                                      <%= f.select :practitioner_type, ProviderNpdb::PRACTITIONER_TYPE, { prompt: true }, {class: 'form-select border border-dark'} %>
+                                  </div>
+                              </div>
+                              <div class="form-row row">
+                                  <div class="col-xl-5">
+                                      <label for="practitioner-type">Individual Taxpayer Identification Number 1:</label>
+                                      <%= f.text_field :individual_identification_number_1, placeholder: 'Type here..', class: 'form-control border border-dark' %>
+                                  </div>
+                                  <div class="col-xl-5">
+                                      <label for="practitioner-type">Individual Taxpayer Identification Number 2:</label>
+                                      <%= f.text_field :individual_identification_number_2, placeholder: 'Type here..', class: 'form-control border border-dark' %>
+                                  </div>
+                              </div>
+                              <div class="form-row row">
+                                  <div class="col-xl-5">
+                                      <label for="practitioner-type">Individual Taxpayer Identification Number 3:</label>
+                                      <%= f.text_field :individual_identification_number_3, placeholder: 'Type here..', class: 'form-control border border-dark' %>
+                                  </div>
+                                  <div class="col-xl-5">
+                                      <label for="practitioner-type">Individual Taxpayer Identification Number 4:</label>
+                                      <%= f.text_field :individual_identification_number_4, placeholder: 'Type here..', class: 'form-control border border-dark' %>
+                                  </div>
+                              </div>
+                              
+                              <div class="form-row row mb-2 mt-2">
+                                <div class="col-xl-8">
+                                  <div class="input-group d-flex align-items-center gap-2">
+                                    <label for="" class=" ">Show on Tickler?</label>
+                                    <div class="form-check">
+                                      <input 
+                                        class="form-check-input" 
+                                        type="radio" 
+                                        name="provider_npdb[show_on_tickler]" 
+                                        value="true" 
+                                        id="yesTickler"
+                                        <%= 'checked' if @provider_npdb.show_on_tickler == true %>>
+                                      <label class="form-check-label" for="yesTickler">Yes</label>
+                                    </div>
+                                    <div class="form-check">
+                                      <input 
+                                        class="form-check-input" 
+                                        type="radio" 
+                                        name="provider_npdb[show_on_tickler]" 
+                                        value="false" 
+                                        id="noTickler"
+                                        <%= 'checked' if @provider_npdb.show_on_tickler == false %>>
+                                      <label class="form-check-label" for="noTickler">No</label>
+                                    </div>
+                                  </div>
                                 </div>
-                            </div>
-                            <div class="form-row row">
-                                <div class="col-xl-5">
-                                    <label for="practitioner-type">Individual Taxpayer Identification Number 1:</label>
-                                    <input type="text" id="taxpayer-id-1" name="taxpayer-id-1" class="form-control">
-                                </div>
-                                <div class="col-xl-5">
-                                    <label for="practitioner-type">Individual Taxpayer Identification Number 2:</label>
-                                    <input type="text" id="taxpayer-id-2" name="taxpayer-id-2" class="form-control">
-                                </div>
-                            </div>
-                            <div class="form-row row">
-                                <div class="col-xl-5">
-                                    <label for="practitioner-type">Individual Taxpayer Identification Number 3:</label>
-                                    <input type="text" id="taxpayer-id-3" name="taxpayer-id-3" class="form-control">
-                                </div>
-                                <div class="col-xl-5">
-                                    <label for="practitioner-type">Individual Taxpayer Identification Number 4:</label>
-                                    <input type="text" id="taxpayer-id-4" name="taxpayer-id-4" class="form-control">
-                                </div>
-                            </div>
-                            <div class="form-row d-flex align-items-center gap-3 mt-2">
-                                <label for="">Show on Tickler?</label>
-                                <div class="form-check d-flex align-items-center gap-2">
-                                    <input class="form-check-input" type="radio" name="ticker-radio"
-                                        id="ticker-radio-yes" value="Yes">
-                                    <label class="form-check-label" for="ticker-radio-yes">
-                                        Yes
-                                    </label>
-                                </div>
-                                <div class="form-check d-flex align-items-center gap-2">
-                                    <input class="form-check-input" type="radio" name="ticker-radio"
-                                        id="ticker-radio-no" value="No">
-                                    <label class="form-check-label" for="ticker-radio-no">
-                                        No
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-2 mt-3">
-                                <button class="btn btn-primary">
-                                    Send Request
-                                </button>
-                                <button class="btn btn-primary">
-                                    Request History
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="form-row row page-applicable mt-3">
-                <div class="col-xl-12">
-                    <div class="card other-name-card">
-                        <div class="card-body">
-                            <h6 class="form-heading">Report(Most Recent request)</h6>
-                            <div class="form-row row">
-                                <div class="col-xl-4">
-                                    <label for="practitioner-type">Status:</label>
-                                    <input type="text" id="report-status" name="report-status" class="form-control">
-                                </div>
-                                <div class="col-xl-4">
-                                    <label for="practitioner-type">Submit Date:</label>
-                                    <input type="date" id="report-submit-date" name="report-submit-date"
-                                        class="form-control">
-                                </div>
-                                <div class="col-xl-4">
-                                    <label for="practitioner-type">Response Date:</label>
-                                    <input type="date" id="report-response-date" name="report-response-date"
-                                        class="form-control">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <label for="practitioner-type">Response Date:</label>
-                                <textarea name="" id="" cols="30" rows="5" class="form-control"></textarea>
-                            </div>
-                            <div class="d-flex gap-2 mt-3 align-items-end">
-                                <button class="btn btn-primary">
-                                    Regenerate PDF
-                                </button>
-                                <a href="">NPDB_QueryResponseSummary_DAVID_ABBASI_2023-03-19_8eb73176906.pdf</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                              </div>
+
+                              <div class="d-flex gap-2 mt-3">
+                                  <button class="btn btn-primary">
+                                      Send Request
+                                  </button>
+                                  <button class="btn btn-primary">
+                                      Request History
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="form-row row page-applicable mt-3">
+                  <div class="col-xl-12">
+                      <div class="card other-name-card">
+                          <div class="card-body">
+                              <h6 class="form-heading">Report(Most Recent request)</h6>
+                              <div class="form-row row">
+                                  <div class="col-xl-4">
+                                      <label for="practitioner-type">Status:</label>
+                                      <%= f.text_field :status, placeholder: 'Type here..', class: 'form-control border border-dark' %>
+                                  </div>
+                                  <div class="col-xl-4">
+                                      <label for="practitioner-type">Submit Date:</label>
+                                      <%= f.text_field :submit_date, placeholder: 'Type here..', class: 'form-control border border-dark' %>
+                                  </div>
+                                  <div class="col-xl-4">
+                                      <label for="practitioner-type">Response Date:</label>
+                                      <%= f.text_field :response_date, placeholder: 'Type here..', class: 'form-control border border-dark' %>
+                                  </div>
+                              </div>
+                              <div class="form-row">
+                                  <label for="practitioner-type">Comments:</label>
+                                  <%= f.text_area :comments, placeholder: 'Type here..', class: 'form-control border border-dark', col: 30, rows: 5 %>
+                              </div>
+                              <div class="d-flex gap-2 mt-3 align-items-end">
+                                  <%= f.submit class: 'btn btn-primary', style: 'width: 200px;' %>
+                                  <%# <a href="">NPDB_QueryResponseSummary_DAVID_ABBASI_2023-03-19_8eb73176906.pdf</a> %>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+            <% end %>
             <form action="" class="page-not-applicable">
                 <div class="form-row mt-4">
                     <label for="">Please explain:<span class="font-red">*</span></label>
