@@ -213,6 +213,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'npdb'
+      @provider_npdb_comments = ProviderNpdbComment.all
       @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
       @provider_npdb = ProviderNpdb.new(
         provider_attest_id: @provider_attest_id,

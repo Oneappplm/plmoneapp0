@@ -28,7 +28,7 @@ class Mhc::ProviderNpdbsController < ApplicationController
   private
 
   def set_provider_npdb
-    @provider_npdb = ProviderEducation.find(params[:id])
+    @provider_npdb = ProviderNpdb.find(params[:id])
   end
 
   # Strong parameters for security
