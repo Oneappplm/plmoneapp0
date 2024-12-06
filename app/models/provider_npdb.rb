@@ -3,6 +3,8 @@ class ProviderNpdb < ApplicationRecord
 
   belongs_to :provider_attest
 
+  has_many :provider_npdb_comments, dependent: :destroy
+
   validates :provider_attest_id, presence: true
 
   before_validation :set_provider_attest

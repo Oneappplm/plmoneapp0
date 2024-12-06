@@ -64,6 +64,8 @@ class User < ApplicationRecord
   has_many :director_providers
   has_many :virtual_review_committees, through: :director_providers
 
+  has_many :provider_npdb_comments, dependent: :destroy
+
   accepts_nested_attributes_for :users_enrollment_groups, allow_destroy: true, reject_if: :all_blank
 
   attr_accessor :email_cc, :email_subject, :email_message, :hidden_role
