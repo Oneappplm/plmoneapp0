@@ -104,7 +104,7 @@ class Mhc::VerificationPlatformController < ApplicationController
 
     if params[:page_tab] == 'education_record'
       @q = School.ransack(params[:q])
-      @provider_education = ProviderEducation.find_or_initialize_by(id: params[:provider_education_id], provider_attest_id: @provider_personal_information.provider_attest_id, caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id)
+      @practice_information_education = PracticeInformationEducation.find_or_initialize_by(id: params[:practice_information_education_id], provider_attest_id: @provider_personal_information.provider_attest_id, caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id)
     end
 
     if params[:page_tab] == 'add_new_board_cert'
@@ -114,13 +114,13 @@ class Mhc::VerificationPlatformController < ApplicationController
     if params[:page_tab] == 'board_cert'
       @provider_specialty = ProviderSpecialty.all
     end
-  
+
     if params[:page_tab] == 'board_cert_info'
       # Check if provider_specialty_id is provided in the URL
       if params[:provider_specialty_id].present?
         # Fetch the specific ProviderSpecialty record
         @provider_specialty = ProviderSpecialty.find_by(id: params[:provider_specialty_id])
-  
+
         unless @provider_specialty
           flash[:alert] = 'Specialty not found for the given ID.'
           redirect_to root_path and return
@@ -128,7 +128,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       elsif params[:provider_attest_id].present?
         # Fallback to fetching all specialties for a provider_attest_id
         @provider_specialties = ProviderSpecialty.where(provider_attest_id: params[:provider_attest_id])
-  
+
         if @provider_specialties.empty?
           flash[:alert] = 'No specialties found for the selected provider.'
         end
@@ -147,8 +147,18 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'education'
+      @q = @provider_personal_information.provider_attest.practice_information_educations.ransack(params[:q]&.except(:page_tab))
+      @practice_information_educations = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
+    end
+
+    if params[:page_tab] == 'training'
       @q = @provider_personal_information.provider_attest.provider_educations.ransack(params[:q]&.except(:page_tab))
       @provider_educations = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
+    end
+
+    if params[:page_tab] == 'training_record'
+      @q = School.ransack(params[:q])
+      @provider_education = ProviderEducation.find_or_initialize_by(id: params[:provider_education_id], provider_attest_id: @provider_personal_information.provider_attest_id, caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id)
     end
 
     if params[:page_tab] == 'sam'
@@ -187,10 +197,10 @@ class Mhc::VerificationPlatformController < ApplicationController
       @limit = 10 # Set limit
       @total_pages = (@provider_insurance_coverages_count.to_f / @limit.to_f).ceil
     end
-    
+
     if params[:page_tab] == 'add_new_liability'
       @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
-      if params[:coverage_id].present? 
+      if params[:coverage_id].present?
         @provider_insurance_coverage = ProviderInsuranceCoverage.find(params[:coverage_id])
       else
         @provider_insurance_coverage = ProviderInsuranceCoverage.new(provider_attest_id: @provider_attest_id)
@@ -212,8 +222,8 @@ class Mhc::VerificationPlatformController < ApplicationController
 
      if params[:page_tab] == 'npdb_record'
       @provider_npdb = ProviderNpdb.find_or_initialize_by(
-        id: params[:provider_npdb_id], 
-        provider_attest_id: @provider_personal_information.provider_attest_id, 
+        id: params[:provider_npdb_id],
+        provider_attest_id: @provider_personal_information.provider_attest_id,
         caqh_provider_attest_id: @provider_personal_information&.caqh_provider_attest_id)
     end
   end

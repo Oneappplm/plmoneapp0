@@ -208,10 +208,30 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["disclosure_category_id"], name: "index_disclosure_questions_on_disclosure_category_id"
   end
 
+  create_table "download_histories", force: :cascade do |t|
+    t.string "file_name"
+    t.datetime "downloaded_at"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "education_types", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "egd_attempts", force: :cascade do |t|
+    t.string "attempt_date"
+    t.string "status"
+    t.string "note"
+    t.bigint "user_id"
+    t.bigint "enroll_groups_detail_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enroll_groups_detail_id"], name: "index_egd_attempts_on_enroll_groups_detail_id"
+    t.index ["user_id"], name: "index_egd_attempts_on_user_id"
   end
 
   create_table "egd_logs", force: :cascade do |t|
@@ -297,12 +317,17 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "client_notes"
     t.string "notes"
     t.string "password_digest"
-    t.string "payer_state"
-    t.string "payor_submission_type"
-    t.string "payor_link"
     t.string "portal_username"
     t.string "portal_password"
     t.json "upload_payor_file"
+    t.string "payer_state"
+    t.string "payor_submission_type"
+    t.string "payor_link"
+    t.datetime "date"
+    t.string "attempt_status"
+    t.string "note"
+    t.integer "agent_user_id"
+    t.boolean "non_applicable_for_revalidation", default: false
     t.index ["enroll_group_id"], name: "index_enroll_groups_details_on_enroll_group_id"
   end
 
@@ -445,7 +470,38 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.boolean "check_caqh_standard_authorization", default: false
     t.string "billing_address_autofill"
     t.string "remittance_address_autofill"
+    t.string "prof_liability_carrier_name"
+    t.string "prof_liability_self_insured"
+    t.string "prof_liability_address"
+    t.string "prof_liability_city"
+    t.integer "prof_liability_state_id"
+    t.string "prof_liability_zipcode"
+    t.date "prof_liability_orig_effective_date"
+    t.date "prof_liability_effective_date"
+    t.date "prof_liability_expiration_date"
+    t.string "prof_liability_coverage_type"
+    t.string "prof_liability_unlimited_coverage"
+    t.string "prof_liability_tail_coverage"
+    t.string "prof_liability_coverage_amount"
+    t.string "prof_liability_coverage_amount_aggregate"
+    t.string "prof_liability_policy_number"
     t.datetime "welcome_letter_sent_at"
+    t.boolean "rcm_only", default: false
+    t.string "group_liability_carrier_name"
+    t.string "group_liability_self_insured"
+    t.string "group_liability_address"
+    t.string "group_liability_city"
+    t.integer "group_liability_state_id"
+    t.string "group_liability_zipcode"
+    t.date "group_liability_orig_effective_date"
+    t.date "group_liability_effective_date"
+    t.date "group_liability_expiration_date"
+    t.string "group_liability_coverage_type"
+    t.string "group_liability_unlimited_coverage"
+    t.string "group_liability_tail_coverage"
+    t.string "group_liability_coverage_amount"
+    t.string "group_liability_coverage_amount_aggregate"
+    t.string "group_liability_policy_number"
   end
 
   create_table "enrollment_groups_contact_details", force: :cascade do |t|
@@ -474,8 +530,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "roles"
-    t.string "email_address"
     t.string "group_role"
+    t.string "email_address"
     t.index ["enrollment_group_id"], name: "index_enrollment_groups_details_on_enrollment_group_id"
   end
 
@@ -550,6 +606,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "suffix"
     t.string "telephone_number"
     t.string "email_address"
+    t.string "payer_state"
     t.string "updated_by"
   end
 
@@ -580,16 +637,40 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "descriptor"
     t.string "provider_id"
     t.string "group_id"
-    t.string "payer_state"
     t.json "upload_payor_file"
     t.string "payor_username"
     t.string "payor_password"
     t.string "processing_date"
     t.string "terminated_date"
+    t.string "payer_state"
     t.date "denied_date"
+    t.datetime "date"
+    t.string "attempt_status"
+    t.string "note"
+    t.integer "agent_user_id"
     t.string "payor_email"
     t.string "payor_phone"
+    t.boolean "non_applicable_for_revalidation", default: false
+    t.string "portal_link"
+    t.date "follow_up_date"
+    t.date "last_follow_up_date"
+    t.boolean "completed", default: false
+    t.boolean "na_for_revalidation", default: false
+    t.string "tax_id"
+    t.string "location"
     t.index ["enrollment_provider_id"], name: "index_enrollment_providers_details_on_enrollment_provider_id"
+  end
+
+  create_table "epd_attempts", force: :cascade do |t|
+    t.string "attempt_date"
+    t.string "status"
+    t.string "note"
+    t.bigint "user_id"
+    t.bigint "enrollment_providers_detail_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enrollment_providers_detail_id"], name: "index_epd_attempts_on_enrollment_providers_detail_id"
+    t.index ["user_id"], name: "index_epd_attempts_on_user_id"
   end
 
   create_table "epd_logs", force: :cascade do |t|
@@ -692,30 +773,32 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "inpatient_facility"
     t.string "is_clinic"
     t.string "telehealth_provider"
-    t.string "old_address"
-    t.string "old_city"
-    t.string "old_state"
-    t.string "old_county"
-    t.string "old_zipcode"
-    t.boolean "is_old_location_primary"
+    t.boolean "is_primary_location"
     t.string "website"
+    t.string "telehealth_video_conferencing_technology"
     t.string "tax_id"
     t.string "facility_billing_npi"
     t.string "mn_medicaid_number"
     t.string "wi_medicaid_number"
     t.string "medicare_id_ptan"
     t.string "taxonomy"
-    t.string "telehealth_video_conferencing_technology"
     t.string "is_gender_affirming_treatment"
     t.string "panel_size"
     t.string "medicare_authorized_official"
     t.string "collab_name"
     t.string "collab_npi"
-    t.boolean "is_primary_location"
+    t.string "is_old_location_primary"
+    t.string "old_zipcode"
+    t.string "old_county"
+    t.string "old_state"
+    t.string "old_city"
+    t.string "old_address"
     t.date "effective_date"
     t.string "location_status"
     t.string "location_npi"
     t.string "location_tin"
+    t.string "npi_digit"
+    t.string "tin_digit_type"
     t.string "npi_digits"
     t.string "tin_digits_type"
     t.string "specialty"
@@ -803,44 +886,63 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["recipient_type", "recipient_id"], name: "index_notifications_on_recipient"
   end
 
-  create_table "practice_accessibilities", primary_key: "provider_practice_accessibility_id", force: :cascade do |t|
+  create_table "payor_names", force: :cascade do |t|
+    t.string "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "practice_accessibilities", force: :cascade do |t|
+    t.integer "caqh_provider_practice_accessibility_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.boolean "accessibility_flag"
     t.text "other_accessibility_description"
     t.text "accessibility_accessibility_description"
+    t.bigint "practice_information_id"
+    t.integer "caqh_provider_practice_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
+    t.index ["practice_information_id"], name: "index_practice_accessibilities_on_practice_information_id"
     t.index ["provider_attest_id"], name: "index_practice_accessibilities_on_provider_attest_id"
-    t.index ["provider_practice_id"], name: "index_practice_accessibilities_on_provider_practice_id"
   end
 
-  create_table "practice_associate_other_questions", primary_key: "provider_practice_associate_other_id", force: :cascade do |t|
+  create_table "practice_associate_other_questions", force: :cascade do |t|
+    t.integer "caqh_provider_practice_associate_other_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "coverage_availability"
+    t.bigint "practice_information_id"
+    t.bigint "practice_associate_id"
+    t.integer "caqh_provider_practice_id"
+    t.integer "caqh_provider_practice_associate_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
-    t.integer "provider_practice_associate_id"
+    t.index ["practice_associate_id"], name: "paoq_ppa_id"
+    t.index ["practice_information_id"], name: "paoq_pp_id"
     t.index ["provider_attest_id"], name: "index_practice_associate_other_questions_on_provider_attest_id"
-    t.index ["provider_practice_associate_id"], name: "paoq_ppa_id"
-    t.index ["provider_practice_id"], name: "paoq_pp_id"
   end
 
-  create_table "practice_associate_specialties", primary_key: "provider_practice_associate_specialty_id", force: :cascade do |t|
+  create_table "practice_associate_specialties", force: :cascade do |t|
+    t.integer "caqh_provider_practice_associate_specialty_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "specialty_specialty_name"
+    t.bigint "practice_information_id"
+    t.bigint "practice_associate_id"
+    t.integer "caqh_provider_practice_id"
+    t.integer "caqh_provider_practice_associate_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
-    t.integer "provider_practice_associate_id"
+    t.index ["practice_associate_id"], name: "index_practice_associate_specialties_on_practice_associate_id"
+    t.index ["practice_information_id"], name: "index_practice_associate_specialties_on_practice_information_id"
     t.index ["provider_attest_id"], name: "index_practice_associate_specialties_on_provider_attest_id"
-    t.index ["provider_practice_associate_id"], name: "pas_ppa_id"
-    t.index ["provider_practice_id"], name: "pas_pp_id"
   end
 
-  create_table "practice_associates", primary_key: "provider_practice_associate_id", force: :cascade do |t|
+  create_table "practice_associates", force: :cascade do |t|
+    t.integer "caqh_provider_practice_associate_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "associate_first_name"
     t.string "associate_last_name"
     t.string "associate_middle_initial"
@@ -871,15 +973,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "degree_degree_abbreviation"
     t.string "provider_type_provider_type_abbreviation"
     t.string "associate_type_associate_type_description"
+    t.bigint "practice_information_id"
+    t.integer "caqh_provider_practice_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
+    t.index ["practice_information_id"], name: "index_practice_associates_on_practice_information_id"
     t.index ["provider_attest_id"], name: "index_practice_associates_on_provider_attest_id"
-    t.index ["provider_practice_id"], name: "index_practice_associates_on_provider_practice_id"
   end
 
-  create_table "practice_business_arrangements", primary_key: "provider_practice_business_arrangement_id", force: :cascade do |t|
+  create_table "practice_business_arrangements", force: :cascade do |t|
+    t.integer "caqh_provider_practice_business_arrangement_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "business_arrangement_name"
     t.string "business_arrangement_type"
     t.string "tax_id"
@@ -890,15 +995,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "postal_code"
     t.string "phone_number"
     t.string "country_country_name"
+    t.bigint "practice_information_id"
+    t.integer "caqh_provider_practice_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
+    t.index ["practice_information_id"], name: "index_practice_business_arrangements_on_practice_information_id"
     t.index ["provider_attest_id"], name: "index_practice_business_arrangements_on_provider_attest_id"
-    t.index ["provider_practice_id"], name: "pba_pp_id"
   end
 
-  create_table "practice_certifications", primary_key: "provider_practice_certification_id", force: :cascade do |t|
+  create_table "practice_certifications", force: :cascade do |t|
+    t.integer "caqh_provider_practice_certification_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.boolean "certification_flag"
     t.datetime "expiration_date"
     t.text "other_certification_explanation"
@@ -906,15 +1014,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.boolean "provider_certified_flag"
     t.text "certification_description"
     t.datetime "certification_date"
+    t.bigint "practice_information_id"
+    t.integer "caqh_provider_practice_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
+    t.index ["practice_information_id"], name: "index_practice_certifications_on_practice_information_id"
     t.index ["provider_attest_id"], name: "index_practice_certifications_on_provider_attest_id"
-    t.index ["provider_practice_id"], name: "pc_pp_id"
   end
 
-  create_table "practice_hours", primary_key: "provider_practice_hours_id", force: :cascade do |t|
+  create_table "practice_hours", force: :cascade do |t|
+    t.integer "caqh_provider_practice_hours_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.boolean "no_office_hours_flag"
     t.string "morning_hours"
     t.string "afternoon_hours"
@@ -927,15 +1038,44 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.text "hours_type_hours_type_description"
     t.string "end_hours_hours"
     t.string "day_of_week_day_of_week_name"
+    t.bigint "practice_information_id"
+    t.integer "caqh_provider_practice_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
+    t.index ["practice_information_id"], name: "index_practice_hours_on_practice_information_id"
     t.index ["provider_attest_id"], name: "index_practice_hours_on_provider_attest_id"
-    t.index ["provider_practice_id"], name: "ph_pp_id"
   end
 
-  create_table "practice_informations", primary_key: "provider_practice_id", force: :cascade do |t|
+  create_table "practice_information_educations", force: :cascade do |t|
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
+    t.string "institution_name"
+    t.string "address"
+    t.string "address2"
+    t.string "city"
+    t.string "county"
+    t.string "province"
+    t.string "postal_code"
+    t.string "country"
+    t.string "state"
+    t.string "phone_number"
+    t.string "email_address"
+    t.string "fax_number"
+    t.string "program_title"
+    t.string "degree_degree_abbreviation"
+    t.string "incomplete_explanation"
+    t.boolean "program_completed_flag"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_practice_information_educations_on_provider_attest_id"
+  end
+
+  create_table "practice_informations", force: :cascade do |t|
+    t.integer "caqh_provider_practice_id"
+    t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "practice_name"
     t.string "address"
     t.string "address2"
@@ -1000,21 +1140,26 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_attest_id"], name: "index_practice_informations_on_provider_attest_id"
   end
 
-  create_table "practice_languages", primary_key: "provider_practice_language_id", force: :cascade do |t|
+  create_table "practice_languages", force: :cascade do |t|
+    t.integer "caqh_provider_practice_language_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "language_type"
     t.string "linguist_name"
     t.string "language_language_name"
     t.text "employee_type_employee_type_description"
+    t.bigint "practice_information_id"
+    t.integer "caqh_provider_practice_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
+    t.index ["practice_information_id"], name: "index_practice_languages_on_practice_information_id"
     t.index ["provider_attest_id"], name: "index_practice_languages_on_provider_attest_id"
-    t.index ["provider_practice_id"], name: "plang_pp_id"
   end
 
-  create_table "practice_limitations", primary_key: "provider_practice_limitation_id", force: :cascade do |t|
+  create_table "practice_limitations", force: :cascade do |t|
+    t.integer "caqh_provider_practice_limitation_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.boolean "age_limitation_flag"
     t.integer "age_limitation_minimum"
     t.integer "age_limitation_maximum"
@@ -1022,11 +1167,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.boolean "specialty_limitation_flag"
     t.text "specialty_limitation_description"
     t.text "gender_limitation_gender_limitation_description"
+    t.bigint "practice_information_id"
+    t.integer "caqh_provider_practice_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
+    t.index ["practice_information_id"], name: "index_practice_limitations_on_practice_information_id"
     t.index ["provider_attest_id"], name: "index_practice_limitations_on_provider_attest_id"
-    t.index ["provider_practice_id"], name: "plimit_pp_id"
   end
 
   create_table "practice_locations", force: :cascade do |t|
@@ -1120,8 +1266,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "practice_other_addresses", primary_key: "provider_practice_address_id", force: :cascade do |t|
+  create_table "practice_other_addresses", force: :cascade do |t|
+    t.integer "caqh_provider_practice_address_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "address"
     t.string "address2"
     t.string "city"
@@ -1139,15 +1287,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "attention"
     t.text "address_type_address_type_description"
     t.text "country_country_name"
+    t.bigint "practice_information_id"
+    t.integer "caqh_provider_practice_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
+    t.index ["practice_information_id"], name: "index_practice_other_addresses_on_practice_information_id"
     t.index ["provider_attest_id"], name: "index_practice_other_addresses_on_provider_attest_id"
-    t.index ["provider_practice_id"], name: "poa_pp_id"
   end
 
-  create_table "practice_other_questions", primary_key: "provider_practice_other_id", force: :cascade do |t|
+  create_table "practice_other_questions", force: :cascade do |t|
+    t.integer "caqh_provider_practice_other_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.boolean "para_professional_flag"
     t.boolean "para_professional_supervision_flag"
     t.boolean "para_professional_billing_flag"
@@ -1155,50 +1306,63 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "provider_practice_answer_text"
     t.datetime "provider_practice_answer_date"
     t.text "other_question_other_question_summary"
+    t.bigint "practice_information_id"
+    t.integer "caqh_provider_practice_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
+    t.index ["practice_information_id"], name: "index_practice_other_questions_on_practice_information_id"
     t.index ["provider_attest_id"], name: "index_practice_other_questions_on_provider_attest_id"
-    t.index ["provider_practice_id"], name: "poq_pp_id"
   end
 
-  create_table "practice_other_tax_ids", primary_key: "provider_practice_other_tax_id", force: :cascade do |t|
+  create_table "practice_other_tax_ids", force: :cascade do |t|
+    t.integer "caqh_provider_practice_other_tax_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "tax_id"
+    t.bigint "practice_information_id"
+    t.bigint "practice_other_question_id"
+    t.integer "caqh_provider_practice_id"
+    t.integer "caqh_provider_practice_other_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
-    t.integer "provider_practice_other_id"
+    t.index ["practice_information_id"], name: "index_practice_other_tax_ids_on_practice_information_id"
+    t.index ["practice_other_question_id"], name: "index_practice_other_tax_ids_on_practice_other_question_id"
     t.index ["provider_attest_id"], name: "index_practice_other_tax_ids_on_provider_attest_id"
-    t.index ["provider_practice_id"], name: "poti_pp_id"
-    t.index ["provider_practice_other_id"], name: "poti_poq_id"
   end
 
-  create_table "practice_patient_types", primary_key: "provider_practice_patient_id", force: :cascade do |t|
+  create_table "practice_patient_types", force: :cascade do |t|
+    t.integer "caqh_provider_practice_patient_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.boolean "patient_flag"
     t.text "patient_explanation"
     t.text "patient_type_patient_type_description"
+    t.bigint "practice_information_id"
+    t.integer "caqh_provider_practice_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
+    t.index ["practice_information_id"], name: "index_practice_patient_types_on_practice_information_id"
     t.index ["provider_attest_id"], name: "index_practice_patient_types_on_provider_attest_id"
-    t.index ["provider_practice_id"], name: "ppt_id"
   end
 
-  create_table "practice_phone_coverages", primary_key: "provider_practice_phone_coverage_id", force: :cascade do |t|
+  create_table "practice_phone_coverages", force: :cascade do |t|
+    t.integer "caqh_provider_practice_phone_coverage_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.boolean "phone_coverage_flag"
     t.text "phone_coverage_type_description"
+    t.bigint "practice_information_id"
+    t.integer "caqh_provider_practice_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
+    t.index ["practice_information_id"], name: "index_practice_phone_coverages_on_practice_information_id"
     t.index ["provider_attest_id"], name: "index_practice_phone_coverages_on_provider_attest_id"
-    t.index ["provider_practice_id"], name: "ppc_id"
   end
 
-  create_table "practice_services", primary_key: "provider_practice_service_id", force: :cascade do |t|
+  create_table "practice_services", force: :cascade do |t|
+    t.integer "caqh_provider_practice_service_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.boolean "service_provided_flag"
     t.string "anesthesia_category"
     t.string "anesthesia_first_name"
@@ -1221,15 +1385,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.text "omitted_service_description"
     t.string "laboratory_name"
     t.string "service_service_name"
+    t.bigint "practice_information_id"
+    t.integer "caqh_provider_practice_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
+    t.index ["practice_information_id"], name: "index_practice_services_on_practice_information_id"
     t.index ["provider_attest_id"], name: "index_practice_services_on_provider_attest_id"
-    t.index ["provider_practice_id"], name: "pserve_pp_id"
   end
 
-  create_table "practice_specialties", primary_key: "provider_practice_specialty_id", force: :cascade do |t|
+  create_table "practice_specialties", force: :cascade do |t|
+    t.integer "caqh_provider_practice_specialty_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.integer "specialty_percent"
     t.boolean "primary_care_flag"
     t.boolean "specialty_care_flag"
@@ -1237,25 +1404,29 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "specialty_specialty_name"
     t.string "sub_specialty_specialty_name"
     t.text "specialty_type_specialty_type_description"
+    t.bigint "practice_information_id"
+    t.integer "caqh_provider_practice_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
+    t.index ["practice_information_id"], name: "index_practice_specialties_on_practice_information_id"
     t.index ["provider_attest_id"], name: "index_practice_specialties_on_provider_attest_id"
-    t.index ["provider_practice_id"], name: "pspecial_pp_id"
   end
 
-  create_table "practice_tax_ids", primary_key: "provider_practice_tax_id", force: :cascade do |t|
+  create_table "practice_tax_ids", force: :cascade do |t|
+    t.integer "caqh_provider_practice_tax_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "group_name"
     t.string "tax_id"
     t.boolean "primary_flag"
     t.string "group_number"
     t.text "tax_type_tax_type_description"
+    t.bigint "practice_information_id"
+    t.integer "caqh_provider_practice_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_practice_id"
+    t.index ["practice_information_id"], name: "index_practice_tax_ids_on_practice_information_id"
     t.index ["provider_attest_id"], name: "index_practice_tax_ids_on_provider_attest_id"
-    t.index ["provider_practice_id"], name: "p_tax_pp_id"
   end
 
   create_table "practice_types", force: :cascade do |t|
@@ -1308,8 +1479,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "provider_adverse_actions", primary_key: "provider_adverse_action_id", force: :cascade do |t|
+  create_table "provider_adverse_actions", force: :cascade do |t|
+    t.integer "caqh_provider_adverse_action_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.datetime "occurrence_date"
     t.text "occurrence_explanation"
     t.datetime "action_date"
@@ -1331,8 +1504,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_attest_id"], name: "index_provider_adverse_actions_on_provider_attest_id"
   end
 
-  create_table "provider_associates", primary_key: "provider_associate_id", force: :cascade do |t|
+  create_table "provider_associates", force: :cascade do |t|
+    t.integer "caqh_provider_associate_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "associate_first_name"
     t.string "associate_last_name"
     t.string "associate_middle_initial"
@@ -1357,7 +1532,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_attest_id"], name: "index_provider_associates_on_provider_attest_id"
   end
 
-  create_table "provider_attests", primary_key: "provider_attest_id", force: :cascade do |t|
+  create_table "provider_attests", force: :cascade do |t|
+    t.integer "caqh_provider_attest_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -1376,8 +1552,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_id"], name: "index_provider_board_certifications_on_provider_id"
   end
 
-  create_table "provider_cds", primary_key: "provider_cdsid", force: :cascade do |t|
+  create_table "provider_cds", force: :cascade do |t|
+    t.integer "caqh_provider_cdsid"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "cds_number"
     t.string "state"
     t.datetime "expiration_date"
@@ -1403,8 +1581,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_id"], name: "index_provider_cds_licenses_on_provider_id"
   end
 
-  create_table "provider_certifications", primary_key: "provider_certification_id", force: :cascade do |t|
+  create_table "provider_certifications", force: :cascade do |t|
+    t.integer "caqh_provider_certification_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "certification_flag"
     t.string "expiration_date"
     t.datetime "classification_description"
@@ -1436,8 +1616,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_id"], name: "index_provider_cnp_licenses_on_provider_id"
   end
 
-  create_table "provider_criminal_actions", primary_key: "provider_criminal_action_id", force: :cascade do |t|
+  create_table "provider_criminal_actions", force: :cascade do |t|
+    t.integer "caqh_provider_criminal_action_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.datetime "incident_date"
     t.datetime "complaint_date"
     t.datetime "resolution_date"
@@ -1469,8 +1651,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_id"], name: "index_provider_dea_licenses_on_provider_id"
   end
 
-  create_table "provider_deas", primary_key: "provider_deaid", force: :cascade do |t|
+  create_table "provider_deas", force: :cascade do |t|
+    t.integer "caqh_provider_deaid"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "dea_number"
     t.string "state"
     t.datetime "expiration_date"
@@ -1483,8 +1667,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_attest_id"], name: "index_provider_deas_on_provider_attest_id"
   end
 
-  create_table "provider_degrees", primary_key: "provider_degree_id", force: :cascade do |t|
+  create_table "provider_degrees", force: :cascade do |t|
+    t.integer "caqh_provider_degree_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "degree_degree_abbreviation"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -1503,8 +1689,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_id"], name: "index_provider_deleted_document_logs_on_provider_id"
   end
 
-  create_table "provider_disclosures", primary_key: "provider_disclosure_id", force: :cascade do |t|
+  create_table "provider_disclosures", force: :cascade do |t|
+    t.integer "caqh_provider_disclosure_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.boolean "disclosure_answer_flag"
     t.datetime "disclosure_date"
     t.text "disclosure_explanation"
@@ -1514,9 +1702,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_attest_id"], name: "index_provider_disclosures_on_provider_attest_id"
   end
 
-  create_table "provider_education_associates", primary_key: "provider_education_associate_id", force: :cascade do |t|
+  create_table "provider_education_associates", force: :cascade do |t|
+    t.integer "caqh_provider_education_associate_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.bigint "provider_education_id"
+    t.integer "caqh_provider_education_id"
     t.string "associate_first_name"
     t.string "associate_last_name"
     t.string "associate_middle_initial"
@@ -1539,8 +1730,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_education_id"], name: "index_provider_education_associates_on_provider_education_id"
   end
 
-  create_table "provider_educations", primary_key: "provider_education_id", force: :cascade do |t|
+  create_table "provider_educations", force: :cascade do |t|
+    t.integer "caqh_provider_education_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "institution_name"
     t.string "address"
     t.string "address2"
@@ -1579,11 +1772,17 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.text "institution_type_institution_type_description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "suite"
+    t.string "country"
+    t.string "county"
+    t.boolean "current_program_director_flag"
     t.index ["provider_attest_id"], name: "index_provider_educations_on_provider_attest_id"
   end
 
-  create_table "provider_hospital_associates", primary_key: "provider_hospital_associate_id", force: :cascade do |t|
+  create_table "provider_hospital_associates", force: :cascade do |t|
+    t.integer "caqh_provider_hospital_associate_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "associate_first_name"
     t.string "associate_last_name"
     t.string "associate_middle_initial"
@@ -1597,16 +1796,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "phone_number"
     t.string "fax_number"
     t.string "email_address"
-    t.string "associate_type_associate_type_description"
+    t.text "associate_type_associate_type_description"
+    t.bigint "provider_hospital_privilege_id"
+    t.integer "caqh_provider_hospital_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_hospital_id"
     t.index ["provider_attest_id"], name: "index_provider_hospital_associates_on_provider_attest_id"
-    t.index ["provider_hospital_id"], name: "pha_ph_id"
   end
 
-  create_table "provider_hospital_privileges", primary_key: "provider_hospital_id", force: :cascade do |t|
+  create_table "provider_hospital_privileges", force: :cascade do |t|
+    t.integer "caqh_provider_hospital_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.integer "aha_hospital_id"
     t.string "hospital_name"
     t.string "address"
@@ -1645,8 +1846,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_attest_id"], name: "index_provider_hospital_privileges_on_provider_attest_id"
   end
 
-  create_table "provider_identification_numbers", primary_key: "provider_identifier_id", force: :cascade do |t|
+  create_table "provider_identification_numbers", force: :cascade do |t|
+    t.integer "caqh_provider_identifier_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "identifier_value"
     t.string "identifier_status"
     t.boolean "identifier_flag"
@@ -1671,8 +1874,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_id"], name: "index_provider_ins_policies_on_provider_id"
   end
 
-  create_table "provider_insurance_coverages", primary_key: "provider_insurance_id", force: :cascade do |t|
+  create_table "provider_insurance_coverages", force: :cascade do |t|
+    t.integer "caqh_provider_insurance_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "insurance_carrier_name"
     t.datetime "original_start_date"
     t.datetime "start_date"
@@ -1719,11 +1924,26 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.text "insurance_coverage_type_insurance_coverage_type_description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "type_of_policy"
+    t.string "additional_address"
+    t.string "email_address"
+    t.date "effective_date"
+    t.integer "claim_amount"
+    t.integer "umbrella_coverage_amount"
+    t.boolean "tail_coverage"
+    t.boolean "current_carrier_excluded"
+    t.string "current_carrier_excluded_explanation"
+    t.boolean "show_on_tickler"
+    t.text "comment"
+    t.boolean "liability_not_applicable"
+    t.text "liability_explanation"
     t.index ["provider_attest_id"], name: "index_provider_insurance_coverages_on_provider_attest_id"
   end
 
-  create_table "provider_languages", primary_key: "provider_language_id", force: :cascade do |t|
+  create_table "provider_languages", force: :cascade do |t|
+    t.integer "caqh_provider_language_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "language_type"
     t.string "language_language_name"
     t.datetime "created_at", null: false
@@ -1731,8 +1951,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_attest_id"], name: "index_provider_languages_on_provider_attest_id"
   end
 
-  create_table "provider_liability_actions", primary_key: "provider_liability_action_id", force: :cascade do |t|
+  create_table "provider_liability_actions", force: :cascade do |t|
+    t.integer "caqh_provider_liability_action_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "insurance_history"
     t.string "carrier_name"
     t.string "policy_number"
@@ -1764,8 +1986,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_id"], name: "index_provider_licenses_on_provider_id"
   end
 
-  create_table "provider_malpractice_case_statuses", primary_key: "provider_malpractice_claim_status_id", force: :cascade do |t|
+  create_table "provider_malpractice_case_statuses", force: :cascade do |t|
+    t.integer "caqh_provider_malpractice_claim_status_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "claim_status"
     t.float "settlement_amount"
     t.float "settlement_amount_paid"
@@ -1782,15 +2006,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "defense_attorney_province"
     t.string "defense_attorney_county"
     t.string "defense_attorney_country_country_name"
+    t.bigint "provider_malpractice_history_id"
+    t.integer "caqh_provider_malpractice_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_malpractice_id"
     t.index ["provider_attest_id"], name: "index_provider_malpractice_case_statuses_on_provider_attest_id"
-    t.index ["provider_malpractice_id"], name: "pmcs_pm_id"
+    t.index ["provider_malpractice_history_id"], name: "pmcs_pm_id"
   end
 
-  create_table "provider_malpractice_histories", primary_key: "provider_malpractice_id", force: :cascade do |t|
+  create_table "provider_malpractice_histories", force: :cascade do |t|
+    t.integer "caqh_provider_malpractice_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "insurance_carrier_name"
     t.datetime "occurrence_date"
     t.string "claim_date"
@@ -1872,15 +2099,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_medicaid_id"
+    t.integer "caqh_provider_medicaid_id"
     t.integer "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "medicaid_number"
     t.string "state"
     t.index ["provider_id"], name: "index_provider_medicaids_on_provider_id"
   end
 
-  create_table "provider_medical_associations", primary_key: "provider_medical_association_id", force: :cascade do |t|
+  create_table "provider_medical_associations", force: :cascade do |t|
+    t.integer "caqh_provider_medical_association_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "association_name"
     t.string "address"
     t.string "address2"
@@ -1902,22 +2132,27 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_attest_id"], name: "index_provider_medical_associations_on_provider_attest_id"
   end
 
-  create_table "provider_medical_condition_providers", primary_key: "provider_medical_condition_provider_id", force: :cascade do |t|
+  create_table "provider_medical_condition_providers", force: :cascade do |t|
+    t.integer "caqh_provider_medical_condition_provider_id"
     t.string "last_name"
     t.string "first_name"
     t.string "middle_name"
     t.string "degree"
     t.text "phone_number"
+    t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
+    t.bigint "provider_medical_condition_id"
+    t.integer "caqh_provider_medical_condition_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_attest_id"
-    t.integer "provider_medical_condition_id"
     t.index ["provider_attest_id"], name: "pmcp_pa_id"
     t.index ["provider_medical_condition_id"], name: "pmcp_pmc_id"
   end
 
-  create_table "provider_medical_conditions", primary_key: "provider_medical_condition_id", force: :cascade do |t|
+  create_table "provider_medical_conditions", force: :cascade do |t|
+    t.integer "caqh_provider_medical_condition_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "medical_condition"
     t.string "practice_ability"
     t.string "current_status"
@@ -1927,9 +2162,11 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_attest_id"], name: "index_provider_medical_conditions_on_provider_attest_id"
   end
 
-  create_table "provider_medical_licenses", primary_key: "provider_license_id", force: :cascade do |t|
+  create_table "provider_medical_licenses", force: :cascade do |t|
+    t.integer "caqh_provider_license_id"
     t.bigint "provider_attest_id"
-    t.bigint "license_number_id"
+    t.integer "caqh_provider_attest_id"
+    t.string "license_number"
     t.string "state"
     t.boolean "currently_practicing_flag"
     t.datetime "expiration_date"
@@ -1943,7 +2180,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.text "license_status_license_status_description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["license_number_id"], name: "index_provider_medical_licenses_on_license_number_id"
     t.index ["provider_attest_id"], name: "index_provider_medical_licenses_on_provider_attest_id"
   end
 
@@ -1960,15 +2196,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "provider_medicare_id"
+    t.integer "caqh_provider_medicare_id"
     t.integer "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "medicare_number"
     t.string "state"
     t.index ["provider_id"], name: "index_provider_medicares_on_provider_id"
   end
 
-  create_table "provider_militaries", primary_key: "provider_military_id", force: :cascade do |t|
+  create_table "provider_militaries", force: :cascade do |t|
+    t.integer "caqh_provider_military_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "last_location"
     t.string "discharge_rank"
     t.string "branch"
@@ -2007,8 +2246,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_id"], name: "index_provider_mn_medicaids_on_provider_id"
   end
 
-  create_table "provider_non_practice_addresses", primary_key: "provider_address_id", force: :cascade do |t|
+  create_table "provider_non_practice_addresses", force: :cascade do |t|
+    t.integer "caqh_provider_address_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "address"
     t.string "address2"
     t.string "city"
@@ -2050,8 +2291,28 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_id"], name: "index_provider_np_licenses_on_provider_id"
   end
 
-  create_table "provider_other_business_interests", primary_key: "provider_other_business_id", force: :cascade do |t|
+  create_table "provider_npdbs", force: :cascade do |t|
+    t.bigint "provider_attest_id", null: false
+    t.integer "caqh_provider_attest_id"
+    t.string "practitioner_type"
+    t.string "individual_identification_number_1"
+    t.string "individual_identification_number_2"
+    t.string "individual_identification_number_3"
+    t.string "individual_identification_number_4"
+    t.boolean "show_on_tickler"
+    t.string "status"
+    t.string "submit_date"
+    t.string "response_date"
+    t.text "comments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_npdbs_on_provider_attest_id"
+  end
+
+  create_table "provider_other_business_interests", force: :cascade do |t|
+    t.integer "caqh_provider_other_business_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "organization_name"
     t.string "organization_type"
     t.string "address"
@@ -2069,16 +2330,20 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_attest_id"], name: "index_provider_other_business_interests_on_provider_attest_id"
   end
 
-  create_table "provider_other_interests", primary_key: "provider_other_interest_id", force: :cascade do |t|
+  create_table "provider_other_interests", force: :cascade do |t|
+    t.integer "caqh_provider_other_interest_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.text "other_interest_description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_attest_id"], name: "index_provider_other_interests_on_provider_attest_id"
   end
 
-  create_table "provider_other_names", primary_key: "provider_other_name_id", force: :cascade do |t|
+  create_table "provider_other_names", force: :cascade do |t|
+    t.integer "caqh_provider_other_name_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "last_name"
     t.string "first_name"
     t.string "middle_name"
@@ -2091,8 +2356,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_attest_id"], name: "index_provider_other_names_on_provider_attest_id"
   end
 
-  create_table "provider_other_questions", primary_key: "provider_other_id", force: :cascade do |t|
+  create_table "provider_other_questions", force: :cascade do |t|
+    t.integer "caqh_provider_other_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.boolean "provider_answer_flag"
     t.text "provider_answer_text"
     t.datetime "provider_answer_date"
@@ -2115,8 +2382,188 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_id"], name: "index_provider_pa_licenses_on_provider_id"
   end
 
-  create_table "provider_personal_informations", primary_key: "provider_id", force: :cascade do |t|
+  create_table "provider_personal_attempts", force: :cascade do |t|
+    t.string "contact_method"
+    t.string "attempt_status"
+    t.date "contact_date"
+    t.text "comments"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
+    t.bigint "provider_personal_information_id"
+    t.integer "caqh_provider_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_personal_attempts_on_provider_attest_id"
+    t.index ["provider_personal_information_id"], name: "ppa_ppi_id"
+  end
+
+  create_table "provider_personal_docs_receives", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
+    t.bigint "provider_personal_information_id"
+    t.integer "caqh_provider_id"
+    t.date "application_received_date"
+    t.date "release_received_date"
+    t.date "disclosure_questions_explanation_received_date"
+    t.date "face_sheet_received_date"
+    t.date "employment_gap_received_date"
+    t.date "practice_information_received_date"
+    t.date "npdb_findings_explanation_received_date"
+    t.date "training_received_date"
+    t.date "education_received_date"
+    t.date "professional_resource_network_received_date"
+    t.date "dea_received_date"
+    t.date "pa_sponsor_request_form_received_date"
+    t.date "collaborative_agreement_received_date"
+    t.boolean "application_received_flag", default: false
+    t.boolean "release_received_flag", default: false
+    t.boolean "disclosure_questions_explanation_received_flag", default: false
+    t.boolean "face_sheet_received_flag", default: false
+    t.boolean "employment_gap_received_flag", default: false
+    t.boolean "practice_information_received_flag", default: false
+    t.boolean "npdb_findings_explanation_received_flag", default: false
+    t.boolean "training_received_flag", default: false
+    t.boolean "education_received_flag", default: false
+    t.boolean "professional_resource_network_received_flag", default: false
+    t.boolean "dea_received_flag", default: false
+    t.boolean "pa_sponsor_request_form_received_flag", default: false
+    t.boolean "collaborative_agreement_received_flag", default: false
+    t.boolean "application_received_incomplete_flag", default: false
+    t.boolean "release_received_incomplete_flag", default: false
+    t.boolean "disclosure_questions_explanation_received_incomplete_flag", default: false
+    t.boolean "face_sheet_received_incomplete_flag", default: false
+    t.boolean "employment_gap_received_incomplete_flag", default: false
+    t.boolean "practice_information_received_incomplete_flag", default: false
+    t.boolean "npdb_findings_explanation_received_incomplete_flag", default: false
+    t.boolean "training_received_incomplete_flag", default: false
+    t.boolean "education_received_incomplete_flag", default: false
+    t.boolean "professional_resource_network_received_incomplete_flag", default: false
+    t.boolean "dea_received_incomplete_flag", default: false
+    t.boolean "pa_sponsor_request_form_received_incomplete_flag", default: false
+    t.boolean "collaborative_agreement_received_incomplete_flag", default: false
+    t.text "application_comments"
+    t.text "release_comments"
+    t.text "disclosure_questions_explanation_comments"
+    t.text "face_sheet_comments"
+    t.text "employment_gap_comments"
+    t.text "practice_information_comments"
+    t.text "npdb_findings_explanation_comments"
+    t.text "training_comments"
+    t.text "education_comments"
+    t.text "professional_resource_network_comments"
+    t.text "dea_comments"
+    t.text "pa_sponsor_request_form_comments"
+    t.text "collaborative_agreement_comments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_personal_docs_receives_on_provider_attest_id"
+    t.index ["provider_personal_information_id"], name: "ppdr_ppi_id"
+  end
+
+  create_table "provider_personal_docs_uploads", force: :cascade do |t|
+    t.string "file_upload"
+    t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
+    t.bigint "provider_personal_information_id"
+    t.integer "caqh_provider_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_personal_docs_uploads_on_provider_attest_id"
+    t.index ["provider_personal_information_id"], name: "ppdu_ppi_id"
+  end
+
+  create_table "provider_personal_information_confidential_contacts", force: :cascade do |t|
+    t.string "contact_method"
+    t.string "firstname"
+    t.string "middlename"
+    t.string "lastname"
+    t.string "title"
+    t.string "suffix"
+    t.string "phone_number"
+    t.string "fax"
+    t.string "email"
+    t.string "address"
+    t.string "suite"
+    t.string "address2"
+    t.string "city"
+    t.string "county"
+    t.string "state"
+    t.string "zip"
+    t.string "country"
+    t.bigint "provider_personal_information_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_personal_information_id"], name: "ppiccc_ppi_id"
+  end
+
+  create_table "provider_personal_information_credentialing_contacts", force: :cascade do |t|
+    t.string "contact_method"
+    t.string "firstname"
+    t.string "middlename"
+    t.string "lastname"
+    t.string "title"
+    t.string "suffix"
+    t.string "phone_number"
+    t.string "fax"
+    t.string "email"
+    t.string "address"
+    t.string "suite"
+    t.string "address2"
+    t.string "city"
+    t.string "county"
+    t.string "state"
+    t.string "zip"
+    t.string "country"
+    t.bigint "provider_personal_information_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_personal_information_id"], name: "ppicc_ppi_id"
+  end
+
+  create_table "provider_personal_information_reinstatements", force: :cascade do |t|
+    t.string "state"
+    t.string "general"
+    t.string "exclusion_type"
+    t.string "specialty"
+    t.datetime "process_date"
+    t.datetime "reinstatement_date"
+    t.bigint "provider_personal_information_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_personal_information_id"], name: "ppir_ppi_id"
+  end
+
+  create_table "provider_personal_information_sam_records", force: :cascade do |t|
+    t.bigint "provider_personal_information_id"
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "last_name"
+    t.string "suffix"
+    t.string "ssn"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "is_primary", default: false
+    t.index ["provider_personal_information_id"], name: "ppiid_sam_records"
+  end
+
+  create_table "provider_personal_information_sam_rva_records", force: :cascade do |t|
+    t.bigint "provider_personal_information_sam_record_id"
+    t.string "search_result"
+    t.string "exclusion_type"
+    t.string "verification_sanctions"
+    t.string "comments"
+    t.datetime "source_date"
+    t.datetime "verification_date"
+    t.string "supporting_documentation"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_personal_information_sam_record_id"], name: "ppisrr_sam_rva_record_id"
+  end
+
+  create_table "provider_personal_informations", force: :cascade do |t|
+    t.integer "caqh_provider_id"
+    t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "last_name"
     t.string "first_name"
     t.string "middle_name"
@@ -2127,11 +2574,11 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.boolean "us_eligible_flag"
     t.string "ssn"
     t.string "nid"
-    t.string "dea_flag"
-    t.string "cds_flag"
+    t.boolean "dea_flag"
+    t.boolean "cds_flag"
     t.string "upin"
-    t.string "upin_flag"
-    t.string "npi_flag"
+    t.boolean "upin_flag"
+    t.boolean "npi_flag"
     t.string "npi"
     t.boolean "medicare_provider_flag"
     t.boolean "medicaid_provider_flag"
@@ -2191,11 +2638,31 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.datetime "next_recredential_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "npi_verification_status"
     t.index ["provider_attest_id"], name: "index_provider_personal_informations_on_provider_attest_id"
   end
 
-  create_table "provider_race_ethnicities", primary_key: "provider_race_ethnicity_id", force: :cascade do |t|
+  create_table "provider_personal_uploaded_docs", force: :cascade do |t|
+    t.string "image_classification"
+    t.string "sub_section"
+    t.string "record_item"
+    t.text "description"
+    t.boolean "exclude_from_profile"
+    t.string "file_upload"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
+    t.bigint "provider_personal_information_id"
+    t.integer "caqh_provider_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "index_provider_personal_uploaded_docs_on_provider_attest_id"
+    t.index ["provider_personal_information_id"], name: "ppud_ppi_id"
+  end
+
+  create_table "provider_race_ethnicities", force: :cascade do |t|
+    t.integer "caqh_provider_race_ethnicity_id"
+    t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "race_ethnicity_level_1"
     t.string "race_ethnicity_level_2"
     t.string "race_ethnicity_level_3"
@@ -2204,8 +2671,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_attest_id"], name: "index_provider_race_ethnicities_on_provider_attest_id"
   end
 
-  create_table "provider_references", primary_key: "provider_reference_id", force: :cascade do |t|
+  create_table "provider_references", force: :cascade do |t|
+    t.integer "caqh_provider_reference_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "first_name"
     t.string "last_name"
     t.string "address"
@@ -2262,6 +2731,21 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_source_id"], name: "index_provider_source_cmes_on_provider_source_id"
   end
 
+  create_table "provider_source_collaborating_physicians", force: :cascade do |t|
+    t.integer "provider_source_id"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "middle_name"
+    t.string "suffix"
+    t.string "degree"
+    t.string "state_license"
+    t.string "license_number"
+    t.string "medicare_number"
+    t.string "npi_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "provider_source_data", force: :cascade do |t|
     t.bigint "provider_source_id", null: false
     t.string "data_key"
@@ -2278,6 +2762,29 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_source_id"], name: "index_provider_source_documents_on_provider_source_id"
+  end
+
+  create_table "provider_source_teaching_programs", force: :cascade do |t|
+    t.integer "provider_source_id"
+    t.string "location"
+    t.string "name"
+    t.string "address1"
+    t.string "address2"
+    t.string "city"
+    t.string "zip_code"
+    t.string "phone_number"
+    t.string "phone_ext"
+    t.string "fax_number"
+    t.string "email"
+    t.string "director_first_name"
+    t.string "director_last_name"
+    t.string "director_degree"
+    t.string "academic_rank"
+    t.boolean "not_expire"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "provider_sources", force: :cascade do |t|
@@ -2322,6 +2829,28 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_source_id"], name: "index_provider_sources_deas_on_provider_source_id"
   end
 
+  create_table "provider_sources_licensures", force: :cascade do |t|
+    t.bigint "provider_source_id"
+    t.string "state"
+    t.string "license_type"
+    t.string "license_status"
+    t.string "license_number"
+    t.date "licensure_issue_date"
+    t.date "licensure_expiration_date"
+    t.string "licensure_not_expire"
+    t.string "licensure_practice_state"
+    t.string "licensure_primary_license"
+    t.string "licensure_require_supervision"
+    t.string "licensure_sponsor_degree"
+    t.string "licensure_sponsor_fname"
+    t.string "licensure_sponsor_mname"
+    t.string "licensure_sponsor_lname"
+    t.string "licensure_sponsor_suffix"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_source_id"], name: "index_provider_sources_licensures_on_provider_source_id"
+  end
+
   create_table "provider_sources_registrations", force: :cascade do |t|
     t.bigint "provider_source_id"
     t.string "registration_number"
@@ -2345,8 +2874,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_source_id"], name: "index_provider_sources_registrations_on_provider_source_id"
   end
 
-  create_table "provider_specialties", primary_key: "provider_specialty_id", force: :cascade do |t|
+  create_table "provider_specialties", force: :cascade do |t|
+    t.integer "caqh_provider_specialty_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "board_certified_flag"
     t.datetime "certification_date"
     t.datetime "recertification_date"
@@ -2402,11 +2933,20 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "special_experience_skillsand_training_section"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "applied_board_certificate"
+    t.string "certification_name"
+    t.date "date_applied"
+    t.string "tickler"
+    t.text "comments"
+    t.boolean "planning_to_take_board_exam_flag"
+    t.string "board_exam_explanation"
     t.index ["provider_attest_id"], name: "index_provider_specialties_on_provider_attest_id"
   end
 
-  create_table "provider_substance_abuses", primary_key: "provider_substance_abuse_id", force: :cascade do |t|
+  create_table "provider_substance_abuses", force: :cascade do |t|
+    t.integer "caqh_provider_substance_abuse_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.text "substance_description"
     t.string "current_ability"
     t.string "monitor_entity_name"
@@ -2437,8 +2977,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_id"], name: "index_provider_taxonomies_on_provider_id"
   end
 
-  create_table "provider_time_gaps", primary_key: "provider_time_gap_id", force: :cascade do |t|
+  create_table "provider_time_gaps", force: :cascade do |t|
+    t.integer "caqh_provider_time_gap_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.datetime "start_date"
     t.datetime "end_date"
     t.text "gap_explanation"
@@ -2493,8 +3035,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.index ["provider_id"], name: "index_provider_wi_medicaids_on_provider_id"
   end
 
-  create_table "provider_work_histories", primary_key: "provider_work_history_id", force: :cascade do |t|
+  create_table "provider_work_histories", force: :cascade do |t|
+    t.integer "caqh_provider_work_history_id"
     t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
     t.string "employer_name"
     t.datetime "start_date"
     t.datetime "end_date"
@@ -2660,7 +3204,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "caqh_answer"
     t.string "caqh_notes"
     t.integer "licensed_registered_state_id"
-    t.string "payer_login", default: "no"
     t.string "license_state_number"
     t.string "license_state_effective_date"
     t.string "license_state_id"
@@ -2729,6 +3272,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.json "caqh_app_copies"
     t.json "cv_copies"
     t.json "telehealth_license_copies"
+    t.string "payer_login", default: "no"
     t.string "board_certificate_not_applicable"
     t.string "board_cert_explain"
     t.string "board_specialty_type"
@@ -2736,6 +3280,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "supervising_name"
     t.string "supervising_npi"
     t.string "primary_location"
+    t.boolean "rcm_only", default: false
+    t.boolean "prof_liability_form"
   end
 
   create_table "providers_missing_field_submissions", force: :cascade do |t|
@@ -2822,6 +3368,24 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
   create_table "roles", force: :cascade do |t|
     t.string "name"
     t.string "slug"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "schools", force: :cascade do |t|
+    t.string "name"
+    t.string "address"
+    t.string "suite"
+    t.string "address2"
+    t.string "city"
+    t.string "county"
+    t.string "state"
+    t.string "postal_code"
+    t.string "country"
+    t.string "contact_method"
+    t.string "phone"
+    t.string "fax"
+    t.string "email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -2928,6 +3492,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.boolean "is_provider_account"
     t.string "accessible_provider"
     t.string "password_change_status_via_invite"
+    t.string "security_question"
+    t.string "security_answer"
     t.index ["api_token"], name: "index_users_on_api_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
@@ -3022,14 +3588,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
   add_foreign_key "director_providers", "virtual_review_committees"
   add_foreign_key "egd_logs", "enroll_groups_details"
   add_foreign_key "enrollment_group_deleted_doc_logs", "enrollment_groups"
-  add_foreign_key "epd_logs", "enrollment_providers_details"
   add_foreign_key "epd_questions", "enrollment_providers_details"
   add_foreign_key "group_contacts", "enrollment_groups"
-  add_foreign_key "group_dco_old_location_addresses", "group_dcos"
   add_foreign_key "group_dcos", "enrollment_groups"
-  add_foreign_key "provider_deleted_document_logs", "providers"
   add_foreign_key "provider_licenses", "providers"
   add_foreign_key "provider_np_licenses", "providers"
+  add_foreign_key "provider_npdbs", "provider_attests"
   add_foreign_key "provider_rn_licenses", "providers"
   add_foreign_key "provider_source_data", "provider_sources"
   add_foreign_key "provider_source_documents", "provider_sources"

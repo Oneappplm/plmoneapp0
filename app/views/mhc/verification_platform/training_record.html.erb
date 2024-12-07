@@ -1,298 +1,123 @@
-   <div class="enc-content">
+<%= form_with model: [:mhc, @provider_education] do |f| %>
+    <%= f.hidden_field :caqh_provider_attest_id %>
+    <%= f.hidden_field :provider_attest_id %>
+    <div class="enc-content">
         <div class="container">
-        <%= render "top_nav_buttons"%>
-
-            <div class="add-license-content">
-                <div class="container">
-                    <div class="row">
-                        <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
-                            <div class="d-flex align-items-center gap-3">
-                                <h4 class="page-heading">Training Record 1</h4>
-
-                                <button class="btn btn-license-edit btn-primary py-1  btn-primary py-1" type="submit">
-                                    Edit
-                                </button>
-
-                            </div>
-                        </div>
-                        <div class="enc-tabs-wrp mt-2">
-                            <div class="">
-                                <button class="btn  btn-primary py-1" name="ver-letter" type="button" data-bs-toggle="modal"
-                                    data-bs-target="#verifLetterModal">
-                                    Verification Letter
-                                </button>
-                            </div>
-                            <div class="">
-                                <button class="btn btn-license btn-primary py-1 " name="send-contract" type="button">
-                                    Send Contract
-                                </button>
-                            </div>
-                            <div class="">
-                                <button class="btn  btn-primary py-1" name="view-scan-img" type="button">
-                                    View Scanned Images
-                                </button>
-                            </div>
-
-                        </div>
-                        <div class="mt-3 row page-applicable">
-                            <div class="col-xl-5">
-                                <div class="left-pane">
-                                    <h6 class="rva-license">RVA Information</h6>
-
-                                    <div class="enc-tabs-wrp mt-2">
-                                        <div class="">
-                                            <button class="btn btn-pane bg-alt-grey py-1" name="btn-request" type="submit">
-                                                Request
-                                            </button>
-                                        </div>
-                                        <div class="">
-                                            <button class="btn btn-pane bg-alt-grey py-1" name="btn-ver" type="submit">
-                                                Verification
-                                            </button>
-                                        </div>
-                                        <div class="">
-                                            <button class="btn btn-pane bg-alt-grey py-1" name="btn-audit" type="submit">
-                                                Audit
-                                            </button>
-                                        </div>
-
-                                    </div>
-                                    <div class="enc-tabs-wrp mt-2">
-                                        <div class="">
-                                            <button class="btn btn-pane bg-alt-grey py-1" name="btn-audit" type="submit">
-                                                Quality Audit
-                                            </button>
-                                        </div>
-                                        <div class="">
-                                            <button class="btn btn-pane bg-alt-grey py-1" name="btn-skip-rva" type="submit">
-                                                Skip RVA
-                                            </button>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-7">
-                                <div class="right-pane">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <h6 class="rva-license">Message Board</h6>
-                                        <button class="btn btn-primary py-1" data-bs-toggle="modal"
-                                            data-bs-target="#addCommentModal">
-                                            Add Comment
-                                        </button>
-                                    </div>
-                                    <div class="form-row mt-2">
-                                        <span class="btn span-pane bg-alt-grey py-1" data-bs-toggle="modal"
-                                            data-bs-target="#deleteCommentModal">
-                                            Subject: Incomplete Record
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-
+            <%= render "top_nav_buttons"%>
+            <div class="mt-4">
+                <div class="d-flex align-items-center gap-3">
+                    <a href="<%= mhc_verification_platform_path(page_tab: 'training')%>" class="link-back">
+                        <i class='bx bx-left-arrow-alt'></i>
+                    </a>
+                    <h4 class="page-heading">Training Record</h4>
                 </div>
             </div>
-
-            <form action="">
-
-                <div class="form-row row mt-3">
-                    <div class="col-xl-12 right-pane">
-                        <div class="form-row row ">
-                            <div class="d-flex align-items-center gap-10">
-                                <span class="page-note">
-                                    <i class='bx bx-error-circle font-blue'></i> <span>To search for an
-                                        Institution/Program name, please click the search button.</span>
-                                </span>
+            <div class="row">
+                <div class="col-xl-8 row">
+                    <span class="page-note">
+                        <i class='bx bx-error-circle font-lightblue'></i> <span>To search for a School name,
+                            please
+                            click the search button.</span>
+                    </span>
+                    <div class="col-12">
+                        <label class="text-dark-grey">Institution Name:</label>
+                        <div class="row">
+                            <div class="col-10">
+                                <%= f.text_field :institution_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                             </div>
-                            <div class="col-xl-5">
-                                <label for="prog-name">Institution/Program Name:</label>
-                                <select name="prog-name" id="prog-name" class="form-select"></select>
-
-                            </div>
-                            <div class="col-xl-1">
-                                <button class="btn-search_add_training" type="submit">
+                            <div class="col-2">
+                                <button id="search_school_button" type="button" class="btn btn-primary btn-sm" id="asdf" style="min-width: 100px; font-size: 12px" data-bs-toggle="modal" data-bs-target="#search_school">
                                     Search
                                 </button>
                             </div>
-                            <div class="col-xl-6">
-                                <label for="address">Address:</label>
-                                <select name="address" id="address" class="form-select"></select>
-                            </div>
-                        </div>
-                        <div class="form-row row mt-2">
-                            <div class="col-xl-6">
-                                <label for="contact">Contact:</label>
-                                <input type="text" name="contact" id="contact" placeholder="Type here..."
-                                    class="form-control" required>
-                            </div>
-                            <div class="col-xl-6">
-                                <label for="add-address">Additional Address:</label>
-                                <input type="text" name="add-address" id="add-address" placeholder="Type here..."
-                                    class="form-control" required>
-                            </div>
-                        </div>
-
-
-                        <div class="form-row row mt-4">
-                            <div class="col-xl-6">
-                                <label for="city">City:</label>
-                                <select name="city" id="city" class="form-select"></select>
-                            </div>
-                            <div class="col-xl-6">
-                                <label for="county">County:</label>
-                                <input type="text" name="county" id="county" placeholder="Type here..."
-                                    class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="form-row row mt-2">
-                            <div class="col-xl-4">
-                                <label for="state">State/Province:</label>
-                                <select name="state" id="state" class="form-select"></select>
-                            </div>
-                            <div class="col-xl-4">
-                                <label for="zip">Zip/Postal Code:</label>
-                                <input type="text" id="lastname" placeholder="Type here..." class="form-control"
-                                    required>
-                            </div>
-                            <div class="col-xl-4">
-                                <label for="country">Country:</label>
-                                <select id="country" name="country" placeholder="Type here..."
-                                    class="form-control"></select>
-                            </div>
-                        </div>
-                        <div class="form-row row mt-2">
-                            <div class="col-xl-4">
-                                <label for="phone-number">Phone Number:</label>
-                                <input type="text" id="phone-number" name="phone-number" placeholder="Type here..."
-                                    class="form-control" required>
-                            </div>
-                            <div class="col-xl-4">
-                                <label for="email-address">Email Address :</label>
-                                <input type="text" name="email-address" id="email-address" placeholder="Type here..."
-                                    class="form-control" required>
-                            </div>
-                            <div class="col-xl-4">
-                                <label for="fax-number">Fax Number:</label>
-                                <input type="text" id="fax-number" name="fax-number" placeholder="Type here..."
-                                    class="form-control" required>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="form-row row mt-2">
-                        <div class="col-xl-4">
-                            <label for="type">Type of Training:</label>
-                            <select name="type" id="type" class="form-select"></select>
-                        </div>
-                        <div class="col-xl-4">
-                            <label for="prog-dir-firstname">Program Director First Name:</label>
-                            <input type="text" name="prog-dir-firstname" placeholder="Type here..."
-                                id="prog-dir-firstname" class="form-control" required>
-                        </div>
-                        <div class="col-xl-4">
-                            <label for="prog-dir-firstname">Program Director Last Name:</label>
-                            <input type="text" name="prog-dir-firstname" placeholder="Type here..."
-                                id="prog-dir-firstname" class="form-control" required>
                         </div>
                     </div>
-                    <div class="form-row row mt-2">
-                        <div class="col-xl-4">
-                            <label for="prog-dir-type">Program Director Practitioner Type:</label>
-                            <select name="prog-dir-type" id="prog-dir-type" class="form-select"></select>
-                        </div>
-
+                    <div class="col-12">
+                        <label for="address">Address:</label>
+                        <%= f.text_field :address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                     </div>
-                </div>
-
-                <div class="form-row row mt-3">
+                    <div class="col-12">
+                        <label for="add-address">Additional Address:</label>
+                        <%= f.text_field :address2,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
                     <div class="col-xl-6">
-                        <div class="d-flex align-items-center gap-3">
-                            <label for="" class="training-curProgdir">Is this the current Program Director?</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="inter-input" id="inter-yes"
-                                    value="Yes">
-                                <label class="form-check-label" for="prac-yes">
-                                    Yes
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="inter-input" id="inter-no"
-                                    value="No">
-                                <label class="form-check-label" for="prac-no">
-                                    No
-                                </label>
-                            </div>
-                        </div>
+                        <label for="city">City:</label>
+                        <%= f.text_field :city,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                     </div>
-
-                </div>
-                <div class="form-row row mt-2">
-
-                    <div class="col-xl-4">
-                        <label for="cur-prog-dir">If No, list current Program Director:</label>
-                        <input type="text" name="cur-prog-dir" id="cur-prog-dir" placeholder="Type here..."
-                            class="form-control" required>
-                    </div>
-
-                </div>
-                <div class="form-row row mt-2">
-
-                    <div class="col-xl-4">
-                        <label for="specialty">Specialty:</label>
-                        <select name="specialty" id="specialty" class="form-select"></select>
-                    </div>
-
-                </div>
-                <div class="form-row row mt-2">
-
-                    <div class="col-xl-2">
-                        <label for="from-date">Dates Attended:</label>
-                        <input type="date" name="from-date" id="from-date" class="form-control">
-                    </div>
-
-                    <div class="col-xl-2">
-                        <label for="to-date"></label>
-                        <input type="date" name="to-date" id="to-date" class="form-control">
-                    </div>
-
-                </div>
-
-                <div class="form-row row mt-3">
                     <div class="col-xl-6">
-                        <div class="d-flex align-items-center gap-3">
-                            <label for="" class="training-curProgdir">Completed?</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="inter-input" id="inter-yes"
-                                    value="Yes">
-                                <label class="form-check-label" for="prac-yes">
-                                    Yes
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="inter-input" id="inter-no"
-                                    value="No">
-                                <label class="form-check-label" for="prac-no">
-                                    No
-                                </label>
-                            </div>
+                        <label for="county">County:</label>
+                        <%= f.text_field :county,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-xl-6">
+                        <label for="state">State/Province:</label>
+                        <%= f.text_field :province,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-xl-6">
+                        <label for="zip">Zip/Postal Code:</label>
+                        <%= f.text_field :postal_code,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-xl-6">
+                        <label for="country">Country:</label>
+                        <%= f.text_field :country,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-xl-6">
+                        <label for="phone-number">Phone Number:</label>
+                        <%= f.text_field :phone_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-xl-6">
+                        <label for="email-address">Email Address :</label>
+                        <%= f.text_field :email_address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-xl-6">
+                        <label for="fax-number">Fax Number:</label>
+                        <%= f.text_field :fax_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-xl-6">
+                        <label for="type">Type of Training:</label>
+                        <%= f.text_field :training_area,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-xl-12">
+                        <label for="prog-dir-firstname">Program Director First Name/Last Name:</label>
+                        <%= f.text_field :program_director,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-12">
+                        <div>
+                            <%= f.label :current_program_director_flag, "Is this the current Program Director?" %>
+                            <%= f.check_box :current_program_director_flag %>
                         </div>
                     </div>
-
-                </div>
-                <div class="form-row row mt-2">
-
-                    <div class="col-xl-4">
-                        <label for="explain-no">If No, please explain:</label>
-                        <input type="text" name="explain-no" id="explain-no" placeholder="Type here..."
-                            class="form-control" required>
+                    <div class="col-xl-12">
+                        <label for="prog-dir-firstname">If No, list current Program Director:</label>
+                        <%= f.text_field :current_program_director,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                     </div>
-
-                </div>
-                <div class="form-row row mt-3">
+                    <div class="col-xl-6">
+                        <label for="prog-dir-firstname">Program Director Practitioner Type:</label>
+                        <%= f.text_field :degree_degree_abbreviation,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-xl-6">
+                        <label for="prog-dir-firstname">Specialty:</label>
+                        <%= f.text_field :specialty_specialty_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-xl-12 row">
+                        <div class="col-xl-6">
+                            <label for="prog-dir-firstname">Dates Attended:</label>
+                            <%= f.date_field :start_date,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                        </div>
+                        <div class="col-xl-6">
+                            <label for="prog-dir-firstname">Dates Attended:</label>
+                            <%= f.date_field :end_date,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div>
+                            <%= f.label :program_completed_flag, "Completed?" %>
+                            <%= f.check_box :program_completed_flag %>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label for="prog-dir-firstname">If No, please explain:</label>
+                        <%= f.text_field :incomplete_explanation,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
                     <div class="col-xl-6">
                         <div class="d-flex align-items-center gap-3">
                             <label for="" class="training-curProgdir">Show on Tickler?</label>
@@ -312,102 +137,73 @@
                             </div>
                         </div>
                     </div>
-
-                </div>
-                <div class="form-row row mt-2">
-
-                    <div class="col-xl-25">
-                        <label for="training-comment">Please List any comments</label>
-                        <input type="text" id="training-comment" placeholder="Type here..." class="form-control"
-                            required>
+                    <div class="col-12 text-left" style="margin-top: 20px;">
+                        <%= f.submit 'Save', class: 'btn btn-primary', style: 'width: 200px;' %>
                     </div>
-
                 </div>
-
-                <div class="form-row mt-1 d-flex justify-content-end">
-                    <button class="btn btn-license-save btn-primary" type="submit">
-                        Save
-                    </button>
-                </div>
-
-
-
-            </form>
-
-
-
-
-
+            </div>
         </div>
     </div>
-    </div>
-
-
-
-
-    </div>
-    </div>
-
-    <!-- Verification Letter Modal -->
-    <div class="modal fade" id="verifLetterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div class="content">
-                        <div class="modal-title">
-                            <h6 class="offset-md-3">Training Verification Letter</h6>
-                            <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
-                        </div>
-                        <div class="mt-3 left-pane">
-                            <h6>Preview Letter</h6>
-                        </div>
-                        <div class="form-row row page-applicable mt-3">
-                            <div class="col-xl-12">
-                                <div class="card other-name-card">
-                                    <div class="card-body">
-                                        <h6 class="form-heading">Send Fax</h6>
-                                        <span class="page-note mt-1">
-                                            <i class='bx bx-error-circle font-red'></i> <span>Please correct the invalid
-                                                fax number. Fields will be enabled once corrected.</span>
-                                        </span>
-                                        <div class="form-row mt-2">
-                                            <label for="">Fax2Mail Email Address:</label>
-                                            <input type="text" id="fax-email" name="fax-email" class="form-control"
-                                                placeholder="Type here...">
-                                        </div>
-                                        <div class="form-row d-flex justify-content-end mt-4">
-                                            <button class="btn btn-primary py-1">
-                                                Send Fax
-                                            </button>
-                                        </div>
+<% end %>
+<!-- Verification Letter Modal -->
+<div class="modal fade" id="verifLetterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="content">
+                    <div class="modal-title">
+                        <h6 class="offset-md-3">Training Verification Letter</h6>
+                        <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                    <div class="mt-3 left-pane">
+                        <h6>Preview Letter</h6>
+                    </div>
+                    <div class="form-row row page-applicable mt-3">
+                        <div class="col-xl-12">
+                            <div class="card other-name-card">
+                                <div class="card-body">
+                                    <h6 class="form-heading">Send Fax</h6>
+                                    <span class="page-note mt-1">
+                                        <i class='bx bx-error-circle font-red'></i> <span>Please correct the invalid
+                                            fax number. Fields will be enabled once corrected.</span>
+                                    </span>
+                                    <div class="form-row mt-2">
+                                        <label for="">Fax2Mail Email Address:</label>
+                                        <input type="text" id="fax-email" name="fax-email" class="form-control"
+                                            placeholder="Type here...">
+                                    </div>
+                                    <div class="form-row d-flex justify-content-end mt-4">
+                                        <button class="btn btn-primary py-1">
+                                            Send Fax
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-row row page-applicable mt-3">
-                            <div class="col-xl-12">
-                                <div class="card other-name-card">
-                                    <div class="card-body">
-                                        <h6 class="form-heading">Send Email</h6>
-                                        <span class="page-note mt-1">
-                                            <i class='bx bx-error-circle font-red'></i> <span>Please correct the invalid
-                                                email address. Fields will be enabled once corrected.</span>
-                                        </span>
-                                        <div class="form-row mt-2">
-                                            <label for="">Email Address To:</label>
-                                            <input type="text" id="email-to" name="email-to" class="form-control"
-                                                placeholder="Type here...">
-                                        </div>
-                                        <div class="form-row">
-                                            <label for="">Email Address CC:</label>
-                                            <input type="text" id="email-cc" name="email-cc" class="form-control"
-                                                placeholder="Type here...">
-                                        </div>
-                                        <div class="form-row d-flex justify-content-end mt-4">
-                                            <button class="btn btn-primary py-1">
-                                                Send Email
-                                            </button>
-                                        </div>
+                    </div>
+                    <div class="form-row row page-applicable mt-3">
+                        <div class="col-xl-12">
+                            <div class="card other-name-card">
+                                <div class="card-body">
+                                    <h6 class="form-heading">Send Email</h6>
+                                    <span class="page-note mt-1">
+                                        <i class='bx bx-error-circle font-red'></i> <span>Please correct the invalid
+                                            email address. Fields will be enabled once corrected.</span>
+                                    </span>
+                                    <div class="form-row mt-2">
+                                        <label for="">Email Address To:</label>
+                                        <input type="text" id="email-to" name="email-to" class="form-control"
+                                            placeholder="Type here...">
+                                    </div>
+                                    <div class="form-row">
+                                        <label for="">Email Address CC:</label>
+                                        <input type="text" id="email-cc" name="email-cc" class="form-control"
+                                            placeholder="Type here...">
+                                    </div>
+                                    <div class="form-row d-flex justify-content-end mt-4">
+                                        <button class="btn btn-primary py-1">
+                                            Send Email
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -417,3 +213,485 @@
             </div>
         </div>
     </div>
+</div>
+
+
+<div class="modal fade" id="search_school" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="p-4">
+                <h2 class="text-center">Search For School</h3>
+                <div class="card other-name-card">
+                    <div class="card-body">
+                        <span class="page-note">
+                            <i class='bx bx-error-circle font-lightblue'></i> <span>
+                            To search for an existing school, please select the Country, State or Province, City and School from the drop down lists. If your School is not on the list, click the New button. Complete the requested address information of the department or office that may verify your degree or certificate. Click the Save button. Click the Close button to populate the record with the new address information.</span>
+                        </span>
+                        <div class="col-xl-12">
+                            <form accept-charset="UTF-8" action=<%= get_schools_url %> method="POST" id="search_school_form" class="form_search_with_icon m-3">
+                                <div class="form-row row">
+                                    <div class="col-12">
+                                        <label for="state">State:</label>
+                                        <div class="search-select form-control border border-dark" name="q[state_eq]" id="search_school_form_state">
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="name">School:</label>
+                                        <input type="text" class="form-control" id="search_school_form_name_cont" name="q[name_cont]" placeholder="Search Education record by name" aria-label="Search Education record" aria-describedby="basic-addon2">
+                                    </div>
+                                </div>
+                                <div class="text-center mt-2">
+                                    <button class="btn btn-primary" type="submit"  form="search_school_form">Search</button>
+                                </div>
+                            </form>
+
+                            <div class="form-row row p-2 text-center m-auto">
+                                <div class="col-12">
+                                    <label for="state">Search Result School list:</label>
+                                    <div class="search-select form-control border border-dark" name="result_school" id="result_school_list">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="m-2">
+                                    <div class="form-row row">
+                                        <div class="col-xl-6 ">
+                                            <label for="name">School:</label>
+                                            <input type="text" name="name" id="search_school_name" class="form-control form-control-lg"
+                                                placeholder="Type here.." disabled="true">
+                                        </div>
+                                        <div class="col-xl-6">
+                                            <label for="address">Address:</label>
+                                            <input type="text" name="address" id="search_school_address" class="form-control form-control-lg"
+                                                placeholder="Type here.." disabled="true">
+                                        </div>
+                                    </div>
+                                    <div class="form-row row">
+                                        <div class="col-xl-6">
+                                            <label for="suite">Suite/Mail Stop:</label>
+                                            <input type="text" name="suite" id="search_school_suite" class="form-control form-control-lg"
+                                                placeholder="Type here.." disabled="true">
+                                        </div>
+                                        <div class="col-xl-6">
+                                            <label for="address2">Additional Address:</label>
+                                            <input type="text" name="address2" id="search_school_address2"
+                                                class="form-control form-control-lg" placeholder="Type here.." disabled="true">
+                                        </div>
+                                    </div>
+                                    <div class="form-row row">
+                                        <div class="col-xl-6">
+                                            <label for="city">City:</label>
+                                            <input type="text" name="city" id="search_school_city" class="form-control form-control-lg"
+                                                placeholder="Type here.." disabled="true">
+                                        </div>
+                                        <div class="col-xl-6">
+                                            <label for="county">County:</label>
+                                            <input type="text" name="county" id="search_school_county" class="form-control form-control-lg"
+                                                placeholder="Type here.." disabled="true">
+                                        </div>
+                                    </div>
+                                    <div class="form-row row">
+                                        <div class="col-xl-4">
+                                            <label for="state">State/Province:</label>
+                                            <input type="text" name="state" id="search_school_state" class="form-control form-control-lg"
+                                                placeholder="Type here.." disabled="true">
+                                        </div>
+                                        <div class="col-xl-4">
+                                            <label for="postal_code">Zip/Postal Code:</label>
+                                            <input type="text" name="postal_code" id="search_school_postal_code" class="form-control form-control-lg"
+                                                placeholder="Type here.." disabled="true">
+                                        </div>
+                                        <div class="col-xl-4">
+                                            <label for="country">Country:</label>
+                                            <input type="text" name="country" id="search_school_country" class="form-control form-control-lg"
+                                                placeholder="Type here.." disabled="true">
+                                        </div>
+                                    </div>
+                                    <div class="form-row row">
+                                        <div class="col-xl-4">
+                                            <label for="phone">Phone Number:</label>
+                                            <input type="text" name="phone" id="search_school_phone" class="form-control form-control-lg"
+                                                placeholder="Type here.." disabled="true">
+                                        </div>
+                                        <div class="col-xl-4">
+                                            <label for="email">Email Address:</label>
+                                            <input type="text" name="email" id="search_school_email" class="form-control form-control-lg"
+                                                placeholder="Type here.." disabled="true">
+                                        </div>
+                                        <div class="col-xl-4">
+                                            <label for="fax">Fax Number:</label>
+                                            <input type="text" name="fax" id="search_school_fax" class="form-control form-control-lg"
+                                                placeholder="Type here.." disabled="true">
+                                        </div>
+                                    </div>
+                                    <div class="form-row row">
+                                        <div class="col-xl-4">
+                                            <label for="fax">Contact Method:</label>
+                                            <input type="text" name="contact_method" id="search_school_contact_method" class="form-control form-control-lg"
+                                                placeholder="Type here.." disabled="true">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-2">
+                            <button type="submit" id="confirm_school_button" class="btn btn-success">Confirm</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-2">
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#add_school">
+                        New
+                    </button>
+                </div>
+                <button class="btn btn-cancel w-100" data-bs-dismiss="modal" id="btn-modal-close">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="add_school" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="p-4">
+                <h2 class="text-center">Add New School</h3>
+                <div class="card other-name-card">
+                    <div class="card-body">
+                        <div class="col-xl-12">
+                            <div class="card">
+                                <form accept-charset="UTF-8" action=<%= mhc_schools_url %> method="POST" id="add_school_form" class="form_search_with_icon">
+                                    <div class="m-2">
+                                        <div class="form-row row">
+                                            <div class="col-xl-6 ">
+                                                <label for="name">School:</label>
+                                                <input type="text" name="name" id="add_school_name" class="form-control form-control-lg"
+                                                    placeholder="Type here..">
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <label for="address">Address:</label>
+                                                <input type="text" name="address" id="add_school_address" class="form-control form-control-lg"
+                                                    placeholder="Type here..">
+                                            </div>
+                                        </div>
+                                        <div class="form-row row">
+                                            <div class="col-xl-6">
+                                                <label for="suite">Suite/Mail Stop:</label>
+                                                <input type="text" name="suite" id="add_school_suite" class="form-control form-control-lg"
+                                                    placeholder="Type here..">
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <label for="address2">Additional Address:</label>
+                                                <input type="text" name="address2" id="add_school_address2"
+                                                    class="form-control form-control-lg" placeholder="Type here..">
+                                            </div>
+                                        </div>
+                                        <div class="form-row row">
+                                            <div class="col-xl-6">
+                                                <label for="city">City:</label>
+                                                <input type="text" name="city" id="add_school_city" class="form-control form-control-lg"
+                                                    placeholder="Type here..">
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <label for="county">County:</label>
+                                                <input type="text" name="county" id="add_school_county" class="form-control form-control-lg"
+                                                    placeholder="Type here..">
+                                            </div>
+                                        </div>
+                                        <div class="form-row row">
+                                            <div class="col-xl-4">
+                                                <label for="state">State/Province:</label>
+                                                <div class="search-select form-control border border-dark" name="state" id="add_school_state">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4">
+                                                <label for="postal_code">Zip/Postal Code:</label>
+                                                <input type="text" name="postal_code" id="add_school_postal_code" class="form-control form-control-lg"
+                                                    placeholder="Type here..">
+                                            </div>
+                                            <div class="col-xl-4">
+                                                <label for="country">Country:</label>
+                                                <input type="text" name="country" id="add_school_country" class="form-control form-control-lg"
+                                                    placeholder="Type here..">
+                                            </div>
+                                        </div>
+                                        <div class="form-row row">
+                                            <div class="col-xl-4">
+                                                <label for="phone">Phone Number:</label>
+                                                <input type="text" name="phone" id="add_school_phone" class="form-control form-control-lg"
+                                                    placeholder="Type here..">
+                                            </div>
+                                            <div class="col-xl-4">
+                                                <label for="email">Email Address:</label>
+                                                <input type="text" name="email" id="add_school_email" class="form-control form-control-lg"
+                                                    placeholder="Type here..">
+                                            </div>
+                                            <div class="col-xl-4">
+                                                <label for="fax">Fax Number:</label>
+                                                <input type="text" name="fax" id="add_school_fax" class="form-control form-control-lg"
+                                                    placeholder="Type here..">
+                                            </div>
+                                        </div>
+                                        <div class="form-row row">
+                                            <div class="col-xl-4">
+                                                <label for="fax">Contact Method:</label>
+                                                <select id="add_school_contact_method" name="contact_method" class="form-select">
+                                                    <option value="email" selected>Email</option>
+                                                    <option value="letter">Letter</option>
+                                                    <option value="fax">Fax</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-md w-100">
+                                        <strong>Save</strong>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-cancel w-100" data-bs-dismiss="modal" id="btn-modal-close">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+        $('.contact_method_radio').on('change',function(e) {
+            if($(this).val() == 'email') {
+                var provider_type = $('#provider_type').val()
+                console.log("provider_type")
+                if(provider_type == 'credentialing_contact') {
+                    $('#to').val($('#cred_contact_email').val())
+                }
+                if(provider_type == 'confidential_contact') {
+                    $('#to').val($('#conf_contact_email').val())
+                }
+                if(provider_type == 'client_contact') {
+                    $('#to').val($('#client_contact_email').val())
+                }
+                if(provider_type == 'intitution_contact') {
+                    $('#to').val($('#intitution_contact_email').val())
+                }
+            }
+        });
+
+        $('#provider_type').on('change',function(e) {
+            if($(this).val() == 'credentialing_contact') {
+                $('#to').val($('#cred_contact_email').val())
+            }
+            if($(this).val() == 'confidential_contact') {
+                $('#to').val($('#conf_contact_email').val())
+            }
+            if($(this).val() == 'client_contact') {
+                $('#to').val($('#client_contact_email').val())
+            }
+            if($(this).val() == 'intitution_contact') {
+                $('#to').val($('#intitution_contact_email').val())
+            }
+        });
+
+        VirtualSelect.init({
+            options: {},
+            ele: '#result_school_list',
+            search: true,
+            showSelectedOptionsFirst: true
+        });
+
+        $("#ajaxForm").submit(function(e){
+            e.preventDefault();
+            var action = $(this).attr("action");
+            var formData = new FormData(this)
+            formData.append('authenticity_token', csrfToken);
+            $.ajax({
+                type: "POST",
+                url: action,
+                crossDomain: true,
+                data: formData,
+                dataType: "json",
+                contentType: "multipart/form-data",
+                processData: false,
+                contentType: false,
+                headers: {
+                    "Accept": "application/json"
+                }
+            }).done(function() {
+                $('#btn-modal-close').trigger('click');
+                $('.loading-overlay').hide();
+            }).fail(function() {
+                alert('An error occurred.')
+                $('.loading-overlay').hide();
+            });
+        });
+
+        $("#confirm_school_button").on('click', function(e) {
+            e.preventDefault();
+            $("#provider_education_institution_name").val($("#search_school_name").val())
+            $("#provider_education_address").val($("#search_school_address").val())
+            $("#provider_education_suite").val($("#search_school_suite").val())
+            $("#provider_education_address2").val($("#search_school_address2").val())
+            $("#provider_education_city").val($("#search_school_city").val())
+            $("#provider_education_county").val($("#search_school_county").val())
+            $("#provider_education_state").val($("#search_school_state").val())
+            $("#provider_education_postal_code").val($("#search_school_postal_code").val())
+            $("#provider_education_country").val($("#search_school_country").val())
+            $("#provider_education_phone_number").val($("#search_school_phone").val())
+            $("#provider_education_fax_number").val($("#search_school_fax").val())
+            $("#provider_education_email_address").val($("#search_school_email").val())
+            $('#btn-modal-close').trigger('click');
+        });
+
+        $("#search_school_form").submit(function(e){
+            e.preventDefault();
+            var action = $(this).attr("action");
+            $.ajax({
+                type: "POST",
+                url: action,
+                crossDomain: true,
+                data: { authenticity_token: csrfToken, q: {
+                    name_cont: $("#search_school_form_name_cont").val(),
+                    state_eq:  $("#search_school_form_state").val()
+                } },
+                dataType: "json",
+            }).success(function(data) {
+                schools = data['schools']
+                document.querySelector('#result_school_list').setOptions(schools);
+                $('.loading-overlay').hide();
+            }).fail(function() {
+                alert('An error occurred.')
+                $('.loading-overlay').hide();
+            });
+        });
+
+        $('#result_school_list').on('change', function(e) {
+            if($('#result_school_list').val() != "") {
+                school_id = $('#result_school_list').val()
+                $.ajax({
+                    type: "GET",
+                    url: "/mhc/schools/" + school_id + ".json",
+                    crossDomain: true,
+                    dataType: "json",
+                }).success(function(data) {
+                    console.log(data)
+                    $("#search_school_name").val(data["school"]["name"])
+                    $("#search_school_address").val(data["school"]["address"])
+                    $("#search_school_suite").val(data["school"]["suite"])
+                    $("#search_school_address2").val(data["school"]["address2"])
+                    $("#search_school_city").val(data["school"]["city"])
+                    $("#search_school_county").val(data["school"]["county"])
+                    $("#search_school_state").val(data["school"]["state"])
+                    $("#search_school_postal_code").val(data["school"]["postal_code"])
+                    $("#search_school_country").val(data["school"]["country"])
+                    $("#search_school_contact_method").val(data["school"]["contact_method"])
+                    $("#search_school_phone").val(data["school"]["phone"])
+                    $("#search_school_fax").val(data["school"]["fax"])
+                    $("#search_school_email").val(data["school"]["email"])
+                    $('.loading-overlay').hide();
+
+                }).fail(function() {
+                    alert('An error occurred.')
+                    $('.loading-overlay').hide();
+                });
+            }
+        })
+
+        $('#add_school').on('shown.bs.modal', function () {
+            $.ajax({
+                url: '<%= get_states_path %>',
+                method: 'GET',
+                data: { authenticity_token: csrfToken },
+                success: function(data) {
+                    states = data['states']
+                    VirtualSelect.init({
+                        options: states,
+                        ele: '#add_school_state',
+                        search: true,
+                        showSelectedOptionsFirst: true
+                    });
+                }
+            })
+        })
+
+        $('#search_school').on('shown.bs.modal', function () {
+            $.ajax({
+                url: '<%= get_states_path %>',
+                method: 'GET',
+                data: { authenticity_token: csrfToken },
+                success: function(data) {
+                    states = data['states']
+                    VirtualSelect.init({
+                        options: states,
+                        ele: '#search_school_form_state',
+                        search: true,
+                        showSelectedOptionsFirst: true
+                    });
+                }
+            })
+        })
+
+        $("#add_school_form").submit(function(e){
+            e.preventDefault();
+            var action = $(this).attr("action");
+            var school = {
+                name: $("#add_school_name").val(),
+                address: $("#add_school_address").val(),
+                suite: $("#add_school_suite").val(),
+                address2: $("#add_school_address2").val(),
+                city: $("#add_school_city").val(),
+                county: $("#add_school_county").val(),
+                state: $("#add_school_state").val(),
+                postal_code: $("#add_school_postal_code").val(),
+                country: $("#add_school_country").val(),
+                contact_method: $("#add_school_contact_method").val(),
+                phone: $("#add_school_phone").val(),
+                fax: $("#add_school_fax").val(),
+                email: $("#add_school_email").val(),
+            }
+            $.ajax({
+                type: "POST",
+                url: action,
+                crossDomain: true,
+                data: { authenticity_token: csrfToken, school: school },
+                dataType: "json",
+            }).success(function(data) {
+                console.log(data["school"])
+                $('#btn-modal-close').trigger('click');
+                $('#search_school_button').trigger('click');
+                $("#search_school_name").val(data["school"]["name"])
+                $("#search_school_address").val(data["school"]["address"])
+                $("#search_school_suite").val(data["school"]["suite"])
+                $("#search_school_address2").val(data["school"]["address2"])
+                $("#search_school_city").val(data["school"]["city"])
+                $("#search_school_county").val(data["school"]["county"])
+                $("#search_school_state").val(data["school"]["state"])
+                $("#search_school_postal_code").val(data["school"]["postal_code"])
+                $("#search_school_country").val(data["school"]["country"])
+                $("#search_school_contact_method").val(data["school"]["contact_method"])
+                $("#search_school_phone").val(data["school"]["phone"])
+                $("#search_school_fax").val(data["school"]["fax"])
+                $("#search_school_email").val(data["school"]["email"])
+                $('.loading-overlay').hide();
+            }).fail(function() {
+                alert('An error occurred.')
+                $('.loading-overlay').hide();
+            });
+        });
+    })
+</script>
+
+
+<style type="text/css">
+  .multi-select, .search-select, .single-select {
+    padding: 0;
+      width: 100%;
+      max-width: 1000px;
+  }
+  .single-select  {
+    width: 100%;
+    max-width: 1000px;
+    padding: 0;
+  }
+</style>

@@ -34,16 +34,16 @@
                 <% end %>
             </div>
         </div>
-        <% if @provider_educations %>
+        <% if @practice_information_educations %>
             <div class="col-lg-12">
             <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-0">
                 <div class="page_info ms-3 text-black">
-                <%= page_entries_info @provider_educations %>
+                <%= page_entries_info @practice_information_educations %>
                 </div>
                 <% if params[:per_page ].present? %>
-                <%= will_paginate @provider_educations, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                <%= will_paginate @practice_information_educations, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
                 <% else %>
-                <%= will_paginate @provider_educations, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                <%= will_paginate @practice_information_educations, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
                 <% end %>
             </div>
             </div>
@@ -59,13 +59,13 @@
                 </tr>
             </thead>
             <tbody>
-                <% @provider_educations.each do |provider_education| %>
+                <% @practice_information_educations.each do |practice_information_educations| %>
                     <tr>
-                        <td><a href="<%= mhc_verification_platform_path(provider_education_id: provider_education.id, page_tab: 'education_record')%>" id="OigDisplayGeneral"
-                                class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none"><%= provider_education.institution_name %>
-                        <td><%= provider_education.degree_degree_abbreviation %></td>
-                        <td><%= provider_education.start_date&.strftime('%b %d, %Y') %></td>
-                        <td><%= provider_education.end_date&.strftime('%b %d, %Y') %></td>
+                        <td><a href="<%= mhc_verification_platform_path(practice_information_education_id: practice_information_educations.id, page_tab: 'education_record')%>" id="OigDisplayGeneral"
+                                class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none"><%= practice_information_educations.institution_name %>
+                        <td><%= practice_information_educations.degree_degree_abbreviation %></td>
+                        <td><%= practice_information_educations.start_date&.strftime('%b %d, %Y') %></td>
+                        <td><%= practice_information_educations.end_date&.strftime('%b %d, %Y') %></td>
                         <td><%= %></td>
                     </tr>
                 <% end %>
