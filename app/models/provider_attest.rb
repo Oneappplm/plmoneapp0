@@ -59,4 +59,5 @@ class ProviderAttest < ApplicationRecord
   has_one :provider_personal_docs_receive, dependent: :destroy
   has_many :provider_personal_uploaded_docs, dependent: :destroy
   has_many :provider_npdbs, dependent: :destroy
+  has_many :practice_information_educations, dependent: :destroy
 end

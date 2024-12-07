@@ -9,7 +9,7 @@
                         <label class="form-check-label" for="training-switch">Not Applicable</label>
                     </div>
                 </div>
-                <a href="<%= mhc_verification_platform_path(page_tab: 'add_new_training')%>" class="btn py-1 btn-primary %>">
+                <a href="<%= mhc_verification_platform_path(page_tab: 'training_record')%>" class="btn py-1 btn-primary %>">
                     <i class='bx bx-plus' ></i>
                     Add New Training
                 </a>
@@ -59,21 +59,16 @@
                     </tr>
                 </thead>
                 <tbody>
+                <% @provider_educations.each do |provider_education| %>
                     <tr>
-                        <td><a href="<%= verification_platform_index_path(page: 'training_record')%>">University of Cincinnati College of Medicine</td>
-                        <td>Residency</td>
-                        <td>Orthopaedic Surgery : Sports Medicine</td>
-                        <td>6/2013</td>
-                        <td>Not Requested</td>
+                        <td><a href="<%= mhc_verification_platform_path(provider_education_id: provider_education.id, page_tab: 'training_record')%>"
+                                class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none"><%= provider_education.institution_name %>
+                        <td><%= provider_education.additional_training_description %></td>
+                        <td><%= provider_education.specialty_specialty_name %></td>
+                        <td><%= provider_education.end_date&.strftime('%b %d, %Y') %></td>
+                        <td><%= %></td>
                     </tr>
-                    <tr>
-                        <td>University of Cincinnati College of Medicine</td>
-                        <td>Residency</td>
-                        <td>Orthopaedic Surgery : Sports Medicine</td>
-                        <td>6/2013</td>
-                        <td>Not Requested</td>
-                    </tr>
-                </tbody>
+                <% end %>
             </table>
             <form action="" class="page-not-applicable">
                 <div class="form-row mt-4">

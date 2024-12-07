@@ -6,22 +6,22 @@ class Mhc::ProviderEducationsController < ApplicationController
   end
 
   def create
-    @provider_education = ProviderEducation.new(practice_information_params)
+    @provider_education = ProviderEducation.new(provider_education_params)
 
     if @provider_education.save
-      redirect_to mhc_verification_platform_path(page_tab: 'education',id: params[:provider_education][:provider_attest_id]), notice: 'Education detail saved successfully.'
+      redirect_to mhc_verification_platform_path(page_tab: 'training',id: params[:provider_education][:provider_attest_id]), notice: 'Training detail saved successfully.'
     else
-      redirect_to mhc_verification_platform_path(page_tab: 'education_record',id: params[:provider_education][:provider_attest_id]), alert: 'Failed to save education detail.'
+      redirect_to mhc_verification_platform_path(page_tab: 'training_record',id: params[:provider_education][:provider_attest_id]), alert: 'Failed to save training detail.'
     end
   end
 
   def update
-   @provider_education.assign_attributes(practice_information_params)
+   @provider_education.assign_attributes(provider_education_params)
 
     if @provider_education.save
-      redirect_to mhc_verification_platform_path(page_tab: 'education',id: params[:provider_education][:provider_attest_id]), notice: 'Education detail saved successfully.'
+      redirect_to mhc_verification_platform_path(page_tab: 'training',id: params[:provider_education][:provider_attest_id]), notice: 'Training detail saved successfully.'
     else
-      redirect_to mhc_verification_platform_path(page_tab: 'education_record',id: params[:provider_education][:provider_attest_id]), alert: 'Failed to save education detail.'
+      redirect_to mhc_verification_platform_path(page_tab: 'training_record',id: params[:provider_education][:provider_attest_id]), alert: 'Failed to save training detail.'
     end
   end
 
@@ -32,7 +32,7 @@ class Mhc::ProviderEducationsController < ApplicationController
   end
 
   # Strong parameters for security
-  def practice_information_params
+  def provider_education_params
     params.require(:provider_education).permit(
       :id, :caqh_provider_education_id, :provider_attest_id, :caqh_provider_attest_id, :institution_name,
       :address, :address2, :suite, :country, :county, :city, :province, :state, :postal_code, :start_date,
