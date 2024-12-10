@@ -367,7 +367,7 @@ Rails.application.routes.draw do
     resources :provider_npdb_comments
     resources :practice_informations, only: [:index, :create], path: 'practice-information'
     resources :provider_educations, only: [:index, :create, :update], path: 'provider-education'
-    resources :practice_information_educations, only: [:index, :create, :update], path: 'practice-information-education'
+    resources :practice_information_educations, only: [:index, :create, :update, :destroy], path: 'practice-information-education'
     resources :provider_specialties, only: [:index, :new, :create, :edit, :destroy, :update], path: 'provider-specialties'
     resources :provider_personal_informations, only: [:update], path: 'provider-personal-information'
     resources :provider_personal_information_sam_records, only: [:create, :show], path: 'provider-personal-information-sam-record' do

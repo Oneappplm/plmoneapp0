@@ -37,6 +37,10 @@
                         <%= f.text_field :address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                     </div>
                     <div class="col-12">
+                        <label class="text-dark-grey">Suite/Dept/Mail Stop:</label>
+                        <%= f.text_field :suite_dept_mail_stop,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div class="col-12">
                         <label class="text-dark-grey">Additional Address:</label>
                         <%= f.text_field :address2,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                     </div>
@@ -89,6 +93,8 @@
                         <%= f.text_field :degree_degree_abbreviation,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                     </div>
                     <div class="col-xl-6">
+                        <label class="text-dark-grey">If Other, please fill:</label>
+                        <%= f.text_field :if_other_list,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                     </div>
                     <div class="col-xl-6">
                         <label class="text-dark-grey">Start Date:</label>
@@ -108,9 +114,27 @@
                         <label class="text-dark-grey">Incomplete Explanation:</label>
                         <%= f.text_field :incomplete_explanation,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                     </div>
+                    <div class="col-12">
+                        <label class="text-dark-grey">Please list any comments:</label>
+                        <%= f.text_field :comments,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                    <div>
+                      <%= f.label :show_on_tickler, "Show On Tickler?" %>
+                      <%= f.check_box :show_on_tickler, class: "form-check-input" %>
+                    </div>
                     <div class="col-12 text-left" style="margin-top: 20px;">
                         <%= f.submit 'Save', class: 'btn btn-primary', style: 'width: 200px;' %>
                     </div>
+                    <% if @practice_information_education.persisted? %>
+                      <div class="col-12 text-left" style="margin-top: 10px;">
+                        <%= button_to 'Delete', 
+                            mhc_practice_information_education_path(@practice_information_education, provider_attest_id: @practice_information_education.provider_attest_id), 
+                            method: :delete, 
+                            data: { confirm: 'Are you sure you want to delete this education detail?' }, 
+                            class: 'btn btn-danger', 
+                            style: 'width: 200px;' %>
+                      </div>
+                    <% end %>
                 </div>
                 <% if @practice_information_education.persisted? %>
                     <div class="col-xl-4 p-2 text-center">
