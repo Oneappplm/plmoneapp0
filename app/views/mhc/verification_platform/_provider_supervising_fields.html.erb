@@ -1,0 +1,81 @@
+<div class="row my-2 provider_supervising_container border border-2 ms-2 p-2 mt-4" data-id=0>
+	<div class="d-flex align-items-center gap-10">
+		<h5  class="add-license-pane-t">Supervising Practitioner/Group Information</h5>
+	</div>
+	<hr>
+  <div class="col-xl-6">
+	  <label for="supervising-prac">Name of Supervising Practitioner/Group:</label>
+		<div class="input-group gap-2">
+			<%= f.text_field :name_of_supervising, placeholder: "Type here...", class: "form-control", required: true %>
+			<button class="btn btn-primary rounded" type="button">Select</button>
+		</div>
+  </div>
+	
+	<div class="col-xl-6">
+		<label for="firstname">Licence State:</label>
+		<%= f.collection_select :license_state, State.all, :id, :name, { include_blank: "Select State" }, class: "form-select form-select-lg" %>
+	</div>
+	<div class="col-xl-6">
+		<label for="group-license-type">License Type:</label>
+		<%= f.select :license_type, ProviderLicensure::LICENSE_TYPE, { prompt: true }, { class: "form-select" } %>
+	</div>
+	<div class="col-xl-6">
+		<label for="group-license-number">License Number:</label>
+		<%= f.text_field :license_number, id: "license-number", placeholder: "Type here...", class: "form-control", required: true %>
+	</div>
+	<div class="col-xl-6">
+		<label for="group-facility">Facility</label>
+		<%= f.text_field :facility, id: "group-facility", placeholder: "Type here...", class: "form-control", required: true %>
+	</div>
+	<div class="col-xl-6">
+		<label for="group-address">Address:</label>
+		<%= f.text_field :address, id: "group-address", placeholder: "Type here...", class: "form-control", required: true %>
+	</div>
+	<div class="col-xl-6">
+		<label for="group-suite">Suite/Dept/Mail Stop:</label>
+		<%= f.text_field :mail_stop, id: "group-suite", placeholder: "Type here...", class: "form-control", required: true %>
+	</div>
+	<div class="col-xl-6">
+		<label for="group-add-address">Additional Address:</label>
+		<%= f.text_field :address2, id: "group-add-address", placeholder: "Type here...", class: "form-control", required: true %>
+	</div>
+	<div class="col-xl-6">
+		<label for="group-city">City:</label>
+		<%= f.text_field :city, id: "group-city", placeholder: "Type here...", class: "form-control", required: true %>
+	</div>
+	<div class="col-xl-6">
+		<label for="group-county">County:</label>
+		<%= f.text_field :country, id: "group-county", placeholder: "Type here...", class: "form-control", required: true %>
+	</div>
+	<div class="col-xl-4">
+		<label for="group-state">State/Province:</label>
+		<%= f.collection_select :state, State.all, :id, :name, { include_blank: "Select State" }, class: "form-select form-select-lg" %>
+	</div>
+	<div class="col-xl-4">
+		<label for="group-zip">Zip/Postal Code:</label>
+		<%= f.text_field :zipcode, id: "group-zip", placeholder: "Type here...", class: "form-control", required: true %>
+	</div>
+	<div class="col-xl-4">
+		<label for="group-country">Country:</label>
+		<%= f.text_field :country, id: "group-county", placeholder: "Type here...", class: "form-control", required: true %>
+	</div>
+	<div class="col-xl-4">
+		<label for="group-phone">Phone Number:</label>
+		<%= f.text_field :phone_number, id: "group-phone", placeholder: "Type here...", class: "form-control", required: true %>
+	</div>
+	<div class="col-xl-4">
+		<label for="group-fax">Fax Number:</label>
+		<%= f.text_field :fax_number, id: "group-fax", placeholder: "Type here...", class: "form-control", required: true %>
+	</div>
+	<div class="col-xl-4">
+		<label for="group-email">Email Address:</label>
+		<%= f.text_field :email_address, id: "group-email", placeholder: "Type here...", class: "form-control", required: true %>
+	</div>
+	<div class="col-lg-1 text-center ms-auto mt-2">
+		<% if f.object.id %>
+			<button type="button" class="btn btn-xs btn-danger remove-dynamic-fields" data-model="provider_licenses_provider_supervising" data-id=<%= f.object.id %> id="remove-provider-supervising"> Remove</button>
+		<% else %>
+			<button type="button" class="btn btn-xs btn-danger remove-dynamic-fields" data-id=0 id="remove-provider-supervising"> Remove </button>
+		<% end %>
+	</div>
+</div>
