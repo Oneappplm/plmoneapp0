@@ -227,6 +227,38 @@ class Mhc::VerificationPlatformController < ApplicationController
         provider_attest_id: @provider_personal_information.provider_attest_id,
         caqh_provider_attest_id: @provider_personal_information&.caqh_provider_attest_id)
     end
+
+    # code for licensure tab
+    if %w[edit_licensure license_record].include?(params[:page_tab])
+      @provider_licensure = ProviderLicensure.find(params[:licensure_id])
+    end
+
+    case params[:page_tab]
+    when "licensure"
+      @q = ProviderLicensure.ransack(params[:q])
+      @provider_licensures = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
+      @limit = 10
+      @total_pages = (@provider_insurance_coverages_count.to_f / @limit.to_f).ceil
+
+    when "add_new_licensure"
+      if @provider_personal_information
+        @provider_attest_id = @provider_personal_information.provider_attest_id
+        caqh_provider_attest_id = @provider_personal_information.caqh_provider_attest_id
+      end
+
+      @provider_licensure = ProviderLicensure.new(
+        provider_attest_id: @provider_attest_id,
+        caqh_provider_attest_id: caqh_provider_attest_id
+      )
+      @provider_licensure.provider_supervisings.build if @provider_licensure.provider_supervisings.empty?
+      @url = mhc_provider_licensures_path
+
+    when "edit_licensure"
+      @url = mhc_provider_licensure_path
+
+    when "license_record"
+      # @provider_licensure is already set above
+    end
   end
 
   def redirect_to_auto_verify
