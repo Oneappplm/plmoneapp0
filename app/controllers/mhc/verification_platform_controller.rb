@@ -103,6 +103,8 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'education_record'
+      @provider_personal_information_comment = ProviderPersonalInformationComment.new
+      @provider_personal_information_comments = ProviderPersonalInformationComment.all
       @q = School.ransack(params[:q])
       @practice_information_education = PracticeInformationEducation.find_or_initialize_by(id: params[:practice_information_education_id], provider_attest_id: @provider_personal_information.provider_attest_id, caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id)
     end
@@ -157,6 +159,8 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'training_record'
+      @provider_personal_information_comment = ProviderPersonalInformationComment.new
+      @provider_personal_information_comments = ProviderPersonalInformationComment.all
       @q = School.ransack(params[:q])
       @provider_education = ProviderEducation.find_or_initialize_by(id: params[:provider_education_id], provider_attest_id: @provider_personal_information.provider_attest_id, caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id)
     end
@@ -213,19 +217,13 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'npdb'
-      @provider_npdb_comments = ProviderNpdbComment.all
+      @provider_personal_information_comment = ProviderPersonalInformationComment.new
+      @provider_personal_information_comments = ProviderPersonalInformationComment.all
       @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
-      @provider_npdb = ProviderNpdb.new(
+      @provider_npdb = ProviderNpdb.find_or_initialize_by(
         provider_attest_id: @provider_attest_id,
         caqh_provider_attest_id: @provider_personal_information&.caqh_provider_attest_id
       )
-    end
-
-     if params[:page_tab] == 'npdb_record'
-      @provider_npdb = ProviderNpdb.find_or_initialize_by(
-        id: params[:provider_npdb_id],
-        provider_attest_id: @provider_personal_information.provider_attest_id,
-        caqh_provider_attest_id: @provider_personal_information&.caqh_provider_attest_id)
     end
 
     # code for licensure tab

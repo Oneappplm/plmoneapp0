@@ -36,16 +36,16 @@
         </div>
         <% if @practice_information_educations %>
             <div class="col-lg-12">
-            <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-0">
-                <div class="page_info ms-3 text-black">
-                <%= page_entries_info @practice_information_educations %>
+                <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-0">
+                    <div class="page_info ms-3 text-black">
+                    <%= page_entries_info @practice_information_educations %>
+                    </div>
+                    <% if params[:per_page ].present? %>
+                    <%= will_paginate @practice_information_educations, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                    <% else %>
+                    <%= will_paginate @practice_information_educations, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                    <% end %>
                 </div>
-                <% if params[:per_page ].present? %>
-                <%= will_paginate @practice_information_educations, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                <% else %>
-                <%= will_paginate @practice_information_educations, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                <% end %>
-            </div>
             </div>
         <% end %>
         <table class="table table-bordered practice-table mt-3 page-applicable ">
