@@ -1,8 +1,7 @@
 class Mhc::ProviderSpecialtiesController < ApplicationController
   def index
     @provider_specialty = ProviderSpecialty.all
-  end  
-  
+  end
 
   def new
     @provider_specialty = ProviderSpecialty.new
@@ -14,22 +13,22 @@ class Mhc::ProviderSpecialtiesController < ApplicationController
     if @provider_specialty.save
       redirect_to mhc_verification_platform_path(
         page_tab: 'board_cert',
-        id: @provider_specialty.provider_attest_id || params[:provider_specialty][:provider_attest_id]
+        id: @provider_specialty.provider_attest_id
       ),
       notice: 'Board certification saved successfully.'
     else
       flash[:alert] = 'Failed to save board certification.'
       redirect_to mhc_verification_platform_path(
-        page_tab: 'add_new_board_cert',
-        id: params[:provider_specialty][:provider_attest_id]
+        page_tab: 'board_cert_info',
+        id: @provider_specialty.provider_attest_id
       )
     end
   end
-    
+
     def edit
       @provider_specialty = ProviderSpecialty.find(params[:id])
     end
-    
+
     def update
       @provider_specialty = ProviderSpecialty.find(params[:id]) # Fetch the record to update
 
@@ -43,17 +42,17 @@ class Mhc::ProviderSpecialtiesController < ApplicationController
         render :edit # Ensure you have an `edit` view template
       end
     end
- 
+
     def destroy
       @provider_specialty = ProviderSpecialty.find(params[:id])
-      
+
       if @provider_specialty.destroy
         redirect_to mhc_verification_platform_path(page_tab: 'board_cert', id: @provider_specialty.provider_attest_id), alert: 'Board certification detail deleted successfully.'
       else
         flash[:error] = 'Failed to delete the board certification.'
         redirect_to mhc_verification_platform_path(page_tab: 'board_cert')
       end
-    end  
+    end
 
   private
   def provider_specialty_params
@@ -79,5 +78,5 @@ class Mhc::ProviderSpecialtiesController < ApplicationController
       :planning_to_take_board_exam_flag,
       :board_exam_explanation
     )
-  end  
+  end
 end

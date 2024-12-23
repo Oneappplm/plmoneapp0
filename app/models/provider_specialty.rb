@@ -4,11 +4,4 @@ class ProviderSpecialty < ApplicationRecord
   belongs_to :provider_attest
 
   validates :provider_attest_id, presence: true
-
-  before_validation :set_provider_attest
-  private
-
-  def set_provider_attest
-    self.provider_attest = ProviderAttest.find_by(caqh_provider_attest_id: caqh_provider_attest_id) || ProviderAttest.last
-  end  
 end

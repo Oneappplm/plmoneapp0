@@ -85,34 +85,15 @@ class Mhc::VerificationPlatformController < ApplicationController
       @practice_information_education = PracticeInformationEducation.find_or_initialize_by(id: params[:practice_information_education_id], provider_attest_id: @provider_personal_information.provider_attest_id, caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id)
     end
 
-    if params[:page_tab] == 'add_new_board_cert'
-      @provider_specialty = ProviderSpecialty.new
-    end
-
     if params[:page_tab] == 'board_cert'
-      @provider_specialty = ProviderSpecialty.all
+      @provider_specialties = ProviderSpecialty.where(provider_attest_id: @provider_personal_information.provider_attest_id)
     end
 
     if params[:page_tab] == 'board_cert_info'
-      # Check if provider_specialty_id is provided in the URL
-      if params[:provider_specialty_id].present?
-        # Fetch the specific ProviderSpecialty record
-        @provider_specialty = ProviderSpecialty.find_by(id: params[:provider_specialty_id])
-
-        unless @provider_specialty
-          flash[:alert] = 'Specialty not found for the given ID.'
-          redirect_to root_path and return
-        end
-      elsif params[:provider_attest_id].present?
-        # Fallback to fetching all specialties for a provider_attest_id
-        @provider_specialties = ProviderSpecialty.where(provider_attest_id: params[:provider_attest_id])
-
-        if @provider_specialties.empty?
-          flash[:alert] = 'No specialties found for the selected provider.'
-        end
-      else
-        flash[:alert] = 'Invalid request parameters.'
-        redirect_to root_path and return
+      @provider_specialty = ProviderSpecialty.find_or_initialize_by(id: params[:provider_specialty_id], provider_attest_id: @provider_personal_information.provider_attest_id)
+      if @provider_specialty.persisted?
+        @provider_personal_information_comment = ProviderPersonalInformationComment.new
+        @provider_personal_information_comments = ProviderPersonalInformationComment.all
       end
     end
 
@@ -135,10 +116,12 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'training_record'
-      @provider_personal_information_comment = ProviderPersonalInformationComment.new
-      @provider_personal_information_comments = ProviderPersonalInformationComment.all
       @q = School.ransack(params[:q])
-      @provider_education = ProviderEducation.find_or_initialize_by(id: params[:provider_education_id], provider_attest_id: @provider_personal_information.provider_attest_id, caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id)
+      @provider_education = ProviderEducation.find_or_initialize_by(id: params[:provider_education_id], provider_attest_id: @provider_personal_information.provider_attest_id)
+      if @provider_education.persisted?
+        @provider_personal_information_comment = ProviderPersonalInformationComment.new
+        @provider_personal_information_comments = ProviderPersonalInformationComment.all
+      end
     end
 
     if params[:page_tab] == 'sam'
@@ -155,6 +138,8 @@ class Mhc::VerificationPlatformController < ApplicationController
 
     if params[:page_tab] == 'oig'
       @provider_personal_information_reinstatements = ProviderPersonalInformationReinstatement.where(provider_personal_information_id:  @provider_personal_information.id)
+      @provider_personal_information_comment = ProviderPersonalInformationComment.new
+      @provider_personal_information_comments = ProviderPersonalInformationComment.all
     end
 
     if params[:page_tab] == 'add_oig_info'
