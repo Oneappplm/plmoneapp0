@@ -122,6 +122,51 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-12 m-2">
+                        <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
+                            View Scanned Images
+                        </button>
+                    </div>
+                </div>
+                <div class="card other-name-card">
+                    <div class="card-body">
+                        <h2 class="">Message Board</h2>
+                        <div class="mt-3 row">
+                            <div class="col-12 m-2">
+                                <ul style="list-style: none;overflow:scroll; height:400px;">
+                                    <% if @provider_personal_information_comments.present? %>
+                                        <% @provider_personal_information_comments.each do |comment| %>
+                                            <li class="mt-2">
+                                            <span class="btn bg-alt-grey py-1" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteCommentModal" 
+                                                data-comment-id="<%= comment.id %>"
+                                                data-comment-subject= "<%= comment.subject %>"
+                                                data-comment-message= "<%= comment.message %>">
+                                                Subject : <%= comment.subject %>
+                                                <p><%= comment.user.first_name %> </p>
+                                            </span>
+                                            <span class="btn py-1">
+                                            <%= button_to mhc_provider_personal_information_comment_path(comment.id), method: :delete, class: 'btn btn-danger' do %>
+                                                <i class="bx bx-trash"></i>
+                                            <% end %>
+                                            </span>
+                                            </li>
+                                        <% end %> 
+                                    <% else %>
+                                        <p class="btn bg-alt-grey py-1">No comment yet!</p>
+                                    <% end %>
+                                </ul>
+                            </div>
+                            <div class="col-12 m-2">
+                                <button type="button" class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" data-bs-toggle="modal" data-bs-target="#addCommentModal">
+                                    Add Comment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
