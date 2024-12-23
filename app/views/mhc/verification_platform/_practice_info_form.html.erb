@@ -1,0 +1,1531 @@
+<%= form_with(model: @practice_information, url: @url) do |f| %>
+	<div class="form-row row mt-4">
+		<div class="col-xl-12">
+			<div class="card other-name-card">
+				<div class="card-body">
+					<span class="page-note">
+						<%= f.hidden_field :caqh_provider_attest_id %>
+						<%= f.hidden_field :provider_attest_id %>
+						<%#= f.hidden_field :id, value: f.object.id %>
+				  </span>
+	        <div class="form-row row mt-2">
+	        	<div class="col-xl-6">
+	        		<div class="row">
+	        			<div class="col-xl-10">
+	        				<label for="facility-name">Practice/Facility Name:</label>
+	        				<%= f.text_field :practice_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+	        			</div>
+	            </div>
+	          </div>
+	          <div class="col-xl-6">
+	          	<label for="">Address:</label>
+	          	<%= f.text_field :address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+	          </div>
+	        </div>
+	        <div class="form-row row">
+	        	<div class="col-xl-6">
+	        		<label for="">Suite/Mail Stop:</label>
+	        		<%= f.text_field :mail_stop, id: "facility-mail-stop", placeholder:"Type here...",class:"form-control" %>
+	        	</div>
+	        	<div class="col-xl-6">
+	        		<label for="">Additional Address:</label>
+	        		<%= f.text_field :address2,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+	        	</div>
+	        </div>
+	        <div class="form-row row">
+	        	<div class="col-xl-6">
+	        		<label for="">City:</label>
+	        		<%= f.text_field :city,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+	        	</div>
+	        	<div class="col-xl-6">
+	        		<label for="">County:</label>
+	        		<%= f.text_field :country,  placeholder: 'Type here...', class: 'form-control border border-dark', id:"facility-country" %>
+	        	</div>
+	        </div>
+	        <div class="form-row row">
+	        	<div class="col-xl-4">
+	        		<label for="facility-state">State/Province:</label>
+	        		<%= f.collection_select :state, State.all, :id, :name, { include_blank: "Select State" }, class: "form-select form-select-lg" %>
+	        	</div>
+	        	<div class="col-xl-4">
+	        		<label for="">Zip/Postal Code:</label>
+	        		<%= f.text_field :zip, id:"facility-zip", type: "text", placeholder:"Type here..." , class:"form-control" %>
+	        	</div>
+	        	<div class="col-xl-4">
+	        		<label for="facility-country">Country:</label>
+	        		<%= f.text_field :country,  placeholder: 'Type here...', class: 'form-control border border-dark', id:"facility-country" %>
+	        	</div>
+	        </div>
+	        <div class="form-row row">
+	        	<div class="col-xl-4">
+	        		<label for="">Office Phone Number:</label>
+	        		<%= f.text_field :phone_number, id: "office-phone-number", placeholder: "Type here", class:"form-control" %>
+	        	</div>
+	        	<div class="col-xl-4">
+	        		<label for="">Office Email Address:</label>
+	        		<%= f.text_field :email_address, id: "office-email", placeholder: "Type here", class:"form-control" %>
+	        	</div>
+	        	<div class="col-xl-4">
+	        		<label for="">Office Fax Number:</label>
+	        		<%= f.text_field :fax_number, id: "office-fax", placeholder: "Type here", class:"form-control" %>
+	        	</div>
+	        </div>
+			  </div>
+			</div>
+		</div>
+		<div class="form-row row mt-4">
+			<div class="col-xl-4">
+				<label for="">Office Manager:</label>
+				<%= f.text_field :office_manager, placeholder: "Type here", class:"form-control" %>
+			</div>
+			<div class="col-xl-4">
+				<div class="row">
+					<div class="col-xl-6">
+						<label for="">Office Manager Phone Number:</label>
+						<%= f.text_field :manager_phone_number, id:"office-manager-phone-number", type: "text", placeholder:"Type here...", class:"form-control" %>
+					</div>
+					<div class="col-xl-6 d-flex align-items-end">
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value=""
+							id="save-office-phone-check" name="save-office-phone-check">
+							<label class="form-check-label" for="save-office-phone-check">
+								Save as Office Phone
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xl-4">
+				<div class="row">
+					<div class="col-xl-6">
+						<label for="">Office Manager Fax Number:</label>
+						<%= f.text_field :manager_fax_number, id:"office-manager-fax", type: "text", placeholder:"Type here...", class:"form-control" %>
+					</div>
+					<div class="col-xl-6 d-flex align-items-end">
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value="" id="save-office-fax-check"
+							name="save-office-fax-check">
+							<label class="form-check-label" for="save-office-fax-check">
+								Save as Office Fax
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-row row">
+			<div class="col-xl-4">
+				<label for="">Back Office Phone Number:</label>
+				<%= f.text_field :back_office_phone_number, id:"back-office-phone-number", type: "text", placeholder:"Type here...", class:"form-control" %>
+			</div>
+			<div class="col-xl-4">
+				<label for="type-practice">Type of Practice:</label>
+				<%= f.select :type_of_practice, [["Corporation", "corporation"], ["DBA", "dba"], ["LLC", "llc"], ["Other", "other"], ["PC", "pc"]], { prompt: true }, { class:"form-select" } %>
+			</div>
+			<div class="col-xl-4">
+				<label for="">Department Name if Hospital-Based:</label>
+				<%= f.text_field :hospital_based_department_name, id:"hospital-based-dept-name", type: "text", placeholder:"Type here...", class:"form-control" %>
+			</div>
+		</div>
+		<div class="mt-4">
+			<span class="page-note">
+				<i class='bx bx-error-circle font-red'></i> <span>Please check all that apply before completing
+				the rest of this section.</span>
+			</span>
+		</div>
+		<div class="form-row row mt-4">
+			<div class="col-xl-6">
+				<label for="practice-type">Practice Type:</label>
+				<%= f.select :practice_type, [["Solo Primary Care", "solo primary care"], ["Solo Specialty Care", "solo specialty care"], ["Group Primary Care", "group primary care"], ["Group Single Specialty", "group single specialty"], ["Group Multispecialty", "group multispecialty"], ["Hospital-Based Practice", "hospital-based practice"], ["Clinic-Based Practice", "clinic-based practice"]], { prompt: true }, { class:"form-select" } %>
+			</div>
+			<div class="col-xl-6">
+				<label for="">Group/Corporate Name as it appears on IRS W-9:</label>
+				<%= f.text_field :group_name, id:"IRS-W9-group-name", name:"IRS-W9-group-name", type: "text", placeholder:"Type here...", class:"form-control" %>
+			</div>
+		</div>
+		<div class="form-row row">
+			<div class="col-xl-6">
+				<label for="">Group Number Corresponding to Tax ID Number:</label>
+				<%= f.text_field :group_number_with_tax_id, id:"tax-id-group-number", placeholder:"Type here...", class:"form-control" %>
+			</div>
+			<div class="col-xl-6">
+				<label for="">Name Affiliated with Tax ID:</label>
+				<%= f.text_field :name_affiliated_with_tax_id, id:"tax-id-affiliated-name", placeholder:"Type here...", class:"form-control" %>
+			</div>
+		</div>
+		<div class="form-row row">
+			<div class="col-xl-6">
+				<label for="">Federal Tax ID:</label>
+				<%= f.text_field :federal_tax_id, id:"federal-tax-id", placeholder:"Type here...", class:"form-control" %>
+			</div>
+			<div class="col-xl-6">
+				<label for="">Date Joined/Expected Start Date:</label>
+				<%= f.date_field :start_date, id: "affiliated-start-date", class: "form-control" %>
+			</div>
+		</div>
+		<div class="form-row row mt-4">
+			<h6 class="form-heading">Office Hours</h6>
+		</div>
+		<div class="">
+			<span class="page-note">
+				Note: Please use military standard time (24 hour clock.) Please check "CLOSED" for all days you
+				do not have office hours at this location.
+			</span>
+		</div>
+		<div class="form-row row mt-2">
+			<div class="col-xl-4">
+				<label for="">Monday</label>
+				<div class="row">
+					<div class="col-xl-4">
+						<label for="">From:</label>
+						<%= f.time_field :mon_time_from, class: 'form-control', id: 'mon-time-from' %>
+					</div>
+					<div class="col-xl-4">
+						<label for="">To:</label>
+						<%= f.time_field :mon_time_to, class: 'form-control', id: 'mon-time-to', placeholder: 'Month' %>
+					</div>
+					<div class="col-xl-4 d-flex align-items-end">
+						<div class="form-check">
+							<%= f.check_box :mon_closed, class: "form-check-input", value:"", id:"mon-close-check" %>
+							<label class="form-check-label" for="mon-close-check">
+								Close
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xl-4">
+				<label for="">Tuesday</label>
+				<div class="row">
+					<div class="col-xl-4">
+						<label for="">From:</label>
+						<%= f.time_field :tue_time_from, class: 'form-control', id: 'tue-time-from' %>
+					</div>
+					<div class="col-xl-4">
+						<label for="">To:</label>
+						<%= f.time_field :tue_time_to, class: 'form-control', id: 'tue-time-to' %>
+					</div>
+					<div class="col-xl-4 d-flex align-items-end">
+						<div class="form-check">
+							<%= f.check_box :tue_closed, class: "form-check-input", value:"", id:"tue-close-check" %>
+							<label class="form-check-label" for="tue-close-check">
+								Close
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-xl-4">
+				<label for="">Wednesday</label>
+				<div class="row">
+					<div class="col-xl-4">
+						<label for="">From:</label>
+						<%= f.time_field :wed_time_from, class: 'form-control', id: 'wed-time-from' %>
+					</div>
+					<div class="col-xl-4">
+						<label for="">To:</label>
+						<%= f.time_field :wed_time_to, class: 'form-control', id: 'wed-time-to' %>
+					</div>
+					<div class="col-xl-4 d-flex align-items-end">
+						<div class="form-check">
+							<%= f.check_box :wed_closed, class: "form-check-input", value:"", id:"wed-close-check" %>
+							<label class="form-check-label" for="wed-close-check">
+								Close
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row row">
+			<div class="col-xl-4">
+				<label for="">Thurday</label>
+				<div class="row">
+					<div class="col-xl-4">
+						<label for="">From:</label>
+						<%= f.time_field :thu_time_from, class: 'form-control', id: 'thu-time-from' %>
+					</div>
+					<div class="col-xl-4">
+						<label for="">To:</label>
+						<%= f.time_field :thu_time_to, class: 'form-control', id: 'thu-time-to' %>
+					</div>
+					<div class="col-xl-4 d-flex align-items-end">
+						<div class="form-check">
+							<%= f.check_box :thu_closed, class: "form-check-input", value:"", id:"thu-close-check" %>
+							<label class="form-check-label" for="thu-close-check">
+								Close
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-xl-4">
+				<label for="">Friday</label>
+				<div class="row">
+					<div class="col-xl-4">
+						<label for="">From:</label>
+						<%= f.time_field :fri_time_from, class: 'form-control', id: 'fri-time-from' %>
+					</div>
+					<div class="col-xl-4">
+						<label for="">To:</label>
+						<%= f.time_field :fri_time_to, class: 'form-control', id: 'fri-time-to' %>
+					</div>
+					<div class="col-xl-4 d-flex align-items-end">
+						<div class="form-check">
+							<%= f.check_box :fri_closed, class: "form-check-input", value:"", id:"fri-close-check" %>
+							<label class="form-check-label" for="fri-close-check">
+								Close
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-xl-4">
+				<label for="">Saturday</label>
+				<div class="row">
+					<div class="col-xl-4">
+						<label for="">From:</label>
+						<%= f.time_field :sat_time_from, class: 'form-control', id: 'sat-time-from' %>
+					</div>
+					<div class="col-xl-4">
+						<label for="">To:</label>
+						<%= f.time_field :sat_time_to, class: 'form-control', id: 'sat-time-to' %>
+					</div>
+					<div class="col-xl-4 d-flex align-items-end">
+						<div class="form-check">
+							<%= f.check_box :sat_closed, class: "form-check-input", value:"", id:"sat-close-check" %>
+							<label class="form-check-label" for="sat-close-check">
+								Close
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row row mt-2">
+			<div class="col-xl-4">
+				<label for="">Sunday</label>
+				<div class="row">
+					<div class="col-xl-4">
+						<label for="">From:</label>
+						<%= f.time_field :sun_time_from, class: 'form-control', id: 'sun-time-from' %>
+					</div>
+					<div class="col-xl-4">
+						<label for="">To:</label>
+						<%= f.time_field :sun_time_to, class: 'form-control', id: 'sun-time-to' %>
+					</div>
+					<div class="col-xl-4 d-flex align-items-end">
+						<div class="form-check">
+							<%= f.check_box :sun_closed, class: "form-check-input", value:"", id:"sun-close-check" %>
+							<label class="form-check-label" for="sun-close-check">
+								Close
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-xl-4">
+				<label for="">Holiday</label>
+				<div class="row">
+					<div class="col-xl-4">
+						<label for="">From:</label>
+						<%= f.time_field :holiday_time_from, class: 'form-control', id: 'holiday-time-from' %>
+					</div>
+					<div class="col-xl-4">
+						<label for="">To:</label>
+						<%= f.time_field :holiday_time_to, class: 'form-control', id: 'holiday-time-to' %>
+					</div>
+					<div class="col-xl-4 d-flex align-items-end">
+						<div class="form-check">
+							<%= f.check_box :holiday_closed, class: "form-check-input", value:"", id:"holiday-close-check" %>
+							<label class="form-check-label" for="holiday-close-check">
+								Close
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row row mt-3">
+			<div class="col-xl-4">
+				<label for="">Number of Patients seen weekly:</label>
+				<%= f.text_field :number_of_patients_weekly, id: "weekly-patients", placeholder:"Type here...", class: "form-control" %>
+			</div>
+			<div class="col-xl-4">
+				<label for="">Total number of Patients in your Practice:</label>
+				<%= f.text_field :total_number_of_patients, id: "practice-total-patient-number", placeholder:"Type here...", class: "form-control" %>
+			</div>
+			<div class="col-xl-4">
+				<label for="">Number of Medicare Patients:</label>
+				<%= f.text_field :total_medicare_patients, id: "medicare-patient-number", placeholder:"Type here...", class: "form-control" %>
+			</div>
+		</div>
+		<div class="form-row row">
+			<div class="col-xl-4">
+				<label for="">Number of Medicaid Patients:</label>
+				<%= f.text_field :total_medical_medicaid_patients, id: "medicaid-patient-number", placeholder:"Type here...", class: "form-control" %>
+			</div>
+			<div class="col-xl-4 d-flex align-items-end gap-3">
+				<div class="form-check">
+					<%= f.check_box :is_ccs, { class: 'form-check-input' }, true, false %>
+					<%= f.label :is_ccs, 'CCS', class: 'form-check-label' %>
+				</div>
+				<div class="form-check">
+					<%= f.check_box :is_chdp, { class: 'form-check-input' }, true, false %>
+					<%= f.label :is_chdp, 'CHDP', class: 'form-check-label' %>
+				</div>
+			</div>
+		</div>
+		<div class="form-row mt-3">
+			<div class="form-check form-switch">
+				<%= f.check_box :any_allied_health_practitioner, { class: "form-check-input", id:"practice-info-switch" }, true, false %>
+				<%= f.label :any_allied_health_practitioner, "Do you employ any allied health
+				practitioners at this location?", class:"form-check-label", for:"practice-info-switch" %>
+			</div>
+		</div>
+		
+		<%# Add the allied health practitioner %>
+
+		<div id="allied_health_practitioners", class= "card p-2 mt-3 mb-3">
+			<div class="fields field mb-3">
+				<%= f.fields_for :allied_health_practitioners do |allied_health_practitioner_fields| %>
+				<%= render 'mhc/verification_platform/practice_informations/allied_health_practitioners_fields', f: allied_health_practitioner_fields %>
+				<% end %>
+			</div>
+			<div class="links mt-2 text-center">
+				<button type="button" class="add_association btn btn-primary py-1" id="add-health-practitioner">Add Allied Health Practitioner</button>
+			</div>
+		</div>
+
+		<div class="form-row row mt-4">
+			<div class="col-xl-4">
+				<label for="">What is your physician supervisor to Nurse Practitioner ratio? 1 : ?</label>
+				<%= f.text_field :physician_to_nurse_ratio, placeholder: 'Type here...', class: "form-control", id: "supervisor-nurse-practitioner" %>
+			</div>
+			<div class="col-xl-4">
+				<label for="">What is your physician supervisor to Nurse Mid-Wife ratio? 1 : ?</label>
+				<%= f.text_field :physician_to_midwife_ratio, class: 'form-control', placeholder: "Type here...", id: "supervisor-nurse-mid-wife" %>
+			</div>
+			<div class="col-xl-4">
+				<label for="">What is your physician supervisor to Physician Assistant ratio? 1 : ?</label>
+				<%= f.text_field :physician_to_assistant_ratio, placeholder: 'Type here...', class: "form-control", id: "supervisor-nurse-practitioner" %>
+			</div>
+		</div>
+
+		<div class="form-row mt-3">
+			<div class="form-check form-switch">
+				<%= f.check_box :is_employing_any_personal_practitioner, { class: "form-check-input", id:"practitioners-switch" }, true, false %>
+				<%= f.label :is_employing_any_personal_practitioner, "Do you personally employ any
+				practitioners at this location (do not include practitioners that are employed by the
+				medical group or any allied health practitioners)?", class:"form-check-label", for:"practitioners-switch" %>
+			</div>
+		</div>
+
+		<%# Add Personally Employed Practitioners %>
+
+		<div id="personally_employed_practitioners", class= "card p-2 mt-3 mb-3">
+			<div class="fields field mb-3">
+				<%= f.fields_for :personally_employed_practitioners do |employed_practitioner_fields| %>
+				<%= render 'mhc/verification_platform/practice_informations/personal_employed_practitioner_fields', f: employed_practitioner_fields %>
+				<% end %>
+			</div>
+			<div class="links mt-2 text-center">
+				<button type="button" class="add_association btn btn-primary py-1" id="add-employed-practitioner">Add Personally Employed Practitioners</button>
+			</div>
+		</div>
+
+		<div class="form-row mt-3">
+			<div class="form-check form-switch">
+				<%= f.check_box :is_licensed_member_in_practice, { class: "form-check-input", id:"licensed-certified-switch" }, true, false %>
+				<%= f.label :is_licensed_member_in_practice, "Are there any other licensed/certified members in your practice?", class:"form-check-label", for:"licensed-certified-switch" %>
+			</div>
+		</div>
+		
+		<%# Other Licensed / Certificate Member Fields %>
+		<div id="licensed_members", class= "card p-2 mt-3 mb-3">
+			<div class="fields field mb-3">
+				<%= f.fields_for :licensed_members do |licensed_member_fields| %>
+				<%= render 'mhc/verification_platform/practice_informations/license_member_fields', f: licensed_member_fields %>
+				<% end %>
+			</div>
+			<div class="links text-center">
+				<button type="button" class="add_association btn btn-primary py-1" id="add-licensed-members">
+					Add Other Members
+				</button>
+			</div>
+		</div>
+
+		<div class="form-row mt-3">
+			<div class="form-check form-switch">
+				<%= f.check_box :is_staff_speak_any_foreign_language, { class: "form-check-input", id:"foreign-languages-switch" } %>
+				<%= f.label :is_staff_speak_any_foreign_language, "Does your staff speak any foreign languages?", class:"form-check-label", for:"foreign-languages-switch" %>
+			</div>
+		</div>
+		
+		<%# Added the staff foreign languages form %>
+
+		<div id="staff_spoken_foreign_languages", class= "card p-2 mt-3 mb-3">
+			<div class="fields field mb-3">
+				<%= f.fields_for :staff_spoken_foreign_languages do |staff_foreign_fields| %>
+				<%= render 'mhc/verification_platform/practice_informations/staff_foreign_fields', f: staff_foreign_fields %>
+				<% end %>
+			</div>
+			<div class="links text-center">
+				<button type="button" class="add_association btn btn-primary py-1" id="add-staff-spoken-foreign-languages">
+					Add Staff Language
+				</button>
+			</div>
+		</div>
+
+		<div class="form-row mt-3">
+			<h6 class="form-heading fs-3 mt-3 mb-2">Please check services provided:</h6>
+			<div class="mt-3 d-flex flex-wrap align-items-center gap-3">
+
+				<div class="form-check">
+					<%= f.check_box :radiology_services, { class: "form-check-input", id: "radiology-check" } %>
+					<%= f.label :radiology_services, "Radiology Services", class: "form-check-label", for: "radiology-check" %>
+				</div>
+
+				<div class="form-check">
+					<%= f.check_box :allergy_injections, { class: "form-check-input", id: "allergies-injections-check" } %>
+					<%= f.label :allergy_injections, " Allergy Injections", class: "form-check-label", for: "allergies-injections-check" %>
+				</div>
+
+				<div class="form-check">
+					<%= f.check_box :age_approriate_immunizations, { class: "form-check-input", id: "age-appropriate-check" } %>
+					<%= f.label :age_approriate_immunizations, " Age Appropriate Immunizations", class: "form-check-label", for: "age-appropriate-check" %>
+				</div>
+
+				<div class="form-check">
+					<%= f.check_box :osteopathic_manipulations, { class: "form-check-input", id: "osteopathic-check" } %>
+					<%= f.label :osteopathic_manipulations, "Osteopathic Manipulations", class: "form-check-label", for: "osteopathic-check" %>
+				</div>
+
+				<div class="form-check">
+					<%= f.check_box :ekg, { class: "form-check-input", id: "EKG-check" } %>
+					<%= f.label :ekg, "EKG", class: "form-check-label", for: "EKG-check" %>
+				</div>
+
+				<div class="form-check">
+					<%= f.check_box :allergy_skin_tests, { class: "form-check-input", id: "allergy-skin-check" } %>
+					<%= f.label :allergy_skin_tests, "Allergy Skin Tests", class: "form-check-label", for: "allergy-skin-check" %>
+				</div>
+
+				<div class="form-check">
+					<%= f.check_box :flexible_sigmoidoscopy, { class: "form-check-input", id: "sigmoidoscopy-check" } %>
+					<%= f.label :flexible_sigmoidoscopy, "Flexible Sigmoidoscopy", class: "form-check-label", for: "sigmoidoscopy-check" %>
+				</div>
+
+				<div class="form-check">
+					<%= f.check_box :iv_hydration_treatments, { class: "form-check-input", id: "IV-check" } %>
+					<%= f.label :iv_hydration_treatments, "IV Hydration/Treatments", class: "form-check-label", for: "IV-check" %>
+				</div>
+
+				<div class="form-check">
+					<%= f.check_box :care_of_minor_lacerations, { class: "form-check-input", id: "minor-lacerations-check" } %>
+					<%= f.label :care_of_minor_lacerations, "Care of Minor Lacerations", class: "form-check-label", for: "minor-lacerations-check" %>
+				</div>
+
+				<div class="form-check">
+					<%= f.check_box :routine_office_gynecology, { class: "form-check-input", id: "gynecology-check" } %>
+					<%= f.label :routine_office_gynecology, "Routine Office Gynecology", class: "form-check-label", for: "gynecology-check" %>
+				</div>
+
+				<div class="form-check">
+					<%= f.check_box :tympanometry_audiometry_tests, { class: "form-check-input", id: "tympanometry-check" } %>
+					<%= f.label :tympanometry_audiometry_tests, " Tympanometry/Audiometry Tests", class: "form-check-label", for: "tympanometry-check" %>
+				</div>
+
+				<div class="form-check">
+					<%= f.check_box :cardiac_stress_tests, { class: "form-check-input", id: "cardiac-check" } %>
+					<%= f.label :cardiac_stress_tests, " Cardiac Stress Tests", class: "form-check-label", for: "cardiac-check" %>
+				</div>
+
+				<div class="form-check">
+					<%= f.check_box :pulmonary_function_tests, { class: "form-check-input", id: "pulmonary-check" } %>
+					<%= f.label :pulmonary_function_tests, " Pulmonary Function Tests", class: "form-check-label", for: "pulmonary-check" %>
+				</div>
+
+				<div class="form-check">
+					<%= f.check_box :drawing_blood, { class: "form-check-input", id: "drawing-blood-check" } %>
+					<%= f.label :drawing_blood, "Drawing Blood", class: "form-check-label", for: "drawing-blood-check" %>
+				</div>
+				
+				<div class="form-check">
+					<%= f.check_box :asthma_treatmeant, { class: "form-check-input", id: "asthma-check" } %>
+					<%= f.label :asthma_treatmeant, " Asthma Treatments", class: "form-check-label", for: "asthma-check" %>
+				</div>
+
+				<div class="form-check">
+					<%= f.check_box :physical_therapies, { class: "form-check-input", id: "physical-therapies-check" } %>
+					<%= f.label :physical_therapies, " Physical Therapies", class: "form-check-label", for: "physical-therapies-check" %>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row row mt-3">
+			<div class="col-xl-4">
+				<label for="">Other (including surgical services)</label>
+				<%= f.text_field :other_surgical_services, class: "form-control", placeholder: "Type here...", id: "other-services" %>
+			</div>
+		</div>
+
+		<div class="form-row row mt-3">
+			<div class="col-xl-6">
+				<label for="" class="w-75">Please list any clinical services you perform at this location that
+				are not typically associated with your specialty:</label>
+				<%= f.text_area :clinical_services_performed_not_typically_associated, class: 'form-control', placeholder: "Type here...", id: "location-clinical-services", cols: 30, rows: 5 %>
+			</div>
+			<div class="col-xl-6">
+				<label for="" class="w-75">Please list any clinical services you do not perform that are
+				typically associated with your specialty:</label>
+				<%= f.text_area :clinical_services_not_performed_typically_associated, class: 'form-control', placeholder: "Type here...", id: "clinical-services", cols: 30, rows: 5 %>
+			</div>
+		</div>
+
+		<div class="row mt-3 mb-3">
+			<div class="col-xl-4">
+				<div class="form-row">
+					<div class="d-flex align-items-center gap-3">
+						<%= f.label :has_practice_limit_age, "Is your practice limited to a certain age?", class: "fw-bold fs-5" %>
+						<div class="form-check d-flex align-items-center gap-2">
+							<%= f.radio_button :has_practice_limit_age, true, class: 'form-check-input', id: 'certain-age-radio-yes' %>
+							<%= f.label :has_practice_limit_age, 'Yes', class: 'form-check-label', for: 'certain-age-radio-yes' %>
+						</div>
+						<div class="form-check d-flex align-items-center gap-2">
+							<%= f.radio_button :has_practice_limit_age, true, class: 'form-check-input', id: 'certain-age-radio-no' %>
+							<%= f.label :has_practice_limit_age, 'No', class: 'form-check-label', for: 'certain-age-radio-no' %>
+						</div>
+					</div>
+				</div>
+				<div class="form-row">
+					<label for="">If Yes, please specify:</label>
+					<div class="row">
+						<div class="col-xl-6">
+							<%= f.text_field :practice_limit_age_from, class: "form-control", placeholder: "From...", id: "age-limited-practice-specify-from" %>
+						</div>
+						<div class="col-xl-6">
+							<%= f.text_field :practice_limit_age_to, class: "form-control", placeholder: "To...", id: "age-limited-practice-specify-to" %>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xl-8">
+				<div class="form-row">
+					<div class="d-flex align-items-center gap-3">
+						<label for="">Is your practice limited to a specific gender?</label>
+						<div class="form-check d-flex align-items-center gap-2">
+							<%= f.radio_button :has_limited_gender, true, class: "form-check-input", id: "specific-gender-radio-yes"  %>
+							<%= f.label :has_limited_gender, "Yes", class: "form-check-label", id: "specific-gender-radio-yes"  %>
+						</div>
+						<div class="form-check d-flex align-items-center gap-2">
+							<%= f.radio_button :has_limited_gender, true, class: "form-check-input", id: "specific-gender-radio-no"  %>
+							<%= f.label :has_limited_gender, "No", class: "form-check-label", id: "specific-gender-radio-no"  %>
+						</div>
+					</div>
+					<div class="form-row row">
+						<div class="col-xl-6">
+							<label for="age-limited-practice-select">If Yes, please select:</label>
+							<%= f.select :limited_gender, [["Male", "male"], ["Female", "female"]], { prompt: true }, { id: "age-limited-practice-select", class: "form-select" } %>
+						</div>
+						<div class="col-xl-6">
+							<label for="other-limitations">Other Limitations:</label>
+							<%= f.text_area :other_limitations, class: 'form-control', id: "other-limitations" %>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row mt-3">
+			<h6 class="form-heading">Please click here to complete: <a href="#">Patient Acceptance Addendum</a>
+			</h6>
+		</div>
+
+		<div class="form-row row mt-3 mx-auto border p-2 shadow">
+			<div class="col-xl-12">
+				<label for="office-computer">What computer(s) does your office use?</label>
+				<%= f.select :computer_office, [["IBM Compatible PC", "ibm compatible pc"], ["Macintosh", "macintosh"]], { prompt: true }, { class: 'form-select', id: "office-computer"} %>
+			</div>
+
+			<div class="col-xl-6 mt-3 mb-3">
+				<label for="office-other">Other Computer Office</label>
+				<%= f.check_box :computer_office_has_other, class: 'form-check-input mx-1', id: "office-other" %>
+			</div>
+			<div class="col-xl-6 mt-3 mb-3">
+				<label for="office-other-explaination">Other Computer Office Explaination</label>
+				<%= f.text_area :computer_office_other, class: "form-control", placeholder: "Type here...", id: "office-other-explaination" %>
+			</div>
+		</div>
+
+		<div class="form-row row mt-3 mx-auto border p-2 shadow">
+			<div class="col-xl-12">
+				<label for="office-OS">What Operating System does your office use?</label>
+				<%= f.select :operating_system, [[" Windows 98", "windows 98"], [" Windows 95", " windows 95"], [" Windows Me", " windows me"], ["Windows 2000", "windows 2000"], ["Windows NT", "windows nt"], ["Windows XP", "windows xp"], ["Macintosh", "macintosh"], ["Citrix", "citrix"]], { prompt: true }, { class: 'form-select', id: "office-OS"} %>
+			</div>
+
+			<div class="col-xl-6 mt-3 mb-3">
+				<label for="office-other">Other OS</label>
+				<%= f.check_box :has_os_office_other, class: 'form-check-input mx-1', id: "office-other" %>
+			</div>
+			<div class="col-xl-6 mt-3 mb-3">
+				<label for="office-other-explaination">Other OS Explaination</label>
+				<%= f.text_area :os_office_other, class: "form-control", placeholder: "Type here...", id: "office-other-explaination" %>
+			</div>
+		</div>
+
+		<div class="form-row mt-3">
+			<div class="d-flex align-items-center gap-3">
+				<label for="">Do you have at least one computer with Internet access?</label>
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :has_computer_has_internet_access, true, class: "form-check-input", id: "internet-access-radio-yes" %>
+					<%= f.label :has_computer_has_internet_access, "Yes", class: 'form-check-label', id: "internet-access-radio-yes" %>
+				</div>
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :has_computer_has_internet_access, true, class: "form-check-input", id: "internet-access-radio-no" %>
+					<%= f.label :has_computer_has_internet_access, "No", class: 'form-check-label', id: "internet-access-radio-no" %>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row mt-3">
+			<div class="d-flex align-items-center gap-3">
+				<label for="">Do you participate in EDI (Electronic Data Interchange) at this location ?</label>
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :does_participate_edi, true, class: "form-check-input", id: "EDI-radio-yes" %>
+					<%= f.label :does_participate_edi, "Yes", class: 'form-check-label', id: "EDI-radio-yes" %>
+				</div>
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :does_participate_edi, true, class: "form-check-input", id: "EDI-radio-no" %>
+					<%= f.label :does_participate_edi, "No", class: 'form-check-label', id: "EDI-radio-no" %>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xl-4">
+					<label for="">If Yes, which network?</label>
+					<%= f.text_field :edi_network, class: "form-control", placeholder: "Type here...", id: "office-network" %>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row mt-3">
+			<div class="d-flex align-items-center gap-3">
+				<label for="">Do you use a practice management system/software at this location ?</label>
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :has_practice_management_software, true, class: "form-check-input", id: "practice-management-system-radio-yes" %>
+					<%= f.label :has_practice_management_software, "Yes", class: 'form-check-label', id: "practice-management-system-radio-yes" %>
+				</div>
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :has_practice_management_software, true, class: "form-check-input", id: "practice-management-system-radio-no" %>
+					<%= f.label :has_practice_management_software, "No", class: 'form-check-label', id: "practice-management-system-radio-no" %>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xl-4">
+					<label for="">If Yes, which one?</label>
+					<%= f.text_field :practice_management_software, class: "form-control", placeholder: 'Type here...', id: "practice-management-system" %>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row mt-3">
+			<div class="d-flex align-items-center gap-3">
+				<label for="">Do you perform surgery at this location ?</label>
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :does_perform_surgery, true, class: "form-check-input", id: "perform-surgery-radio-yes" %>
+					<%= f.label :does_perform_surgery, "Yes", class: 'form-check-label', id: "perform-surgery-radio-yes" %>
+				</div>
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :does_perform_surgery, true, class: "form-check-input", id: "perform-surgery-radio-no" %>
+					<%= f.label :does_perform_surgery, "No", class: 'form-check-label', id: "perform-surgery-radio-no" %>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row mt-3">
+			<label for="">What type of anesthesia do you provide at this location ?</label>
+			<div class="d-flex flex-wrap align-items-center gap-3 form-row">
+				<div class="form-check">
+					<%= f.check_box :anesthesia_local, class: "form-check-input", id: "local-check" %>
+					<%= f.label :anesthesia_local, "Local", class: "form-check-label", for: "local-check" %>
+				</div>
+				<div class="form-check">
+					<%= f.check_box :anesthesia_regional, class: "form-check-input", id: "regional-check" %>
+					<%= f.label :anesthesia_regional, "Regional", class: "form-check-label", for: "regional-check" %>
+				</div>
+				<div class="form-check">
+					<%= f.check_box :anesthesia_conscious_sedation, class: "form-check-input", id: "conscious-sedation-check" %>
+					<%= f.label :anesthesia_conscious_sedation, "Conscious Sedation", class: "form-check-label", for: "conscious-sedation-check" %>
+				</div>
+				<div class="form-check">
+					<%= f.check_box :anesthesia_general, class: "form-check-input", id: "general-check" %>
+					<%= f.label :anesthesia_general, "General", for: "general-check", class: "form-check-label" %>
+				</div>
+				<div class="form-check">
+					<%= f.label :anesthesia_other, "Other", for: "surgery-location-other", class: "form-check-label" %>
+					<%= f.check_box :anesthesia_other, class: "form-check-input", id: "surgery-location-other" %>
+				</div>
+				<div class="form-check">
+					<%= f.label :anesthesia_none, "None", for: "surgery-location-none", class: "form-check-label" %>
+					<%= f.check_box :anesthesia_none, class: "form-check-input", id: "surgery-location-none" %>
+				</div>
+			</div>
+			<div>
+				<label>If Other, please explain:</label>
+				<%= f.text_area :anesthesia_other_value, class: "form-control mt-2 mb-2", placeholder: "Type of anesthesia do you provide...", cols: 30, rows: 5 %>
+			</div>
+		</div>
+		
+
+		<%# Add the Anesthesia Administration form here %>
+
+		<div id="provider_anesthesia_administrations", class= "card p-2 mt-3 mb-3">
+			<div class="fields field mb-3">
+				<%= f.fields_for :provider_anesthesia_administrations do |anesthesia_administration_fields| %>
+				  <%= render 'mhc/verification_platform/practice_informations/anesthesia_administration_fields', f: anesthesia_administration_fields %>
+				<% end %>
+			</div>
+			<div class="links text-center">
+				<button type="button" class="add_association btn btn-primary py-1" id="add-provider-anesthesia-administrations">
+					Add Anesthetist
+				</button>
+			</div>
+		</div>
+
+		<div class="form-row mt-3">
+			<label for="">Accreditations, Certifications or Licensures your office has received:</label>
+			<div class="form-row">
+				<div class=" form-check d-flex align-items-center gap-2">
+					<%= f.check_box :ambulatory_surgery_facilities, class: "form-check-input", id: "american-association-check" %>
+					<%= f.label :ambulatory_surgery_facilities, "American Association for
+					Accreditation of Ambulatory Surgery Facilities (AAAASF)", class: "form-check-label",  for: "american-association-check" %>
+				</div>
+			</div>
+			<div class="form-row">
+				<div class=" form-check d-flex align-items-center gap-2">
+					<%= f.check_box :health_surgery_licensure, class: "form-check-input", id: "state-dapartment-check" %>
+					<%= f.label :health_surgery_licensure, "State Department of Health
+					Services Licensure", class: "form-check-label",  for: "state-dapartment-check" %>
+				</div>
+			</div>
+			<div class="form-row">
+				<div class=" form-check d-flex align-items-center gap-2">
+					<%= f.check_box :ambulatory_health_care, class: "form-check-input", id: "medical-quality-accreditation-check" %>
+					<%= f.label :ambulatory_health_care, "Institute for
+					Medical Quality-Accreditation Association for Ambulatory Health Care (IMQ-AAAHC)", class: "form-check-label",  for: "medical-quality-accreditation-check" %>
+				</div>
+			</div>
+			<div class="form-row">
+				<div class=" form-check d-flex align-items-center gap-2">
+					<%= f.check_box :medicare_certification, class: "form-check-input", id: "medicare-certification-check" %>
+					<%= f.label :medicare_certification, "Medicare
+					Certification", class: "form-check-label",  for: "medicare-certification-check" %>
+				</div>
+			</div>
+			<div class="form-row">
+				<div class=" form-check d-flex align-items-center gap-2">
+					<%= f.check_box :medical_quality_commission, class: "form-check-input", id: "TMQC-check" %>
+					<%= f.label :medical_quality_commission, "The Medical Quality Commission
+					(TMQC)", class: "form-check-label",  for: "TMQC-check" %>
+				</div>
+			</div>
+			<div class="form-row row mt-2 mb-3">
+				<div class="col-xl-4">
+					<%= f.label :other_certification, "If Other, please explain:" ,for: "other-office-accreditations", class: "form-check-label" %>
+					<%= f.check_box :other_certification, class: "form-check-input border-dark", id: "other-office-accreditations" %>
+				</div>
+				<div class="mt-2">
+					<%= f.label :certification_none, "None:" ,for: "other-office-accreditations-none", class: "form-check-label" %>
+					<%= f.check_box :certification_none, class: "form-check-input border-dark", id: "other-office-accreditations-none" %>
+				</div>
+			</div>
+
+			<div class="">
+				<div class="col-xl-12">
+					<label class="form-check-label" for="none-check">If Other, Please explain : </label>
+					<%= f.text_area :other_certification_explanation, class: 'form-control', cols: 30, rows: 5 %>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row mt-3">
+			<div class="form-check form-switch">
+				<%= f.check_box :is_laboratory_services, class: "form-check-input", id: "laboratory-services-switch" %>
+				<%= f.label :is_laboratory_services, "Do you provide laboratory
+				services at this location?", for: "laboratory-services-switch", class: "form-check-label" %>
+			</div>
+		</div>
+
+		<div class="form-row row mt-3">
+			<div class="col-xl-12">
+				<div class="card other-name-card">
+					<div class="card-body">
+						<div class="form-row row">
+							<div class="col-xl-4">
+								<%= f.label :billing_name, "Billing Name:" %>
+								<%= f.text_field :billing_name, class: "form-control", placeholder: "Type here..." %>
+							</div>
+							<div class="col-xl-4">
+								<%= f.label :tax_id, "Tax ID:" %>
+								<%= f.text_field :tax_id, class: "form-control", placeholder: "Type here..." %>
+							</div>
+							<div class="col-xl-4">
+								<%= f.label :type_of_service, "Type of Service Provided:" %>
+								<%= f.text_area :type_of_service, class: "form-control border-dark", placeholder: "Type here..." %>
+							</div>
+						</div>
+
+						<div class="d-flex align-items-center gap-3 mt-2">
+							<%= f.label :clia_waiver, "Do you have CLIA waiver?" %>
+							<div class="form-check d-flex align-items-center gap-2">
+								<%= f.radio_button :clia_waiver, true, class: "form-check-input", id: "CLIA-waiver-radio-yes" %>
+								<%= f.label :clia_waiver, "Yes", class: "form-check-label", value: "Yes" %>
+							</div>
+							<div class="form-check d-flex align-items-center gap-2">
+								<%= f.radio_button :clia_waiver, true, class: "form-check-input", id: "CLIA-waiver-radio-no" %>
+								<%= f.label :clia_waiver, "No", class: "form-check-label", value: "No" %>
+							</div>
+						</div>
+
+						<div class="d-flex align-items-center gap-3 mt-2">
+							<%= f.label :clia_certificate, "Do you have CLIA Certificate?" %>
+							<div class="form-check d-flex align-items-center gap-2">
+								<%= f.radio_button :clia_certificate, true, class: "form-check-input", id: "CLIA-certificate-radio-yes" %>
+								<%= f.label :clia_certificate, "Yes", class: "form-check-label", value: "Yes" %>
+							</div>
+							<div class="form-check d-flex align-items-center gap-2">
+								<%= f.radio_button :clia_certificate, true, class: "form-check-input", id: "CLIA-certificate-radio-no" %>
+								<%= f.label :clia_certificate, "No", class: "form-check-label", value: "No" %>
+							</div>
+						</div>
+
+						<div class="form-row row mt-2">
+							<div class="col-xl-6">
+								<%= f.label :clia_certificate_number, "CLIA Certificate Number:" %>
+								<%= f.text_field :clia_certificate_number, class: "form-control", placeholder: "Type here..." %>
+							</div>
+							<div class="col-xl-6">
+								<%= f.label :clia_certificate_expiration_date, "Certificate Expiration Date:" %>
+								<%= f.date_field :clia_certificate_expiration_date, class: "form-control", placeholder: "Type here..." %>
+							</div>
+						</div>
+
+						<div class="form-row mt-2">
+							<div class="col-xl-6">
+								<%= f.label :clia_certification_of_participation, "Please list all other Certificates of Participation:" %>
+								<%= f.select :clia_certification_of_participation, [["AAFP", "aafp"], ["COLA", "cola"], ["CAP", "cap"], ["MLE", "mle"], ["Other", "other"]], { prompt: true }, {class: "form-select"} %>
+							</div>
+							<div class="col-xl-6">
+								<%= f.label :other_clia, "If Other, please list:" %>
+								<%= f.text_field :other_clia, class: "form-control", placeholder: "Type here..." %>
+							</div>
+						</div>
+
+						<div class="form-row row">
+							<div class="col-xl-6">
+								<%= f.label :xray_certification_type, "Please list all X-ray certifications:" %>
+								<%= f.select :xray_certification_type, [["None", "none"], ["Test2ForXray", "test2forxray"]] , { prompt: "Select" }, class: "form-select" %>
+							</div>
+						</div>
+
+						<div class="d-flex align-items-center gap-3 mt-2">
+							<%= f.label :coverage_24_hour, "Do you have 24-hour coverage at this location?" %>
+							<div class="form-check d-flex align-items-center gap-2">
+								<%= f.radio_button :coverage_24_hour, true, class: "form-check-input", id: "24hour-coverage-radio-yes" %>
+								<%= f.label :coverage_24_hour, "Yes", class: "form-check-label" %>
+							</div>
+							<div class="form-check d-flex align-items-center gap-2">
+								<%= f.radio_button :coverage_24_hour, true, class: "form-check-input", id: "24hour-coverage-radio-no" %>
+								<%= f.label :coverage_24_hour, "No", class: "form-check-label" %>
+							</div>
+						</div>
+
+						<div class="form-row mt-2">
+							<%= f.label :coverage_details, "If Yes, please check all that apply:", class: "fst-italic" %>
+							<div class="d-flex flex-wrap align-items-center gap-3 form-row">
+								<div class="form-check">
+									<%= f.check_box :answering_service, class: "form-check-input", id: "answering-service-check" %>
+									<%= f.label :answering_service, "Answering Service", class: "form-check-label" %>
+								</div>
+								<div class="form-check">
+									<%= f.check_box :voice_mail_with_instruction, class: "form-check-input", id: "voice-mail-check" %>
+									<%= f.label :voice_mail_with_instruction, "Voice mail with instructions to call answering service", class: "form-check-label" %>
+								</div>
+								<div class="form-check">
+									<%= f.check_box :voice_mail_with_other_instruction, class: "form-check-input", id: "vm-other-check" %>
+									<%= f.label :voice_mail_with_other_instruction, "Voice mail with other instructions", class: "form-check-label" %>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-row row mt-2">
+							<div class="col-xl-6">
+								<%= f.label :answering_service_company, "Answering Service Company:" %>
+								<%= f.text_field :answering_service_company, class: "form-control", placeholder: "Type here..." %>
+							</div>
+							<div class="col-xl-6">
+								<%= f.label :answering_service_phone_number, "Phone Number:" %>
+								<%= f.text_field :answering_service_phone_number, class: "form-control", placeholder: "Type here..." %>
+							</div>
+						</div>
+
+						<div class="form-row row">
+							<div class="col-xl-6">
+								<%= f.label :answering_service_fax_number, "Fax Number:" %>
+								<%= f.text_field :answering_service_fax_number, class: "form-control", placeholder: "Type here..." %>
+							</div>
+							<div class="col-xl-6">
+								<%= f.label :answering_service_mail_address, "Mailing Address:" %>
+								<%= f.text_field :answering_service_mail_address, class: "form-control", placeholder: "Type here..." %>
+							</div>
+						</div>
+
+						<div class="form-row row">
+							<div class="col-xl-6">
+								<%= f.label :answering_service_mail_stop, "Suite/Dept/Mail Stop:" %>
+								<%= f.text_field :answering_service_mail_stop, class: "form-control", placeholder: "Type here..." %>
+							</div>
+							<div class="col-xl-6">
+								<%= f.label :answering_service_address2, "Additional Address:" %>
+								<%= f.text_field :answering_service_address2, class: "form-control", placeholder: "Type here..." %>
+							</div>
+						</div>
+
+						<div class="form-row row">
+							<div class="col-xl-4">
+								<%= f.label :answering_service_state, "State/Province:" %>
+								<%= f.collection_select :answering_service_state, State.all, :id, :name, { include_blank: "Select State" }, class: "form-select" %>
+							</div>
+							<div class="col-xl-4">
+								<%= f.label :answering_service_zipcode, "Zip/Postal Code:" %>
+								<%= f.text_field :answering_service_zipcode, class: "form-control", placeholder: "Type here..." %>
+							</div>
+							<div class="col-xl-4">
+								<%= f.label :answering_service_country, "Country:" %>
+								<%= f.select :answering_service_country, PracticeInformation::COUNTRY, { prompt: true }, {class: "form-select"} %>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row mt-3">
+			<div class="form-check form-switch">
+				<%= f.check_box :any_cover_practitioner, class: "form-check-input", id: "practitioners-who-cover-switch", checked: true %>
+				<%= f.label :any_cover_practitioner, "Are there any practitioners
+				who cover for you?" ,class: "form-check-label", for: "practitioners-who-cover-switch" %>
+			</div>
+		</div>
+
+		<%# Add covering practitioner information form %>
+
+		<div id="covering_practitioners", class= "card p-2 mt-3 mb-3">
+			<div class="fields field mb-3">
+				<%= f.fields_for :covering_practitioners do |covering_practitioner_info_fields| %>
+				  <%= render 'mhc/verification_platform/practice_informations/covering_practitioner_info_fields', f: covering_practitioner_info_fields %>
+				<% end %>
+			</div>
+			<div class="links text-center">
+				<button type="button" class="add_association btn btn-primary py-1 mb-3" id="add-covering-practitioners">
+					Add Covering Practitioner/Group
+				</button>
+			</div>
+		</div>
+		
+		<div class="d-flex align-items-center gap-3 mt-3">
+			<label for="">Does this location meet ADA accessibility standards?</label>
+			<div class="form-check d-flex align-items-center gap-2">
+				<%= f.radio_button :ada_accessibility, true, class: "form-check-input", id: "ADA-standards-radio-yes" %>
+				<%= f.label :ada_accessibility, "Yes", class: "form-check-label", for: "ADA-standards-radio-yes" %>
+			</div>
+			<div class="form-check d-flex align-items-center gap-2">
+				<%= f.radio_button :ada_accessibility, true, class: "form-check-input", id: "ADA-standards-radio-no" %>
+				<%= f.label :ada_accessibility, "No", class: "form-check-label", for: "ADA-standards-radio-no" %>
+			</div>
+		</div>
+
+		<div class="form-row mt-2">
+			<label for="">Which of the following facilities are handicapped accessible?</label>
+			<div class="d-flex flex-wrap align-items-center gap-3 form-row">
+				<div class="form-check">
+					<%= f.check_box :handicapped_building, class: "form-check-input", id: "accessible-building-check" %>
+					<%= f.label :handicapped_building, "Building", class: "form-check-label", for: "accessible-building-check" %>
+				</div>
+				<div class="form-check">
+					<%= f.check_box :handicapped_parking, class: "form-check-input", id: "accessible-parking-check" %>
+					<%= f.label :handicapped_parking, "Parking", class: "form-check-label", for: "accessible-parking-check" %>
+				</div>
+				<div class="form-check">
+					<%= f.check_box :handicapped_restroom, class: "form-check-input", id: "accessible-restroom-check" %>
+					<%= f.label :handicapped_restroom, "Restroom", class: "form-check-label", for: "accessible-restroom-check" %>
+				</div>
+				<div class="form-check">
+					<%= f.check_box :handicapped_other, class: "form-check-input", id: "accessible-other-check" %>
+					<%= f.label :handicapped_other, "Other", class: "form-check-label", for: "accessible-other-check" %>
+				</div>
+			</div>
+			<div class="form-row row accessible-other-wrp">
+				<div class="col-xl-4">
+					<label for="">If Other, please explain:</label>
+					<%= f.text_area :handicapped_other_explaination, placeholder: "Type here...", id: "accessible-other-txt", class: "form-control" %>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row mt-2">
+			<label for="">If Yes, please check all that apply:</label>
+			<div class="d-flex flex-wrap align-items-center gap-3 form-row">
+				<div class="form-check">
+					<%= f.check_box :disabled_telephony, class: "form-check-input", id: "disabled-TTY-check" %>
+					<%= f.label :disabled_telephony, "Text Telephony-TTY", class: "form-check-label", for: "disabled-TTY-check" %>
+				</div>
+				<div class="form-check">
+					<%= f.check_box :american_sign_language, class: "form-check-input", id: "disabled-ASL-check" %>
+					<%= f.label :american_sign_language, "American Sign Language-ASL", class: "form-check-label", for: "disabled-ASL-check" %>  
+				</div>
+				<div class="form-check">
+					<%= f.check_box :disabled_impairment_services, class: "form-check-input", id: "disabled-impairment-check" %>
+					<%= f.label :disabled_impairment_services, "Mental/Physical Impairment Services", class: "form-check-label", for: "disabled-impairment-check" %>
+				</div>
+				<div class="form-check">
+					<%= f.check_box :disabled_other, class: "form-check-input", id: "disabled-other-check" %>
+					<%= f.label :disabled_other, "Other", class: "form-check-label", for: "disabled-other-check" %>
+				</div>
+			</div>
+			<div class="form-row row">
+				<div class="col-xl-4">
+					<label for="">If Other, please explain:</label>
+					<%= f.text_area :disabled_other_explaination, placeholder: "Type here...", id: "disabled-other-txt", class: "form-control" %>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row mt-2">
+			<label for="">Does this office provide signs or other communication systems (raised symbol and
+			lettering) for people who are blind or have vision impairments?</label>
+			<div class="d-flex align-items-center gap-3">
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :other_communication_system, true, class: "form-check-input", id: "communication-systems-radio-yes" %>
+					<%= f.label :other_communication_system, "Yes", class: "form-check-label", for: "communication-systems-radio-yes" %>
+				</div>
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :other_communication_system, true, class: "form-check-input", id: "communication-systems-radio-no" %>
+					<%= f.label :other_communication_system, "No", class: "form-check-label", for: "communication-systems-radio-no" %>
+				</div>
+			</div>
+		</div>
+
+		<div class="d-flex align-items-center gap-3 mt-2">
+			<label for="">Is there public transportation access at this location?</label>
+			<div class="d-flex align-items-center gap-3">
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :public_transportation, true, class: "form-check-input", id: "public-transportation-radio-yes" %>
+					<%= f.label :public_transportation, "Yes", class: "form-check-label", for: "public-transportation-radio-yes" %>
+				</div>
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :public_transportation, true, class: "form-check-input", id: "public-transportation-radio-no" %>
+					<%= f.label :public_transportation, "No", class: "form-check-label", for: "public-transportation-radio-no" %>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row">
+			<label for="">If Yes, please check all that apply:</label>
+			<div class="d-flex flex-wrap align-items-center gap-3 form-row">
+				<div class="form-check">
+					<%= f.check_box :public_bus, class: "form-check-input", id: "transportation-bus-check" %>
+					<%= f.label :public_bus, "Bus", class: "form-check-label", for: "transportation-bus-check" %>
+				</div>
+				<div class="form-check">
+					<%= f.check_box :public_subway, class: "form-check-input", id: "transportation-subway-check" %>
+					<%= f.label :public_subway, "Subway", class: "form-check-label", for: "transportation-subway-check" %>
+				</div>
+				<div class="form-check">
+					<%= f.check_box :public_regional_train, class: "form-check-input", id: "transportation-train-check" %>
+					<%= f.label :public_regional_train, "Regional Train", class: "form-check-label", for: "transportation-train-check" %>
+				</div>
+				<div class="form-check">
+					<%= f.check_box :public_other_transportation, class: "form-check-input", id: "transportation-other-check" %>
+					<%= f.label :public_other_transportation, "Other", class: "form-check-label", for: "transportation-other-check" %>
+				</div>
+			</div>
+			<div class="form-row row">
+				<div class="col-xl-4">
+					<label for="">If Other, please explain:</label>
+					<%= f.text_area :public_other_transportation_explaination, class: "form-control", placeholder: 'Type here...', id: "transportation-other-txt" %>
+				</div>
+			</div>
+		</div>
+
+		<div class="d-flex align-items-center gap-3 mt-2">
+			<label for="">Does this location provide childcare services?</label>
+			<div class="form-check d-flex align-items-center gap-2">
+				<%= f.radio_button :is_provide_child_care_service, true, class: "form-check-input", id: "childcare-services-radio-yes" %>
+				<%= f.label :is_provide_child_care_service, "Yes", class: "form-check-label", for: "childcare-services-radio-yes" %>
+			</div>
+			<div class="form-check d-flex align-items-center gap-2">
+				<%= f.radio_button :is_provide_child_care_service, true, class: "form-check-input", id: "childcare-services-radio-no" %>
+				<%= f.label :is_provide_child_care_service, "No", class: "form-check-label", for: "childcare-services-radio-no" %>
+			</div>
+		</div>
+
+		<div class="d-flex align-items-center gap-3 mt-2">
+			<label for="">Do you have TDD at this location?</label>
+			<div class="form-check d-flex align-items-center gap-2">
+				<%= f.radio_button :is_tdd, true, class: "form-check-input", id: "TDD-radio-yes" %>
+				<%= f.label :is_tdd, "Yes", class: "form-check-label", for: "TDD-radio-yes" %>
+			</div>
+			<div class="form-check d-flex align-items-center gap-2">
+				<%= f.radio_button :is_tdd, true, class: "form-check-input", id: "TDD-radio-no" %>
+				<%= f.label :is_tdd, "No", class: "form-check-label", for: "TDD-radio-no" %>
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="d-flex align-items-center gap-3 mt-2">
+				<label for="">Is this location EPSDT certified?</label>
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :is_epsdt_certified, true, class: "form-check-input", id: "EPSDT-certified-radio-yes" %>
+					<%= f.label :is_epsdt_certified, "Yes", class: "form-check-label", for: "EPSDT-certified-radio-yes" %>
+				</div>
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :is_epsdt_certified, true, class: "form-check-input", id: "EPSDT-certified-radio-no" %>
+					<%= f.label :is_epsdt_certified, "No", class: "form-check-label", for: "EPSDT-certified-radio-no" %>
+				</div>
+			</div>
+			<div class="form-row row">
+				<div class="col-xl-4">
+					<label for="">If Yes, EPSDT number::</label>
+					<%= f.text_field :epsdt_certificate_number, placeholder: "Type here...", id: "EPSDT-certified-number", class: "form-control" %>
+				</div>
+			</div>
+		</div>
+
+		<div class="d-flex align-items-center gap-3 mt-2">
+			<label for="">Do you want this location listed in the directory?</label>
+			<div class="form-check d-flex align-items-center gap-2">
+				<%= f.radio_button :is_directory_location_listed, true, class: "form-check-input", id: "location-listed-radio-yes" %>
+				<%= f.label :is_directory_location_listed, "Yes", class: "form-check-label", for: "location-listed-radio-yes" %>
+			</div>
+			<div class="form-check d-flex align-items-center gap-2">
+				<%= f.radio_button :is_directory_location_listed, true, class: "form-check-input", id: "location-listed-radio-no" %>
+				<%= f.label :is_directory_location_listed, "No", class: "form-check-label", for: "location-listed-radio-no" %>
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="d-flex align-items-center gap-3 mt-2">
+				<label for="">Does this location qualify as a minority business enterprise?</label>
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :is_minority_business_enterprise, true, class: "form-check-input", id: "minority-business-radio-yes" %>
+					<%= f.label :is_minority_business_enterprise, "Yes", class: "form-check-label", for: "minority-business-radio-yes" %>
+				</div>
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :is_minority_business_enterprise, true, class: "form-check-input", id: "minority-business-radio-no" %>
+					<%= f.label :is_minority_business_enterprise, "No", class: "form-check-label", for: "minority-business-radio-no" %>
+				</div>
+			</div>
+			<div class="form-row row">
+				<div class="col-xl-4">
+					<label for="">Group NPI:</label>
+					<%= f.text_field :group_npi, class: "form-control", placeholder: "Type here...", id: "group-NPI" %>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row mt-2">
+			<label for="">Please designate only one office location for the following question. If you have only
+			one office location you must answer Yes to the question.</label>
+		</div>
+
+		<div class="form-row">
+			<div class="d-flex align-items-center gap-3 mt-2">
+				<label for="">Is this location your primary office?</label>
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :is_primary_location, true, class: "form-check-input", id: "primary-office-radio-yes" %>
+					<%= f.label :is_primary_location, "Yes", class: "form-check-label", for: "primary-office-radio-yes" %>
+				</div>
+				<div class="form-check d-flex align-items-center gap-2">
+					<%= f.radio_button :is_primary_location, true, class: "form-check-input", id: "primary-office-radio-no" %>
+					<%= f.label :is_primary_location, "No", class: "form-check-label", for: "primary-office-radio-no" %>
+				</div>
+			</div>
+			<div class="form-row row">
+				<div class="col-xl-4">
+					<label for="">Please list any comments:</label>
+					<%= f.text_area :any_comments, class: "form-control", placeholder: "Type here ...", id: "list-comment" %>
+				</div>
+			</div>
+
+			<div class="form-row row">
+				<div class="col-xl-4">
+					<%= f.submit class: 'btn btn-primary py-1 mt-4' %>
+				</div>
+			</div>
+		</div>
+	</div>
+<% end %>
+
+<script>	
+	<%# js for allied health practitioners nested form %>
+  $("#add-health-practitioner").click(function() {
+    var alliedHealthPractitionersFields = $("#allied_health_practitioners .fields .form-row");
+    var newAlliedHealthPractitioner = alliedHealthPractitionersFields.last().clone();
+
+    // Generate a unique ID for the new form fields
+    var newId = new Date().getTime();
+    // Update IDs and names of the cloned fields
+    newAlliedHealthPractitioner.html(
+        newAlliedHealthPractitioner.html().replace(
+            /allied_health_practitioners_attributes\]\[\d+\]/g,
+            "allied_health_practitioners_attributes][" + newId + "]"
+        )
+    );
+    // Reset input values and deselect radio buttons and select fields
+    newAlliedHealthPractitioner.find("input").each(function() {
+      if ($(this).is(":radio") || $(this).is(":checkbox")) {
+        $(this).prop("checked", false); // Reset radio buttons and checkboxes
+      } else {
+        $(this).val(""); // Clear input values
+      }
+    });
+
+    newAlliedHealthPractitioner.find("select").each(function() {
+      $(this).val(""); // Clear selected option
+    });
+    // Update attributes for the remove button and container
+    newAlliedHealthPractitioner.find('.remove-dynamic-fields').attr('data-id', newId);
+    newAlliedHealthPractitioner.attr('data-id', newId);
+
+    // Append the new form fields to the container
+    $("#allied_health_practitioners .fields").append(newAlliedHealthPractitioner);
+  });
+
+
+
+	$("#allied_health_practitioners").on("click", ".remove-dynamic-fields", function() {
+		var container = this.closest(".allied_health_practitioner_container");
+		const containers = $(".allied_health_practitioner_container");
+    
+    if (containers.length > 1) {
+			const destroyField = container.querySelector(".destroy-field");
+	    if (destroyField) {
+	      destroyField.value = "1"; // Mark for destruction
+	      container.style.display = 'none' // Hide the field
+	    } else {
+	      container.remove(); // Remove unsaved fields
+	    }
+    } else {
+	    alert("At least one record is required.");
+	  }
+	});
+
+	<%# js for personally employed practitioners nested form %>
+	$("#add-employed-practitioner").click(function() {
+		var personallyEmployedPractiotionerFields = $("#personally_employed_practitioners .fields .form-row");
+		var newPersonallyEmployedPractitioners = personallyEmployedPractiotionerFields.last().clone();
+		console.log($(newPersonallyEmployedPractitioners).find("input"))
+		var newId = new Date().getTime();
+		newPersonallyEmployedPractitioners.html(newPersonallyEmployedPractitioners.html().replace(/personally_employed_practitioners_attributes\]\[\d+\]/g, "personally_employed_practitioners_attributes][" + newId + "]"));
+		$("#personally_employed_practitioners .fields").append(newPersonallyEmployedPractitioners);
+		$(newPersonallyEmployedPractitioners).find("select").each(function() {
+			$(this).find("option[selected]").first().removeAttr("selected")
+		});
+
+		$(newPersonallyEmployedPractitioners).find("input").each(function() {
+			$(this).val("")
+		});
+
+		newPersonallyEmployedPractitioners.find('.remove-dynamic-fields').attr('data-id', newId);
+		newPersonallyEmployedPractitioners.attr('data-id', newId);
+		$("#personally_employed_practitioners .fields").append(newPersonallyEmployedPractitioners);
+	});
+
+	$("#personally_employed_practitioners").on("click", ".remove-dynamic-fields", function() {
+		var container = this.closest(".employed_practioner_container");
+		const containers = $(".employed_practioner_container");
+    
+    if (containers.length > 1) {
+			const destroyField = container.querySelector(".destroy-field");
+	    if (destroyField) {
+	      destroyField.value = "1"; // Mark for destruction
+	      container.style.display = 'none' // Hide the field
+	    } else {
+	      container.remove(); // Remove unsaved fields
+	    }
+	  } else {
+	  	alert("At least one record is required.");
+	  }
+  });
+
+  <%# js for licenced member nested form %>
+  $("#add-licensed-members").click(function() {
+		var licensedMemberFields = $("#licensed_members .fields .form-row");
+		var newLicensedMembers = licensedMemberFields.last().clone();
+		console.log($(newLicensedMembers).find("input"))
+		var newId = new Date().getTime();
+		newLicensedMembers.html(newLicensedMembers.html().replace(/licensed_members_attributes\]\[\d+\]/g, "licensed_members_attributes][" + newId + "]"));
+		$("#licensed_members .fields").append(newLicensedMembers);
+
+		 // Clear input values and deselect options
+	  newLicensedMembers.find("input").each(function() {
+	    if ($(this).is(":radio") || $(this).is(":checkbox")) {
+	      $(this).prop("checked", false);
+	    } else {
+	      $(this).val("");
+	    }
+	  });
+
+	  newLicensedMembers.find("select").val("");
+
+		newLicensedMembers.find('.remove-dynamic-fields').attr('data-id', newId);
+		newLicensedMembers.attr('data-id', newId);
+		$("#licensed_members .fields").append(newLicensedMembers);
+  });
+
+	$("#licensed_members").on("click", ".remove-dynamic-fields", function() {
+		var container = this.closest(".licensed_members_container");
+		const containers = $(".licensed_members_container");
+    
+    if (containers.length > 1) {
+			const destroyField = container.querySelector(".destroy-field");
+	    if (destroyField) {
+	      destroyField.value = "1"; // Mark for destruction
+	      container.style.display = 'none' // Hide the field
+	    } else {
+	      container.remove(); // Remove unsaved fields
+	    }
+    } else {
+    	alert("At least one record is required.");
+    }
+	});
+
+	<%# js for staff language nested form %>
+	$("#add-staff-spoken-foreign-languages").click(function() {
+		var staffLanguageFields = $("#staff_spoken_foreign_languages .fields .form-row");
+		var newStaffLanguage = staffLanguageFields.last().clone();
+		console.log($(newStaffLanguage).find("input"))
+		var newId = new Date().getTime();
+		newStaffLanguage.html(newStaffLanguage.html().replace(/staff_spoken_foreign_languages_attributes\]\[\d+\]/g, "staff_spoken_foreign_languages_attributes][" + newId + "]"));
+		$("#staff_spoken_foreign_languages .fields").append(newStaffLanguage);
+		// Clear input values and deselect options
+	  newStaffLanguage.find("input").each(function() {
+	    if ($(this).is(":radio") || $(this).is(":checkbox")) {
+	      $(this).prop("checked", false);
+	    } else {
+	      $(this).val("");
+	    }
+	  });
+
+	  newStaffLanguage.find("select").val("");
+
+		newStaffLanguage.find('.remove-dynamic-fields').attr('data-id', newId);
+		newStaffLanguage.attr('data-id', newId);
+		$("#staff_spoken_foreign_languages .fields").append(newStaffLanguage);
+	});
+
+	$("#staff_spoken_foreign_languages").on("click", ".remove-dynamic-fields", function() {
+		var container = this.closest(".staff_spoken_foreign_languages_container");
+		const containers = $(".staff_spoken_foreign_languages_container");
+    
+    if (containers.length > 1) {
+			const destroyField = container.querySelector(".destroy-field");
+	    if (destroyField) {
+	      destroyField.value = "1"; // Mark for destruction
+	      container.style.display = 'none' // Hide the field
+	    } else {
+	      container.remove(); // Remove unsaved fields
+	    }
+	  } else {
+    	alert("At least one record is required.");
+    }
+  });
+
+  <%# js for provider anesthesia administrations %>
+  $("#add-provider-anesthesia-administrations").click(function() {
+		var providerAnesthesiaFields = $("#provider_anesthesia_administrations .fields .form-row");
+		var newProviderNesthesia = providerAnesthesiaFields.last().clone();
+		console.log($(newProviderNesthesia).find("input"))
+		var newId = new Date().getTime();
+		newProviderNesthesia.html(newProviderNesthesia.html().replace(/provider_anesthesia_administrations_attributes\]\[\d+\]/g, "provider_anesthesia_administrations_attributes][" + newId + "]"));
+		$("#provider_anesthesia_administrations .fields").append(newProviderNesthesia);
+		// Clear input values and deselect options
+	  newProviderNesthesia.find("input").each(function() {
+	    if ($(this).is(":radio") || $(this).is(":checkbox")) {
+	      $(this).prop("checked", false);
+	    } else {
+	      $(this).val("");
+	    }
+	  });
+
+	  newProviderNesthesia.find("select").val("");
+
+		newProviderNesthesia.find('.remove-dynamic-fields').attr('data-id', newId);
+		newProviderNesthesia.attr('data-id', newId);
+		$("#provider_anesthesia_administrations .fields").append(newProviderNesthesia);
+	});
+
+	$("#provider_anesthesia_administrations").on("click", ".remove-dynamic-fields", function() {
+		var container = this.closest(".provider_anesthesia_administrations_container");
+		const containers = $(".provider_anesthesia_administrations_container");
+    
+    if (containers.length > 1) {
+			const destroyField = container.querySelector(".destroy-field");
+	    if (destroyField) {
+	      destroyField.value = "1"; // Mark for destruction
+	      container.style.display = 'none' // Hide the field
+	    } else {
+	      container.remove(); // Remove unsaved fields
+	    }
+	  } else {
+    	alert("At least one record is required.");
+    }
+  });
+
+  <%# js for covering practitioner nested form %>
+  $("#add-covering-practitioners").click(function() {
+		var coveringPractitonerFields = $("#covering_practitioners .fields .form-row");
+		var newCoveringPractitoner = coveringPractitonerFields.last().clone();
+		console.log($(newCoveringPractitoner).find("input"))
+		var newId = new Date().getTime();
+		newCoveringPractitoner.html(newCoveringPractitoner.html().replace(/covering_practitioners_attributes\]\[\d+\]/g, "covering_practitioners_attributes][" + newId + "]"));
+		$("#covering_practitioners .fields").append(newCoveringPractitoner);
+
+		$(newCoveringPractitoner).find("select").each(function() {
+			$(this).find("option[selected]").first().removeAttr("selected")
+		});
+
+		$(newCoveringPractitoner).find("input").each(function() {
+			$(this).val("")
+		});
+
+		newCoveringPractitoner.find('.remove-dynamic-fields').attr('data-id', newId);
+		newCoveringPractitoner.attr('data-id', newId);
+		$("#covering_practitioners .fields").append(newCoveringPractitoner);
+	});
+
+	$("#covering_practitioners").on("click", ".remove-dynamic-fields", function() {
+		var container = this.closest(".covering_practitioners_container");
+		const containers = $(".covering_practitioners_container");
+
+    if (containers.length > 1) {
+			const destroyField = container.querySelector(".destroy-field");
+	    if (destroyField) {
+	      destroyField.value = "1"; // Mark for destruction
+	      container.style.display = 'none' // Hide the field
+	    } else {
+	      container.remove(); // Remove unsaved fields
+	    }
+	  } else {
+    	alert("At least one record is required.");
+    }
+  });
+</script>

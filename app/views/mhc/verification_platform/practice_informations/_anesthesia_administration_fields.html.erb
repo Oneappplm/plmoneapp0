@@ -1,0 +1,65 @@
+<div class="form-row provider_anesthesia_administrations_container row mt-3 provider-anesthesia-administrations-card">
+	<div class="col-xl-12">
+		<div class="other-name-card">
+			<div class="card-body">
+				<h6 class="form-heading">Anesthesia Administration</h6>
+				<p class="fst-italic">For Regional, Conscious Sedation or General, who in office
+					administers anesthesia?</p>
+				<div class=" row mt-2">
+					<div class="col-xl-4">
+						<label for="">First Name:</label>
+						<%= f.text_field :first_name, class: "form-control", placeholder: "Type here...", id: "anesthesia-fname" %>
+					</div>
+					<div class="col-xl-4">
+						<label for="">Last Name:</label>
+						<%= f.text_field :last_name, class: "form-control", placeholder: "Type here...", id: "anesthesia-lname" %>
+					</div>
+					<div class="col-xl-4">
+						<label for="">Suffix:</label>
+						<%= f.select :suffix, [["Sr", "sr"], ["Jr", "jr"], ["II", "ii"], ["III", "iii"], ["IV", "iv"], ["V", "v"], ["VI", "vi"], ["VII", "vii"]], { prompt: true }, { class:"form-select", id: "anesthesia-suffix" } %>
+					</div>
+				</div>
+				<div class=" row mt-2">
+					<div class="col-xl-6">
+						<label for="practitioner-title">Practitioner Title:</label>
+						<%= f.select :practitioner_type, [["Anesthesiologist", "anesthesiologist"], ["Anesthetist", "anesthetist"], ["ARNP", "arnp"], ["CST", "cst"], ["Other", "other"], ["Surgen", "surgen"]], {prompt: true}, { class: "form-select", id: "practitioner-title" } %>
+					</div>
+					<div class="col-xl-6">
+						<label for="">If Other, please specify:</label>
+						<%= f.text_area :other_explaination, class: "form-control border-dark", placeholder: "Type here...", id: "other-practitioner-title", cols: 30, rows: 5 %>
+					</div>
+				</div>
+				<div class="">
+					<div class=" form-check d-flex align-items-center gap-2">
+						<%= f.check_box :is_class_a, class: "form-check-input", id: "class-A-check" %>
+						<%= f.label :is_class_a, "Class A (Minor - local
+							anesthesia only)", class: "form-check-label" %>
+					</div>
+				</div>
+				<div class="">
+					<div class=" form-check d-flex align-items-center gap-2">
+						<%= f.check_box :is_class_b, class: "form-check-input", id: "class-B-check" %>
+						<%= f.label :is_class_b, "Class B (Minor or Major -
+							local or regional anesthesia with sedation)", class: "form-check-label" %>
+					</div>
+				</div>
+				<div class="">
+					<div class=" form-check d-flex align-items-center gap-2">
+						<%= f.check_box :is_class_c, class: "form-check-input", id: "class-C-check" %>
+						<%= f.label :is_class_c, "Class C (Minor or Major -
+							general or regional anesthesia requiring support of vital body
+							functions)", class: "form-check-label" %>
+					</div>
+				</div>
+				<div class="col-lg-1 text-center ms-auto mt-2">
+	        <% if f.object.id %>
+	          <%= f.hidden_field :_destroy, class: "destroy-field" %>
+	          <button type="button" class="btn btn-xs btn-danger remove-dynamic-fields" data-model="anesthesia_administration" data-id=<%= f.object.id %> id="provider-anesthesia-administrations"> Remove</button>
+	        <% else %>
+	          <button type="button" class="btn btn-xs btn-danger remove-dynamic-fields" data-id=0 id="provider-anesthesia-administrations"> Remove </button>
+	        <% end %>
+	      </div>
+			</div>
+		</div>
+	</div>
+</div>
