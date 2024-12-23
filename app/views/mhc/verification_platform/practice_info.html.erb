@@ -22,12 +22,24 @@
                 </span>
             </div>
             <div class="row mt-3 page-applicable">
-                <div class="col-xl-4">
+              <div class="col-xl-4 mb-3">
+                <%= search_form_for @q, url: mhc_verification_platform_path(page_tab: 'practice_info'), method: :get, html: { class: 'form_search_with_icon'} do |f|%>
+                  <%= hidden_field_tag "page_tab", "practice_info" %>
+                  <div>
+                     <%= f.text_field :practice_name_cont, value: "#{params[:q][:practice_name_cont] rescue ''}", placeholder: 'Search...', class: "form-control py-2" %>
+                     <i class="bx bx-search"></i>
+                  </div>
+               <% end %>
+             </div>
+                <%# <div class="col-xl-4">
                     <div class="form-control enc-search-wrp">
                         <input type="" class="enc-search-input" placeholder="Search">
                         <!-- <i class='bx bx-search' ></i> -->
                     </div>
-                </div>
+                </div> %>
+            </div>
+            <div class="col-xl-6 filter-result mt-2 mb-3">
+              <h6>Result: <%= @practice_informations.count %> records</h6>
             </div>
             <% if @practice_informations %>
               <div class="col-lg-12">
@@ -55,8 +67,12 @@
                 <tbody>
                     <% @practice_informations.each do |practice_information| %>
                         <tr>
-                            <td><%= practice_information.practice_name %></td>
-                            <td><%= practice_information.state %></td>
+                            <td>
+                              <%= link_to mhc_verification_platform_path(page_tab: 'practice_info_record', practice_information_id: practice_information.id), class: "text-dark text-start bg-transparent border-0 fw-bold text-decoration-none" do %>
+                                <%= practice_information.practice_name %>
+                              <% end %>
+                            </td>
+                            <td><%= practice_information.get_state.name %></td>
                             <td><%= practice_information.zip %></td>
                             <td><%= @provider_personal_information.primary_practice_state == practice_information.state %></td>
                         </tr>

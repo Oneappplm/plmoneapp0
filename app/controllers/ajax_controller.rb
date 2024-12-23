@@ -29,6 +29,8 @@ class AjaxController < ApplicationController
       GroupDcoNote.delete(id)
     elsif model == 'provider_notes'
       ProviderNote.delete(id)
+    elsif model == 'practice_informations_allied_health_practitioner'
+      AlliedHealthPractitioner.delete(id)
     elsif model == 'comment'
       EnrollmentComment.delete(id)
     elsif model == 'payer_questions'

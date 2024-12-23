@@ -74,10 +74,6 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_personal_information_confidential_contact ||= @provider_personal_information.build_provider_personal_information_confidential_contact.save
     end
 
-    if params[:page_tab] == 'add_practice_info'
-      @practice_information = PracticeInformation.new(provider_attest_id: @provider_personal_information.provider_attest_id, caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id )
-    end
-
     if params[:page_tab] == 'education_record'
       @provider_personal_information_comment = ProviderPersonalInformationComment.new
       @provider_personal_information_comments = ProviderPersonalInformationComment.all
@@ -97,12 +93,55 @@ class Mhc::VerificationPlatformController < ApplicationController
       end
     end
 
-    if params[:page_tab] == 'practice_info'
-      @practice_informations = @provider_personal_information.provider_attest.practice_informations.paginate(per_page: 10, page: params[:page])
+    # Common logic for handling nested associations
+    # Common logic for handling nested associations
+    def build_associations(practice_information)
+      [
+        :allied_health_practitioners,
+        :personally_employed_practitioners,
+        :licensed_members,
+        :staff_spoken_foreign_languages,
+        :provider_anesthesia_administrations,
+        :covering_practitioners
+      ].each do |association|
+        practice_information.send(association).build if practice_information.send(association).empty?
+      end
     end
 
-    if params[:page_tab] == 'practice_info_record'
-      @practice_information = @provider_personal_information.provider_attest.practice_informations.where(id: params[:practice_information_id]).last
+    if params[:page_tab] == 'practice_info'
+      @q = PracticeInformation.ransack(params[:q])
+      @practice_informations = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
+      @url = mhc_practice_informations_path
+    end
+
+    if ['add_practice_info', 'edit_practice_info', 'practice_info_record'].include?(params[:page_tab])
+      # Determine if it's a new or existing practice information
+      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+      @practice_information = if params[:page_tab] == 'add_practice_info'
+                                PracticeInformation.new(
+                                  provider_attest_id: @provider_personal_information.provider_attest_id,
+                                  caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id
+                                )
+                              else
+                                PracticeInformation.find_or_initialize_by(
+                                  id: params[:practice_information_id],
+                                  provider_attest_id: @provider_personal_information.provider_attest_id,
+                                  caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id
+                                )
+                              end
+
+      # Build associations if necessary
+      build_associations(@practice_information)
+
+      # Set @url based on specific tab
+      case params[:page_tab]
+      when 'add_practice_info'
+        @url = mhc_practice_informations_path  # Assign URL for adding new practice info
+      when 'edit_practice_info'
+        @url = mhc_practice_information_path(@practice_information)  # Edit path for existing practice info
+      when 'practice_info_record'
+        @url = mhc_practice_information_path(@practice_information)
+      end
     end
 
     if params[:page_tab] == 'education'
