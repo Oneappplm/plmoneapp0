@@ -1,16 +1,18 @@
 class Mhc::ProviderDeasController < ApplicationController
   before_action :set_provider_dea, only: [:update]
+  
   def create
-    provider_dea = ProviderDea.new(
-      provider_dea_params
-    )
-
+    provider_dea = ProviderDea.new(provider_dea_params)
+  
     if provider_dea.save
-      redirect_to mhc_verification_platform_path(page_tab: 'registration', id: params[:provider_dea][:provider_attest_id]), notice: 'Created record successfully.'
+      redirect_to mhc_verification_platform_path(page_tab: 'registration', id: params[:provider_dea][:provider_attest_id]),
+                  notice: 'Record created successfully.'
     else
-      redirect_to mhc_verification_platform_path(page_tab: 'registration', id: params[:provider_dea][:provider_attest_id]), notice: 'Failed to create record.'
+      redirect_to mhc_verification_platform_path(page_tab: 'registration', id: params[:provider_dea][:provider_attest_id]),
+                  alert: 'Failed to create record.'
     end
   end
+  
 
   def update
     @provider_dea.assign_attributes(provider_dea_params)
@@ -36,7 +38,7 @@ class Mhc::ProviderDeasController < ApplicationController
     params.require(:provider_dea).permit(
       :caqh_provider_deaid, :provider_attest_id, :dea_number, :state, :expiration_date,
       :caqh_provider_attest_id, :dea_license_limitation_flag, :dea_license_limitation_explanation,
-      :no_dea_explanation, :application_date)
+      :no_dea_explanation, :application_date, :show_on_tickler, :full_schedule)
   end
 
   def set_provider_dea
