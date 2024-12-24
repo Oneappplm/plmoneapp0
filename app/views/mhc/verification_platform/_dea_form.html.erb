@@ -1,0 +1,62 @@
+    <%= form_with model: [:mhc, provider_dea], id: "provider_dea_#{provider_dea.id || index}" do |f| %>
+      <%= f.hidden_field :provider_attest_id, value: params[:id] %>
+      <div class="form-row">
+        <label for="">DEA Registration Number:</label>
+        <%= f.text_field :dea_number, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="form-row">
+        <label for="">Issue Date:</label>
+        <%= f.date_field :application_date, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="form-row d-flex align-items-center gap-3 mt-2">
+        <label for="full_schedule">Full Schedule?</label>
+        <div class="form-check d-flex align-items-center gap-2">
+          <%= f.radio_button :full_schedule, 'Yes', id: 'full-sched-radio-yes', class: 'form-check-input' %>
+          <label class="form-check-label" for="full-sched-radio-yes">Yes</label>
+        </div>
+        <div class="form-check d-flex align-items-center gap-2">
+          <%= f.radio_button :full_schedule, 'No', id: 'full-sched-radio-no', class: 'form-check-input' %>
+          <label class="form-check-label" for="full-sched-radio-no">No</label>
+        </div>
+      </div>
+      <div class="form-row d-flex align-items-center gap-3 mt-2">
+        <label for="show_on_tickler">Show on Tickler?</label>
+        <div class="form-check d-flex align-items-center gap-2">
+          <%= f.radio_button :show_on_tickler, 'Yes', id: 'ticker-radio-yes', class: 'form-check-input' %>
+          <label class="form-check-label" for="ticker-radio-yes">Yes</label>
+        </div>
+        <div class="form-check d-flex align-items-center gap-2">
+          <%= f.radio_button :show_on_tickler, 'No', id: 'ticker-radio-no', class: 'form-check-input' %>
+          <label class="form-check-label" for="ticker-radio-no">No</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="DEA-state">State:</label>
+        <%= f.collection_select :state, @states, :alpha_code, :name, { prompt: 'State' }, { class: 'form-control' } %>
+      </div>
+      <div class="form-row">
+        <label for="">Expiration Date:</label>
+        <%= f.date_field :expiration_date, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="form-row d-flex align-items-center gap-3 mt-2">
+        <label for="dea_license_limitation_flag">Limited or Restricted?</label>
+        <div class="form-check d-flex align-items-center gap-2">
+          <%= f.radio_button :dea_license_limitation_flag, true, id: 'dea-license-yes', class: 'form-check-input' %>
+          <%= f.label :dea_license_limitation_flag, 'Yes', for: 'dea-license-yes', class: 'form-check-label' %>
+        </div>
+        <div class="form-check d-flex align-items-center gap-2">
+          <%= f.radio_button :dea_license_limitation_flag, false, id: 'dea-license-no', class: 'form-check-input' %>
+          <%= f.label :dea_license_limitation_flag, 'No', for: 'dea-license-no', class: 'form-check-label' %>
+        </div>
+      </div>
+      <div class="form-row limited-wrp">
+        <label for="">If Yes, please explain:</label>
+        <%= f.text_area :dea_license_limitation_explanation, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      </div>
+      <div class="col-xl-6 d-flex p-2 justify-content-around">
+        <div class="">
+          <input type="submit" value="Save" class="btn btn-primary" form=<%= "provider_dea_#{provider_dea.id || index}" %>>
+        </div>
+      </div>
+    <% end %>                                     
+    <%= button_to "Destroy", mhc_provider_dea_path(page_tab: 'register', provider_dea_id: provider_dea.id, provider_attest_id: provider_dea.provider_attest_id), { :method => :delete, class: "btn btn-danger", form_class: ""}%>
