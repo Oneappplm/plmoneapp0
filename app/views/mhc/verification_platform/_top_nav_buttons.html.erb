@@ -1,0 +1,56 @@
+ <div class="row">
+    <div class="col-xl-6 d-flex align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <a href="<%= mhc_verification_platform_path %>" class="link-back">
+                <i class='bx bx-left-arrow-alt' ></i>
+            </a>
+            <h4 class="page-heading"><%= "#{@provider_personal_information.caqh_provider_attest_id || provider_personal_information.provider_attest_id}, #{@provider_personal_information.first_name} #{@provider_personal_information.middle_name} #{@provider_personal_information.last_name} #{@provider_personal_information.provider_type_provider_type_abbreviation}" %></h4>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="enc-navs">
+            <button class="btn enc-btn-nav btn-sm btn-primary active">Home</button>
+            <%= link_to 'Profile', profile_page_path, class: 'btn enc-btn-nav btn-sm btn-primary' %>
+            <%= link_to 'Application', application_page_path, class: 'btn enc-btn-nav btn-sm btn-primary' %>
+        </div>
+    </div>
+</div>
+<div class="enc-tabs-wrp mt-4">
+    <a href="<%= mhc_verification_platform_path(page_tab: 'overview')%>" class="btn enc-btn-nav btn-sm  <%= params[:page_tab] == 'overview' ? encompass_active_classes : encompass_idle_classes %>">Overview</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'agreement')%>" class="btn enc-btn-nav btn-sm <%= params[:page_tab] == 'agreement' ? encompass_active_classes : encompass_idle_classes %>">Agreement</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'practitioner_info')%>" class="btn enc-btn-nav btn-sm  <%= params[:page_tab] == 'practitioner_info'? encompass_active_classes : encompass_idle_classes %>">Practitioner Info</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'practice_info')%>" class="btn enc-btn-nav btn-sm <%= ['practice_info_record', 'practice_info', 'add_practice_info', 'edit_practice_info'].include?(params[:page_tab])  ? encompass_active_classes : encompass_idle_classes %>">Practice Info</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'education')%>" class="btn enc-btn-nav btn-sm <%= ['education', 'education_record'].include?(params[:page_tab]) ? encompass_active_classes : encompass_idle_classes %>">Education</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'training')%>" class="btn enc-btn-nav btn-sm <%=(params[:page_tab] == 'training' or params[:page_tab] == 'add_new_training' or params[:page_tab] == 'training_record') ? encompass_active_classes : encompass_idle_classes %>">Training</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'board_cert')%>" class="btn enc-btn-nav btn-sm <%= ['board_cert', 'board_cert_info', 'add_new_board_cert'].include?(params[:page_tab])  ? encompass_active_classes : encompass_idle_classes %>">Board Cert</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'registration')%>"  class="btn enc-btn-nav btn-sm <%= params[:page_tab] == 'registration' ? encompass_active_classes : encompass_idle_classes %>">Registration</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'licensure')%>" class="btn enc-btn-nav btn-sm <%= (params[:page_tab] == 'licensure' || params[:page_tab] == 'add_new_licensure' || params[:page_tab] == 'license_record' || params[:page_tab] == 'edit_licensure') ? encompass_active_classes : encompass_idle_classes %>">Licensure</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'liability')%>" class="btn enc-btn-nav btn-sm <%= (params[:page_tab] == 'liability' or params[:page_tab] == 'add_new_liability' or params[:page_tab] == 'liability_info') ? encompass_active_classes : encompass_idle_classes %>">Liability</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'app_tracking')%>"  class="btn enc-btn-nav btn-sm <%= (params[:page_tab] == 'app_tracking' or params[:page_tab] == 'app_tracking_record') ? encompass_active_classes : encompass_idle_classes %>">App Tracking</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'facilities')%>"  class="btn enc-btn-nav btn-sm <%= (params[:page_tab] == 'facilities' or params[:page_tab] == 'add_new_facility' or params[:page_tab] == 'facility_record') ? encompass_active_classes : encompass_idle_classes %>">Facilities</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'npdb')%>"  class="btn enc-btn-nav btn-sm <%= (params[:page_tab] == 'npdb') ? encompass_active_classes : encompass_idle_classes %>">NPDB</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'additional_forms')%>"  class="btn enc-btn-nav btn-sm <%= (params[:page_tab] == 'additional_forms') ? encompass_active_classes : encompass_idle_classes %>">Additional Forms</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'disclosures')%>"  class="btn enc-btn-nav btn-sm <%= (params[:page_tab] == 'disclosures') ? encompass_active_classes : encompass_idle_classes %>">Disclosures</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'oig')%>"  class="btn enc-btn-nav btn-sm  <%= ['add_oig_info', 'oig', 'oig_info'].include?(params[:page_tab])  ? encompass_active_classes : encompass_idle_classes %>">OIG</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'sam')%>"  class="btn enc-btn-nav btn-sm <%= ['sam', 'add_new_sam', 'sam_record'].include?(params[:page_tab]) ? encompass_active_classes : encompass_idle_classes %>">SAM</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'npi')%>"  class="btn enc-btn-nav btn-sm <%= (params[:page_tab] == 'npi') ? encompass_active_classes : encompass_idle_classes %>">NPI</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'ssa')%>"  class="btn enc-btn-nav btn-sm <%= (params[:page_tab] == 'ssa') ? encompass_active_classes : encompass_idle_classes %>">SSA</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'billing_info')%>"  class="btn enc-btn-nav btn-sm <%= (params[:page_tab] == 'billing_info') ? encompass_active_classes : encompass_idle_classes %>">Billing Info</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'cme')%>"  class="btn enc-btn-nav btn-sm <%= (params[:page_tab] == 'cme' or params[:page_tab] == 'add_new_cme') ? encompass_active_classes : encompass_idle_classes %>">CME</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'teaching')%>"  class="btn enc-btn-nav btn-sm <%= ['teaching', 'add_new_teaching', 'teaching_record'].include?(params[:page_tab]) ? encompass_active_classes : encompass_idle_classes %>">Teaching</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'other_cert')%>"  class="btn enc-btn-nav btn-sm <%=  ['other_cert', 'add_other_cert', 'other_cert_info'].include?(params[:page_tab]) ? encompass_active_classes : encompass_idle_classes %>">Other Cert</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'peer_ref')%>"  class="btn enc-btn-nav btn-sm <%= ['peer_ref', 'add_new_peer_ref', 'peer_ref_record'].include?(params[:page_tab]) ? encompass_active_classes : encompass_idle_classes %>">Peer Ref</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'employment')%>"  class="btn enc-btn-nav btn-sm <%= (params[:page_tab] == 'employment' or params[:page_tab] == 'add_new_employment' or params[:page_tab] == 'employment_record') ? encompass_active_classes : encompass_idle_classes %>">Employment</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'liability_action')%>"  class="btn enc-btn-nav btn-sm <%= (params[:page_tab] == 'liability_action' or params[:page_tab] == 'add_new_liability_action' or params[:page_tab] == 'liability_action_record')  ? encompass_active_classes : encompass_idle_classes %>">Liability Action</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'affiliations')%>"  class="btn enc-btn-nav btn-sm <%= (params[:page_tab] == 'affiliations' or params[:page_tab] == 'add_new_affiliation' or params[:page_tab] == 'affiliation_record') ? encompass_active_classes : encompass_idle_classes %>">Affiliations</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'fee_paid')%>"  class="btn enc-btn-nav btn-sm <%= (params[:page_tab] == 'fee_paid' or params[:page_tab] == 'fee_paid_record') ? encompass_active_classes : encompass_idle_classes %>">Fee Paid</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'tb_status')%>"  class="btn enc-btn-nav btn-sm <%= (params[:page_tab] == 'tb_status') ? encompass_active_classes : encompass_idle_classes %>">TB Status</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'facility_disclosures')%>"  class="btn enc-btn-nav btn-sm <%= ['facility_disclosures'].include?(params[:page_tab]) ? encompass_active_classes : encompass_idle_classes %>">Facility Disclosures</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'accreditation')%>"  class="btn enc-btn-nav btn-sm <%= ['accreditation', 'accreditation_info', 'add_new_accreditation'].include?(params[:page_tab]) ? encompass_active_classes : encompass_idle_classes %>">Accreditation</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'medicare_cert')%>"  class="btn enc-btn-nav btn-sm <%= ['medicare_cert'].include?(params[:page_tab]) ? encompass_active_classes : encompass_idle_classes %>">Medicare Cert</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'medicare_part')%>"  class="btn enc-btn-nav btn-sm <%= ['medicare_part'].include?(params[:page_tab]) ? encompass_active_classes : encompass_idle_classes %>">Medicare Part</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'site_survey')%>"  class="btn enc-btn-nav btn-sm <%= ['site_survey'].include?(params[:page_tab]) ? encompass_active_classes : encompass_idle_classes %>">Site Survey</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'certifications')%>"  class="btn enc-btn-nav btn-sm <%= ['certifications', 'add_new_certification', 'certification_info'].include?(params[:page_tab]) ? encompass_active_classes : encompass_idle_classes %>">Certifications</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'ins_coverage')%>"  class="btn enc-btn-nav btn-sm <%= ['ins_coverage', 'add_insurance_coverage', 'insurance_coverage_info'].include?(params[:page_tab]) ? encompass_active_classes : encompass_idle_classes %>">Ins. Coverage</a>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'org_information')%>"  class="btn enc-btn-nav btn-sm <%= ['org_information'].include?(params[:page_tab]) ? encompass_active_classes : encompass_idle_classes %>">Organization Information</a>
+</div>

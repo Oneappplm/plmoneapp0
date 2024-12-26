@@ -1,0 +1,114 @@
+<body>
+    <div class="enc-content">
+        <div class="container">
+          <%= render "top_nav_buttons"%>
+            <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <h4 class="page-heading">App Tracking</h4>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="board-cert-switch">
+                        <label class="form-check-label" for="board-cert-switch">Not Applicable</label>
+                    </div>
+                </div>
+                <a href="<%= mhc_verification_platform_path(page_tab: 'app_tracking_record')%>" class="btn btn-primary page-applicable AddBoardCertificate py-1"
+                    id="AddBoardCertificate">
+                    <i class='bx bx-plus'></i>
+                    Add New Application
+                </a>
+            </div>
+            <% if @provider_personal_information_app_trackings %>
+                <div class="col-lg-12">
+                    <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-0">
+                        <div class="page_info ms-3 text-black">
+                        <%= page_entries_info @provider_personal_information_app_trackings %>
+                        </div>
+                        <% if params[:per_page ].present? %>
+                        <%= will_paginate @provider_personal_information_app_trackings, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                        <% else %>
+                        <%= will_paginate @provider_personal_information_app_trackings, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                        <% end %>
+                    </div>
+                </div>
+            <% end %>
+            <table class="table table-bordered practice-table mt-3 page-applicable ">
+                <thead>
+                    <tr>
+                        <th  class="text-white" scope="col">Application Type</th>
+                        <th class="text-white">Application Receipt Date</th>
+                        <th class="text-white">App Receive Complete Date</th>
+                        <th class="text-white">Verifications Complete Date</th>
+                        <th class="text-white">File Return to Client Date</th>
+                        <th class="text-white">Output File Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% @provider_personal_information_app_trackings.each do |provider_personal_information_app_tracking| %>
+                        <tr>
+                            <td>
+                            <a href="<%= mhc_verification_platform_path(page_tab: 'app_tracking_record', provider_personal_information_app_tracking_id: provider_personal_information_app_tracking.id) %>">
+                                <%= provider_personal_information_app_tracking.application_type&.titleize %>
+                            </a>
+                            <td><%= provider_personal_information_app_tracking.application_receipt_date&.strftime('%b %d, %Y') %></td>
+                            <td><%= provider_personal_information_app_tracking.application_receive_complete_date&.strftime('%b %d, %Y') %></td>
+                            <td><%= provider_personal_information_app_tracking.verification_complete_date&.strftime('%b %d, %Y') %></td>
+                            <td><%= provider_personal_information_app_tracking.file_return_to_client_date&.strftime('%b %d, %Y') %></td>
+                            <td></td>
+                        </tr>
+                    <% end %>
+                </tbody>
+            </table>
+            <form action="" class="page-not-applicable">
+                <div class="form-row mt-4">
+                    <label for="">Please explain:<span class="font-red">*</span></label>
+                    <textarea name="not-applicable-explain" id="" cols="30" rows="5" class="form-control"
+                        required></textarea>
+                </div>
+                <div class="form-row mt-2 d-flex justify-content-end">
+                    <button type="submit" name="save-not-app-explain" class="btn btn-primary">
+                        Save
+                    </button>
+                </div>
+            </form>
+            <div class="row mt-3 page-applicable">
+                <div class="col-xl-12">
+                    <label for="">Reinstatement</label>
+                </div>
+            </div>
+            <div class="row page-applicable">
+                <div class="col-xl-12">
+                    <div class=" form-check d-flex align-items-center gap-2">
+                        <input class="form-check-input" type="checkbox" id="indicator" value="indicator">
+                        <label class="form-check-label" for="indicator">Indicator</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row mt-3 page-applicable">
+                <div class="row">
+                    <div class="col-xl-6">
+                        <label for="">Master Client Flag List</label>
+                        <div class="left-pane bg-gray">
+                            <div class="form-control enc-search-wrp">
+                                <input type="" name="" class="enc-search-input" placeholder="Search">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            <button type="button" class="btn btn-primary">
+                                Define Privileges Category
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-xl-6">
+                        <label for="">Client Flag</label>
+                        <div class="right-pane border-dash bg-gray">
+
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            <button type="button" class="btn btn-danger">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

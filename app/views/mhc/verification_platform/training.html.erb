@@ -1,0 +1,82 @@
+ <div class="enc-content">
+        <div class="container">
+            <%= render "top_nav_buttons"%>
+            <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <h4 class="page-heading">Training</h4>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="training-switch">
+                        <label class="form-check-label" for="training-switch">Not Applicable</label>
+                    </div>
+                </div>
+                <a href="<%= mhc_verification_platform_path(page_tab: 'training_record')%>" class="btn py-1 btn-primary %>">
+                    <i class='bx bx-plus' ></i>
+                    Add New Training
+                </a>
+            </div>
+            <div class="mt-2 page-applicable">
+                <span class="page-note">
+                    <i class='bx bx-error-circle font-red'></i> <span>Please list all internships, residencies, fellowships preceptorships, and other post-graduate training programs in chronological order. 
+                        Include all training programs attended whether completed or not. Required fields are marked with the symbol “<span class="font-red">*</span>”.</span>.
+                </span>
+                <span class="page-note">
+                    <i class='bx bx-error-circle font-red'></i> <span>Please check the Not Applicable button if you have never enrolled in a professional education program.</span>
+                </span>
+            </div>
+            <div class="row mt-3 page-applicable">
+                <div class="col-xl-4">
+                    <div class="form-control enc-search-wrp">
+                        <input type="" class="enc-search-input" placeholder="Search">
+                        <i class='bx bx-search' ></i>
+                    </div>
+                </div>
+            </div>
+            <% if @provider_educations %>
+                <div class="col-lg-12">
+                    <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-0">
+                        <div class="page_info ms-3 text-black">
+                        <%= page_entries_info @provider_educations %>
+                        </div>
+                        <% if params[:per_page ].present? %>
+                        <%= will_paginate @provider_educations, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                        <% else %>
+                        <%= will_paginate @provider_educations, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                        <% end %>
+                    </div>
+                </div>
+            <% end %>
+            <table class="table table-bordered practice-table mt-3 page-applicable ">
+                <thead>
+                    <tr>
+                        <th class="text-white" scope="col">Institution/Program</th>
+                        <th class="text-white">Training Type</th>
+                        <th class="text-white">Specialty</th>
+                        <th class="text-white">Attended To</th>
+                        <th class="text-white">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <% @provider_educations.each do |provider_education| %>
+                    <tr>
+                        <td><a href="<%= mhc_verification_platform_path(provider_education_id: provider_education.id, page_tab: 'training_record')%>"
+                                class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none"><%= provider_education.institution_name %>
+                        <td><%= provider_education.additional_training_description %></td>
+                        <td><%= provider_education.specialty_specialty_name %></td>
+                        <td><%= provider_education.end_date&.strftime('%b %d, %Y') %></td>
+                        <td><%= %></td>
+                    </tr>
+                <% end %>
+            </table>
+            <form action="" class="page-not-applicable">
+                <div class="form-row mt-4">
+                    <label for="">Please explain:<span class="font-red">*</span></label>
+                    <textarea name="" id="" cols="30" rows="5" class="form-control" required></textarea>
+                </div>
+                <div class="form-row mt-2 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>

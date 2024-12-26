@@ -350,7 +350,86 @@ Rails.application.routes.draw do
     end
   end
 
-		resources :audit_trails, only: [:index, :show], path: 'audit-trail'
+  resources :audit_trails, only: [:index, :show], path: 'audit-trail'
+
+  post '/save_attempt_details', to: 'app_trackers#save_attempt_details'
+  post '/provider_personal_docs_uploaded_documents', to: 'app_trackers#provider_personal_docs_uploaded_documents'
+  post '/save_provider_personal_docs_receives', to: 'app_trackers#save_provider_personal_docs_receives'
+  post '/save_provider_practice_informations', to: 'app_trackers#save_provider_practice_informations'
+
+
+  # for generating the report on client home
+  get '/generate_report', to: 'mhc/verification_platform#generate_report', defaults: { format: :csv }
+
+  # for verification-work-tickler
+  get '/work_tickler_page', to: 'mhc/verification_platform#work_tickler_page'
+  get '/privileges_work_tickler_page', to: 'mhc/verification_platform#privileges_work_tickler_page'
+  get '/enrollment_work_tickler_page', to: 'mhc/verification_platform#enrollment_work_tickler_page'
+
+  # for generating the cme_practitioner_profile_report on query_report tab in verification platform
+  get '/cme_practitioner_report', to: 'query_reports#cme_practitioner_report', defaults: { format: :csv }
+
+  # for profile & application button on practitioner show page
+  get '/profile_page', to: 'mhc/verification_platform#profile_page'
+  get '/application_page', to: 'mhc/verification_platform#application_page'
+  get '/enrollment_report_page', to: 'mhc/verification_platform#enrollment_report_page'
+
+  namespace :mhc do
+    resources :provider_insurance_coverages
+    resources :provider_npdbs
+    resources :provider_npdb_comments
+    resources :provider_personal_information_comments
+    resources :provider_personal_information_app_trackings
+    resources :provider_licensures
+    resources :practice_informations, path: 'practice-information'
+    resources :provider_educations, only: [:index, :create, :update, :destroy], path: 'provider-education'
+    resources :practice_information_educations, only: [:index, :create, :update, :destroy], path: 'practice-information-education'
+    resources :provider_specialties, only: [:index, :new, :create, :edit, :destroy, :update], path: 'provider-specialties'
+    resources :provider_personal_informations, only: [:update], path: 'provider-personal-information'
+    resources :provider_personal_information_sam_records, only: [:create, :show], path: 'provider-personal-information-sam-record' do
+      collection do
+        get :auto_create, path: 'auto-create'
+      end
+    end
+    resources :provider_personal_information_reinstatements, only: [:create], path: 'provider-personal-information-reinstatements'
+    resources :provider_personal_information_sam_rva_records, only: [:create, :update], path: 'provider-personal-information-sam-rva-record' do
+      member do
+        get :auto_create, path: 'auto-create'
+      end
+    end
+    resources :provider_deas, only: [:create, :update, :destroy], path: 'provider-dea'
+    resources :verification_platform, only: [:index, :show], path: 'verification-platform'
+
+    resources :client_portal, only: [:index, :show], path: 'client-portal' do
+      collection do
+        get :upload_csv
+        post :process_csv
+        get :clear_csv
+        get :download_csv
+      end
+    end
+
+    resources :manage_practitioners, only: [:index], path: 'manage-practitioners'
+    resources :manage_clients, only: [:index], path: 'manage-clients' do
+      collection do
+        post :provider_personal_uploaded_docs, path: 'provider-personal-uploaded-docs'
+        delete :delete_provider_personal_docs, path: 'delete_provider_personal_docs'
+      end
+    end
+    resources :schools
+  end
+
+  post 'mhc/verification-platform/send-contact', to: 'mhc/verification_platform#send_contact'
+
+  resources :app_trackers, path: 'app-tracker' do
+    member do
+      get :upload_documents
+      post :upload_documents
+      delete :delete_uploaded_document
+      get :view_uploaded_documents
+      post :download_documents
+    end
+  end
 
   namespace :api do
     namespace :v1 do
