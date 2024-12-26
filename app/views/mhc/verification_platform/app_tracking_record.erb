@@ -1,0 +1,215 @@
+    <div class="enc-content">
+        <div class="container">
+          <%= render "top_nav_buttons"%>
+            <div class="form-row row mt-3">
+                <div class="col-xl-6 d-flex align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <a href="<%= mhc_verification_platform_path(page_tab: 'app_tracking')%>" class="link-back">
+                            <i class='bx bx-left-arrow-alt'></i>
+                        </a>
+                        <h4 class="page-heading"><%= @provider_personal_information_app_tracking.persisted? ? "Update" : "Add New" %> Application</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-6">
+                    `<%= form_with model: [:mhc, @provider_personal_information_app_tracking] do |f| %>
+                        <%= f.hidden_field :provider_personal_information_id %>
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <%= f.label :application_type, "Application Type Date:" %>
+                                <%= f.select :application_type, options_for_select([['Crediantial', 'credential'], ['Re-Credential', 're_credential']], f.object.application_type), { prompt: '' }, { class: 'form-select', required: true } %>
+                            </div>
+                            <div class="col-xl-6">
+                                <%= f.label :owner, "Owner (Last Name, First Name):" %>
+                                <%= f.select :owner, options_for_select(@provider_information_names, f.object.owner), { prompt: '' }, { class: 'form-select', required: true } %>
+                            </div>
+                        </div>
+                        <div class="form-row row">
+                            <div class="col-xl-4">
+                                <%= f.label :application_receipt_date, "Application Receipt Date:" %>
+                                <%= f.date_field :application_receipt_date, class: "form-control" %>
+                            </div>
+                            <div class="col-xl-4">
+                                <%= f.label :application_receive_complete_date, "App Receive Complete Date:" %>
+                                <%= f.date_field :application_receive_complete_date, class: "form-control", placeholder: "Enter Status" %>
+                            </div>
+                            <div class="col-xl-4">
+                                <%= f.label :application_submitted_date, "Application Submitted Date:" %>
+                                <%= f.date_field :application_submitted_date, class: "form-control", placeholder: "Enter Status" %>
+                            </div>
+                        </div>
+                        <div class="form-row row">
+                            <div class="col-xl-6">
+                                <%= f.label :verification_complete_date, "Verification Complete Date:" %>
+                                <%= f.date_field :verification_complete_date, class: "form-control", placeholder: "Enter Status" %>
+                            </div>
+                            <div class="col-xl-6">
+                                <%= f.label :file_return_to_client_date, "File Return to Client Date:" %>
+                                <%= f.date_field :file_return_to_client_date, class: "form-control", placeholder: "Enter Status" %>
+                            </div>
+                        </div>
+                        <div class="form-row row">
+                            <div class="col-xl-6">
+                                    <%= f.label :expedite, "Expedite:" %>
+                                    <%= f.check_box :expedite %>
+                            </div>
+                        </div>
+                        <div class="form-row row">
+                            <div class="col-xl-12">
+                                <%= f.label :application_comment, "Please list any comments:" %>
+                                <%= f.text_area :application_comment, class: "form-control"%>
+                            </div>
+                        </div>
+
+                        <div class="form-row mt-3 page-applicable">
+                            <div class="row">
+                                <div class="col-xl-6">
+                                    <label for="">Master Issue List</label>
+                                    <div class="left-pane bg-gray" style="padding: 10px;height:300px;overflow:scroll;">
+                                        <%# <div class="form-control enc-search-wrp">
+                                            <input type="" name="" class="enc-search-input" placeholder="Search">
+                                            <i class='bx bx-search'></i>
+                                        </div> %>
+                                        <div class="form-row d-flex gap-2 flex-wrap mt-2">
+                                            <span class="provider-check">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" id="acc-cert-not-received">
+                                                    <label class="form-check-label" for="acc-cert-not-received">
+                                                        CDS Not Verified
+                                                    </label>
+                                                </div>
+                                            </span>
+                                            <span class="provider-check">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" id="incomp-app">
+                                                    <label class="form-check-label" for="flexCheckDefault2">
+                                                        DEA Copy Not Received
+                                                    </label>
+                                                </div>
+                                            </span>
+                                        </div>
+                                        <div class="form-row d-flex gap-2 flex-wrap mt-2">
+                                            <span class="provider-check">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" id="acc-cert-not-received">
+                                                    <label class="form-check-label" for="acc-cert-not-received">
+                                                        CDS Not Verified
+                                                    </label>
+                                                </div>
+                                            </span>
+                                            <span class="provider-check">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" id="incomp-app">
+                                                    <label class="form-check-label" for="flexCheckDefault2">
+                                                        DEA Expiring / Expired
+                                                    </label>
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button type="button" class="btn btn-primary py-1">
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <label for="">Client Flag</label>
+                                    <div class="right-pane border-dash bg-gray" style="padding: 10px;height:300px;overflow:scroll;">
+                                        <div class="form-row d-flex gap-2 flex-wrap">
+                                            <span class="provider-check">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" id="DEA-not-valid">
+                                                    <label class="form-check-label" for="DEA-not-valid">
+                                                        DEA Not Verified
+                                                    </label>
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button type="button" class="btn btn-danger">
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row mt-3 page-applicable">
+                            <div class="row">
+                                <div class="col-xl-6">
+                                    <label for="">Master Review List</label>
+                                    <div class="left-pane bg-gray" style="padding: 10px;height:300px;overflow:scroll;">
+                                        <%# <div class="form-control enc-search-wrp">
+                                            <input type="" name="" class="enc-search-input" placeholder="Search">
+                                            <i class='bx bx-search'></i>
+                                        </div> %>
+                                        <div class="form-row d-flex gap-2 flex-wrap mt-2">
+                                            <span class="provider-check">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" id="acc-cert-not-received">
+                                                    <label class="form-check-label" for="acc-cert-not-received">
+                                                        Accreditation Certification Not Received
+                                                    </label>
+                                                </div>
+                                            </span>
+                                            <span class="provider-check">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" id="incomp-app">
+                                                    <label class="form-check-label" for="flexCheckDefault2">
+                                                        Incomplete App: Continuing Education Requirement
+                                                    </label>
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button type="button" class="btn btn-primary py-1">
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <label for="">Client Flag</label>
+                                    <div class="right-pane border-dash bg-gray" style="padding: 10px;height:300px;overflow:scroll;">
+                                        <div class="form-row d-flex gap-2 flex-wrap">
+                                            <span class="provider-check">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" id="DEA-not-valid">
+                                                    <label class="form-check-label" for="DEA-not-valid">
+                                                        DEA Not Verified
+                                                    </label>
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button type="button" class="btn btn-danger">
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row row">
+                            <div class="col-xl-12">
+                                <%= f.label :file_status, "File Status:" %>
+                                <%= f.select :file_status, options_for_select([['Clean', 'clean'], ['Issue', 'issue'],  ['Review', 'review'],  ['Review & Issue', 'review_and_issue']], f.object.file_status), { prompt: '' }, { class: 'form-select', required: true } %>
+                            </div>
+                        </div>
+                        <div class="form-row row">
+                            <div class="col-xl-12">
+                                <%= f.label :other_comment, "Please list any comments:" %>
+                                <%= f.text_area :other_comment, class: "form-control"%>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <%= f.submit 'Save',  class: "btn btn-success px-5" %>
+                        </div>
+                    <% end %>
+                </div>
+            </div>
+        </div>
+    </div>
