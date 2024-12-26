@@ -250,6 +250,15 @@ class Mhc::VerificationPlatformController < ApplicationController
       )
     end
 
+    if params[:page_tab] == 'app_tracking'
+      @provider_personal_information_app_trackings = ProviderPersonalInformationAppTracking.where(provider_personal_information_id: @provider_personal_information.id).paginate(per_page: 10, page: params[:page] || 1)
+    end
+
+    if params[:page_tab] == 'app_tracking_record'
+      @provider_personal_information_app_tracking = ProviderPersonalInformationAppTracking.where(id: params[:provider_personal_information_app_tracking_id]).first_or_initialize(provider_personal_information_id: @provider_personal_information.id)
+      @provider_information_names = ProviderPersonalInformation.select(:id, "CONCAT(last_name,', ',first_name, ' ', middle_name) as name").all.collect { |provider_personal_information| [provider_personal_information.name, provider_personal_information.id]}
+    end
+
     # code for licensure tab
     if %w[edit_licensure license_record].include?(params[:page_tab])
       @provider_licensure = ProviderLicensure.find(params[:licensure_id])

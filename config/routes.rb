@@ -382,6 +382,7 @@ Rails.application.routes.draw do
     resources :provider_npdbs
     resources :provider_npdb_comments
     resources :provider_personal_information_comments
+    resources :provider_personal_information_app_trackings
     resources :provider_licensures
     resources :practice_informations, path: 'practice-information'
     resources :provider_educations, only: [:index, :create, :update, :destroy], path: 'provider-education'
