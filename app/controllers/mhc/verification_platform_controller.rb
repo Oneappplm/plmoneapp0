@@ -190,9 +190,14 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'registration'
+      @provider_personal_information = ProviderPersonalInformation.find_by(id: params[:provider_personal_information_id] || params[:id])
       @provider_deas = @provider_personal_information.provider_deas.order(:id)
+      @provider_cd = ProviderCd.new(caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id)
       @states = State.all
+      @provider_cds = @provider_personal_information.provider_cds.order(:id)
+      @new_provider_cd = ProviderCd.new(caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id, provider_attest_id: @provider_personal_information.provider_attest_id) 
     end
+    
 
     if params[:page_tab] == 'liability'
       @q = ProviderInsuranceCoverage.ransack(params[:q])

@@ -103,6 +103,10 @@ Rails.application.routes.draw do
       post :autosave_multi_record
     end
   end
+  
+  namespace :mhc do
+    resources :provider_cds
+  end
 
   resources :alt_enrollment_groups, path: 'alt-enrollment-groups' do
     get :documents
