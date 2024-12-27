@@ -378,6 +378,7 @@ Rails.application.routes.draw do
   get '/enrollment_report_page', to: 'mhc/verification_platform#enrollment_report_page'
 
   namespace :mhc do
+    resources :provider_cds
     resources :provider_insurance_coverages
     resources :provider_npdbs
     resources :provider_npdb_comments
@@ -417,7 +418,7 @@ Rails.application.routes.draw do
         get 'history', to: 'client_portal#history'
       end
     end
-    
+
 
     resources :manage_practitioners, only: [:index], path: 'manage-practitioners'
     resources :manage_clients, only: [:index], path: 'manage-clients' do
