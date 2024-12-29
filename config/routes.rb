@@ -395,6 +395,14 @@ Rails.application.routes.draw do
       get :view_uploaded_documents
     end
   end
+  resources :help_codes, path: 'help-codes'
+  resources :pdf_populators, only: [:index], path: 'pdf-populator' do
+    collection do
+      post :populate_data
+      get  :search_providers
+    end
+  end
+
 
   post '/save_attempt_details', to: 'app_trackers#save_attempt_details'
   post '/provider_personal_docs_uploaded_documents', to: 'app_trackers#provider_personal_docs_uploaded_documents'
@@ -568,16 +576,6 @@ Rails.application.routes.draw do
   post 'mhc/verification-platform/send-contact', to: 'mhc/verification_platform#send_contact'
   post 'mhc/verification-platform/generate_rva_information', to: 'mhc/verification_platform#generate_rva_information'
   post 'mhc/verification-platform/generate_npdb_information', to: 'mhc/verification_platform#generate_npdb_information'
-
-  resources :app_trackers, path: 'app-tracker' do
-    member do
-      get :upload_documents
-      post :upload_documents
-      delete :delete_uploaded_document
-      get :view_uploaded_documents
-      post :download_documents
-    end
-  end
 
   namespace :api do
     namespace :v1 do

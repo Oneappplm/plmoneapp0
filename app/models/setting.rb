@@ -28,6 +28,8 @@ class Setting < ApplicationRecord
  def cignahealth? = client_name == 'cignahealth'
 	def dcs? = client_name == 'dcs'
 	def sprout? = client_name == 'sprout'
+	def affordablecare? = client_name == 'affordablecare'
+	def groups? = client_name == 'groups'
 	def mhc? = client_name == 'mhc'
 
 	def t(key)

@@ -109,6 +109,14 @@ class Provider < ApplicationRecord
   scope :non_binary, -> { where(gender: 'Non Binary') }
   scope :active, -> { where(status: 'active') }
   scope :inactive, -> { where(status: 'inactive-termed') }
+  scope :search_by_condition, -> (params) {
+    conditions = {}
+    conditions[:first_name] = params[:first_name].titleize if params[:first_name].present?
+    conditions[:last_name] = params[:last_name].titleize if params[:last_name].present?
+    conditions[:npi] = params[:npi] if params[:npi].present?
+
+    where(conditions)
+  }
 
   after_save :send_welcome_letter
 
