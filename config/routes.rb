@@ -350,7 +350,14 @@ Rails.application.routes.draw do
     end
   end
 
-		resources :audit_trails, only: [:index, :show], path: 'audit-trail'
+	resources :audit_trails, only: [:index, :show], path: 'audit-trail'
+  resources :help_codes, path: 'help-codes'
+  resources :pdf_populators, only: [:index], path: 'pdf-populator' do
+    collection do
+      post :populate_data
+      get  :search_providers
+    end
+  end
 
   namespace :api do
     namespace :v1 do
