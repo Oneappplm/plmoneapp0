@@ -1,115 +1,92 @@
-<%= form_with url: virtual_review_committee_path, method: :get, html: { id: 'vrc-search-form'} do |form| %>
-<div class="card">
-   <div class="card-body bg-medium-grey">
+<%= search_form_for @q, url: virtual_review_committee_path, html: { id: 'vrc-search-form' } do |f| %>
+  <div class="card">
+    <div class="card-body bg-medium-grey">
       <div class="row">
-         <div class="col-lg-6">
-            <div class="form-group mb-3 text-black">
-               <label for="">Provider Type</label>
-               <select name="provider_type" class="form-select py-1">
-                  <option value="">Select option</option>
-                  <% @provider_types.each do |provider_type|%>
-                  <option value=<%= provider_type.fch %> <%= params['provider_type'] == provider_type.fch ? 'selected' : '' %>><%= provider_type.fch%></option>
-                  <% end %>
-               </select>
+        <!-- Left Column -->
+        <div class="col-lg-6">
+          <!-- Provider Type -->
+          <div class="form-group mb-3 text-black">
+            <%= f.label :provider_type_eq, "Provider Type" %>
+            <%= f.select :provider_type_eq, options_for_select([["Select option", ""]] + @provider_types.map { |p| [p.fch, p.fch] }, params.dig(:q, :provider_type_eq)),{}, class: 'form-select py-1' %>
+          </div>
+          <!-- Specialty -->
+          <div class="form-group mb-3 text-black">
+            <%= f.label :specialty_eq, "Specialty" %>
+            <%= f.select :specialty_eq, options_for_select([["Select option", ""]] + specialties.map { |s| [s.bcbs, s.bcbs] }, params.dig(:q, :specialty_eq)), {},  class: 'form-select py-1' %>
+          </div>
+          <!-- First Name and Last Name -->
+          <div class="row mb-3">
+            <div class="col-lg-6">
+              <%= f.label :first_name_cont, "First Name" %>
+              <%= f.text_field :first_name_cont, value: params.dig(:q, :first_name_cont), class: 'form-control py-1' %>
             </div>
-            <div class="form-group mb-3 text-black">
-               <label for="">Specialty</label>
-               <select class="form-select py-1" name="specialty">
-                  <option value="">Select option</option>
-                  <% specialties.each do |specialty|%>
-                  <option value="<%= specialty.bcbs%>" <%= params['specialty'] == specialty.bcbs ? 'selected' : '' %>><%= specialty.bcbs %></option>
-                  >
-                  <% end %>
-               </select>
+            <div class="col-lg-6">
+              <%= f.label :last_name_cont, "Last Name" %>
+              <%= f.text_field :last_name_cont, value: params.dig(:q, :last_name_cont), class: 'form-control py-1' %>
             </div>
-            <div class="row mb-3">
-               <div class="col-lg-6 text-black">
-                  <label for="">First Name</label>
-                  <input type="text" class="form-control  py-1" name="first_name" value="<%= params[:first_name] %>" placeholder="">
-               </div>
-               <div class="col-lg-6 text-black">
-                  <label for="">Last Name</label>
-                  <input type="text" class="form-control  py-1 text-black" name="last_name" value="<%= params[:last_name] %>" placeholder="">
-               </div>
+          </div>
+          <!-- Review Level -->
+          <div class="form-group mb-3 text-black">
+            <%= f.label :review_level_eq, "Review Level" %>
+            <%= f.select :review_level_eq, options_for_select([["Select option", ""], "Expedited"], params.dig(:q, :review_level_eq)), {}, class: 'form-select py-1' %>
+          </div>
+          <!-- Credential Cycle -->
+          <div class="form-group mb-3 text-black">
+            <%= f.label :cred_cycle_eq, "Credential Cycle" %>
+            <%= f.select :cred_cycle_eq, options_for_select([["Select option", ""], "Credential", "Recredential"], params.dig(:q, :cred_cycle_eq)), {}, class: 'form-select py-1' %>
+          </div>
+        </div>
+        <!-- Right Column -->
+        <div class="col-lg-6 text-black">
+          <!-- PSV Completed -->
+          <div class="row mb-3">
+            <%= f.label :psv_completed_date_gteq, "PSV Completed" %>
+            <div class="col-lg-6">
+              <%= f.date_field :psv_completed_date_gteq, value: params.dig(:q, :psv_completed_date_gteq), class: 'form-control py-1', placeholder: 'From' %>
             </div>
-            <div class="form-group mb-3 text-black">
-               <label for="">Review Level</label>
-               <select name="review_level" class="form-select py-1">
-                  <option value="">Select option</option>
-                  <option value="Expedited" <%= params['review_level'] == 'Expedited' ? 'selected' : '' %>>
-                     Expedited
-                  </option>    
-               </select>
+            <div class="col-lg-6">
+              <%= f.date_field :psv_completed_date_lteq, value: params.dig(:q, :psv_completed_date_lteq), class: 'form-control py-1', placeholder: 'To' %>
             </div>
-            <div class="form-group mb-3 text-black">
-               <label for="">Credential Cycle</label>
-               <select class="form-select py-1" name="cred_cycle">
-                  <option value="">Select option</option>
-                  <option value="Credential" <%= params['cred_cycle'] == 'Credential' ? 'Selected' : ''%>>Credential</option>
-                  <option value="Recredential" <%= params['cred_cycle'] == 'Recredential' ? 'Selected' : ''%>>Recredential</option>
-               </select>
+          </div>
+          <!-- Committee Date -->
+          <div class="row mb-3">
+            <%= f.label :committee_date_gteq, "Committee Date" %>
+            <div class="col-lg-6">
+              <%= f.date_field :committee_date_gteq, value: params.dig(:q, :committee_date_gteq), class: 'form-control py-1', placeholder: 'From' %>
             </div>
-         </div>
-         <div class="col-lg-6 text-black">
-            <div class="row mb-3">
-               <label for="">PSV Completed</label>
-               <div class="col-lg-6">
-                  <input type="date" class="form-control  py-1"  name="PSV_date_from" placeholder="from">
-               </div>
-               <div class="col-lg-6">
-                  <input type="date" class="form-control  py-1" name="PSV_date_to" placeholder="to">
-               </div>
+            <div class="col-lg-6">
+              <%= f.date_field :committee_date_lteq, value: params.dig(:q, :committee_date_lteq), class: 'form-control py-1', placeholder: 'To' %>
             </div>
-            <div class="row mb-3">
-               <label for="">Committee Date</label>
-               <div class="col-lg-6">
-                  <input type="date" class="form-control  py-1" name="committee_date_from"  placeholder="from">
-               </div>
-               <div class="col-lg-6">
-                  <input type="date" class="form-control  py-1" name="committee_date_to"   placeholder="to">
-               </div>
+          </div>
+          <!-- Review Date -->
+          <div class="row mb-3">
+            <%= f.label :review_date_gteq, "Review Date Range" %>
+            <div class="col-lg-6">
+              <%= f.date_field :review_date_gteq, value: params.dig(:q, :review_date_gteq), class: 'form-control py-1', placeholder: 'From' %>
             </div>
-            <div class="row mb-3">
-               <label for="">Review Date Range</label>
-               <div class="col-lg-6">
-                  <input type="date" class="form-control py-1" name="review_date_from"  placeholder="from">
-               </div>
-               <div class="col-lg-6">
-                  <input type="date" class="form-control py-1" name="review_date_to"  placeholder="to">
-               </div>
+            <div class="col-lg-6">
+              <%= f.date_field :review_date_lteq, value: params.dig(:q, :review_date_lteq), class: 'form-control py-1', placeholder: 'To' %>
             </div>
-            <div class="row mb-8">
-               <label for="">State</label>
-               <div class="col-lg-12 mb-3">
-                  <select class="form-select py-1" name="state">
-                     <option value="">Select option</option>
-                     <% @states.each do |state|%>
-                     <option value="<%= state.alpha_code %>" <%= state.alpha_code == params['state'] ? 'selected' : '' %>><%= state.name %> - <%= state.alpha_code %></option>
-                     <% end %>
-                  </select>
-               </div>
-               <div class="col-lg-12">
-                  <div class="form-group mb-3">
-                     <label for="">ID Type</label>
-                     <input type="text" class="form-control  py-1">
-                  </div>
-               </div>
-            </div>
-         </div>
-         <!-- start of row for btton -->
-         <div class="row mt-3">
-            <div class="col-lg-12  d-flex">
-               <div class="flex-grow-1 justify-content-center align-items-center text-center">
-                  <button class="btn btn-sm btn-primary fw-bold" style="margin-left: 10%;width: 150px;">Submit</button>
-               </div>
-               <div class="flex-shrink-0">
-                  <a href="<%= virtual_review_committee_path %>" class="btn btn-sm btn-danger">Clear</a>
-               </div>
-            </div>
-         </div>
-         <!-- end of row for button -->
+          </div>
+          <!-- State -->
+          <div class="form-group mb-3 text-black">
+            <%= f.label :state_eq, "State" %>
+            <%= f.select :state_eq, options_for_select([["Select option", ""]] + @states.map { |s| ["#{s.name} - #{s.alpha_code}", s.alpha_code] }, params.dig(:q, :state_eq)), {}, class: 'form-select py-1' %>
+          </div>
+          <!-- ID Type -->
+          <div class="form-group mb-3 text-black">
+            <%= f.label :id_type_cont, "ID Type" %>
+            <%= f.text_field :id_type_cont, value: params.dig(:q, :id_type_cont), class: 'form-control py-1' %>
+          </div>
+        </div>
       </div>
-   </div>
-</div>
+      <!-- Buttons -->
+      <div class="row mt-3">
+        <div class="col-lg-12 d-flex">
+          <%= f.submit "Submit", class: "btn btn-sm btn-primary fw-bold", style: "margin-left: 10%; width: 150px;" %>
+          <%= link_to "Clear", virtual_review_committee_path, class: "btn btn-sm btn-danger ms-3" %>
+        </div>
+      </div>
+    </div>
+  </div>
 <% end %>
-
