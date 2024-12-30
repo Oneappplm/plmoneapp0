@@ -105,53 +105,50 @@ class PagesController < ApplicationController
 	end
 
 	def virtual_review_committee
+    @q = VirtualReviewCommittee.ransack(params[:q])
+    @vrc_documents = VrcDocument.all
     @vrc_directors = User.directors
 
-		@vrcs = if @global_search_text.present?
-			VirtualReviewCommittee.search(@global_search_text)
-		else
-			VirtualReviewCommittee.all
-		end
+    # Apply search and filters via Ransack
+    @vrcs = @q.result
 
-    if (params[:review_date_from].present? && params[:review_date_to].present?) && (params[:committee_date_from].present? && params[:committee_date_to])&&params[:PSV_date_from].present? && params[:PSV_date_to].present?
-        review_date_range = Date.parse(params[:review_date_from])..Date.parse(params[:review_date_to])
-        committee_date_range = Date.parse(params[:committee_date_from])..Date.parse(params[:committee_date_to])
-        psv_date_range = Date.parse(params[:PSV_date_from])..Date.parse(params[:PSV_date_to])
-        @vrcs = @vrcs.where(review_date: review_date_range, committee_date: committee_date_range, psv_completed_date: psv_date_range)
-
-    elsif (params[:review_date_from].present? && params[:review_date_to].present?)
-        review_date_range = Date.parse(params[:review_date_from])..Date.parse(params[:review_date_to])
-        @vrcs = @vrcs.where(review_date: review_date_range)
-
-    elsif (params[:committee_date_from].present? && params[:committee_date_to].present?)
-        committee_date_range = Date.parse(params[:committee_date_from])..Date.parse(params[:committee_date_to])
-        @vrcs = @vrcs.where(committee_date: committee_date_range)
-
-    elsif (params[:PSV_date_from].present? && params[:PSV_date_to].present?)
-      psv_date_range = Date.parse(params[:PSV_date_from])..Date.parse(params[:PSV_date_to])
-       @vrcs = @vrcs.where(psv_completed_date: psv_date_range)
-
+    # Date range filtering
+    if params[:review_date_from].present? && params[:review_date_to].present?
+      @vrcs = @vrcs.where(review_date: Date.parse(params[:review_date_from])..Date.parse(params[:review_date_to]))
     end
 
-		if params[:'vrc-progress-status'].present? && params[:'vrc-progress-status'] != 'all'
-			@vrcs = @vrcs.send(params[:'vrc-progress-status'])
-		end
+    if params[:committee_date_from].present? && params[:committee_date_to].present?
+      @vrcs = @vrcs.where(committee_date: Date.parse(params[:committee_date_from])..Date.parse(params[:committee_date_to]))
+    end
 
-		@vrcs = @vrcs.paginate(page: params[:page], per_page: 50)
+    if params[:PSV_date_from].present? && params[:PSV_date_to].present?
+      @vrcs = @vrcs.where(psv_completed_date: Date.parse(params[:PSV_date_from])..Date.parse(params[:PSV_date_to]))
+    end
 
-		if params[:vrc].present? && params[:vrc] == 'work-tickler'
-			render 'work_tickler'
-		elsif params[:vrc].present? && params[:vrc] == 'documents'
-			render 'documents'
-		elsif params[:vrc].present? && params[:vrc] == 'reports'
-			render 'reports'
-		elsif params[:vrc].present? && params[:vrc] == 'issue'
-			render 'issue'
-    elsif params[:vrc].present? && params[:vrc] == 'minutes'
+    # Progress status filter
+    if params[:'vrc-progress-status'].present? && params[:'vrc-progress-status'] != 'all'
+      @vrcs = @vrcs.send(params[:'vrc-progress-status'])
+    end
+
+    # Pagination
+    @vrcs = @vrcs.paginate(page: params[:page], per_page: 50)
+
+    # Conditional rendering based on `vrc` parameter
+    case params[:vrc]
+    when 'work-tickler'
+      render 'work_tickler'
+    when 'documents'
+      render 'documents'
+    when 'reports'
+      render 'reports'
+    when 'issue'
+      render 'issue'
+    when 'minutes'
       @completed_records = VirtualReviewCommittee.where(progress_status: "completed")
       render 'minutes'
-		end
-	end
+    end
+  end
+
 
   def records
     @vrc_directors = User.directors
@@ -229,32 +226,70 @@ class PagesController < ApplicationController
 		render "client_portal"
   end
 
-  def download_clients
-    provider_attest_id = params[:provider_attest_id]
+  # def download_clients
+  #   provider_attest_id = params[:provider_attest_id]
     
-    @provider_personal_informations = ProviderPersonalInformation.where(provider_attest_id: provider_attest_id)
+  #   @provider_personal_informations = ProviderPersonalInformation.where(provider_attest_id: provider_attest_id)
 
-    @q = ProviderPersonalInformation.ransack(params[:q]&.except(:advanced_search))
+  #   @q = ProviderPersonalInformation.ransack(params[:q]&.except(:advanced_search))
+
+  #   csv_data = CSV.generate(headers: true) do |csv|
+  #     csv << ['NPI', 'Provider Name', 'Address', 'MedvId', 'Cred Cycle']
+      
+  #     @provider_personal_informations.each do |provider|
+  #       practice_information = provider.provider_attest.practice_informations.first
+  #       csv << [
+  #         "#{provider.npi}",
+  #         "#{provider.fullname}, #{provider.provider_type_provider_type_abbreviation}",
+  #         "#{practice_information.complete_address}",
+  #         "#{provider.caqh_provider_attest_id}"
+  #       ]
+  #     end
+  #   end
+  #   respond_to do |format|
+  #     format.csv { send_data csv_data, filename: "provider_report_#{Date.today}.csv" }
+  #   end
+  # end
+
+
+  def download_clients
+    selected_ids = params[:selected_ids]&.split(',')
+
+    @virtual_review_committees = if selected_ids.present?
+                                   VirtualReviewCommittee.where(id: selected_ids)
+                                 else
+                                   VirtualReviewCommittee.all
+                                 end
 
     csv_data = CSV.generate(headers: true) do |csv|
-      csv << ['Status', 'Provider Name', 'Birth Date', 'Address', 'Attested Date', 'MedvId', 'Cred Cycle']
-      
-      @provider_personal_informations.each do |provider|
-        practice_information = provider.provider_attest.practice_informations.first
+      csv << [
+        'Assigned','Provider Name', 'Provider Type', 'Cred Cycle', 'PSV Completed Date',
+        'Review Level', 'Recred Due Date', 'Review Date', 'Committee Date',
+        'Status'
+      ]
+
+      @virtual_review_committees.each do |vrc|
         csv << [
-          "#{provider.cred_status}",
-          "#{provider.fullname}, #{provider.provider_type_provider_type_abbreviation}",
-          "#{provider.birth_date.strftime("%Y-%m-%d")}",
-          "#{practice_information.complete_address}",
-          "#{provider.attest_date.strftime("%Y-%m-%d")}",
-          "#{provider.caqh_provider_attest_id}"
+          vrc.progress_status,
+          vrc.provider_name,
+          vrc.provider_type,
+          vrc.cred_cycle,
+          vrc.psv_completed_date&.strftime('%Y-%m-%d'),
+          vrc.review_level,
+          vrc.recred_due_date&.strftime('%Y-%m-%d'),
+          vrc.review_date&.strftime('%Y-%m-%d'),
+          vrc.committee_date&.strftime('%Y-%m-%d'),
+          vrc.status
         ]
       end
     end
+
     respond_to do |format|
-      format.csv { send_data csv_data, filename: "provider_report_#{Date.today}.csv" }
+      filename = selected_ids.present? ? "selected_vrcs_#{Date.today}.csv" : "all_vrcs_#{Date.today}.csv"
+      format.csv { send_data csv_data, filename: filename }
     end
   end
+
 
   def show_virtual_review_committee
   	if params[:client_id].present?
@@ -269,15 +304,22 @@ class PagesController < ApplicationController
   def record_approval
     @record = DirectorProvider.where(virtual_review_committee_id: params[:id])
 
-    if @record.update(record_approval_params)
-     if record_approval_params[:status] != "Pending"
-        @vrc = VirtualReviewCommittee.find(params[:id]).update(progress_status: "completed")
+    if @record
+      if params[:status].present? && params[:status] != "Pending"
+        @vrc = VirtualReviewCommittee.find(params[:id])
+        @vrc.update(
+          progress_status: "completed",
+          review_details: params[:description],
+          review_level: params[:status]
+        )
       end
-      redirect_to virtual_review_committee_path
+      redirect_to show_virtual_review_committee_path(params[:id]), notice: "Records updated successfully."
     else
-      render :show_virtual_review_committee, notice: "There was an error updating the records."
+      flash[:alert] = "There was an error updating the records."
+      render :show_virtual_review_committee
     end
   end
+
 
   def providers;end
 
@@ -308,6 +350,46 @@ class PagesController < ApplicationController
 		def settings
 			@setting = Setting.take || Setting.new
 		end
+
+  # for uploading and downloading the document in "VRC Document"
+
+  def upload_vrc_document
+    @vrc_document = VrcDocument.new(vrc_document_params)
+    if @vrc_document.save
+      redirect_to virtual_review_committee_path(vrc: 'documents'), notice: "Document uploaded successfully."
+    else
+      render :vrc_list_document, alert: "Failed to upload document."
+    end
+  end
+
+  def update_vrc_document
+    document = VrcDocument.find(params[:document_id])
+    if document.update(vrc_document_params)
+      redirect_to virtual_review_committee_path(vrc: 'documents'), notice: "Document updated successfully."
+    else
+      redirect_to virtual_review_committee_path(vrc: 'documents'), alert: 'Document or file not found.'
+    end
+  end
+
+  def delete_vrc_documents
+    document = VrcDocument.find(params[:id])
+    if document && document.destroy
+      flash[:notice] = 'Document was successfully deleted.'
+      render json: { success: true }
+    else
+      flash[:alert] = 'Failed to delete the document.'
+      render json: { success: false }, status: :not_found
+    end
+  end
+
+
+    # @vrc_document = VrcDocument.find(params[:id])
+    # if @vrc_document.destroy
+    #   redirect_to virtual_review_committee_path(vrc: 'documents'), notice: "Document deleted successfully."
+    # else
+    #   redirect_to virtual_review_committee_path(vrc: 'documents'), alert: "Failed to delete the document."
+    # end
+
 
 	protected
 
@@ -434,7 +516,6 @@ class PagesController < ApplicationController
     ProviderSourcesCds.delete(id) if model == 'cds'
     ProviderSourcesRegistration.delete(id) if model == 'registration'
     ProviderSourceCme.delete(id) if model == 'cme'
-
   end
 
   private
@@ -446,8 +527,14 @@ class PagesController < ApplicationController
       params.permit(:progress_status)
     end
 
-    def record_approval_params
-      params.permit(:status, :description, :signature_upload)
+    # def record_approval_params
+    #   params.permit(:status, :description, :signature_upload)
+    # end
+
+    def vrc_document_params
+      params.permit(:name, :committee_date, :file_upload)
     end
+
+
 end
 

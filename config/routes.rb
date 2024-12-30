@@ -92,6 +92,11 @@ Rails.application.routes.draw do
   patch '/record_approval', to: 'pages#record_approval', as: 'record_approval'
   get '/virtual_review_committee/minutes', to: 'pages#minutes', as: 'minutes'
 
+  post '/upload_vrc_document', to: 'pages#upload_vrc_document', as: :upload_document
+  post '/update_vrc_document', to: 'pages#update_vrc_document', as: :update_vrc_document
+  post '/delete_vrc_documents/:id', to: 'pages#delete_vrc_documents', as: :delete_vrc_document
+
+
   resources :manage_clients
 
 
