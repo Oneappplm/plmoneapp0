@@ -13,6 +13,9 @@ class ProviderPersonalInformation < ApplicationRecord
   has_many :provider_cds, through: :provider_attest
   has_many :provider_insurance_coverages, through: :provider_attest
   has_many :practice_associates, through: :provider_attest
+  has_many :provider_medicares, foreign_key: :provider_attest_id, primary_key: :provider_attest_id
+  has_many :provider_medicaids, foreign_key: :provider_attest_id, primary_key: :provider_attest_id, dependent: :destroy
+  has_many :provider_militaries, foreign_key: :provider_attest_id, primary_key: :provider_attest_id, dependent: :destroy
   has_many :provider_work_histories, through: :provider_attest
   has_many :provider_medical_licenses, through: :provider_attest
   has_many :provider_specialties, through: :provider_attest

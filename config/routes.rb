@@ -124,6 +124,19 @@ Rails.application.routes.draw do
 
   resources :missing_field_submissions
 
+  namespace :mhc do
+    resources :provider_medicares
+  end  
+
+  namespace :mhc do
+    resources :provider_medicaids
+  end  
+
+  namespace :mhc do
+    resources :provider_militaries
+  end
+  
+
   # added these two resources just to make it different to pages_controller for now it doesn't have any model
   resources :verification_platform, path: 'verification-platform'
   resources :office_managers, path: 'group-engage' do
