@@ -372,21 +372,19 @@
                                 </div>
                             </div>
                             <div class="form-row d-flex align-items-center gap-3 mt-2">
-                                <label for="">Show on Tickler?</label>
-                                <div class="form-check d-flex align-items-center gap-2">
-                                    <input class="form-check-input" type="radio" name="ECFMG-ticker-radio"
-                                        id="ECFMG-ticker-radio-yes" value="Yes">
-                                    <label class="form-check-label" for="ECFMG-ticker-radio-yes">
-                                        Yes
-                                    </label>
-                                </div>
-                                <div class="form-check d-flex align-items-center gap-2">
-                                    <input class="form-check-input" type="radio" name="ECFMG-ticker-radio"
-                                        id="ECFMG-ticker-radio-no" value="No">
-                                    <label class="form-check-label" for="ECFMG-ticker-radio-no">
-                                        No
-                                    </label>
-                                </div>
+                              <label for="">Show on Tickler?</label>
+                              <div class="form-check d-flex align-items-center gap-2">
+                                <%= f.radio_button :show_on_tickler, true, class: "form-check-input", id: "show_on_tickler_yes" %>
+                                <label class="form-check-label" for="show_on_tickler_yes">
+                                  Yes
+                                </label>
+                              </div>
+                              <div class="form-check d-flex align-items-center gap-2">
+                                <%= f.radio_button :show_on_tickler, false, class: "form-check-input", id: "show_on_tickler_no" %>
+                                <label class="form-check-label" for="show_on_tickler_no">
+                                  No
+                                </label>
+                              </div>
                             </div>
                             <hr class="mt-4">
                             <div class="form-row d-flex justify-content-center mt-4">
@@ -397,323 +395,751 @@
                 <% end %>
             </div>
         </div>
-        <div class="form-row row mt-3 page-applicable">
-            <div class="col-xl-4">
-                <label for="">CAQH ID:</label>
-                <input type="text" id="" class="form-control">
-            </div>
-            <div class="col-xl-4">
-                <label for="">NPI Number:</label>
-                <input type="text" id="" class="form-control">
-            </div>
-            <div class="col-xl-4">
-                <label for="">Medicare UPIN Number:</label>
-                <input type="text" id="" class="form-control">
-            </div>
-        </div>
-        <div class="form-row row page-applicable mt-3">
-            <div class="col-xl-12">
+         <% @provider_medicare.each do |provider_medicare| %>
+          <%= form_with model: provider_medicare, url: mhc_provider_medicare_path(provider_medicare), method: :put, local: true do |f| %>
+            <%= f.hidden_field :provider_attest_id %>
+
+            <div class="form-row row page-applicable mt-3">
+              <div class="col-xl-12">
                 <div class="card other-name-card">
-                    <div class="card-body">
-                        <h6 class="form-heading">Medicare Billing Number:</h6>
-                        <div class="row">
-                            <div class="col-xl-5">
-                                <div class="form-row">
-                                    <label for="">Medicare PIN:</label>
-                                    <input type="text" id="" class="form-control">
-                                </div>
-                                <div class="form-row">
-                                    <label for="">Issue Date:</label>
-                                    <input type="date" id="" class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-xl-5">
-                                <div class="form-row">
-                                    <label for="medicare-state">State:</label>
-                                    <select name="" id="medicare-state" class="form-select"></select>
-                                </div>
-                                <div class="form-row d-flex align-items-center gap-3 mt-2">
-                                    <div class="form-check d-flex align-items-center gap-2">
-                                        <input class="form-check-input" type="radio" name="medicare-radio"
-                                            id="medicare-optin-radio" value="Opt In">
-                                        <label class="form-check-label" for="medicare-optin-radio">
-                                            Opt In
-                                        </label>
-                                    </div>
-                                    <div class="form-check d-flex align-items-center gap-2">
-                                        <input class="form-check-input" type="radio" name="medicare-radio"
-                                            id="medicare-optout-radio" value="Opt Out">
-                                        <label class="form-check-label" for="medicare-optout-radio">
-                                            Opt Out
-                                        </label>
-                                    </div>
-                                    <div class="form-check d-flex align-items-center gap-2">
-                                        <input class="form-check-input" type="radio" name="medicare-radio"
-                                            id="medicare-partial-radio" value="Partial">
-                                        <label class="form-check-label" for="medicare-partial-radio">
-                                            Partial
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-2 d-flex align-items-end">
-                                <div class=" form-check d-flex align-items-center gap-2">
-                                    <input class="form-check-input" type="checkbox" id="medicare-remove" value="">
-                                    <label class="form-check-label" for="medicare-remove">Remove</label>
-                                </div>
-                            </div>
+                  <div class="card-body">
+                    <h6 class="form-heading">Medicare Billing Number:</h6>
+                    <div class="row">
+                      <div class="col-xl-5">
+                        <div class="form-row">
+                          <%= f.label :medicare_number, "Medicare PIN:" %>
+                          <%= f.text_field :medicare_number, class: "form-control", value: provider_medicare.medicare_number %>
                         </div>
-                        <hr class="mt-4">
-                        <div class="form-row d-flex justify-content-center mt-4">
-                            <button class="btn btn-primary py-1">
-                                Add Medicare Billing Number
-                            </button>
+                        <div class="form-row">
+                          <%= f.label :issue_date, "Issue Date:" %>
+                          <%= f.date_field :issue_date, class: "form-control", value: provider_medicare.issue_date %>
                         </div>
+                      </div>
+
+                      <div class="col-xl-5">
+                        <div class="form-row">
+                          <%= f.label :state, "State:" %>
+                          <%= f.collection_select :state, @states, :alpha_code, :name, { prompt: 'State' }, { class: 'form-control' } %>
+                        </div>
+                        <div class="form-row d-flex align-items-center gap-3 mt-2">
+                          <div class="form-check">
+                            <%= f.radio_button :medicare_opt_in, "Opt In", checked: provider_medicare.medicare_opt_in == "Opt In", class: "form-check-input" %>
+                            <%= f.label :medicare_opt_in, "Opt In", class: "form-check-label" %>
+                          </div>
+                          <div class="form-check">
+                            <%= f.radio_button :medicare_opt_out, "Opt Out", checked: provider_medicare.medicare_opt_in == "Opt Out", class: "form-check-input" %>
+                            <%= f.label :medicare_opt_out, "Opt Out", class: "form-check-label" %>
+                          </div>
+                          <div class="form-check">
+                            <%= f.radio_button :medicare_partial, "Partial", checked: provider_medicare.medicare_opt_in == "Partial", class: "form-check-input" %>
+                            <%= f.label :medicare_partial, "Partial", class: "form-check-label" %>
+                          </div>
+                        </div>
+                      </div>
                     </div>
+
+                    <hr class="mt-4">
+                    <div class="form-row d-flex justify-content-center mt-4">
+                      <%= f.submit "Update Medicare Billing Number", class: "btn btn-primary py-1" %>
+                    </div>
+                  </div>
                 </div>
+              </div>
             </div>
-        </div>
-        <div class="form-row row page-applicable mt-3">
+          <% end %>
+
+          <!-- Button for deleting the Medicare Billing Number -->
+          <div class="form-row d-flex justify-content-center mt-4">
+            <%= button_to "Delete Medicare Billing Number", mhc_provider_medicare_path(provider_medicare), method: :delete, class: "btn btn-danger py-1", data: { confirm: "Are you sure you want to delete this Medicare Billing Number?" } %>
+          </div>
+        <% end %>
+                  <!-- Add button to show form for new Medicare Billing Number -->
+          <div class="form-row d-flex justify-content-center mt-4">
+            <button id="add-medicare-button" class="btn btn-success py-1">Add New Medicare Billing Number</button>
+          </div>
+
+          <!-- Only show this form when you want to add a new Medicare Billing Number -->
+          <div id="new-medicare-form" style="display: none;">
+            <%= form_with model: @new_provider_medicare, url: mhc_provider_medicares_path, method: :post, local: true do |f| %>
+              <%= f.hidden_field :provider_attest_id, value: @new_provider_medicare&.provider_attest_id || "" %>
+
+              <div class="form-row row page-applicable mt-3">
+                <div class="col-xl-12">
+                  <div class="card other-name-card">
+                    <div class="card-body">
+                      <h6 class="form-heading">Medicare Billing Number:</h6>
+                      <div class="row">
+                        <div class="col-xl-5">
+                          <div class="form-row">
+                            <%= f.label :medicare_number, "Medicare PIN:" %>
+                            <%= f.text_field :medicare_number, class: "form-control", placeholder: 'Type here...' %>
+                          </div>
+                          <div class="form-row">
+                            <%= f.label :issue_date, "Issue Date:" %>
+                            <%= f.date_field :issue_date, class: "form-control" %>
+                          </div>
+                        </div>
+
+                        <div class="col-xl-5">
+                          <div class="form-row">
+                            <%= f.label :state, "State:" %>
+                            <%= f.collection_select :state, @states, :alpha_code, :name, { prompt: 'State' }, { class: 'form-control' } %>
+                          </div>
+                          <div class="form-row d-flex align-items-center gap-3 mt-2">
+                            <div class="form-check">
+                              <%= f.radio_button :medicare_opt_in, "Opt In", class: "form-check-input" %>
+                              <%= f.label :medicare_opt_in, "Opt In", class: "form-check-label" %>
+                            </div>
+                            <div class="form-check">
+                              <%= f.radio_button :medicare_opt_out, "Opt Out", class: "form-check-input" %>
+                              <%= f.label :medicare_opt_out, "Opt Out", class: "form-check-label" %>
+                            </div>
+                            <div class="form-check">
+                              <%= f.radio_button :medicare_partial, "Partial", class: "form-check-input" %>
+                              <%= f.label :medicare_partial, "Partial", class: "form-check-label" %>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-row d-flex justify-content-center mt-4">
+                        <%= f.submit "Add Medicare Billing Number", class: "btn btn-primary py-1" %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- JavaScript to toggle the form -->
+          <script>
+            document.getElementById("add-medicare-button").addEventListener("click", function() {
+              var form = document.getElementById("new-medicare-form");
+              form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
+            });
+          </script>
+        <% if @provider_medicaids.any? %>
+          <% @provider_medicaids.each do |provider_medicaid| %>
+          <div class="form-row row page-applicable mt-3">
             <div class="col-xl-12">
                 <div class="card other-name-card">
                     <div class="card-body">
                         <h6 class="form-heading">Medicaid Billing Number:</h6>
-                        <div class="row">
-                            <div class="col-xl-5">
-                                <div class="form-row">
-                                    <label for="">Medic-Cal/Medicaid Number:</label>
-                                    <input type="text" id="" class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-xl-5">
-                                <div class="form-row">
-                                    <label for="medicaid-state">State:</label>
-                                    <select name="" id="medicaid-state" class="form-select"></select>
-                                </div>
-                            </div>
-                            <div class="col-xl-2 d-flex align-items-end">
-                                <div class=" form-check d-flex align-items-center gap-2">
-                                    <input class="form-check-input" type="checkbox" id="medicaid-remove" value="">
-                                    <label class="form-check-label" for="medicaid-remove">Remove</label>
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="mt-4">
+                        <%= form_with model: provider_medicaid, url: mhc_provider_medicaid_path(provider_medicaid), method: :put, local: true do |f| %>
+                          <%= f.hidden_field :provider_attest_id %>
+
+                          <div class="form-group">
+                            <%= f.label :medicaid_number, "Medicaid Number" %>
+                            <%= f.text_field :medicaid_number, class: "form-control", value: provider_medicaid.medicaid_number %>
+                          </div>
+
+                          <div class="form-row">
+                            <%= f.label :state, "State:" %>
+                            <%= f.collection_select :state, @states, :alpha_code, :name, { prompt: 'State' }, { class: 'form-control' } %>
+                          </div>
+
+                          <div class="form-row d-flex justify-content-center mt-4">
+                            <%= f.submit "Update Medicaid Number", class: "btn btn-primary" %>
+                          </div>
+                        <% end %>
+
                         <div class="form-row d-flex justify-content-center mt-4">
-                            <button class="btn btn-primary py-1">
-                                Add Medicaid Billing Number
-                            </button>
+                          <%= button_to "Delete Medicaid Number", mhc_provider_medicaid_path(provider_medicaid), method: :delete, class: "btn btn-danger", data: { confirm: "Are you sure you want to delete this Medicaid Number?" } %>
                         </div>
+                      <% end %>
+
+                      <!-- Button to show the form for adding a new Medicaid Number -->
+                      <div class="form-row d-flex justify-content-center mt-4">
+                        <button id="add-medicaid-button" class="btn btn-success">Add New Medicaid Number</button>
+                      </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="form-row row mt-3 page-applicable">
-            <div class="col-xl-6">
-                <div class="d-flex align-items-center gap-3">
-                    <label for="">TRICARE Provider?</label>
-                    <div class="form-check d-flex align-items-center gap-2">
-                        <input class="form-check-input" type="radio" name="TRICARE-radio" id="TRICARE-radio-yes"
-                            value="Yes">
-                        <label class="form-check-label" for="TRICARE-yes">
-                            Yes
-                        </label>
-                    </div>
-                    <div class="form-check d-flex align-items-center gap-2">
-                        <input class="form-check-input" type="radio" name="TRICARE-radio" id="TRICARE-radio-no"
-                            value="No">
-                        <label class="form-check-label" for="TRICARE-radio-no">
-                            No
-                        </label>
-                    </div>
-                </div>
-                <div class="form-row mt-2">
-                    <label for="">If Yes, TRICARE Group Number:</label>
-                    <input type="text" id="" class="form-control">
-                </div>
+          </div>
+            
+          <!-- Form for adding a new Medicaid Number -->
+          <div id="new-medicaid-form" style="display: none;">
+            <div class="form-row row page-applicable mt-3">
+              <div class="col-xl-12">
+                  <div class="card other-name-card">
+                      <div class="card-body">
+                          <h6 class="form-heading">Medicaid Billing Number:</h6>
+                          <%= form_with model: @new_provider_medicaid, url: mhc_provider_medicaids_path, method: :post, local: true do |f| %>
+                            <%= f.hidden_field :provider_attest_id, value: @new_provider_medicaid&.provider_attest_id || "" %>
+
+                            <div class="form-group">
+                              <%= f.label :medicaid_number, "Medicaid Number" %>
+                              <%= f.text_field :medicaid_number, class: "form-control", placeholder: "Type here..." %>
+                            </div>
+
+                            <div class="form-row">
+                              <%= f.label :state, "State:" %>
+                              <%= f.collection_select :state, @states, :alpha_code, :name, { prompt: 'State' }, { class: 'form-control' } %>
+                            </div>
+
+                            <div class="form-row d-flex justify-content-center mt-4">
+                              <%= f.submit "Add Medicaid Number", class: "btn btn-primary" %>
+                            </div>
+                          <% end %>
+                      </div>
+                   </div>
+               </div>
             </div>
-            <div class="col-xl-6">
-                <div class="d-flex align-items-center gap-3">
-                    <label for="">Certified Worker's Compensation Provider?</label>
-                    <div class="form-check d-flex align-items-center gap-2">
-                        <input class="form-check-input" type="radio" name="certified-workers-radio"
-                            id="certified-workers-radio-yes" value="Yes">
-                        <label class="form-check-label" for="certified-workers-radio-yes">
-                            Yes
-                        </label>
-                    </div>
-                    <div class="form-check d-flex align-items-center gap-2">
-                        <input class="form-check-input" type="radio" name="certified-workers-radio"
-                            id="certified-workers-radio-no" value="No">
-                        <label class="form-check-label" for="certified-workers-radio-no">
-                            No
-                        </label>
-                    </div>
-                </div>
-                <div class="form-row mt-2">
-                    <label for="">If Yes, Certificate Number:</label>
-                    <input type="text" id="" class="form-control">
-                </div>
+          </div>
+
+          <!-- JavaScript to toggle the new Medicaid form -->
+          <script>
+            document.getElementById("add-medicaid-button").addEventListener("click", function() {
+              var form = document.getElementById("new-medicaid-form");
+              form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
+            });
+          </script>
+        <% else %>
+          <!-- Show the form directly if no records exist -->
+            <div class="form-row row page-applicable mt-3">
+              <div class="col-xl-12">
+                  <div class="card other-name-card">
+                      <div class="card-body">
+                          <h6 class="form-heading">Medicaid Billing Number:</h6>
+                          <div class="form-group mt-4">
+                            <%= form_with model: @new_provider_medicaid, url: mhc_provider_medicaids_path, method: :post, local: true do |f| %>
+                              <%= f.hidden_field :provider_attest_id, value: @new_provider_medicaid&.provider_attest_id || "" %>
+
+                              <div class="form-group">
+                                <%= f.label :medicaid_number, "Medic-Cal/Medicaid Number:" %>
+                                <%= f.text_field :medicaid_number, class: "form-control", placeholder: "Type here..." %>
+                              </div>
+
+                              <div class="form-row">
+                                <%= f.label :state, "State:" %>
+                                <%= f.collection_select :state, @states, :alpha_code, :name, { prompt: 'State' }, { class: 'form-control' } %>
+                              </div>
+
+                              <div class="form-row d-flex justify-content-center mt-4">
+                                <%= f.submit "Add Medicaid Number", class: "btn btn-primary" %>
+                              </div>
+                            <% end %>
+                          </div>
+                      </div>
+                  </div>
+              </div>
             </div>
-        </div>
-        <div class="form-row row mt-3 page-applicable">
-            <div class="col-xl-6 d-flex align-items-center gap-3">
-                <label for="">Certified Qualified Medical Examiner?</label>
-                <div class="form-check d-flex align-items-center gap-2">
-                    <input class="form-check-input" type="radio" name="qualified-medical-examiner-radio"
-                        id="qualified-medical-examiner-radio-yes" value="Yes">
-                    <label class="form-check-label" for="qualified-medical-examiner-yes">
-                        Yes
-                    </label>
-                </div>
-                <div class="form-check d-flex align-items-center gap-2">
-                    <input class="form-check-input" type="radio" name="qualified-medical-examiner-radio"
-                        id="qualified-medical-examiner-radio-no" value="No">
-                    <label class="form-check-label" for="qualified-medical-examiner-radio-no">
-                        No
-                    </label>
-                </div>
-            </div>
-            <div class="col-xl-6 d-flex align-items-center gap-3">
-                <label for="">Agreed Medical Examiner?</label>
-                <div class="form-check d-flex align-items-center gap-2">
-                    <input class="form-check-input" type="radio" name="medical-examiner-radio"
-                        id="medical-examiner-radio-yes" value="Yes">
-                    <label class="form-check-label" for="medical-examiner-radio-yes">
-                        Yes
-                    </label>
-                </div>
-                <div class="form-check d-flex align-items-center gap-2">
-                    <input class="form-check-input" type="radio" name="medical-examiner-radio"
-                        id="medical-examiner-radio-no" value="No">
-                    <label class="form-check-label" for="medical-medical-examiner-radio-no">
-                        No
-                    </label>
-                </div>
-            </div>
-        </div>
-        <div class="form-row row mt-3 page-applicable">
-            <div class="col-xl-6 d-flex align-items-center gap-3">
-                <label for="">U.S. Military Service/Public Health:</label>
-                <div class="form-check d-flex align-items-center gap-2">
-                    <input class="form-check-input" type="radio" name="us-military-radio" id="us-military-radio-yes"
-                        value="Yes">
-                    <label class="form-check-label" for="us-military-radio-yes">
-                        Yes
-                    </label>
-                </div>
-                <div class="form-check d-flex align-items-center gap-2">
-                    <input class="form-check-input" type="radio" name="us-military-radio" id="us-military-radio-no"
-                        value="No">
-                    <label class="form-check-label" for="us-military-radio-no">
-                        No
-                    </label>
-                </div>
-            </div>
-        </div>
-        <div class="form-row row page-applicable us-military-wrp mt-3">
-            <div class="col-xl-12">
+        <% end %>
+        <% if @provider_militaries.any? %>
+          <% @provider_militaries.each do |provider_military| %>
+            <div class="form-row row page-applicable mt-3">
+              <div class="col-xl-12">
                 <div class="card other-name-card">
-                    <div class="card-body">
-                        <h6 class="form-heading">U.S. Military Service/Public Health</h6>
-                        <div class="row">
-                            <div class="col-xl-5">
-                                <div class="row">
-                                    <div class="col-xl-6">
-                                        <div class="form-row">
-                                            <label for="">Dates of Service From:</label>
-                                            <input type="date" id="" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <div class="form-row">
-                                            <label for="">Dates of Service To:</label>
-                                            <input type="date" id="" class="form-control">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <label for="branch-service">Branch of Service:</label>
-                                    <select name="" id="branch-service" class="form-select"></select>
-                                </div>
-                                <div class="form-row">
-                                    <label for="type-discharge">Type of Discharge from Active Duty:</label>
-                                    <select name="" id="type-discharge" class="form-select"></select>
-                                </div>
-                                <div class="row">
-                                    <div class="form-row">
-                                        <label for="">If Reserve, anticipated date of separation from reserve
-                                            duty?</label>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <div class="form-row">
-                                            <!-- <label for="">Month:</label> -->
-                                            <input type="text" id="" class="form-control" placeholder="Month">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <div class="form-row">
-                                            <!-- <label for="">Year:</label> -->
-                                            <input type="text" id="" class="form-control" placeholder="Year">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-5">
-                                <div class="form-row">
-                                    <label for="">Last Location:</label>
-                                    <input type="text" id="" class="form-control">
-                                </div>
-                                <div class="form-row">
-                                    <label for="active-reserve">Are You Currently on Active or Reserve Military
-                                        Duty?:</label>
-                                    <select name="" id="active-reserve" class="form-select"></select>
-                                </div>
-                                <div class="form-row">
-                                    <label for="rank-discharge">Rank at Discharge:</label>
-                                    <select name="" id="rank-discharge" class="form-select"></select>
-                                </div>
-                            </div>
-                            <!-- <div class="col-xl-2 d-flex align-items-end">
-                                <div class=" form-check d-flex align-items-center gap-2">
-                                    <input class="form-check-input" type="checkbox" id="medicare-remove" value="">
-                                    <label class="form-check-label" for="medicare-remove">Remove</label>
-                                </div>
-                            </div> -->
+                  <div class="card-body">
+                    <h6 class="form-heading">Military Service Information:</h6>
+                    <%= form_with model: provider_military, url: mhc_provider_military_path(provider_military), method: :put, local: true do |f| %>
+                      <%= f.hidden_field :provider_attest_id %>
+
+                      <div class="form-group">
+                        <%= f.label :start_date, "Dates of Service From:" %>
+                        <%= f.date_field :start_date, class: "form-control", value: provider_military.start_date %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :end_date, "Dates of Service To:" %>
+                        <%= f.date_field :end_date, class: "form-control", value: provider_military.end_date %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :branch, "Branch of Service:" %>
+                        <%= f.text_field :branch, class: "form-control", value: provider_military.branch %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :discharge_rank, "Rank at Discharge:" %>
+                        <%= f.text_field :discharge_rank, class: "form-control", value: provider_military.discharge_rank %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :last_location, "Last Location:" %>
+                        <%= f.text_field :last_location, class: "form-control", value: provider_military.last_location %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :type_of_discharge, "Type of Discharge from Active Duty:" %>
+                        <%= f.text_field :type_of_discharge, class: "form-control", value: provider_military.type_of_discharge %>
+                      </div>
+
+                      <div class="form-row">
+                        <label>If Reserve, anticipated date of separation from reserve duty:</label>
+                        <div class="col-xl-6">
+                          <%= f.text_field :reserve_separation_month, class: "form-control", placeholder: "Month" %>
                         </div>
-                        <hr class="mt-4">
-                        <div class="form-row d-flex justify-content-center mt-4">
-                            <button class="btn btn-primary py-1">
-                                Add Medicare Billing Number
-                            </button>
+                        <div class="col-xl-6">
+                          <%= f.text_field :reserve_separation_year, class: "form-control", placeholder: "Year" %>
                         </div>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :currently_active_reserve, "Are You Currently on Active or Reserve Military Duty?" %>
+                        <%= f.check_box :currently_active_reserve, {}, provider_military.currently_active_reserve, false %>
+                      </div>
+                      <div class="form-section">
+                        <div class="card mb-3">
+                          <div class="card-body">
+                            <div class="form-row row mt-3">
+                            <h1> OTHER FIELD</h1>
+                              <div class="col-xl-4">
+                                <%= f.label :caqh_id, "CAQH ID:" %>
+                                <%= f.text_field :caqh_id, class: "form-control" %>
+                              </div>
+                              <div class="col-xl-4">
+                                <%= f.label :npi_number, "NPI Number:" %>
+                                <%= f.text_field :npi_number, class: "form-control" %>
+                              </div>
+                              <div class="col-xl-4">
+                                <%= f.label :medicare_upin_number, "Medicare UPIN Number:" %>
+                                <%= f.text_field :medicare_upin_number, class: "form-control" %>
+                              </div>
+                            </div>
+
+                            <div class="form-row row mt-3">
+                              <div class="col-xl-6">
+                                <%= f.label :tricare_provider, "TRICARE Provider?" %>
+                                <div class="form-check">
+                                  <%= f.radio_button :tricare_provider, true, id: "tricare_provider_yes", class: "form-check-input" %>
+                                  <%= f.label :tricare_provider, "Yes", value: true, class: "form-check-label" %>
+                                </div>
+                                <div class="form-check">
+                                  <%= f.radio_button :tricare_provider, false, id: "tricare_provider_no", class: "form-check-input" %>
+                                  <%= f.label :tricare_provider, "No", value: false, class: "form-check-label" %>
+                                </div>
+                                <%= f.label :tricare_group_number, "If Yes, TRICARE Group Number:" %>
+                                <%= f.text_field :tricare_group_number, class: "form-control" %>
+                              </div>
+
+                              <div class="col-xl-6">
+                                <%= f.label :certified_workers_comp_provider, "Certified Worker's Compensation Provider?" %>
+                                <div class="form-check">
+                                  <%= f.radio_button :certified_workers_comp_provider, true, id: "certified_workers_yes", class: "form-check-input" %>
+                                  <%= f.label :certified_workers_comp_provider, "Yes", value: true, class: "form-check-label" %>
+                                </div>
+                                <div class="form-check">
+                                  <%= f.radio_button :certified_workers_comp_provider, false, id: "certified_workers_no", class: "form-check-input" %>
+                                  <%= f.label :certified_workers_comp_provider, "No", value: false, class: "form-check-label" %>
+                                </div>
+                                <%= f.label :certificate_number, "If Yes, Certificate Number:" %>
+                                <%= f.text_field :certificate_number, class: "form-control" %>
+                              </div>
+                            </div>
+
+                            <div class="form-row row mt-3">
+                              <div class="col-xl-6">
+                                <%= f.label :certified_qualified_medical_examiner, "Certified Qualified Medical Examiner?" %>
+                                <div class="form-check">
+                                  <%= f.radio_button :certified_qualified_medical_examiner, true, id: "qualified_examiner_yes", class: "form-check-input" %>
+                                  <%= f.label :certified_qualified_medical_examiner, "Yes", value: true, class: "form-check-label" %>
+                                </div>
+                                <div class="form-check">
+                                  <%= f.radio_button :certified_qualified_medical_examiner, false, id: "qualified_examiner_no", class: "form-check-input" %>
+                                  <%= f.label :certified_qualified_medical_examiner, "No", value: false, class: "form-check-label" %>
+                                </div>
+                              </div>
+
+                              <div class="col-xl-6">
+                                <%= f.label :agreed_medical_examiner, "Agreed Medical Examiner?" %>
+                                <div class="form-check">
+                                  <%= f.radio_button :agreed_medical_examiner, true, id: "agreed_examiner_yes", class: "form-check-input" %>
+                                  <%= f.label :agreed_medical_examiner, "Yes", value: true, class: "form-check-label" %>
+                                </div>
+                                <div class="form-check">
+                                  <%= f.radio_button :agreed_medical_examiner, false, id: "agreed_examiner_no", class: "form-check-input" %>
+                                  <%= f.label :agreed_medical_examiner, "No", value: false, class: "form-check-label" %>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="form-row row mt-3">
+                              <div class="col-xl-6">
+                                <%= f.label :us_military_service, "U.S. Military Service/Public Health:" %>
+                                <div class="form-check">
+                                  <%= f.radio_button :us_military_service, true, id: "us_military_yes", class: "form-check-input" %>
+                                  <%= f.label :us_military_service, "Yes", value: true, class: "form-check-label" %>
+                                </div>
+                                <div class="form-check">
+                                  <%= f.radio_button :us_military_service, false, id: "us_military_no", class: "form-check-input" %>
+                                  <%= f.label :us_military_service, "No", value: false, class: "form-check-label" %>
+                                </div>
+                              </div>
+                              <div class="col-xl-6">
+                                <%= f.label :branch_of_military, "Branch of the Military:" %>
+                                <%= f.text_field :branch_of_military, class: "form-control" %>
+                              </div>
+                            </div>
+
+                            <div class="form-row row mt-3">
+                              <div class="col-xl-12">
+                                <%= f.label :comments, "Please list any comments:" %>
+                                <%= f.text_area :comments, class: "form-control" %>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-row d-flex justify-content-center mt-4">
+                        <%= f.submit "Update Military Service Info", class: "btn btn-primary" %>
+                      </div>
+                    <% end %>
+
+                    <div class="form-row d-flex justify-content-center mt-4">
+                      <%= button_to "Delete Military Service Info", mhc_provider_military_path(provider_military), method: :delete, class: "btn btn-danger", data: { confirm: "Are you sure you want to delete this Military Service Info?" } %>
                     </div>
+                  </div>
                 </div>
+              </div>
             </div>
-        </div>
-        <div class="form-row row mt-3 page-applicable">
-            <div class="col-xl-6">
-                <label for="">Branch of the Military?</label>
-                <input type="text" id="" class="form-control">
+          <% end %>
+
+          <!-- Button to show the form for adding a new Military Service Info -->
+          <div class="form-row d-flex justify-content-center mt-4">
+            <button id="add-military-button" class="btn btn-success">Add New Military Service Info</button>
+          </div>
+
+          <!-- Form for adding a new Military Service Info -->
+          <div id="new-military-form" style="display: none;">
+            <div class="form-row row page-applicable mt-3">
+              <div class="col-xl-12">
+                <div class="card other-name-card">
+                  <div class="card-body">
+                    <h6 class="form-heading">Military Service Information:</h6>
+                    <%= form_with model: @new_provider_military, url: mhc_provider_militaries_path, method: :post, local: true do |f| %>
+                      <%= f.hidden_field :provider_attest_id, value: @new_provider_military&.provider_attest_id || "" %>
+
+                      <div class="form-group">
+                        <%= f.label :start_date, "Dates of Service From:" %>
+                        <%= f.date_field :start_date, class: "form-control" %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :end_date, "Dates of Service To:" %>
+                        <%= f.date_field :end_date, class: "form-control" %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :branch, "Branch of Service:" %>
+                        <%= f.text_field :branch, class: "form-control" %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :discharge_rank, "Rank at Discharge:" %>
+                        <%= f.text_field :discharge_rank, class: "form-control" %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :last_location, "Last Location:" %>
+                        <%= f.text_field :last_location, class: "form-control" %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :type_of_discharge, "Type of Discharge from Active Duty:" %>
+                        <%= f.text_field :type_of_discharge, class: "form-control" %>
+                      </div>
+                      <div class="form-row">
+                        <label>If Reserve, anticipated date of separation from reserve duty:</label>
+                        <div class="col-xl-6">
+                          <%= f.text_field :reserve_separation_month, class: "form-control", placeholder: "Month" %>
+                        </div>
+                        <div class="col-xl-6">
+                          <%= f.text_field :reserve_separation_year, class: "form-control", placeholder: "Year" %>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :currently_active_reserve, "Are You Currently on Active or Reserve Military Duty?" %>
+                        <%= f.check_box :currently_active_reserve %>
+                      </div>
+                      <div class="form-section">
+                        <div class="card mb-3">
+                          <div class="card-body">
+                            <div class="form-row row mt-3">
+                            <h1> OTHER FIELD</h1>
+                              <div class="col-xl-4">
+                                <%= f.label :caqh_id, "CAQH ID:" %>
+                                <%= f.text_field :caqh_id, class: "form-control" %>
+                              </div>
+                              <div class="col-xl-4">
+                                <%= f.label :npi_number, "NPI Number:" %>
+                                <%= f.text_field :npi_number, class: "form-control" %>
+                              </div>
+                              <div class="col-xl-4">
+                                <%= f.label :medicare_upin_number, "Medicare UPIN Number:" %>
+                                <%= f.text_field :medicare_upin_number, class: "form-control" %>
+                              </div>
+                            </div>
+
+                            <div class="form-row row mt-3">
+                              <div class="col-xl-6">
+                                <%= f.label :tricare_provider, "TRICARE Provider?" %>
+                                <div class="form-check">
+                                  <%= f.radio_button :tricare_provider, true, id: "tricare_provider_yes", class: "form-check-input" %>
+                                  <%= f.label :tricare_provider, "Yes", value: true, class: "form-check-label" %>
+                                </div>
+                                <div class="form-check">
+                                  <%= f.radio_button :tricare_provider, false, id: "tricare_provider_no", class: "form-check-input" %>
+                                  <%= f.label :tricare_provider, "No", value: false, class: "form-check-label" %>
+                                </div>
+                                <%= f.label :tricare_group_number, "If Yes, TRICARE Group Number:" %>
+                                <%= f.text_field :tricare_group_number, class: "form-control" %>
+                              </div>
+
+                              <div class="col-xl-6">
+                                <%= f.label :certified_workers_comp_provider, "Certified Worker's Compensation Provider?" %>
+                                <div class="form-check">
+                                  <%= f.radio_button :certified_workers_comp_provider, true, id: "certified_workers_yes", class: "form-check-input" %>
+                                  <%= f.label :certified_workers_comp_provider, "Yes", value: true, class: "form-check-label" %>
+                                </div>
+                                <div class="form-check">
+                                  <%= f.radio_button :certified_workers_comp_provider, false, id: "certified_workers_no", class: "form-check-input" %>
+                                  <%= f.label :certified_workers_comp_provider, "No", value: false, class: "form-check-label" %>
+                                </div>
+                                <%= f.label :certificate_number, "If Yes, Certificate Number:" %>
+                                <%= f.text_field :certificate_number, class: "form-control" %>
+                              </div>
+                            </div>
+
+                            <div class="form-row row mt-3">
+                              <div class="col-xl-6">
+                                <%= f.label :certified_qualified_medical_examiner, "Certified Qualified Medical Examiner?" %>
+                                <div class="form-check">
+                                  <%= f.radio_button :certified_qualified_medical_examiner, true, id: "qualified_examiner_yes", class: "form-check-input" %>
+                                  <%= f.label :certified_qualified_medical_examiner, "Yes", value: true, class: "form-check-label" %>
+                                </div>
+                                <div class="form-check">
+                                  <%= f.radio_button :certified_qualified_medical_examiner, false, id: "qualified_examiner_no", class: "form-check-input" %>
+                                  <%= f.label :certified_qualified_medical_examiner, "No", value: false, class: "form-check-label" %>
+                                </div>
+                              </div>
+
+                              <div class="col-xl-6">
+                                <%= f.label :agreed_medical_examiner, "Agreed Medical Examiner?" %>
+                                <div class="form-check">
+                                  <%= f.radio_button :agreed_medical_examiner, true, id: "agreed_examiner_yes", class: "form-check-input" %>
+                                  <%= f.label :agreed_medical_examiner, "Yes", value: true, class: "form-check-label" %>
+                                </div>
+                                <div class="form-check">
+                                  <%= f.radio_button :agreed_medical_examiner, false, id: "agreed_examiner_no", class: "form-check-input" %>
+                                  <%= f.label :agreed_medical_examiner, "No", value: false, class: "form-check-label" %>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="form-row row mt-3">
+                              <div class="col-xl-6">
+                                <%= f.label :us_military_service, "U.S. Military Service/Public Health:" %>
+                                <div class="form-check">
+                                  <%= f.radio_button :us_military_service, true, id: "us_military_yes", class: "form-check-input" %>
+                                  <%= f.label :us_military_service, "Yes", value: true, class: "form-check-label" %>
+                                </div>
+                                <div class="form-check">
+                                  <%= f.radio_button :us_military_service, false, id: "us_military_no", class: "form-check-input" %>
+                                  <%= f.label :us_military_service, "No", value: false, class: "form-check-label" %>
+                                </div>
+                              </div>
+                              <div class="col-xl-6">
+                                <%= f.label :branch_of_military, "Branch of the Military:" %>
+                                <%= f.text_field :branch_of_military, class: "form-control" %>
+                              </div>
+                            </div>
+
+                            <div class="form-row row mt-3">
+                              <div class="col-xl-12">
+                                <%= f.label :comments, "Please list any comments:" %>
+                                <%= f.text_area :comments, class: "form-control" %>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-row d-flex justify-content-center mt-4">
+                        <%= f.submit "Add Military Service Info", class: "btn btn-primary" %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
             </div>
-        </div>
-        <div class="form-row row mt-3 page-applicable">
-            <div class="col-xl-12">
-                <label for="">Please list any comments:</label>
-                <input type="text" id="" class="form-control">
+          </div>
+
+          <!-- JavaScript to toggle the new Military Service Info form -->
+          <script>
+            document.getElementById("add-military-button").addEventListener("click", function() {
+              var form = document.getElementById("new-military-form");
+              form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
+            });
+          </script>
+        <% else %>
+            <div class="form-row row page-applicable mt-3">
+              <div class="col-xl-12">
+                <div class="card other-name-card">
+                  <div class="card-body">
+                    <h6 class="form-heading">U.S. Military Service/Public Health:</h6>
+                    <%= form_with model: @new_provider_military, url: mhc_provider_militaries_path, method: :post, local: true do |f| %>
+                      <%= f.hidden_field :provider_attest_id, value: @new_provider_military&.provider_attest_id || "" %>
+
+                      <div class="form-group">
+                        <%= f.label :start_date, "Dates of Service From:" %>
+                        <%= f.date_field :start_date, class: "form-control" %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :end_date, "Dates of Service To:" %>
+                        <%= f.date_field :end_date, class: "form-control" %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :branch, "Branch of Service:" %>
+                        <%= f.text_field :branch, class: "form-control" %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :discharge_rank, "Rank at Discharge:" %>
+                        <%= f.text_field :discharge_rank, class: "form-control" %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :last_location, "Last Location:" %>
+                        <%= f.text_field :last_location, class: "form-control" %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :type_of_discharge, "Type of Discharge from Active Duty:" %>
+                        <%= f.text_field :type_of_discharge, class: "form-control" %>
+                      </div>
+
+                      <div class="form-row">
+                        <label>If Reserve, anticipated date of separation from reserve duty:</label>
+                        <div class="col-xl-6">
+                          <%= f.text_field :reserve_separation_month, class: "form-control", placeholder: "Month" %>
+                        </div>
+                        <div class="col-xl-6">
+                          <%= f.text_field :reserve_separation_year, class: "form-control", placeholder: "Year" %>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <%= f.label :currently_active_reserve, "Are You Currently on Active or Reserve Military Duty?" %>
+                        <%= f.check_box :currently_active_reserve %>
+                      </div>
+                      <div class="form-section">
+                        <div class="card mb-3">
+                          <div class="card-body">
+                            <div class="form-row row mt-3">
+                            <h1> OTHER FIELD</h1>
+                              <div class="col-xl-4">
+                                <%= f.label :caqh_id, "CAQH ID:" %>
+                                <%= f.text_field :caqh_id, class: "form-control" %>
+                              </div>
+                              <div class="col-xl-4">
+                                <%= f.label :npi_number, "NPI Number:" %>
+                                <%= f.text_field :npi_number, class: "form-control" %>
+                              </div>
+                              <div class="col-xl-4">
+                                <%= f.label :medicare_upin_number, "Medicare UPIN Number:" %>
+                                <%= f.text_field :medicare_upin_number, class: "form-control" %>
+                              </div>
+                            </div>
+
+                            <div class="form-row row mt-3">
+                              <div class="col-xl-6">
+                                <%= f.label :tricare_provider, "TRICARE Provider?" %>
+                                <div class="form-check">
+                                  <%= f.radio_button :tricare_provider, true, id: "tricare_provider_yes", class: "form-check-input" %>
+                                  <%= f.label :tricare_provider, "Yes", value: true, class: "form-check-label" %>
+                                </div>
+                                <div class="form-check">
+                                  <%= f.radio_button :tricare_provider, false, id: "tricare_provider_no", class: "form-check-input" %>
+                                  <%= f.label :tricare_provider, "No", value: false, class: "form-check-label" %>
+                                </div>
+                                <%= f.label :tricare_group_number, "If Yes, TRICARE Group Number:" %>
+                                <%= f.text_field :tricare_group_number, class: "form-control" %>
+                              </div>
+
+                              <div class="col-xl-6">
+                                <%= f.label :certified_workers_comp_provider, "Certified Worker's Compensation Provider?" %>
+                                <div class="form-check">
+                                  <%= f.radio_button :certified_workers_comp_provider, true, id: "certified_workers_yes", class: "form-check-input" %>
+                                  <%= f.label :certified_workers_comp_provider, "Yes", value: true, class: "form-check-label" %>
+                                </div>
+                                <div class="form-check">
+                                  <%= f.radio_button :certified_workers_comp_provider, false, id: "certified_workers_no", class: "form-check-input" %>
+                                  <%= f.label :certified_workers_comp_provider, "No", value: false, class: "form-check-label" %>
+                                </div>
+                                <%= f.label :certificate_number, "If Yes, Certificate Number:" %>
+                                <%= f.text_field :certificate_number, class: "form-control" %>
+                              </div>
+                            </div>
+
+                            <div class="form-row row mt-3">
+                              <div class="col-xl-6">
+                                <%= f.label :certified_qualified_medical_examiner, "Certified Qualified Medical Examiner?" %>
+                                <div class="form-check">
+                                  <%= f.radio_button :certified_qualified_medical_examiner, true, id: "qualified_examiner_yes", class: "form-check-input" %>
+                                  <%= f.label :certified_qualified_medical_examiner, "Yes", value: true, class: "form-check-label" %>
+                                </div>
+                                <div class="form-check">
+                                  <%= f.radio_button :certified_qualified_medical_examiner, false, id: "qualified_examiner_no", class: "form-check-input" %>
+                                  <%= f.label :certified_qualified_medical_examiner, "No", value: false, class: "form-check-label" %>
+                                </div>
+                              </div>
+
+                              <div class="col-xl-6">
+                                <%= f.label :agreed_medical_examiner, "Agreed Medical Examiner?" %>
+                                <div class="form-check">
+                                  <%= f.radio_button :agreed_medical_examiner, true, id: "agreed_examiner_yes", class: "form-check-input" %>
+                                  <%= f.label :agreed_medical_examiner, "Yes", value: true, class: "form-check-label" %>
+                                </div>
+                                <div class="form-check">
+                                  <%= f.radio_button :agreed_medical_examiner, false, id: "agreed_examiner_no", class: "form-check-input" %>
+                                  <%= f.label :agreed_medical_examiner, "No", value: false, class: "form-check-label" %>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="form-row row mt-3">
+                              <div class="col-xl-6">
+                                <%= f.label :us_military_service, "U.S. Military Service/Public Health:" %>
+                                <div class="form-check">
+                                  <%= f.radio_button :us_military_service, true, id: "us_military_yes", class: "form-check-input" %>
+                                  <%= f.label :us_military_service, "Yes", value: true, class: "form-check-label" %>
+                                </div>
+                                <div class="form-check">
+                                  <%= f.radio_button :us_military_service, false, id: "us_military_no", class: "form-check-input" %>
+                                  <%= f.label :us_military_service, "No", value: false, class: "form-check-label" %>
+                                </div>
+                              </div>
+                              <div class="col-xl-6">
+                                <%= f.label :branch_of_military, "Branch of the Military:" %>
+                                <%= f.text_field :branch_of_military, class: "form-control" %>
+                              </div>
+                            </div>
+
+                            <div class="form-row row mt-3">
+                              <div class="col-xl-12">
+                                <%= f.label :comments, "Please list any comments:" %>
+                                <%= f.text_area :comments, class: "form-control" %>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-row d-flex justify-content-center mt-4">
+                        <%= f.submit "Submit", class: "btn btn-primary" %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
             </div>
-        </div>
-        <form action="" class="page-not-applicable">
-            <div class="form-row mt-4">
-                <label for="">Please explain:<span class="font-red">*</span></label>
-                <textarea name="" id="" cols="30" rows="5" class="form-control" required></textarea>
-            </div>
-            <div class="form-row mt-2 d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary py-1">
-                    Save
-                </button>
-            </div>
-        </form>
+        <% end %>
     </div>
 </div>
 

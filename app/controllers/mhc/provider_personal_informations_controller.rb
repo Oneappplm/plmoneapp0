@@ -38,7 +38,7 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
       :emergency_contact_last_name, :emergency_contact_first_name, :emergency_contact_middle_name,
       :emergency_contact_phone, :pager_beeper_number, :answering_service_phone_number, :cell_phone_number,
       :pager_beeper_digital_flag, :visa_expiration_date, :ethnicity_description, :visa_issue_date,
-      :ecfmg_expiration_date, :work_permit_status, :spouse_middle_name,
+      :ecfmg_expiration_date, :show_on_tickler, :work_permit_status, :spouse_middle_name,
       :state_residence_date, :citizenship_country_country_name, :marital_status_marital_status_description,
       :gender_gender_description, :birth_country_country_name, :correspondence_address_type_correspondence_address_type_descrip,
       :provider_type_provider_type_abbreviation, :graduate_type_graduate_type_description,

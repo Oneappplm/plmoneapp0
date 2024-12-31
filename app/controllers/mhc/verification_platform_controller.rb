@@ -220,8 +220,18 @@ class Mhc::VerificationPlatformController < ApplicationController
       @states = State.all
       @provider_cds = @provider_personal_information.provider_cds.order(:id)
       @new_provider_cd = ProviderCd.new(caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id, provider_attest_id: @provider_personal_information.provider_attest_id) 
+      @provider_medicares = @provider_personal_information.provider_medicares.order(:id)
+      @provider_medicare = ProviderMedicare.all 
+      @new_provider_medicare = ProviderMedicare.new(provider_attest_id: @provider_personal_information.provider_attest_id)
+      @provider_medicaids = @provider_personal_information.provider_medicaids.order(:id)
+      @new_provider_medicaid = ProviderMedicaid.new(
+        provider_attest_id: @provider_personal_information.provider_attest_id
+      )
+      @provider_militaries = @provider_personal_information.provider_militaries.order(:id)
+      @new_provider_military = ProviderMilitary.new(
+        provider_attest_id: @provider_personal_information.provider_attest_id
+      )
     end
-    
 
     if params[:page_tab] == 'liability'
       @q = ProviderInsuranceCoverage.ransack(params[:q])
