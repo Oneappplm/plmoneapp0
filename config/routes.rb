@@ -366,6 +366,7 @@ Rails.application.routes.draw do
   get '/enrollment_report_page', to: 'mhc/verification_platform#enrollment_report_page'
 
   namespace :mhc do
+    resources :client_portal
     resources :provider_insurance_coverages
     resources :provider_npdbs
     resources :provider_npdb_comments
