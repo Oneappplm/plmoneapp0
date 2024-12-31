@@ -379,6 +379,7 @@ Rails.application.routes.draw do
 
   namespace :mhc do
     resources :provider_cds
+    resources :client_portal
     resources :provider_insurance_coverages
     resources :provider_npdbs
     resources :provider_npdb_comments

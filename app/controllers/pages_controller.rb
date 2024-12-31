@@ -237,14 +237,16 @@ class PagesController < ApplicationController
     @q = ProviderPersonalInformation.ransack(params[:q]&.except(:advanced_search))
 
     csv_data = CSV.generate(headers: true) do |csv|
-      csv << ['NPI', 'Provider Name', 'Address', 'MedvId', 'Cred Cycle']
+      csv << ['Status', 'Provider Name', 'Birth Date', 'Address', 'Attested Date', 'MedvId', 'Cred Cycle']
       
       @provider_personal_informations.each do |provider|
         practice_information = provider.provider_attest.practice_informations.first
         csv << [
-          "#{provider.npi}",
+          "#{provider.cred_status}",
           "#{provider.fullname}, #{provider.provider_type_provider_type_abbreviation}",
+          "#{provider.birth_date.strftime("%Y-%m-%d")}",
           "#{practice_information.complete_address}",
+          "#{provider.attest_date.strftime("%Y-%m-%d")}",
           "#{provider.caqh_provider_attest_id}"
         ]
       end
