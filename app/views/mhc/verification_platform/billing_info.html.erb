@@ -1,5 +1,98 @@
 <div class="enc-content">
-  <div class="container">
-    <%= render "top_nav_buttons"%>
-  </div>
+    <div class="container">
+        <%= render "top_nav_buttons"%>
+        <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <h4 class="page-heading">Billing Information</h4>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="practice-info-switch">
+                    <label class="form-check-label" for="practice-info-switch">Not Applicable</label>
+                </div>
+            </div>
+            <a href="<%= mhc_verification_platform_path(page_tab: 'add_billing_info')%>" class="btn btn-primary py-1 page-applicable">
+                    <i class='bx bx-plus' ></i>
+                    Add New Billing
+                </a>
+        </div>
+        <div class="mt-2 page-applicable">
+            <span class="page-note">
+                <i class='bx bx-error-circle font-red'></i> <span>Please list your billing information. Required fields are marked with the symbol</span>
+            </span>
+            <span class="page-note">
+                <i class='bx bx-error-circle font-red'></i> <span>Note: Please check the Not Applicable box if you have do not utilize a billing company.</span>
+            </span>
+        </div>
+        <div class="row mt-3 page-applicable">
+            <div class="col-xl-4">
+                <div class="form-control enc-search-wrp">
+                    <input type="" class="enc-search-input" placeholder="Search">
+                    <!-- <i class='bx bx-search' ></i> -->
+                </div>
+            </div>
+        </div>
+        <div class="row result-controls page-applicable">
+            <div class="col-xl-6 filter-result">
+                <h6 class="">Result: 1 records</h6>
+            </div>
+            <div class="col-xl-6">
+                <div class="table-controls">
+                    <div class="control-wrp">
+                        <label for="limit">Show limit</label>
+                        <input type="text" id="limit" class="form-control" value="20">
+                    </div>
+                    <div class="control-wrp">
+                        <label for="page">Page 1 of 32</label>
+                        <input type="text" id="page" class="form-control" value="1">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table class="table table-bordered practice-table mt-2 page-applicable">
+          <thead>
+            <tr>
+              <th class="text-white" scope="col">No</th>
+              <th class="text-white">Billing Company</th>
+              <th class="text-white">Address</th>
+              <th class="text-white">City</th>
+              <th class="text-white">State/Province</th>
+              <th class="text-white">Zip/Postal Code</th>
+              <th class="text-white">Country</th>
+              <th class="text-white">Name Affiliated with Tax ID Number</th>
+              <th class="text-white">Federal Tax ID Number</th>
+              <th class="text-white">Check Payable To</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @billing_companies.each_with_index do |billing_company, index| %>
+              <tr>
+                <td>
+                  <a href="<%= mhc_verification_platform_path(id: billing_company.id, page_tab: 'show_billing_info') %>">
+                    <%= index + 1 %>
+                  </a>
+                </td>
+                <td><%= billing_company.billing_company_name %></td>
+                <td><%= billing_company.address %></td>
+                <td><%= billing_company.city %></td>
+                <td><%= billing_company.state %></td>
+                <td><%= billing_company.zip %></td>
+                <td><%= billing_company.country %></td>
+                <td><%= billing_company.name_affiliated_with_tax_id %></td>
+                <td><%= billing_company.federal_tax_id %></td>
+                <td><%= billing_company.check_payable_to %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+        <form action="" class="page-not-applicable">
+            <div class="form-row mt-4">
+                <label for="">Please explain:<span class="font-red">*</span></label>
+                <textarea name="" id="" cols="30" rows="5" class="form-control" required></textarea>
+            </div>
+            <div class="form-row mt-2 d-flex justify-content-end">
+                <button type="submit" class="btn btn-sm btn-primary">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
 </div>

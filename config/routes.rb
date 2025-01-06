@@ -131,6 +131,10 @@ Rails.application.routes.draw do
   end  
 
   namespace :mhc do
+    resources :billing_companies
+  end  
+
+  namespace :mhc do
     resources :provider_medicaids
   end  
 
