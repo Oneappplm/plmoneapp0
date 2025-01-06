@@ -234,6 +234,19 @@ class Mhc::VerificationPlatformController < ApplicationController
       )
     end
 
+    if params[:page_tab] == 'billing_info'
+      @billing_companies = BillingCompany.all
+    end 
+
+    if params[:page_tab] == 'show_billing_info'
+      @billing_company = BillingCompany.find_by(id: params[:id])
+      
+      if @billing_company.nil?
+        redirect_to mhc_verification_platform_path(page_tab: 'billing_info'),
+                    alert: 'Billing company not found.'
+      end
+    end
+
     if params[:page_tab] == 'liability'
       @q = ProviderInsuranceCoverage.ransack(params[:q])
       @provider_insurance_coverages = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
