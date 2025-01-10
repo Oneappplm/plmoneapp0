@@ -1,0 +1,69 @@
+<div class="enc-content">
+   <%= form_with url: load_provider_personal_information_mhc_manage_clients_path, method: :post, local: true do |f| %>
+      <div class="container-fluid">
+         <div class="row">
+            <div class="col-xl-12">
+               <%#= render partial: "verification_platform/encompass_nav" %>
+            </div>
+         </div>
+         <div class="row mb-3">
+            <div class="col-xl-12 mb-1">
+               <h2>
+                  <a href="<%= mhc_manage_clients_path %>" class="d-flex gap-2 text-secondary">
+                     <i class="bi bi-arrow-left h5 d-flex align-items-center"></i>
+                     <span class="h1"><%= 'Edit Provider Personal Information' %></span>
+                  </a>
+               </h2>
+            </div>
+         </div>
+
+         <div class="form-row row mb-3">
+            <div class="col-xl-9 mt-2 mb-2">
+                <label for="provider_personal_information_id">Select Provider</label>
+                <%= select_tag 'provider_personal_information_id',
+                               options_from_collection_for_select(@providers, :id, :first_name),
+                               prompt: 'Select a provider',
+                               class: 'form-control' %>
+            </div>
+            <div class="col-xl-3 mt-2 mb-2">
+               <%= f.submit 'Select Provider', class: 'btn btn-primary py-1 mt-4' %>
+               <%= link_to 'clear', edit_provider_personal_information_mhc_manage_clients_path, class: 'btn btn-danger py-1 mt-4'  %>
+            </div>
+         </div>
+    <% end %>
+
+    <% if @provider_personal_information %>
+      <h2>Editing Provider: <%= @provider_personal_information.fullname %></h2>
+
+      <%= form_with model: @provider_personal_information, url: mhc_manage_clients_path(@provider_personal_information), method: :patch, local: true do |f| %>
+        <div>
+          <%= f.label :first_name %>
+          <%= f.text_field :first_name, class: 'form-control' %>
+        </div>
+
+        <div>
+          <%= f.label :last_name %>
+          <%= f.text_field :last_name, class: 'form-control' %>
+        </div>
+
+        <div>
+          <%= f.label :birth_date %>
+          <%= f.date_field :birth_date, class: 'form-control' %>
+        </div>
+
+        <div>
+          <%= f.label :email_address %>
+          <%= f.email_field :email_address, class: 'form-control' %>
+        </div>
+
+        <div>
+          <%= f.label :npi %>
+          <%= f.text_field :npi, class: 'form-control' %>
+        </div>
+
+        <div>
+          <%= f.submit 'Update Provider', class: 'btn btn-success mt-3' %>
+        </div>
+      <% end %>
+    <% end %>
+</div>
