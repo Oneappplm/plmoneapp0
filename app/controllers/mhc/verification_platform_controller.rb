@@ -272,6 +272,8 @@ class Mhc::VerificationPlatformController < ApplicationController
     if params[:page_tab] == 'app_tracking_record'
       @provider_personal_information_app_tracking = ProviderPersonalInformationAppTracking.where(id: params[:provider_personal_information_app_tracking_id]).first_or_initialize(provider_personal_information_id: @provider_personal_information.id)
       @provider_information_names = ProviderPersonalInformation.select(:id, "CONCAT(last_name,', ',first_name, ' ', middle_name) as name").all.collect { |provider_personal_information| [provider_personal_information.name, provider_personal_information.id]}
+      @selected_issues = @provider_personal_information_app_tracking.master_issues
+      @selected_reviews = @provider_personal_information_app_tracking.master_reviews
     end
 
     # code for licensure tab
