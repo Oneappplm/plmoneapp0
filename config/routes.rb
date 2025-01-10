@@ -398,6 +398,21 @@ Rails.application.routes.draw do
   namespace :mhc do
     resources :provider_cds
     resources :client_portal
+
+    resources :client_organizations do
+      collection do
+        get 'edit_client_organization'
+        post 'load_client_organization'
+      end
+    end
+    
+    resources :manage_clients, path: 'manage-clients' do
+      collection do
+        get 'edit_provider_personal_information'
+        post 'load_provider_personal_information'
+      end
+    end
+    
     resources :provider_insurance_coverages
     resources :provider_npdbs
     resources :provider_npdb_comments

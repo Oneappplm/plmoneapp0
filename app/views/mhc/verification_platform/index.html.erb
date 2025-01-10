@@ -54,7 +54,7 @@
                         <div class="row mb-3">
                           <div class="col-md-6">
                             <%= form_with url: generate_report_path(format: :csv), method: :get, class: "form-inline", id: 'download-report-form' do %>
-                              <%= hidden_field_tag :provider_attest_id, @provider_personal_informations.first.provider_attest_id %>
+                              <%= hidden_field_tag :provider_attest_id, @provider_personal_informations.first.provider_attest_id  if  @provider_personal_informations.present? %>
                               <div class="form-group mr-2">
                                 <label for="date_range" class="mr-2 text-white">Select Date Range</label>
                                 <%= text_field_tag :date_range, params[:date_range], class: "form-control", placeholder: "Select date range" %>
@@ -67,20 +67,21 @@
                         </div>
                         
                         <table class="table practice-table mt-3">
-                            <thead>
-                                <tr>
-                                    <th class="text-white" scope="col">Practitioner Name</th>
-                                    <th class="text-white">Ready for download</th>
-                                    <th class="text-white">In Process</th>
-                                    <th class="text-white">Submitted</th>
-                                    <th class="text-white">Incomplete Application</th>
-                                    <th class="text-white">Application Not Received</th>
-                                    <th class="text-white">Status</th>
-                                </tr>
-                            </thead>
+                          <thead>
+                            <tr>
+                              <th class="text-white" scope="col">Practitioner Name</th>
+                              <th class="text-white">Ready for download</th>
+                              <th class="text-white">In Process</th>
+                              <th class="text-white">Submitted</th>
+                              <th class="text-white">Incomplete Application</th>
+                              <th class="text-white">Application Not Received</th>
+                              <th class="text-white">Status</th>
+                            </tr>
+                          </thead>
                             <tbody>
-                            <% @provider_personal_informations.each do |provider_personal_information| %>
-                                <tr>
+                              <% if @provider_personal_informations.present? %>
+                                <% @provider_personal_informations.each do |provider_personal_information| %>
+                                  <tr>
                                     <td>
                                     <%= link_to mhc_verification_platform_path(id: provider_personal_information.provider_attest_id) do %>
                                     <%= "#{provider_personal_information&.fullname}, #{provider_personal_information.provider_type_provider_type_abbreviation}" %>
@@ -92,8 +93,9 @@
                                     <td></td>
                                     <td></td>
                                     <td></td>
-                                </tr>
-                            <% end %>
+                                  </tr>
+                                <% end %>
+                              <% end %>
                             </tbody>
                         </table>
 
