@@ -1,30 +1,33 @@
 class ManageClientsController < ApplicationController
 
 	def index
-    @practitioner = Practitioner.paginate(page: params[:page])
+    @provider_personal_information = ProviderPersonalInformation.paginate(page: params[:page])
   end
 
   def new 
-    @practitioner = Practitioner.new
+    @provider_personal_information = ProviderPersonalInformation.new
+    @provider_personal_information.build_provider_personal_information_credentialing_contact
   end
 
   def create
-    @practitioner = Practitioner.new(practitioner_params)
-
-    if @practitioner.save
-      redirect_to action: "index"
-      else
+    @provider_personal_information = ProviderPersonalInformation.new(practitioner_params)
+  
+    # Attempt to save the record without running validations
+    if @provider_personal_information.save(validate: false)
+      redirect_to mhc_manage_clients_path, notice: "Practitioner created successfully."
+    else
       render :new, status: :unprocessable_entity
     end
   end
+  
 
   private
+
   def practitioner_params
-    params.require(:practitioner).permit(:first_name, :middle_name, :last_name, :suffix, :gender, :date_of_birth, :social_security_number,
-           :contact_method, :phone_number, :fax_number, :email_address, :address, :suit_or_apt,
-           :additional_address, :city, :country, :state_or_province, :zipcode, :practitioner_type,
-           :credentials_committee_date, :credentials_batch_date, :client_batch_name, :client_batch_id,
-           :market, :status, :application_method, :availability, :county, :first_name_of_credentialing_contact,
-           :middle_name_of_credentialing_contact, :last_name_of_credentialing_contact, :suffix_of_credentialing_contact)
+    params.require(:provider_personal_information).permit(:first_name, :middle_name, :last_name, :suffix, :gender, :date_of_birth,
+      :ssn, :practitioner_type, :credentials_committee_date, :client_batch_date, :availability,
+      :client_batch_name, :client_batch_id, :market, :status, :application_method,
+      provider_personal_information_credentialing_contact_attributes: [:firstname, :middlename, :lastname, :suffix_of_credentialing_contact, :contact_method, :phone_number, :fax_number, :email_address, :address, :suit_or_apt, :additional_address, :city, :county, :state_or_province, :zipcode, :country,]
+    )
   end
 end
