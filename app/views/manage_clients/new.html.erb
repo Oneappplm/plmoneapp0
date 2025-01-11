@@ -1,5 +1,5 @@
 <div class="enc-content">
-<%= form_with model: @practitioner, url: manage_clients_path do |form| %>
+<%= form_with model: @provider_personal_information, url: manage_clients_path do |form| %>
     <div class="container-fluid">
         <div class="row">
             <div class="col-xl-12">
@@ -48,100 +48,100 @@
         <div class="row mb-3 mx-2">
             <div class="col-xl-6">
                 <label class="text-dark-grey" for="social-security-number">Social Security Number  <span class="text-red">*</span></label>
-                <%= form.text_field :social_security_number , class:"form-control border-dark", placeholder:"Type here..." , required: true%>
+                <%= form.text_field :ssn , class:"form-control border-dark", placeholder:"Type here..." , required: true%>
             </div>
         </div>
 
         <!-- Send Notification to Credentialing Contact Container -->
+            <%= form.fields_for :provider_personal_information_credentialing_contact do |contact_fields| %>
+              <div class="border rounded shadow mx-3 mt-5 pb-2">
+                  <div class="row mt-4 ms-2">
+                      <label class="h4">Send Notification to Credentialing Contact</label>
+                  </div>
+                  <div class="row mx-2 mb-3">
+                      <div class="col-xl-3">
+                          <label class="text-dark-grey">First Name </label>
+                        <%= contact_fields.text_field :firstname , class:"form-control border-dark", placeholder:"Type here..."%>
+                      </div>
+                      <div class="col-xl-3">
+                          <label class="text-dark-grey">Middle Name</label>
+                        <%= contact_fields.text_field :middlename , class:"form-control border-dark", placeholder:"Type here..."%>
+                      </div>
+                      <div class="col-xl-4">
+                          <label class="text-dark-grey">Last Name </label>
+                        <%= contact_fields.text_field :lastname , class:"form-control border-dark", placeholder:"Type here..."%>
+                      </div>
+                      <div class="col-xl-2">
+                          <label class="text-dark-grey">Suffix</label>
+                          <%= contact_fields.select :suffix_of_credentialing_contact, options_for_select([ 'Jr.', 'Sr.', 'II', 'III', 'IV', 'V']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
 
-        <div class="border rounded shadow mx-3 mt-5 pb-2">
-            <div class="row mt-4 ms-2">
-                <label class="h4">Send Notification to Credentialing Contact</label>
-            </div>
-            <div class="row mx-2 mb-3">
-                <div class="col-xl-3">
-                    <label class="text-dark-grey">First Name </label>
-                   <%= form.text_field :first_name_of_credentialing_contact , class:"form-control border-dark", placeholder:"Type here..."%>
-                </div>
-                <div class="col-xl-3">
-                    <label class="text-dark-grey">Middle Name</label>
-                   <%= form.text_field :middle_name_of_credentialing_contact , class:"form-control border-dark", placeholder:"Type here..."%>
-                </div>
-                <div class="col-xl-4">
-                    <label class="text-dark-grey">Last Name </label>
-                   <%= form.text_field :last_name_of_credentialing_contact , class:"form-control border-dark", placeholder:"Type here..."%>
-                </div>
-                <div class="col-xl-2">
-                    <label class="text-dark-grey">Suffix</label>
-                    <%= form.select :suffix_of_credentialing_contact, options_for_select([ 'Jr.', 'Sr.', 'II', 'III', 'IV', 'V']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
+                      </div>
+                  </div>
+                  <div class="row mx-2 mb-3">
+                      <div class="col-xl-6">
+                          <label class="text-dark-grey">Contact Method</label>
+                          <%= contact_fields.text_field :contact_method, class:"form-control border-dark", placeholder:"Type here..."%>
 
-                </div>
-            </div>
-            <div class="row mx-2 mb-3">
-                <div class="col-xl-6">
-                    <label class="text-dark-grey">Contact Method</label>
-                    <%= form.text_field :contact_method, class:"form-control border-dark", placeholder:"Type here..."%>
+                      </div>
+                      <div class="col-xl-6">
+                          <label class="text-dark-grey">Phone Number</label>
+                          <%= contact_fields.number_field :phone_number, class: 'form-control border-dark', placeholder: 'Type here...' %>
+                      </div>
+                  </div>
+                  <div class="row mb-3 mx-2">
+                      <div class="col-xl-6">
+                          <label class="text-dark-grey">Fax Number </label>
+                          <%= contact_fields.text_field :fax_number, class:"form-control border-dark", placeholder:"Type here..."%>
+                      </div>
+                      <div class="col-xl-6">
+                          <label class="text-dark-grey">Email Address </label>
+                          <%= contact_fields.email_field :email_address, class: 'form-control border-dark', placeholder: 'Type here...' %>
+                      </div>
+                  </div>
+                  <div class="row mb-3 mx-2">
+                      <div class="col-xl-6">
+                          <label class="text-dark-grey">Address </label>
+                          <%= contact_fields.text_field :address, class: 'form-control border-dark', placeholder: 'Type here...' %>
+                      </div>
+                      <div class="col-xl-6">
+                          <label class="text-dark-grey">Suit/Apt </label>
+                          <%= contact_fields.text_field :suit_or_apt, class: 'form-control border-dark', placeholder: 'Type here...' %>
+                      </div>
+                  </div>
+                  <div class="row mb-3 mx-2">
+                      <div class="col-xl-6">
+                          <label class="text-dark-grey">Additional Address </label>
+                          <%= contact_fields.text_field :additional_address, class: 'form-control border-dark', placeholder: 'Type here...' %>
+                      </div>
+                      <div class="col-xl-6">
+                          <label class="text-dark-grey">City </label>
+                          <%= contact_fields.text_field :city, class: 'form-control border-dark', placeholder: 'Type here...' %>
+                      </div>
+                  </div>
+                  <div class="row mb-3 mx-2">
+                      <div class="col-xl-6">
+                          <label class="text-dark-grey">County</label>
+                          <%= contact_fields.text_field :county, class: 'form-control border-dark', placeholder: 'Type here...' %>
+                      </div>
+                      <div class="col-xl-6">
+                          <label class="text-dark-grey">State/Province</label>
+                          <%= contact_fields.select :state_or_province, options_for_select([ 'UP', 'MP', 'MH']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
 
-                </div>
-                 <div class="col-xl-6">
-                    <label class="text-dark-grey">Phone Number</label>
-                    <%= form.number_field :phone_number, class: 'form-control border-dark', placeholder: 'Type here...' %>
-                </div>
-            </div>
-            <div class="row mb-3 mx-2">
-                <div class="col-xl-6">
-                    <label class="text-dark-grey">Fax Number </label>
-                    <%= form.text_field :fax_number, class:"form-control border-dark", placeholder:"Type here..."%>
-                </div>
-                <div class="col-xl-6">
-                    <label class="text-dark-grey">Email Address </label>
-                    <%= form.email_field :email_address, class: 'form-control border-dark', placeholder: 'Type here...' %>
-                </div>
-            </div>
-            <div class="row mb-3 mx-2">
-                <div class="col-xl-6">
-                    <label class="text-dark-grey">Address </label>
-                    <%= form.text_field :address, class: 'form-control border-dark', placeholder: 'Type here...' %>
-                </div>
-                <div class="col-xl-6">
-                    <label class="text-dark-grey">Suit/Apt </label>
-                    <%= form.text_field :suit_or_apt, class: 'form-control border-dark', placeholder: 'Type here...' %>
-                </div>
-            </div>
-            <div class="row mb-3 mx-2">
-                <div class="col-xl-6">
-                    <label class="text-dark-grey">Additional Address </label>
-                    <%= form.text_field :additional_address, class: 'form-control border-dark', placeholder: 'Type here...' %>
-                </div>
-                <div class="col-xl-6">
-                    <label class="text-dark-grey">City </label>
-                    <%= form.text_field :city, class: 'form-control border-dark', placeholder: 'Type here...' %>
-                </div>
-            </div>
-            <div class="row mb-3 mx-2">
-                <div class="col-xl-6">
-                    <label class="text-dark-grey">County</label>
-                    <%= form.text_field :county, class: 'form-control border-dark', placeholder: 'Type here...' %>
-                </div>
-                <div class="col-xl-6">
-                    <label class="text-dark-grey">State/Province</label>
-                    <%= form.select :state_or_province, options_for_select([ 'UP', 'MP', 'MH']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
+                      </div>
+                  </div>
+                  <div class="row mb-3 mx-2">
+                      <div class="col-xl-6">
+                          <label class="text-dark-grey">Zip Code</label>
+                          <%= contact_fields.text_field :zipcode, class: 'form-control border-dark', placeholder: 'Type here...' %>
+                      </div>
+                      <div class="col-xl-6">
+                          <label class="text-dark-grey">Country</label>
+                          <%= contact_fields.select :country, options_for_select([ 'India', 'Alaska', 'Australia']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
 
-                </div>
-            </div>
-            <div class="row mb-3 mx-2">
-                <div class="col-xl-6">
-                    <label class="text-dark-grey">Zip Code</label>
-                    <%= form.text_field :zipcode, class: 'form-control border-dark', placeholder: 'Type here...' %>
-                </div>
-                <div class="col-xl-6">
-                    <label class="text-dark-grey">Country</label>
-                    <%= form.select :country, options_for_select([ 'India', 'Alaska', 'Australia']), {prompt: 'Select Option'}, { class: 'form-select border border-dark'} %>
-
-                </div>
-            </div>
-        </div>
-
+                      </div>
+                  </div>
+              </div>
+            <% end %>
         <!-- Send Notification to Credentialing Contact Container -->
 
         <div class="row mb-3 mx-2 mt-5">
