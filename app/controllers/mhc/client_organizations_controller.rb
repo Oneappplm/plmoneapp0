@@ -32,7 +32,7 @@ class Mhc::ClientOrganizationsController < ApplicationController
     end
   end
 
-  def update_client_organization
+  def update_status
     @client_organization = ClientOrganization.find(params[:id])
 
     if @client_organization.update(client_organization_params)

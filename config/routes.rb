@@ -408,6 +408,9 @@ Rails.application.routes.draw do
         get 'edit_client_organization'
         post 'load_client_organization'
       end
+      member do
+        patch 'update_status'
+      end
     end
     
     resources :manage_clients, path: 'manage-clients' do
