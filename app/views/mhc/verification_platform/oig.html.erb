@@ -8,9 +8,6 @@
                     <input class="form-check-input" type="checkbox">
                     <label class="form-check-label" for="disclosure-switch">Not Applicable</label>
                 </div>
-                <%# <a class="btn btn-primary py-1 page-applicable py-1" href="" id="EditDisclosure">
-                    Edit
-                </a> %>
             </div>
         </div>
         <div class="row">
@@ -110,7 +107,7 @@
                                 </button>
                             </div>
                             <div class="col-12 m-2">
-                                <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
+                                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#QAModal">
                                     Quality Audit
                                 </button>
                             </div>
@@ -173,98 +170,99 @@
 </div>
 
 <div class="modal fade" id="send_contact_template" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
-            <div class="p-4">
-                <h2 class="text-center">Send Contact</h3>
-                <div class="card other-name-card">
-                    <div class="card-body">
-                        <div class="col-xl-12 py-2">
-                            <form accept-charset="UTF-8" action=<%= mhc_verification_platform_send_contact_path %> method="POST" enctype="multipart/form-data" target="_blank" id="ajaxForm">
-                            <%# <form id='send_contact_form'> %>
-                                <div class="row p-2">
-                                    <div class="col-2 m-auto">
-                                        Practitioner Name:
-                                    </div>
-                                    <div class="col-10">
-                                        <input type="text" name="practitioner_name" value="<%= @provider_personal_information.fullname %>" class="form-control border-none" style="border: none!important" placeholder="Type here..." disabled>
-                                    </div>
-                                </div>
-                                <div class="row p-2">
-                                    <div class="col-2 m-auto">
-                                        Select Contact To:
-                                    </div>
-                                    <div class="col-10">
-                                        <select id="provider_type" name="provider_type" class="form-select">
-                                            <option value="credentialing_contact" selected>Credentialing Contact</option>
-                                            <option value="confidential_contact">Confidential Contact</option>
-                                            <option value="client_contact">Client Contact</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row p-2">
-                                    <div class="col-2 m-auto">
-                                        Contact Method:
-                                    </div>
-                                    <div class="col-10 row">
-                                        <div class="col-4 form-check d-flex align-items-center gap-2">
-                                            <input class="form-check-input contact_method_radio" type="radio" name="contact_method_radio" id="contact-method-email" value="email" checked>
-                                            <label class="form-check-label" for="contact-method-email">
-                                                Email
-                                            </label>
-                                        </div>
-                                        <div class="col-4 form-check d-flex align-items-center gap-2">
-                                            <input class="form-check-input contact_method_radio" type="radio" name="contact_method_radio" id="contact-method-fax" value="fax" disabled>
-                                            <label class="form-check-label" for="contact-method-fax">
-                                                Fax
-                                            </label>
-                                        </div>
-                                        <div class="col-4 form-check d-flex align-items-center gap-2">
-                                            <input class="form-check-input contact_method_radio" type="radio" name="contact_method_radio" id="contact-method-letter" value="letter" disabled>
-                                            <label class="form-check-label" for="contact-method-letter">
-                                                Letter
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row p-2">
-                                    <div class="col-2 m-auto">
-                                        To:
-                                    </div>
-                                    <div class="col-10">
-                                        <input type="text" id="to" name="to" class="form-control" placeholder="Type here..." required="true" value=<%= @provider_personal_information.provider_personal_information_credentialing_contact&.email%>>
-                                    </div>
-                                    <input type="hidden" id="cred_contact_email" value=<%= @provider_personal_information.provider_personal_information_credentialing_contact&.email %>>
-                                    <input type="hidden" id="conf_contact_email" value=<%= @provider_personal_information.provider_personal_information_confidential_contact&.email %>>
-                                    <input type="hidden" id="client_contact_email" value="">
-                                </div>
-                                <div class="row p-2">
-                                    <div class="col-2 m-auto">
-                                        Subject:
-                                    </div>
-                                    <div class="col-10">
-                                        <input type="text" name="subject" class="form-control" placeholder="Type here..." required="true">
-                                    </div>
-                                </div>
-                                <div class="row p-2">
-                                    <div class="col-2 m-auto">
-                                        Attachments:
-                                    </div>
-                                    <div class="col-10">
-                                        <input type="file" name="attachments[]" multiple="multiple" class="form-control" placeholder="Type here..." required="true">
-                                    </div>
-                                </div>
-                                <textarea class="form-control" name="message" placeholder="Type here..." rows="8" required="true"></textarea>
-                            </form>
-                        </div>
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content">
+          <div class="p-4">
+            <h2 class="text-center">Send Contact</h2>
+            <div class="card other-name-card">
+              <div class="card-body">
+                <div class="col-xl-12 py-2">
+                  <form accept-charset="UTF-8" action=<%= mhc_verification_platform_send_contact_path %> method="POST" enctype="multipart/form-data" target="_blank" id="ajaxForm">
+                  <%# <form id='send_contact_form'> %>
+                      <div class="row p-2">
+                          <div class="col-2 m-auto">
+                              Practitioner Name:
+                          </div>
+                          <div class="col-10">
+                              <input type="text" name="practitioner_name" value="<%= @provider_personal_information.fullname %>" class="form-control border-none" style="border: none!important" placeholder="Type here..." disabled>
+                          </div>
+                      </div>
+                      <div class="row p-2">
+                          <div class="col-2 m-auto">
+                              Select Contact To:
+                          </div>
+                          <div class="col-10">
+                              <select id="provider_type" name="provider_type" class="form-select">
+                                  <option value="credentialing_contact" selected>Credentialing Contact</option>
+                                  <option value="confidential_contact">Confidential Contact</option>
+                                  <option value="client_contact">Client Contact</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div class="row p-2">
+                          <div class="col-2 m-auto">
+                              Contact Method:
+                          </div>
+                          <div class="col-10 row">
+                              <div class="col-4 form-check d-flex align-items-center gap-2">
+                                  <input class="form-check-input contact_method_radio" type="radio" name="contact_method_radio" id="contact-method-email" value="email" checked>
+                                  <label class="form-check-label" for="contact-method-email">
+                                      Email
+                                  </label>
+                              </div>
+                              <div class="col-4 form-check d-flex align-items-center gap-2">
+                                  <input class="form-check-input contact_method_radio" type="radio" name="contact_method_radio" id="contact-method-fax" value="fax" disabled>
+                                  <label class="form-check-label" for="contact-method-fax">
+                                      Fax
+                                  </label>
+                              </div>
+                              <div class="col-4 form-check d-flex align-items-center gap-2">
+                                  <input class="form-check-input contact_method_radio" type="radio" name="contact_method_radio" id="contact-method-letter" value="letter" disabled>
+                                  <label class="form-check-label" for="contact-method-letter">
+                                      Letter
+                                  </label>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="row p-2">
+                          <div class="col-2 m-auto">
+                              To:
+                          </div>
+                          <div class="col-10">
+                              <input type="text" id="to" name="to" class="form-control" placeholder="Type here..." required="true" value=<%= @provider_personal_information.provider_personal_information_credentialing_contact&.email%>>
+                          </div>
+                          <input type="hidden" id="cred_contact_email" value=<%= @provider_personal_information.provider_personal_information_credentialing_contact&.email %>>
+                          <input type="hidden" id="conf_contact_email" value=<%= @provider_personal_information.provider_personal_information_confidential_contact&.email %>>
+                          <input type="hidden" id="client_contact_email" value="">
+                      </div>
+                      <div class="row p-2">
+                          <div class="col-2 m-auto">
+                              Subject:
+                          </div>
+                          <div class="col-10">
+                              <input type="text" name="subject" class="form-control" placeholder="Type here..." required="true">
+                          </div>
+                      </div>
+                      <div class="row p-2">
+                          <div class="col-2 m-auto">
+                              Attachments:
+                          </div>
+                          <div class="col-10">
+                              <input type="file" name="attachments[]" multiple="multiple" class="form-control" placeholder="Type here..." required="true">
+                          </div>
+                      </div>
+                      <textarea class="form-control" name="message" placeholder="Type here..." rows="8" required="true"></textarea>
+                  </form>
                 </div>
-                <button type="submit" class="btn btn-primary btn-md w-100" form="ajaxForm">
-                    <strong>Send</strong>
-                </button>
-                <button class="btn btn-cancel w-100" data-bs-dismiss="modal" id="btn-modal-close">Cancel</button>
-            </div>
-        </div>
+             </div>
+              <button type="submit" class="btn btn-primary btn-md w-100" form="ajaxForm">
+                  <strong>Send</strong>
+              </button>
+              <button class="btn btn-cancel w-100" data-bs-dismiss="modal" id="btn-modal-close">Cancel</button>
+           </div>
+      </div>
     </div>
+  </div>
 </div>
 
             <!-- Add Comment Modal -->
@@ -327,470 +325,514 @@
                 </div>
             </div>
 
-            <!-- Quality Audit Modal -->
+             <!-- Quality Audit Modal -->
             <div class="modal fade" id="QAModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            <div class="content">
-                                <div class="modal-title">
-                                    <h6 class="">Quality Audit</h6>
-                                    <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
-                                </div>
-                                <div class="form-row row mt-3">
-                                    <div class="col-xl-12">
-                                        <div class="card other-name-card">
-                                            <form action="">
-                                                <div class="card-body">
-                                                    <div class="d-flex align-items-center justify-content-between">
-                                                        <h6 class="form-heading">Request</h6>
-                                                        <div class="d-flex justify-content-end gap-2">
-                                                            <button class="btn btn-primary py-1">
-                                                                View Request History
-                                                            </button>
-                                                            <button class="btn btn-primary py-1">
-                                                                View Webcrawler Image Archive
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-row mt-3">
-                                                        <button class="btn btn-primary py-1">
-                                                            Send Request
-                                                        </button>
-                                                    </div>
-                                                    <div class="form-row d-flex mt-3">
-                                                        <label for="">Requested By:</label>
-                                                    </div>
-                                                    <div class="form-row">
-                                                        <label for="">Requested Date:</label>
-                                                    </div>
-                                                    <div class="form-row d-flex align-items-center gap-3">
-                                                        <label for="">Requested Method:</label>
-                                                        <div class="form-check d-flex align-items-center gap-2">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="method-radio" id="method-autofax" value="AutoFax">
-                                                            <label class="form-check-label" for="method-autofax">
-                                                                AutoFax
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check d-flex align-items-center gap-2">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="method-radio" id="method-email" value="E-Mail">
-                                                            <label class="form-check-label" for="method-email">
-                                                                E-Mail
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check d-flex align-items-center gap-2">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="method-radio" id="method-letter" value="Letter">
-                                                            <label class="form-check-label" for="method-letter">
-                                                                Letter
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check d-flex align-items-center gap-2">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="method-radio" id="method-phone" value="Phone">
-                                                            <label class="form-check-label" for="method-phone">
-                                                                Phone
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check d-flex align-items-center gap-2">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="method-radio" id="method-website" value="Website">
-                                                            <label class="form-check-label" for="method-website">
-                                                                Website
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-row row">
-                                                        <div class="col-xl-6">
-                                                            <label for="req-fee-amount">Required Fee Amount:</label>
-                                                            <input type="text" name="req-fee-amount" id="req-fee-amount"
-                                                                class="form-control" placeholder="Type here...">
-                                                        </div>
-                                                        <div class="col-xl-6">
-                                                            <label for="check-payable-to">Check Payable To:</label>
-                                                            <input type="text" name="check-payable-to"
-                                                                id="check-payable-to" class="form-control"
-                                                                placeholder="Type here...">
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-row mt-2">
-                                                        <div class=" form-check d-flex align-items-center gap-2">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                id="inc-delineation-check"
-                                                                value="Include Delineation of Privileges">
-                                                            <label class="form-check-label"
-                                                                for="inc-delineation-check">Include Delineation of
-                                                                Privileges</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-row d-flex align-items-center gap-3">
-                                                        <label for="">Check has generated?</label>
-                                                        <div class="form-check d-flex align-items-center gap-2">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="check-generate-radio" id="check-generate-yes"
-                                                                value="Yes">
-                                                            <label class="form-check-label" for="check-generate-yes">
-                                                                Yes
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check d-flex align-items-center gap-2">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="check-generate-radio" id="check-generate-no"
-                                                                value="No">
-                                                            <label class="form-check-label" for="check-generate-no">
-                                                                No
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-row d-flex align-items-center gap-3">
-                                                        <label for="">Received Status:</label>
-                                                        <div class="form-check d-flex align-items-center gap-2">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="received-status-radio" id="received-status-yes"
-                                                                value="Yes">
-                                                            <label class="form-check-label" for="received-status-yes">
-                                                                Yes
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check d-flex align-items-center gap-2">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="received-status-radio" id="received-status-no"
-                                                                value="No">
-                                                            <label class="form-check-label" for="received-status-no">
-                                                                No
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-row">
-                                                        <label for="">Received By:</label>
-                                                    </div>
-                                                    <div class="form-row">
-                                                        <label for="">Received Date:</label>
-                                                    </div>
-                                                    <div class="form-row">
-                                                        <label for="">Comments:</label>
-                                                        <textarea name="" id="" cols="30" rows="3"
-                                                            class="form-control"></textarea>
-                                                    </div>
-                                                    <div class="form-row d-flex justify-content-end gap-2 mt-3">
-                                                        <button class="btn btn-primary py-1">
-                                                            View Received Images
-                                                        </button>
-                                                        <button type="submit" class="btn btn-primary py-1">
-                                                            Save Request
-                                                        </button>
-                                                        <button class="btn btn-primary py-1">
-                                                            Restart Request
-                                                        </button>
-                                                        <button class="btn btn-primary py-1">
-                                                            Run Webcrawler
-                                                        </button>
-                                                    </div>
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-body">
+                    <div id="qaModalMessage" class="alert alert-info d-none"></div>
+                    <div class="content">
+                      <div class="modal-title">
+                        <h6 class="">Quality Audit</h6>
+                        <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                      </div>
+                      <div class="form-row row mt-3">
+                          <div class="col-xl-12">
+                              <div class="card other-name-card">
+                                  <form action="">
+                                      <div class="card-body">
+                                          <div class="d-flex align-items-center justify-content-between">
+                                              <h6 class="form-heading">Request</h6>
+                                              <div class="d-flex justify-content-end gap-2">
+                                                  <button class="btn btn-primary py-1">
+                                                      View Request History
+                                                  </button>
+                                                  <button class="btn btn-primary py-1">
+                                                      View Webcrawler Image Archive
+                                                  </button>
+                                              </div>
+                                          </div>
+                                          <div class="form-row mt-3">
+                                              <button class="btn btn-primary py-1">
+                                                  Send Request
+                                              </button>
+                                          </div>
+                                          <hr>
+                                          <div class="row">
+                                            <div class="col-md-6">
+                                              <label for="">Requested By:</label>
+                                            </div>
+                                            <div class="col-md-6">
+                                              <span class="font-bold">SYSTEM</span>
+                                            </div>
+                                          </div>
+                                          <hr>
+                                          <div class="row">
+                                            <div class="col-md-6">
+                                              <label for="">Requested Date:</label>
+                                            </div>
+                                            <div class="col-md-6">
+                                              <span class="font-bold"><%= Date.today.strftime('%m/%d/%Y') %></span>
+                                            </div>
+                                          </div>
+                                          <hr>
+                                          <div class="form-row d-flex align-items-center gap-3">
+                                              <label for="">Requested Method:</label>
+                                              <div class="form-check d-flex align-items-center gap-2">
+                                                  <input class="form-check-input" type="radio"
+                                                      name="method-radio" id="method-autofax" value="AutoFax">
+                                                  <label class="form-check-label" for="method-autofax">
+                                                      AutoFax
+                                                  </label>
+                                              </div>
+                                              <div class="form-check d-flex align-items-center gap-2">
+                                                  <input class="form-check-input" type="radio"
+                                                      name="method-radio" id="method-email" value="E-Mail">
+                                                  <label class="form-check-label" for="method-email">
+                                                      E-Mail
+                                                  </label>
+                                              </div>
+                                              <div class="form-check d-flex align-items-center gap-2">
+                                                  <input class="form-check-input" type="radio"
+                                                      name="method-radio" id="method-letter" value="Letter" checked>
+                                                  <label class="form-check-label" for="method-letter">
+                                                      Letter
+                                                  </label>
+                                              </div>
+                                              <div class="form-check d-flex align-items-center gap-2">
+                                                  <input class="form-check-input" type="radio"
+                                                      name="method-radio" id="method-phone" value="Phone">
+                                                  <label class="form-check-label" for="method-phone">
+                                                      Phone
+                                                  </label>
+                                              </div>
+                                              <div class="form-check d-flex align-items-center gap-2">
+                                                  <input class="form-check-input" type="radio"
+                                                      name="method-radio" id="method-website" value="Website">
+                                                  <label class="form-check-label" for="method-website">
+                                                      Website
+                                                  </label>
+                                              </div>
+                                          </div>
+                                              <span>The default contact method is letter.</span>
+                                              <hr>
+                                          <div class="form-row row">
+                                              <div class="col-xl-6">
+                                                  <label for="req-fee-amount">Required Fee Amount:</label>
+                                                  <input type="text" name="req-fee-amount" id="req-fee-amount"
+                                                      class="form-control" placeholder="Type here...">
+                                              </div>
+                                              <div class="col-xl-6">
+                                                  <label for="check-payable-to">Check Payable To:</label>
+                                                  <input type="text" name="check-payable-to"
+                                                      id="check-payable-to" class="form-control"
+                                                      placeholder="Type here...">
+                                              </div>
+                                          </div>
+                                              <hr>
+                                          <div class="form-row mt-2">
+                                              <div class=" form-check d-flex align-items-center gap-2">
+                                                  <input class="form-check-input" type="checkbox"
+                                                      id="inc-delineation-check"
+                                                      value="Include Delineation of Privileges">
+                                                  <label class="form-check-label"
+                                                      for="inc-delineation-check">Include Delineation of
+                                                      Privileges</label>
+                                              </div>
+                                          </div>
+                                          <hr>
+                                          <div class="form-row d-flex align-items-center gap-3">
+                                              <label for="">Check has generated?</label>
+                                              <div class="form-check d-flex align-items-center gap-2">
+                                                  <input class="form-check-input" type="radio"
+                                                      name="check-generate-radio" id="check-generate-yes"
+                                                      value="Yes">
+                                                  <label class="form-check-label" for="check-generate-yes">
+                                                      Yes
+                                                  </label>
+                                              </div>
+                                              <div class="form-check d-flex align-items-center gap-2">
+                                                  <input class="form-check-input" type="radio"
+                                                      name="check-generate-radio" id="check-generate-no"
+                                                      value="No" checked>
+                                                  <label class="form-check-label" for="check-generate-no">
+                                                      No
+                                                  </label>
+                                              </div>
+                                          </div>
+                                          <hr>
+                                          <div class="form-row d-flex align-items-center gap-3">
+                                              <label for="">Received Status:</label>
+                                              <div class="form-check d-flex align-items-center gap-2">
+                                                  <input class="form-check-input" type="radio"
+                                                      name="received-status-radio" id="received-status-yes"
+                                                      value="Yes" checked>
+                                                  <label class="form-check-label" for="received-status-yes">
+                                                      Yes
+                                                  </label>
+                                              </div>
+                                              <div class="form-check d-flex align-items-center gap-2">
+                                                  <input class="form-check-input" type="radio"
+                                                      name="received-status-radio" id="received-status-no"
+                                                      value="No">
+                                                  <label class="form-check-label" for="received-status-no">
+                                                      No
+                                                  </label>
+                                              </div>
+                                          </div>
+                                          <hr>
+                                          <div class="row">
+                                            <div class="col-md-6">
+                                              <label for="">Received By:</label>
+                                            </div>
+                                            <div class="col-md-6">
+                                              <span class="font-bold">SYSTEM</span>
+                                            </div>
+                                          </div>
+                                          <hr>
+                                          <div class="row">
+                                            <div class="col-md-6">
+                                              <label for="">Received Date:</label>
+                                            </div>
+                                            <div class="col-md-6">
+                                              <span class="font-bold"><%= Date.today.strftime('%m/%d/%Y') %></span>
+                                            </div>
+                                          </div>
+                                          <hr>
+                                          <div class="form-row">
+                                              <label for="">Comments:</label>
+                                              <textarea name="" id="" cols="30" rows="3"
+                                                  class="form-control">Webcrawler</textarea>
+                                          </div>
+                                          <div class="form-row d-flex justify-content-end gap-2 mt-3">
+                                              <button class="btn btn-primary py-1">
+                                                  View Received Images
+                                              </button>
+                                              <button type="submit" class="btn btn-primary py-1">
+                                                  Save Request
+                                              </button>
+                                              <button class="btn btn-primary py-1">
+                                                  Restart Request
+                                              </button>
+                                              
+                                          </div>
+                                          <hr>
+                                            <div class="row">
+                                              <div class="col-md-6">
+                                                <button class="btn btn-primary py-1" id="run-webcrawler-btn">
+                                                  Run Webcrawler
+                                                </button>
+                                              </div>
+                                              <div class="col-md-6">
+                                                <div class="crawler-link-oig">
                                                 </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-row row mt-3">
-                                    <div class="col-xl-12">
-                                        <div class="card other-name-card">
-                                            <form action="">
-                                                <div class="card-body">
-                                                    <h6 class="form-heading">Verification</h6>
-                                                    <div class="form-row row">
-                                                        <div class="col-xl-4">
-                                                            <label for="source-name">Source Name:</label>
-                                                            <select name="source-name" id="source-name  "
-                                                                class="form-select">
-                                                                <option value="">Select option</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-xl-4">
-                                                            <label for="source-date">Source Date:</label>
-                                                            <input type="date" name="source-date" id="source-date"
-                                                                class="form-control">
-                                                        </div>
-                                                        <div class="col-xl-4">
-                                                            <label for="status">Status:</label>
-                                                            <select name="status" id="status" class="form-select">
-                                                                <option value="">Select option</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-row d-flex align-items-center gap-3 mt-1">
-                                                        <label for="">Adverse Action:</label>
-                                                        <select name="adverse-act" id="adverse-act" class="form-select">
-                                                            <option value="">Select option</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="form-row row">
-                                                        <div class="col-xl-6">
-                                                            <label for="others">Other:</label>
-                                                            <textarea name="others" id="others" cols="30" rows="5"
-                                                                class="form-control"></textarea>
-                                                        </div>
-                                                        <div class="col-xl-6">
-                                                            <label for="source-date">Comments:</label>
-                                                            <textarea name="others" id="others" cols="30" rows="5"
-                                                                class="form-control"></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-row d-flex align-items-center gap-3 mt-1">
-                                                        <div class="form-check d-flex align-items-center gap-2">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="verif-radio" id="verif-open" value="Open">
-                                                            <label class="form-check-label" for="verif-open">
-                                                                Open
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check d-flex align-items-center gap-2">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="verif-radio" id="verif-close" value="Close">
-                                                            <label class="form-check-label" for="verif-close">
-                                                                Close
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-row d-flex align-items-center gap-3">
-                                                        <label for="">In Good Standing?</label>
-                                                        <div class="form-check d-flex align-items-center gap-2">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="good-standing-radio" id="good-standing-yes"
-                                                                value="Yes">
-                                                            <label class="form-check-label" for="good-standing-yes">
-                                                                Yes
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check d-flex align-items-center gap-2">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="good-standing-radio" id="good-standing-no"
-                                                                value="No">
-                                                            <label class="form-check-label" for="good-standing-no">
-                                                                No
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-row row mt-3">
-                                                        <div class="col-xl-12">
-                                                            <div class="card other-name-card">
-                                                                <div class="card-body">
-                                                                    <h6 class="form-heading">Verification Errors</h6>
-                                                                    <div class="form-row row">
-                                                                        <div class="col-xl-6">
-                                                                            <label for="error">Error:</label>
-                                                                            <select name="error" id="error"
-                                                                                class="form-select">
-                                                                                <option value="">Select option</option>
-                                                                            </select>
-                                                                        </div>
-                                                                        <div class="col-xl-6">
-                                                                            <label for="comment">Comments:</label>
-                                                                            <select name="comment" id="comment"
-                                                                                class="form-select">
-                                                                                <option value="">Select option</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <!-- <hr> -->
-                                                                    <div
-                                                                        class="d-flex align-items-center justify-content-between mt-3">
-                                                                        <div class="offset-md-5">
-                                                                            <button class="btn btn-primary py-1">
-                                                                                Add Another Error
-                                                                            </button>
-                                                                        </div>
-                                                                        <button class="btn btn-danger">
-                                                                            Remove
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-row row mt-3">
-                                                        <div class="col-xl-12">
-                                                            <div class="card other-name-card">
-                                                                <div class="card-body">
-                                                                    <div
-                                                                        class="d-flex justify-content-between align-items-center">
-                                                                        <h6 class="form-heading">Correct Information
-                                                                        </h6>
-                                                                        <div class="d-flex gap-2">
-                                                                            <button class="btn btn-primary py-1">
-                                                                                Verified
-                                                                            </button>
-                                                                            <button class="btn btn-primary py-1">
-                                                                                Verify and Update with Correct
-                                                                                Information
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="form-row row mt-3">
-                                                                        <div class="col-xl-6">
-                                                                            <label for="error"
-                                                                                class="d-none">Error:</label>
-                                                                            <select name="correct-info-sel"
-                                                                                id="correct-info-sel"
-                                                                                class="form-select">
-                                                                                <option value="">Select option</option>
-                                                                            </select>
-                                                                        </div>
-                                                                        <div class="col-xl-6">
-                                                                            <label for="comment"
-                                                                                class="d-none">Comments:</label>
-                                                                            <input type="text" name="correct-info-txt"
-                                                                                id="correct-info-txt"
-                                                                                class="form-control"
-                                                                                placeholder="Type here...">
-                                                                        </div>
-                                                                    </div>
-                                                                    <!-- <hr class=""> -->
-                                                                    <div
-                                                                        class="d-flex align-items-center justify-content-between mt-3">
-                                                                        <div class="offset-md-5">
-                                                                            <button class="btn btn-primary py-1">
-                                                                                Add
-                                                                            </button>
-                                                                        </div>
-                                                                        <button class="btn btn-danger">
-                                                                            Remove
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-row mt-2">
-                                                        <label for="">Verification Status:</label>
-                                                    </div>
-                                                    <div class="form-row">
-                                                        <label for="">Notification Status:</label>
-                                                    </div>
-                                                    <div class="form-row">
-                                                        <label for="">Verification Date:</label>
-                                                    </div>
-                                                    <div class="form-row">
-                                                        <label for="">Verifier:</label>
-                                                    </div>
-                                                    <div class="form-row row">
-                                                        <div class="col-xl-12">
-                                                            <label for="verif-comment">Comments:</label>
-                                                            <textarea name="verif-comment" id="verif-comment" cols="30"
-                                                                rows="3" class="form-control"></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-end gap-2 mt-3">
-                                                        <button type="submit" class="btn btn-primary py-1">
-                                                            Save Verification
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-row row mt-3">
-                                    <div class="col-xl-12">
-                                        <div class="card other-name-card">
-                                            <form action="">
-                                                <div class="card-body">
-                                                    <h6 class="form-heading">Audit</h6>
-                                                    <div class="form-row d-flex gap-2 mt-3">
-                                                        <button class="btn btn-primary py-1">
-                                                            Quality Audit
-                                                        </button>
-                                                        <button type="submit" class="btn btn-pane-sm">
-                                                            First Audit
-                                                        </button>
-                                                        <button class="btn btn-pane-sm">
-                                                            Second Audit
-                                                        </button>
-                                                    </div>
-                                                    <div class="form-row row mt-3">
-                                                        <div class="col-xl-12">
-                                                            <div class="card other-name-card">
-                                                                <div class="card-body">
-                                                                    <h6 class="form-heading">Reasons</h6>
-                                                                    <div class="form-row row">
-                                                                        <div class="col-xl-6">
-                                                                            <label for="reason">Reason:</label>
-                                                                            <select name="reason" id="reason"
-                                                                                class="form-select">
-                                                                                <option value="">Select option</option>
-                                                                            </select>
-                                                                        </div>
-                                                                        <div class="col-xl-6">
-                                                                            <label
-                                                                                for="reason-comment">Comments:</label>
-                                                                            <select name="reason-comment"
-                                                                                id="reason-comment" class="form-select">
-                                                                                <option value="">Select option</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div
-                                                                        class="d-flex align-items-center justify-content-between mt-3">
-                                                                        <div class="offset-md-5">
-                                                                            <button class="btn btn-primary py-1">
-                                                                                Add Another Reason
-                                                                            </button>
-                                                                        </div>
-                                                                        <button class="btn btn-danger">
-                                                                            Remove
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-row d-flex align-items-center gap-3">
-                                                        <label for="">Audit Status:</label>
-                                                        <div class="form-check d-flex align-items-center gap-2">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="audit-status-radio" id="audit-status-pass"
-                                                                value="Yes">
-                                                            <label class="form-check-label" for="audit-status-pass">
-                                                                Pass
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check d-flex align-items-center gap-2">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="audit-standing-radio" id="audit-status-fail"
-                                                                value="No">
-                                                            <label class="form-check-label" for="audit-status-fail">
-                                                                Fail
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-row">
-                                                        <label for="">Audit Date:</label>
-                                                    </div>
-                                                    <div class="form-row">
-                                                        <label for="">Auditor:</label>
-                                                    </div>
-                                                    <div class="form-row row">
-                                                        <div class="col-xl-12">
-                                                            <label for="audit-comment">Comments:</label>
-                                                            <textarea name="audit-comment" id="audit-comment" cols="30"
-                                                                rows="3" class="form-control"></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-end gap-2 mt-3">
-                                                        <button type="submit" class="btn btn-primary py-1">
-                                                            Save Audit
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                              </div>
+                                            </div>
+                                          <hr>
+                                      </div>
+                                  </form>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="form-row row mt-3">
+                          <div class="col-xl-12">
+                              <div class="card other-name-card">
+                                  <form action="">
+                                      <div class="card-body">
+                                          <h6 class="form-heading">Verification</h6>
+                                          <div class="form-row row">
+                                              <div class="col-xl-4">
+                                                  <label for="source-name">Source Name:</label>
+                                                  <select name="source-name" id="source-name  "
+                                                      class="form-select">
+                                                      <option value="">Select option</option>
+                                                  </select>
+                                              </div>
+                                              <div class="col-xl-4">
+                                                  <label for="source-date">Source Date:</label>
+                                                  <input type="date" name="source-date" id="source-date"
+                                                      class="form-control">
+                                              </div>
+                                              <div class="col-xl-4">
+                                                  <label for="status">Status:</label>
+                                                  <select name="status" id="status" class="form-select">
+                                                      <option value="">Select option</option>
+                                                  </select>
+                                              </div>
+                                          </div>
+                                          <div class="form-row d-flex align-items-center gap-3 mt-1">
+                                              <label for="">Adverse Action:</label>
+                                              <select name="adverse-act" id="adverse-act" class="form-select">
+                                                  <option value="">Select option</option>
+                                              </select>
+                                          </div>
+                                          <div class="form-row row">
+                                              <div class="col-xl-6">
+                                                  <label for="others">Other:</label>
+                                                  <textarea name="others" id="others" cols="30" rows="5"
+                                                      class="form-control"></textarea>
+                                              </div>
+                                              <div class="col-xl-6">
+                                                  <label for="source-date">Comments:</label>
+                                                  <textarea name="others" id="others" cols="30" rows="5"
+                                                      class="form-control"></textarea>
+                                              </div>
+                                          </div>
+                                          <div class="form-row d-flex align-items-center gap-3 mt-1">
+                                              <div class="form-check d-flex align-items-center gap-2">
+                                                  <input class="form-check-input" type="radio"
+                                                      name="verif-radio" id="verif-open" value="Open">
+                                                  <label class="form-check-label" for="verif-open">
+                                                      Open
+                                                  </label>
+                                              </div>
+                                              <div class="form-check d-flex align-items-center gap-2">
+                                                  <input class="form-check-input" type="radio"
+                                                      name="verif-radio" id="verif-close" value="Close">
+                                                  <label class="form-check-label" for="verif-close">
+                                                      Close
+                                                  </label>
+                                              </div>
+                                          </div>
+                                          <div class="form-row d-flex align-items-center gap-3">
+                                              <label for="">In Good Standing?</label>
+                                              <div class="form-check d-flex align-items-center gap-2">
+                                                  <input class="form-check-input" type="radio"
+                                                      name="good-standing-radio" id="good-standing-yes"
+                                                      value="Yes">
+                                                  <label class="form-check-label" for="good-standing-yes">
+                                                      Yes
+                                                  </label>
+                                              </div>
+                                              <div class="form-check d-flex align-items-center gap-2">
+                                                  <input class="form-check-input" type="radio"
+                                                      name="good-standing-radio" id="good-standing-no"
+                                                      value="No">
+                                                  <label class="form-check-label" for="good-standing-no">
+                                                      No
+                                                  </label>
+                                              </div>
+                                          </div>
+                                          <div class="form-row row mt-3">
+                                              <div class="col-xl-12">
+                                                  <div class="card other-name-card">
+                                                      <div class="card-body">
+                                                          <h6 class="form-heading">Verification Errors</h6>
+                                                          <div class="form-row row">
+                                                              <div class="col-xl-6">
+                                                                  <label for="error">Error:</label>
+                                                                  <select name="error" id="error"
+                                                                      class="form-select">
+                                                                      <option value="">Select option</option>
+                                                                  </select>
+                                                              </div>
+                                                              <div class="col-xl-6">
+                                                                  <label for="comment">Comments:</label>
+                                                                  <select name="comment" id="comment"
+                                                                      class="form-select">
+                                                                      <option value="">Select option</option>
+                                                                  </select>
+                                                              </div>
+                                                          </div>
+                                                          <!-- <hr> -->
+                                                          <div
+                                                              class="d-flex align-items-center justify-content-between mt-3">
+                                                              <div class="offset-md-5">
+                                                                  <button class="btn btn-primary py-1">
+                                                                      Add Another Error
+                                                                  </button>
+                                                              </div>
+                                                              <button class="btn btn-danger">
+                                                                  Remove
+                                                              </button>
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                          <div class="form-row row mt-3">
+                                              <div class="col-xl-12">
+                                                  <div class="card other-name-card">
+                                                      <div class="card-body">
+                                                          <div
+                                                              class="d-flex justify-content-between align-items-center">
+                                                              <h6 class="form-heading">Correct Information
+                                                              </h6>
+                                                              <div class="d-flex gap-2">
+                                                                  <button class="btn btn-primary py-1">
+                                                                      Verified
+                                                                  </button>
+                                                                  <button class="btn btn-primary py-1">
+                                                                      Verify and Update with Correct
+                                                                      Information
+                                                                  </button>
+                                                              </div>
+                                                          </div>
+                                                          <div class="form-row row mt-3">
+                                                              <div class="col-xl-6">
+                                                                  <label for="error"
+                                                                      class="d-none">Error:</label>
+                                                                  <select name="correct-info-sel"
+                                                                      id="correct-info-sel"
+                                                                      class="form-select">
+                                                                      <option value="">Select option</option>
+                                                                  </select>
+                                                              </div>
+                                                              <div class="col-xl-6">
+                                                                  <label for="comment"
+                                                                      class="d-none">Comments:</label>
+                                                                  <input type="text" name="correct-info-txt"
+                                                                      id="correct-info-txt"
+                                                                      class="form-control"
+                                                                      placeholder="Type here...">
+                                                              </div>
+                                                          </div>
+                                                          <!-- <hr class=""> -->
+                                                          <div
+                                                              class="d-flex align-items-center justify-content-between mt-3">
+                                                              <div class="offset-md-5">
+                                                                  <button class="btn btn-primary py-1">
+                                                                      Add
+                                                                  </button>
+                                                              </div>
+                                                              <button class="btn btn-danger">
+                                                                  Remove
+                                                              </button>
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                          <div class="form-row mt-2">
+                                              <label for="">Verification Status:</label>
+                                          </div>
+                                          <div class="form-row">
+                                              <label for="">Notification Status:</label>
+                                          </div>
+                                          <div class="form-row">
+                                              <label for="">Verification Date:</label>
+                                          </div>
+                                          <div class="form-row">
+                                              <label for="">Verifier:</label>
+                                          </div>
+                                          <div class="form-row row">
+                                              <div class="col-xl-12">
+                                                  <label for="verif-comment">Comments:</label>
+                                                  <textarea name="verif-comment" id="verif-comment" cols="30"
+                                                      rows="3" class="form-control"></textarea>
+                                              </div>
+                                          </div>
+                                          <div class="d-flex justify-content-end gap-2 mt-3">
+                                              <button type="submit" class="btn btn-primary py-1">
+                                                  Save Verification
+                                              </button>
+                                          </div>
+                                      </div>
+                                  </form>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="form-row row mt-3">
+                          <div class="col-xl-12">
+                              <div class="card other-name-card">
+                                  <form action="">
+                                      <div class="card-body">
+                                          <h6 class="form-heading">Audit</h6>
+                                          <div class="form-row d-flex gap-2 mt-3">
+                                              <button class="btn btn-primary py-1">
+                                                  Quality Audit
+                                              </button>
+                                              <button type="submit" class="btn btn-pane-sm">
+                                                  First Audit
+                                              </button>
+                                              <button class="btn btn-pane-sm">
+                                                  Second Audit
+                                              </button>
+                                          </div>
+                                          <div class="form-row row mt-3">
+                                              <div class="col-xl-12">
+                                                  <div class="card other-name-card">
+                                                      <div class="card-body">
+                                                          <h6 class="form-heading">Reasons</h6>
+                                                          <div class="form-row row">
+                                                              <div class="col-xl-6">
+                                                         
+                                                                  <label for="reason">Reason:</label>
+                                                                  <select name="reason" id="reason"
+                                                                      class="form-select">
+                                                                      <option value="">Select option</option>
+                                                                  </select>
+                                                              </div>
+                                                              <div class="col-xl-6">
+                                                                  <label
+                                                                      for="reason-comment">Comments:</label>
+                                                                  <select name="reason-comment"
+                                                                      id="reason-comment" class="form-select">
+                                                                      <option value="">Select option</option>
+                                                                  </select>
+                                                              </div>
+                                                          </div>
+                                                          <div
+                                                              class="d-flex align-items-center justify-content-between mt-3">
+                                                              <div class="offset-md-5">
+                                                                  <button class="btn btn-primary py-1">
+                                                                      Add Another Reason
+                                                                  </button>
+                                                              </div>
+                                                              <button class="btn btn-danger">
+                                                                  Remove
+                                                              </button>
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                          <div class="form-row d-flex align-items-center gap-3">
+                                              <label for="">Audit Status:</label>
+                                              <div class="form-check d-flex align-items-center gap-2">
+                                                  <input class="form-check-input" type="radio"
+                                                      name="audit-status-radio" id="audit-status-pass"
+                                                      value="Yes">
+                                                  <label class="form-check-label" for="audit-status-pass">
+                                                      Pass
+                                                  </label>
+                                              </div>
+                                              <div class="form-check d-flex align-items-center gap-2">
+                                                  <input class="form-check-input" type="radio"
+                                                      name="audit-standing-radio" id="audit-status-fail"
+                                                      value="No">
+                                                  <label class="form-check-label" for="audit-status-fail">
+                                                      Fail
+                                                  </label>
+                                              </div>
+                                          </div>
+                                          <div class="form-row">
+                                              <label for="">Audit Date:</label>
+                                          </div>
+                                          <div class="form-row">
+                                              <label for="">Auditor:</label>
+                                          </div>
+                                          <div class="form-row row">
+                                              <div class="col-xl-12">
+                                                  <label for="audit-comment">Comments:</label>
+                                                  <textarea name="audit-comment" id="audit-comment" cols="30"
+                                                      rows="3" class="form-control"></textarea>
+                                              </div>
+                                          </div>
+                                          <div class="d-flex justify-content-end gap-2 mt-3">
+                                              <button type="submit" class="btn btn-primary py-1">
+                                                  Save Audit
+                                              </button>
+                                          </div>
+                                      </div>
+                                  </form>
+                              </div>
+                          </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
+              </div>
             </div>
 
             <!-- Verification Letter Modal -->
@@ -904,7 +946,60 @@
                 $('#to').val($('#intitution_contact_email').val())
             }
         });
-    })
+        $('#run-webcrawler-btn').click(function (e) {
+          e.preventDefault();
+          var firstName = $('#firstname').html().trim();
+          var lastName = $('#lastname').html().trim();
+
+          if (!firstName || !lastName) {
+            $('#qaModalMessage').text('Crawling failed due to some error: First name or last name is missing.');
+            return;
+          }
+
+          $(this).attr('disabled', true);
+
+          $('#qaModalMessage').text('Running Webcrawler... Please wait...');
+          $('#qaModalMessage')[0].classList.remove('d-none');
+          $('.loading-overlay').show();
+
+          var currentDate = new Date();
+          var formattedDate = currentDate.toISOString().split('T')[0];
+          var formattedTime = currentDate
+            .toTimeString()
+            .split(' ')[0]
+            .replace(/:/g, '-');
+          var timestamp = `${formattedDate}T${formattedTime}`;
+
+          var randomString = Math.random().toString(36).substring(2, 10);
+          var fileName = `OIG_OIG_${firstName}_${lastName}_${timestamp}_${randomString}.pdf`;
+
+          var filePath = `/webscrape/oig/screenshot.pdf`;
+          $.ajax({
+            url: '/webscrapers/run_webcrawler',
+            method: 'POST',
+            headers: {
+              'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
+            },
+            data: {
+              first_name: firstName, 
+              last_name: lastName,
+            },
+            success: function (response) {
+              $('#run-webcrawler-btn').attr('disabled', false).text('Run Webcrawler');
+
+              var linkHtml = `<a href="${filePath}" target="_blank">${fileName}</a>`;
+              $('.crawler-link-oig').html(linkHtml);
+
+              $('#qaModalMessage').text(response.message);
+              $('.loading-overlay').hide();
+            },
+            error: function () {
+              $('#run-webcrawler-btn').attr('disabled', false).text('Run Webcrawler');
+              $('#qaModalMessage').text('Error running Webcrawler. Please try again.');
+            },
+          });
+        });
+      });
 
     var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
@@ -933,4 +1028,6 @@
             $('.loading-overlay').hide();
         });
     });
+
+</script>
 </script>

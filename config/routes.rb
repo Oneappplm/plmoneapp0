@@ -306,6 +306,7 @@ Rails.application.routes.draw do
 
   namespace :webscrapers do
     root to: 'logs#index'
+    post '/run_webcrawler', to: 'quality_audits#run_webcrawler'
     resources :alaska_states, only: [:index], path: 'state-alaska' do
       collection do
         get :crawl
