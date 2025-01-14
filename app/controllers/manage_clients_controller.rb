@@ -10,7 +10,7 @@ class ManageClientsController < ApplicationController
   end
 
   def create
-    @provider_personal_information = ProviderPersonalInformation.new(practitioner_params)
+    @provider_personal_information = ProviderPersonalInformation.new(provider_personal_information_params)
   
     # Attempt to save the record without running validations
     if @provider_personal_information.save(validate: false)
@@ -19,11 +19,29 @@ class ManageClientsController < ApplicationController
       render :new, status: :unprocessable_entity
     end
   end
+
+  def edit
+    @provider_personal_information = ProviderPersonalInformation.find(params[:id])
+    @provider_personal_information.build_provider_personal_information_credentialing_contact
+  end    
   
+  def update
+    @provider_personal_information = ProviderPersonalInformation.find(params[:id])
+  
+    # Assign attributes without running validations
+    @provider_personal_information.assign_attributes(provider_personal_information_params)
+  
+    # Save the record without running validations
+    if @provider_personal_information.save(validate: false)
+      redirect_to mhc_manage_clients_path, notice: "Practitioner updated successfully."
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end  
 
   private
 
-  def practitioner_params
+  def provider_personal_information_params
     params.require(:provider_personal_information).permit(:first_name, :middle_name, :last_name, :suffix, :gender, :date_of_birth,
       :ssn, :practitioner_type, :credentials_committee_date, :client_batch_date, :availability,
       :client_batch_name, :client_batch_id, :market, :status, :application_method,
