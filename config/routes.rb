@@ -419,6 +419,10 @@ Rails.application.routes.draw do
         get 'edit_provider_personal_information'
         post 'load_provider_personal_information'
       end
+      member do
+        get 'edit'
+        patch 'update'
+      end
     end
     
     resources :provider_insurance_coverages
