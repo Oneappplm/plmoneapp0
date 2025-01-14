@@ -30,6 +30,7 @@ class Setting < ApplicationRecord
 	def sprout? = client_name == 'sprout'
 	def affordablecare? = client_name == 'affordablecare'
 	def groups? = client_name == 'groups'
+	def dcm? = client_name == 'dcm'
 
 	def t(key)
 		I18n.t("#{client_name}.#{key}")
