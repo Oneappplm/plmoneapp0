@@ -418,6 +418,7 @@ Rails.application.routes.draw do
       collection do
         get 'edit_provider_personal_information'
         post 'load_provider_personal_information'
+        get :append_remove_practitioner
       end
       member do
         get 'edit'
