@@ -826,7 +826,7 @@ class ProviderSource < ApplicationRecord
 
     no_count = data_values.select{|v| v == 'no'}.count
     percentage = ((valid_yes_count + no_count) / with_prerequisites.count.to_f) * 100
-    percentage.to_i
+    percentage.to_i rescue 0
   end
 
   def add_to_roster group_engage_provider
