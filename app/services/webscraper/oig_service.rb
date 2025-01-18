@@ -36,7 +36,7 @@ class Webscraper::OigService < WebscraperService
 			sleep(2)
 		end
 
-		save_screenshot
+		webcrawler_log = save_screenshot
 
 		sleep(2)
 		crawler.quit()
