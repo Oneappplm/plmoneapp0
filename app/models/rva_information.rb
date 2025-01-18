@@ -1,0 +1,2 @@
+class RvaInformation < ApplicationRecord
+end

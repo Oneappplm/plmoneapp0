@@ -82,6 +82,32 @@ class Mhc::VerificationPlatformController < ApplicationController
       redirect_to history_mhc_client_portal_index_path # Replace with actual history page path
     end
   end
+
+  def generate_rva_information
+    @rva_information = RvaInformation.find(params[:id])
+    if params[:section] == "verification"
+      @rva_information.verification_status = 'Verified'
+      @rva_information.verification_date = Date.today
+      @rva_information.verifier = params[:first_name]
+      params[:rva_information][:verification_comments] = 'None'
+      @rva_information.other_details = 'None'
+      @rva_information.adverse_action_comments = 'None'
+      @rva_information.adverse_action_status = 'close'
+    end
+    if params[:section] == 'audit'
+      params[:rva_information][:auditor]  = params[:first_name]
+      params[:rva_information][:audit_date] = Date.today
+      params[:rva_information][:audit_comments] = 'None'
+    end
+    # if params[:personal_info_id].present?
+    #   ProviderPersonalInformation.update()
+    # end
+    if @rva_information.update(rva_information_params)
+      render json: { message: 'Verification completed successfully', rva_information: @rva_information}, status: :ok
+    else
+      render json: { error: e.message }, status: :unprocessable_entity
+    end
+  end
   
   
   protected
@@ -204,6 +230,9 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_personal_information_reinstatements = ProviderPersonalInformationReinstatement.where(provider_personal_information_id:  @provider_personal_information.id)
       @provider_personal_information_comment = ProviderPersonalInformationComment.new
       @provider_personal_information_comments = ProviderPersonalInformationComment.all
+      @rva_information = RvaInformation.new
+      @last_rva_information = RvaInformation.last
+      @oig_webcrawler_logs = WebcrawlerLog.where(crawler_type: 'OIG').where.not(filepath: nil).order(updated_at: :desc)
     end
 
     if params[:page_tab] == 'add_oig_info'
@@ -328,4 +357,43 @@ class Mhc::VerificationPlatformController < ApplicationController
       redirect_to auto_verifies_path and return
     end
   end
+
+  def rva_information_params
+    params.require(:rva_information).permit(
+      :send_request,
+      :requested_by,
+      :requested_date,
+      :method_radio,
+      :required_fee_amount,
+      :check_payable_to,
+      :include_delineation,
+      :check_generated,
+      :requested_method,
+      :received_status,
+      :comments,
+      :source_name,
+      :source_date,
+      :status,
+      :adverse_action,
+      :other_details,
+      :adverse_action_comments,
+      :adverse_action_status,
+      :verification_status,
+      :in_good_standing,
+      :error_type,
+      :error_comments,
+      :correct_info_selected,
+      :correct_info_text,
+      :verification_date,
+      :verifier,
+      :verification_comments,
+      :audit_reason,
+      :audit_reason_comments,
+      :audit_status,
+      :audit_date,
+      :auditor,
+      :audit_comments
+    )
+  end
+
 end

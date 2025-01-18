@@ -306,7 +306,8 @@ Rails.application.routes.draw do
 
   namespace :webscrapers do
     root to: 'logs#index'
-    post '/run_webcrawler', to: 'quality_audits#run_webcrawler'
+    post '/run_oig_webcrawler', to: 'quality_audits#run_oig_webcrawler'
+    post '/send_request', to: 'quality_audits#send_request'
     resources :alaska_states, only: [:index], path: 'state-alaska' do
       collection do
         get :crawl
@@ -523,6 +524,7 @@ Rails.application.routes.draw do
   end  
 
   post 'mhc/verification-platform/send-contact', to: 'mhc/verification_platform#send_contact'
+  post 'mhc/verification-platform/generate_rva_information', to: 'mhc/verification_platform#generate_rva_information'
 
   resources :app_trackers, path: 'app-tracker' do
     member do
