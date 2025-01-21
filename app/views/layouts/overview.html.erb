@@ -8,10 +8,12 @@
   <%= csp_meta_tag %>
 
   <%= stylesheet_link_tag "application" %>
+  <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
 
   <%= javascript_importmap_tags %>
   <!-- Title -->
   <title>PLM HEALTH ONE APP</title>
+  
 
   <!-- Favicon -->
   <link rel="shortcut icon" href="./favicon.ico">
@@ -25,7 +27,6 @@
   <link rel="stylesheet" href="/dist/assets/vendor/daterangepicker/daterangepicker.css">
   <link rel="stylesheet" href="/dist/assets/vendor/tom-select/dist/css/tom-select.bootstrap5.css">
 
-  <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
 
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -152,33 +153,31 @@
 
   <main id="content" role="main" class="main">
     <% if notice or alert%>
-    <div class="px-3 mt-3">
-      <% if notice %>
-        <div id="alert-container">
-    <p class="alert alert-success alert-dismissible"><%= notice %></p>
-    </div>
+      <div class="px-3 mt-3">
+        <% if notice %>
+          <div id="alert-container">
+            <p class="alert alert-success alert-dismissible"><%= notice %></p>
+          </div>
 
-    <% content_for :js do %>
-    <script>
-    // Function to fade out the alert after login
-      document.addEventListener("DOMContentLoaded", function() {
-        function fadeOutAlert() {
-          $("#alert-container").fadeOut(3000, function() {
-            $(this).remove();
-          });
-        }
-        // Call the fadeOutAlert function after 3 seconds
-        setTimeout(fadeOutAlert, 3000);
-      });
-    </script>
-
-     <% end %>
-      <% end %>
-
-      <% if alert %>
-        <p class="alert alert-danger"><%= alert %></p>
-      <% end %>
-    </div>
+          <% content_for :js do %>
+            <script>
+            // Function to fade out the alert after login
+              document.addEventListener("DOMContentLoaded", function() {
+                function fadeOutAlert() {
+                  $("#alert-container").fadeOut(3000, function() {
+                    $(this).remove();
+                  });
+                }
+                // Call the fadeOutAlert function after 3 seconds
+                setTimeout(fadeOutAlert, 3000);
+              });
+            </script>
+          <% end %>
+        <% end %>
+        <% if alert %>
+          <p class="alert alert-danger"><%= alert %></p>
+        <% end %>
+      </div>
     <% end %>
     <%= yield %>
     <%#= render "global_components/footer"%> <!-- not needed for now no footer in design -->
@@ -481,65 +480,162 @@
     </script>
 
 
-<script type="text/javascript">
-  $(document).ready(function() {
-  // Generate a random color
-  var bg_theme_color = "<%= current_setting.theme_color %>";
+    <script type="text/javascript">
+        $(document).ready(function() {
+        // Generate a random color
+        var bg_theme_color = "<%= current_setting.theme_color %>";
 
-  // Update the background color of all elements with the class bg-theme-color
-  $('.bg-theme-color').css('background-color', bg_theme_color);
-});
+        // Update the background color of all elements with the class bg-theme-color
+        $('.bg-theme-color').css('background-color', bg_theme_color);
+      });
 
-  $('.btn-toggle').on('click',function(e){
-    $(this).hasClass('active') ? $(this).removeClass('active') : $(this).addClass('active');
-    if($(this).hasClass('has-to-show')){
-      $(this).hasClass('active') ? toShow($(this).data('toshow'),true) : toShow($(this).data('toshow'),false);
-    }
+        $('.btn-toggle').on('click',function(e){
+          $(this).hasClass('active') ? $(this).removeClass('active') : $(this).addClass('active');
+          if($(this).hasClass('has-to-show')){
+            $(this).hasClass('active') ? toShow($(this).data('toshow'),true) : toShow($(this).data('toshow'),false);
+          }
 
-    if($(this).hasClass('has-to-hide')){
-      $(this).hasClass('active') ? toShow($(this).data('tohide'),false) : toShow($(this).data('tohide'),true);
-    }
+          if($(this).hasClass('has-to-hide')){
+            $(this).hasClass('active') ? toShow($(this).data('tohide'),false) : toShow($(this).data('tohide'),true);
+          }
 
-    if($(this).hasClass('to-change-value')) {
-      var to_change = $(this).data('tochange');
-      $(this).hasClass('active') ? $('input[name="'+to_change+'"]').val('yes') : $('input[name="'+to_change+'"]').val('no');
-    }
-  });
-
-
+          if($(this).hasClass('to-change-value')) {
+            var to_change = $(this).data('tochange');
+            $(this).hasClass('active') ? $('input[name="'+to_change+'"]').val('yes') : $('input[name="'+to_change+'"]').val('no');
+          }
+        });
 
 
-//   $(document).ready(function() {
-//   $('.tax-id').on('input', function() {
-//     var input = $(this).val();
-//     input = input.replace(/[^0-9]/g, ''); // remove all non-numeric characters
-//     input = input.slice(0, 9); // limit input to 9 digits
-//     var formattedInput = input.replace(/(\d{3})(\d{3})(\d{3})/, '$1-$2-$3'); // format the input
-//     $(this).val(formattedInput); // set the input value to the formatted input
-//   });
-// });
 
 
-</script>
-<!-- other format for tax -->
-<!-- <script>
-    $('.tax-id').on('input', function() {
-    var inputValue = $(this).val();
-    var regex = /^(\d{2})?-?(\d{0,7})$/;
-    var matches = inputValue.match(regex);
-    if (matches) {
-      var formattedValue = matches[1] ? matches[1] + '-' : '';
-      formattedValue += matches[2];
-      $(this).val(formattedValue);
-    } else {
-      $(this).val('');
-    }
-  });
-</script> -->
+      //   $(document).ready(function() {
+      //   $('.tax-id').on('input', function() {
+      //     var input = $(this).val();
+      //     input = input.replace(/[^0-9]/g, ''); // remove all non-numeric characters
+      //     input = input.slice(0, 9); // limit input to 9 digits
+      //     var formattedInput = input.replace(/(\d{3})(\d{3})(\d{3})/, '$1-$2-$3'); // format the input
+      //     $(this).val(formattedInput); // set the input value to the formatted input
+      //   });
+      // });
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/printThis/1.15.0/printThis.js" integrity="sha512-Fd3EQng6gZYBGzHbKd52pV76dXZZravPY7lxfg01nPx5mdekqS8kX4o1NfTtWiHqQyKhEGaReSf4BrtfKc+D5w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="/dist/assets/js/jquery-jvectormap-2.0.5.min.js"></script>
-<!-- <script src="/dist/assets/js/us_mill.js"></script> -->
-<%= yield :js %>
-</body>
+
+      </script>
+      <!-- other format for tax -->
+      <!-- <script>
+          $('.tax-id').on('input', function() {
+          var inputValue = $(this).val();
+          var regex = /^(\d{2})?-?(\d{0,7})$/;
+          var matches = inputValue.match(regex);
+          if (matches) {
+            var formattedValue = matches[1] ? matches[1] + '-' : '';
+            formattedValue += matches[2];
+            $(this).val(formattedValue);
+          } else {
+            $(this).val('');
+          }
+        });
+      </script> -->
+
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/printThis/1.15.0/printThis.js" integrity="sha512-Fd3EQng6gZYBGzHbKd52pV76dXZZravPY7lxfg01nPx5mdekqS8kX4o1NfTtWiHqQyKhEGaReSf4BrtfKc+D5w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+      <script src="/dist/assets/js/jquery-jvectormap-2.0.5.min.js"></script>
+      <!-- <script src="/dist/assets/js/us_mill.js"></script> -->
+      <%= yield :js %>
+
+    <script type="text/javascript">
+      $(document).ready(function () {
+        console.log("Document ready");
+
+        // Initialize Bootstrap dropdowns with specific positioning
+        $(".dropdown-toggle").dropdown({
+          display: "static",
+          popperConfig: {
+            placement: "bottom-end",
+            modifiers: [
+              {
+                name: "offset",
+                options: {
+                  offset: [0, 10],
+                },
+              },
+            ],
+          },
+        });
+
+        // Function to close all dropdowns except the specified one
+        function closeAllDropdownsExcept($exceptDropdown) {
+          $(".dropdown-menu.show")
+            .not($exceptDropdown)
+            .removeClass("show")
+            .css({ transform: "translateY(12px)", opacity: 0 });
+        }
+
+        // Dropdown toggle functionality
+        function toggleDropdown(event, $dropdown) {
+          event.stopPropagation();
+          const isCurrentlyShown = $dropdown.hasClass("show");
+          closeAllDropdownsExcept($dropdown);
+
+          if (!isCurrentlyShown) {
+            $dropdown
+              .css({
+                position: "absolute",
+                left: "auto",
+                right: "0",
+                top: "100%",
+                transform: "translateY(12px)", // Start below
+                opacity: 0, // Start invisible
+                display: "block", // Make visible for transition
+              })
+              .css({ transform: "translateY(0)", opacity: 1 })
+              .addClass("show");
+          } else {
+            $dropdown
+              .css({ transform: "translateY(12px)", opacity: 0 })
+              .removeClass("show")
+              .css("display", "none");
+          }
+        }
+
+        // Notification dropdown
+        $("#navbarNotificationsDropdown").on("click", function (event) {
+          console.log("Notification dropdown clicked");
+          toggleDropdown(event, $(this).next(".dropdown-menu"));
+        });
+
+        // Account dropdown
+        $("#accountNavbarDropdown").on("click", function (event) {
+          console.log("Account dropdown clicked");
+          toggleDropdown(event, $(this).next(".dropdown-menu"));
+        });
+
+        // Close dropdowns when clicking outside
+        $(document).on("click", function (event) {
+          if (!$(event.target).closest(".dropdown").length) {
+            $(".dropdown-menu.show")
+              .css({ transform: "translateY(12px)", opacity: 0 })
+              .removeClass("show")
+              .css("display", "none");
+          }
+        });
+
+        // Add CSS for faster transitions
+        $("<style>")
+          .text(`
+            .dropdown-menu {
+              transform: translateY(10px); /* Start position */
+              transition: transform 0.5s ease, opacity 0.4s ease; /* Faster transition (200ms) */
+              opacity: 0; /* Hidden by default */
+              display: none; /* Ensure it starts hidden */
+              margin-top: 1.4rem !important;
+            }
+            .dropdown-menu.show {
+              display: block !important;
+              transform: translateY(0); /* End position */
+              opacity: 1; /* Fully visible */
+            }
+          `)
+          .appendTo("head");
+      });
+    </script>
+  </body>
 </html>
