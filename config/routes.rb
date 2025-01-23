@@ -476,6 +476,51 @@ Rails.application.routes.draw do
     end
     resources :schools
   end
+  namespace :mhc do
+    get 'california_participating_physician_reapplication', to: 'verification_platform#california_participating_physician_reapplication'
+  end
+  
+  namespace :mhc do
+    get 'california_participating_physician_addendum_b', to: 'verification_platform#california_participating_physician_addendum_b'
+  end
+   
+  namespace :mhc do
+    get 'california_participating_physician_ipa_addendum_c', to: 'verification_platform#california_participating_physician_ipa_addendum_c'
+  end
+  
+  namespace :mhc do
+    get 'confidential_report_of_physical_and_mental_disabilities', to: 'verification_platform#confidential_report_of_physical_and_mental_disabilities'
+  end
+  
+  namespace :mhc do
+    get 'minnesota_uniform_credentialing_application', to: 'verification_platform#minnesota_uniform_credentialing_application'
+  end
+  
+  namespace :mhc do
+    get 'minnesota_uniform_credentialing_reappointment_application', to: 'verification_platform#minnesota_uniform_credentialing_reappointment_application'
+  end
+  
+  namespace :mhc do
+    get 'alliance_application', to: 'verification_platform#alliance_application'
+  end
+
+  namespace :mhc do
+    get 'alliance_reapplication', to: 'verification_platform#alliance_reapplication'
+  end
+  
+  namespace :mhc do
+    get 'alliance_professional_liability_addendum_a', to: 'verification_platform#alliance_professional_liability_addendum_a'
+  end  
+  
+  namespace :mhc do
+    resources :verification_platform, only: [] do
+      get 'california_participating_physician_application', on: :collection
+    end
+  end
+
+  namespace :mhc do
+    get 'verification_platform/california_participating_physician_application', to: 'verification_platform#california_participating_physician_application', as: :california_participating_physician_application
+  end  
 
   post 'mhc/verification-platform/send-contact', to: 'mhc/verification_platform#send_contact'
 
