@@ -4,7 +4,8 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :invitable, :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :timeoutable
+         :recoverable, :rememberable, :validatable, :timeoutable,
+         :confirmable
 
 		audited
 
@@ -126,9 +127,10 @@ class User < ApplicationRecord
     excluded_roles = find_excluded_roles
 
     Role.all.map do |role|
-      next if excluded_roles.include?(role.slug)
+      slug = role.name.parameterize(separator: "_")
+      next if excluded_roles.include?(slug)
 
-      [role.name, role.slug]
+      [role.name, slug]
     end.compact
   end
 
