@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_09_04_075126) do
+ActiveRecord::Schema[7.0].define(version: 2025_01_24_113343) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -446,6 +446,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_04_075126) do
     t.string "billing_address_autofill"
     t.string "remittance_address_autofill"
     t.datetime "welcome_letter_sent_at"
+    t.integer "admin_id"
+    t.index ["admin_id"], name: "index_enrollment_groups_on_admin_id"
   end
 
   create_table "enrollment_groups_contact_details", force: :cascade do |t|
@@ -569,6 +571,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_04_075126) do
     t.string "terminated_date"
     t.date "denied_date"
     t.string "payer_state"
+    t.string "tax_id"
+    t.string "location"
     t.index ["enrollment_provider_id"], name: "index_enrollment_providers_details_on_enrollment_provider_id"
   end
 
@@ -781,6 +785,27 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_04_075126) do
     t.datetime "updated_at", null: false
     t.index ["read_at"], name: "index_notifications_on_read_at"
     t.index ["recipient_type", "recipient_id"], name: "index_notifications_on_recipient"
+  end
+
+  create_table "peer_recommendations", force: :cascade do |t|
+    t.bigint "provider_id", null: false
+    t.boolean "allow_recommendation", default: false
+    t.string "recommendation"
+    t.string "document"
+    t.string "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_peer_recommendations_on_provider_id"
+  end
+
+  create_table "peer_reviews", force: :cascade do |t|
+    t.bigint "provider_id", null: false
+    t.datetime "committee_date"
+    t.integer "review_status", default: 0
+    t.string "feedback"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_peer_reviews_on_provider_id"
   end
 
   create_table "practice_locations", force: :cascade do |t|
@@ -1466,6 +1491,13 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_04_075126) do
     t.string "supervising_npi"
     t.string "primary_location"
     t.string "payer_login", default: "no"
+    t.integer "secondary_enrollment_group_id"
+    t.string "secondary_primary_location"
+    t.string "secondary_dcos", default: "f"
+    t.string "work_history_not_applicable"
+    t.string "work_history_explain"
+    t.integer "admin_id"
+    t.index ["admin_id"], name: "index_providers_on_admin_id"
   end
 
   create_table "providers_missing_field_submissions", force: :cascade do |t|
@@ -1662,6 +1694,11 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_04_075126) do
     t.datetime "locked_at"
     t.string "security_question"
     t.string "security_answer"
+    t.boolean "assigned_access_only"
+    t.string "confirmation_token"
+    t.datetime "confirmation_sent_at"
+    t.datetime "confirmed_at"
+    t.string "unconfirmed_email"
     t.index ["api_token"], name: "index_users_on_api_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
@@ -1752,17 +1789,34 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_04_075126) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "work_history_providers", force: :cascade do |t|
+    t.string "practice_name"
+    t.string "location"
+    t.date "start_date"
+    t.date "end_date"
+    t.integer "tax_id"
+    t.string "reasone_of_leaving"
+    t.bigint "provider_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_work_history_providers_on_provider_id"
+  end
+
   add_foreign_key "director_providers", "users"
   add_foreign_key "director_providers", "virtual_review_committees"
   add_foreign_key "egd_logs", "enroll_groups_details"
   add_foreign_key "enrollment_group_deleted_doc_logs", "enrollment_groups"
+  add_foreign_key "enrollment_groups", "users", column: "admin_id"
   add_foreign_key "epd_questions", "enrollment_providers_details"
   add_foreign_key "group_contacts", "enrollment_groups"
   add_foreign_key "group_dcos", "enrollment_groups"
+  add_foreign_key "peer_recommendations", "providers"
+  add_foreign_key "peer_reviews", "providers"
   add_foreign_key "provider_licenses", "providers"
   add_foreign_key "provider_np_licenses", "providers"
   add_foreign_key "provider_rn_licenses", "providers"
   add_foreign_key "provider_source_data", "provider_sources"
   add_foreign_key "provider_source_documents", "provider_sources"
   add_foreign_key "provider_taxonomies", "providers"
+  add_foreign_key "providers", "users", column: "admin_id"
 end
