@@ -510,6 +510,26 @@ Rails.application.routes.draw do
   
   namespace :mhc do
     get 'alliance_professional_liability_addendum_a', to: 'verification_platform#alliance_professional_liability_addendum_a'
+  end
+  
+  namespace :mhc do
+    get 'michigan_application', to: 'verification_platform#michigan_application'
+  end
+  
+  namespace :mhc do
+    get 'arms_credential_application', to: 'verification_platform#arms_credential_application'
+  end
+  
+  namespace :mhc do
+    get 'memorialcare_initial_application', to: 'verification_platform#memorialcare_initial_application'
+  end  
+
+  namespace :mhc do
+    get 'texas_standardized_credentialing_application', to: 'verification_platform#texas_standardized_credentialing_application'
+  end  
+
+  namespace :mhc do
+    get 'california_participating_physician_application/addendum_a', to: 'verification_platform#california_participating_physician_application_addendum_a'
   end  
   
   namespace :mhc do
