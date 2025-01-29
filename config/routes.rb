@@ -350,7 +350,8 @@ Rails.application.routes.draw do
     end
   end
 
-		resources :audit_trails, only: [:index, :show], path: 'audit-trail'
+	resources :audit_trails, only: [:index, :show], path: 'audit-trail'
+  resources :help_codes, path: 'help-codes'
 
   namespace :api do
     namespace :v1 do
