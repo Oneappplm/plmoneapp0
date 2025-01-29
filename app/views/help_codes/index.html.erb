@@ -1,0 +1,21 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Help Codes</h1>
+    <div>
+      <%= link_to help_codes_path, id: "list-view-link", class: "btn btn-outline-#{list_view? ? 'primary' : 'secondary'}" do %>
+        <i class="fas fa-list"></i>
+      <% end %>
+      <%= link_to help_codes_path(view: 'table'), id: "table-view-link", class: "btn btn-outline-#{table_view? ? 'primary' : 'secondary'}" do %>
+        <i class="fas fa-table"></i>
+      <% end %>
+    </div>
+    <%= link_to "New help code", new_help_code_path, class: "btn btn-success" %>
+  </div>
+
+  <% if table_view? %>
+   <%= render 'table_view' %>
+  <% else %>
+   <%= render 'list_view' %>
+  <% end %>
+
+</div>
