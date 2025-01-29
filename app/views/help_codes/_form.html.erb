@@ -1,0 +1,28 @@
+
+<%= form_with(model: help_code, class: "needs-validation") do |form| %>
+  <% if help_code.errors.any? %>
+    <div class="alert alert-danger">
+      <h2><%= pluralize(help_code.errors.count, "error") %> prohibited this help_code from being saved:</h2>
+
+      <ul>
+        <% help_code.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :category, class: "form-label" %>
+    <%= form.select :category, HelpCode.categories.keys.map { |key| [HelpCode.categories[key], key] }, {}, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :code, class: "form-label" %>
+    <%= form.text_field :code, class: "form-control" %>
+  </div>
+  
+  <div>
+    <%= form.submit "Save", class: "btn btn-primary" %>
+  </div>
+<% end %>
