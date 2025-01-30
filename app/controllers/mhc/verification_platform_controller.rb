@@ -109,6 +109,13 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
   end
   
+  def profile_page
+    @provider_personal_information = ProviderPersonalInformation.find_by(provider_attest_id: params[:provider_attest_id])
+    unless @provider_personal_information
+      flash[:error] = "Provider personal information not found."
+      redirect_to mhc_verification_platform_overview_path and return
+    end  
+  end
   
   protected
   def set_provider_personal_informations
