@@ -35,11 +35,11 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td>{{SKOMAL}}</td>
-					<td>{{randomLastName}}</td>
-					<td>{{SANAKI}}</td>
-					<td>{{randomCompanySuffix}}</td>
-					<td>DDS</td>
+					<td><%= @provider_personal_information.first_name %></td>
+					<td><%= @provider_personal_information.middle_name %></td>
+					<td><%= @provider_personal_information.last_name %></td>
+					<td><%= @provider_personal_information.suffix %></td>
+					<td><%= @provider_personal_information.practitioner_type%></td>
 				</tr>
 			</tbody>
 		</table>
@@ -62,27 +62,27 @@
 				</tr>
 				<tr>
 					<td class="fw-bold text-dark">ClientID:</td>
-					<td>ENC1336035</td>
+					<td><%= @provider_personal_information.id %></td>
 					<td class="fw-bold text-dark">CAQH ID:</td>
-					<td></td>
+					<td><%= @provider_personal_information.caqh_provider_id %></td>
 				</tr>
 				<tr>
 					<td class="fw-bold text-dark">Social Security No.:</td>
-					<td></td>
+					<td><%= @provider_personal_information.ssn %></td>
 					<td class="fw-bold text-dark">Date of Birth:</td>
-					<td>01/01/1980</td>
+					<td><%= @provider_personal_information.birth_date %></td>
 				</tr>
 				<tr>
 					<td class="fw-bold text-dark">NPI:</td>
-					<td>123456789</td>
+					<td><%= @provider_personal_information.npi %></td>
 					<td class="fw-bold text-dark">Country of Birth:</td>
-					<td>United States</td>
+					<td><%= @provider_personal_information.birth_country_country_name %></td>
 				</tr>
 				<tr>
 					<td class="fw-bold text-dark">US Citizen:</td>
-					<td></td>
+					<td><%= @provider_personal_information.citizenship_status %></td>
 					<td class="fw-bold text-dark">PMRS ID:</td>
-					<td>565</td>
+					<td><%= @provider_personal_information.citizenship_status %></td>
 				</tr>
 			</tbody>
 		</table>
@@ -114,13 +114,11 @@
 				<tr>
 					<td>
 						<strong class="text-dark">Practice Address:</strong><br>
-						{{randomStreetAddress}}<br>
-						{{randomStreetAddress}}<br>
-						{{randomCity}}, {{randomCountryCode}}
+					<%= @provider_personal_information.correspondence_address_type_correspondence_address_type_descrip %>
 					</td>
 					<td>
-						<strong class="text-dark">Practice Phone:</strong> {{randomPhoneNumber}}<br>
-						<strong class="text-dark">Practice Fax:</strong> {{randomPhoneNumberExt}}<br>
+						<strong class="text-dark">Practice Phone:</strong> <%= @provider_personal_information.cell_phone_number %> <br>
+						<strong class="text-dark">Practice Fax:</strong><%= @provider_personal_information.cell_phone_number %><br>
 						<strong class="text-dark">TIN Number:</strong>
 					</td>
 				</tr>
@@ -131,14 +129,226 @@
 			</tbody>
 		</table>
 	</div>
-
-	<div class="section-title mt-4">Additional License</div>
-
-	<div class=" text-center mt-5 text-dark">
-		Copyrights 2000-2024, Medversant Technologies
-	</div>
 </div>
+<div class="container mt-4">
+		<div class="license-box">
+				<h5>Primary License</h5>
+				<div class="row">
+						<div class="col-6">
+								<p><strong>License Number:</strong> 105490</p>
+								<p><strong>Issue Date:</strong><%= @provider_personal_information.ecfmg_issue_date&.strftime('%B %d, %Y') %></p>
+								<p><strong>Status:</strong> CURRENT - ACTIVE</p>
+								<p><strong>Source:</strong> State Board</p>
+								<p><strong>Source Date:</strong> 03/25/2021</p>
+								<p><strong>Review Criteria:</strong> None</p>
+						</div>
+						<div class="col-6">
+								<p><strong>License Type:</strong> DDS</p>
+								<p><strong>State:</strong> CA</p>
+								<p><strong>Expiration Date:</strong> 01/31/2023</p>
+								<p><strong>Adverse Action:</strong> None</p>
+								<p><strong>Verifier:</strong> th_angelo</p>
+								<p><strong>Verification Date:</strong> 03/25/2021</p>
+						</div>
+				</div>
+				<div class="row comments">
+						<div class="col-12">
+								<p><strong>Comments:</strong> Education verified by license state board</p>
+						</div>
+				</div>
+		</div>
+    <div class="section-title mt-4">Additional License</div><br>
+		<div class="license-box">
+				<h5>DEA Registration</h5>
+				<div class="row">
+						<div class="col-6">
+								<p><strong>DEA Number:</strong> FA9933816</p>
+								<p><strong>Schedule:</strong> 2 2N 3 3N 4 5</p>
+								<p><strong>Source:</strong> DEA</p>
+								<p><strong>Source Date:</strong> 03/25/2021</p>
+								<p><strong>Review Criteria:</strong> None</p>
+						</div>
+						<div class="col-6">
+								<p><strong>Status:</strong> Active</p>
+								<p><strong>State:</strong> CA</p>
+								<p><strong>Expiration Date:</strong> 06/30/2023</p>
+								<p><strong>Verifier:</strong> th_angelo</p>
+								<p><strong>Verification Date:</strong> 03/25/2021</p>
+						</div>
+				</div>
+				<div class="row comments">
+						<div class="col-12">
+								<p><strong>Comments:</strong> None</p>
+						</div>
+				</div>
+		</div>
 
+		<div class="license-box">
+				<h5>NPDB</h5>
+				<div class="row">
+						<div class="col-6">
+								<p><strong>Source:</strong> IQRS</p>
+								<p><strong>Source Date:</strong> 03/25/2021</p>
+								<p><strong>Review Criteria:</strong> None</p>
+						</div>
+						<div class="col-6">
+								<p><strong>Verifier:</strong> lhan</p>
+								<p><strong>Verification Date:</strong> 03/25/2021</p>
+						</div>
+				</div>
+				<div class="row comments">
+						<div class="col-12">
+								<p><strong>Comments:</strong> None</p>
+						</div>
+				</div>
+		</div>
+</div>
+<div class="container mt-4">
+		<div class="section">
+				<div class="section-title">SAM Exclusions:</div>
+				<div class="section-content">
+						<div class="row">
+								<div class="col-6">
+										<p><strong>Name:</strong> AABEDI, CHANTELLE</p>
+										<p><strong>Search Results:</strong> No Match</p>
+										<p><strong>Finding:</strong> None</p>
+										<p><strong>Verified By:</strong> SAM</p>
+										<p><strong>Verifier:</strong> System</p>
+										<p><strong>Comments:</strong> None</p>
+								</div>
+								<div class="col-6">
+										<p><strong>Source Date:</strong> 03/25/2021</p>
+										<p><strong>Verification Date:</strong> 03/25/2021</p>
+								</div>
+						</div>
+				</div>
+		</div>
+
+		<div class="section mt-4">
+				<div class="section-title">NPI</div>
+				<div class="section-content">
+						<div class="row">
+								<div class="col-6">
+										<p><strong>NPI Number:</strong> 1740895150</p>
+										<p><strong>Search Results:</strong> Match</p>
+										<p><strong>Verified By:</strong> NPI</p>
+										<p><strong>Verifier:</strong> System</p>
+								</div>
+								<div class="col-6">
+										<p><strong>Source Date:</strong> 03/25/2021</p>
+										<p><strong>Verification Date:</strong> 03/25/2021</p>
+								</div>
+						</div>
+				</div>
+		</div>
+
+		<div class="section mt-4">
+				<div class="section-title">Medicare Opt Out</div>
+				<div class="section-content">
+						<div class="row">
+								<div class="col-6">
+										<p><strong>State:</strong> CA</p>
+										<p><strong>On Opt Out List:</strong> No</p>
+										<p><strong>Effective Date:</strong></p>
+										<p><strong>End Date:</strong></p>
+								</div>
+								<div class="col-6">
+										<p><strong>Verified By:</strong> System</p>
+										<p><strong>Source Date:</strong> Not Available</p>
+										<p><strong>Verification Date:</strong> 03/23/2021</p>
+										<p><strong>Verification Source:</strong> CMS Administrator</p>
+								</div>
+						</div>
+						<div class="row">
+								<div class="col-6">
+										<p><strong>State:</strong> CA</p>
+										<p><strong>On Opt Out List:</strong> No</p>
+										<p><strong>Effective Date:</strong></p>
+										<p><strong>End Date:</strong></p>
+								</div>
+								<div class="col-6">
+										<p><strong>Verified By:</strong> System</p>
+										<p><strong>Source Date:</strong> Not Available</p>
+										<p><strong>Verification Date:</strong> 03/23/2021</p>
+										<p><strong>Verification Source:</strong> CMS Administrator</p>
+								</div>
+						</div>
+				</div>
+		</div>
+
+		<div class="section mt-4">
+				<div class="section-title">Work History</div>
+				<div class="section-content">
+						<div class="row">
+								<div class="col-6">
+										<p><strong>Practice/Employer:</strong> ENHANCED DENTAL<br>3967 FOOTHILL BLVD<br>LA CRESCENTA 91214</p>
+										<p><strong>Position:</strong> Source:</p>
+										<p><strong>Source:</strong> Application</p>
+										<p><strong>Source Date:</strong> 03/19/2021</p>
+										<p><strong>Review Criteria:</strong> None</p>
+										<p><strong>Comments:</strong> None</p>
+								</div>
+								<div class="col-6">
+										<p><strong>Dates:</strong> 03/01/2021--Present</p>
+										<p><strong>Verifier:</strong> th_angelo</p>
+										<p><strong>Verification Date:</strong> 03/25/2021</p>
+								</div>
+						</div>
+						<div class="row">
+								<div class="col-6">
+										<p><strong>Practice/Employer:</strong> DAVID S KIM DDS CORP<br>25078 PEACHLAND AVE STE G<br>NEWHALL 91321</p>
+										<p><strong>Position:</strong> Source:</p>
+										<p><strong>Source:</strong> Application</p>
+										<p><strong>Source Date:</strong> 03/19/2021</p>
+										<p><strong>Review Criteria:</strong> None</p>
+										<p><strong>Comments:</strong> None</p>
+								</div>
+								<div class="col-6">
+										<p><strong>Dates:</strong> 03/01/2021--Present</p>
+										<p><strong>Verifier:</strong> th_angelo</p>
+										<p><strong>Verification Date:</strong> 03/25/2021</p>
+										<p><strong>Source Date:</strong> 03/25/2021</p>
+										<p><strong>Review Criteria:</strong> None</p>
+										<p><strong>Comments:</strong> None</p>
+								</div>
+						</div>
+				</div>
+		</div>
+</div>
+<div class="container mt-4">
+		<table class="bordered-table">
+				<tr>
+						<td>
+								<strong>Practice/Employer:</strong><br>
+								WEST COAST DENTAL GROUP OF NORTH HILLS<br>
+								15350 NORDHOFF STREET STE A<br>
+								NORTH HILLS 91343
+						</td>
+						<td>
+								<strong>Dates:</strong><br>
+								10/01/2020-02/28/2021
+						</td>
+				</tr>
+				<tr>
+						<td>
+								<strong>Position:</strong><br>
+								<strong>Source:</strong> Application<br>
+								<strong>Source Date:</strong> 03/19/2021<br>
+								<strong>Review Criteria:</strong> None<br>
+								<strong>Comments:</strong> None
+						</td>
+						<td>
+								<strong>Verifier:</strong> th_angelo<br>
+								<strong>Verification Date:</strong> 03/25/2021
+						</td>
+				</tr>
+		</table>
+		<table class="bordered-table mt-2">
+				<tr>
+						<td class="no-border"><strong>Disclosure Comments</strong></td>
+				</tr>
+		</table>
+</div>
 <style>
 	.table-bordered th, .table-bordered td {
 		border: 1px solid black !important;
@@ -164,4 +374,54 @@
 		font-size: 0.9rem;
 	}
 </style>
-
+<style>
+		.license-box {
+				border: 1px solid #000;
+				padding: 10px;
+				margin-bottom: 10px;
+		}
+		.license-box h5 {
+				background-color: #f8f9fa;
+				padding: 5px;
+				margin: -10px -10px 10px -10px;
+				border-bottom: 1px solid #000;
+		}
+		.license-box .row {
+				margin-bottom: 10px;
+		}
+		.license-box .row:last-child {
+				margin-bottom: 0;
+		}
+		.license-box .col-6 {
+				padding-right: 5px;
+				padding-left: 5px;
+		}
+		.license-box .col-12 {
+				padding-right: 5px;
+				padding-left: 5px;
+		}
+		.license-box .comments {
+				border-top: 1px solid #000;
+				padding-top: 5px;
+		}
+</style>
+<style>
+		.section-title {
+				background-color: #d3d3f7;
+				font-weight: bold;
+				padding: 5px;
+		}
+		.section-content {
+				border: 1px solid #000;
+				padding: 10px;
+		}
+		.section-content .row {
+				margin-bottom: 10px;
+		}
+		.section-content .row:last-child {
+				margin-bottom: 0;
+		}
+		.section-content .col-6 {
+				padding: 0 5px;
+		}
+</style>
