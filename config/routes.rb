@@ -362,6 +362,8 @@ Rails.application.routes.draw do
 
   namespace :mhc do
     resources :verification_platform, only: [:index, :show], path: 'verification-platform'
+    resources :manage_clients
+    resources :manage_practitioners, path: 'manage-practitioners'
   end
 
   namespace :api do
