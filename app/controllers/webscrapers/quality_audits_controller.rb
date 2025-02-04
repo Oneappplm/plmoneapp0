@@ -44,6 +44,9 @@ class Webscrapers::QualityAuditsController < ApplicationController
 
     # Remove the temporary file after saving
     File.delete(tmp_file_path) if File.exist?(tmp_file_path)
+    if params[:personal_info_id].present?
+      ProviderPersonalInformation.update(verification_status: 'Processing')
+    end
 
     render json: { message: 'Webcrawler completed successfully', rva_information: rva_information, webscraper_log: webscraper_log }, status: :ok
   rescue => e
@@ -53,9 +56,13 @@ class Webscrapers::QualityAuditsController < ApplicationController
   def send_request
     last_name = params[:last_name] 
     first_name = params[:first_name]
+    infoId = params[:info_id]
     # Create reva informaton for send request 
     rva_information = RvaInformation.create(tab: 'OIG', send_request: 'SENT', requested_by: first_name, requested_date: Date.today, requested_method: 'Letter', required_fee_amount: 0, check_generated: false, received_by: first_name, received_status: true, comments: 'none', received_date: Date.today)
     render json: { message: 'requestsent sccessfully',  rva_information: rva_information}, status: :ok
+    if infoId.present?
+      ProviderPersonalInformation.update(verification_status: 'Processing')
+    end
   rescue => e
     render json: { error: e.message }, status: :unprocessable_entity
   end

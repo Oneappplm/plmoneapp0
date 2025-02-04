@@ -112,13 +112,16 @@
                                 </button>
                             </div>
                             <div class="col-12 m-2">
+
                                 <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
                                     Skip RVA
                                 </button>
                             </div>
-                            <div class="col-12 m-2">
-                              <span class="text-danger d-none" id="re-rva">Need ReRVA</span>
-                            </div>
+                            <% if !RvaInformation.last&.source_date.present? && !RvaInformation.last&.audit_status == true %>
+                                <div class="col-12 m-2">
+                                  <span class="text-danger" id="re-rva">Need ReRVA</span>
+                                </div>
+                            <% end %>    
                         </div>
                     </div>
                 </div>
@@ -894,6 +897,7 @@
           e.preventDefault();
           var firstName = $('#firstname').html().trim();
           var lastName = $('#lastname').html().trim();
+          var personalInfoId = $('input[name="personal_info_id"]').val();
 
           if (!firstName || !lastName) {
             $('#qaModalMessage').text('Crawling failed due to some error: First name or last name is missing.');
@@ -911,6 +915,7 @@
             data: {
               first_name: firstName, 
               last_name: lastName,
+              info_id: personalInfoId,
             },
             success: function (response) {
               // set the values
@@ -1020,7 +1025,7 @@
               $('#rva_information_audit_date')[0].innerHTML = data.audit_date;
               $('#rva_information_auditor')[0].innerHTML = data.auditor;
               $('#rva_information_audit_comments')[0].value = data.audit_comments;
-              $('#re-rva')[0].classList.remove('d-none');
+              $('#re-rva')[0].classList.add('d-none');
             },
             error: function(xhr, status, error) {
               console.error('Error:', error);

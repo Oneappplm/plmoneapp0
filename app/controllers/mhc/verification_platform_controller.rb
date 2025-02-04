@@ -99,9 +99,9 @@ class Mhc::VerificationPlatformController < ApplicationController
       params[:rva_information][:audit_date] = Date.today
       params[:rva_information][:audit_comments] = 'None'
     end
-    # if params[:personal_info_id].present?
-    #   ProviderPersonalInformation.update()
-    # end
+    if params[:personal_info_id].present?
+      ProviderPersonalInformation.update(verification_status: 'completed')
+    end
     if @rva_information.update(rva_information_params)
       render json: { message: 'Verification completed successfully', rva_information: @rva_information}, status: :ok
     else
