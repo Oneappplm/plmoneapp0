@@ -299,6 +299,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'npdb'
+      @provider_personal_information_reinstatements = ProviderPersonalInformationReinstatement.where(provider_personal_information_id: @provider_personal_information.id)
       @provider_personal_information_comment = ProviderPersonalInformationComment.new
       @provider_personal_information_comments = ProviderPersonalInformationComment.all
       @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
@@ -306,6 +307,9 @@ class Mhc::VerificationPlatformController < ApplicationController
         provider_attest_id: @provider_attest_id,
         caqh_provider_attest_id: @provider_personal_information&.caqh_provider_attest_id
       )
+      @rva_information = RvaInformation.new
+      @last_rva_information = RvaInformation.last
+      @npdb_webcrawler_logs = WebcrawlerLog.where(crawler_type: 'NPDB').where.not(filepath: nil).order(updated_at: :desc)
     end
 
     if params[:page_tab] == 'app_tracking'
