@@ -1,7 +1,7 @@
 class CreatePracticeInformations < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :practice_informations, id: false do |t|
-      t.primary_key    :provider_practice_id
+    create_table :practice_informations, primary_key: [:provider_attest_id,:provider_practice_id] do |t|
+      t.integer        :provider_practice_id
       t.references     :provider_attest
       t.string         :practice_name
       t.string         :address

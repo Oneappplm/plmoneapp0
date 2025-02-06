@@ -1,7 +1,7 @@
 class CreateProviderMilitaries < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_militaries, id: false do |t|
-      t.primary_key    :provider_military_id
+    create_table :provider_militaries, primary_key: [:provider_attest_id,:provider_military_id] do |t|
+      t.integer        :provider_military_id
       t.references     :provider_attest
       t.string         :last_location
       t.string         :discharge_rank

@@ -1,7 +1,7 @@
 class CreateProviderReferences < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_references, id: false do |t|
-      t.primary_key    :provider_reference_id
+    create_table :provider_references, primary_key: [:provider_attest_id,:provider_reference_id] do |t|
+      t.integer        :provider_reference_id
       t.references     :provider_attest
       t.string         :first_name
       t.string         :last_name

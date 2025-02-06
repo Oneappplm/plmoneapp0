@@ -1,7 +1,9 @@
 class ApplicationRecord < ActiveRecord::Base
   primary_abstract_class
-		include ActionView::Helpers::TextHelper
-		# audited
+  
+  include ActionView::Helpers::TextHelper
+  include CsvAttributesAssignment
+  # audited
 
   def valid?(*)
     true

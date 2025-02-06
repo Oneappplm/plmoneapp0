@@ -1,7 +1,7 @@
 class CreateProviderSpecialties < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_specialties, id: false do |t|
-      t.primary_key     :provider_specialty_id
+    create_table :provider_specialties, primary_key: [:provider_attest_id,:provider_specialty_id] do |t|
+      t.integer         :provider_specialty_id
       t.references      :provider_attest
       t.string          :board_certified_flag
       t.datetime        :certification_date
