@@ -16,8 +16,8 @@ class Mhc::VerificationPlatformController < ApplicationController
 
   protected
   def set_provider_personal_informations
-    @provider_personal_information = ProviderPersonalInformation.find(params[:id])
-    @practice_informations = @provider_personal_information.provider_attest.practice_informations
+    @provider_personal_information = ProviderPersonalInformation.find_by(provider_attest_id: params[:id])
+    # @practice_informations = @provider_personal_information.provider_attest.practice_informations
   end
 
 		def redirect_to_auto_verify
