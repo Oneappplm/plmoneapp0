@@ -308,6 +308,7 @@ Rails.application.routes.draw do
     root to: 'logs#index'
     post '/run_oig_webcrawler', to: 'quality_audits#run_oig_webcrawler'
     post '/send_request', to: 'quality_audits#send_request'
+    post '/send_npdb_request', to: 'quality_audits#send_npdb_request'
     resources :alaska_states, only: [:index], path: 'state-alaska' do
       collection do
         get :crawl
@@ -545,6 +546,7 @@ Rails.application.routes.draw do
 
   post 'mhc/verification-platform/send-contact', to: 'mhc/verification_platform#send_contact'
   post 'mhc/verification-platform/generate_rva_information', to: 'mhc/verification_platform#generate_rva_information'
+  post 'mhc/verification-platform/generate_npdb_information', to: 'mhc/verification_platform#generate_npdb_information'
 
   resources :app_trackers, path: 'app-tracker' do
     member do
