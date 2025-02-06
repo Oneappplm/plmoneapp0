@@ -29,6 +29,7 @@ class ProviderPersonalInformation < ApplicationRecord
   has_many :provider_personal_information_reinstatements
   has_many :provider_personal_information_comments
   has_many :provider_personal_information_app_trackings
+  has_many :rva_informations
 
   has_one :provider_personal_information_credentialing_contact
   has_one :provider_personal_information_confidential_contact

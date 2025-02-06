@@ -14,6 +14,11 @@ class Mhc::VerificationPlatformController < ApplicationController
 
       render params[:page_tab]
     else
+      if @provider_personal_information.present?
+        @rva_information_completed = @provider_personal_information.rva_informations
+                                      .where.not(source_date: nil)
+                                      .where.not(audit_status: false)
+      end
       render 'overview'
     end
   end
@@ -100,7 +105,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       params[:rva_information][:audit_comments] = 'None'
     end
     if params[:personal_info_id].present?
-      ProviderPersonalInformation.update(verification_status: 'completed')
+      ProviderPersonalInformation.find(params[:personal_info_id]).update(verification_status: 'completed')
     end
     if @rva_information.update(rva_information_params)
       render json: { message: 'Verification completed successfully', rva_information: @rva_information}, status: :ok
@@ -234,11 +239,14 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'oig'
+      @rva_information_completed = @provider_personal_information.rva_informations
+                                    .where.not(source_date: nil)
+                                    .where.not(audit_status: false)
       @provider_personal_information_reinstatements = ProviderPersonalInformationReinstatement.where(provider_personal_information_id:  @provider_personal_information.id)
       @provider_personal_information_comment = ProviderPersonalInformationComment.new
       @provider_personal_information_comments = ProviderPersonalInformationComment.all
       @rva_information = RvaInformation.new
-      @last_rva_information = RvaInformation.last
+      @last_rva_information = @provider_personal_information.rva_informations.last
       @oig_webcrawler_logs = WebcrawlerLog.where(crawler_type: 'OIG').where.not(filepath: nil).order(updated_at: :desc)
     end
 
