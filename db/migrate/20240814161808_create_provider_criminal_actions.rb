@@ -1,7 +1,7 @@
 class CreateProviderCriminalActions < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_criminal_actions, id: false do |t|
-      t.primary_key    :provider_criminal_action_id
+    create_table :provider_criminal_actions, primary_key: [:provider_attest_id,:provider_criminal_action_id] do |t|
+      t.integer        :provider_criminal_action_id
       t.references     :provider_attest
       t.datetime       :incident_date
       t.datetime       :complaint_date

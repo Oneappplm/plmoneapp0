@@ -1,7 +1,7 @@
 class CreateProviderLiabilityActions < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_liability_actions, id: false do |t|
-      t.primary_key  :provider_liability_action_id
+    create_table :provider_liability_actions, primary_key: [:provider_attest_id,:provider_liability_action_id] do |t|
+      t.integer      :provider_liability_action_id
       t.references   :provider_attest
       t.string       :insurance_history
       t.string       :carrier_name

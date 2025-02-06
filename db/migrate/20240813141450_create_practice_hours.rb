@@ -1,7 +1,7 @@
 class CreatePracticeHours < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :practice_hours, id: false do |t|
-      t.primary_key   :provider_practice_hours_id
+    create_table :practice_hours, primary_key: [:provider_attest_id,:provider_practice_hours_id,:provider_practice_id] do |t|
+      t.integer       :provider_practice_hours_id
       t.references    :provider_attest
       t.boolean       :no_office_hours_flag
       t.string        :morning_hours
@@ -15,11 +15,11 @@ class CreatePracticeHours < ActiveRecord::Migration[7.0]
       t.text          :hours_type_hours_type_description
       t.string        :end_hours_hours
       t.string        :day_of_week_day_of_week_name
+      t.integer       :provider_practice_id
 
       t.timestamps
     end
 
-    add_column :practice_hours, :provider_practice_id, :integer
     add_index  :practice_hours, :provider_practice_id, :name => 'ph_pp_id'
   end
 
