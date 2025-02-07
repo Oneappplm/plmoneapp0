@@ -29,6 +29,7 @@ class PagesController < ApplicationController
 		@provider_sources = ProviderSource.all
 		@provider = current_user.provider_source_lookup
     build_initial_associations
+    @provider_source_documents = ProviderSourceDocument.where(provider_source_id: @provider.id)
 		HtmlUtils.set_current_provider_source(@provider)
 
     if params[:add_new].present?

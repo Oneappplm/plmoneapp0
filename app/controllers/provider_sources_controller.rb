@@ -1,4 +1,4 @@
-class ProviderSourcesController < ApplicationController
+	class ProviderSourcesController < ApplicationController
 	before_action :set_current_provider_source_and_redirect_to_edit_page, only: [:edit]
 	before_action :create_provider_source_and_redirect_to_edit_page, only: [:new]
 
@@ -14,8 +14,18 @@ class ProviderSourcesController < ApplicationController
 	end
 
 	def index
-		@provider_sources = ProviderSource.all
-		@provider_source = ProviderSource.new
+		if params[:search].present?
+      search_term = "%#{params[:search]}%"
+      
+      # Use LEFT JOIN to ensure all provider sources are included
+      @provider_sources = ProviderSource
+        .left_joins(:data)
+        .where("provider_source_data.data_key IN ('first_name', 'last_name') AND provider_source_data.data_value LIKE ?", search_term)
+        .distinct # Ensure uniqueness
+    else
+			@provider_sources = ProviderSource.all
+			@provider_source = ProviderSource.new
+		end
 	end
 
 	def autosave
@@ -31,6 +41,27 @@ class ProviderSourcesController < ApplicationController
 				format.json { render json: { success: true, data_key: field_name, data_value: value } }
 		end
 	end
+
+	 # upload provider source documents
+		def upload_document
+		  provider_source_id = params[:provider_source_id]
+		  uploaded_file = params[:file]
+
+		  if uploaded_file.present?
+		    file_name = uploaded_file.original_filename
+
+		    provider_source_document = ProviderSourceDocument.new(
+		      provider_source_id: provider_source_id,
+		      file_name: file_name
+		    )
+
+		    provider_source_document.file_path = uploaded_file
+
+		    if provider_source_document.save
+	        redirect_to custom_provider_source_path(page: 'manage_document')
+		    end
+		  end
+		end
 
   def get_progress
     data_group = params[:data_group]
@@ -82,6 +113,54 @@ class ProviderSourcesController < ApplicationController
 		end
 	end
 
+	def download_documents 
+    document_ids = params[:document_ids]
+    documents = ProviderSourceDocument.where(id: document_ids)
+
+    if documents.any?
+      # Assuming only one document can be downloaded at a time for simplicity
+      document = documents.first
+      file_url = document.file_path.url
+
+      if remote_file_exists?(file_url)
+        redirect_to file_url, allow_other_host: true
+      else
+        redirect_back fallback_location: custom_provider_source_path(page: 'manage_document'), alert: 'Selected document could not be found for download.'
+      end
+    else
+      redirect_back fallback_location: custom_provider_source_path(page: 'manage_document'), alert: 'No documents found for download.'
+    end
+  end
+
+  def edit_document
+   document = ProviderSourceDocument.find(params[:document_id])
+	  uploaded_file = params[:document_file]
+
+	  if document.present? && uploaded_file.present?
+	    document.file_path = uploaded_file
+	    document.file_name = uploaded_file.original_filename
+
+	    if document.save
+	      redirect_to custom_provider_source_path(page: 'manage_document'), notice: 'Document was successfully updated.'
+	    else
+	      redirect_to custom_provider_source_path(page: 'manage_document'), alert: 'Failed to update the document.'
+	    end
+	  else
+	    redirect_to custom_provider_source_path(page: 'manage_document'), alert: 'Document or file not found.'
+	  end
+	end
+
+	def delete_document
+	  document = ProviderSourceDocument.find_by(id: params[:document_id])
+	  if document && document.destroy
+	    flash[:notice] = 'Document was successfully deleted.'
+	    render json: { success: true }
+	  else
+	    flash[:alert] = 'Failed to delete the document.'
+	    render json: { success: false }, status: :not_found
+	  end
+	end
+
 	private
 	def create_provider_source_and_redirect_to_edit_page
 		current_provider_source.update(current_provider_source: false)
@@ -99,5 +178,17 @@ class ProviderSourcesController < ApplicationController
       ProviderSource.find(params[:id]).update(current_provider_source: true)
     end
 		redirect_to custom_provider_source_path
+	end
+
+	# Helper method to check if a file exists at a remote URL
+	 def remote_file_exists?(url)
+	  uri = URI.parse(url)
+	  http = Net::HTTP.new(uri.host, uri.port)
+	  http.use_ssl = true if uri.scheme == 'https'
+
+	  request = Net::HTTP::Head.new(uri.request_uri)
+	  response = http.request(request)
+
+	  response.code.to_i == 200
 	end
 end

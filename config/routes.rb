@@ -102,8 +102,15 @@ Rails.application.routes.draw do
       get :fetch
       post :get_progress
       post :autosave_multi_record
+      post :upload_document
+      post :update_document
+      post :download_documents
+      post :edit_document
+      post :delete_document
     end
   end
+
+  post '/delete_documents/:id', to: 'provider_sources#delete_documents'
 
   resources :alt_enrollment_groups, path: 'alt-enrollment-groups' do
     get :documents
