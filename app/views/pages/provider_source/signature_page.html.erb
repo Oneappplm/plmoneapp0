@@ -12,12 +12,18 @@
 					<p class="text-black">
 						To complete your application, please read and agree to the following attestation and release agreement. You must click the “I Attest” button to certify that you have carefully reviewed all information, including supporting  documentation, contained within your Provider App application and that all information provided is true, correct, current and complete, to the best of your knowledge by clicking “I Attest”, you also acknowledge that you must create an electronic signature in order to complete your application.
 					</p>
+					<% if all_information_completed?(@provider) %>
+					<div class="alert alert-success w-75 d-flex align-items-center">
+						<label class="text-dark-grey">Your attestation is completed. Now do the signature and click on "I Attest". </label>
+					</div>
+					<% else %>
 					<div class="alert alert-danger w-75 d-flex align-items-center">
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="svg-icon text-white">
-						  <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
+							<path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
 						</svg>
 						<label class="text-dark-grey">Your attestation is not complete until you see the confirmation screen.</label>
 					</div>
+					<% end %>
 				</div>
 			</div>
 			<div class="row">
@@ -25,27 +31,28 @@
 					<canvas  id="signature" class="border w-100 bg-medium-grey border-secondary" width="450" height="150">
 
 					</canvas >
+					<input type="text" name="signature" id="provider_source_signature" style="opacity: 0;">
 				</div>
 				<div class="col-lg-12 my-3">
-						<a  id="clear-signature" class="btn btn-sm btn-primary fw-bold d-flex align-items-center" style="width: 100px;">
-							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="svg-icon">
-							  <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-							</svg>
-							<span class="ms-2 d-block">Undo</span>
-						</a>
+					<a  id="clear-signature" class="btn btn-sm btn-primary fw-bold d-flex align-items-center" style="width: 100px;">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="svg-icon">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+						</svg>
+						<span class="ms-2 d-block">Undo</span>
+					</a>
 
 					<div class="d-flex flex-column my-3">
 						<div class="form-check">
-							  <input class="form-check-input" type="checkbox" name="draw_signature" value="" id="flexCheckDefault">
-							  <label class="form-check-label" for="flexCheckDefault">
-							   Draw signature using mouse. (Recommended method for most healthcare networks)
-							  </label>
+							<input class="form-check-input" type="checkbox" name="draw_signature" value="" id="flexCheckDefault">
+							<label class="form-check-label" for="flexCheckDefault">
+								Draw signature using mouse. (Recommended method for most healthcare networks)
+							</label>
 						</div>
 						<div class="form-check">
-							  <input class="form-check-input" type="checkbox" name="type_keyboard" value="" id="flexCheckDefault">
-							  <label class="form-check-label" for="flexCheckDefault">
-							   Type name using keyboard
-							  </label>
+							<input class="form-check-input" type="checkbox" name="type_keyboard" value="" id="flexCheckDefault">
+							<label class="form-check-label" for="flexCheckDefault">
+								Type name using keyboard
+							</label>
 						</div>
 					</div>
 				</div>
@@ -53,33 +60,63 @@
 					<div class="d-flex justify-content-between">
 						<div class="d-flex flex-column">
 							<small>Date of Signature:</small>
-							<input type="date" name="" class="form-control border-dark" style="width: 250px;">
+							<input type="date" name="signature_date" class="form-control border-dark" style="width: 250px;">
 						</div>
 						<div class="d-flex flex-column">
 							<small class="text-white">Buttons</small>
 							<div class="d-flex gap-2">
 								<a href="<%= custom_provider_source_path(page: 'attestation_signature')%>" class="btn btn-sm btn-primary">Back</a>
-							<button class="btn btn-sm btn-primary">I Attest</button>
+								<a href="<%= custom_provider_source_path(page: "reattest_application")%>" class="btn btn-sm btn-primary">I Attest</a>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-
 		</div>
 	</div>
 </div>
 
 
+
 <script>
 	jQuery(document).ready(function($){
-    
-    var canvas = document.getElementById("signature");
-    var signaturePad = new SignaturePad(canvas);
-    
-    $('#clear-signature').on('click', function(){
-        signaturePad.clear();
-    });
-    
-});
+		var canvas = document.getElementById("signature");
+		var signaturePad = new SignaturePad(canvas);
+		var signatureInput = $('#provider_source_signature');
+
+    // Function to save signature data
+		function saveSignature() {
+			var signatureData = signaturePad.isEmpty() ? '' : signaturePad.toDataURL();
+			signatureInput.val(signatureData);
+			
+      // Send AJAX request to autosave signature data
+			$.ajax({
+				url: '/provider_sources/autosave',
+				method: 'POST',
+				dataType: 'json',
+				data: {
+					authenticity_token: csrfToken,
+          field_name: 'signature', // Adjust as per your parameter naming convention
+          value: signatureData
+        },
+        success: function(response) {
+        	console.log('Signature autosaved:', response);
+          // Optionally handle success message or UI update
+        },
+        error: function(xhr, status, error) {
+        	console.error('Error autosaving signature:', error);
+          // Optionally handle error message or UI update
+        }
+      });
+		}
+		
+    // Autosave on signature change
+		signaturePad.onEnd = saveSignature;
+		
+		
+		$('#clear-signature').on('click', function(){
+			signaturePad.clear();
+		});
+	});
+
 </script>
