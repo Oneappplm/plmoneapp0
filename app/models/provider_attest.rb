@@ -1,6 +1,4 @@
-
 class ProviderAttest < ApplicationRecord
-  self.primary_key = 'provider_attest_id'
 
   has_many :practice_accessibilities, dependent: :destroy
   has_many :practice_associates, dependent: :destroy
@@ -9,7 +7,8 @@ class ProviderAttest < ApplicationRecord
   has_many :practice_business_arrangements, dependent: :destroy
   has_many :practice_certifications, dependent: :destroy
   has_many :practice_hours, dependent: :destroy
-  has_many  :practice_informations, dependent: :destroy
+
+  has_many :practice_informations, dependent: :destroy
   has_many :practice_languages, dependent: :destroy
   has_many :practice_limitations, dependent: :destroy
   has_many :practice_other_addresses, dependent: :destroy
@@ -60,4 +59,9 @@ class ProviderAttest < ApplicationRecord
   has_many :provider_personal_attempts, dependent: :destroy
   has_many :provider_personal_docs_uploaded_documents, class_name: 'ProviderPersonalDocsUpload', dependent: :destroy
   has_one :provider_personal_docs_receive, dependent: :destroy
+
+  has_many :provider_personal_uploaded_docs, dependent: :destroy
+  has_many :provider_npdbs, dependent: :destroy
+  has_many :practice_information_educations, dependent: :destroy
+  has_many :provider_licensures, dependent: :destroy
 end

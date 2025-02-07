@@ -103,14 +103,13 @@
 													<% end %>
 													<% if current_user.can_access?('provider_engage')%>
 													<div class="nav-item mb-2">
-																<a class="nav-link <%= active_menu('provider_engage', 'provider_source') %>" href="<%= custom_provider_source_path %>" data-placement="left">
+															<a class="nav-link <%= active_menu('provider_engage', 'provider_source') %> <%= request.path == '/provider-engage' ? 'active bg-primary text-white' : '' %>" href="<%= custom_provider_source_path %>" data-placement="left">
 																			<!-- <i class="bi-receipt nav-icon"></i> -->
 																			<i class="bi bi-people nav-icon"></i>
 																			<span class="nav-link-title">Provider Engage </span>
 																</a>
 													</div>
 													<% end %>
-
 													<% if current_user.can_access?('group_engage') %>
 													<div class="nav-item mb-2">
 																<a class="nav-link <%= active_menu('office_managers', 'index') %>" href="<%= office_managers_path %>" data-placement="left">
@@ -121,7 +120,7 @@
 													</div>
 													<% end %>
 
-													<%# if current_user.can_access?('enrollment_dashboard') %>
+													<% if current_setting.dcm? %>
 														<div class="nav-item mb-1">
 															<a class="nav-link <%= active_menu('caqh', 'show') %> <%= active_menu('manage_tools') %>" href="<%= current_setting.mhc? ? mhc_verification_platform_index_path : caqh_upload_path %>" data-placement="left">
 																	<!-- <i class="bi-receipt nav-icon"></i> -->
@@ -130,9 +129,20 @@
 																	<span class="nav-link-title">CAQH</span>
 															</a>
 														</div>
-													<%# end %>
+													<% end %>
 
+													<% if current_setting.dcm? %>
+														<div class="nav-item mb-1">
+														  <a class="nav-link <%= active_menu('app_tracking') %> <%= ['app_tracking', 'app_tracking_record'].include?(params[:page_tab]) || request.path == '/mhc/verification-platform' ? 'active bg-primary text-white' : '' %>" 
+														     href="<%= current_setting.dcm? ? '/mhc/verification-platform' : '#' %>" 
+														     data-placement="left">
+														    <i class="bi bi-clipboard-check nav-icon"></i>
+														    <span class="nav-link-title">PAR Tracking</span>
+														  </a>
+														</div>
+													<% end %>
 
+													<% if !current_setting.dcm? %>
 													<% if current_user.can_access?('verification_platform')%>
 														<div class="nav-item mb-1">
 																	<a class="nav-link <%= active_menu('verification_platform', 'index') %> <%= active_menu('manage_tools') %>" href="<%= current_setting.mhc? ? mhc_verification_platform_index_path : verification_platform_index_path %>" data-placement="left">
@@ -142,6 +152,7 @@
 																				<span class="nav-link-title">Verification Platform</span>
 																	</a>
 														</div>
+													<% end %>
 													<% end %>
 
 													<% if current_setting.dcm? %>

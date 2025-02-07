@@ -1,8 +1,9 @@
 class CreateProviderPersonalInformations < ActiveRecord::Migration[7.0]
   def self.up
-    create_table :provider_personal_informations, primary_key: [:provider_attest_id,:provider_id] do |t|
-      t.integer          :provider_id
+    create_table :provider_personal_informations do |t|
+      t.integer          :caqh_provider_id
       t.references       :provider_attest
+      t.integer          :caqh_provider_attest_id
       t.string           :last_name
       t.string           :first_name
       t.string           :middle_name
@@ -13,11 +14,11 @@ class CreateProviderPersonalInformations < ActiveRecord::Migration[7.0]
       t.boolean          :us_eligible_flag
       t.string           :ssn
       t.string           :nid
-      t.string           :dea_flag
-      t.string           :cds_flag
+      t.boolean          :dea_flag
+      t.boolean          :cds_flag
       t.string           :upin
-      t.string           :upin_flag
-      t.string           :npi_flag
+      t.boolean          :upin_flag
+      t.boolean          :npi_flag
       t.string           :npi
       t.boolean          :medicare_provider_flag
       t.boolean          :medicaid_provider_flag
