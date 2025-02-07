@@ -193,7 +193,8 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_information_names = ProviderPersonalInformation
         .select(:nid, "CONCAT(last_name,', ',first_name, ' ', middle_name) as name")
         .all.collect { |provider_personal_information| [provider_personal_information.name, provider_personal_information.nid] }
-
+      @selected_issues = @provider_personal_information_app_tracking.master_issues
+      @selected_reviews = @provider_personal_information_app_tracking.master_reviews
     end
 
     # code for licensure tab

@@ -1,3 +1,4 @@
+
     <div class="enc-content">
         <div class="container">
           <%= render "top_nav_buttons"%>
@@ -13,40 +14,40 @@
             </div>
             <div class="row">
                 <div class="col-xl-6">
-                    `<%= form_with model: [:mhc, @provider_personal_information_app_tracking] do |f| %>
+                    `<%= form_with model: [:mhc, @provider_personal_information_app_tracking], id: 'tracking-form' do |f| %>
                         <%= f.hidden_field :provider_personal_information_id %>
                         <div class="row">
                             <div class="col-xl-6">
                                 <%= f.label :application_type, "Application Type Date:" %>
-                                <%= f.select :application_type, options_for_select([['Crediantial', 'credential'], ['Re-Credential', 're_credential']], f.object.application_type), { prompt: '' }, { class: 'form-select mt-2 mb-2', required: true } %>
+                                <%= f.select :application_type, options_for_select([['Crediantial', 'credential'], ['Re-Credential', 're_credential']], f.object.application_type), { prompt: '' }, { class: 'form-select', required: true } %>
                             </div>
                             <div class="col-xl-6">
                                 <%= f.label :owner, "Owner (Last Name, First Name):" %>
-                                <%= f.select :owner, options_for_select(@provider_information_names, f.object.owner), { prompt: '' }, { class: 'form-select mt-2 mb-2', required: true } %>
+                                <%= f.select :owner, options_for_select(@provider_information_names, f.object.owner), { prompt: '' }, { class: 'form-select', required: true } %>
                             </div>
                         </div>
                         <div class="form-row row">
                             <div class="col-xl-4">
                                 <%= f.label :application_receipt_date, "Application Receipt Date:" %>
-                                <%= f.date_field :application_receipt_date, class: "form-control mt-2 mb-2" %>
+                                <%= f.date_field :application_receipt_date, class: "form-control" %>
                             </div>
                             <div class="col-xl-4">
                                 <%= f.label :application_receive_complete_date, "App Receive Complete Date:" %>
-                                <%= f.date_field :application_receive_complete_date, class: "form-control mt-2 mb-2", placeholder: "Enter Status" %>
+                                <%= f.date_field :application_receive_complete_date, class: "form-control", placeholder: "Enter Status" %>
                             </div>
                             <div class="col-xl-4">
                                 <%= f.label :application_submitted_date, "Application Submitted Date:" %>
-                                <%= f.date_field :application_submitted_date, class: "form-control mt-2 mb-2", placeholder: "Enter Status" %>
+                                <%= f.date_field :application_submitted_date, class: "form-control", placeholder: "Enter Status" %>
                             </div>
                         </div>
                         <div class="form-row row">
                             <div class="col-xl-6">
                                 <%= f.label :verification_complete_date, "Verification Complete Date:" %>
-                                <%= f.date_field :verification_complete_date, class: "form-control mt-2 mb-2", placeholder: "Enter Status" %>
+                                <%= f.date_field :verification_complete_date, class: "form-control", placeholder: "Enter Status" %>
                             </div>
                             <div class="col-xl-6">
                                 <%= f.label :file_return_to_client_date, "File Return to Client Date:" %>
-                                <%= f.date_field :file_return_to_client_date, class: "form-control mt-2 mb-2", placeholder: "Enter Status" %>
+                                <%= f.date_field :file_return_to_client_date, class: "form-control", placeholder: "Enter Status" %>
                             </div>
                         </div>
                         <div class="form-row row">
@@ -58,81 +59,51 @@
                         <div class="form-row row">
                             <div class="col-xl-12">
                                 <%= f.label :application_comment, "Please list any comments:" %>
-                                <%= f.text_area :application_comment, class: "form-control mt-2 mb-2"%>
+                                <%= f.text_area :application_comment, class: "form-control"%>
                             </div>
                         </div>
 
                         <div class="form-row mt-3 page-applicable">
                             <div class="row">
                                 <div class="col-xl-6">
-                                    <label for="">Master Issue List</label>
-                                    <div class="left-pane bg-gray" style="padding: 10px;height:300px;overflow:scroll;">
-                                        <%# <div class="form-control enc-search-wrp">
-                                            <input type="" name="" class="enc-search-input" placeholder="Search">
-                                            <i class='bx bx-search'></i>
-                                        </div> %>
-                                        <div class="form-row d-flex gap-2 flex-wrap mt-2">
-                                            <span class="provider-check">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="acc-cert-not-received">
-                                                    <label class="form-check-label" for="acc-cert-not-received">
-                                                        CDS Not Verified
-                                                    </label>
-                                                </div>
-                                            </span>
-                                            <span class="provider-check">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="incomp-app">
-                                                    <label class="form-check-label" for="flexCheckDefault2">
-                                                        DEA Copy Not Received
-                                                    </label>
-                                                </div>
-                                            </span>
-                                        </div>
-                                        <div class="form-row d-flex gap-2 flex-wrap mt-2">
-                                            <span class="provider-check">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="acc-cert-not-received">
-                                                    <label class="form-check-label" for="acc-cert-not-received">
-                                                        CDS Not Verified
-                                                    </label>
-                                                </div>
-                                            </span>
-                                            <span class="provider-check">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="incomp-app">
-                                                    <label class="form-check-label" for="flexCheckDefault2">
-                                                        DEA Expiring / Expired
-                                                    </label>
-                                                </div>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-end mt-2">
-                                        <button type="button" class="btn btn-primary py-1">
-                                            Add
-                                        </button>
-                                    </div>
+                                  <label for="">Master Issue List</label>
+                                  <div class="left-pane bg-gray" style="padding: 10px;height:300px;overflow:scroll;">
+                                      <%# <div class="form-control enc-search-wrp">
+                                          <input type="" name="" class="enc-search-input" placeholder="Search">
+                                          <i class='bx bx-search'></i>
+                                      </div> %>
+                                      <div class="form-row d-flex gap-1 flex-wrap mt-2 row issue-list-container" id="master-issue-list">
+                                        <% ProviderPersonalInformationAppTracking::MASTER_ISSUE_LIST.each do |issue| %>
+                                          <% if !@selected_issues.include?(issue) %>
+                                            <div class="provider-check form-check issue-item">
+                                              <%= check_box_tag "master_issue_#{issue}", issue, false, class: "form-check-input mx-2 issue-checkbox" %>
+                                              <%= label_tag "master_issue_#{issue}", issue, class: 'form-check-label mx-2' %>
+                                            </div>
+                                          <% end %>
+                                        <% end %>
+                                      </div>
+                                  </div>
+                                  <div class="d-flex justify-content-end mt-2">
+                                    <%= button_tag "Add", type: "button", id: "add-issue-button", class: "btn btn-primary py-1" %>
+                                  </div>
                                 </div>
                                 <div class="col-xl-6">
-                                    <label for="">Client Flag</label>
-                                    <div class="right-pane border-dash bg-gray" style="padding: 10px;height:300px;overflow:scroll;">
-                                        <div class="form-row d-flex gap-2 flex-wrap">
-                                            <span class="provider-check">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="DEA-not-valid">
-                                                    <label class="form-check-label" for="DEA-not-valid">
-                                                        DEA Not Verified
-                                                    </label>
-                                                </div>
-                                            </span>
-                                        </div>
+                                  <%= f.label :client_flag, "Issue" %>
+                                  <div class="right-pane border-dash bg-gray p-2">
+                                    <div class="form-row d-flex gap-2 flex-wrap" id="client-flag-list">
+                                      <% if @provider_personal_information_app_tracking.master_issues.compact.reject(&:blank?).present? %>
+                                        <% @provider_personal_information_app_tracking.master_issues.each do |issue| %>
+                                          <div class="provider-check form-check issue-item">
+                                            <%= check_box_tag "master_right_issue_#{issue}", issue, false, class: "form-check-input mx-2 issue-checkbox" %>
+                                            <%= label_tag "master_right_issue_#{issue}", issue, class: 'form-check-label mx-2' %>
+                                          </div>
+                                        <% end %>
+                                      <% end %>  
                                     </div>
-                                    <div class="d-flex justify-content-end mt-2">
-                                        <button type="button" class="btn btn-danger">
-                                            Remove
-                                        </button>
-                                    </div>
+                                  </div>
+                                  <div class="d-flex justify-content-end mt-2">
+                                    <%= button_tag "Remove", type: "button", id: "remove-issue-button", class: "btn btn-danger" %>
+                                  </div>
                                 </div>
                             </div>
                         </div>
@@ -142,74 +113,260 @@
                                 <div class="col-xl-6">
                                     <label for="">Master Review List</label>
                                     <div class="left-pane bg-gray" style="padding: 10px;height:300px;overflow:scroll;">
-                                        <%# <div class="form-control enc-search-wrp">
-                                            <input type="" name="" class="enc-search-input" placeholder="Search">
-                                            <i class='bx bx-search'></i>
-                                        </div> %>
-                                        <div class="form-row d-flex gap-2 flex-wrap mt-2">
-                                            <span class="provider-check">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="acc-cert-not-received">
-                                                    <label class="form-check-label" for="acc-cert-not-received">
-                                                        Accreditation Certification Not Received
-                                                    </label>
-                                                </div>
-                                            </span>
-                                            <span class="provider-check">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="incomp-app">
-                                                    <label class="form-check-label" for="flexCheckDefault2">
-                                                        Incomplete App: Continuing Education Requirement
-                                                    </label>
-                                                </div>
-                                            </span>
-                                        </div>
+                                      <div class="form-row d-flex gap-1 flex-wrap mt-2 row review-list-container" id="master-review-list">
+                                        <% ProviderPersonalInformationAppTracking::MASTER_REVIEW_LIST.each do |review| %>
+                                          <% if !@selected_reviews.include?(review) %>
+                                            <div class="provider-check form-check review-item">
+                                              <%= check_box_tag "master_review_#{review}", review, false, class: "form-check-input mx-2 review-checkbox" %>
+                                              <%= label_tag "master_review_#{review}", review, class: 'form-check-label mx-2' %>
+                                            </div>
+                                          <% end %>
+                                        <% end %>
+                                      </div>
                                     </div>
                                     <div class="d-flex justify-content-end mt-2">
-                                        <button type="button" class="btn btn-primary py-1">
-                                            Add
-                                        </button>
+                                      <%= button_tag "Add", type: "button", id: "add-review-button", class: "btn btn-primary py-1" %>
                                     </div>
                                 </div>
                                 <div class="col-xl-6">
-                                    <label for="">Client Flag</label>
-                                    <div class="right-pane border-dash bg-gray" style="padding: 10px;height:300px;overflow:scroll;">
-                                        <div class="form-row d-flex gap-2 flex-wrap">
-                                            <span class="provider-check">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="DEA-not-valid">
-                                                    <label class="form-check-label" for="DEA-not-valid">
-                                                        DEA Not Verified
-                                                    </label>
-                                                </div>
-                                            </span>
-                                        </div>
+                                  <label for="">Client Flag</label>
+                                  <div class="right-pane border-dash bg-gray p-2">
+                                    <div class="form-row d-flex gap-2 flex-wrap" id="review-flag-list">
+                                      <% if @provider_personal_information_app_tracking.master_reviews.compact.reject(&:blank?).present? %>
+                                        <% @provider_personal_information_app_tracking.master_reviews.each do |review| %>
+                                          <div class="provider-check form-check review-item">
+                                            <%= check_box_tag "master_right_review_#{review}", review, false, class: "form-check-input mx-2 review-checkbox" %>
+                                            <%= label_tag "master_right_review_#{review}", review, class: 'form-check-label mx-2' %>
+                                          </div>
+                                        <% end %>
+                                      <% end %>  
                                     </div>
-                                    <div class="d-flex justify-content-end mt-2">
-                                        <button type="button" class="btn btn-danger">
-                                            Remove
-                                        </button>
-                                    </div>
+                                  </div>
+                                  <div class="d-flex justify-content-end mt-2">
+                                    <%= button_tag "Remove", type: "button", id: "remove-review-button", class: "btn btn-danger" %>
+                                  </div>
                                 </div>
                             </div>
                         </div>
                         <div class="form-row row">
                             <div class="col-xl-12">
                                 <%= f.label :file_status, "File Status:" %>
-                                <%= f.select :file_status, options_for_select([['Clean', 'clean'], ['Issue', 'issue'],  ['Review', 'review'],  ['Review & Issue', 'review_and_issue']], f.object.file_status), { prompt: '' }, { class: 'form-select mt-2 mb-2', required: true } %>
+                                <%= f.select :file_status, options_for_select([['Clean', 'clean'], ['Issue', 'issue'],  ['Review', 'review'],  ['Review & Issue', 'review_and_issue']], f.object.file_status), { prompt: '' }, { class: 'form-select', required: true } %>
                             </div>
                         </div>
                         <div class="form-row row">
                             <div class="col-xl-12">
                                 <%= f.label :other_comment, "Please list any comments:" %>
-                                <%= f.text_area :other_comment, class: "form-control mt-2 mb-2"%>
+                                <%= f.text_area :other_comment, class: "form-control"%>
                             </div>
                         </div>
                         <div class="text-center">
-                            <%= f.submit 'Save',  class: "btn btn-success px-5 mt-2 mb-2" %>
+                            <%= f.submit 'Save',  class: "btn btn-success px-5" %>
                         </div>
                     <% end %>
                 </div>
             </div>
         </div>
     </div>
+<script>
+  $(document).ready(function () {
+    // Add selected issues from the left to the right
+    $('#add-issue-button').on('click', function () {
+      // Check if any checkbox is checked
+      const selectedCheckboxes = $('.issue-checkbox:checked');
+      if (selectedCheckboxes.length === 0) {
+        alert('Please select at least one issue to add.');
+        return; // Exit if no checkbox is selected
+      }
+
+      // Loop through all checked checkboxes in the left pane
+      selectedCheckboxes.each(function () {
+        const issueValue = this.value; 
+
+        // Add the selected issue to the right pane (client-flag-list)
+        $('#client-flag-list').prepend(`
+          <div class="provider-check form-check issue-item">
+            <input type="checkbox" id="client_issue_${issueValue}" value="${issueValue}" class="form-check-input mx-2">
+            <label for="client_issue_${issueValue}" class="form-check-label mx-2">${issueValue}</label>
+          </div>
+        `);
+
+        // Remove the checkbox from the left pane
+        $(this).closest('.issue-item').remove();
+      });
+
+      // Update the hidden field with selected issues
+      syncSelectedIssuesToHiddenField();
+    });
+
+    // Remove selected issues from the right pane
+    $('#remove-issue-button').on('click', function () {
+      // Check if any checkbox is checked
+      const selectedCheckboxes = $('#client-flag-list .form-check-input:checked');
+      if (selectedCheckboxes.length === 0) {
+        alert('Please select at least one issue to remove.');
+        return; // Exit if no checkbox is selected
+      }
+
+      // Loop through all checked checkboxes in the right pane
+      selectedCheckboxes.each(function () {
+        const issueValue = $(this).val(); // Get the issue value
+        const issueLabel = $(this).next('label').text().replace(' Selected', ''); // Remove 'Selected' badge text
+
+        // Add the removed issue back to the left pane
+        $('#master-issue-list').prepend(`
+          <div class="provider-check form-check issue-item">
+            <input type="checkbox" id="master_right_issue_${issueValue}" value="${issueValue}" class="form-check-input mx-2 issue-checkbox">
+            <label for="master_right_issue_${issueValue}" class="form-check-label mx-2">${issueLabel}</label>
+          </div>
+        `);
+
+        // Remove the checkbox from the right pane
+        $(this).closest('.issue-item').remove();
+
+
+        // Clear the selected checkboxes after moving them
+        $('#client-flag-list .form-check-input').prop('checked', false);
+      });
+
+      // Update the hidden field with remaining issues
+      syncSelectedIssuesToHiddenField();
+    });
+
+    function syncSelectedIssuesToHiddenField() {
+      const selectedIssues = [];
+      $('#client-flag-list .form-check-input').each(function () {
+        selectedIssues.push($(this).val());
+      });
+
+      const form = $("#tracking-form");
+      if (form.length === 0) {
+        console.log("Form not found");
+        return;
+      }
+
+      // Clear existing hidden fields to avoid duplicates
+      form.find("input[name='provider_personal_information_app_tracking[master_issues][]']").remove();
+
+      // Add hidden fields for selected issues or an empty field if none are selected
+      if (selectedIssues.length === 0) {
+        $("<input>").attr({
+          type: "hidden",
+          name: "provider_personal_information_app_tracking[master_issues][]",
+          value: ""
+        }).appendTo(form);
+      } else {
+        selectedIssues.forEach(function(issue) {
+          $("<input>").attr({
+            type: "hidden",
+            name: "provider_personal_information_app_tracking[master_issues][]",
+            value: issue
+          }).appendTo(form);
+        });
+      }
+    }
+
+    // Add selected reviews from the left to the right
+    $('#add-review-button').on('click', function () {
+      // Check if any checkbox is checked
+      const selectedCheckboxes = $('.review-checkbox:checked');
+      if (selectedCheckboxes.length === 0) {
+        alert('Please select at least one review to add.');
+        return; // Exit if no checkbox is selected
+      }
+
+      // Loop through all checked checkboxes in the left pane
+      selectedCheckboxes.each(function () {
+        const reviewValue = this.value; 
+
+        // Add the selected review to the right pane (client-flag-list)
+        $('#review-flag-list').prepend(`
+          <div class="provider-check form-check review-item">
+            <input type="checkbox" id="client_review_${reviewValue}" value="${reviewValue}" class="form-check-input mx-2">
+            <label for="client_review_${reviewValue}" class="form-check-label mx-2">${reviewValue}</label>
+          </div>
+        `);
+
+        // Remove the checkbox from the left pane
+        $(this).closest('.review-item').remove();
+      });
+
+      // Update the hidden field with selected reviews
+      syncSelectedReviewsToHiddenField();
+    });
+    // Remove selected issues from the right pane
+    $('#remove-review-button').on('click', function () {
+      // Check if any checkbox is checked
+      const selectedCheckboxes = $('#review-flag-list .form-check-input:checked');
+      if (selectedCheckboxes.length === 0) {
+        alert('Please select at least one review to remove.');
+        return; // Exit if no checkbox is selected
+      }
+
+      // Loop through all checked checkboxes in the right pane
+      selectedCheckboxes.each(function () {
+        const reviewValue = $(this).val(); // Get the review value
+        const reviewLabel = $(this).next('label').text().replace(' Selected', ''); // Remove 'Selected' badge text
+
+        // Add the removed review back to the left pane
+        $('#master-review-list').prepend(`
+          <div class="provider-check form-check review-item">
+            <input type="checkbox" id="master_right_review_${reviewValue}" value="${reviewValue}" class="form-check-input mx-2 review-checkbox">
+            <label for="master_right_review_${reviewValue}" class="form-check-label mx-2">${reviewLabel}</label>
+          </div>
+        `);
+
+        // Remove the checkbox from the right pane
+        $(this).closest('.review-item').remove();
+
+
+        // Clear the selected checkboxes after moving them
+        $('#review-flag-list .form-check-input').prop('checked', false);
+      });
+
+      // Update the hidden field with remaining issues
+      syncSelectedReviewsToHiddenField();
+    });
+    // Function to sync selected issues to the hidden field
+    
+    function syncSelectedReviewsToHiddenField() {
+      const selectedReviews = [];
+      $('#review-flag-list .form-check-input').each(function () {
+        selectedReviews.push($(this).val());
+      });
+
+      const form = $("#tracking-form");
+      if (form.length === 0) {
+        console.log("Form not found");
+        return;
+      }
+
+      // Clear existing hidden fields to avoid duplicates
+      form.find("input[name='provider_personal_information_app_tracking[master_reviews][]']").remove();
+
+      // Add hidden fields for selected reviews or an empty field if none are selected
+      if (selectedReviews.length === 0) {
+        $("<input>").attr({
+          type: "hidden",
+          name: "provider_personal_information_app_tracking[master_reviews][]",
+          value: [],
+        }).appendTo(form);
+      } else {
+        selectedReviews.forEach(function(review) {
+          $("<input>").attr({
+            type: "hidden",
+            name: "provider_personal_information_app_tracking[master_reviews][]",
+            value: review
+          }).appendTo(form);
+        });
+      }
+    }
+
+  });
+</script>
+<style>
+  .left-pane, .right-pane {
+    height: 300px;
+    overflow: scroll;
+  }
+</style>
