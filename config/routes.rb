@@ -96,6 +96,9 @@ Rails.application.routes.draw do
   post 'logout-on-close', to: 'ajax#logout_on_close'
   patch '/record_approval', to: 'pages#record_approval', as: 'record_approval'
   get '/virtual_review_committee/minutes', to: 'pages#minutes', as: 'minutes'
+  get '/auth/auth0/callback' => 'auth0#callback'
+  get '/auth/failure' => 'auth0#failure'
+  get '/auth/logout' => 'auth0#logout'
 
   post '/upload_vrc_document', to: 'pages#upload_vrc_document', as: :upload_document
   post '/update_vrc_document', to: 'pages#update_vrc_document', as: :update_vrc_document

@@ -30,6 +30,16 @@ class Users::SessionsController < Devise::SessionsController
     end
   end
 
+  def destroy
+    logout
+  end
+
+  def logout
+    reset_session
+
+    redirect_to logout_url, allow_other_host: true
+  end
+
   private
 
   def log_login_activity(user)
@@ -46,4 +56,15 @@ class Users::SessionsController < Devise::SessionsController
     session[:captcha_num1] ||= rand(1..10)
     session[:captcha_num2] ||= rand(1..10)
   end
+
+  def logout_url
+    request_params = {
+      returnTo: root_url,
+      client_id: Figaro.env.auth0_client_id
+    }
+
+    URI::HTTPS.build(host: Figaro.env.auth0_domain, path: '/v2/logout', query: request_params.to_query).to_s
+  end
 end
+
+  
