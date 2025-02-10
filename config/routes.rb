@@ -90,6 +90,9 @@ Rails.application.routes.draw do
   post 'logout-on-close', to: 'ajax#logout_on_close'
   patch '/record_approval', to: 'pages#record_approval', as: 'record_approval'
   get '/virtual_review_committee/minutes', to: 'pages#minutes', as: 'minutes'
+  get '/auth/auth0/callback' => 'auth0#callback'
+  get '/auth/failure' => 'auth0#failure'
+  get '/auth/logout' => 'auth0#logout'
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 
