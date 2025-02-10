@@ -15,10 +15,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       render params[:page_tab]
     else
       if @provider_personal_information.present?
-        @rva_information_completed = @provider_personal_information.rva_informations
-                                      .where(tab: 'OIG')
-                                      .where.not(source_date: nil)
-                                      .where.not(audit_status: false)
+        @rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'OIG').where.not(source_date: nil).where.not(audit_status: false)
       end
       render 'overview'
     end
@@ -241,10 +238,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'oig'
-      @rva_information_completed = @provider_personal_information.rva_informations.
-                                    .where(tab: 'OIG')
-                                    .where.not(source_date: nil)
-                                    .where.not(audit_status: false)
+      @rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'OIG').where.not(source_date: nil).where.not(audit_status: false)
       @provider_personal_information_reinstatements = ProviderPersonalInformationReinstatement.where(provider_personal_information_id:  @provider_personal_information.id)
       @provider_personal_information_comment = ProviderPersonalInformationComment.new
       @provider_personal_information_comments = ProviderPersonalInformationComment.all
