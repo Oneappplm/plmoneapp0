@@ -70,6 +70,26 @@ class User < ApplicationRecord
   attr_accessor :email_cc, :email_subject, :email_message
 
   class << self
+    def from_omniauth(auth)
+      return nil unless auth && auth['info']['email'].present?
+      
+      info = auth['extra']['raw_info']
+
+      user = User.find_or_create_by(email: auth['info']['email']) do |user|
+        user.provider = auth['provider']
+        user.uid = auth['uid']
+        user.first_name = info['given_name']
+        user.last_name = info['family_name']
+      end
+
+      if user.persisted? && user.confirmed_at.nil?
+        user.confirmed_at = Time.current
+        user.save(validate: false)
+      end
+
+      user
+    end
+
     def set_user_sidebar_preferences
       User.all.each do |user|
         sidebar_cards = ['enrollment_details', 'licenses', 'documents','group', 'practice_location', 'enrollments', 'enrollment_payer', 'dco_outreach' ,'schedules']
@@ -304,6 +324,14 @@ class User < ApplicationRecord
   end
 
   private
+
+  def set_user_role
+    if hidden_role.present?
+     self.user_role = hidden_role
+    elsif user_role.blank?
+     self.user_role = "admin_staff"
+    end
+  end
 
   def set_sidebar_preferences
     sidebar_cards = ['enrollment_details', 'licenses', 'documents','group', 'practice_location', 'enrollments', 'enrollment_payer', 'dco_outreach' ,'schedules']

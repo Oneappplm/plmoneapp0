@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
+ActiveRecord::Schema[7.0].define(version: 2025_02_09_062734) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -3402,6 +3402,15 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "sessions", force: :cascade do |t|
+    t.string "session_id", null: false
+    t.text "data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
+    t.index ["updated_at"], name: "index_sessions_on_updated_at"
+  end
+
   create_table "settings", force: :cascade do |t|
     t.string "theme_color"
     t.string "font_style"
@@ -3494,12 +3503,24 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_18_141201) do
     t.string "password_change_status_via_invite"
     t.string "security_question"
     t.string "security_answer"
+<<<<<<< HEAD
+=======
+    t.boolean "assigned_access_only"
+    t.string "confirmation_token"
+    t.datetime "confirmation_sent_at"
+    t.datetime "confirmed_at"
+    t.string "unconfirmed_email"
+    t.string "provider"
+    t.string "uid"
+>>>>>>> 533c3e1b (feat(auth): integrate sso okta)
     t.index ["api_token"], name: "index_users_on_api_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
     t.index ["invited_by_type", "invited_by_id"], name: "index_users_on_invited_by"
+    t.index ["provider"], name: "index_users_on_provider"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["uid"], name: "index_users_on_uid"
   end
 
   create_table "users_enrollment_groups", force: :cascade do |t|
