@@ -37,9 +37,9 @@ class Webscrapers::QualityAuditsController < ApplicationController
     FileUtils.cp(source_file, tmp_file_path)
 
     # Save the file in WebscraperLog using CarrierWave
-    webscraper_log = WebcrawlerLog.new(
-      crawler_type: 'OIG',
-      status: 'completed'
+    webscraper_log = OigWebcrawlerLog.new(
+      status: 'completed',
+      rva_information_id: rva_information.id
     )
     webscraper_log.filepath = File.open(tmp_file_path) # Attach the file using CarrierWave
     webscraper_log.save!

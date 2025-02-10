@@ -247,7 +247,6 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_personal_information_comments = ProviderPersonalInformationComment.all
       @rva_information = RvaInformation.new
       @last_rva_information = @provider_personal_information.rva_informations.last
-      @oig_webcrawler_logs = WebcrawlerLog.where(crawler_type: 'OIG').where.not(filepath: nil).order(updated_at: :desc)
     end
 
     if params[:page_tab] == 'add_oig_info'

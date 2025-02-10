@@ -117,11 +117,12 @@
                                     Skip RVA
                                 </button>
                             </div>
-                            <% if !@rva_information_completed.present? %>
+                            <% if @rva_information_completed.present? %>
                                 <div class="col-12 m-2">
                                   <span class="text-danger" id="re-rva">Need ReRVA</span>
                                 </div>
-                            <% end %>    
+                            <% end %>
+                            <div class="re-rva"></div> 
                         </div>
                     </div>
                 </div>
@@ -468,7 +469,7 @@
                                   </div>
                                   <div class="col-md-9">
                                     <div class="row justify-content-end" id="crawler-link">
-                                      <% @oig_webcrawler_logs.each do |crawler_log| %>
+                                      <% @last_rva_information&.oig_webcrawler_logs&.each do |crawler_log| %>
                                         <div class="col-md-6">
                                           <div class="text-decoration-underline"><%= link_to "#{File.basename(crawler_log.filepath.url)}", crawler_log.filepath.url, target: '_blank' %></div>
                                         </div>
@@ -1025,7 +1026,7 @@
               $('#rva_information_audit_date')[0].innerHTML = data.audit_date;
               $('#rva_information_auditor')[0].innerHTML = data.auditor;
               $('#rva_information_audit_comments')[0].value = data.audit_comments;
-              $('#re-rva')[0].classList.add('d-none');
+              $('.re-rva')[0].innerHTML = 'Need ReRVA';
             },
             error: function(xhr, status, error) {
               console.error('Error:', error);
