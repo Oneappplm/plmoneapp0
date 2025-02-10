@@ -101,3 +101,5 @@ gem "geocoder" # https://github.com/alexreisner/geocoder
 gem "audited" # https://github.com/collectiveidea/audited
 gem 'chunky_png', '~> 1.3', '>= 1.3.5'
 gem 'combine_pdf'
+gem 'omniauth-auth0', '~> 3.0'
+gem 'omniauth-rails_csrf_protection', '~> 1.0' # prevents forged authentication requests
