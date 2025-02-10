@@ -117,12 +117,11 @@
                                     Skip RVA
                                 </button>
                             </div>
-                            <% if @rva_information_completed.present? %>
-                                <div class="col-12 m-2">
-                                  <span class="text-danger" id="re-rva">Need ReRVA</span>
-                                </div>
-                            <% end %>
-                            <div class="re-rva"></div> 
+                            <div class="col-12 m-2">
+                              <button class="btn text-danger <%= @rva_information_completed.present? ? '' : 'd-none' %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" id="re-rva">
+                                Need ReRVA
+                              </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1026,7 +1025,7 @@
               $('#rva_information_audit_date')[0].innerHTML = data.audit_date;
               $('#rva_information_auditor')[0].innerHTML = data.auditor;
               $('#rva_information_audit_comments')[0].value = data.audit_comments;
-              $('.re-rva')[0].innerHTML = 'Need ReRVA';
+              $('#re-rva')[0].classList.remove('d-none');
             },
             error: function(xhr, status, error) {
               console.error('Error:', error);

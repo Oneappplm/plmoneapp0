@@ -35,11 +35,11 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td><%= @provider_personal_information.first_name %></td>
-					<td><%= @provider_personal_information.middle_name %></td>
-					<td><%= @provider_personal_information.last_name %></td>
-					<td><%= @provider_personal_information.suffix %></td>
-					<td><%= @provider_personal_information.practitioner_type%></td>
+					<td><%= @provider_personal_information&.first_name %></td>
+					<td><%= @provider_personal_information&.middle_name %></td>
+					<td><%= @provider_personal_information&.last_name %></td>
+					<td><%= @provider_personal_information&.suffix %></td>
+					<td><%= @provider_personal_information&.practitioner_type%></td>
 				</tr>
 			</tbody>
 		</table>
@@ -62,27 +62,27 @@
 				</tr>
 				<tr>
 					<td class="fw-bold text-dark">ClientID:</td>
-					<td><%= @provider_personal_information.id %></td>
+					<td><%= @provider_personal_information&.id %></td>
 					<td class="fw-bold text-dark">CAQH ID:</td>
-					<td><%= @provider_personal_information.caqh_provider_id %></td>
+					<td><%= @provider_personal_information&.caqh_provider_id %></td>
 				</tr>
 				<tr>
 					<td class="fw-bold text-dark">Social Security No.:</td>
-					<td><%= @provider_personal_information.ssn %></td>
+					<td><%= @provider_personal_information&.ssn %></td>
 					<td class="fw-bold text-dark">Date of Birth:</td>
-					<td><%= @provider_personal_information.birth_date %></td>
+					<td><%= @provider_personal_information&.birth_date %></td>
 				</tr>
 				<tr>
 					<td class="fw-bold text-dark">NPI:</td>
-					<td><%= @provider_personal_information.npi %></td>
+					<td><%= @provider_personal_information&.npi %></td>
 					<td class="fw-bold text-dark">Country of Birth:</td>
-					<td><%= @provider_personal_information.birth_country_country_name %></td>
+					<td><%= @provider_personal_information&.birth_country_country_name %></td>
 				</tr>
 				<tr>
 					<td class="fw-bold text-dark">US Citizen:</td>
-					<td><%= @provider_personal_information.citizenship_status %></td>
+					<td><%= @provider_personal_information&.citizenship_status %></td>
 					<td class="fw-bold text-dark">PMRS ID:</td>
-					<td><%= @provider_personal_information.citizenship_status %></td>
+					<td><%= @provider_personal_information&.citizenship_status %></td>
 				</tr>
 			</tbody>
 		</table>
@@ -114,11 +114,11 @@
 				<tr>
 					<td>
 						<strong class="text-dark">Practice Address:</strong><br>
-					<%= @provider_personal_information.correspondence_address_type_correspondence_address_type_descrip %>
+					<%= @provider_personal_information&.correspondence_address_type_correspondence_address_type_descrip %>
 					</td>
 					<td>
-						<strong class="text-dark">Practice Phone:</strong> <%= @provider_personal_information.cell_phone_number %> <br>
-						<strong class="text-dark">Practice Fax:</strong><%= @provider_personal_information.cell_phone_number %><br>
+						<strong class="text-dark">Practice Phone:</strong> <%= @provider_personal_information&.cell_phone_number %> <br>
+						<strong class="text-dark">Practice Fax:</strong><%= @provider_personal_information&.cell_phone_number %><br>
 						<strong class="text-dark">TIN Number:</strong>
 					</td>
 				</tr>
@@ -136,7 +136,7 @@
 				<div class="row">
 						<div class="col-6">
 								<p><strong>License Number:</strong> 105490</p>
-								<p><strong>Issue Date:</strong><%= @provider_personal_information.ecfmg_issue_date&.strftime('%B %d, %Y') %></p>
+								<p><strong>Issue Date:</strong><%= @provider_personal_information&.ecfmg_issue_date&.strftime('%B %d, %Y') %></p>
 								<p><strong>Status:</strong> CURRENT - ACTIVE</p>
 								<p><strong>Source:</strong> State Board</p>
 								<p><strong>Source Date:</strong> 03/25/2021</p>
@@ -271,6 +271,24 @@
 										<p><strong>Source Date:</strong> Not Available</p>
 										<p><strong>Verification Date:</strong> 03/23/2021</p>
 										<p><strong>Verification Source:</strong> CMS Administrator</p>
+								</div>
+						</div>
+				</div>
+		</div>
+		<div class="section mt-4">
+				<div class="section-title">OIG Exclusions</div>
+				<div class="section-content">
+						<div class="row">
+								<div class="col-6">
+										<p><strong>Search Result:</strong> <%= oig_details[0]&.status %><p>
+										<p><strong>Finding:</strong> None</p>
+										<p><strong>Verified By:</strong> <%= oig_details[0]&.tab %></p>
+										<p><strong>Verifier:</strong> <%= oig_details[0]&.verifier %></p>
+										<p><strong>comments:</strong> <%= oig_details[0]&.verification_comments %></p>
+								</div>
+								<div class="col-6">
+										<p><strong>Source Date:</strong> <%= oig_details[0]&.source_date %></p>
+										<p><strong>Verification Date:</strong><%= oig_details[0]&.verification_date %></p>
 								</div>
 						</div>
 				</div>
