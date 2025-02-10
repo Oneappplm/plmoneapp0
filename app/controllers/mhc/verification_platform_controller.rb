@@ -16,6 +16,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     else
       if @provider_personal_information.present?
         @rva_information_completed = @provider_personal_information.rva_informations
+                                      .where(tab: 'OIG')
                                       .where.not(source_date: nil)
                                       .where.not(audit_status: false)
       end
@@ -120,7 +121,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       flash[:error] = "Provider personal information not found."
       redirect_to mhc_verification_platform_index_path and return
     end
-    @provider_oig_tab_details = @provider_personal_information.rva_informations
+    @provider_oig_tab_details = @provider_personal_information.rva_informations.where(tab: 'OIG')
   end
   
   protected
@@ -240,14 +241,15 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'oig'
-      @rva_information_completed = @provider_personal_information.rva_informations
+      @rva_information_completed = @provider_personal_information.rva_informations.
+                                    .where(tab: 'OIG')
                                     .where.not(source_date: nil)
                                     .where.not(audit_status: false)
       @provider_personal_information_reinstatements = ProviderPersonalInformationReinstatement.where(provider_personal_information_id:  @provider_personal_information.id)
       @provider_personal_information_comment = ProviderPersonalInformationComment.new
       @provider_personal_information_comments = ProviderPersonalInformationComment.all
       @rva_information = RvaInformation.new
-      @last_rva_information = @provider_personal_information.rva_informations.last
+      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'OIG').last
     end
 
     if params[:page_tab] == 'add_oig_info'
