@@ -272,6 +272,9 @@ class Mhc::VerificationPlatformController < ApplicationController
       @new_provider_military = ProviderMilitary.new(
         provider_attest_id: @provider_personal_information.provider_attest_id
       )
+      @rva_information = RvaInformation.new
+      @last_rva_information = RvaInformation.last
+      @registration_webcrawler_logs = WebcrawlerLog.where(crawler_type: 'Registration').where.not(filepath: nil).order(updated_at: :desc)
     end
 
     if params[:page_tab] == 'billing_info'
