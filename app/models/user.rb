@@ -337,7 +337,7 @@ class User < ApplicationRecord
   def set_user_role
     if hidden_role.present?
      self.user_role = hidden_role
-    else
+    elsif user_role.blank?
      self.user_role = "admin_staff"
     end
   end
