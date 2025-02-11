@@ -1,6 +1,6 @@
 class ProviderPersonalInformation < ApplicationRecord
 
-  PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID','ProviderID']
+  PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID']
 
   belongs_to :provider_attest
 
