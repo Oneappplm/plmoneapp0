@@ -307,6 +307,8 @@ class Mhc::VerificationPlatformController < ApplicationController
     if params[:page_tab] == 'liability_info'
       @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
       @provider_insurance_coverages = ProviderInsuranceCoverage.find(params[:coverage_id])
+      @rva_information = RvaInformation.new
+      @last_rva_information = RvaInformation.last
     end
 
     if params[:page_tab] == 'npdb'

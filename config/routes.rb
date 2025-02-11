@@ -308,6 +308,7 @@ Rails.application.routes.draw do
     root to: 'logs#index'
     post '/run_oig_webcrawler', to: 'quality_audits#run_oig_webcrawler'
     post '/send_request', to: 'quality_audits#send_request'
+    post '/send_liability_request', to: 'quality_audits#send_liability_request'
     resources :alaska_states, only: [:index], path: 'state-alaska' do
       collection do
         get :crawl
