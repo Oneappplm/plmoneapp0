@@ -141,6 +141,8 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_personal_information_comments = ProviderPersonalInformationComment.all
       @q = School.ransack(params[:q])
       @practice_information_education = PracticeInformationEducation.find_or_initialize_by(id: params[:practice_information_education_id], provider_attest_id: @provider_personal_information.provider_attest_id, caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id)
+      @rva_information = RvaInformation.new
+      @last_rva_information = RvaInformation.last
     end
 
     if params[:page_tab] == 'board_cert'

@@ -311,6 +311,7 @@ Rails.application.routes.draw do
     post '/send_request', to: 'quality_audits#send_request'
     post '/send_npdb_request', to: 'quality_audits#send_npdb_request'
     post '/send_registration_request', to: 'quality_audits#send_registration_request' 
+    post '/send_education_request', to: 'quality_audits#send_education_request' 
     resources :alaska_states, only: [:index], path: 'state-alaska' do
       collection do
         get :crawl
