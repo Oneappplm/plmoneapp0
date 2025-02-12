@@ -153,6 +153,8 @@ class Mhc::VerificationPlatformController < ApplicationController
         @provider_personal_information_comment = ProviderPersonalInformationComment.new
         @provider_personal_information_comments = ProviderPersonalInformationComment.all
       end
+      @rva_information = RvaInformation.new
+      @last_rva_information = RvaInformation.last
     end
 
     # Common logic for handling nested associations
