@@ -14,8 +14,8 @@ class RoleBasedAccess < ApplicationRecord
 		:work_ticklers,
 		:enrollment_clients,
 		:notifications,
-    :notification_bell,
-    :enrollment_details_notes,
+        :notification_bell,
+        :enrollment_details_notes,
 		:enrollment_groups,
 		:locations,
 		:alt_enrollment_groups,
@@ -104,7 +104,8 @@ class RoleBasedAccess < ApplicationRecord
     "Edit Access",
     "Delete Role",
     "Associate Location",
-	  "Settings"
+	"Settings",
+    "App Trackers"
 	]
 
 	default_scope { order(:id) }
