@@ -174,4 +174,14 @@ class Webscrapers::QualityAuditsController < ApplicationController
   rescue => e
     render json: { error: e.message }, status: :unprocessable_entity
   end  
+  
+  def send_liability_request
+    last_name = params[:last_name] 
+    first_name = params[:first_name]
+    # Create reva informaton for send request 
+    rva_information = RvaInformation.create(tab: 'Liability', send_request: 'SENT', requested_by: first_name, requested_date: Date.today, requested_method: 'Letter', required_fee_amount: 0, check_generated: false, received_by: first_name, received_status: true, comments: 'none', received_date: Date.today)
+    render json: { message: 'requestsent sccessfully',  rva_information: rva_information}, status: :ok
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
 end
