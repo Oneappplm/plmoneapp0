@@ -226,8 +226,8 @@
                                         </button>
                                     </div>
                                     <div class="col-12 m-2">
-                                        <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
-                                            Quality Audit
+                                        <button class="btn btn-primary btn-audit btn-sm" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>">
+                                          Quality Audit
                                         </button>
                                     </div>
                                     <div class="col-12 m-2">
@@ -348,439 +348,412 @@
         </div>
     </div>
 
-    <!-- Quality Audit Modal -->
-    <div class="modal fade" id="QAModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-body">
+      <!-- Quality Audit Modal -->
+            <div class="modal fade" id="QAModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-body">
+                    <div id="qaModalMessage" class="alert alert-info d-none"></div>
                     <div class="content">
-                        <div class="modal-title">
-                            <h6 class="">Quality Audit</h6>
-                            <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                      <div class="modal-title">
+                        <h6 class="">Quality Audit</h6>
+                        <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                      </div>
+                      <%= form_with model: @rva_information, url: mhc_verification_platform_generate_rva_information_path, method: :post, id: 'audit-form' do |f| %>
+
+                        <%= hidden_field_tag :id, @last_rva_information&.id %>
+                        <%= hidden_field_tag :personal_info_id %>
+
+                        <%= hidden_field_tag :first_name %>
+                        <%= hidden_field_tag :last_name %>
+                        <div class="form-row row mt-3">
+                          <div class="col-xl-12">
+                            <div class="card other-name-card">
+                              <div class="card-header bg-secondary rounded-0">
+                                <h6 class="form-heading text-white">Request</h6>
+                              </div>
+                              <div class="card-body">
+                                <div class="d-flex justify-content-end gap-2">
+                                  <button class="btn btn-primary py-1" type="button">View Request History</button>
+                                  <button class="btn btn-primary py-1" type="button">View Webcrawler Image Archive</button>
+                                </div>
+                                <hr class="form-hr">
+                                <div class="row pt-3 pb-3">
+                                  <div class="col-md-6">
+                                    <button class="btn btn-sm btn-light" id="send-request-btn">Send Request</button>
+                                  </div>
+                                  <div class="col-md-6">
+                                    <span class="font-bold sent-request" style="line-height: 38px;"></span>
+                                  </div>
+                                </div>
+                                <hr class="form-hr">
+                                <div class="row">
+                                  <div class="col-md-6">
+                                    <label for="">Requested By:</label>
+                                  </div>
+                                  <div class="col-md-6">
+                                    <span class="font-bold requested-by"></span>
+                                  </div>
+                                </div>
+                                <hr class="form-hr">
+                                <div class="row">
+                                  <div class="col-md-6">
+                                    <label for="">Requested Date:</label>
+                                  </div>
+                                  <div class="col-md-6">
+                                    <span class="font-bold requested-date"></span>
+                                  </div>
+                                </div>
+                                <hr class="form-hr">
+                                <div class="form-row d-flex align-items-center gap-3">
+                                  <label for="">Requested Method:</label>
+                                  <%= f.radio_button :requested_method, 'AutoFax', id: 'method-autofax' %>
+                                  <label class="form-check-label" for="method-autofax">AutoFax</label>
+                                  <%= f.radio_button :requested_method, 'E-Mail', id: 'method-email' %>
+                                  <label class="form-check-label" for="method-email">E-Mail</label>
+                                  <%= f.radio_button :requested_method, 'Letter', id: 'method-letter', checked: true %>
+                                  <label class="form-check-label" for="method-letter">Letter</label>
+                                  <%= f.radio_button :requested_method, 'Phone', id: 'method-phone' %>
+                                  <label class="form-check-label" for="method-phone">Phone</label>
+                                  <%= f.radio_button :requested_method, 'Website', id: 'method-website' %>
+                                  <label class="form-check-label" for="method-website">Website</label>
+                                </div>
+                                <span>The default contact method is letter.</span>
+                                <hr class="form-hr">
+                                <div class="form-row row">
+                                  <div class="col-xl-6">
+                                    <%= f.label :required_fee_amount, "Required Fee Amount:" %>
+                                    <%= f.text_field :required_fee_amount, class: 'form-control req-fee-amount', placeholder: "Type here...", disabled: true %>
+                                  </div>
+                                  <div class="col-xl-6">
+                                    <%= f.label :check_payable_to, "Check Payable To:" %>
+                                    <%= f.text_field :check_payable_to, class: 'form-control', placeholder: "Type here...", disabled: true %>
+                                  </div>
+                                </div>
+                                <hr class="form-hr">
+                                <div class="form-row mt-2">
+                                  <%= f.check_box :include_delineation, id: 'inc-delineation-check', value: "Include Delineation of Privileges"%>
+                                  <%= f.label :include_delineation, "Include Delineation of Privileges", for: 'inc-delineation-check' %>
+                                </div>
+                                <hr class="form-hr">
+                                <div class="form-row d-flex align-items-center gap-3">
+                                  <label for="">Check has generated?</label>
+                                  <%= f.radio_button :check_generated, 'Yes', id: 'check-generate-yes', disabled: true %>
+                                  <label for="check-generate-yes">Yes</label>
+                                  <%= f.radio_button :check_generated, 'No', id: 'check-generate-no', disabled: true %>
+                                  <label for="check-generate-no">No</label>
+                                </div>
+                                <hr class="form-hr">
+                                <div class="form-row d-flex align-items-center gap-3">
+                                  <label for="">Received Status:</label>
+                                  <%= f.radio_button :received_status, 'Yes', id: 'received-status-yes', disabled: true %>
+                                  <label for="received-status-yes">Yes</label>
+                                  <%= f.radio_button :received_status, 'No', id: 'received-status-no', disabled: true %>
+                                  <label for="received-status-no">No</label>
+                                </div>
+                                <hr class="form-hr">
+                                <div class="row">
+                                  <div class="col-md-6">
+                                    <label for="">Received by:</label>
+                                  </div>
+                                  <div class="col-md-6">
+                                    <span class="font-bold received-by"></span>
+                                  </div>
+                                </div>
+                                <hr class="form-hr">
+                                <div class="row">
+                                  <div class="col-md-6">
+                                    <label for="">Received date:</label>
+                                  </div>
+                                  <div class="col-md-6">
+                                    <span class="font-bold received-date"></span>
+                                  </div>
+                                </div>
+                                <hr class="form-hr">
+                                <div class="form-row">
+                                  <%= f.label :comments, "Comments:" %>
+                                  <%= f.text_area :comments, rows: 3, class: 'form-control request-comment'%>
+                                </div>
+                                <div class="form-row d-flex justify-content-end gap-2 mt-3">
+                                  <button class="btn btn-primary py-1" type="button">View Received Images</button>
+                                  <button class="btn btn-primary py-1" type="button">Save Request</button>
+                                  <button class="btn btn-primary py-1" type="button">Restart Request</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-row row mt-3">
+                          <div class="col-xl-12">
+                            <div class="card other-name-card">
+                              <div class="card-header bg-secondary rounded-0">
+                                <h6 class="form-heading text-white">Verification</h6>
+                              </div>  
+                              <div class="card-body">
+                                <div class="form-row row">
+                                  <div class="col-md-6">
+                                    <%= f.label :source_name, 'Source Name:' %>
+                                  </div>
+                                  <div class="col-md-6">  
+                                    <%= f.select :source_name, options_for_select([['ABDPH', 'ABDPH'] , ['ABE', 'ABE'], ['ABFAS', 'ABFAS'], ['ABGD', 'ABGD'] , ['ABMS MasterFile', 'ABMS MasterFile'], ['ABO', 'ABO'], ['ABOG', 'ABOG'], ['ABOI/ID', 'ABOI/ID'], ['ABOMP', 'ABOMP'] , ['ABOMS', 'ABOMS'] , ['ABP', 'ABP'] , ['ABPD', 'ABPD'] , ['ABPHD', 'ABPHD'] , ['ABPM', 'ABPM'], ['ABPS', 'ABPS'], ['AMA PROFILE', 'AMM PROFILE'], ['AOA PROFILE', 'AOA PROFILE'], ['APPLICASTION', 'APPLICATION'], ['CERTIFASCTS', 'CERTIFASCTS'], ['ISSUING BORD', 'ISSUING BORD']], selected: @oig_webcrawler_logs.present? ? 'OIG' : ''), { include_blank: 'Select option' }, class: 'form-select' %>
+                                  </div>
+                                </div>
+                                <hr>
+                                <div class="form-row row">
+                                  <div class="col-md-6">
+                                    <%= f.label :source_date, 'Source Date:' %>
+                                  </div>
+                                  <div class="col-md-6">  
+                                    <%= f.date_field :source_date, class: 'form-control'%>
+                                  </div>
+                                </div>
+                                <hr>
+                                <div class="form-row row">
+                                  <div class="col-md-6">
+                                    <%= f.label :status, 'Status:' %>
+                                  </div>
+                                  <div class="col-md-6">
+                                    <%= f.select :status, options_for_select([['Active', 'Active'], ['Candidate', 'Candidate'], ['Certificate', 'certificate'], ['Diplomate', 'Diplomate'] , ['Eligible', 'Eligible'] , ['Expire', 'Expire'] ,['Inactive', 'Inactive'] ,['No recoad found', 'NO recoad found'], ['not Certified', 'not certified'], ['Qualified', 'Qualified'], ['Retierd', 'Retierd'], ['Unable to verify', 'Unable to verify'], ['y', 'y'] , ['z', 'z'] ]), { include_blank: 'Select option' }, class: 'form-select' %>
+                                  </div>
+                                </div>
+                                <hr>
+                                <div class="card">
+                                  <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h6 class="form-heading">Adverse Action</h6>
+                                    </div>    
+                                    <div class="form-row d-flex align-items-center gap-3 mt-1">
+																		 <%= f.select :adverse_action, options_for_select([
+                                      ['None', 'None'],
+                                      ['Disclosure Response Discrepancy', 'Disclosure Response Discrepancy'],
+                                      ['Expired', 'Expired'],
+                                      ['Expiring prior to committee', 'Expiring prior to committee'],
+                                      ['Inadequate attestation response', 'Inadequate attestation response'],
+                                      ['Inadequate failed to pass exam explanation', 'Inadequate failed to pass exam explanation'],
+                                      ['Incorrect attestation response', 'Incorrect attestation response'],
+                                      ['No record found', 'No record found'],
+                                      ['Not Renewed', 'Not Renewed'],
+                                      ['Other', 'Other'],
+                                      ['Reduced', 'Reduced'],
+                                      ['Relinquished', 'Relinquished'],
+                                      ['Retired', 'Retired'],
+                                      ['Revoked', 'Revoked'],
+                                      ['Suspended', 'Suspended'],
+                                      ['Unable to verify', 'Unable to verify'],
+                                      ['Voluntarily Surrendered', 'Voluntarily Surrendered']
+                                    ], selected: 'None'), { include_blank: 'Select option' }, class: 'form-select' %>
+                                    </div>
+                                    <div class="form-row row">
+                                      <div class="col-xl-6">
+                                        <%= f.label :other_details, 'Other:' %>
+                                        <%= f.text_area :other_details, rows: 5, class: 'form-control' %>
+                                      </div>
+                                      <div class="col-xl-6">
+                                        <%= f.label :adverse_action_comments, 'Comments:' %>
+                                        <%= f.text_area :adverse_action_comments, rows: 5, class: 'form-control' %>
+                                      </div>
+                                    </div>
+                                    <div class="form-row d-flex align-items-center gap-2 mt-1">
+                                      <%= f.radio_button :adverse_action_status, 'Open', id: 'verif-open' %>
+                                      <%= f.label :adverse_action_status, 'Open' %>
+                                      <%= f.radio_button :adverse_action_status, 'Close', id: 'verif-close' %>
+                                      <%= f.label :adverse_action_status, 'Close' %>
+                                    </div>
+                                    <div class="form-row d-flex align-items-center gap-2">
+                                      <%= f.label :in_good_standing, 'In Good Standing?' %>
+                                      <%= f.radio_button :in_good_standing, 'Yes', id: 'good-standing-yes' %>
+                                      <%= f.label :in_good_standing, 'Yes', for: 'good-standing-yes', class: 'form-check-label' %>
+                                      <%= f.radio_button :in_good_standing, 'No', id: 'good-standing-no' %>
+                                      <%= f.label :in_good_standing, 'No', for: 'good-standing-no', class: 'form-check-label' %>
+                                    </div>
+                                  </div>
+                                </div>
+                                <!-- Verification Errors Section -->
+                                <div class="form-row row mt-3">
+                                  <div class="col-xl-12">
+                                    <div class="card other-name-card">
+                                      <div class="card-body">
+                                        <h6 class="form-heading">Verification Errors</h6>
+                                        <div class="form-row row">
+                                          <div class="col-xl-6">
+                                            <%= f.label :error_type, 'Error:' %>
+                                            <%= f.select :error_type, options_for_select([['None', 'None'] , ['Applied to another Board', 'Applied to another Board'], ['Board certification number', 'Board certification number'], ['Board certification status', 'Board certification status'], ['Certification expiration date', 'Certification expiration date'], ['Certified under another name', 'Certified under another name'], ['Detailed Attestation Explanation Missing', 'Detailed Attestation Explanation Missing'], ['Eligible/Qualifed Exam Date', 'Eligible/Qualifed Exam Date'], ['Eligible/Qualified Status', 'Eligible/Qualified Status'], ['Examined by Board and failed to pass', 'Examined by Board and failed to pass'], ['Expiration Date', 'Expiration Date'], ['Failed to Pass examination', 'Failed to Pass examination'], ['Initial certification date', 'Initial certification date'], ['Issuing Board', 'Issuing Board'] ,['other', 'other'] , ['Planning to take Board exam', 'Planning to take Board exam'] , ['Recertification date', 'Recertification date'] , ['Specialty', 'Specialty'] ,['Taken Part I and eligible for Part II', 'Taken Part I and eligible for Part II'] ], 'None'), { include_blank: 'Select option' }, class: 'form-select' %>
+
+                                          </div>
+                                          <div class="col-xl-6">
+                                            <%= f.label :error_comments, 'Comments:' %>
+                                            <%= f.text_area :error_comments, rows: 3, class: 'form-control' %>
+                                          </div>
+                                        </div>
+                                        <div class="d-flex align-items-center justify-content-between mt-3">
+                                          <button type="button" class="btn btn-primary py-1">Add Another Error</button>
+                                          <button type="button" class="btn btn-danger">Remove</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <!-- Correct Information Section -->
+                                <div class="form-row row mt-3">
+                                  <div class="col-xl-12">
+                                    <div class="card other-name-card">
+                                      <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                          <h6 class="form-heading">Correct Information</h6>
+                                          <div class="d-flex gap-2">
+                                            <button class="btn btn-primary py-1">Verified</button>
+                                            <button class="btn btn-primary py-1">Verify and Update with Correct Information</button>
+                                          </div>
+                                        </div>
+                                        <div class="form-row row mt-3">
+                                          <div class="col-xl-6">
+                                            <%= f.label :correct_info_selected, 'Select Correct Info:' %>
+                                            <%= f.select :correct_info_selected, options_for_select([['Applied to another Board', 'Applied to another Board'], ['Board certification number', 'Board certification number'], ['Board certification status', 'Board certification status'], ['Certification expiration date', 'Certification expiration date'], ['Certified under another name', 'Certified under another name'], ['Detailed Attestation Explanation Missing', 'Detailed Attestation Explanation Missing'], ['Eligible/Qualifed Exam Date', 'Eligible/Qualifed Exam Date'], ['Eligible/Qualified Status', 'Eligible/Qualified Status'], ['Examined by Board and failed to pass', 'Examined by Board and failed to pass'], ['Expiration Date', 'Expiration Date'], ['Failed to Pass examination', 'Failed to Pass examination'], ['Initial certification date', 'Initial certification date'], ['Issuing Board', 'Issuing Board'] ,['other', 'other'] , ['Planning to take Board exam', 'Planning to take Board exam'] , ['Recertification date', 'Recertification date'] , ['Specialty', 'Specialty'] ,['Taken Part I and eligible for Part II', 'Taken Part I and eligible for Part II'] ], 'None'), { include_blank: 'Select option' }, class: 'form-select' %>
+                                          </div>
+                                          <div class="col-xl-6">
+                                            <%= f.label :correct_info_text, 'Enter Details:' %>
+                                            <%= f.text_field :correct_info_text, class: 'form-control' %>
+                                          </div>
+                                        </div>
+                                        <div class="d-flex align-items-center justify-content-between mt-3">
+                                          <button type="button" class="btn btn-primary py-1">Add</button>
+                                          <button type="button" class="btn btn-danger">Remove</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <hr class="form-hr">
+                                <div class="row mt-5">
+                                  <div class="col-md-6">
+                                    <label for="">Verification Status:</label>
+                                  </div>
+                                  <div class="col-md-6">
+                                    <span class="font-bold verification-status"></span>
+                                  </div>
+                                </div>
+                                <hr class="form-hr">
+                                <div class="row">
+                                  <div class="col-md-6">
+                                    <label for="">Notification Status:</label>
+                                  </div>
+                                  <div class="col-md-6">
+                                    <span class="font-bold notification-status"></span>
+                                  </div>
+                                </div>
+                                <hr class="form-hr">
+                                <div class="row">
+                                  <div class="col-md-6">
+                                    <label for="">Verification Date:</label>
+                                  </div>
+                                  <div class="col-md-6">
+                                    <span class="font-bold verification-date"></span>
+                                  </div>
+                                </div>
+                                <hr class="form-hr">
+                                <div class="row">
+                                  <div class="col-md-6">
+                                    <label for="">Verifier:</label>
+                                  </div>
+                                  <div class="col-md-6">
+                                    <span class="font-bold verifier"></span>
+                                  </div>
+                                </div>
+                                <hr class="form-hr">
+
+                                <!-- Comments and Save Button -->
+                                <div class="form-row row mt-3">
+                                  <div class="col-xl-12">
+                                    <%= f.label :verification_comments, 'Comments:' %>
+                                    <%= f.text_area :verification_comments, rows: 3, class: 'form-control' %>
+                                  </div>
+                                </div>
+                                <div class="d-flex justify-content-end gap-2 mt-3">
+                                  <%= f.button 'Save Verification', class: 'btn btn-primary py-1', id: 'verification-btn' %>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                         <div class="form-row row mt-3">
-                            <div class="col-xl-12">
-                                <div class="card other-name-card">
-                                    <form action="">
-                                        <div class="card-body">
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <h6 class="form-heading">Request</h6>
-                                                <div class="d-flex justify-content-end gap-2">
-                                                    <button class="btn btn-primary py-1">
-                                                        View Request History
-                                                    </button>
-                                                    <button class="btn btn-primary py-1">
-                                                        View Webcrawler Image Archive
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="form-row mt-3">
-                                                <button class="btn btn-primary py-1">
-                                                    Send Request
-                                                </button>
-                                            </div>
-                                            <div class="form-row d-flex mt-3">
-                                                <label for="">Requested By:</label>
-                                            </div>
-                                            <div class="form-row">
-                                                <label for="">Requested Date:</label>
-                                            </div>
-                                            <div class="form-row d-flex align-items-center gap-3">
-                                                <label for="">Requested Method:</label>
-                                                <div class="form-check d-flex align-items-center gap-2">
-                                                    <input class="form-check-input" type="radio" name="method-radio"
-                                                        id="method-autofax" value="AutoFax">
-                                                    <label class="form-check-label" for="method-autofax">
-                                                        AutoFax
-                                                    </label>
-                                                </div>
-                                                <div class="form-check d-flex align-items-center gap-2">
-                                                    <input class="form-check-input" type="radio" name="method-radio"
-                                                        id="method-email" value="E-Mail">
-                                                    <label class="form-check-label" for="method-email">
-                                                        E-Mail
-                                                    </label>
-                                                </div>
-                                                <div class="form-check d-flex align-items-center gap-2">
-                                                    <input class="form-check-input" type="radio" name="method-radio"
-                                                        id="method-letter" value="Letter">
-                                                    <label class="form-check-label" for="method-letter">
-                                                        Letter
-                                                    </label>
-                                                </div>
-                                                <div class="form-check d-flex align-items-center gap-2">
-                                                    <input class="form-check-input" type="radio" name="method-radio"
-                                                        id="method-phone" value="Phone">
-                                                    <label class="form-check-label" for="method-phone">
-                                                        Phone
-                                                    </label>
-                                                </div>
-                                                <div class="form-check d-flex align-items-center gap-2">
-                                                    <input class="form-check-input" type="radio" name="method-radio"
-                                                        id="method-website" value="Website">
-                                                    <label class="form-check-label" for="method-website">
-                                                        Website
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="form-row row">
-                                                <div class="col-xl-6">
-                                                    <label for="req-fee-amount">Required Fee Amount:</label>
-                                                    <input type="text" name="req-fee-amount" id="req-fee-amount" class="form-control" placeholder="Type here...">
-                                                </div>
-                                                <div class="col-xl-6">
-                                                    <label for="check-payable-to">Check Payable To:</label>
-                                                    <input type="text" name="check-payable-to" id="check-payable-to" class="form-control" placeholder="Type here...">
-                                                </div>
-                                            </div>
-                                            <div class="form-row mt-2">
-                                                <div class=" form-check d-flex align-items-center gap-2">
-                                                    <input class="form-check-input" type="checkbox" id="inc-delineation-check" value="Include Delineation of Privileges">
-                                                    <label class="form-check-label" for="inc-delineation-check">Include Delineation of Privileges</label>
-                                                </div>
-                                            </div>
-                                            <div class="form-row d-flex align-items-center gap-3">
-                                                <label for="">Check has generated?</label>
-                                                <div class="form-check d-flex align-items-center gap-2">
-                                                    <input class="form-check-input" type="radio" name="check-generate-radio"
-                                                        id="check-generate-yes" value="Yes">
-                                                    <label class="form-check-label" for="check-generate-yes">
-                                                        Yes
-                                                    </label>
-                                                </div>
-                                                <div class="form-check d-flex align-items-center gap-2">
-                                                    <input class="form-check-input" type="radio" name="check-generate-radio"
-                                                        id="check-generate-no" value="No">
-                                                    <label class="form-check-label" for="check-generate-no">
-                                                        No
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="form-row d-flex align-items-center gap-3">
-                                                <label for="">Received Status:</label>
-                                                <div class="form-check d-flex align-items-center gap-2">
-                                                    <input class="form-check-input" type="radio" name="received-status-radio"
-                                                        id="received-status-yes" value="Yes">
-                                                    <label class="form-check-label" for="received-status-yes">
-                                                        Yes
-                                                    </label>
-                                                </div>
-                                                <div class="form-check d-flex align-items-center gap-2">
-                                                    <input class="form-check-input" type="radio" name="received-status-radio"
-                                                        id="received-status-no" value="No">
-                                                    <label class="form-check-label" for="received-status-no">
-                                                        No
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="form-row">
-                                                <label for="">Received By:</label>
-                                            </div>
-                                            <div class="form-row">
-                                                <label for="">Received Date:</label>
-                                            </div>
-                                            <div class="form-row">
-                                                <label for="">Comments:</label>
-                                                <textarea name="" id="" cols="30" rows="3" class="form-control"></textarea>
-                                            </div>
-                                            <div class="form-row d-flex justify-content-end gap-2 mt-3">
-                                                <button class="btn btn-primary py-1">
-                                                    View Received Images
-                                                </button>
-                                                <button type="submit" class="btn btn-primary py-1">
-                                                    Save Request
-                                                </button>
-                                                <button class="btn btn-primary py-1">
-                                                    Restart Request
-                                                </button>
-                                                <button class="btn btn-primary py-1">
-                                                    Run Webcrawler
-                                                </button>
-                                            </div>
+                          <div class="card other-name-card">
+                            <div class="card-body">
+                              <h6 class="form-heading">Audit</h6>
+
+                              <div class="form-row row mt-3">
+                                <div class="col-xl-12">
+                                  <div class="card other-name-card">
+                                    <div class="card-body">
+                                      <h6 class="form-heading">Reasons</h6>
+                                      <div class="form-row row">
+                                        <div class="col-xl-6">
+                                          <%= f.label :audit_reason, 'Reason:' %>
+																					<%= f.select :audit_reason, options_for_select([ ['None', 'None'] , ['ABMSUID Incorrect', 'ABMSUID Incorrect'] ,['Adverse Action Not Recorded', 'Adverse Action Not Recorded'] ,['Board Certification Status Incorrect', 'Board Certification Status Incorrect'] ,['Expiration Date Incorrect', 'Expiration Date Incorrect'] , ['Expires Before 30 Days', 'Expires Before 30 Days'] , ['Initial Certification Date Incorrect', 'Initial Certification Date Incorrect'] , ['Issuing Board Incorrect', 'Issuing Board Incorrect'] , ['Source Date Greater Than 90 Days', 'Source Date Greater Than 90 Days'] , ['Recertification Date Incorrect', 'Recertification Date Incorrect'] , ['Show on Tickler Status Incorrect', 'Show on Tickler Status Incorrect'], ['Source Date Incorrect', 'Source Date Incorrect'], ['Source Name Incorrect', 'Source Name Incorrect'], ['Speciality Incorrect', 'Speciality Incorrect'], ['Theorem: Incorrect Information Entered', 'Theorem: Incorrect Information Entered'], ['Theorem: Necessary Information Not Entered', 'Theorem: Necessary Information Not Entered'], ['Theorem: Unnecessary Information Entered', 'Theorem: Unnecessary Information Entered'], ['Verification Not Uploaded', 'Verification Not Uploaded'], ['Verification Status Incorrect', 'Verification Status Incorrect']], 'None'), { include_blank: 'Select option' }, class: 'form-select' %>   
                                         </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-row row mt-3">
-                            <div class="col-xl-12">
-                                <div class="card other-name-card">
-                                    <form action="">
-                                        <div class="card-body">
-                                            <h6 class="form-heading">Verification</h6>
-                                            <div class="form-row row">
-                                                <div class="col-xl-4">
-                                                    <label for="source-name">Source Name:</label>
-                                                    <select name="source-name" id="source-name  "
-                                                        class="form-select">
-                                                        <option value="">Select option</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-xl-4">
-                                                    <label for="source-date">Source Date:</label>
-                                                    <input type="date" name="source-date" id="source-date" class="form-control">
-                                                </div>
-                                                <div class="col-xl-4">
-                                                    <label for="status">Status:</label>
-                                                    <select name="status" id="status"
-                                                        class="form-select">
-                                                        <option value="">Select option</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="form-row d-flex align-items-center gap-3 mt-1">
-                                                <label for="">Adverse Action:</label>
-                                                <select name="adverse-act" id="adverse-act" class="form-select">
-                                                    <option value="">Select option</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-row row">
-                                                <div class="col-xl-6">
-                                                    <label for="others">Other:</label>
-                                                    <textarea name="others" id="others" cols="30" rows="5" class="form-control"></textarea>
-                                                </div>
-                                                <div class="col-xl-6">
-                                                    <label for="source-date">Comments:</label>
-                                                    <textarea name="others" id="others" cols="30" rows="5" class="form-control"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="form-row d-flex align-items-center gap-3 mt-1">
-                                                <div class="form-check d-flex align-items-center gap-2">
-                                                    <input class="form-check-input" type="radio" name="verif-radio"
-                                                        id="verif-open" value="Open">
-                                                    <label class="form-check-label" for="verif-open">
-                                                        Open
-                                                    </label>
-                                                </div>
-                                                <div class="form-check d-flex align-items-center gap-2">
-                                                    <input class="form-check-input" type="radio" name="verif-radio"
-                                                        id="verif-close" value="Close">
-                                                    <label class="form-check-label" for="verif-close">
-                                                        Close
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="form-row d-flex align-items-center gap-3">
-                                                <label for="">In Good Standing?</label>
-                                                <div class="form-check d-flex align-items-center gap-2">
-                                                    <input class="form-check-input" type="radio" name="good-standing-radio"
-                                                        id="good-standing-yes" value="Yes">
-                                                    <label class="form-check-label" for="good-standing-yes">
-                                                        Yes
-                                                    </label>
-                                                </div>
-                                                <div class="form-check d-flex align-items-center gap-2">
-                                                    <input class="form-check-input" type="radio" name="good-standing-radio"
-                                                        id="good-standing-no" value="No">
-                                                    <label class="form-check-label" for="good-standing-no">
-                                                        No
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="form-row row mt-3">
-                                                <div class="col-xl-12">
-                                                    <div class="card other-name-card">
-                                                        <div class="card-body">
-                                                            <h6 class="form-heading">Verification Errors</h6>
-                                                            <div class="form-row row">
-                                                                <div class="col-xl-6">
-                                                                    <label for="error">Error:</label>
-                                                                    <select name="error" id="error"
-                                                                        class="form-select">
-                                                                        <option value="">Select option</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="col-xl-6">
-                                                                    <label for="comment">Comments:</label>
-                                                                    <select name="comment" id="comment"
-                                                                        class="form-select">
-                                                                        <option value="">Select option</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <!-- <hr> -->
-                                                            <div class="d-flex align-items-center justify-content-between mt-3">
-                                                                <div class="offset-md-5">
-                                                                    <button class="btn btn-primary py-1">
-                                                                        Add Another Error
-                                                                    </button>
-                                                                </div>
-                                                                <button class="btn btn-danger">
-                                                                   Remove
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-row row mt-3">
-                                                <div class="col-xl-12">
-                                                    <div class="card other-name-card">
-                                                        <div class="card-body">
-                                                            <div class="d-flex justify-content-between align-items-center">
-                                                                <h6 class="form-heading">Correct Information</h6>
-                                                                <div class="d-flex gap-2">
-                                                                    <button class="btn btn-primary py-1">
-                                                                        Verified
-                                                                    </button>
-                                                                    <button class="btn btn-primary py-1">
-                                                                        Verify and Update with Correct Information
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-row row mt-3">
-                                                                <div class="col-xl-6">
-                                                                    <label for="error" class="d-none">Error:</label>
-                                                                    <select name="correct-info-sel" id="correct-info-sel"
-                                                                        class="form-select">
-                                                                        <option value="">Select option</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="col-xl-6">
-                                                                    <label for="comment" class="d-none">Comments:</label>
-                                                                    <input type="text" name="correct-info-txt" id="correct-info-txt" class="form-control" placeholder="Type here...">
-                                                                </div>
-                                                            </div>
-                                                            <!-- <hr class=""> -->
-                                                            <div class="d-flex align-items-center justify-content-between mt-3">
-                                                                <div class="offset-md-5">
-                                                                    <button class="btn btn-primary py-1">
-                                                                        Add
-                                                                    </button>
-                                                                </div>
-                                                                <button class="btn btn-danger">
-                                                                   Remove
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-row mt-2">
-                                                <label for="">Verification Status:</label>
-                                            </div>
-                                            <div class="form-row">
-                                                <label for="">Notification Status:</label>
-                                            </div>
-                                            <div class="form-row">
-                                                <label for="">Verification Date:</label>
-                                            </div>
-                                            <div class="form-row">
-                                                <label for="">Verifier:</label>
-                                            </div>
-                                            <div class="form-row row">
-                                                <div class="col-xl-12">
-                                                    <label for="verif-comment">Comments:</label>
-                                                    <textarea name="verif-comment" id="verif-comment" cols="30" rows="3" class="form-control"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex justify-content-end gap-2 mt-3">
-                                                <button type="submit" class="btn btn-primary py-1">
-                                                    Save Verification
-                                                </button>
-                                            </div>
+                                        <div class="col-xl-6">
+                                          <%= f.label :audit_reason_comments, 'Comments:' %>
+                                          <%= f.text_field :audit_reason_comments, class: 'form-control' %>
                                         </div>
-                                    </form>
+                                      </div>
+                                      <div class="d-flex align-items-center justify-content-between mt-3">
+                                        <%= button_tag 'Add Another Reason', class: 'btn btn-primary py-1', type: 'button' %>
+                                        <%= button_tag 'Remove', class: 'btn btn-danger', type: 'button' %>
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="form-row row mt-3">
-                            <div class="col-xl-12">
-                                <div class="card other-name-card">
-                                    <form action="">
-                                        <div class="card-body">
-                                            <h6 class="form-heading">Audit</h6>
-                                            <div class="form-row d-flex gap-2 mt-3">
-                                                <button class="btn btn-primary py-1">
-                                                    Quality Audit
-                                                </button>
-                                                <button type="submit" class="btn btn-pane bg-alt-grey py-1">
-                                                    First Audit
-                                                </button>
-                                                <button class="btn btn-pane bg-alt-grey py-1">
-                                                    Second Audit
-                                                </button>
-                                            </div>
-                                            <div class="form-row row mt-3">
-                                                <div class="col-xl-12">
-                                                    <div class="card other-name-card">
-                                                        <div class="card-body">
-                                                            <h6 class="form-heading">Reasons</h6>
-                                                            <div class="form-row row">
-                                                                <div class="col-xl-6">
-                                                                    <label for="reason">Reason:</label>
-                                                                    <select name="reason" id="reason"
-                                                                        class="form-select">
-                                                                        <option value="">Select option</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="col-xl-6">
-                                                                    <label for="reason-comment">Comments:</label>
-                                                                    <select name="reason-comment" id="reason-comment"
-                                                                        class="form-select">
-                                                                        <option value="">Select option</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div class="d-flex align-items-center justify-content-between mt-3">
-                                                                <div class="offset-md-5">
-                                                                    <button class="btn btn-primary py-1">
-                                                                        Add Another Reason
-                                                                    </button>
-                                                                </div>
-                                                                <button class="btn btn-danger">
-                                                                   Remove
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-row d-flex align-items-center gap-3">
-                                                <label for="">Audit Status:</label>
-                                                <div class="form-check d-flex align-items-center gap-2">
-                                                    <input class="form-check-input" type="radio" name="audit-status-radio"
-                                                        id="audit-status-pass" value="Yes">
-                                                    <label class="form-check-label" for="audit-status-pass">
-                                                        Pass
-                                                    </label>
-                                                </div>
-                                                <div class="form-check d-flex align-items-center gap-2">
-                                                    <input class="form-check-input" type="radio" name="audit-standing-radio"
-                                                        id="audit-status-fail" value="No">
-                                                    <label class="form-check-label" for="audit-status-fail">
-                                                        Fail
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="form-row">
-                                                <label for="">Audit Date:</label>
-                                            </div>
-                                            <div class="form-row">
-                                                <label for="">Auditor:</label>
-                                            </div>
-                                            <div class="form-row row">
-                                                <div class="col-xl-12">
-                                                    <label for="audit-comment">Comments:</label>
-                                                    <textarea name="audit-comment" id="audit-comment" cols="30" rows="3" class="form-control"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex justify-content-end gap-2 mt-3">
-                                                <button type="submit" class="btn btn-primary py-1">
-                                                    Save Audit
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
+                              </div>
+
+                              <div class="form-row d-flex align-items-center gap-3">
+                                <%= f.label :audit_status, 'Audit Status:' %>
+                                <%= f.radio_button :audit_status, 'Pass', id: 'audit-status-pass', class: 'form-check-input', disabled: true %>
+                                <%= f.label :audit_status, 'Pass', for: 'audit-status-pass', class: 'form-check-label' %>
+
+                                <%= f.radio_button :audit_status, 'Fail', id: 'audit-status-fail', class: 'form-check-input', disabled: true %>
+                                <%= f.label :audit_status, 'Fail', for: 'audit-status-fail', class: 'form-check-label' %>
+                              </div>
+                              <hr class="form-hr">
+
+                              <div class="row">
+                                <div class="col-md-6">
+                                  <label for="">Audit Date:</label>
                                 </div>
+                                <div class="col-md-6">
+                                  <span class="font-bold" id="rva_information_audit_date"></span>
+                                </div>
+                              </div>
+                              <hr class="form-hr">
+
+                              <div class="row">
+                                <div class="col-md-6">
+                                  <label for="">Auditor:</label>
+                                </div>
+                                <div class="col-md-6">
+                                  <span class="font-bold" id="rva_information_auditor"></span>
+                                </div>
+                              </div>
+                              <hr class="form-hr">
+
+                              <div class="form-row row">
+                                <div class="col-xl-12">
+                                  <%= f.label :audit_comments, 'Comments:' %>
+                                  <%= f.text_area :audit_comments, rows: 3, class: 'form-control' %>
+                                </div>
+                              </div>
+
+                              <div class="d-flex justify-content-end gap-2 mt-3">
+                                <%= f.button 'Save Audit', class: 'btn btn-primary py-1', id: 'audit-btn' %>
+                              </div>
                             </div>
+                          </div>
                         </div>
+                      <% end %>  
                     </div>
+                  </div>
                 </div>
+              </div>
             </div>
-        </div>
-    </div>
 
     <!-- Verification Letter Modal -->
     <div class="modal fade" id="verifLetterModal" tabindex="-1" aria-labelledby="exampleModalLabel"
@@ -847,3 +820,262 @@
             </div>
         </div>
     </div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.contact_method_radio').on('change',function(e) {
+            if($(this).val() == 'email') {
+                var provider_type = $('#provider_type').val()
+                console.log("provider_type")
+                if(provider_type == 'credentialing_contact') {
+                    $('#to').val($('#cred_contact_email').val())
+                }
+                if(provider_type == 'confidential_contact') {
+                    $('#to').val($('#conf_contact_email').val())
+                }
+                if(provider_type == 'client_contact') {
+                    $('#to').val($('#client_contact_email').val())
+                }
+                if(provider_type == 'intitution_contact') {
+                    $('#to').val($('#intitution_contact_email').val())
+                }
+            }
+        });
+
+        $('#provider_type').on('change',function(e) {
+            if($(this).val() == 'credentialing_contact') {
+                $('#to').val($('#cred_contact_email').val())
+            }
+            if($(this).val() == 'confidential_contact') {
+                $('#to').val($('#conf_contact_email').val())
+            }
+            if($(this).val() == 'client_contact') {
+                $('#to').val($('#client_contact_email').val())
+            }
+            if($(this).val() == 'intitution_contact') {
+                $('#to').val($('#intitution_contact_email').val())
+            }
+        });
+
+        // send request parameter
+        $('#send-request-btn').click(function (e) {
+          e.preventDefault();
+          var firstName = $('#firstname').html().trim();
+
+          $('.loading-overlay').show();
+
+          $.ajax({
+            url: '/webscrapers/send_board_cert_request',
+            method: 'POST',
+            headers: {
+              'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
+            },
+            data: {
+              first_name: firstName,
+            },
+            success: function (response) {
+              // set the values
+              const data =  response.rva_information;
+              $('#send-request-btn').attr('disabled', 'true');
+              $('#send-request-btn')[0].classList.remove('btn');
+              $('.sent-request')[0].innerHTML = data.send_request;
+              $('.requested-by')[0].innerHTML = data.requested_by;
+              $('.requested-date')[0].innerHTML = data.requested_date;
+              $(`#method-${data.requested_method}`).checked = true;
+              $('.req-fee-amount')[0].value = data.required_fee_amount;
+              $('input[name="check_generated"]').checked = data.required_fee_amount;
+              $('.received-by')[0].innerHTML = data.received_by;
+              $('.received-date')[0].innerHTML = data.received_date;
+              $('input[name="received_status"]').checked = data.received_status;
+              $('.request-comment')[0].value = data.comments;
+              $('.loading-overlay').hide();
+            },
+            error: function () {
+            },
+          });
+        });
+
+        $('#run-webcrawler-btn').click(function (e) {
+          e.preventDefault();
+          var firstName = $('#firstname').html().trim();
+          var lastName = $('#lastname').html().trim();
+          var personalInfoId = $('input[name="personal_info_id"]').val();
+
+          if (!firstName || !lastName) {
+            $('#qaModalMessage').text('Crawling failed due to some error: First name or last name is missing.');
+            return;
+          }
+
+          $('.loading-overlay').show();
+
+          $.ajax({
+            url: '/webscrapers/run_oig_webcrawler',
+            method: 'POST',
+            headers: {
+              'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
+            },
+            data: {
+              first_name: firstName, 
+              last_name: lastName,
+              info_id: personalInfoId,
+            },
+            success: function (response) {
+              // set the values
+              const crawlerData = response.webscraper_log;
+
+              // Ensure crawlerData and its properties are defined before proceeding
+              if (crawlerData && crawlerData.filepath && crawlerData.filepath.url && crawlerData.created_at) {
+                  const createdDate = new Date(crawlerData.created_at); // Convert to a Date object if it's a string
+
+                  // Construct HTML dynamically
+                  const crawlerLinkHTML = `
+                      <div class="row justify-content-end">
+                          <div class="col-md-6">
+                              <div class="text-decoration-underline">
+                                  <a href="${crawlerData.filepath.url}" target="_blank">
+                                      ${crawlerData.filepath.url.split('/').pop()}
+                                  </a>
+                              </div>
+                          </div>
+                          <div class="col-md-3">
+                              <div class="date-time d-flex">
+                                  <span>${createdDate.toISOString().split('T')[0]}</span> <!-- YYYY-MM-DD -->
+                                  <span class="ms-2">${createdDate.toTimeString().slice(0, 5)}</span> <!-- HH:MM -->
+                              </div>
+                          </div>
+                      </div>`;
+
+                  // Inject the HTML into the #crawler-link element
+                  document.getElementById('crawler-link').innerHTML += crawlerLinkHTML;
+              } else {
+                  console.error('Crawler data is missing or incomplete.');
+              }
+              $('#rva_information_source_date').removeAttr('disabled');
+              const data = response.rva_information;
+              document.querySelector('[name="id"]').value = data.id;
+              $('#send-request-btn').attr('disabled', 'false');
+              $('#send-request-btn')[0].classList.remove('btn');
+              $('.sent-request')[0].innerHTML = data.send_request;
+              $('.requested-by')[0].innerHTML = data.requested_by;
+              $('.requested-date')[0].innerHTML = data.requested_date;
+              $(`#method-${data.requested_method}`).checked = true;
+              $('.req-fee-amount')[0].value = data.required_fee_amount;
+              $('input[name="check_generated"]').value = data.required_fee_amount;
+              $('.received-by')[0].innerHTML = data.received_by;
+              $('.received-date')[0].innerHTML = data.received_date;
+              $('input[name="received_status"]').value = data.received_status;
+              $('.request-comment')[0].value = data.comments;
+              $('.loading-overlay').hide();
+            },
+            error: function () {
+            },
+          });
+        });
+        $('#verification-btn').click(function(e) {
+          e.preventDefault(); // Prevent default form submission
+
+          // Serialize the form data from #audit-form
+          const auditFormData = $('#audit-form').serialize();
+          const additionalParams = 'section=audit'; 
+
+
+          // Combine the form data and additional data into a single object
+          $.ajax({
+            url: '/mhc/verification-platform/generate_rva_information',
+            method: 'POST',
+            headers: {
+              'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
+            },
+            data: `${auditFormData}&section=verification`, // Combine serialized data
+            success: function(response) {
+              // Handle success (e.g., display a success message)
+              const data = response.rva_information;
+              $('input[name="rva_information[audit_status]"]').removeAttr('disabled')
+              $('#rva_information_source_name').attr('disabled', true);
+              $('#rva_information_source_date').attr('disabled', true);
+              $('#rva_information_status').attr('disabled', true);
+              $('#rva_information_other_details').attr('disabled', true);
+              $('.verification-status')[0].innerHTML = data.verification_status;
+              $('.verification-date')[0].innerHTML = data.verification_date;
+              $('.verifier')[0].innerHTML = data.verifier;
+              $('#rva_information_verification_comments')[0].value = data.verification_comments;
+              $(`#verif-${data.adverse_action_status}`).checked = data.adverse_action_status;
+              $('input[name="rva_information[in_good_standing]"]').checked = data.in_good_standing;
+            },
+            error: function(xhr, status, error) {
+              console.error('Error:', error);
+            }
+          });
+        });
+        $('#audit-btn').click(function(e) {
+          e.preventDefault(); // Prevent default form submission
+
+          // Serialize the form data from #audit-form
+          const auditFormData = $('#audit-form').serialize();
+
+          // Combine the form data and additional data into a single object
+          $.ajax({
+            url: '/mhc/verification-platform/generate_rva_information',
+            method: 'POST',
+            headers: {
+              'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
+            },
+            data: `${auditFormData}&section=audit`, // Combine serialized data
+            success: function(response) {
+              const data = response.rva_information;
+              $('input[name="rva_information[audit_status]"]').value = data.audit_status;
+              $('#rva_information_audit_date')[0].innerHTML = data.audit_date;
+              $('#rva_information_auditor')[0].innerHTML = data.auditor;
+              $('#rva_information_audit_comments')[0].value = data.audit_comments;
+              $('#re-rva')[0].classList.remove('d-none');
+            },
+            error: function(xhr, status, error) {
+              console.error('Error:', error);
+            }
+          });
+        });
+      });
+
+    var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+    $("#ajaxForm").submit(function(e){
+        e.preventDefault();
+        var action = $(this).attr("action");
+        var formData = new FormData(this)
+        formData.append('authenticity_token', csrfToken);
+        $.ajax({
+            type: "POST",
+            url: action,
+            crossDomain: true,
+            data: formData,
+            dataType: "json",
+            contentType: "multipart/form-data",
+            processData: false,
+            contentType: false,
+            headers: {
+                "Accept": "application/json"
+            }
+        }).done(function() {
+            $('#btn-modal-close').trigger('click');
+            $('.loading-overlay').hide();
+        }).fail(function() {
+            alert('An error occurred.')
+            $('.loading-overlay').hide();
+        });
+    });
+  document.addEventListener('DOMContentLoaded', function() {
+    const qualityAuditModal = document.getElementById('QAModal');
+    qualityAuditModal.addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget; 
+      const FirstName = button.getAttribute('data-first-name');
+      const LastName = button.getAttribute('data-last-name');
+      const InformationId = button.getAttribute('data-information-id');
+      const personalInfoId = button.getAttribute('data-personal-information-id');
+
+      // Update the hidden field in the form with the document ID
+      document.querySelector('[name="first_name"]').value = FirstName;
+      document.querySelector('[name="last_name"]').value = LastName;
+      document.querySelector('[name="id"]').value = InformationId;
+      document.querySelector('[name="personal_info_id"]').value = personalInfoId;
+    });
+  });
+</script>
