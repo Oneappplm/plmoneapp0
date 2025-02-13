@@ -11,7 +11,6 @@ Rails.application.routes.draw do
 
 		get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
 		# get 'app-tracker', to: 'pages#app_tracker'
-    resources :app_trackers
   post 'caqh/upload', to: 'caqh#upload'
   get 'caqh/upload', to: 'caqh#show'
   get 'encompass', to: 'pages#encompass'
@@ -144,6 +143,8 @@ Rails.application.routes.draw do
       post :remove_provider
     end
   end
+
+  resources :app_trackers, path: 'app-tracker'
 
   resources :practice_locations
   resources :group_engage_providers, path: 'group-engage-providers' do
