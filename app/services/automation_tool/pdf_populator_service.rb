@@ -1,10 +1,10 @@
 class AutomationTool::PdfPopulatorService < ApplicationService
   attr_reader :template_path, :data, :output_path
   
-  def initialize(template_path, data)
+  def initialize(template_path, data, custom_file_name = nil)
     @template_path = template_path
     @data = data
-    @output_path = generate_unique_output_path
+    @output_path = generate_unique_output_path(custom_file_name)
   end
 
   def call
@@ -14,11 +14,11 @@ class AutomationTool::PdfPopulatorService < ApplicationService
         case field.field_name
         # Dentist Information
         when 'First Name'
-          field.field_value = data[:provider_name][:first_name]
+          field.field_value = data[:first_name]
         when 'Middle Initial'
-          field.field_value = data[:provider_name][:middle_initial]
+          field.field_value = data[:middle_initial]
         when 'Last Name'
-          field.field_value = data[:provider_name][:last_name]
+          field.field_value = data[:last_name]
         when 'Date of  birth'
           field.field_value = data[:dob]
         when 'National Provider Identifier Individual NPI'
@@ -109,11 +109,11 @@ class AutomationTool::PdfPopulatorService < ApplicationService
 
         # Work history
         when 'First Name_2'
-          field.field_value = data[:provider_name][:first_name]
+          field.field_value = data[:first_name]
         when 'Middle Initial_2'
-          field.field_value = data[:provider_name][:middle_initial]
+          field.field_value = data[:middle_initial]
         when 'Last Name_2'
-          field.field_value = data[:provider_name][:last_name]
+          field.field_value = data[:last_name]
         when 'Practice NameInstitution'
           field.field_value = data[:work_history][0][:practice_name]
         when 'Address_4'
@@ -213,14 +213,23 @@ class AutomationTool::PdfPopulatorService < ApplicationService
     nil
   end
 
-  def generate_unique_output_path
-    timestamp = Time.current.strftime('%Y%m%d%H%M%S')
-    unique_id = SecureRandom.hex(4)
-    folder_path = Rails.root.join('public', 'populated_pdf')
+  def generate_unique_output_path(custom_file_name = nil)
+    folder_path = generate_folder_path
+   
+    if custom_file_name.blank? 
+      timestamp = Time.current.strftime('%Y%m%d%H%M%S')
+      unique_id = SecureRandom.hex(4)
+      custom_file_name = "Populated_Careington_Form_#{timestamp}_#{unique_id}.pdf"
+    end
+   
+    folder_path.join(custom_file_name)
+  end
 
+  def generate_folder_path
+    folder_path = Rails.root.join('public', 'populated_pdf')
     FileUtils.mkdir_p(folder_path) unless Dir.exist?(folder_path)
 
-    folder_path.join("Populated_Careington_Form_#{timestamp}_#{unique_id}.pdf")
+    folder_path
   end
 
   def set_date_field(field, field_path, data)
@@ -244,7 +253,7 @@ class AutomationTool::PdfPopulatorService < ApplicationService
   def validate_data(data)
 
     required_keys = %i[
-      provider_name license_number graduation_date dental_school date_started
+      first_name last_name license_number graduation_date dental_school date_started
       office_name address office_city state zip phone_number
   ]
 
