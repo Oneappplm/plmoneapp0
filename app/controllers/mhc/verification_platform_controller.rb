@@ -328,6 +328,12 @@ class Mhc::VerificationPlatformController < ApplicationController
       @npdb_webcrawler_logs = WebcrawlerLog.where(crawler_type: 'NPDB').where.not(filepath: nil).order(updated_at: :desc)
     end
 
+    if params[:page_tab] == 'employment_record'
+      @provider_personal_information_reinstatements = ProviderPersonalInformationReinstatement.where(provider_personal_information_id: @provider_personal_information.id)
+      @rva_information = RvaInformation.new
+      @last_rva_information = RvaInformation.last
+    end
+
     if params[:page_tab] == 'app_tracking'
       @provider_personal_information_app_trackings = ProviderPersonalInformationAppTracking.where(provider_personal_information_id: @provider_personal_information.id).paginate(per_page: 10, page: params[:page] || 1)
     end
