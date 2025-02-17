@@ -141,7 +141,7 @@
 								<td colspan="2">
 									<%= form_with model: @practice_information, url: save_provider_practice_informations_path, local: true do |form| %>
 									  <%= form.hidden_field :provider_attest_id, value: provider.provider_attest_id %>
-									  <%= form.hidden_field :caqh_provider_practice_id, value: provider.practice_informations.first.present? ? provider.practice_informations.first.caqh_provider_practice_id : nil %>
+									  <%#= form.hidden_field :caqh_provider_practice_id, value: provider.practice_informations.first.present? ? provider.practice_informations.first.caqh_provider_practice_id : nil %>
 
 									  <%= hidden_field_tag :doc_recived_id, "#{provider.provider_attest_id} #{provider.practice_informations.first&.caqh_provider_practice_id}" %>
 
@@ -285,7 +285,7 @@
 
 									  				<tbody>
 															<tr>
-																<td><%= provider.id %></td>
+																<td><%= provider.caqh_provider_attest_id %></td>
 																<td>
 																	<%= form.select :contact_method, options_for_select(['Application Review', 'Approval Letter', 'BCPhone', 'Document Load']), { prompt: true }, {class: 'form-select mt-1 mb-1'} %>
 																</td>
@@ -317,7 +317,7 @@
 									  		<tbody>
 									  			<% provider.provider_personal_attempts.each do |attempt| %>
 										  			<tr>
-															<td><%= provider.id %></td>
+															<td><%= provider.caqh_provider_attest_id %></td>
 															<td><%= attempt.contact_method %></td>
 											        <td><%= attempt.attempt_status %></td>
 											        <td><%= attempt.contact_date %></td>
