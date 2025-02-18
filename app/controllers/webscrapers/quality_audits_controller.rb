@@ -127,6 +127,54 @@ class Webscrapers::QualityAuditsController < ApplicationController
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
+  def send_licensure_request
+    last_name = params[:last_name] 
+    first_name = params[:first_name]
+
+    # Create RVA information for NPDB request
+    rva_information = RvaInformation.create(
+      tab: 'licensure',
+      send_request: 'SENT',
+      requested_by: first_name,
+      requested_date: Date.today,
+      requested_method: 'Letter',
+      required_fee_amount: 0,
+      check_generated: false,
+      received_by: first_name,
+      received_status: true,
+      comments: 'none',
+      received_date: Date.today
+    )
+
+    render json: { message: 'licensure request sent successfully', rva_information: rva_information }, status: :ok
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end  
+
+  def send_employment_request
+    last_name = params[:last_name] 
+    first_name = params[:first_name]
+
+    # Create RVA information for NPDB request
+    rva_information = RvaInformation.create(
+      tab: 'employment',
+      send_request: 'SENT',
+      requested_by: first_name,
+      requested_date: Date.today,
+      requested_method: 'Letter',
+      required_fee_amount: 0,
+      check_generated: false,
+      received_by: first_name,
+      received_status: true,
+      comments: 'none',
+      received_date: Date.today
+    )
+
+    render json: { message: 'employment request sent successfully', rva_information: rva_information }, status: :ok
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end 
+
   def send_npdb_request
     last_name = params[:last_name] 
     first_name = params[:first_name]
@@ -185,16 +233,6 @@ class Webscrapers::QualityAuditsController < ApplicationController
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
-  def send_education_request
-    last_name = params[:last_name] 
-    first_name = params[:first_name]
-    # Create reva informaton for send request 
-    rva_information = RvaInformation.create(tab: 'EDUCATION', send_request: 'SENT', requested_by: first_name, requested_date: Date.today, requested_method: 'Letter', required_fee_amount: 0, check_generated: false, received_by: first_name, received_status: true, comments: 'none', received_date: Date.today)
-    render json: { message: 'requestsent sccessfully',  rva_information: rva_information}, status: :ok
-  rescue => e
-    render json: { error: e.message }, status: :unprocessable_entity
-  end
-  
   def send_board_cert_request
     last_name = params[:last_name] 
     first_name = params[:first_name]
@@ -213,8 +251,32 @@ class Webscrapers::QualityAuditsController < ApplicationController
       comments: 'none',
       received_date: Date.today
     )
-
+     
     render json: { message: 'board cert request sent successfully', rva_information: rva_information }, status: :ok
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end  
+
+  def send_education_request
+    last_name = params[:last_name] 
+    first_name = params[:first_name]
+
+    # Create RVA information for NPDB request
+    rva_information = RvaInformation.create(
+      tab: 'EDUCATION',
+      send_request: 'SENT',
+      requested_by: first_name,
+      requested_date: Date.today,
+      requested_method: 'Letter',
+      required_fee_amount: 0,
+      check_generated: false,
+      received_by: first_name,
+      received_status: true,
+      comments: 'none',
+      received_date: Date.today
+    )
+     
+    render json: { message: 'EDUCATION cert request sent successfully', rva_information: rva_information }, status: :ok
   rescue => e
     render json: { error: e.message }, status: :unprocessable_entity
   end  
