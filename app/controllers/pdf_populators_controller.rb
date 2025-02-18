@@ -5,14 +5,14 @@ class PdfPopulatorsController < ApplicationController
   # @pdf_files = Dir[Rails.root.join('public', 'populated_pdf', '*.pdf')]
   if params.dig(:provider_id).present? && params.dig(:pdf_form).present?
      provider = Provider.find_by_id params.dig(:provider_id)
-     data = careington_format_data
+     data = format_data
     
      provider.attributes.each do |key, value|
       data[key.to_sym] = value if data.key?(key.to_sym) # Ensure the key exists in data
      end
-
-     custom_file_name = "#{provider.fullname.upcase}_#{Time.current.strftime('%Y%m%d%H%M%S')}.pdf"
-     service = AutomationTool::PdfPopulatorService.new(pdf_sample_template, data, custom_file_name)
+     
+     custom_file_name = "#{provider.last_name}_#{provider.middle_name}_#{provider.first_name}_#{params.dig(:pdf_form)}_#{Time.current.strftime("%Y-%m-%d %H%M%S")}.pdf"
+     service = AutomationTool::PdfPopulatorService.new(pdf_sample_template(params.dig(:pdf_form)), data, params.dig(:pdf_form), custom_file_name)
      service.call
     
      if File.exist?(service.output_path)
@@ -34,7 +34,7 @@ class PdfPopulatorsController < ApplicationController
  end
 
  protected
- def careington_format_data
+ def format_data
   {
   first_name: "Jarrod",
   middle_initial: "M",

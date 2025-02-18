@@ -1,23 +1,25 @@
 class AutomationTool::PdfPopulatorService < ApplicationService
-  attr_reader :template_path, :data, :output_path
+  attr_reader :template_path, :data, :output_path, :template
   
-  def initialize(template_path, data, custom_file_name = nil)
+  def initialize(template_path, data, template = "careington", custom_file_name = nil)
     @template_path = template_path
     @data = data
+    @template = template
     @output_path = generate_unique_output_path(custom_file_name)
   end
 
   def call
     doc = HexaPDF::Document.open(template_path)
+
     if doc.acro_form
       doc.acro_form.each_field do |field|
         case field.field_name
         # Dentist Information
-        when 'First Name'
+        when 'First Name', 'text_12grpt'
           field.field_value = data[:first_name]
-        when 'Middle Initial'
+        when 'Middle Initial', 'text_13vfig'
           field.field_value = data[:middle_initial]
-        when 'Last Name'
+        when 'Last Name', 'text_11ltyj'
           field.field_value = data[:last_name]
         when 'Date of  birth'
           field.field_value = data[:dob]
@@ -219,7 +221,7 @@ class AutomationTool::PdfPopulatorService < ApplicationService
     if custom_file_name.blank? 
       timestamp = Time.current.strftime('%Y%m%d%H%M%S')
       unique_id = SecureRandom.hex(4)
-      custom_file_name = "Populated_Careington_Form_#{timestamp}_#{unique_id}.pdf"
+      custom_file_name = "Populated_#{timestamp}_#{unique_id}.pdf"
     end
    
     folder_path.join(custom_file_name)
