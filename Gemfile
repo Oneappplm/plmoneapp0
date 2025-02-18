@@ -106,3 +106,4 @@ gem "iprog_string_utils", "~> 0.1.0" # https://github.com/iprog21/iprog_string_u
 gem 'composite_primary_keys'
 gem 'omniauth-auth0', '~> 3.0'
 gem 'omniauth-rails_csrf_protection', '~> 1.0' # prevents forged authentication requests
+gem "rubyzip"

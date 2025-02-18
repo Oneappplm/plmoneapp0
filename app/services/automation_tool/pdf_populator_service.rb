@@ -15,11 +15,11 @@ class AutomationTool::PdfPopulatorService < ApplicationService
       doc.acro_form.each_field do |field|
         case field.field_name
         # Dentist Information
-        when 'First Name', 'text_12grpt'
+        when 'First Name', 'text_firstname'
           field.field_value = data[:first_name]
-        when 'Middle Initial', 'text_13vfig'
+        when 'Middle Initial', 'text_middlename'
           field.field_value = data[:middle_initial]
-        when 'Last Name', 'text_11ltyj'
+        when 'Last Name', 'text_lastname'
           field.field_value = data[:last_name]
         when 'Date of  birth'
           field.field_value = data[:dob]
@@ -228,7 +228,7 @@ class AutomationTool::PdfPopulatorService < ApplicationService
   end
 
   def generate_folder_path
-    folder_path = Rails.root.join('public', 'populated_pdf')
+    folder_path = Rails.root.join('public', 'autopopulate_providers_output')
     FileUtils.mkdir_p(folder_path) unless Dir.exist?(folder_path)
 
     folder_path

@@ -2,24 +2,29 @@ class PdfPopulatorsController < ApplicationController
  include PdfPopulatorsHelper
  
  def index
-  # @pdf_files = Dir[Rails.root.join('public', 'populated_pdf', '*.pdf')]
-  if params.dig(:provider_id).present? && params.dig(:pdf_form).present?
-     provider = Provider.find_by_id params.dig(:provider_id)
+  # @pdf_files = Dir[Rails.root.join('public', 'autopopulate_providers_output', '*.pdf')]
+  if params.dig(:provider_ids).present? && params.dig(:pdf_form).present?
+   
+     providers = Provider.where(id: params.dig(:provider_ids).reject(&:empty?))
      data = format_data
-    
-     provider.attributes.each do |key, value|
-      data[key.to_sym] = value if data.key?(key.to_sym) # Ensure the key exists in data
-     end
      
-     custom_file_name = "#{provider.last_name}_#{provider.middle_name}_#{provider.first_name}_#{params.dig(:pdf_form)}_#{Time.current.strftime("%Y-%m-%d %H%M%S")}.pdf"
-     service = AutomationTool::PdfPopulatorService.new(pdf_sample_template(params.dig(:pdf_form)), data, params.dig(:pdf_form), custom_file_name)
-     service.call
+     providers.each do |provider|
+      provider.attributes.each do |key, value|
+        data[key.to_sym] = value if data.key?(key.to_sym) # Ensure the key exists in data
+      end
+      
+      custom_file_name = "#{provider.last_name}_#{provider.middle_name}_#{provider.first_name}_#{params.dig(:pdf_form)}_#{Time.current.strftime("%Y-%m-%d %H%M%S")}.pdf"
+      service = AutomationTool::PdfPopulatorService.new(pdf_sample_template(params.dig(:pdf_form)), data, params.dig(:pdf_form), custom_file_name)
+      service.call
+    end
+
+    zipfile_path = AutomationTool::PdfZipperService.create_zip
+
+    send_file zipfile_path, type: 'application/zip', disposition: 'attachment'
     
-     if File.exist?(service.output_path)
-      send_file service.output_path, type: 'application/pdf', disposition: 'attachment'
-     else
-      render plain: "File not found", status: :not_found
-     end
+    # Clean up files after sending
+    AutomationTool::PdfZipperService.clean_up
+
   end
  end
 
