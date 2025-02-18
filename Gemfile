@@ -103,3 +103,4 @@ gem 'chunky_png', '~> 1.3', '>= 1.3.5'
 gem 'combine_pdf'
 
 gem "hexapdf", "~> 1.0" # https://github.com/gettalong/hexapdf
+gem "rubyzip"

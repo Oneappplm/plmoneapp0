@@ -1,21 +1,118 @@
 <div class="content container-fluid">
-	<div class="row mb-3">
+	<div class="row mb-3 mt-3">
     <div class="col-lg-12">
-      <h2>
-        PDF Populator
-      </h2>
+      <h2>PDF Populator</h2>
     </div>
   </div>
-  <div class="row mb-3">
-    <div class="col-lg-6">
-      <%= form_with url: request.url, method: :get, html: { local: true, class: 'form_search_with_icon no-loader'} do |form| %>
-         <%= form.select :provider_id, options_for_select(Provider.all.map{|provider| [provider.fullname, provider.id]}), { prompt: 'Select Provider' }, {class: 'form-select border-dark mb-2', required: true}  %>
+
+  <div class="row">
+    <div class="col-lg-4">
+        <div class="card card-payer">
+        <div class="card-body">
+          <%= form_with url: search_providers_pdf_populators_path, method: :get, html: { class: 'form-search-with-icon', id: 'filter-form' } do |f| %>
+            <h4>Search By</h4>
+              <div class="col-lg-12 mt-3">
+                <%= check_box_tag 'select_all_providers', true, params[:select_all_providers], id: 'select-all-providers' %>
+                <label for="">Select all providers</label>
+              </div>
+
+             <div class="col-lg-12 mt-3">
+              <label for="">Group</label>
+              <%= select_tag('enrollment_group', options_for_select(@enrollment_groups, params[:enrollment_group]), class: 'form-select', prompt: 'Select option')%>
+            </div>
+           
+
+              <div class="col-lg-12 mt-3">
+                <label for="">First name:</label>
+                <%= text_field_tag 'first_name', nil, placeholder: 'Input first name', class: 'search-field form-control' %>
+              </div>
+
+              <div class="col-lg-12 mt-3">
+                <label for="">Last name:</label>
+                <%= text_field_tag 'last_name', nil, placeholder: 'Input last name', class: 'search-field form-control' %>
+              </div>
+
+              <div class="col-lg-12 mt-3">
+                <label>NPI:</label>
+                <%= text_field_tag 'npi', nil, placeholder: 'Input NPI', class: 'search-field form-control' %>
+              </div>
+           
+
+              <div class="d-flex justify-content-center mt-4">
+                <button class="btn btn-primary py-1" id="filter-submit">Submit</button>
+              </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <%= form_with url: request.url, method: :get, html: { local: true, class: 'form-search-with-icon no-loader'} do |form| %>
+         <h1>Providers</h1>
+         <%= form.select :provider_ids, options_for_select(@providers.map { |provider| ["#{provider.fullname} -  #{provider.npi}", provider.id] }, params[:provider_ids]), {}, {class: 'form-select border-dark mb-2', required: true, multiple: true, style: "height: 350px;", id: 'providers-list' } %>
          <%= form.select :pdf_form, options_for_select([
-            ['Careington | Dental Network Provider Application & Agreement','careington']
+           ['Careington | Dental Network Provider Application & Agreement','careington'],
+           #  ['Paper | Provider Application', 'paper'],
+           ['EmblemHealth | Dental Network Application', 'emblemhealth']
           ]), { prompt: 'Select PDF Form' }, {class: 'form-select border-dark', required: true}  %>
          <%= form.submit "Populate Provider Data", class: "btn btn-primary mt-2" %>
       <% end %>
     </div>
   </div>
-	<br>
+
 </div>
+
+<% content_for :js do %>
+  <script>
+    $(document).ready(function() {
+
+      const selectGroup        = $('#enrollment_group')
+      const selectAllProviders = $('#select-all-providers')
+      const searchFields       = $('.search-field')
+      const form               = $('#filter-form')
+
+      selectAllProviders.on('change', function() {
+        if (this.checked) {
+          searchFields.prop('disabled', true)
+          searchFields.val('')
+          selectGroup.val('')
+        } else {
+          searchFields.prop('disabled', false)
+        }
+      })
+
+      searchFields.on('input', function() {
+        selectAllProviders.prop('checked', false)
+      })
+
+      selectGroup.on('change', function(){
+        searchFields.val('')
+        selectAllProviders.prop('checked', false)
+      });
+
+      form.on('submit', function(e) {
+        e.preventDefault()
+        $.ajax({
+          url: '<%= search_providers_pdf_populators_path %>',
+          method: 'GET',
+          data: form.serialize(),
+          success: function(response) {
+            let providersList = $('#providers-list option');
+  
+            // Remove selected attribute from all options
+            providersList.prop('selected', false);
+
+            // Iterate over response and reselect the matching option
+            response.forEach(function(provider) {
+              let option = providersList.filter(`[value="${provider.id}"]`);
+              if (option.length) {
+                option.prop('selected', true);
+              }
+            });
+
+            $('.loading-overlay').hide()
+          }
+        })
+      })
+    })
+  </script>
+<% end %>
