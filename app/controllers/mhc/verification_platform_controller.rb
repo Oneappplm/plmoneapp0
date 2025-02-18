@@ -346,8 +346,16 @@ class Mhc::VerificationPlatformController < ApplicationController
     # code for licensure tab
     if %w[edit_licensure license_record].include?(params[:page_tab])
       @provider_licensure = ProviderLicensure.find(params[:licensure_id])
+      @rva_information = RvaInformation.new
+      @last_rva_information = RvaInformation.last
     end
-
+    
+    if params[:page_tab] == 'employment_record'
+      @provider_personal_information_reinstatements = ProviderPersonalInformationReinstatement.where(provider_personal_information_id: @provider_personal_information.id)
+      @rva_information = RvaInformation.new
+      @last_rva_information = RvaInformation.last
+    end
+    
     case params[:page_tab]
     when "licensure"
       @q = ProviderLicensure.ransack(params[:q])
