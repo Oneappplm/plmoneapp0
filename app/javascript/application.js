@@ -3,6 +3,8 @@
 import "controllers"
 import "ahoy"
 
+import Rails from "@rails/ujs"
+Rails.start()
 
 
 

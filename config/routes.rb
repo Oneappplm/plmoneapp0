@@ -429,4 +429,11 @@ Rails.application.routes.draw do
       resources :dcos, only: [:index]
     end
   end
+
+  # for dcm
+  namespace :admin do
+    resources :faqs
+  end
+  
+  resources :faqs, only: [:index]
 end

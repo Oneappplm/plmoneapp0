@@ -10,6 +10,12 @@
       <% end %>
     </div>
     <%= link_to "New help code", new_help_code_path, class: "btn btn-success" %>
+    
+    <% if current_user.user_role == 'super_administrator' && current_setting.dcm? %>
+      <%= link_to 'FAQ', admin_faqs_path, class: 'btn btn-primary' %>
+    <% else %>
+      <%= link_to 'FAQ', faqs_path, class: 'btn btn-primary' %>
+    <% end %>      
   </div>
 
   <% if table_view? %>

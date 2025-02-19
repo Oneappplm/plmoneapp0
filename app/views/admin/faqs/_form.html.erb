@@ -1,0 +1,25 @@
+<div class="container mt-4 mb-4">
+  <h2>New FAQ</h2>
+
+  <%= form_with(model: [:admin, @faq], local: true) do |f| %>
+    <div class="form-group">
+      <%= f.label :question, "Question" %>
+      <%= f.text_field :question, required: true, class: 'form-control border-dark mt-2 mb-2' %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :answer, "Answer" %>
+      <%= f.text_area :answer, required: true, class: 'form-control border-dark mt-2 mb-2' %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :visible, "Visible to Users" %>
+      <%= f.check_box :visible, checked: true, class: 'form-check-input border-dark mt-2 mb-2' %>
+    </div>
+
+    <div class="form-group">
+      <%= f.submit "Save FAQ", class: "btn btn-success" %>
+      <%= link_to "Back", admin_faqs_path, class: "btn btn-secondary" %>
+    </div>
+  <% end %>
+</div>
