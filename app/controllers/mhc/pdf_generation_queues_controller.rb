@@ -70,11 +70,12 @@ class Mhc::PdfGenerationQueuesController < ApplicationController
   # Delete Queue
   def destroy
     if @queue.destroy
-      render json: { success: true, message: "Queue deleted successfully." }
+      redirect_to profile_page_path(provider_personal_info: params[:provider_personal_information]), notice: 'Queue deleted successfully.'
     else
-      render json: { success: false, message: "Failed to delete the queue." }, status: :unprocessable_entity
+      redirect_to profile_page_path(provider_personal_info: params[:provider_personal_information]), alert: 'Failed to delete the queue.'
     end
   end
+
 
   # Requeue Job
   def requeue
