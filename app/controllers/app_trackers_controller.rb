@@ -8,6 +8,7 @@ class AppTrackersController < ProvidersController
 	  @provider_personal_attempt = ProviderPersonalAttempt.new
 	  @provider_personal_docs_receive = ProviderPersonalDocsReceive.new
 	  @practice_information = PracticeInformation.new
+	  @client_organizations = ClientOrganization.all
 	end
 
 	# for uploading the documents
@@ -80,24 +81,31 @@ class AppTrackersController < ProvidersController
 	
 	# # for provider_practice_informations in this update & create both methods are present
 	def save_provider_practice_informations
-		provider_attest_id, provider_practice_id = params[:doc_recived_id].split(" ")
+		provider_attest_id = params[:practice_information][:provider_attest_id]
+	  practice_info_id = params[:practice_information][:id] # Fetch practice_information ID
 
-	 	@practice_information = PracticeInformation.find_by(provider_practice_id: provider_practice_id, provider_attest_id: provider_attest_id)
+	  if practice_info_id.present?
+	    @practice_information = PracticeInformation.find_by(id: practice_info_id)
+	  else
+	    @practice_information = PracticeInformation.find_by(provider_attest_id: provider_attest_id)
+	  end
 
-		if @practice_information.present?
-			if @practice_information.update(practice_information_params)
-				redirect_to app_trackers_path, notice: 'Practice Information updated successfully.'
-			else
-		     render :edit, alert: "Failed to create Practice Information."
-			end
-		else
-			@practice_information = PracticeInformation.new(practice_information_params)
-			if @practice_information.save
-				redirect_to app_trackers_path, notice: 'Practice Information created successfully.'
-			else
-		     render :new, alert: "Failed to create Practice Information."
-			end
-		end
+	  if @practice_information.present?
+	    if @practice_information.update(practice_information_params)
+	      redirect_to app_trackers_path, notice: 'Practice Information updated successfully.'
+	    else
+	      flash[:alert] = "Failed to update Practice Information."
+	      render :edit
+	    end
+	  else
+	    @practice_information = PracticeInformation.new(practice_information_params)
+	    if @practice_information.save
+	      redirect_to app_trackers_path, notice: 'Practice Information created successfully.'
+	    else
+	      flash[:alert] = "Failed to create Practice Information."
+	      render :new
+	    end
+	  end
 	end
 
 
@@ -195,8 +203,7 @@ class AppTrackersController < ProvidersController
 
 	def practice_information_params
 		params.require(:practice_information).permit(
-			:provider_attest_id,
-			:provider_practice_id,
+			:id,
 			:address,
 			:address2,
 			:city,
@@ -204,9 +211,21 @@ class AppTrackersController < ProvidersController
 			:fax_number,
 			:phone_number,
 			:email_address,
-			:birth_date,
+			:provider_type,
+			:cred_cycle,
+			:npi,
 			:ssn,
-			:npi
+			:caqh_provider_practice_id,
+			:caqh_provider_attest_id,
+			:birth_date,
+			:provider_status,
+			:attestation_date,
+			:file_due_date,
+			:app_complete_date,
+			:app_reviewed,
+			:batch_description,
+			:comment,
+			:provider_attest_id
 		)
 	end
 
