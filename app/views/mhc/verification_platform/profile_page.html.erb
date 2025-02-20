@@ -38,8 +38,8 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-dark">
-              <%= render 'mhc/verification_platform/credential_committee_content' %>
-              <%= render partial: 'mhc/verification_platform/verified_profile_content', locals: { oig_details: @provider_oig_tab_details } %>
+              <%= render partial: 'mhc/verification_platform/credential_committee_content', locals: { provider_personal_information: @provider_personal_information }  %>
+              <%= render partial: 'mhc/verification_platform/verified_profile_content', locals: { oig_details: @provider_oig_tab_details, provider_personal_information: @provider_personal_information } %>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -409,14 +409,14 @@
                 <table class="table table-hover mt-5">
                   <thead>
                     <tr>
-                      <th><input type="checkbox" id="cbSelectAll" onclick="SelectAll();"></th>
+                      <th><input type="checkbox" id="select-all-queue"></th>
                       <th>Type</th>
                       <th>File Name</th>
                       <th>Create Date</th>
                       <th>File Type</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="links-data">
                     <tr>
                       <td><input type="checkbox" id="cbVP" value="Verified Profile" data-provider-id="<%= @provider_personal_information.id %>"></td>
                       <td>Verified Profile</td>
@@ -476,7 +476,7 @@
                   <td>
                     <div class="d-flex">
                       <button class="btn btn-secondary" style="font-size: 12px;padding: 4px;" onclick="pauseQueue(this)" data-queue-id="<%= queue.id %>">Pause</button>
-                      <button class="btn btn-secondary" style="font-size: 12px;padding: 4px;" onclick="deleteQueue(<%= queue.id %>)">Delete</button>
+                      <%= button_to 'Delete', mhc_pdf_generation_queue_path(queue, provider_personal_information: @provider_personal_information ), method: :delete, class: 'btn btn-secondary', style: "font-size: 12px;padding: 4px;" %>
                       <button class="btn btn-secondary" style="font-size: 12px;padding: 4px;" onclick="requeueQueue(<%= queue.id %>)">ReQueue</button>
                     </div>
                   </td>
@@ -554,12 +554,17 @@ document.addEventListener('DOMContentLoaded', function () {
     let selectedFiles = [];
 
     document.querySelectorAll('input[type=checkbox]:checked').forEach((checkbox) => {
-      selectedFiles.push({
+      let fileData = {
         file_name: checkbox.value,
         file_url: checkbox.getAttribute('data-url'),
         file_type: checkbox.getAttribute('data-type'),
         provider_id: checkbox.getAttribute('data-provider-id')
-      });
+      };
+
+      // **Filter out objects where any value is null, undefined, or an empty string**
+      if (fileData.file_name != 'on') {
+        selectedFiles.push(fileData);
+      }
     });
 
     if (selectedFiles.length === 0) {
@@ -591,6 +596,19 @@ document.addEventListener('DOMContentLoaded', function () {
       btnQueue.disabled = false; // Re-enable button if request fails
     });
   });
+  document.getElementById("generateProfileQueueModal").addEventListener("show.bs.modal", function (event) {
+    const selectAllCheckbox = document.getElementById('select-all-queue');
+    
+    if (selectAllCheckbox) {
+      selectAllCheckbox.addEventListener('change', function () {
+        const checkboxes = document.querySelectorAll('#links-data input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = selectAllCheckbox.checked;
+        });
+      });
+    }
+  });
+  
   document.getElementById("providerQueueModal").addEventListener("show.bs.modal", function (event) {
     let button = event.relatedTarget; // Button that triggered the modal
     let queueId = button.getAttribute("data-queue-id"); // Get queue ID
@@ -608,7 +626,7 @@ document.addEventListener('DOMContentLoaded', function () {
           rows += `
             <tr>
               <td>${item.id}</td>
-              <td style="background-color: ${item.status == 'Completed' ? '#CCFFCC' : '#FFCCCC'}">${item.status}</td>
+              <td style="background-color: ${item.status == 'completed' ? '#CCFFCC' : '#FFCCCC'}">${item.status}</td>
               <td style="word-wrap: break-word;" class="source-file">${item.file_path}</td>
               <td>${item.message || ''}</td>
               <td>
@@ -628,58 +646,6 @@ document.addEventListener('DOMContentLoaded', function () {
         modalBody.innerHTML = "<tr><td colspan='5'>Error loading data.</td></tr>";
       });
   });
-  function pauseQueue(queueId) {
-    debugger
-      fetch(`/mhc/pdf_generation_queues/${queueId}/pause`, {
-          method: "POST",
-          headers: { "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content, "Content-Type": "application/json" }
-      })
-      .then(response => response.json())
-      .then(data => {
-          if (data.success) {
-              document.getElementById(`queue-status-${queueId}`).textContent = "Paused";
-          } else {
-              alert("Failed to pause queue.");
-          }
-      })
-      .catch(error => console.error("Error pausing queue:", error));
-  }
-
-  // Delete Queue Function
-  function deleteQueue(queueId) {
-      if (!confirm("Are you sure you want to delete this queue?")) return;
-      
-      fetch(`/mhc/pdf_generation_queues/${queueId}`, {
-          method: "DELETE",
-          headers: { "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content, "Content-Type": "application/json" }
-      })
-      .then(response => response.json())
-      .then(data => {
-          if (data.success) {
-              document.getElementById(`queue-item-${queueId}`).remove();
-          } else {
-              alert("Failed to delete queue.");
-          }
-      })
-      .catch(error => console.error("Error deleting queue:", error));
-  }
-
-  // Requeue Function
-  function requeueQueue(queueId) {
-      fetch(`/mhc/pdf_generation_queues/${queueId}/requeue`, {
-          method: "POST",
-          headers: { "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content, "Content-Type": "application/json" }
-      })
-      .then(response => response.json())
-      .then(data => {
-          if (data.success) {
-              alert("Queue successfully requeued.");
-          } else {
-              alert("Failed to requeue.");
-          }
-      })
-      .catch(error => console.error("Error requeuing queue:", error));
-  }
 });
 
 </script>

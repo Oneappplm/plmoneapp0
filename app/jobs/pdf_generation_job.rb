@@ -1,6 +1,7 @@
 require 'open-uri'
 require 'combine_pdf'
 require 'fileutils'
+require 'wicked_pdf'
 
 class PdfGenerationJob < ApplicationJob
   queue_as :default
@@ -9,41 +10,41 @@ class PdfGenerationJob < ApplicationJob
     queue = PdfGenerationQueue.find_by(id: queue_id)
     return if queue.nil?
 
-    # Update all queued items to 'sent' with a delay
     sleep(2)
     queue.pdf_queue_items.update_all(status: 'sent')
     queue.update!(status: 'sent', message: 'Processing PDF generation.')
 
     begin
-      # Extract queued files
-      queue.pdf_queue_items.each do |item|
-        file_url = item.file_path
+      file_links = []
 
-        if !file_exists?(file_url)
-          item.update!(status: 'error', message: 'File not found.')
-        elsif !valid_pdf?(file_url)
-          item.update!(status: 'error', message: 'File not a valid PDF.')
+      queue.pdf_queue_items.each do |item|
+        if item.file_name == "Verified Profile"
+          # Generate PDF from the HTML pages
+          pdf_paths = generate_verified_profile_pdfs(provider)
+          file_links.concat(pdf_paths)
+        else
+          file_url = item.file_path
+          if !file_exists?(file_url)
+            item.update!(status: 'error', message: 'File not found.')
+          elsif !valid_pdf?(file_url)
+            item.update!(status: 'error', message: 'File not a valid PDF.')
+          else
+            file_links << file_url
+          end
         end
       end
 
-      # If any item has an error, stop processing
       if queue.pdf_queue_items.where(status: 'error').exists?
         queue.update!(status: 'error', message: 'One or more files are invalid or missing.')
         return
       end
 
-      # Generate PDF
-      file_links = queue.pdf_queue_items.pluck(:file_path)
       pdf_path = generate_pdf(file_links, provider, queue)
 
-      # Delay before marking items as completed
       sleep(2)
       queue.pdf_queue_items.update_all(status: 'completed')
-
-      # Update queue status and set PDF path
       queue.update!(status: 'completed', generated_date: Time.current, pdf_path: pdf_path)
 
-      # Delay before deleting the queue
       sleep(5)
       queue.update!(deleted: true)
 
@@ -55,16 +56,47 @@ class PdfGenerationJob < ApplicationJob
 
   private
 
-  def generate_pdf(files, provider, queue)
-    # Ensure the directory exists
+  def generate_verified_profile_pdfs(provider)
+    provider_personal_information = provider
     pdf_dir = Rails.root.join("public/generated_pdfs")
     FileUtils.mkdir_p(pdf_dir)
 
-    # Generate unique PDF filename
+    # Generate PDFs for both templates
+    pdf_paths = [
+      render_pdf('mhc/verification_platform/verified_profile_pdf', provider, 'verified_profile')
+    ]
+
+    pdf_paths
+  end
+
+  def render_pdf(template, provider, filename_prefix)
+
+    oig_details = provider.rva_informations.where(tab: 'OIG')
+    pdf_dir = Rails.root.join("public/generated_pdfs")
+    FileUtils.mkdir_p(pdf_dir)
+
+    filename = "#{provider.caqh_provider_attest_id}_#{filename_prefix}_#{Time.current.strftime('%Y%m%d%H%M%S')}.pdf"
+    pdf_path = pdf_dir.join(filename)
+
+    html_content = ApplicationController.render(
+      template: template,
+      layout: 'pdf',
+      locals: { provider_personal_information: provider, oig_details: oig_details }
+    )
+
+    pdf_file = WickedPdf.new.pdf_from_string(html_content)
+
+    File.open(pdf_path, 'wb') { |file| file.write(pdf_file) }
+    pdf_path.to_s
+  end
+
+  def generate_pdf(files, provider, queue)
+    pdf_dir = Rails.root.join("public/generated_pdfs")
+    FileUtils.mkdir_p(pdf_dir)
+
     filename = "#{provider.caqh_provider_attest_id}_#{SecureRandom.hex(5)}_#{Time.current.strftime('%Y%m%d%H%M%S')}.pdf"
     merged_pdf_path = pdf_dir.join(filename)
 
-    # Initialize new combined PDF
     combined_pdf = CombinePDF.new
 
     files.each do |file_url|
@@ -84,10 +116,8 @@ class PdfGenerationJob < ApplicationJob
       end
     end
 
-    # Save the merged PDF
     combined_pdf.save(merged_pdf_path)
 
-    # Save the new PDF in the SavedFile model
     saved_profile = queue.create_saved_profile!(
       file_path: merged_pdf_path.to_s,
       file_type: 'pdf'
@@ -123,7 +153,7 @@ class PdfGenerationJob < ApplicationJob
       file = URI.open(url)
       magic_number = file.read(4) # Read first 4 bytes to check PDF signature
       file.close
-      magic_number == "%PDF" # PDFs start with "%PDF"
+      magic_number == "%PDF"
     rescue => e
       Rails.logger.error "File validation failed: #{url} - #{e.message}"
       false
@@ -134,7 +164,7 @@ class PdfGenerationJob < ApplicationJob
     return false if url.blank?
 
     begin
-      URI.open(url).status[0] == "200" # Check if file is accessible
+      URI.open(url).status[0] == "200"
     rescue => e
       Rails.logger.error "File not found: #{url} - #{e.message}"
       false

@@ -128,7 +128,7 @@ Rails.application.routes.draw do
 
   namespace :mhc do
     resources :provider_medicares
-    resources :pdf_generation_queues, only: [:create] do
+    resources :pdf_generation_queues, only: [:create, :destroy] do
       member do
         get :queue_items
         post :pause
