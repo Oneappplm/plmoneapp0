@@ -49,8 +49,9 @@ module PlmhealthoneApp
       :enable_starttls_auto => true
     }
 
-				config.active_record.yaml_column_permitted_classes = [Symbol, Date, Time, ActiveSupport::TimeWithZone, ActiveSupport::TimeZone, ActiveSupport::HashWithIndifferentAccess, BigDecimal]
-				# config.time_zone = 'Pacific Time (US & Canada)'
- 			# config.active_record.default_timezone = :local
+			config.active_record.yaml_column_permitted_classes = [Symbol, Date, Time, ActiveSupport::TimeWithZone, ActiveSupport::TimeZone, ActiveSupport::HashWithIndifferentAccess, BigDecimal]
+			# config.time_zone = 'Pacific Time (US & Canada)'
+			# config.active_record.default_timezone = :local
+    config.active_job.queue_adapter = :sidekiq  
   end
 end

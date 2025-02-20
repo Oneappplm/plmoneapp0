@@ -119,9 +119,14 @@ class Mhc::VerificationPlatformController < ApplicationController
       redirect_to mhc_verification_platform_index_path and return
     end
     @provider_oig_tab_details = @provider_personal_information.rva_informations.where(tab: 'OIG')
+    @queues = PdfGenerationQueue.all.order(created_at: :desc)
+    @psv_pdfs = SavedProfile.joins(:pdf_generation_queue)
+                       .where(pdf_generation_queues: { deleted: true, provider_personal_information_id: @provider_personal_information.id })
+
   end
   
   protected
+  
   def set_provider_personal_informations
     @provider_personal_information = ProviderPersonalInformation.find_by(provider_attest_id: params[:id])
   end

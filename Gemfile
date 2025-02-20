@@ -102,3 +102,7 @@ gem "iprog_string_utils", "~> 0.1.0" # https://github.com/iprog21/iprog_string_u
 gem 'composite_primary_keys'
 gem 'ransack'
 gem 'mail_form'
+gem 'sidekiq'
+gem 'combine_pdf'    # For PDF generation
+gem 'wicked_pdf'    # For rendering HTML to PDF
+gem 'wkhtmltopdf-binary' # Required dependency for wicked_pdf
