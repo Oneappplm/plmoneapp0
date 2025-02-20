@@ -84,6 +84,7 @@ GEM
     audited (5.4.3)
       activerecord (>= 5.0, < 7.2)
       request_store (~> 1.2)
+    base64 (0.2.0)
     bcrypt (3.1.18)
     bindex (0.8.1)
     bootsnap (1.16.0)
@@ -109,6 +110,9 @@ GEM
       activesupport
     chunky_png (1.4.0)
     coderay (1.1.3)
+    combine_pdf (1.0.29)
+      matrix
+      ruby-rc4 (>= 0.1.5)
     composite_primary_keys (14.0.9)
       activerecord (~> 7.0.2)
     concurrent-ruby (1.2.2)
@@ -198,6 +202,7 @@ GEM
     llhttp-ffi (0.4.0)
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
+    logger (1.6.6)
     loofah (2.19.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -254,6 +259,7 @@ GEM
       http (>= 4.0.0)
       rails (>= 5.2.0)
     orm_adapter (0.5.0)
+    ostruct (0.6.1)
     pdf-core (0.9.0)
     pg (1.4.6)
     pg_search (2.3.6)
@@ -306,6 +312,8 @@ GEM
       activesupport (>= 6.1.5)
       i18n
     redis (4.8.1)
+    redis-client (0.23.2)
+      connection_pool
     regexp_parser (2.7.0)
     reline (0.3.2)
       io-console (~> 0.5)
@@ -318,6 +326,7 @@ GEM
     roo (2.9.0)
       nokogiri (~> 1)
       rubyzip (>= 1.3.0, < 3.0.0)
+    ruby-rc4 (0.1.5)
     ruby-vips (2.1.4)
       ffi (~> 1.12)
     ruby2_keywords (0.0.5)
@@ -328,6 +337,12 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
+    sidekiq (7.3.9)
+      base64
+      connection_pool (>= 2.3.0)
+      logger
+      rack (>= 2.2.4)
+      redis-client (>= 0.22.2)
     sprockets (4.2.0)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
@@ -362,9 +377,13 @@ GEM
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    wicked_pdf (2.8.2)
+      activesupport
+      ostruct
     will_paginate (3.3.1)
     will_paginate-bootstrap-style (0.2.4)
       will_paginate (~> 3.0, >= 3.0.0)
+    wkhtmltopdf-binary (0.12.6.8)
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.6.7)
@@ -383,6 +402,7 @@ DEPENDENCIES
   capybara
   carrierwave (>= 3.0.0.beta, < 4.0)
   chunky_png (~> 1.3, >= 1.3.5)
+  combine_pdf
   composite_primary_keys
   countries
   debug
@@ -413,16 +433,19 @@ DEPENDENCIES
   redis (~> 4.0)
   roo (~> 2.9.0)
   selenium-webdriver
+  sidekiq
   sprockets-rails
   stimulus-rails
   sys-filesystem
   tzinfo-data
   web-console
+  wicked_pdf
   will_paginate (~> 3.3)
   will_paginate-bootstrap-style
+  wkhtmltopdf-binary
 
 RUBY VERSION
    ruby 3.0.2p107
 
 BUNDLED WITH
-   2.4.12
+   2.5.23
