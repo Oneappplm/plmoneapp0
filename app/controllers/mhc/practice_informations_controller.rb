@@ -274,6 +274,17 @@ class Mhc::PracticeInformationsController < ApplicationController
       :holiday_time_from, 
       :holiday_time_to,
       :holiday_closed,
+      :provider_type,
+      :cred_cycle,
+      :birth_date,
+      :ssn,
+      :provider_status,
+      :attestation_date,
+      :file_due_date,
+      :app_complete_date,
+      :app_reviewed,
+      :batch_description,
+      :comment,
 
       allied_health_practitioners_attributes: [ :id, :first_name, :last_name, :suffix, :type_of_practitioner, :mail_stop, :address, :address2, :city, :county, :state, :zip_code, :country, :state_license, :state_license_number, :listed_as_pcp, :_destroy ],
 
