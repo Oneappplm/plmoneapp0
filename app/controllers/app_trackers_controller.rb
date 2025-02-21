@@ -4,11 +4,42 @@ class AppTrackersController < ProvidersController
 
 	def index
 	  @provider_personal_information = ProviderPersonalInformation.paginate(per_page: 10, page: params[:page] || 1)
-	  @clients = Client.paginate(per_page: 10, page: params[:page] || 1)
 	  @provider_personal_attempt = ProviderPersonalAttempt.new
 	  @provider_personal_docs_receive = ProviderPersonalDocsReceive.new
 	  @practice_information = PracticeInformation.new
-	  @client_organizations = ClientOrganization.all
+	  @practice_information = PracticeInformation.paginate(per_page: 10, page: params[:page] || 1)
+	  @client_organizations = ClientOrganization.paginate(per_page: 10, page: params[:page] || 1)
+
+	  # Filtering for @app_trackers
+	  if params[:user_search].present?
+		  search_term = "%#{params[:user_search]}%"
+		  @provider_personal_information = @provider_personal_information.where(
+		    "first_name ILIKE ? OR middle_name ILIKE ? OR last_name ILIKE ? OR caqh_provider_attest_id::text ILIKE ?",
+		    search_term, search_term, search_term, search_term
+		  )
+		end
+
+	  if params[:app_reviewed].present?
+		  bool_value = ActiveModel::Type::Boolean.new.cast(params[:app_reviewed]) # Convert "true"/"false" string to boolean
+		  @practice_information = @practice_information.where(app_reviewed: bool_value)
+
+		  if bool_value == false || @practice_information.empty? && @provider_personal_information.exists?
+		    flash[:alert] = "No results found"
+		  end
+		end
+
+	  @practice_information = @practice_information.where(provider_status: params[:provider_status]) if params[:provider_status].present?
+	  @practice_information = @practice_information.where(file_due_date: params[:file_due_date]) if params[:file_due_date].present?
+	  @practice_information = @practice_information.where(cred_cycle: params[:cred_cycle]) if params[:cred_cycle].present?
+	  @practice_information = @practice_information.where(batch_description: params[:batch_description]) if params[:batch_description].present?
+
+		@client_organizations = @client_organizations.where(organization_name: params[:organization_name]) if params[:organization_name].present?	  
+
+	  if @practice_information.exists? && @client_organizations.exists? && @provider_personal_information.exists?
+		  # Results found
+		else
+		  flash[:alert] = "No results found"
+		end
 	end
 
 	# for uploading the documents
