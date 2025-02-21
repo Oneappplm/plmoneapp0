@@ -40,41 +40,41 @@
 			<h2>Provider</h2>
 			<%= form_with url: app_trackers_path, method: :get, local: true, class: "form_search_with_icon" do |form| %>
 			  <div class="">
-			    <%= text_field_tag :user_search, params[:user_search], class: "form-control", placeholder: "Search..." %>
+			    <%= text_field_tag :user_search, params[:user_search], class: "form-control border-dark", placeholder: "Search..." %>
 			    <i class="bi bi-search"></i>
 			  </div>
-			  <small><code>( search with provider id )</code></small>
+			  <small><code>( search with provider id & provider name )</code></small>
 
 			  <div class="row">
 			    <div class="col-lg-6 mt-2 form-group">
 			      <%= form.label :app_reviewed, "App Reviewed", class: "form-label" %>
-			      <%= form.select :application_reviewed, options_for_select(['False', 'True']), { prompt: true },  {class: "form-select auto-submit"} %>
+			      <%= form.select :app_reviewed, options_for_select([['True', true], ['False', false]], selected: params[:app_reviewed]), { prompt: 'Select an option' }, { class: "form-select border-dark auto-submit" } %>
 			    </div>
 			    <div class="col-lg-6 mt-2">
 			      <%= form.label :provider_status, class: "form-label" %>
-			      <%= form.select :provider_status, options_for_select(['Change of Ownership', 'Credential Once', 'Deceased', 'Delegated', 'Incomplete App', 'No Application Received', 'No Longer in Private Sector', 'No Longer Practices Medicine', 'Non-Participant', 'Non-Responder', 'On Leave', 'Out of Network', 'Paper App', 'Relocated Out of State', 'Retired', 'Terminated', 'Undeliverable' ]), { prompt: true },  {class: "form-select auto-submit"} %>
+			      <%= form.select :provider_status, options_for_select(['Change of Ownership', 'Credential Once', 'Deceased', 'Delegated', 'Incomplete App', 'No Application Received', 'No Longer in Private Sector', 'No Longer Practices Medicine', 'Non-Participant', 'Non-Responder', 'On Leave', 'Out of Network', 'Paper App', 'Relocated Out of State', 'Retired', 'Terminated', 'Undeliverable' ]), { prompt: true },  {class: "form-select auto-submit border-dark"} %>
 			    </div>
 			  </div>
 
 			  <div class="row">
 			    <div class="col-lg-6 mt-2">
 			      <%= form.label :credential_cycle, "Credential Cycle", class: "form-label" %>
-			      <%= form.select :cred_cycle, options_for_select(['Cred', 'Recred']), { prompt: true },  {class: "form-select auto-submit"} %>
+			      <%= form.select :cred_cycle, options_for_select(['Cred', 'Recred']), { prompt: true },  {class: "form-select auto-submit border-dark"} %>
 			    </div>
 			    <div class="col-lg-6 mt-2">
 			      <%= form.label :client_name, "Client Name", class: "form-label" %>
-			      <%= form.collection_select(:client_name, Client.all, :id, :full_name, { prompt: true }, { class: "form-select auto-submit" })  %>
+			      <%= form.collection_select(:client_name, ClientOrganization.all, :id, :organization_name, { prompt: true }, { class: "form-select auto-submit border-dark" })  %>
 			    </div>
 			  </div>
 
 			  <div class="row">
 			    <div class="col-lg-6 mt-2">
 			      <%= form.label :batch_description, "Batch Description", class: "form-label" %>
-			      <%= form.select :batch_description, options_for_select(['']), { prompt: true },  {class: "form-select auto-submit"} %>
+			      <%= form.select :batch_description, options_for_select(['']), { prompt: true },  {class: "form-select auto-submit border-dark"} %>
 			    </div>
 			    <div class="col-lg-6 mt-2">
 			      <%= form.label :file_due_date, "File Due Date", class: "form-label" %>
-			      <%= form.date_field :file_due_date, class: "form-control auto-submit" %>
+			      <%= form.date_field :file_due_date, class: "form-control auto-submit border-dark" %>
 			    </div>
 			  </div>
 
@@ -116,7 +116,8 @@
 					<tbody>
 						<% @provider_personal_information.each do |provider| %>
 							<tr>
-								<td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.caqh_provider_attest_id %> data-remote="true"><%= provider.caqh_provider_attest_id %></a></td>
+
+								<td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.caqh_provider_id %> data-remote="true"><%= provider.caqh_provider_attest_id %></a></td>
 								<td>
 
 									<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%#= provider.id %> data-remote="true">
@@ -236,9 +237,10 @@
 											</div>
 
 											<div class="form-group mt-2 mb-2">
-												<%= form.label :app_reviewed %>
-												<%= form.check_box :app_reviewed, class: "form-input-check mt-1 mb-1", value: provider.practice_informations.first.app_reviewed %>
+											  <%= form.label :app_reviewed %>
+											  <%= form.check_box :app_reviewed, class: "form-input-check mt-1 mb-1", checked: provider.practice_informations.first.app_reviewed || false %>
 											</div>
+
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :batch_description %>
@@ -290,10 +292,10 @@
 															<tr>
 																<td><%= provider.caqh_provider_attest_id %></td>
 																<td>
-																	<%= form.select :contact_method, options_for_select(['Application Review', 'Approval Letter', 'BCPhone', 'Document Load']), { prompt: true }, {class: 'form-select mt-1 mb-1'} %>
+																	<%= form.select :contact_method, options_for_select(ProviderPersonalAttempt::CONTACT_METHOD, form.object.contact_method), { prompt: true }, { class: 'form-select mt-1 mb-1' } %>
 																</td>
 																<td>
-																	<%= form.select :attempt_status, options_for_select(['A', 'AM', 'AM-Final', 'AM-Final']), { prompt: true }, {class: 'form-select mt-1 mb-1'} %>
+																	<%= form.select :attempt_status, options_for_select(ProviderPersonalAttempt::ATTEMPT_STATUS, form.object.attempt_status), { prompt: true }, { class: 'form-select mt-1 mb-1' } %>
 																</td>
 																<td>
 																	<%= form.date_field :contact_date, class: 'form-control' %>
