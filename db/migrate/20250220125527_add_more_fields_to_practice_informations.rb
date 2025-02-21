@@ -1,4 +1,4 @@
-class AddFieldsToPracticeInformations < ActiveRecord::Migration[7.0]
+class AddMoreFieldsToPracticeInformations < ActiveRecord::Migration[7.0]
   def change
     add_column :practice_informations, :provider_type, :string
     add_column :practice_informations, :cred_cycle, :string
