@@ -135,6 +135,8 @@ Rails.application.routes.draw do
         post :requeue
       end
     end
+    get "/delete_saved_profiles", to: "pdf_generation_queues#delete_saved_profile", as: "delete_saved_profile"
+    post "/extra_queue_items", to: "pdf_generation_queues#extra_queue_items"
   end
 
   namespace :mhc do
