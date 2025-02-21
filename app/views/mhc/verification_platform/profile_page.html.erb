@@ -1,4 +1,5 @@
 <div class="container mt-5">
+  <div id="provider-personal-info" data-personal-info="<%= @provider_personal_information.id %>"></div>
   <div class="card mb-4">
     <div class="card-header">Profile</div>
     <div class="card-body">
@@ -304,18 +305,18 @@
         </thead>
         <tbody>
           <% @psv_pdfs.each do |psv_data| %>
-            <tr>
+            <tr class="profile-<%= psv_data.id %>">
               <td><%= link_to File.basename(psv_data.file_path.url), psv_data.file_path.url, target: "_blank" %></td>
               <td><%= psv_data.file_type %></td>
               <td><%= psv_data.created_at.strftime('%d/%m/%Y %H:%M') %></td>
               <td>
-                <input type="checkbox" name="selected_psvs[]" value="<%= psv_data.id %>">
+                <input type="checkbox" name="selected_psvs[]" value="<%= psv_data.id %>" class="saved-profile-checkbox">
               </td>
             </tr>
           <% end %>
         </tbody>
       </table>
-      <button class="btn btn-danger mt-3">Delete</button>
+      <%= link_to "Delete", "#", class: "btn btn-danger mt-3", id: "delete-selected-link" %>
     </div>
   </div>
 
@@ -418,7 +419,7 @@
                   </thead>
                   <tbody id="links-data">
                     <tr>
-                      <td><input type="checkbox" id="cbVP" value="Verified Profile" data-provider-id="<%= @provider_personal_information.id %>"></td>
+                      <td><input type="checkbox" id="cbVP" value="Verified Profile" data-provider-id="<%= @provider_personal_information.id %>" class="link-checkbox"></td>
                       <td>Verified Profile</td>
                       <td><a href="javascript:alert('Not Implemented');">Verified Profile</a></td>
                       <td><%= Time.current.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
@@ -428,7 +429,7 @@
                       <% content_type = doc&.file_upload.file.content_type %>
                       <% file_type =  content_type.split('/').last if content_type.present? %>
                       <tr>
-                        <td><input type="checkbox" id="<%= doc&.id %>" value="<%= doc&.sub_section %>" data-url="<%= doc&.file_upload.url %>" data-type="<%= doc&.sub_section %>" data-provider-id="<%= @provider_personal_information.id %>"></td>
+                        <td><input type="checkbox" id="<%= doc&.id %>" value="<%= doc&.sub_section %>" data-url="<%= doc&.file_upload.url %>" data-type="<%= doc&.sub_section %>" data-provider-id="<%= @provider_personal_information.id %>" class="link-checkbox"></td>
                         <td><%= doc&.sub_section %></td>
                         <td><a href="<%= doc&.file_upload.url %>"><%= doc&.file_upload.url %></a></td>
                         <td><%= doc&.created_at.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
@@ -497,6 +498,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <!-- File Input for Adding New File -->
+        <input type="file" id="file-input" class="form-control">
+        <button type="button" class="btn btn-primary mt-4">upload</button>
         <table class="table table-hover queue-detail-table" style="font-size:11px;">
           <thead class="bg-white">
             <tr>
@@ -513,11 +517,13 @@
         </table>
       </div>
       <div class="modal-footer">
+        
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
+
 
 
 <style>
@@ -553,7 +559,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let selectedFiles = [];
 
-    document.querySelectorAll('input[type=checkbox]:checked').forEach((checkbox) => {
+    document.querySelectorAll('#links-data .link-checkbox:checked').forEach((checkbox) => {
       let fileData = {
         file_name: checkbox.value,
         file_url: checkbox.getAttribute('data-url'),
@@ -646,6 +652,35 @@ document.addEventListener('DOMContentLoaded', function () {
         modalBody.innerHTML = "<tr><td colspan='5'>Error loading data.</td></tr>";
       });
   });
-});
 
+  const checkboxes = document.querySelectorAll(".saved-profile-checkbox");
+  const deleteLink = document.getElementById("delete-selected-link");
+  const personalInfoId = document.getElementById("provider-personal-info").dataset.personalInfo;
+
+  function updateDeleteLink() {
+    let selectedIds = Array.from(document.querySelectorAll(".saved-profile-checkbox:checked"))
+                           .map(checkbox => checkbox.value);
+
+    if (selectedIds.length > 0) {
+      deleteLink.href = `/mhc/delete_saved_profiles?selected_profiles=${selectedIds.join(",")}&personalInfoId=${personalInfoId}`;
+    } else {
+      deleteLink.href = "#"; // Reset if no checkbox is selected
+    }
+  }
+
+  // Update URL when checkboxes are checked/unchecked
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener("change", updateDeleteLink);
+  });
+
+  // Prevent navigation and show alert if no checkbox is selected
+  deleteLink.addEventListener("click", function (event) {
+    let selectedIds = document.querySelectorAll(".saved-profile-checkbox:checked");
+    
+    if (selectedIds.length === 0) {
+      event.preventDefault(); // Prevent redirection
+      alert("Please select at least one record before deleting.");
+    }
+  });
+});
 </script>

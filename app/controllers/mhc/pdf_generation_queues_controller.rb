@@ -58,6 +58,19 @@ class Mhc::PdfGenerationQueuesController < ApplicationController
     }
   end
 
+  # delete saved profile
+  def delete_saved_profile
+    if params[:selected_profiles].present?
+      selected_psvs = params[:selected_profiles].split(',')
+      selected_profiles = SavedProfile.where(id: selected_psvs)
+
+      selected_profiles.destroy_all
+      redirect_to profile_page_path(provider_personal_info: params[:personalInfoId]), notice: 'Selected PSV deleted successfully.'
+    else
+      redirect_to profile_page_path(provider_personal_info: params[:personalInfoId]), alert: 'No PSV selected for deletion.'
+    end
+  end
+
   # Pause Job
   def pause
     if @queue.update(status: "Paused")
