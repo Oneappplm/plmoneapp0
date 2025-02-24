@@ -402,6 +402,32 @@ Rails.application.routes.draw do
   get '/enrollment_report_page', to: 'mhc/verification_platform#enrollment_report_page'
 
   namespace :mhc do
+    resources :provider_cds
+    resources :client_portal
+
+    resources :client_organizations do
+      collection do
+        get 'edit_client_organization'
+        post 'load_client_organization'
+      end
+      member do
+        patch 'update_status'
+      end
+    end
+    
+    resources :manage_clients, path: 'manage-clients' do
+      collection do
+        get 'edit_provider_personal_information'
+        post 'load_provider_personal_information'
+        get :append_remove_practitioner
+        get :get_provider_uploaded_docs
+      end
+      member do
+        get 'edit'
+        patch 'update'
+      end
+    end
+    
     resources :provider_insurance_coverages
     resources :provider_npdbs
     resources :provider_npdb_comments
