@@ -1,0 +1,192 @@
+<div class="enc-content">
+   <%= form_with(model: @client_organization, url: mhc_client_organizations_path, local: true) do |f| %>
+      <div class="container-fluid">
+         <div class="row">
+            <div class="col-xl-12">
+               <%#= render partial: "verification_platform/encompass_nav" %>
+            </div>
+         </div>
+         <div class="row mb-3">
+            <div class="col-xl-12 mb-1">
+               <h2>
+                  <a href="<%= mhc_manage_clients_path %>" class="d-flex gap-2 text-secondary">
+                     <i class="bi bi-arrow-left h5 d-flex align-items-center"></i>
+                     <span class="h1"><%= local_assigns[:header_text] || 'Add/Edit Organization' %></span>
+                  </a>
+               </h2>
+            </div>
+         </div>
+
+         <div class="form-row row mb-3">
+            <div class="col-xl-6 mt-2 mb-2">
+               <label for="">Organization Name</label>
+            <%= f.text_field :organization_name, class: 'form-control', placeholder: 'Type here...'%>
+            </div>
+            <div class="col-xl-6 mt-2 mb-2">
+               <label for="">Primary Service</label>
+            <%= f.select :primary_service, ClientOrganization::PRIMARY_SERVICE, { prompt: true },  { class: 'form-select', placeholder: 'Type here...' } %>
+            </div>
+         </div>
+
+         <div class="form-row row mb-3">
+            <div class="col-xl-6 mt-2 mb-2">
+               <label for="">Tin Number</label>
+               <%= f.text_field :tin_number, class: 'form-control', placeholder: 'Type here...'%>
+            </div>
+            <div class="col-xl-6 mt-2 mb-2">
+               <label for="">Tin Name</label>
+               <%= f.text_field :tin_name, class: 'form-control', placeholder: 'Type here...'%>
+            </div>
+         </div>
+
+         <div class="form-row row mb-3">
+            <div class="col-xl-6 mt-2 mb-2">
+               <label for="">NPI Number</label>
+               <%= f.text_field :organization_npi, class: 'form-control', placeholder: 'Type here...'%>
+            </div>
+            <div class="col-xl-6 mt-2 mb-2">
+               <label for="">Facility Type</label>
+               <%= f.select :organization_facility_type, ClientOrganization::FACILITY_TYPE, { prompt: true },  { class: 'form-select', placeholder: 'Type here...' }%>
+            </div>
+         </div>
+
+         <div class="form-row row mb-3 text-dark">
+            <div>Status</div>
+            <div class="col-xl-2 mt-2 mb-2">
+               <%= f.radio_button :credential, id: "organization_credential" %>
+               <%= f.label :credential, "Credential (Appointment)", for: "organization_credential" %>
+            </div>
+            <div class="col-xl-2 mt-2 mb-2">
+               <%= f.radio_button :recredential, id: "organization_recredential" %>
+               <%= f.label :recredential, "Recredential (Reappointment)", for: "organization_recredential" %>
+            </div>
+         </div>
+
+         <div class="border p-4">
+            <div class="bg-primary fw-bold fs-4 p-1 text-dark">Credentialing Contact</div>
+
+            <div class="mt-3">
+               <label>Contact Method</label>
+              <%= f.select :contact_method, options_for_select(["Do Not Send", "Letter", "Email", "Phone"]), { prompt: true }, class: "form-control" %>
+            </div>
+
+            <div class="form-row row mb-3">
+               <div class="col-xl-6 mt-2 mb-2">
+                  <%= f.label :contact_first_name, "First Name" %>
+                  <%= f.text_field :contact_first_name, class: "form-control" %>
+                </div>
+
+                <div class="col-xl-6 mt-2 mb-2">
+                  <%= f.label :contact_middle_name, "Middle Name" %>
+                  <%= f.text_field :contact_middle_name, class: "form-control" %>
+                </div>
+            </div>
+
+            <div class="form-row row mb-3">
+               <div class="col-xl-6 mt-2 mb-2">
+                  <%= f.label :contact_last_name, "Last Name" %>
+                  <%= f.text_field :contact_last_name, class: "form-control" %>
+                </div>
+
+                <div class="col-xl-6 mt-2 mb-2">
+                  <%= f.label :contact_suffix, "Suffix" %>
+                  <%= f.select :contact_suffix, options_for_select([["Jr"], ["Sr"], ["II."], ["III"], ["IV"], ["V"], ["VI"], ["VII"]]), { prompt: true }, { class: "form-select" } %>
+                </div>
+            </div>
+
+            <div class="form-row row mb-3">
+               <div class="col-xl-6 mt-2 mb-2">
+                  <%= f.label :organization_phone_number, "Phone Number" %>
+                  <%= f.text_field :organization_phone_number, class: "form-control" %>
+                </div>
+
+                <div class="col-xl-6 mt-2 mb-2">
+                  <%= f.label :organization_fax_number, "Fax Number" %>
+                  <%= f.text_field :organization_fax_number, class: "form-control" %>
+                </div>
+            </div>
+
+             <div class="form-row row mb-3">
+               <div class="col-xl-6 mt-2 mb-2">
+                  <%= f.label :email_address, "Email Address" %>
+                  <%= f.text_field :email_address, class: "form-control" %>
+                </div>
+
+                <div class="col-xl-6 mt-2 mb-2">
+                  <%= f.label :organization_address_1, "Address" %>
+                  <%= f.text_field :organization_address_1, class: "form-control" %>
+                </div>
+            </div>
+
+            <div class="form-row row mb-3">
+               <div class="col-xl-6 mt-2 mb-2">
+                  <%= f.label :mail_stop, "Suite/Apt" %>
+                  <%= f.text_field :mail_stop, class: "form-control" %>
+                </div>
+
+                <div class="col-xl-6 mt-2 mb-2">
+                  <%= f.label :organization_address_2, "Additional Address" %>
+                  <%= f.text_field :organization_address_2, class: "form-control" %>
+                </div>
+            </div>
+
+            <div class="form-row row mb-3">
+               <div class="col-xl-6 mt-2 mb-2">
+                  <%= f.label :organization_city, "City" %>
+                  <%= f.text_field :organization_city, class: "form-control" %>
+                </div>
+
+                <div class="col-xl-6 mt-2 mb-2">
+                  <%= f.label :organization_country, "Country" %>
+                  <%= f.text_field :organization_country, class: "form-control" %>
+                </div>
+            </div>
+
+            <div class="form-row row mb-3">
+               <div class="col-xl-6 mt-2 mb-2">
+                  <%= f.label :organization_state_id, "State/Province" %>
+                  <%= f.collection_select :organization_state_id, State.all, :id, :name, { prompt: true }, { class: "form-select" }%>
+                </div>
+
+                <div class="col-xl-6 mt-2 mb-2">
+                  <%= f.label :organization_zipcode, "Zip/Postal Code" %>
+                  <%= f.text_field :organization_zipcode, class: "form-control" %>
+                </div>
+            </div>
+         </div>
+
+         <div class="form-row row mb-3">
+            <div class="col-xl-6 mt-2 mb-2">
+               <%= f.label :client_due_date, "Client Due Date" %>
+               <%= f.date_field :client_due_date, class: "form-control" %>
+            </div>
+
+            <div class="col-xl-6 mt-2 mb-2">
+               <%= f.label :client_batch_date, "Client Batch Date" %>
+               <%= f.date_field :client_batch_date, class: "form-control" %>
+            </div>
+         </div>
+
+         <div class="form-row row mb-3">
+            <div class="col-xl-6 mt-2 mb-2">
+               <%= f.label :client_batch_name, "Client Batch Name" %>
+               <%= f.text_field :client_batch_name, class: "form-control" %>
+            </div>
+
+            <div class="col-xl-6 mt-2 mb-2">
+               <%= f.label :client_batch_id, "Client Batch ID" %>
+               <%= f.text_field :client_batch_id, class: "form-control" %>
+            </div>
+         </div>
+
+         
+         <div class="row mt-5 ms-5">
+            <div class="col-xl-3 ms-auto">
+               <div class="col-xl-9 ms-5">
+                  <%= f.submit class:"btn btn-primary ms-5"%>
+               </div>
+            </div>
+         </div>
+      </div>
+   <% end %>
+</div>
