@@ -164,7 +164,7 @@ class ProviderSource < ApplicationRecord
 
   def registration_ids_progress
     percentage = 0
-    prerequisites = ['has_dea_registration_number', 'has_cds_registration_number', 'registration_id_form']
+    prerequisites = ['', '', '']
     with_prerequisites = ['professional_ids_progress_dea_fields','professional_ids_progress_cds_fields','professional_ids_progress_registration_fields']
 
     values = fetch_many(prerequisites)&.pluck(:data_value)

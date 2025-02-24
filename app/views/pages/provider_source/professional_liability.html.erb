@@ -45,7 +45,7 @@
 										<label class="text-dark-grey">Do/Did you have professional liability coverage within the past ten (10) years? <span class="text-danger"> *</span></label>
 									<div class="d-flex me-4 gap-2">
 										<div class="gap-2">
-											<input type="radio" name="has_liability_coverage" class="liability-coverage-rbtn" data-form='self_insurance_fields' value="yes" checked='checked'>
+											<input type="radio" name="has_liability_coverage" class="liability-coverage-rbtn" data-form='self_insurance_fields' value="yes">
 											<span>YES</span>
 										</div>	
 										<div class="gap-2">
@@ -55,11 +55,10 @@
 									</div>
 								</div>	
 						    </div>	
-
-            <div class="col-lg-12" id="lack_of_liability_form">
-              <label class="text-dark-grey">Please explain your lack of Professional Liability Coverage.</label>
-              <textarea class="form-control border-dark" name="lf-lack-of-liability-coverage" rows="5"></textarea>
-            </div>
+						<div class="col-lg-12" id="lack_of_liability_form" style="display: none;">
+							<label class="text-dark-grey">Please explain your lack of Professional Liability Coverage.</label>
+							<textarea class="form-control border-dark" name="lf-lack-of-liability-coverage" rows="5"></textarea>
+						</div>
 					</div>
    <div class="<%= toggle_hide_current_provider_source('has_liability_coverage', @provider) %>" id="self_insurance_fields">
 						<div class="row my-3">
@@ -141,4 +140,20 @@ $('.liability-coverage-rbtn').on('change',function(){
 		// console.log($(this).val());
 		($(this).val() == 'yes') ?	$('#self_insurance_fields').removeClass('d-none') : $('#self_insurance_fields').addClass('d-none');
 })
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const radioButtons = document.querySelectorAll(".liability-coverage-rbtn");
+    const lackOfLiabilityForm = document.getElementById("lack_of_liability_form");
+
+    radioButtons.forEach(radio => {
+      radio.addEventListener("change", function () {
+        if (this.value === "no") {
+          lackOfLiabilityForm.style.display = "block";
+        } else {
+          lackOfLiabilityForm.style.display = "none";
+        }
+      });
+    });
+  });
 </script>
