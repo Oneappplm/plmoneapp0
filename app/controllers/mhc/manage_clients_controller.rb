@@ -51,17 +51,29 @@ class Mhc::ManageClientsController < ApplicationController
   end
 
   def provider_personal_uploaded_docs
-    provider_id = params[:provider_personal_uploaded_doc][:provider_id]
-
-    @documents = ProviderPersonalUploadedDoc.where(provider_id: params[:provider_id])
-    @document = ProviderPersonalUploadedDoc.new
-
-    if request.post?
-      @document = ProviderPersonalUploadedDoc.new(provider_personal_uploaded_docs_params)
-      if @document.save
-        redirect_to mhc_manage_clients_path, notice: 'Document uploaded successfully.'
-      end
+    provider_personal_information =  ProviderPersonalInformation.find(params[:provider_personal_uploaded_doc][:provider_personal_information_id])
+    @document = ProviderPersonalUploadedDoc.new(provider_personal_uploaded_docs_params)
+    @document.provider_attest_id = provider_personal_information.provider_attest_id
+    @document.caqh_provider_attest_id = provider_personal_information.caqh_provider_attest_id
+    if @document.save
+      redirect_to mhc_manage_clients_path, notice: 'Document uploaded successfully.'
     end
+  end
+
+  def get_provider_uploaded_docs
+    personal_information_id = params[:id]
+    documents = ProviderPersonalUploadedDoc.where(provider_personal_information_id: personal_information_id)
+
+    render json: documents.map { |doc| 
+      {
+        id: doc.id,
+        image_classification: doc.image_classification,
+        sub_section: doc.sub_section,
+        file_name: doc.file_upload.file.filename.to_s,
+        file_url: doc.file_upload.url,
+        created_at: doc.created_at
+      }
+    }
   end
 
   def delete_provider_personal_docs
@@ -82,6 +94,7 @@ class Mhc::ManageClientsController < ApplicationController
       :exclude_from_profile,
       :file_upload,
       :provider_attest_id,
+      :caqh_provider_attest_id,
       :provider_personal_information_id)
   end
 
