@@ -559,7 +559,7 @@ Rails.application.routes.draw do
   namespace :mhc do
     get 'verification_platform/california_participating_physician_application', to: 'verification_platform#california_participating_physician_application', as: :california_participating_physician_application
   end  
-
+  get 'provider-engage', to: 'provider_app#provider_engage', as: 'provider_engage'
   post 'mhc/verification-platform/send-contact', to: 'mhc/verification_platform#send_contact'
   post 'mhc/verification-platform/generate_rva_information', to: 'mhc/verification_platform#generate_rva_information'
   post 'mhc/verification-platform/generate_npdb_information', to: 'mhc/verification_platform#generate_npdb_information'

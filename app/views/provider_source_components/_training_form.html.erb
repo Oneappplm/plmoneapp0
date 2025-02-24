@@ -102,19 +102,20 @@
 		<input type="date" class="form-control border-dark" name="tf-end-date">
 	</div>
 </div>
+	<div class="row mb-3">
+		<div class="d-flex align-items-center my-3">
+			<label class="me-3">Did you not complete your training at this institution? <span class="text-danger"> *</span></label>
+			
+			<button type="button" class="btn btn-outline-primary rounded-circle small-btn me-2" id="yes_button">✓</button>
+			<button type="button" class="btn btn-outline-primary rounded-circle small-btn" id="no_button">✗</button>
 
-	 <div class="row mb-3">
-    <div class="d-flex align-items-center my-3">
-      <%= HtmlUtils.radio_toggle name: 'incomplete_training',
-    		label: 'Did you not complete your training at this institution? <span class="text-danger"> *</span>',
-        toshow: 'training_reason_form'
-      %>
-      <input type="hidden" id="incomplete_training" name="incomplete_training" value="no">
-    </div>
-      <div id="training_reason_form" class="d-none">
-        <%= render partial: 'provider_source_components/training_reason_form'%>
-      </div>
-	</div>
+			<input type="hidden" id="incomplete_training" name="incomplete_training">
+		</div>
+
+		<div id="training_reason_form" class="d-none">
+			<%= render partial: 'provider_source_components/training_reason_form' %>
+		</div>
+  </div>
 <div class="row mb-3">
 	<div class="col-lg-6">
 		<label class="text-dark-grey">University Affiliated Program</label>
@@ -164,4 +165,33 @@
 		<input type="text" class="form-control border-dark" name="tfu-fax-number">
 	</div>
 </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const yesButton = document.getElementById("yes_button");
+    const noButton = document.getElementById("no_button");
+    const formSection = document.getElementById("training_reason_form");
+    const hiddenInput = document.getElementById("incomplete_training");
 
+    yesButton.addEventListener("click", function() {
+      formSection.classList.add("d-none"); // Hide form
+      hiddenInput.value = "yes";
+
+      yesButton.classList.add("btn-primary");
+      yesButton.classList.remove("btn-outline-primary");
+
+      noButton.classList.add("btn-outline-primary");
+      noButton.classList.remove("btn-primary");
+    });
+
+    noButton.addEventListener("click", function() {
+      formSection.classList.remove("d-none"); // Show form
+      hiddenInput.value = "no";
+
+      noButton.classList.add("btn-primary");
+      noButton.classList.remove("btn-outline-primary");
+
+      yesButton.classList.add("btn-outline-primary");
+      yesButton.classList.remove("btn-primary");
+    });
+  });
+</script>
