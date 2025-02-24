@@ -50,6 +50,76 @@
                      </div>
                   </div>
                </div>
+                <div class="d-flex align-items-center my-3 gap-3">
+                  <label class="mb-0">Are/We you board certified in this specialty?</label>
+                  
+                  <div class="d-flex gap-2">
+                    <input type="radio" name="specialties_certified" value="yes" id="certified_yes">
+                    <span>YES</span>
+                  </div>
+
+                  <div class="d-flex gap-2">
+                    <input type="radio" name="specialties_certified" value="no" id="certified_no">
+                    <span>NO</span>
+                  </div>
+                </div>
+                <!-- Hidden Fields (Shown when YES is selected) -->
+                <div id="certification_fields" style="display: none;">
+                  <div class="row">
+                    <div class="col-lg-6 mb-3">
+                      <label class="text-dark-grey"> Certifying Board<span class="text-danger">*</span></label>
+                      <input type="text" name="specialties_crtifiying_board" class="form-control border-dark">
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                      <label class="text-dark-grey"> Address Line 1<span class="text-danger">*</span></label>
+                      <input type="text" name="specialties_address_line_1" class="form-control border-dark">
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-6 mb-3">
+                      <label class="text-dark-grey"> Address Line 2<span class="text-danger">*</span></label>
+                      <input type="text" name="specialties_address_line_2" class="form-control border-dark">
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                      <label class="text-dark-grey"> City<span class="text-danger">*</span></label>
+                      <input type="text" name="specialties_city" class="form-control border-dark">
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-6 mb-3">
+                      <label class="text-dark-grey"> State<span class="text-danger">*</span></label>
+                      <input type="text" name="specialties_state" class="form-control border-dark">
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                      <label class="text-dark-grey">Zip Code<span class="text-danger">*</span></label>
+                      <input type="text" name="specialties_zip" class="form-control border-dark">
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-6 mb-3">
+                      <label class="text-dark-grey">Board Certification Number<span class="text-danger">*</span></label>
+                      <input type="text" name="specialties_bord_certificate" class="form-control border-dark">
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                      <label class="text-dark-grey">Telephone Number<span class="text-danger">*</span></label>
+                      <input type="text" name="specialties_telephone" class="form-control border-dark">
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-6 mb-3">
+                      <label class="text-dark-grey">Initial Certification Date (MM/DD/YYYY)<span class="text-danger">*</span></label>
+                      <input type="date" name="specialties_initial_date" class="form-control border-dark">
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                      <label class="text-dark-grey">Certification Expiration Date (MM/DD/YYYY)<span class="text-danger">*</span></label>
+                      <input type="date" name="specialties_exipration_date" class="form-control border-dark">
+                    </div>
+                  </div>
+                </div>
                <div class="row mb-3">
                   <!-- <div class="col-lg-6"> -->
                   <div class="col-lg-6">
@@ -116,7 +186,7 @@
 								<div class="d-flex justify-content-between">
 										<label class="text-dark-grey">Have you ever failed to pass a specialty board examination? <span class="text-danger"> *</span></label>
 									<div class="d-flex me-4 gap-2">
-										<div class="gap-2">
+										<div class="gap-2"> 
 											<input type="radio" name="specialties_board_exam" class="radio-with-form" data-form='failed_exam_board' value="yes" checked='checked'>
 											<span>YES</span>
 										</div>	
@@ -154,9 +224,20 @@
                   </div>
                   <div class="col-lg-6">
                      <label class="text-dark-grey">Employment Type (can be multiple)</label>
-                     <select class="form-select border-dark" placeholder="Suffix" name="populations_employment_type">
-                         <option value="">Select Option</option>
-                     </select>
+                      <select class="form-select border-dark" name="populations_employment_type">
+                          <option value="">Select Option</option>
+                          <option value="children_0_8">Children (0-8 years)</option>
+                          <option value="children_idd_dd_7_17">Children with IDD/DD (7-17 years)</option>
+                          <option value="children_sed_7_17">Children with SED (7-17 years)</option>
+                          <option value="autism_benefit_screening">Autism Benefit Screening</option>
+                          <option value="infant_mental_health">Infant Mental Health</option>
+                          <option value="aba_services">ABA Services</option>
+                          <option value="adults_mental_illness">Adults with Mental Illness</option>
+                          <option value="adults_idd_dd">Adults with IDD/DD</option>
+                          <option value="adults_sud">Adults with SUD</option>
+                          <option value="children_sud">Children with SUD</option>
+                          <option value="co_occurring">Co-Occurring</option>
+                      </select>
                   </div>
                </div>
                <div class="row mb-3">
@@ -189,3 +270,25 @@
       </div>
    </div>
 </div>
+<!-- JavaScript to Toggle Fields -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const yesOption = document.getElementById("certified_yes");
+    const noOption = document.getElementById("certified_no");
+    const fieldsDiv = document.getElementById("certification_fields");
+
+    noOption.checked = true;
+    fieldsDiv.style.display = "none";
+
+    function toggleFields() {
+      if (yesOption.checked) {
+        fieldsDiv.style.display = "block";
+      } else {
+        fieldsDiv.style.display = "none";
+      }
+    }
+
+    yesOption.addEventListener("change", toggleFields);
+    noOption.addEventListener("change", toggleFields);
+  });
+</script>

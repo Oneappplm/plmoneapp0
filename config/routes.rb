@@ -157,7 +157,6 @@ Rails.application.routes.draw do
   end
   resource :client_organizations
 
-
   resources :time_lines, path: 'time-lines'
   resources :manage_clients, path: 'manage-clients'
   resources :manage_practitioners, path: 'manage-practitioners'
@@ -279,8 +278,6 @@ Rails.application.routes.draw do
     end
   end
 
-
-
   resources :view_summary
 
   devise_scope :user do
@@ -370,7 +367,6 @@ Rails.application.routes.draw do
     end
   end
 
-
   resources :help_codes, path: 'help-codes'
   resources :pdf_populators, only: [:index], path: 'pdf-populator' do
     collection do
@@ -427,6 +423,71 @@ Rails.application.routes.draw do
     resources :verification_platform, only: [:index, :show], path: 'verification-platform'
     resources :manage_clients
     resources :manage_practitioners, path: 'manage-practitioners'
+
+    resources :client_portal, only: [:index, :show], path: 'client-portal' do
+      collection do
+        get :upload_csv
+        post :process_csv
+        get :clear_csv
+        get :download_csv
+      end
+    end
+
+    resources :client_portal do
+      collection do
+        get 'history', to: 'client_portal#history'
+      end
+    end
+
+    resources :manage_practitioners, only: [:index], path: 'manage-practitioners'
+    resources :manage_clients, only: [:index], path: 'manage-clients' do
+      collection do
+        post :provider_personal_uploaded_docs, path: 'provider-personal-uploaded-docs'
+        delete :delete_provider_personal_docs, path: 'delete_provider_personal_docs'
+      end
+    end
+    resources :schools
+  end
+  namespace :mhc do
+    get 'california_participating_physician_reapplication', to: 'verification_platform#california_participating_physician_reapplication'
+    get 'california_participating_physician_addendum_b', to: 'verification_platform#california_participating_physician_addendum_b'
+    get 'california_participating_physician_ipa_addendum_c', to: 'verification_platform#california_participating_physician_ipa_addendum_c'
+    get 'confidential_report_of_physical_and_mental_disabilities', to: 'verification_platform#confidential_report_of_physical_and_mental_disabilities'
+    get 'minnesota_uniform_credentialing_application', to: 'verification_platform#minnesota_uniform_credentialing_application'
+    get 'minnesota_uniform_credentialing_reappointment_application', to: 'verification_platform#minnesota_uniform_credentialing_reappointment_application'
+    get 'alliance_application', to: 'verification_platform#alliance_application'
+    get 'alliance_reapplication', to: 'verification_platform#alliance_reapplication'
+    get 'alliance_professional_liability_addendum_a', to: 'verification_platform#alliance_professional_liability_addendum_a'
+    get 'michigan_application', to: 'verification_platform#michigan_application'
+    get 'arms_credential_application', to: 'verification_platform#arms_credential_application'
+    get 'memorialcare_initial_application', to: 'verification_platform#memorialcare_initial_application'
+    get 'texas_standardized_credentialing_application', to: 'verification_platform#texas_standardized_credentialing_application'
+    get 'california_participating_physician_application/addendum_a', to: 'verification_platform#california_participating_physician_application_addendum_a'
+  end
+  
+  namespace :mhc do
+    resources :verification_platform, only: [] do
+      get 'california_participating_physician_application', on: :collection
+    end
+  end
+
+  namespace :mhc do
+    get 'verification_platform/california_participating_physician_application', to: 'verification_platform#california_participating_physician_application', as: :california_participating_physician_application
+  end  
+
+  get 'provider-engage', to: 'provider_app#provider_engage', as: 'provider_engage'
+  post 'mhc/verification-platform/send-contact', to: 'mhc/verification_platform#send_contact'
+  post 'mhc/verification-platform/generate_rva_information', to: 'mhc/verification_platform#generate_rva_information'
+  post 'mhc/verification-platform/generate_npdb_information', to: 'mhc/verification_platform#generate_npdb_information'
+
+  resources :app_trackers, path: 'app-tracker' do
+    member do
+      get :upload_documents
+      post :upload_documents
+      delete :delete_uploaded_document
+      get :view_uploaded_documents
+      post :download_documents
+    end
   end
 
   namespace :api do

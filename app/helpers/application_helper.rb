@@ -6,12 +6,20 @@ module ApplicationHelper
 		current_client_organization = ClientOrganization.take || ClientOrganization.new
 	end
 
-	def active_menu cname, aname = nil
-		if aname.present?
-			cname.split(',').include?(controller_name) && aname.split(',').include?(action_name) ? 'ph-active fw-semibold' : ''
-		else
-			cname.split(',').include?(controller_name) ? 'ph-active fw-semibold' : ''
-		end
+	# def active_menu cname, aname = nil
+	# 	if aname.present?
+	# 		cname.split(',').include?(controller_name) && aname.split(',').include?(action_name) ? 'ph-active fw-semibold' : ''
+	# 	else
+	# 		cname.split(',').include?(controller_name) ? 'ph-active fw-semibold' : ''
+	# 	end
+	# end
+
+	def active_menu(cname, *anames)
+	  if anames.present?
+	    cname.split(',').include?(controller_name) && anames.include?(action_name) ? 'ph-active fw-semibold' : ''
+	  else
+	    cname.split(',').include?(controller_name) ? 'ph-active fw-semibold' : ''
+	  end
 	end
 
 	def active_manage_tool_sub_menu cname, aname = nil
