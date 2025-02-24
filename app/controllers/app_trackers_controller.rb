@@ -44,9 +44,9 @@ class AppTrackersController < ProvidersController
 
 	# for uploading the documents
 	def provider_personal_docs_uploaded_documents
-		provider_id = params[:provider_personal_docs_upload][:provider_id]
+		caqh_provider_attest_id = params[:provider_personal_docs_upload][:caqh_provider_attest_id]
 
-		@documents = ProviderPersonalDocsUpload.where(provider_id: params[:provider_id])
+		@documents = ProviderPersonalDocsUpload.where(caqh_provider_attest_id: params[:provider_personal_docs_upload][:caqh_provider_attest_id])
 		@document = ProviderPersonalDocsUpload.new
 
 		if request.post?
@@ -58,62 +58,56 @@ class AppTrackersController < ProvidersController
 	end
 
 
-	# def upload_documents
-	# 	@document = @provider.uploaded_documents.new
-	# 	if request.post?
-	# 		@document = @provider.uploaded_documents.new(document_params)
-	# 		if @document.save
-	# 			redirect_to app_trackers_path, notice: 'Document uploaded successfully.'
-	# 		end
-	# 	end
-	# end
-
-	# def delete_uploaded_document
-	# 	doc_id = params.dig(:doc_id)
-	# 	doc_file = @provider.uploaded_documents.find_by_id(doc_id)
-	# 	if doc_file.destroy
-	# 		redirect_to request.referrer, notice: "Successfully deleted."
-	# 	else
-	# 		redirect_to request.referrer, alert: "Something went wrong."
-	# 	end
-	# end
-
-	# def view_uploaded_documents; end
-
 	# for provider_personal_attempt 
 	def save_attempt_details
-		@provider_personal_attempt = ProviderPersonalAttempt.new(attempt_params)
-		if @provider_personal_attempt.save
-			redirect_to app_trackers_path, notice: "Provider Personal Attempt created successfully."
-		end
-	end
+	  @provider_personal_attempt = ProviderPersonalAttempt.new(attempt_params)
 
-	# for provider_personal_docs_receives in this update & create both methods are present
-	def save_provider_personal_docs_receives
-	  provider_id, provider_attest_id = params[:doc_recived_id].split(" ")
+	  provider_personal_info = ProviderPersonalInformation.find_by(caqh_provider_id: @provider_personal_attempt.caqh_provider_id)
 
-	  @provider_personal_docs_receive = ProviderPersonalDocsReceive.find_by(provider_id: provider_id, provider_attest_id: provider_attest_id)
-    
-	  if @provider_personal_docs_receive.present?
-	    if @provider_personal_docs_receive.update(provider_personal_docs_receive_params)
-	      redirect_to app_trackers_path, notice: "Provider Personal Docs Receives updated successfully."
-	    else
-	      render :edit, alert: "Failed to update Provider Personal Docs Receives."
-	    end
+	  if provider_personal_info
+	    @provider_personal_attempt.provider_personal_information_id = provider_personal_info.id
 	  else
-	    @provider_personal_docs_receive = ProviderPersonalDocsReceive.new(provider_personal_docs_receive_params)
-	    if @provider_personal_docs_receive.save
-	      redirect_to app_trackers_path, notice: "Provider Personal Docs Receives created successfully."
-	    else
-	      render :new, alert: "Failed to create Provider Personal Docs Receives."
-	    end
+	    flash[:alert] = "No provider personal information found for the given CAQH Provider ID."
+	    redirect_to app_trackers_path and return
+	  end
+
+	  if @provider_personal_attempt.save
+	    redirect_to app_trackers_path, notice: "Provider Personal Attempt created successfully."
+	  else
+	    flash[:alert] = @provider_personal_attempt.errors.full_messages.join(", ")
+	    redirect_to app_trackers_path
 	  end
 	end
-	
+
+
+	def save_provider_personal_docs_receives
+	  # Find the provider personal information based on the given ID
+	  provider_info = ProviderPersonalInformation.find(params[:provider_personal_docs_receive][:provider_personal_information_id])
+
+	  # Attempt to find the associated ProviderPersonalDocsReceive record
+	  @provider_personal_docs_receive = provider_info.provider_personal_docs_receive
+
+	  # If no record is found, build a new one
+	  if @provider_personal_docs_receive.nil?
+	    @provider_personal_docs_receive = provider_info.build_provider_personal_docs_receive
+	  end
+
+	  # Update the record (either found or newly built)
+	  if @provider_personal_docs_receive.update(provider_personal_docs_receive_params)
+	    # If update was successful, notify user that the record was updated or created
+	    notice_message = @provider_personal_docs_receive.persisted? ? 'updated' : 'created'
+	    redirect_to app_trackers_path, notice: "Provider Personal Docs Receives #{notice_message} successfully."
+	  else
+	    # If save failed, notify user and show the appropriate form
+	    flash[:alert] = "Failed to save Provider Personal Docs Receives."
+	    render @provider_personal_docs_receive.new_record? ? :new : :edit
+	  end
+	end
+
 	# # for provider_practice_informations in this update & create both methods are present
 	def save_provider_practice_informations
 		provider_attest_id = params[:practice_information][:provider_attest_id]
-	  practice_info_id = params[:practice_information][:id] # Fetch practice_information ID
+	  practice_info_id = params[:practice_information][:id]
 
 	  if practice_info_id.present?
 	    @practice_information = PracticeInformation.find_by(id: practice_info_id)
@@ -139,37 +133,29 @@ class AppTrackersController < ProvidersController
 	  end
 	end
 
-
-
 	protected
 
 	def provider_personal_docs_upload_params
 		params.require(:provider_personal_docs_upload).permit(
 			:file_upload,
 			:provider_id,
-			:provider_attest_id
+			:provider_attest_id,
+			:provider_personal_information_id,
+			:caqh_provider_attest_id,
+			:caqh_provider_id
 		)
 	end
 
-
-	# def document_params
-	# 	params.require(:provider_uploaded_document).permit(
-	# 		:image_classification,
-	# 		:sub_section,
-	# 		:description,
-	# 		:exclude_from_profile,
-	# 		:file_upload
-	# 	)
-	# end
-
 	def attempt_params
 		params.require(:provider_personal_attempt).permit(
-			:provider_id,
 			:provider_attest_id,
 			:contact_method,
 			:attempt_status,
 			:contact_date,
-			:comments
+			:comments,
+			:caqh_provider_id,
+			:caqh_provider_attest_id,
+			:provider_personal_information_id
 		)
 	end
 
@@ -228,7 +214,10 @@ class AppTrackersController < ProvidersController
 			:professional_resource_network_comments,
 			:dea_comments,
 			:pa_sponsor_request_form_comments,
-			:collaborative_agreement_comments
+			:collaborative_agreement_comments,
+			:caqh_provider_id, 
+			:caqh_provider_attest_id,
+			:provider_personal_information_id
 	   )
 	end
 
