@@ -9,6 +9,7 @@ class Users::SessionsController < Devise::SessionsController
         redirect_to redirect_url, notice: "An OTP Code has been sent to your email. Please check your email." and return
       else
         super
+        log_login_activity(resource)
       end
     else
       self.resource = warden.authenticate!(auth_options)
@@ -17,5 +18,17 @@ class Users::SessionsController < Devise::SessionsController
       yield resource if block_given?
       respond_with resource, location: after_sign_in_path_for(resource)
     end
+  end
+
+  private
+
+  def log_login_activity(user)
+    CustomAudit.create!(
+      auditable: user,
+      auditable_type: 'User',
+      action: 'login',
+      user_id: user.id,
+      audited_changes: { 'Login' => "User #{user.full_name} logged in at #{Time.current}" }
+    )
   end
 end
