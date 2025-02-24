@@ -1,8 +1,10 @@
 class CreateProviderPersonalDocsReceives < ActiveRecord::Migration[7.0]
   def change
-    create_table :provider_personal_docs_receives, primary_key: [:provider_attest_id,:provider_id] do |t|
+    create_table :provider_personal_docs_receives do |t|
       t.references :provider_attest
-      t.integer :provider_id
+      t.integer    :caqh_provider_attest_id
+      t.references :provider_personal_information, index: false
+      t.integer    :caqh_provider_id
 
       # Received Dates
       t.date :application_received_date
@@ -66,5 +68,7 @@ class CreateProviderPersonalDocsReceives < ActiveRecord::Migration[7.0]
 
       t.timestamps
     end
+
+    add_index  :provider_personal_docs_receives, :provider_personal_information_id, :name => 'ppdr_ppi_id'
   end
 end
