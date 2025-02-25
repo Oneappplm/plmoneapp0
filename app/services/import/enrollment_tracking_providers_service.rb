@@ -18,7 +18,7 @@ class Import::EnrollmentTrackingProvidersService < ApplicationService
 
 			data.each_with_index do |sheet, index|
 				if index > 0
-					next if sheet.compact.size == 0
+					next if sheet.compact.size == 0 || Provider.exists?(first_name:	sheet[3], middle_name: sheet[4], last_name: sheet[5])
 
 					provider = Provider.new(
 						roster_result: sheet[0],
