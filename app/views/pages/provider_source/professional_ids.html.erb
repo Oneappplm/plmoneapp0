@@ -19,14 +19,24 @@
             <%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
         </div>
         <div class="col-lg-12 card py-3 my-3">
-          <h4 class="fw-semibold text-secondary">NPI ID</h4>
+          <h4 class="fw-semibold text-secondary">NPI ID
+            <span class="ms-2" data-bs-toggle="tooltip" data-bs-placement="right" 
+              title="National Practitioner Identification Number (10 digits, e.g. 1234567890; Individual NPI only).">
+              <i class="bi bi-info-circle text-primary fs-5"></i>
+            </span>
+          </h4>
           <div class="form-group">
             <label class="text-dark-grey">National Practitioner Identification (NPI) Number (e.g. 10 digits, 1234567890, Individual NPI only)</label>
             <input type="text" name="npi_number" class="form-control border-dark">
           </div>
         </div>
         <div class="col-lg-12 card py-3 mb-3">
-          <h4 class="fw-semibold text-secondary">DEA</h4>
+          <h4 class="fw-semibold text-secondary">DEA
+            <span class="ms-2" data-bs-toggle="tooltip" data-bs-placement="right" 
+              title="Drug Enforcement Administration Registration number, applicable to MD, DO, DDS, DMD, DVM, DPM only.">
+              <i class="bi bi-info-circle text-primary fs-5"></i>
+            </span>
+          </h4>
           <div class="d-flex justify-content-between align-items-center my-3">
             <p class="mb-0">Do/Did you have a DEA Registration Number?</p>
             <div class="d-flex gap-3">
@@ -66,7 +76,12 @@
         </div>
 
         <div class="col-lg-12 card py-3 mb-3">
-          <h4 class="fw-semibold text-secondary mb-3">CDS</h4>
+          <h4 class="fw-semibold text-secondary mb-3">CDS
+            <span class="ms-2" data-bs-toggle="tooltip" data-bs-placement="right" 
+              title="Controlled Dangerous Substances Registration Number issued by certain states. Applicable to MD, DO, DDS, DMD, DVM, DPM only.">
+              <i class="bi bi-info-circle text-primary fs-5"></i>
+            </span>
+          </h4>
           <div class="d-flex justify-content-between align-items-center my-3">
             <p class="mb-0">Do/Did you have a CDS Registration Number?</p>
             <div class="d-flex gap-3">
@@ -160,7 +175,7 @@
               </div>
             </div>
           </div>
-          <div class="<%#= toggle_hide_current_provider_source('registration_id_form', @provider) %>" id="registration_ids_form">
+          <div class="<%= toggle_hide_current_provider_source('registration_id_form', @provider)%>" id="registration_ids_form">
              <% if !@provider.registrations.blank? %>
             <% @provider&.registrations&.reload&.each do |registration|%>
               <%= render partial: "pages/provider_source/registration_fields", locals: {registration: registration}%>
