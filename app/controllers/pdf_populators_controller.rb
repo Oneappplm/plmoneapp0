@@ -1,111 +1,136 @@
 class PdfPopulatorsController < ApplicationController
- include PdfPopulatorsHelper
- 
- def index
-  # @pdf_files = Dir[Rails.root.join('public', 'autopopulate_providers_output', '*.pdf')]
-  if params.dig(:provider_ids).present? && params.dig(:pdf_form).present?
-   
-     providers = Provider.where(id: params.dig(:provider_ids).reject(&:empty?))
-     data = format_data
-     
-     providers.each do |provider|
-      provider.attributes.each do |key, value|
-        data[key.to_sym] = value if data.key?(key.to_sym) # Ensure the key exists in data
-      end
+  include PdfPopulatorsHelper
+
+  before_action :set_providers,         only: [:index]
+  before_action :set_enrollment_groups, only: [:index]
+
+  def index
+    # @pdf_files = Dir[Rails.root.join('public', 'autopopulate_providers_output', '*.pdf')]
+
+    if params.dig(:provider_ids).present? && params.dig(:pdf_form).present?
+
+       providers = Provider.where(id: params.dig(:provider_ids).reject(&:empty?))
+       data = format_data
       
-      custom_file_name = "#{provider.last_name}_#{provider.middle_name}_#{provider.first_name}_#{params.dig(:pdf_form)}_#{Time.current.strftime("%Y-%m-%d %H%M%S")}.pdf"
-      service = AutomationTool::PdfPopulatorService.new(pdf_sample_template(params.dig(:pdf_form)), data, params.dig(:pdf_form), custom_file_name)
-      service.call
+       providers.each do |provider|
+        provider.attributes.each do |key, value|
+          data[key.to_sym] = value if data.key?(key.to_sym) # Ensure the key exists in data
+        end
+        
+        custom_file_name = "#{provider.last_name}_#{provider.middle_name}_#{provider.first_name}_#{params.dig(:pdf_form)}_#{Time.current.strftime("%Y-%m-%d %H%M%S")}.pdf"
+        service = AutomationTool::PdfPopulatorService.new(pdf_sample_template(params.dig(:pdf_form)), data, params.dig(:pdf_form), custom_file_name)
+        service.call
+      end
+
+      zipfile_path = AutomationTool::PdfZipperService.create_zip
+
+      send_file zipfile_path, type: 'application/zip', disposition: 'attachment'
+      
+      # Clean up files after sending
+      AutomationTool::PdfZipperService.clean_up
     end
-
-    zipfile_path = AutomationTool::PdfZipperService.create_zip
-
-    send_file zipfile_path, type: 'application/zip', disposition: 'attachment'
-    
-    # Clean up files after sending
-    AutomationTool::PdfZipperService.clean_up
-
   end
- end
 
- def populate_data
-  if params.dig(:auto_populate_data).present?
-    data = eval(params[:"json-data"])
-    service = AutomationTool::PdfPopulatorService.new(pdf_sample_template, data)
-    service.call
+  def populate_data
+    if params.dig(:auto_populate_data).present?
+      data = eval(params[:"json-data"])
+      service = AutomationTool::PdfPopulatorService.new(pdf_sample_template, data)
+      service.call
 
-    redirect_to pdf_populators_path, notice: "Auto Populate data has been successfully completed."
+      redirect_to pdf_populators_path, notice: "Auto Populate data has been successfully completed."
+    end
   end
- end
 
- protected
- def format_data
-  {
-  first_name: "Jarrod",
-  middle_initial: "M",
-  last_name: "Lee",
-  dob: "11/11/1994",
-  npi: "1679209381",
-  license_number: "DS0000012013",
-  graduation_date: "06/2022",
-  dental_school: "Meharry Medical College",
-  specialty: "General Dentist",
-  date_started: "04/01/2024",
-  office_name: "Hintz and Oakley Family Dentistry",
-  address: "120 West Jackson Street",
-  office_city: "Cookeville",
-  state: "TN",
-  zip: "38501",
-  tax_id: "47-1611765",
-  phone_number: "931-526-5460",
-  fax_number: "931-526-5459",
-  ada_compliance: "Yes",
-  accepting_new_patients: "Yes",
-  office_hours: {
-    monday: "8:00 AM - 5:00 PM",
-    tuesday: "7:30 AM - 5:00 PM",
-    wednesday: "7:30 AM - 5:00 PM",
-    thursday: "7:30 AM - 5:00 PM",
-    friday: "8:00 AM - 5:00 PM"
-  },
-  board_certified: "Yes",
-  hospital_privileges: "No",
-  sedation_privileges: "Nitrous Oxide",
-  w9_included: true,
-  malpractice_insurance: true,
-  dea_certificate: false,
-  liability_coverage: {
-    amount: "$1,000,000 per occurrence",
-    expiration_date: "12/31/2024"
-  },
-   work_history: [
+  def search_providers
+    @providers = []
+    @providers = Provider.where(enrollment_group_id: params[:enrollment_group]) if params[:enrollment_group].present?
+    @providers = Provider.unscoped if params[:select_all_providers].present?
+    @providers = Provider.search_by_condition(params) if search_fields?
+   
+    render json: @providers
+  end
+
+  def search_fields?
+   params.dig(:first_name).present? || params.dig(:last_name).present? || params.dig(:npi).present?
+  end
+
+  protected
+
+  def set_providers
+    @providers = Provider.all
+  end
+
+  def set_enrollment_groups 
+    @enrollment_groups = EnrollmentGroup.all.map { |group| [group.group_name, group.id] }
+  end
+
+  def format_data
     {
-     practice_name: "Hintz and Oakley Family Dentistry",
-     address: "120 West Jackson Street, Cookeville, TN, 38501",
-     start_date: "04/2024",
-     end_date: nil
-    },
-    {
-     practice_name: "Open Door Dental",
-     address: "112 E 1st St, Crossville, TN, 38555",
-     start_date: "01/2024",
-     end_date: "03/2024"
-    },
-    {
-     practice_name: "Dr. Darryl G. Smith, DDS",
-     address: "805 Webb Ave, Crossville, TN, 38555",
-     start_date: "08/2022",
-     end_date: "11/2023"
+      first_name: "Jarrod",
+      middle_initial: "M",
+      last_name: "Lee",
+      dob: "11/11/1994",
+      npi: "1679209381",
+      license_number: "DS0000012013",
+      graduation_date: "06/2022",
+      dental_school: "Meharry Medical College",
+      specialty: "General Dentist",
+      date_started: "04/01/2024",
+      office_name: "Hintz and Oakley Family Dentistry",
+      address: "120 West Jackson Street",
+      office_city: "Cookeville",
+      state: "TN",
+      zip: "38501",
+      tax_id: "47-1611765",
+      phone_number: "931-526-5460",
+      fax_number: "931-526-5459",
+      ada_compliance: "Yes",
+      accepting_new_patients: "Yes",
+      office_hours: {
+        monday: "8:00 AM - 5:00 PM",
+        tuesday: "7:30 AM - 5:00 PM",
+        wednesday: "7:30 AM - 5:00 PM",
+        thursday: "7:30 AM - 5:00 PM",
+        friday: "8:00 AM - 5:00 PM"
+      },
+      board_certified: "Yes",
+      hospital_privileges: "No",
+      sedation_privileges: "Nitrous Oxide",
+      w9_included: true,
+      malpractice_insurance: true,
+      dea_certificate: false,
+      liability_coverage: {
+        amount: "$1,000,000 per occurrence",
+        expiration_date: "12/31/2024"
+      },
+      work_history: [
+        {
+          practice_name: "Hintz and Oakley Family Dentistry",
+          address: "120 West Jackson Street, Cookeville, TN, 38501",
+          start_date: "04/2024",
+          end_date: nil
+        },
+        {
+          practice_name: "Open Door Dental",
+          address: "112 E 1st St, Crossville, TN, 38555",
+          start_date: "01/2024",
+          end_date: "03/2024"
+        },
+        {
+          practice_name: "Dr. Darryl G. Smith, DDS",
+          address: "805 Webb Ave, Crossville, TN, 38555",
+          start_date: "08/2022",
+          end_date: "11/2023"
+        }
+      ],
+      attestation_questions: {
+        liability_insurance_issues: "No",
+        malpractice_claims: "No",
+        health_impairments: "No",
+        substance_abuse: "No",
+        criminal_convictions: "No",
+        licensing_issues: "No"
+      }
     }
-   ],
-   attestation_questions: {
-    liability_insurance_issues: "No",
-    malpractice_claims: "No",
-    health_impairments: "No",
-    substance_abuse: "No",
-    criminal_convictions: "No",
-    licensing_issues: "No"
-   }
-  }  
- end
+  end
 end
