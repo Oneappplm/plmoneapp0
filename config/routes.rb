@@ -369,6 +369,7 @@ Rails.application.routes.draw do
   resources :pdf_populators, only: [:index], path: 'pdf-populator' do
     collection do
       post :populate_data
+      get  :search_providers
     end
   end
 
