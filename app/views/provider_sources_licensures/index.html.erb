@@ -1,0 +1,111 @@
+<h2>All Licensures</h2>
+
+<%= form_with model: @licensures, url: provider_sources_licensures_path, local: true do |f| %>
+  <% @licensures.each do |licensure| %>
+    <div class="border p-3 mb-3 bg-light rounded">
+      <h5>Licensure Details</h5>
+
+      <div class="row mb-3">
+        <div class="col-lg-6">
+          <%= f.label :licensure_state, "Licensure State", class: "text-dark-grey" %>
+          <%= f.text_field :licensure_state, value: licensure.licensure_state, class: "form-control border-dark" %>
+        </div>
+        <div class="col-lg-6">
+          <%= f.label :license_type, "License Type", class: "text-dark-grey" %>
+          <%= f.select :license_type, options_for_select([
+            ['Licensed Medical Esthetician', 'licensed_medical_esthetician'],
+            ['Medical Assistant', 'medical_assistant'],
+            ['Medical Doctor (MD)', 'medical_doctor'],
+            ['Registered Medical Assistant', 'registered_medical_assistant']
+          ], licensure.license_type), { prompt: 'Select License Type' }, class: "form-control border-dark" %>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-lg-6">
+          <%= f.label :license_number, "License Number", class: "text-dark-grey" %>
+          <%= f.text_field :license_number, value: licensure.license_number, class: "form-control border-dark" %>
+        </div>
+        <div class="col-lg-6">
+          <%= f.label :license_status, "License Status", class: "text-dark-grey" %>
+          <%= f.text_field :license_status, value: licensure.license_status, class: "form-control border-dark" %>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-lg-6">
+          <%= f.label :licensure_issue_date, "Issue Date", class: "text-dark-grey" %>
+          <%= f.date_field :licensure_issue_date, value: licensure.licensure_issue_date, class: "form-control border-dark" %>
+        </div>
+        <div class="col-lg-6">
+          <%= f.label :licensure_expiration_date, "Expiration Date", class: "text-dark-grey" %>
+          <%= f.date_field :licensure_expiration_date, value: licensure.licensure_expiration_date, class: "form-control border-dark licensure-expire" %>
+          <span class="d-flex gap-2">
+            <%= f.check_box :licensure_not_expire, { checked: licensure.licensure_expiration_date.nil?, id: "licensure-not-expire" } %>
+            <small>Does not expire</small>
+          </span>
+        </div>
+      </div>
+
+      <!-- Added Supervision, Primary License & Practice State -->
+      <div class="row mb-3">
+        <div class="col-lg-12">
+          <%= f.label :licensure_practice_state, "Are you currently practicing in this state?", class: "form-label" %>
+          <div class="d-flex gap-2">
+            <%= f.radio_button :licensure_practice_state, "yes", checked: licensure.licensure_practice_state == true, required: true %> YES
+            <%= f.radio_button :licensure_practice_state, "no", checked: licensure.licensure_practice_state == false, required: true %> NO
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-lg-12">
+          <%= f.label :licensure_primary_license, "Is this your primary license?", class: "form-label" %>
+          <div class="d-flex gap-2">
+            <%= f.radio_button :licensure_primary_license, "yes", checked: licensure.licensure_primary_license == true, required: true %> YES
+            <%= f.radio_button :licensure_primary_license, "no", checked: licensure.licensure_primary_license == false, required: true %> NO
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-lg-12">
+          <%= f.label :licensure_require_supervision, "Does this license require supervision?", class: "form-label" %>
+          <div class="d-flex gap-2">
+            <%= f.radio_button :licensure_require_supervision, "yes", checked: licensure.licensure_require_supervision == true, required: true, id: "supervision-yes" %> YES
+            <%= f.radio_button :licensure_require_supervision, "no", checked: licensure.licensure_require_supervision == false, required: true, id: "supervision-no" %> NO
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-3 ">
+        <div class="col-lg-12">
+          <h5>Name of Sponsor</h5>
+        </div>
+        <div class="col-lg-4">
+          <%= f.label :licensure_sponsor_fname, "First Name", class: "text-dark-grey" %>
+          <%= f.text_field :licensure_sponsor_fname, value: licensure.licensure_sponsor_fname, class: "form-control border-dark" %>
+        </div>
+        <div class="col-lg-2">
+          <%= f.label :licensure_sponsor_mname, "Middle Name", class: "text-dark-grey" %>
+          <%= f.text_field :licensure_sponsor_mname, value: licensure.licensure_sponsor_mname, class: "form-control border-dark" %>
+        </div>
+        <div class="col-lg-4">
+          <%= f.label :licensure_sponsor_lname, "Last Name", class: "text-dark-grey" %>
+          <%= f.text_field :licensure_sponsor_lname, value: licensure.licensure_sponsor_lname, class: "form-control border-dark" %>
+        </div>
+        <div class="col-lg-2">
+          <%= f.label :licensure_sponsor_suffix, "Suffix", class: "text-dark-grey" %>
+          <%= f.select :licensure_sponsor_suffix, 
+            options_for_select(["", "Jr.", "Sr.", "III.", "IV."], licensure.licensure_sponsor_suffix), 
+            {}, 
+            class: "form-select border-dark" %>
+        </div>
+        <div class="col-lg-12 mt-3">
+          <%= f.label :licensure_sponsor_degree, "Degree", class: "text-dark-grey" %>
+          <%= f.text_field :licensure_sponsor_degree, value: licensure.licensure_sponsor_degree, class: "form-control border-dark" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

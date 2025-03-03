@@ -4,6 +4,7 @@ class ProviderSource < ApplicationRecord
   has_many :deas, class_name: 'ProviderSourcesDea', inverse_of: :provider_source, dependent: :destroy
   has_many :cds, class_name: 'ProviderSourcesCds', inverse_of: :provider_source, dependent: :destroy
   has_many :cmes, class_name: 'ProviderSourceCme', inverse_of: :provider_source, dependent: :destroy
+  has_many :licensures, class_name: 'ProviderSourceLicensure', inverse_of: :provider_source, dependent: :destroy
   has_many :registrations, class_name: 'ProviderSourcesRegistration', inverse_of: :provider_source, dependent: :destroy
 
   accepts_nested_attributes_for :deas, allow_destroy: true, reject_if: :all_blank

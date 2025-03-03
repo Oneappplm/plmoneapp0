@@ -1,0 +1,305 @@
+  <div class="col-lg-8 mx-auto card py-4 px-5 mb-3">
+    <h4 class="fw-semibold text-secondary mb-3">Specialties</h4>
+    <div class="alert alert-info alert-light-blue d-flex align-items-center">
+      <i class="bi bi-info-circle" style="font-size: 20px;"></i>
+      <small class="ms-2 fw-semibold text-dark-grey">Please enter all practicing specialty information.</small>
+    </div>
+
+    <%= form_with(model: @specialty_detail, local: true) do |form| %>
+      <% @specialty_details.each do |specialty| %>
+        <div class="d-flex align-items-center divider gap-3 my-3">
+          <span class="line flex-grow-1 bg-medium-grey"></span>
+          <div class="bg-medium-grey rounded px-3 py-2">
+            <h6 class="my-0 text-secondary">SPECIALTY</h6>
+          </div>
+          <span class="line flex-grow-1 bg-medium-grey"></span>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-lg-6">
+            <div class="form-group">
+              <%= form.label :ranking, class: "text-dark-grey" %>
+              <%= form.select :ranking, [['Primary', 'Primary'], ['Secondary', 'Secondary']], 
+                  { prompt: 'Select Ranking*', selected: specialty.ranking }, 
+                  class: "form-select border-dark" %>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="form-group">
+              <%= form.label :specialty, class: "text-dark-grey" %>
+              <%= form.text_field :specialty,  value: specialty.specialty,class: "form-control border-dark" %>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center my-3 gap-3">
+          <label class="mb-0">Are you board certified in this specialty?</label>
+          <div class="d-flex gap-2">
+            <%= form.radio_button :certified, 'yes', id: 'certified_yes' %>
+            <label for="certified_yes">YES</label>
+          </div>
+          <div class="d-flex gap-2">
+            <%= form.radio_button :certified, 'no', id: 'certified_no' %>
+            <label for="certified_no">NO</label>
+          </div>
+        </div>
+
+        <!-- Hidden Fields (Shown when YES is selected) -->
+        <div>
+          <div class="row">
+            <div class="col-lg-6 mb-3">
+              <%= form.label :certifying_board, class: "text-dark-grey" %>
+              <%= form.text_field :certifying_board, value: specialty.certifying_board,
+              class: "form-control border-dark" %>
+            </div>
+            <div class="col-lg-6 mb-3">
+              <%= form.label :address_line_1, class: "text-dark-grey" %>
+              <%= form.text_field :address_line_1,  value: specialty.address_line_1,
+              class: "form-control border-dark" %>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-6 mb-3">
+              <%= form.label :address_line_2, class: "text-dark-grey" %>
+              <%= form.text_field :address_line_2,value: specialty.address_line_2,
+               class: "form-control border-dark" %>
+            </div>
+            <div class="col-lg-6 mb-3">
+              <%= form.label :city, class: "text-dark-grey" %>
+              <%= form.text_field :city, value: specialty.city,
+              class: "form-control border-dark" %>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-6 mb-3">
+              <%= form.label :state, class: "text-dark-grey" %>
+              <%= form.text_field :state, value: specialty.state,
+              class: "form-control border-dark" %>
+            </div>
+            <div class="col-lg-6 mb-3">
+              <%= form.label :zip, class: "text-dark-grey" %>
+              <%= form.text_field :zip, value: specialty.zip,
+              class: "form-control border-dark" %>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-6 mb-3">
+              <%= form.label :telephone, class: "text-dark-grey" %>
+              <%= form.telephone_field :telephone, value: specialty.telephone,
+              class: "form-control border-dark" %>
+            </div>
+            <div class="col-lg-6 mb-3">
+              <%= form.label :certification_expiry, "Certification Expiry Date", class: "text-dark-grey" %>
+              <%= form.date_field :certification_expiry,  value: specialty.certification_expiry,
+              class: "form-control border-dark" %>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6 mb-3">
+              <%= form.label :Board_Certification_Number ,class: "text-dark-grey" %>
+              <%= form.telephone_field :board_certificate, value: specialty.board_certificate,
+              class: "form-control border-dark" %>
+            </div>
+            <div class="col-lg-6 mb-3">
+              <%= form.label :Initial_ertification_Date,"Initial Certification Date", class: "text-dark-grey" %>
+              <%= form.date_field :initial_date, value: specialty.initial_date,
+              class: "form-control border-dark" %>
+
+            </div>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-lg-6">
+            <div class="d-flex align-items-center my-3">
+              <%= HtmlUtils.radio_toggle name: 'specialty_detail[ppo_directory]',
+                label: 'Do you wish to be listed in the PPO Directory under <br>
+                this specialty? <span class="text-danger"> *</span>',
+                hidden_field: true,
+                checked: specialty.ppo_directory
+              %>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="d-flex align-items-center my-3">
+              <%= HtmlUtils.radio_toggle name: 'specialty_detail[pos_directory]',
+                label: 'Do you wish to be listed in the POS Directory under <br>
+                this specialty? <span class="text-danger"> *</span>',
+                hidden_field: true,
+                checked: specialty.pos_directory
+              %>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-2">
+          <div class="col-lg-6">
+            <div class="d-flex align-items-center my-3">
+              <%= HtmlUtils.radio_toggle name: 'specialty_detail[provider_directory]',
+                label: 'Do you wish to be listed in the Provider Directory under <br>
+                this specialty?',
+                hidden_field: true,
+                checked: specialty.provider_directory
+              %>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="d-flex align-items-center my-3">
+              <%= HtmlUtils.radio_toggle name: 'specialty_detail[hmo_directory]',
+                label: 'Do you wish to be listed in the HMO Directory under <br>
+                this specialty?',
+                hidden_field: true,
+                checked: specialty.hmo_directory
+              %>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-2">
+          <div class="col-lg-6">
+            <div class="d-flex align-items-center my-3">
+              <%= HtmlUtils.radio_toggle name: 'specialty_detail[board_certified]',
+                label: 'Are/Were you certified by any board in this specialty?',
+                hidden_field: true,
+                checked: specialty.board_certified
+              %>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="d-flex align-items-center my-3">
+              <%= HtmlUtils.radio_toggle name: 'specialty_detail[certified_eligible]',
+                label: 'Are you eligible to be certified in this specialty?',
+                hidden_field: true,
+                checked: specialty.certified_eligible
+              %>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-12 card py-3 mb-3">
+          <div class="row mb-3">
+              <div class="col-lg-12">
+                <div class="d-flex justify-content-between">
+                    <label class="text-dark-grey">
+                      Have you ever failed to pass a specialty board examination?
+                      <span class="text-danger"> *</span>
+                    </label>
+                    <div class="d-flex me-4 gap-2">
+                      <div class="gap-2">
+                          <input type="radio" name="specialties_board_exam"
+                            class="radio-with-form" data-form='failed_exam_board'
+                            value="yes" checked>
+                          <span>YES</span>
+                      </div>
+                      <div class="gap-2">
+                          <input type="radio" name="specialties_board_exam"
+                            class="radio-with-form" data-form='failed_exam_board'
+                            value="no">
+                          <span>NO</span>
+                      </div>
+                    </div>
+                </div>
+              </div>
+          </div>
+          <!-- Hidden Form Section -->
+            <div>
+                <div class="col-lg-12 mb-3">
+                  <label class="text-dark-grey">Board Exam Date
+                  <span class="text-danger">*</span></label>
+                  <%= form.date_field :failed_exam_date,value: specialty.failed_exam_date,
+                   class: "form-control border-dark" %>
+                </div>
+
+                <div class="col-lg-12 mb-3">
+                  <label class="text-dark-grey">Certifying Board
+                  <span class="text-danger">*</span></label>
+                  <%= form.text_field :failed_exam_certifying_board, value: specialty.failed_exam_certifying_board,
+                  class: "form-control border-dark", placeholder: "Certifying Board" %>
+                </div>
+
+                <div class="col-lg-12">
+                  <label class="text-dark-grey">Reason for failure
+                  <span class="text-danger">*</span></label>
+                  <%= form.text_area :failed_exam_reason, rows: 8,value: specialty.failed_exam_reason,
+                   class: "form-control border-dark" %>
+                </div>
+            </div>
+        </div>
+           <div class="col-lg-12 card p-4 mb-4 shadow-sm">
+            <h4 class="fw-semibold text-secondary mb-4">Population Served</h4>
+
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <label class="text-dark-grey fw-semibold mb-2">Requesting privileges for the target populations</label>
+                    <%= form.select :target_population_privileges, 
+                        [["Children", "children"], ["Adults", "adults"], ["None", "none"]],
+                        { prompt: "Select Option" , selected: specialty.target_population_privileges},
+                         class: "form-select border-dark shadow-sm" %>
+                </div>
+                <div class="col-lg-6">
+                    <label class="text-dark-grey fw-semibold mb-2">Employment Type</label>
+                    <%= form.select :populations_employment_type, 
+                        [["Children (0-8 years)", "children_0_8"], ["Children with IDD/DD (7-17 years)", "children_idd_dd_7_17"],
+                        ["Children with SED (7-17 years)", "children_sed_7_17"], ["Autism Benefit Screening", "autism_benefit_screening"],
+                        ["Infant Mental Health", "infant_mental_health"], ["ABA Services", "aba_services"],
+                        ["Adults with Mental Illness", "adults_mental_illness"], ["Adults with IDD/DD", "adults_idd_dd"],
+                        ["Adults with SUD", "adults_sud"], ["Children with SUD", "children_sud"], ["Co-Occurring", "co_occurring"]],
+                        { prompt: "Select Option", selected: specialty.populations_employment_type},
+                        class: "form-select border-dark shadow-sm" %>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <label class="text-dark-grey fw-semibold mb-2">Population being served</label>
+                    <%= form.text_field :populations_served,value: specialty.populations_served,
+                     class: "form-control border-dark shadow-sm", placeholder: "Enter population served" %>
+                </div>
+            </div>
+
+            <div class="col-lg-12 mb-4">
+                <label class="text-dark-grey fw-semibold mb-2">Are you a student intern?</label>
+                <div class="d-flex gap-3">
+                    <div class="form-check">
+                        <%= form.radio_button :specialty_student_intern, true, class: "form-check-input" %>
+                        <label class="form-check-label">Yes</label>
+                    </div>
+                    <div class="form-check">
+                        <%= form.radio_button :specialty_student_intern, false, class: "form-check-input" %>
+                        <label class="form-check-label">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mb-4">
+                <label class="text-dark-grey fw-semibold mb-2">Other information</label>
+                <%= form.text_area :populations_infos,value: specialty.populations_infos,
+                 class: "form-control border-dark shadow-sm", rows: 6 %>
+                <small class="text-muted">Max 2500 characters</small>
+            </div>
+
+            <div class="form-group">
+                <label class="text-dark-grey fw-semibold mb-2">Other areas of professional practice interest, activities, procedures, diagnoses, or populations</label>
+                <%= form.text_area :populations_served_text,value: specialty.populations_served_text,
+                 class: "form-control border-dark shadow-sm", rows: 6 %>
+                <small class="text-muted">Max 2500 characters</small>
+            </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<style>
+.bordered-form {
+  border: 2px solid #333; /* Border color */
+  padding: 20px; /* Andar ka space */
+  border-radius: 8px; /* Gol corner ke liye */
+  background: #fff; /* White background */
+}
+.form-container {
+  border: 2px solid #333;
+  padding: 20px;
+  border-radius: 8px;
+  background: #fff;
+}
+</style>
