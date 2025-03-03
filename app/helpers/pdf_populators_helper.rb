@@ -1,7 +1,7 @@
 module PdfPopulatorsHelper
  def pdf_sample_template pdf_form = "careington"
   if pdf_form == "emblemhealth"
-   Rails.root.join('public', 'templates', 'Dental Provider Application Template.pdf')
+   Rails.root.join('public', 'templates', 'dental-provider-application-template.pdf')
   elsif pdf_form == "paper"
    Rails.root.join('public', 'templates', 'Paper Provider Application Template.pdf')
   else
