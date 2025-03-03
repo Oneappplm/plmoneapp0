@@ -418,6 +418,8 @@ Rails.application.routes.draw do
   get '/application_page', to: 'mhc/verification_platform#application_page'
   get '/enrollment_report_page', to: 'mhc/verification_platform#enrollment_report_page'
 
+  post "/update_provider_associations", to: "office_managers#update_provider_associations"
+
   namespace :mhc do
     resources :provider_cds
     resources :client_portal

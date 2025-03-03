@@ -20,10 +20,10 @@ class ProviderSourcesController < ApplicationController
       # Use LEFT JOIN to ensure all provider sources are included
       @provider_sources = ProviderSource
         .left_joins(:data)
-        .where("provider_source_data.data_key IN ('first_name', 'last_name') AND provider_source_data.data_value LIKE ?", search_term)
+        .where("provider_source_data.data_key IN ('first_name', 'last_name') AND provider_source_data.data_value LIKE ?", search_term).where(created_by_user: current_user.id)
         .distinct # Ensure uniqueness
     else
-			@provider_sources = ProviderSource.all
+			@provider_sources = ProviderSource.where(created_by_user: current_user.id)
 			@provider_source = ProviderSource.new
 		end
 	end

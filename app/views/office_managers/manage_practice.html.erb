@@ -148,92 +148,79 @@
   </div>
 
   <!-- Associate Provider Modal -->
-  <div class="modal fade associateProviderModal" id="" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-          <div class="modal-content">
-              <div class="modal-body">
-                  <div class="content">
-                      <div class="modal-title">
-                          <h6 class="">Associate Providers</h6>
-                          <!-- <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button> -->
-                      </div>
-                      <div class="row">
-                          <p class="associate-note mt-4">Instruction: Drag the name of the provider you want to associate or disassociate.</p>
-                      </div>
-                      <form action="">
-                          <div class="row">
-                              <div class="col-xl-6">
-                                  <h6 class="associate-heading mt-4">Providers added to the Organization, who have accepted your invitation, but not yet associated with the selected location.</h6>
-                                  <div class="associate-left-pane">
-                                      <span class="provider-check">
-                                          <div class="form-check">
-                                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                                              <label class="form-check-label" for="flexCheckDefault">
-                                                  Janeen Ruth Burlison
-                                              </label>
-                                          </div>
-                                      </span>
-                                      <span class="provider-check">
-                                          <div class="form-check">
-                                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault1">
-                                              <label class="form-check-label" for="flexCheckDefault1">
-                                                  Larry De Hoyos
-                                              </label>
-                                          </div>
-                                      </span>
-                                      <span class="provider-check">
-                                          <div class="form-check">
-                                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault2">
-                                              <label class="form-check-label" for="flexCheckDefault2">
-                                                  Rose Dawson
-                                              </label>
-                                          </div>
-                                      </span>
-                                  </div>
-                              </div>
-                              <div class="col-xl-6">
-                                  <h6 class="associate-heading mt-4">Providers associated to location who have accepted your invitation.</h6>
-                                  <div class="associate-right-pane">
-                                      <span class="provider-check">
-                                          <div class="form-check">
-                                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault3">
-                                              <label class="form-check-label" for="flexCheckDefault3">
-                                                  Maribel Zazueta
-                                              </label>
-                                          </div>
-                                      </span>
-                                      <span class="provider-check">
-                                          <div class="form-check">
-                                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault4">
-                                              <label class="form-check-label" for="flexCheckDefault4">
-                                                  Mary Gatter
-                                              </label>
-                                          </div>
-                                      </span>
-                                      <span class="provider-check">
-                                          <div class="form-check">
-                                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault5">
-                                              <label class="form-check-label" for="flexCheckDefault5">
-                                                  Jack Dawson
-                                              </label>
-                                          </div>
-                                      </span>
-                                  </div>
-                              </div>
-                          </div>
-                      </form>
-                      <div class="add-note mt-4">
-                          <h6>Note:</h6>
-                          <h6>Please note that this window only shows Providers who have accepted your invitation. Providers who have not yet accepted your invitation cannot be associated or disassociated. </h6>
-                      </div>
-                      <div class="form-row mt-3">
-                          <button type="submit" class="btn btn-manage btn-primary">Save</button>
-                          <button type="button" class="btn btn-card-remove" data-bs-dismiss="modal">Cancel</button>
-                      </div>
+  <div class="modal fade associateProviderModal" id="providerAssociationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="content">
+            <div class="modal-title">
+              <h6 class="">Associate Providers</h6>
+              <!-- <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button> -->
+            </div>
+            <div class="row">
+              <p class="associate-note mt-4">Instruction: Drag the name of the provider you want to associate or disassociate.</p>
+            </div>
+
+            <form id="associateProvidersForm" method="POST" action="<%= update_provider_associations_path %>">
+              <input type="hidden" name="practice_location_id" id="practice_location_id" value="<%= params[:practice_location_id] %>">
+              <input type="hidden" name="associated_providers" id="associated_providers">
+              <input type="hidden" name="disassociated_providers" id="disassociated_providers">
+
+              <div class="row">
+                <!-- Left Panel -->
+                <div class="col-xl-6">
+                  <h6 class="associate-heading mt-4 text-primary">
+                    Providers added to the Organization, who have accepted your invitation, but not yet associated with the selected location.
+                  </h6>
+                  <div class="associate-pane associate-left-pane d-block">
+                    <% if @non_associated_providers.present? %>
+                      <% @non_associated_providers.each do |provider| %>
+                        <% next unless provider.full_name.present? || provider.email_address.present? %>
+                        <h6 class="provider-item mt-3" data-provider-id="<%= provider.id %>" draggable="true" style="width: fit-content;">
+                          <%= provider.full_name %>
+                        </h6>
+                        <br>
+                      <% end %>
+                    <% else %>
+                      <p class="text-muted">No providers available.</p>
+                    <% end %>
                   </div>
+                </div>
+
+                <!-- Right Panel -->
+                <div class="col-xl-6">
+                  <h6 class="associate-heading mt-4 text-success">
+                    Providers associated to location who have accepted your invitation.
+                  </h6>
+                  <div class="associate-pane associate-right-pane">
+                    <% if @providers.present? %>
+                      <% @providers.each do |provider| %>
+                        <% next unless provider.full_name.present? || provider.email_address.present? %>
+                        <h6 class="provider-item mt-3" data-provider-id="<%= provider.id %>" draggable="true" style="width: fit-content;">
+                          <%= provider.full_name %>
+                        </h6>
+                        <br>
+                      <% end %>
+                    <% else %>
+                      <p class="text-muted">No providers available.</p>
+                    <% end %>
+                  </div>
+                </div>
               </div>
+
+              <div class="add-note mt-4">
+                <h6>Note:</h6>
+                <h6>Please note that this window only shows Providers who have accepted your invitation. Providers who have not yet accepted your invitation cannot be associated or disassociated. </h6>
+              </div>
+              <div class="form-row mt-3">
+                <button type="button" id="saveProviderAssociations" class="btn btn-manage btn-primary">Save</button>
+                <button type="button" class="btn btn-card-remove" data-bs-dismiss="modal">Cancel</button>
+              </div>
+            </form>
           </div>
+        </div>
       </div>
+    </div>
   </div>
 
   <!-- Associate Provider Modal -->
@@ -262,8 +249,8 @@
       setTimeout(getStates(),3000);
 
       $('.edit-practice-location-button').on('click', function() {
-          var practice_location_id = $(this).data("practice-location-id");
-          newEditPracticeLocation(practice_location_id);
+        var practice_location_id = this.dataset.practiceLocationId;
+        newEditPracticeLocation(practice_location_id);
       });
 
       $('.add-practice-location-button').on('click', function() {
@@ -287,11 +274,191 @@
 
   <style>
     .multi-languages {
-    padding: 0;
+      padding: 0;
     }
     #dropdown-states, #dropdown-practice-location-states {
-    padding: 0;
-    max-width: 100%;
+      padding: 0;
+      max-width: 100%;
     }
   </style>
 <% end %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const leftPane = document.querySelector(".associate-left-pane");
+    const rightPane = document.querySelector(".associate-right-pane");
+    const saveButton = document.getElementById("saveProviderAssociations");
+    const practiceLocationInput = document.getElementById("practice_location_id");
+
+    // Function to fetch and update provider lists
+    function fetchProviders(practiceLocationId) {
+        fetch(`/group-engage/manage_practice_locations?practice_location_id=${practiceLocationId}`, {
+            method: "GET",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "Accept": "application/json"
+            }
+        })
+        .then(response => response.json())
+        .then(data => updateProviderLists(data))
+        .catch(error => console.error("Error fetching practice locations:", error));
+    }
+
+    // Function to update the provider lists in UI
+    function updateProviderLists(data) {
+        leftPane.innerHTML = "";
+        rightPane.innerHTML = "";
+
+        // Populate left pane with unassociated providers
+        data.non_associated_providers.forEach(provider => {
+            leftPane.innerHTML += `
+                <span class="provider-check mt-3" draggable="true" id="provider-${provider.id}" data-provider-id="${provider.id}">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="${provider.id}" id="check-${provider.id}">
+                    <label class="form-check-label" for="check-${provider.id}">${provider.full_name}</label>
+                  </div>
+                </span>`;
+        });
+
+        // Populate right pane with associated providers
+        data.providers.forEach(provider => {
+            rightPane.innerHTML += `
+                <span class="provider-check mt-3" draggable="true" id="provider-${provider.id}" data-provider-id="${provider.id}">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="${provider.id}" id="check-${provider.id}">
+                    <label class="form-check-label" for="check-${provider.id}">${provider.full_name}</label>
+                  </div>
+                </span>`;
+        });
+
+        initializeDragAndDrop();
+    }
+
+    // Attach event listeners for the associate buttons
+    document.querySelectorAll(".associate-provider-button").forEach(button => {
+        button.addEventListener("click", function () {
+            const practiceLocationId = this.getAttribute("data-practice-location-id");
+            practiceLocationInput.value = practiceLocationId; // Set the selected practice location ID
+            fetchProviders(practiceLocationId);
+        });
+    });
+
+    // Initialize drag-and-drop functionality
+    function initializeDragAndDrop() {
+        document.querySelectorAll(".provider-check").forEach(provider => {
+            provider.addEventListener("dragstart", (e) => {
+                e.dataTransfer.setData("text/plain", provider.dataset.providerId);
+                e.target.classList.add("dragging");
+            });
+
+            provider.addEventListener("dragend", (e) => {
+                e.target.classList.remove("dragging");
+            });
+        });
+
+        [leftPane, rightPane].forEach(pane => {
+            pane.addEventListener("dragover", (e) => {
+                e.preventDefault();
+                pane.classList.add("drag-over");
+            });
+
+            pane.addEventListener("dragleave", () => {
+                pane.classList.remove("drag-over");
+            });
+
+            pane.addEventListener("drop", (e) => {
+                e.preventDefault();
+                pane.classList.remove("drag-over");
+
+                let providerId = e.dataTransfer.getData("text/plain");
+                let draggedElement = document.getElementById(`provider-${providerId}`);
+
+                if (draggedElement && !pane.contains(draggedElement)) {
+                    pane.appendChild(draggedElement);
+                    
+                    // Determine association status and update backend
+                    let isAssociated = pane.classList.contains("associate-right-pane");
+                    updateProviderAssociation([providerId], isAssociated);
+                }
+            });
+        });
+    }
+
+    // Function to send AJAX request when provider is dragged & dropped
+    function updateProviderAssociation(providerIds, isAssociated) {
+        let formData = new FormData();
+        formData.append("practice_location_id", practiceLocationInput.value);
+
+        if (isAssociated) {
+            formData.append("associated_providers", JSON.stringify(providerIds));
+        } else {
+            formData.append("disassociated_providers", JSON.stringify(providerIds));
+        }
+
+        fetch("/update_provider_associations", {
+            method: "POST",
+            headers: {
+                "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content"),
+                "Accept": "application/json"
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                console.log("Provider association updated successfully.");
+               
+            } else {
+                alert("Error updating provider association.");
+            }
+        })
+        .catch(error => console.error("Error updating provider association:", error));
+    }
+    saveButton.addEventListener("click", function () {
+      let modal = document.getElementById("providerAssociationModal"); // Replace with actual modal ID
+      let bootstrapModal = bootstrap.Modal.getInstance(modal);
+      if (bootstrapModal) {
+        bootstrapModal.hide();
+      }
+    });
+
+});
+
+</script>
+
+
+<style>
+  .associate-pane {
+    min-height: 300px;
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    transition: background-color 0.3s ease;
+  }
+
+  .associate-pane.drag-over {
+    background-color: #e3f2fd;
+    border-color: #007bff;
+  }
+
+  .provider-item {
+    background: white;
+    padding: 10px 15px;
+    margin: 8px 0;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    cursor: grab;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .provider-item:active {
+    transform: scale(1.05);
+    box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.2);
+  }
+
+  .provider-item:hover {
+    background: #f1f1f1;
+  }
+</style>
