@@ -17,7 +17,6 @@ class OfficeManagersController < ApplicationController
     end
   end
 
-
   def manage_practice_locations
     @locations = if params[:search].present?
      PracticeLocation.search(params[:search]).paginate(per_page: 10, page: params[:page] || 1)
@@ -53,6 +52,26 @@ class OfficeManagersController < ApplicationController
       end
     end
   end
+
+  def update_provider_associations
+    practice_location_id = params[:practice_location_id]
+
+    associated_providers = params[:associated_providers].present? ? JSON.parse(params[:associated_providers]) : []
+    disassociated_providers = params[:disassociated_providers].present? ? JSON.parse(params[:disassociated_providers]) : []
+
+    # Update associated providers only if there are any
+    if associated_providers.any?
+      ProviderSource.where(id: associated_providers).update_all(practice_location_id: practice_location_id)
+    end
+
+    # Remove practice location from disassociated providers only if there are any
+    if disassociated_providers.any?
+      ProviderSource.where(id: disassociated_providers).update_all(practice_location_id: nil)
+    end
+
+    render json: { status: "success" }
+  end
+
 
   def manage_applications; end
 

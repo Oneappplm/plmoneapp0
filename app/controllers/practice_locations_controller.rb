@@ -9,7 +9,6 @@ class PracticeLocationsController < ApplicationController
     end
   end
 
-
    def update
     # Handle the custom fields if they are present in the parameters
     if params[:open_practice_status_display].present?
@@ -47,6 +46,18 @@ class PracticeLocationsController < ApplicationController
   end
 
   def practice_location_params
+    params[:practice_location][:open_practice_status] = JSON.parse(params[:practice_location][:open_practice_status]) rescue []
+    params[:practice_location][:ada_wrp_status] = JSON.parse(params[:practice_location][:ada_wrp_status]) rescue []
+    params[:practice_location][:disabled_other_services_wrp_status] = JSON.parse(params[:practice_location][:disabled_other_services_wrp_status]) rescue []
+    
+    params[:practice_location][:public_transportation_wrp_status] = JSON.parse(params[:practice_location][:public_transportation_wrp_status]) rescue []
+
+    params[:practice_location][:laboratory_services_wrp_status] = JSON.parse(params[:practice_location][:laboratory_services_wrp_status]) rescue []
+
+    params[:practice_location][:radiology_services_xray_status] = JSON.parse(params[:practice_location][:radiology_services_xray_status]) rescue []
+
+    params[:practice_location][:anesthesia_administered_status] = JSON.parse(params[:practice_location][:anesthesia_administered_status]) rescue []
+
     params.require(:practice_location).permit(:location, :legal_name, :address1, :address2,
                                               :city, :state_id, :zip_code, :phone_number, :fax_number,
                                               :email, :group_tax_number, :group_npi_number, :have_group_tax_number,

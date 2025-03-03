@@ -92,240 +92,64 @@
       </div>
     </div>
   </div>
-</div>  
+</div>
 <script>
-  let currentTab = 0; // Track the current tab index
+  $(document).ready(function () {
+    function setupStatusManager(containerId, inputId, buttonId, hiddenFieldId, displayFieldId) {
+      const container = $(containerId);
 
-  // Function to initialize and show the current tab
-  function showTab(n) {
-    const tabs = document.querySelectorAll('.tab-pane');
-    const tabNavigationButtons = document.querySelectorAll('.nav-item .tab'); // Tab navigation buttons
-    
-    // Hide all tabs and remove 'active' class from all navigation buttons
-    tabs.forEach(tab => tab.classList.remove('show', 'active'));
-    tabNavigationButtons.forEach(button => button.classList.remove('active'));
+      if (container.length) {
+        const inputField = $(inputId);
+        const addButton = $(buttonId);
+        const hiddenField = $(hiddenFieldId);
+        const displayField = $(displayFieldId);
 
-    // Show the current tab and add the 'active' class to the current navigation button
-    tabs[n].classList.add('show', 'active');
-    tabNavigationButtons[n].classList.add('active');
-    
-    // Update button visibility
-    updateButtons(n);
-
-    // If we have an ID saved, update the form action to 'update' for subsequent tabs
-    const form = document.getElementById('practice_location_form');
-    if (formDataStorage.id) {
-      form.method = 'patch'
-      form.action = '/practice_locations/' + formDataStorage.id; // Update form action for update
-    }
-  }
-
-  // Function to validate fields in the current tab
-  function validateCurrentTab() {
-    const currentTabContent = document.querySelectorAll('.tab-pane')[currentTab];
-    
-    // Select all required fields that are marked with the 'required' attribute
-    const requiredFields = currentTabContent.querySelectorAll('input[required], select[required], textarea[required], input[type="radio"]:required');
-    
-    let valid = true;
-    
-    // Remove any previous error alerts
-    const alertBox = currentTabContent.querySelector('.alert');
-    if (alertBox) {
-      alertBox.remove();
-    }
-
-    // Loop through each required field and validate if it's filled
-    let errorFound = false;
-    requiredFields.forEach(input => {
-      if (input.type === 'radio') {
-        // Check if any radio button in the group is selected
-        const radioGroup = currentTabContent.querySelectorAll(`input[name="${input.name}"]:required`);
-        const isSelected = Array.from(radioGroup).some(radio => radio.checked);
-        if (!isSelected) {
-          errorFound = true;
-          radioGroup.forEach(radio => radio.classList.add('is-invalid')); // Highlight all radio buttons in the group
-        } else {
-          radioGroup.forEach(radio => radio.classList.remove('is-invalid')); // Remove invalid class if a radio button is selected
-        }
-      } else if (!input.value.trim()) {
-        errorFound = true;
-        input.classList.add('is-invalid'); // Highlight the input if it's empty
-      } else {
-        input.classList.remove('is-invalid'); // Remove invalid class if field is filled
-      }
-    });
-
-    // If any required field is empty, display the error alert at the top of the tab
-    if (errorFound) {
-      valid = false;
-      const errorMessage = document.createElement('div');
-      errorMessage.classList.add('alert', 'alert-danger');
-      errorMessage.textContent = "Please fill out all required fields marked with *.";
-      currentTabContent.insertBefore(errorMessage, currentTabContent.firstChild);
-    }
-
-    return valid;
-  }
-
-  // Function to update buttons dynamically based on the current tab
-  function updateButtons(tabIndex) {
-    const saveButton = document.getElementById('save-tab');
-    const saveNextButton = document.getElementById('next-tab');
-    const cancelButton = document.querySelector('.btn-cancel');
-
-    // Show "Save & Next" for all tabs except the last one
-    if (tabIndex === 0) {
-      saveNextButton.style.display = "inline-block"; // Show Save & Next
-    } else if (tabIndex === document.querySelectorAll('.tab-pane').length - 1) {
-      saveNextButton.style.display = "none"; // Hide Save & Next on the last tab
-    } else {
-      saveNextButton.style.display = "inline-block"; // Show Save & Next for all other tabs
-    }
-  }
-
-  let formDataStorage = {};  // Store form data, including the record ID after creation
-
-  function submitFormViaAjax(form, buttonType) {
-    const formData = new FormData(form); // Create FormData from the form
-    const url = form.action; // Form action URL
-    const currentTabContent = document.querySelectorAll('.tab-pane')[currentTab];
-
-    // Check if it's the last tab
-    const totalTabs = document.querySelectorAll('.tab-pane').length;
-
-    // If we are on the last tab, add a hidden field to the form
-    if (currentTab === totalTabs - 1) {
-      let hiddenField = form.querySelector('input[name="last_tab_reached"]');
-      if (!hiddenField) {
-        hiddenField = document.createElement('input');
-        hiddenField.type = 'hidden';
-        hiddenField.name = 'last_tab_reached';
-        hiddenField.value = 'true'; // Set value to indicate this is the last tab
-        form.appendChild(hiddenField);
-      }
-    }
-
-    // If we have an ID stored in formDataStorage, add it to the formData for updating
-    if (formDataStorage.id) {
-      formData.append("id", formDataStorage.id); // Append the record ID for updating
-      
-      // Check if the _method field is already present in the form
-      if (!form.querySelector('input[name="_method"]')) {
-        // Add _method hidden field for PATCH request only if it doesn't exist already
-        const methodField = document.createElement('input');
-        methodField.type = 'hidden';
-        methodField.name = '_method';
-        methodField.value = 'patch'; // Specify the HTTP method as PATCH for updates
-        form.appendChild(methodField); // Append it to the form
-      }
-    }
-
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    
-    // Perform AJAX request (using fetch)
-    const method = formDataStorage.id ? 'PATCH' : 'POST'; // Determine method based on if we have an ID
-    fetch(url, {
-      method: method,
-      body: formData,
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRF-Token': csrfToken,
-      },
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        // Store the ID of the created or updated record
-        if (data.location_id) {
-          formDataStorage.id = data.location_id; // Save the ID of the created or updated record
+        if (!inputField.length || !addButton.length || !hiddenField.length || !displayField.length) {
+          console.error(`⚠️ One or more elements are missing in ${containerId}!`);
+          return;
         }
 
-        // Handle successful response
-        if (buttonType === 'saveAndNext') {
-          // If 'Save and Next' is clicked, move to next tab
-          if (document.getElementById('next-tab').style.display !== "none") {
-            currentTab++;
-            showTab(currentTab);
-          }
-        } else if (buttonType === "save") {
-          // Only show the success message if we are on the last tab
-          if (currentTab === totalTabs - 1) {
-            document.getElementById('save-tab').style.display = 'none';
-            document.querySelector('.services').style.display = 'none';
-            const successMessage = document.createElement('h2');
-            successMessage.classList.add('mt-5', 'mb-5')
-            successMessage.textContent = 'Success! New Location added. You can now close this window.';
-            currentTabContent.insertBefore(successMessage, currentTabContent.firstChild);
-          }
+        let statusList = [];
+        let existingValue = hiddenField.val().trim();
 
-          // Update the form method for subsequent requests
-          const form = document.getElementById('practice_location_form');
-          if (formDataStorage.id) {
-            form.method = 'patch'
-            form.action = '/practice_locations/' + formDataStorage.id; // Update form action for update
+        if (existingValue) {
+          try {
+            statusList = JSON.parse(existingValue);
+            if (!Array.isArray(statusList)) {
+              throw new Error("Not an array");
+            }
+          } catch (error) {
+            console.warn(`⚠️ Invalid JSON in ${hiddenFieldId}. Converting to array.`);
+            statusList = existingValue.split(",").map(item => item.trim()).filter(Boolean);
           }
-        } else {
-          // Close the modal if it's the last tab
-          const modal = document.getElementById('addLocationModal');
-          const bootstrapModal = new bootstrap.Modal(modal);
-          bootstrapModal.hide();  // Dismiss the modal
         }
-      } else {
-        // Handle validation errors
-        const errorMessages = data.errors;
-        const alertBox = document.createElement('div');
-        alertBox.classList.add('alert', 'alert-danger');
-        alertBox.textContent = errorMessages.join(' ');
-        currentTabContent.insertBefore(alertBox, currentTabContent.firstChild);
+
+            // Populate the display field with existing values
+        displayField.val(statusList.join(", "));
+
+        addButton.on("click", function () {
+          let newStatus = inputField.val().trim();
+          console.log(`✅ Adding to ${displayFieldId}:`, newStatus);
+
+          if (newStatus !== "" && !statusList.includes(newStatus)) {
+            statusList.push(newStatus);
+                    inputField.val(""); // Clear input after adding
+
+                    // Update hidden field and display field
+                    hiddenField.val(JSON.stringify(statusList));
+                    displayField.val(statusList.join(", "));
+                  }
+                });
       }
-    })
-    .catch(error => {
-      console.error('Error submitting the form:', error);
-    });
-  }
-
-  // Handle the "Save" button click (Stay on the same tab)
-  document.getElementById('save-tab').addEventListener('click', function(event) {
-    event.preventDefault();  // Prevent default form submission
-
-    const form = document.getElementById('practice_location_form');
-    
-    if (validateCurrentTab()) {
-      submitFormViaAjax(form, 'save'); // Submit the form via AJAX with 'save' button type
     }
-  });
 
-  // Handle the "Save & Next" button click (Validate and go to next tab)
-  document.getElementById('next-tab').addEventListener('click', function(event) {
-    event.preventDefault();  // Prevent default form submission
-    
-    const form = document.getElementById('practice_location_form');
-    
-    if (validateCurrentTab()) {
-      submitFormViaAjax(form, 'saveAndNext'); // Submit the form via AJAX with 'saveAndNext' button type
-    }
+    // Apply to both sections
+    setupStatusManager("#tab-patient-acceptance", "#practice_status_input", "#add_to_list", "#practice_location_open_practice_status", "#practice_status_list_display");
+    setupStatusManager("#tab-patient-access", "#patient_access_input", "#add_to_list_ada_wrp", "#practice_location_ada_wrp_status", "#ada_wrp_list_display");
+    setupStatusManager("#tab-patient-access", "#disabled_other_services_input", "#add_to_list_disabled_other_services_wrp", "#practice_location_disabled_other_services_wrp_status", "#disabled_other_services_wrp_status_display");
+    setupStatusManager("#tab-patient-access", "#public_transportation_input", "#add_to_list_public_transportation_wrp", "#practice_location_public_transportation_wrp_status", "#public_transportation_wrp_status_display");
+    setupStatusManager("#tab-patient-services", "#laboratory_services_input", "#add_to_list_laboratory_services_wrp", "#practice_location_laboratory_services_wrp_status", "#laboratory_services_wrp_status_display");
+    setupStatusManager("#tab-patient-services", "#radiology_services_xray_input", "#add_to_list_radiology_services_xray", "#practice_location_laboratory_services_wrp_status", "#radiology_services_xray_status_display");
+    setupStatusManager("#tab-patient-services", "#anesthesia_administered_input", "#add_to_list_anesthesia_administered", "#practice_location_laboratory_services_wrp_status", "#anesthesia_administered_status_display");
   });
-
-  // Handle the "Cancel" button click (Dismiss modal)
-  const modal = document.getElementById('addLocationModal');
-  const totalTabs = document.querySelectorAll('.tab-pane').length;
-  document.querySelector('.btn-cancel').addEventListener('click', function() {
-    // Close the modal without saving
-    const bootstrapModal = new bootstrap.Modal(modal);
-    bootstrapModal.hide();  // Dismiss the modal
-    if (currentTab === totalTabs - 1) {
-      location.reload(); // This will reload the page after the modal is closed
-    }
-  });
-
-  // You can also use the modal's hidden event to refresh the page if the modal is closed by other means
-  modal.addEventListener('hidden.bs.modal', function() {
-    if (currentTab === totalTabs - 1) {
-      location.reload(); // Refresh the page when the modal is closed
-    }
-  });
-
-  // Initialize the first tab
-  showTab(currentTab);
 </script>
