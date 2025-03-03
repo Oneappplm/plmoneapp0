@@ -10,6 +10,8 @@ class PracticeLocationsController < ApplicationController
   end
 
   def update
+    @practice_location.open_practice_status = params[:open_practice_status_display].split(',')
+    @practice_location.ada_wrp_status = params[:ada_wrp_status_display].split(',')
     if @practice_location.update(practice_location_params)
       redirect_to request.referrer, notice: 'Updated location successfully.'
     end
@@ -32,6 +34,18 @@ class PracticeLocationsController < ApplicationController
   end
 
   def practice_location_params
+    params[:practice_location][:open_practice_status] = JSON.parse(params[:practice_location][:open_practice_status]) rescue []
+    params[:practice_location][:ada_wrp_status] = JSON.parse(params[:practice_location][:ada_wrp_status]) rescue []
+    params[:practice_location][:disabled_other_services_wrp_status] = JSON.parse(params[:practice_location][:disabled_other_services_wrp_status]) rescue []
+    
+    params[:practice_location][:public_transportation_wrp_status] = JSON.parse(params[:practice_location][:public_transportation_wrp_status]) rescue []
+
+    params[:practice_location][:laboratory_services_wrp_status] = JSON.parse(params[:practice_location][:laboratory_services_wrp_status]) rescue []
+
+    params[:practice_location][:radiology_services_xray_status] = JSON.parse(params[:practice_location][:radiology_services_xray_status]) rescue []
+
+    params[:practice_location][:anesthesia_administered_status] = JSON.parse(params[:practice_location][:anesthesia_administered_status]) rescue []
+
     params.require(:practice_location).permit(:location, :legal_name, :address1, :address2,
                                               :city, :state_id, :zip_code, :phone_number, :fax_number,
                                               :email, :group_tax_number, :group_npi_number, :have_group_tax_number,
@@ -53,9 +67,9 @@ class PracticeLocationsController < ApplicationController
                                               :public_transportation_wrp, :laboratory_services, :laboratory_services_wrp, :clia_waiver,
                                               :clia_waiver_wrp, :clia_waiver_expiration_date, :clia_certificate, :clia_certificate_wrp,
                                               :clia_certificate_expiration_date, :radiology_services, :radiology_services_xray,
-                                              :radiology_services_fda, :anesthesia_administered, :additional_procedures
+                                              :radiology_services_fda, :anesthesia_administered, :additional_procedures, open_practice_status: [], ada_wrp_status: [], disabled_other_services_wrp_status: [],
+                                              public_transportation_wrp_status: [], laboratory_services_wrp_status: [], radiology_services_xray_status: [], anesthesia_administered_status: []
                                              )
 
   end
-
 end

@@ -46,7 +46,7 @@
                               </a>
                           </li>
                       </ul>
-                      <% url = @practice_location.persisted? ? practice_location_path(id: @practice_location.id) : practice_locations_path%>
+                      <% url = @practice_location.persisted? ? practice_location_path(id: @practice_location.id) : practice_locations_path %>
                       <%= form_for @practice_location, url: url do |f| %>
                       <div class="tab-content mt-3" id="myTabContent1">
 
@@ -91,3 +91,63 @@
       </div>
   </div>
 </div>
+<script>
+  $(document).ready(function () {
+    function setupStatusManager(containerId, inputId, buttonId, hiddenFieldId, displayFieldId) {
+      const container = $(containerId);
+
+      if (container.length) {
+        const inputField = $(inputId);
+        const addButton = $(buttonId);
+        const hiddenField = $(hiddenFieldId);
+        const displayField = $(displayFieldId);
+
+        if (!inputField.length || !addButton.length || !hiddenField.length || !displayField.length) {
+          console.error(`⚠️ One or more elements are missing in ${containerId}!`);
+          return;
+        }
+
+        let statusList = [];
+        let existingValue = hiddenField.val().trim();
+
+        if (existingValue) {
+          try {
+            statusList = JSON.parse(existingValue);
+            if (!Array.isArray(statusList)) {
+              throw new Error("Not an array");
+            }
+          } catch (error) {
+            console.warn(`⚠️ Invalid JSON in ${hiddenFieldId}. Converting to array.`);
+            statusList = existingValue.split(",").map(item => item.trim()).filter(Boolean);
+          }
+        }
+
+            // Populate the display field with existing values
+        displayField.val(statusList.join(", "));
+
+        addButton.on("click", function () {
+          let newStatus = inputField.val().trim();
+          console.log(`✅ Adding to ${displayFieldId}:`, newStatus);
+
+          if (newStatus !== "" && !statusList.includes(newStatus)) {
+            statusList.push(newStatus);
+                    inputField.val(""); // Clear input after adding
+
+                    // Update hidden field and display field
+                    hiddenField.val(JSON.stringify(statusList));
+                    displayField.val(statusList.join(", "));
+                  }
+                });
+      }
+    }
+
+    // Apply to both sections
+    setupStatusManager("#tab-patient-acceptance", "#practice_status_input", "#add_to_list", "#practice_location_open_practice_status", "#practice_status_list_display");
+    setupStatusManager("#tab-patient-access", "#patient_access_input", "#add_to_list_ada_wrp", "#practice_location_ada_wrp_status", "#ada_wrp_list_display");
+    setupStatusManager("#tab-patient-access", "#disabled_other_services_input", "#add_to_list_disabled_other_services_wrp", "#practice_location_disabled_other_services_wrp_status", "#disabled_other_services_wrp_status_display");
+    setupStatusManager("#tab-patient-access", "#public_transportation_input", "#add_to_list_public_transportation_wrp", "#practice_location_public_transportation_wrp_status", "#public_transportation_wrp_status_display");
+    setupStatusManager("#tab-patient-services", "#laboratory_services_input", "#add_to_list_laboratory_services_wrp", "#practice_location_laboratory_services_wrp_status", "#laboratory_services_wrp_status_display");
+    setupStatusManager("#tab-patient-services", "#radiology_services_xray_input", "#add_to_list_radiology_services_xray", "#practice_location_laboratory_services_wrp_status", "#radiology_services_xray_status_display");
+    setupStatusManager("#tab-patient-services", "#anesthesia_administered_input", "#add_to_list_anesthesia_administered", "#practice_location_laboratory_services_wrp_status", "#anesthesia_administered_status_display");
+  });
+</script>
