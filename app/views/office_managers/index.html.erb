@@ -1,760 +1,771 @@
+<%= render "top_button_navs"%>
+<%= render 'user_restriction', locals: { access_key: 'Manage Provider' } do %>
+  <div class="content">
+      <div class="container">
+          <!-- Cards -->
+          <div class="row">
+              <div class="col-xl-3">
+                  <div class="card provider-card">
+                      <div class="card-body">
+                          <span class="card-head">
+                              <i class="bx bx-group"></i>
+                              All Provider
+                          </span>
+                          <div class="card-counter">
+                              <h3 class="text-white"><%= ProviderSource.count %></h3>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
 
-    <%= render "top_button_navs"%>
-    <%= render 'user_restriction', locals: { access_key: 'Manage Provider' } do %>
-        <div class="content">
-            <div class="container">
-                <!-- Cards -->
-                <div class="row">
-                    <div class="col-xl-3">
-                        <div class="card provider-card">
-                            <div class="card-body">
-                                <span class="card-head">
-                                    <i class="bx bx-group"></i>
-                                    All Provider
-                                </span>
-                                <div class="card-counter">
-                                    <h3 class="text-white"><%= ProviderSource.count %></h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+          <!-- Filter Dropdown -->
+          <div class="filter-wpr">
+              <div class="row mb-3">
+                  <div class="col-xl-5">
+                      <label for="filter-select">Location</label>
+                      <div class="d-flex align-items-center gap-2">
+                          <%= form_with url: request.url, method: :get, html: { class: ''} do |form| %>
+                              <%= form.select :practice_location_id, options_for_select(PracticeLocation.all.map{|m| [m.location, m.id]}.prepend("All Location"), params[:practice_location_id]), {}, {:class => 'form-select w-100',  onchange: 'this.form.submit();'}  %>
+                          <% end %>
+                          <% select_tag('location_filter_select', options_for_select(PracticeLocation.all.map{|m| [m.location, m.id]}.prepend("All Location"), params[:practice_location_id]), class: 'form-control',  id: 'filter-select', onchange: 'this.form.submit();')%>
+                          <!--  data-bs-toggle="modal" data-bs-target="#removeLocationModal" -->
+                          <% if params[:practice_location_id].present? && current_user.can_access?('Remove Location') %>
+                              <button class="btn btn-danger btn-xs" id="remove-location">
+                                  <i class="bx bx-trash"></i>
+                                  Remove Location
+                              </button>
+                          <% end %>
+                      </div>
+                  </div>
+                  <div class="col-xl-7 button-wpr">
+                      <% if params[:practice_location_id].present? && current_user.can_access?('Add Provider') %>
+                      <button class="btn btn-primary btn-xs" id="add-provider" data-bs-toggle="modal" data-bs-target="#addProviderModal">
+                          <i class='bx bx-plus' ></i>
+                          Add Provider
+                      </button>
+                      <% end %>
 
-                <!-- Filter Dropdown -->
-                <div class="filter-wpr">
-                    <div class="row mb-3">
-                        <div class="col-xl-5">
-                            <label for="filter-select">Location</label>
-                            <div class="d-flex align-items-center gap-2">
-                                <%= form_with url: request.url, method: :get, html: { class: ''} do |form| %>
-                                    <%= form.select :practice_location_id, options_for_select(PracticeLocation.all.map{|m| [m.location, m.id]}.prepend("All Location"), params[:practice_location_id]), {}, {:class => 'form-select w-100',  onchange: 'this.form.submit();'}  %>
-                                <% end %>
-                                <% select_tag('location_filter_select', options_for_select(PracticeLocation.all.map{|m| [m.location, m.id]}.prepend("All Location"), params[:practice_location_id]), class: 'form-control',  id: 'filter-select', onchange: 'this.form.submit();')%>
-                                <!--  data-bs-toggle="modal" data-bs-target="#removeLocationModal" -->
-                                <% if params[:practice_location_id].present? && current_user.can_access?('Remove Location') %>
-                                    <button class="btn btn-danger btn-xs" id="remove-location">
-                                        <i class="bx bx-trash"></i>
-                                        Remove Location
-                                    </button>
-                                <% end %>
-                            </div>
-                        </div>
-                        <div class="col-xl-7 button-wpr">
-                            <% if params[:practice_location_id].present? && current_user.can_access?('Add Provider') %>
-                            <button class="btn btn-primary btn-xs" id="add-provider" data-bs-toggle="modal" data-bs-target="#addProviderModal">
-                                <i class='bx bx-plus' ></i>
-                                Add Provider
-                            </button>
-                            <% end %>
+                      <%#= link_to 'Send Invite', 'javascript::void(0);', class: 'btn btn-manage btn-purple mt-2', onclick: "sendInvite(this)", data: { providerid: provider.id, emailaddress: provider.email_address  } if current_user.can_access?('Send Invite') %>
 
-                            <%= link_to 'javascript:void(0)', class: 'btn btn-primary btn-xs', onclick: "sendBulkInvites(this)" do %>
-                                <i class='bx bxs-paper-plane' ></i>
-                                Send Invites
-                            <% end if current_user.can_access?('Send Invite') %>
+                      <%= link_to 'javascript:void(0)', class: 'btn btn-primary btn-xs', onclick: "sendBulkInvites(this)" do %>
+                          <i class='bx bxs-paper-plane' ></i>
+                          Send Invites
+                      <% end if current_user.can_access?('Send Invite') %>
 
-                            <%= link_to 'javascript:void(0)', class: 'btn btn-danger btn-xs', onclick: 'deleteProviders(this)' do %>
-                                <i class="bx bx-trash"></i>
-                                Remove Providers
-                            <% end if current_user.can_access?('Remove Provider') %>
-                        </div>
-                    </div>
-                    <div class="row result-controls mb-4">
-                        <div class="col-lg-12">
-                            <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
-                            <div class="page_info ms-3 text-black">
-                                <%= page_entries_info @providers, entry_name: 'Providers' %>
-                            </div>
-                            <% if params[:per_page ].present? %>
-                                <%= will_paginate @providers, :params =>  {per_page: params[:page] }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                            <% else %>
-                                <%= will_paginate @providers, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                            <% end %>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                <!-- Cards -->
-                <div class="card-wpr">
-                <div class="row">
-                    <% @providers.each do |provider| %>
-                    <% next unless provider.full_name.present? || provider.email_address.present?%>
-                    <div class="col-xl-3 mb-2">
-                        <div class="border p-4 rounded shadow h-100">
-                        <div class="d-flex justify-content-between">
-                                <h6><%= provider.full_name %></h6>
-                                <input class="form-check-input border-dark" type="checkbox" value="<%= provider.id %>">
-                        </div>
-                        <hr style="margin-top: 8px; margin-bottom: 8px;">
-                        <div class="row">
-                            <div class="col-xl-6">
-                                <h6>Attest Date:</h6>
-                            </div>
-                            <div class="col-xl-6">
-                                <p></p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xl-6">
-                                <h6>Degree:</h6>
-                            </div>
-                            <div class="col-xl-6">
-                                <p><%= provider.degree %></p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xl-6">
-                                <h6>Last Invite Sent:</h6>
-                            </div>
-                            <div class="col-xl-6">
-                                <p><%= provider&.global_invitation_sent_at&.strftime("%Y-%m-%d") %></p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xl-6">
-                                <h6>Sent invite count:</h6>
-                            </div>
-                            <div class="col-xl-6">
-                                <p><%= provider.global_invitation_count  %></p>
-                            </div>
-                        </div>
-                        <div class="row mt-4">
-                            <div class="col-lg-12">
-
-                                <% if provider.user.present? && provider.user.password_change_status_via_invite == 'completed' %>
-                                    <%= link_to 'Manage Application', manage_applications_office_manager_path(provider), class: 'btn btn-manage btn-primary' if current_user.can_access?('Manage Application') %>
-                                <% else %>
-                                    <%= link_to 'Send Invite', 'javascript::void(0);', class: 'btn btn-manage btn-purple mt-2', onclick: "sendInvite(this)", data: { providerid: provider.id, emailaddress: provider.email_address  } if current_user.can_access?('Send Invite') %>
-                                <% end%>
-
-                                <%= button_to 'Remove', remove_provider_office_manager_path(provider), class: 'btn btn-manage btn-danger mt-2 delete-button', data: {confirm: 'Are you sure?'} if current_user.can_access?('Remove Provider') %>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
+                      <%= link_to 'javascript:void(0)', class: 'btn btn-danger btn-xs', onclick: 'deleteProviders(this)' do %>
+                          <i class="bx bx-trash"></i>
+                          Remove Providers
+                      <% end if current_user.can_access?('Remove Provider') %>
+                  </div>
+              </div>
+              <div class="row result-controls mb-4">
+                  <div class="col-lg-12">
+                      <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+                      <div class="page_info ms-3 text-black">
+                          <%= page_entries_info @providers, entry_name: 'Providers' %>
+                      </div>
+                      <% if params[:per_page ].present? %>
+                          <%= will_paginate @providers, :params =>  {per_page: params[:page] }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                      <% else %>
+                          <%= will_paginate @providers, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                      <% end %>
+                      </div>
+                  </div>
+              </div>
+          </div>
 
 
 
+          <!-- Cards -->
+          <div class="card-wpr">
+          <div class="row">
+              <% @providers.each do |provider| %>
+              <% next unless provider.full_name.present? || provider.email_address.present?%>
+              <div class="col-xl-3 mb-2">
+                  <div class="border p-4 rounded shadow h-100">
+                  <div class="d-flex justify-content-between">
+                          <h6><%= provider.full_name %></h6>
+                          <input class="form-check-input border-dark" type="checkbox" value="<%= provider.id %>" emailaddress="<%= provider.email_address %>">
+                  </div>
+                  <hr style="margin-top: 8px; margin-bottom: 8px;">
+                  <div class="row">
+                      <div class="col-xl-6">
+                          <h6>Attest Date:</h6>
+                      </div>
+                      <div class="col-xl-6">
+                          <p></p>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-xl-6">
+                          <h6>Degree:</h6>
+                      </div>
+                      <div class="col-xl-6">
+                          <p><%= provider.degree %></p>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-xl-6">
+                          <h6>Last Invite Sent:</h6>
+                      </div>
+                      <div class="col-xl-6">
+                          <p><%= provider&.global_invitation_sent_at&.strftime("%Y-%m-%d") %></p>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-xl-6">
+                          <h6>Sent invite count:</h6>
+                      </div>
+                      <div class="col-xl-6">
+                          <p><%= provider.global_invitation_count  %></p>
+                      </div>
+                  </div>
+                  <div class="row mt-4">
+                      <div class="col-lg-12">
+
+                          <% if provider.user.present? && provider.user.password_change_status_via_invite == 'completed' %>
+                              <%= link_to 'Manage Application', manage_applications_office_manager_path(provider), class: 'btn btn-manage btn-primary' if current_user.can_access?('Manage Application') %>
+                          <% else %>
+                              <%= link_to 'Send Invite', 'javascript::void(0);', class: 'btn btn-manage btn-purple mt-2', onclick: "sendInvite(this)", data: { providerid: provider.id, emailaddress: provider.email_address  } if current_user.can_access?('Send Invite') %>
+                          <% end%>
+
+                          <%= button_to 'Remove', remove_provider_office_manager_path(provider), class: 'btn btn-manage btn-danger mt-2 delete-button', data: {confirm: 'Are you sure?'} if current_user.can_access?('Remove Provider') %>
+                      </div>
+                  </div>
+                  </div>
+              </div>
 
 
-                    <% end %>
-                </div>
-                </div>
-                <div class="row result-controls mb-4">
-                    <div class="col-lg-12">
-                        <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
-                        <div class="page_info ms-3 text-black">
-                            <%= page_entries_info @providers, entry_name: 'Providers' %>
-                        </div>
-                        <% if params[:per_page ].present? %>
-                            <%= will_paginate @providers, :params =>  {per_page: params[:page] }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                        <% else %>
-                            <%= will_paginate @providers, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                        <% end %>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-
-                <div class="modal fade " id="sendInviteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                <div class="content">
-                                    <div class="modal-title">
-                                        <h6 class="header-email">Send Email Invitation</h6>
-                                    </div>
-                                    <div class="form-row row">
-                                        <!-- <div class="col-xl-6">
-                                            <label for="">Sender Name</label>
-                                            <input type="text" class="form-control" placeholder="">
-                                        </div> -->
-                                        <div class="col-xl-12">
-                                            <label for="">Email To * </label>
-                                            <h5 class="providers-selected hide"></h5>
-                                            <input type="text" name="sim_email_to" class="form-control" placeholder="" readonly required>
-                                        </div>
-                                    </div>
-                                    <div class="form-row row">
-                                        <div class="col-xl-12">
-                                            <label for="">Subject *</label>
-                                            <input type="text" name="sim_subject" class="form-control" placeholder="" required>
-                                        </div>
-                                        <div class="col-xl-12">
-                                            <label for="">Email CC</label>
-                                            <input type="text" name="sim_email_cc" class="form-control" placeholder="">
-                                        </div>
-                                    </div>
-                                    <div class="form-row row">
-                                        <div class="col-xl-12">
-                                            <label for="">Message *</label>
-                                            <textarea name="sim_message" id="" class="form-control" required cols="30" rows="12"><%= "You are invited to connect to Office Manager account on [website_link].\n\nTo agree to designate him/her as your office manager, please click the link. \n\nPlease do not close your browser until the page completely loads, which may take some time. \n\nIf you do not wish to accept the invitation, please disregard this message.".html_safe %>
-                                            </textarea>
-                                        </div>
-                                    </div>
-                                    <!-- <h6 class="note-heading mt-4">Invite link which will be added by the system</h6>
-                                    <p class="note">You are invited to connect to Office Manager account on (link of the website). To agree to designate him/her as your office manager, please click the link. Please do not close your browser until the page completely loads, which may take some time. If you do not wish to accept the invitation, please disregard this message. <a href="">[Click to open link]</a> </p> -->
-                                    <div class="form-row mt-3">
-                                        <button id="btnSendSingleInvitation" class="btn btn-manage btn-primary" onclick="sendSingleInvitationNow(this)" data-providerid="" data-mode="">Send</button>
-                                        <button class="btn btn-card-remove fw-bold text-black" data-bs-dismiss="modal">Cancel</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Remove Location Modal -->
-                <div class="modal fade" id="removeLocationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                <div class="content">
-                                    <h6 class="remove-heading remove-location-title"></h6>
-                                    <p class="remove-note">Are you sure you want to delete?</p>
-                                    <div class="form-row mt-3">
-                                        <button class="btn btn-sm btn-danger w-100 text-center remove-location-button-yes" data-locationid="" onclick="removeLocation(this)">Yes</button>
-                                        <button class="btn btn-card-remove fw-bold text-black" data-bs-dismiss="modal">No</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Add Provider Modal -->
-                <div class="modal fade" id="addProviderModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-xl modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                <div class="">
-                                    <div class="modal-title">
-                                        <h6 class="">Add New Provider</h6>
-                                        <button class="btn btn-cancel" data-bs-dismiss="modal">
-                                            <!-- close icon large -->
-
-                                            <i class="bx bx-x-circle text-red"></i>
-                                        </button>
-                                    </div>
-                                    <div class="form-row row">
-                                        <div class="col-xl-4">
-                                            <label for="">First Name <span class="text-red">*</span></label>
-                                            <input type="text" class="form-control form-field" placeholder="" name="first_name">
-                                        </div>
-                                        <div class="col-xl-4">
-                                            <label for="">Middle Name</label>
-                                            <input type="text" class="form-control form-field" placeholder="" name="middle_name">
-                                        </div>
-                                        <div class="col-xl-4">
-                                            <label for="">Last Name <span class="text-red">*</span></label>
-                                            <input type="text" class="form-control form-field" placeholder="" name="last_name">
-                                        </div>
-                                    </div>
-                                    <div class="form-row row mt-2">
-                                        <div class="col-xl-4">
-                                            <label for="">SSN </label>
-                                            <input type="text" class="form-control form-field" placeholder="" name="ssn">
-                                        </div>
-                                        <div class="col-xl-4">
-                                            <label for="">Date of Birth <span class="text-red">*</span></label>
-                                            <input type="date" class="form-control form-field" placeholder="" name="date_of_birth">
-                                        </div>
-                                        <div class="col-xl-4">
-                                            <label for="">Email </label>
-                                            <input type="text" class="form-control form-field" placeholder="" name="email">
-                                        </div>
-                                    </div>
-
-                                    <div class="row result-controls mt-4">
-                                        <!-- <div class="col-xl-6 filter-result">
-                                            <h6 class="">Search result: 2 existing providers</h6>
-                                        </div> -->
-                                        <div class="col-xl-6">
-                                            <div class="">
-                                                <button id="btn-search-provider" class="btn btn-sm btn-primary">
-                                                    <i class="bx bx-search"></i>
-                                                    Search Provider
-                                                </button>
-                                                <button id="btn-add-provider" class="btn btn-sm btn-primary">
-                                                    <i class='bx bx-plus' ></i>
-                                                    Add Provider
-                                                </button>
-                                                <!-- button close -->
-                                                <button class="btn btn-sm btn-warning" data-bs-dismiss="modal">
-                                                    Close
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <!-- <div class="dark">
-                                    <div class="content">
-                                        <div class="modal-title">
-                                            <h6 class="text-white">Add Existing Provider to Roster</h6>
-                                        </div>
-                                    </div>
-                                </div> -->
-                                <p class="alert alert-success alert-dismissible mt-4 d-none"></p>
-                                <p class="alert alert-danger alert-dismissible mt-4 d-none"></p>
-
-                                <div id="group-engage-table-holder" class="d-none">
-                                    <table id="group-engage-table" class="custom-table mt-4">
-                                        <thead>
-                                            <tr>
-                                                <th  class="text-white"></th>
-                                                <th  class="text-white">First Name</th>
-                                                <th  class="text-white">Middle Name</th>
-                                                <th  class="text-white">Last Name</th>
-                                                <th  class="text-white">Birth Date</th>
-                                                <th  class="text-white">SSN</th>
-                                                <th  class="text-white">Email</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="mt-4">
-                                    <h6 class="mb-0">Required Fields: </h6>
-                                    <ul>
-                                        <li>
-                                            <small><code>SSN & EMAIL are required when "Add Provider" button is clicked</code></small>
-                                        </li>
-                                        <li>
-                                            <small><code>Firstname, Lastname & Birthday are required when "Search Provider" button is clicked</code></small>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="add-note mt-1">
-                                    <h6>Tips:</h6>
-                                    <ul>
-                                        <li>Enter required fields and click "Search Provider" button.</li>
-                                        <li>If the provider is located, click "Add to Roster". An invitation will be emailed to the provider.</li>
-                                        <li>When the provider accepts the invitation, the office manager will be able to manage the practitioner.</li>
-                                        <li>If the provider is not located, click "Add Provider" in the search box. This will generate an email to the email address provided.</li>
-                                        <li>The provider will receive an email providing the opportunity to link the provider's account with the office manager or to create a new provider account.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <script>
-        $(document).ready(function(){
-            // reload page when modal is closed
-            $('#addProviderModal').on('hidden.bs.modal', function () {
-                location.reload();
-            });
 
 
-            $('#remove-location').on('click', function(){
-                var location = $('#practice_location_id option:selected').text();
-                var location_id = $('#practice_location_id option:selected').val();
 
-                $('.remove-location-title').text(location)
-                $('.remove-location-button-yes').attr('data-locationid', location_id);
-                $('#removeLocationModal').modal('show');
-            });
+              <% end %>
+          </div>
+          </div>
+          <div class="row result-controls mb-4">
+              <div class="col-lg-12">
+                  <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+                  <div class="page_info ms-3 text-black">
+                      <%= page_entries_info @providers, entry_name: 'Providers' %>
+                  </div>
+                  <% if params[:per_page ].present? %>
+                      <%= will_paginate @providers, :params =>  {per_page: params[:page] }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                  <% else %>
+                      <%= will_paginate @providers, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                  <% end %>
+                  </div>
+              </div>
+          </div>
+          <hr>
 
-            $('#btn-search-provider').on('click', function(){
-                var first_name = $('input[name="first_name"]').val();
-                var middle_name = $('input[name="middle_name"]').val();
-                var last_name = $('input[name="last_name"]').val();
-                var date_of_birth = $('input[name="date_of_birth"]').val();
-                var email = $('input[name="email"]').val();
-                var ssn = $('input[name="ssn"]').val();
-                var location_id = $('#practice_location_id option:selected').val();
+          <div class="modal fade " id="sendInviteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                      <div class="modal-body">
+                          <div class="content">
+                              <div class="modal-title">
+                                  <h6 class="header-email">Send Email Invitation</h6>
+                              </div>
+                              <div class="form-row row">
+                                  <!-- <div class="col-xl-6">
+                                      <label for="">Sender Name</label>
+                                      <input type="text" class="form-control" placeholder="">
+                                  </div> -->
+                                  <div class="col-xl-12">
+                                      <label for="">Email To * </label>
+                                      <h5 class="providers-selected hide"></h5>
+                                      <input type="text" name="sim_email_to" class="form-control" placeholder="" readonly required>
+                                  </div>
+                              </div>
+                              <div class="form-row row">
+                                  <div class="col-xl-12">
+                                      <label for="">Subject *</label>
+                                      <input type="text" name="sim_subject" class="form-control" placeholder="" required>
+                                  </div>
+                                  <div class="col-xl-12">
+                                      <label for="">Email CC</label>
+                                      <input type="text" name="sim_email_cc" class="form-control" placeholder="">
+                                  </div>
+                              </div>
+                              <div class="form-row row">
+                                  <div class="col-xl-12">
+                                      <label for="">Message *</label>
+                                      <textarea name="sim_message" id="" class="form-control" required cols="30" rows="12"><%= "You are invited to connect to Office Manager account on [website_link].\n\nTo agree to designate him/her as your office manager, please click the link. \n\nPlease do not close your browser until the page completely loads, which may take some time. \n\nIf you do not wish to accept the invitation, please disregard this message.".html_safe %>
+                                      </textarea>
+                                  </div>
+                              </div>
+                              <!-- <h6 class="note-heading mt-4">Invite link which will be added by the system</h6>
+                              <p class="note">You are invited to connect to Office Manager account on (link of the website). To agree to designate him/her as your office manager, please click the link. Please do not close your browser until the page completely loads, which may take some time. If you do not wish to accept the invitation, please disregard this message. <a href="">[Click to open link]</a> </p> -->
+                              <div class="form-row mt-3">
+                                  <button id="btnSendSingleInvitation" class="btn btn-manage btn-primary" onclick="sendSingleInvitationNow(this)" data-providerid="" data-mode="">Send</button>
+                                  <button class="btn btn-card-remove fw-bold text-black" data-bs-dismiss="modal">Cancel</button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
 
-                if (first_name === ''  || last_name === '' || date_of_birth === '') {
-                    alert('Firstname, lastname and birthday are required.')
-                    return;
-                }
+          <!-- Remove Location Modal -->
+          <div class="modal fade" id="removeLocationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                      <div class="modal-body">
+                          <div class="content">
+                              <h6 class="remove-heading remove-location-title"></h6>
+                              <p class="remove-note">Are you sure you want to delete?</p>
+                              <div class="form-row mt-3">
+                                  <button class="btn btn-sm btn-danger w-100 text-center remove-location-button-yes" data-locationid="" onclick="removeLocation(this)">Yes</button>
+                                  <button class="btn btn-card-remove fw-bold text-black" data-bs-dismiss="modal">No</button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
 
-                // get ajax for searching
-                $.ajax({
-                    url: "<%= search_group_engage_providers_path %>",
-                    method: 'GET',
-                    data: {
-                        authenticity_token: $('meta[name="csrf-token"]').attr('content'),
-                        group_engage_provider: {
-                            first_name: first_name,
-                            middle_name: middle_name,
-                            last_name: last_name,
-                            date_of_birth: date_of_birth,
-                            email_address: email,
-                            ssn: ssn,
-                            practice_location_id: location_id
-                        }
-                    },
-                    beforeSend: function() {
-                    // Show the loading button
-                    //  $('.loading-overlay').show(); //
-                    },
-                    success: function(data) {
-                        var providers = data['providers'];
-                        // clear table
-                        $('#group-engage-table tbody').html('');
-                        $.each(providers, function(index, provider){
-                            var add_to_roster_link = '<a href="javascript:void(0);" class="btn-plus" onclick="addToRoster(this)" data-groupengageproviderid="' + provider.id + '"><i class="bx bxs-plus-circle"></i> Add To Roster</a>';
-                            var table_row = '<tr><td>' + add_to_roster_link + '</td><td>' + provider.first_name + '</td><td>' + provider.middle_name + '</td><td>' + provider.last_name + '</td><td>' + provider.date_of_birth + '</td><td>' + provider.ssn + '</td><td>' + provider.email_address + '</td></tr>';
-                            // append table row to table
+          <!-- Add Provider Modal -->
+          <div class="modal fade" id="addProviderModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-xl modal-dialog-centered">
+                  <div class="modal-content">
+                      <div class="modal-body">
+                          <div class="">
+                              <div class="modal-title">
+                                  <h6 class="">Add New Provider</h6>
+                                  <button class="btn btn-cancel" data-bs-dismiss="modal">
+                                      <!-- close icon large -->
 
-                            $('#group-engage-table tbody').append(table_row);
-                        });
-                        $('#group-engage-table-holder').removeClass('d-none');
+                                      <i class="bx bx-x-circle text-red"></i>
+                                  </button>
+                              </div>
+                              <div class="form-row row">
+                                  <div class="col-xl-4">
+                                      <label for="">First Name <span class="text-red">*</span></label>
+                                      <input type="text" class="form-control form-field" placeholder="" name="first_name">
+                                  </div>
+                                  <div class="col-xl-4">
+                                      <label for="">Middle Name</label>
+                                      <input type="text" class="form-control form-field" placeholder="" name="middle_name">
+                                  </div>
+                                  <div class="col-xl-4">
+                                      <label for="">Last Name <span class="text-red">*</span></label>
+                                      <input type="text" class="form-control form-field" placeholder="" name="last_name">
+                                  </div>
+                              </div>
+                              <div class="form-row row mt-2">
+                                  <div class="col-xl-4">
+                                      <label for="">SSN </label>
+                                      <input type="text" class="form-control form-field" placeholder="" name="ssn">
+                                  </div>
+                                  <div class="col-xl-4">
+                                      <label for="">Date of Birth <span class="text-red">*</span></label>
+                                      <input type="date" class="form-control form-field" placeholder="" name="date_of_birth">
+                                  </div>
+                                  <div class="col-xl-4">
+                                      <label for="">Email </label>
+                                      <input type="text" class="form-control form-field" placeholder="" name="email">
+                                  </div>
+                              </div>
 
-                        //  $('#addProviderModal').modal('hide');
-                        // $('.loading-overlay').hide(); //
+                              <div class="row result-controls mt-4">
+                                  <!-- <div class="col-xl-6 filter-result">
+                                      <h6 class="">Search result: 2 existing providers</h6>
+                                  </div> -->
+                                  <div class="col-xl-6">
+                                      <div class="">
+                                          <button id="btn-search-provider" class="btn btn-sm btn-primary">
+                                              <i class="bx bx-search"></i>
+                                              Search Provider
+                                          </button>
+                                          <button id="btn-add-provider" class="btn btn-sm btn-primary">
+                                              <i class='bx bx-plus' ></i>
+                                              Add Provider
+                                          </button>
+                                          <!-- button close -->
+                                          <button class="btn btn-sm btn-warning" data-bs-dismiss="modal">
+                                              Close
+                                          </button>
+                                      </div>
+                                  </div>
+                              </div>
+
+                          </div>
+                          <!-- <div class="dark">
+                              <div class="content">
+                                  <div class="modal-title">
+                                      <h6 class="text-white">Add Existing Provider to Roster</h6>
+                                  </div>
+                              </div>
+                          </div> -->
+                          <p class="alert alert-success alert-dismissible mt-4 d-none"></p>
+                          <p class="alert alert-danger alert-dismissible mt-4 d-none"></p>
+
+                          <div id="group-engage-table-holder" class="d-none">
+                              <table id="group-engage-table" class="custom-table mt-4">
+                                  <thead>
+                                      <tr>
+                                          <th  class="text-white"></th>
+                                          <th  class="text-white">First Name</th>
+                                          <th  class="text-white">Middle Name</th>
+                                          <th  class="text-white">Last Name</th>
+                                          <th  class="text-white">Birth Date</th>
+                                          <th  class="text-white">SSN</th>
+                                          <th  class="text-white">Email</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                  </tbody>
+                              </table>
+                          </div>
+                          <div class="mt-4">
+                              <h6 class="mb-0">Required Fields: </h6>
+                              <ul>
+                                  <li>
+                                      <small><code>SSN & EMAIL are required when "Add Provider" button is clicked</code></small>
+                                  </li>
+                                  <li>
+                                      <small><code>Firstname, Lastname & Birthday are required when "Search Provider" button is clicked</code></small>
+                                  </li>
+                              </ul>
+                          </div>
+                          <div class="add-note mt-1">
+                              <h6>Tips:</h6>
+                              <ul>
+                                  <li>Enter required fields and click "Search Provider" button.</li>
+                                  <li>If the provider is located, click "Add to Roster". An invitation will be emailed to the provider.</li>
+                                  <li>When the provider accepts the invitation, the office manager will be able to manage the practitioner.</li>
+                                  <li>If the provider is not located, click "Add Provider" in the search box. This will generate an email to the email address provided.</li>
+                                  <li>The provider will receive an email providing the opportunity to link the provider's account with the office manager or to create a new provider account.</li>
+                              </ul>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <script>
+    $(document).ready(function(){
+      // reload page when modal is closed
+      $('#addProviderModal').on('hidden.bs.modal', function () {
+        location.reload();
+      });
 
 
-                        // var add_to_roster_link = '<a href="javascript:void(0);" class="btn-plus" onclick="addToRoster(this)" data-groupengageproviderid="' + group_engage_provider.id + '"><i class="bx bxs-plus-circle"></i> Add To Roster</a>';
-                        // var table_row = '<tr><td>' + add_to_roster_link + '</td><td>' + group_engage_provider.first_name + '</td><td>' + group_engage_provider.middle_name + '</td><td>' + group_engage_provider.last_name + '</td><td>' + group_engage_provider.date_of_birth + '</td><td>' + group_engage_provider.ssn + '</td><td>' + group_engage_provider.email_address + '</td></tr>';
-                        // // append table row to table
-                        // $('#group-engage-table tbody').append(table_row);
-                    },
-                    error: function(xhr, status, error) {
-                    $('.loading-overlay').hide();
-                    alert(xhr.responseText);
-                    }
-                });
-            });
+      $('#remove-location').on('click', function(){
+        var location = $('#practice_location_id option:selected').text();
+        var location_id = $('#practice_location_id option:selected').val();
 
-            $('#btn-add-provider').on('click', function(){
-                var first_name = $('input[name="first_name"]').val();
-                var middle_name = $('input[name="middle_name"]').val();
-                var last_name = $('input[name="last_name"]').val();
-                var date_of_birth = $('input[name="date_of_birth"]').val();
-                var email = $('input[name="email"]').val();
-                var ssn = $('input[name="ssn"]').val();
-                var location_id = $('#practice_location_id option:selected').val();
+        $('.remove-location-title').text(location)
+        $('.remove-location-button-yes').attr('data-locationid', location_id);
+        $('#removeLocationModal').modal('show');
+      });
 
-                // alert if all are blank
-                if (first_name === '' || last_name === '' || date_of_birth === '' || email === '' || ssn === '') {
-                    alert('Firstname, lastname, birthday, ssn and email are required.')
-                    return;
-                }
+      $('#btn-search-provider').on('click', function(){
+        var first_name = $('input[name="first_name"]').val();
+        var middle_name = $('input[name="middle_name"]').val();
+        var last_name = $('input[name="last_name"]').val();
+        var date_of_birth = $('input[name="date_of_birth"]').val();
+        var email = $('input[name="email"]').val();
+        var ssn = $('input[name="ssn"]').val();
+        var location_id = $('#practice_location_id option:selected').val();
 
-                // post ajax
-                $.ajax({
-                    url: "<%= group_engage_providers_path %>",
-                    method: 'POST',
-                    data: {
-                        authenticity_token: $('meta[name="csrf-token"]').attr('content'),
-                        group_engage_provider: {
-                            first_name: first_name,
-                            middle_name: middle_name,
-                            last_name: last_name,
-                            date_of_birth: date_of_birth,
-                            email_address: email,
-                            ssn: ssn,
-                            practice_location_id: location_id
-                        }
-                    },
-                    beforeSend: function() {
-                    // Show the loading button
-                    $('.loading-overlay').show(); //
-                    },
-                    success: function(data) {
-                    var group_engage_provider = data['group_engage_provider'];
-                    var message = data['message'];
-                    var add_to_roster_link = '<a href="javascript:void(0);" class="btn-plus" onclick="addToRoster(this)" data-groupengageproviderid="' + group_engage_provider.id + '"><i class="bx bxs-plus-circle"></i> Add To Roster</a>';
-                    var table_row = '<tr><td>' + add_to_roster_link + '</td><td>' + group_engage_provider.first_name + '</td><td>' + group_engage_provider.middle_name + '</td><td>' + group_engage_provider.last_name + '</td><td>' + group_engage_provider.date_of_birth + '</td><td>' + group_engage_provider.ssn + '</td><td>' + group_engage_provider.email_address + '</td></tr>';
-
-                    $('.loading-overlay').hide(); //
-                    $('#group-engage-table-holder').removeClass('d-none');
-                    $('#group-engage-table tbody').append(table_row);
-
-                    showSuccessMessage(message);
-                    },
-                    error: function(xhr, status, error) {
-                    showErrorMessage(xhr.responseText);
-                    }
-                });
-            });
-        });
-
-        function addToRoster(link){
-            var group_engage_provider_id = $(link).data('groupengageproviderid');
-            var practice_location_id = $('#practice_location_id option:selected').val();
-            $.ajax({
-                url: "/group-engage-providers/" + group_engage_provider_id + "/add_to_roster",
-                method: 'POST',
-                data: {
-                    authenticity_token: $('meta[name="csrf-token"]').attr('content'),
-                    practice_location_id: practice_location_id
-                },
-                beforeSend: function() {
-                // Show the loading button
-                $('.loading-overlay').show();
-                },
-                success: function(data) {
-                var message = data['message'];
-                showSuccessMessage(message);
-                },
-                error: function(xhr, status, error) {
-                $('.loading-overlay').hide();
-                showErrorMessage(xhr.responseText);
-                }
-            });
+        if (first_name === ''  || last_name === '' || date_of_birth === '') {
+          alert('Firstname, lastname and birthday are required.')
+          return;
         }
 
-        function showSuccessMessage(message){
-        $('.loading-overlay').hide();
-        $('.alert-success').text(message);
-        $('.alert-success').removeClass('d-none');
+          // get ajax for searching
+        $.ajax({
+          url: "<%= search_group_engage_providers_path %>",
+          method: 'GET',
+          data: {
+            authenticity_token: $('meta[name="csrf-token"]').attr('content'),
+            group_engage_provider: {
+              first_name: first_name,
+              middle_name: middle_name,
+              last_name: last_name,
+              date_of_birth: date_of_birth,
+              email_address: email,
+              ssn: ssn,
+              practice_location_id: location_id
+            }
+          },
+          beforeSend: function() {
+              // Show the loading button
+              //  $('.loading-overlay').show(); //
+          },
+          success: function(data) {
+            var providers = data['providers'];
+                  // clear table
+            $('#group-engage-table tbody').html('');
+            $.each(providers, function(index, provider){
+              var add_to_roster_link = '<a href="javascript:void(0);" class="btn-plus" onclick="addToRoster(this)" data-groupengageproviderid="' + provider.id + '"><i class="bx bxs-plus-circle"></i> Add To Roster</a>';
+              var table_row = '<tr><td>' + add_to_roster_link + '</td><td>' + provider.first_name + '</td><td>' + provider.middle_name + '</td><td>' + provider.last_name + '</td><td>' + provider.date_of_birth + '</td><td>' + provider.ssn + '</td><td>' + provider.email_address + '</td></tr>';
+                      // append table row to table
 
-        setTimeout(function() {
+              $('#group-engage-table tbody').append(table_row);
+            });
+            $('#group-engage-table-holder').removeClass('d-none');
+
+                  //  $('#addProviderModal').modal('hide');
+                  // $('.loading-overlay').hide(); //
+
+
+                  // var add_to_roster_link = '<a href="javascript:void(0);" class="btn-plus" onclick="addToRoster(this)" data-groupengageproviderid="' + group_engage_provider.id + '"><i class="bx bxs-plus-circle"></i> Add To Roster</a>';
+                  // var table_row = '<tr><td>' + add_to_roster_link + '</td><td>' + group_engage_provider.first_name + '</td><td>' + group_engage_provider.middle_name + '</td><td>' + group_engage_provider.last_name + '</td><td>' + group_engage_provider.date_of_birth + '</td><td>' + group_engage_provider.ssn + '</td><td>' + group_engage_provider.email_address + '</td></tr>';
+                  // // append table row to table
+                  // $('#group-engage-table tbody').append(table_row);
+          },
+          error: function(xhr, status, error) {
+            $('.loading-overlay').hide();
+            alert(xhr.responseText);
+          }
+        });
+      });
+
+      $('#btn-add-provider').on('click', function(){
+        var first_name = $('input[name="first_name"]').val();
+        var middle_name = $('input[name="middle_name"]').val();
+        var last_name = $('input[name="last_name"]').val();
+        var date_of_birth = $('input[name="date_of_birth"]').val();
+        var email = $('input[name="email"]').val();
+        var ssn = $('input[name="ssn"]').val();
+        var location_id = $('#practice_location_id option:selected').val();
+
+          // alert if all are blank
+        if (first_name === '' || last_name === '' || date_of_birth === '' || email === '' || ssn === '') {
+          alert('Firstname, lastname, birthday, ssn and email are required.')
+          return;
+        }
+
+          // post ajax
+        $.ajax({
+          url: "<%= group_engage_providers_path %>",
+          method: 'POST',
+          data: {
+            authenticity_token: $('meta[name="csrf-token"]').attr('content'),
+            group_engage_provider: {
+              first_name: first_name,
+              middle_name: middle_name,
+              last_name: last_name,
+              date_of_birth: date_of_birth,
+              email_address: email,
+              ssn: ssn,
+              practice_location_id: location_id
+            }
+          },
+          beforeSend: function() {
+              // Show the loading button
+              $('.loading-overlay').show(); //
+            },
+            success: function(data) {
+              var group_engage_provider = data['group_engage_provider'];
+              var message = data['message'];
+              var add_to_roster_link = '<a href="javascript:void(0);" class="btn-plus" onclick="addToRoster(this)" data-groupengageproviderid="' + group_engage_provider.id + '"><i class="bx bxs-plus-circle"></i> Add To Roster</a>';
+              var table_row = '<tr><td>' + add_to_roster_link + '</td><td>' + group_engage_provider.first_name + '</td><td>' + group_engage_provider.middle_name + '</td><td>' + group_engage_provider.last_name + '</td><td>' + group_engage_provider.date_of_birth + '</td><td>' + group_engage_provider.ssn + '</td><td>' + group_engage_provider.email_address + '</td></tr>';
+
+              $('.loading-overlay').hide(); //
+              $('#group-engage-table-holder').removeClass('d-none');
+              $('#group-engage-table tbody').append(table_row);
+
+              showSuccessMessage(message);
+            },
+            error: function(xhr, status, error) {
+              showErrorMessage(xhr.responseText);
+            }
+          });
+      });
+    });
+
+    function addToRoster(link){
+      var group_engage_provider_id = $(link).data('groupengageproviderid');
+      var practice_location_id = $('#practice_location_id option:selected').val();
+      $.ajax({
+        url: "/group-engage-providers/" + group_engage_provider_id + "/add_to_roster",
+        method: 'POST',
+        data: {
+          authenticity_token: $('meta[name="csrf-token"]').attr('content'),
+          practice_location_id: practice_location_id
+        },
+        beforeSend: function() {
+              // Show the loading button
+          $('.loading-overlay').show();
+        },
+        success: function(data) {
+          var message = data['message'];
+          showSuccessMessage(message);
+        },
+        error: function(xhr, status, error) {
+          $('.loading-overlay').hide();
+          showErrorMessage(xhr.responseText);
+        }
+      });
+    }
+
+    function showSuccessMessage(message){
+      $('.loading-overlay').hide();
+      $('.alert-success').text(message);
+      $('.alert-success').removeClass('d-none');
+
+      setTimeout(function() {
         $('.alert-success').text('');
         $('.alert-success').addClass('d-none');
-        }, 3000);
-        }
+      }, 3000);
+    }
 
-        function showErrorMessage(message){
-        $('.loading-overlay').hide();
-        $('.alert-danger').text(message);
-        $('.alert-danger').removeClass('d-none');
+    function showErrorMessage(message){
+      $('.loading-overlay').hide();
+      $('.alert-danger').text(message);
+      $('.alert-danger').removeClass('d-none');
 
-        setTimeout(function() {
+      setTimeout(function() {
         $('.alert-danger').text('');
         $('.alert-danger').addClass('d-none');
-        }, 3000);
-        }
+      }, 3000);
+    }
 
-        function removeLocation(btn){
-            var location_id = $(btn).data('locationid');
+    function removeLocation(btn){
+      var location_id = $(btn).data('locationid');
 
-            $.ajax({
-                url: "/practice_locations/" + location_id,
-                method: 'DELETE',
-                data: { authenticity_token: $('meta[name="csrf-token"]').attr('content') },
-                beforeSend: function() {
-                // Show the loading button
-                $('.loading-overlay').show(); //
+      $.ajax({
+        url: "/practice_locations/" + location_id,
+        method: 'DELETE',
+        data: { authenticity_token: $('meta[name="csrf-token"]').attr('content') },
+        beforeSend: function() {
+              // Show the loading button
+              $('.loading-overlay').show(); //
+            },
+            success: function(data) {
+              $('#removeLocationModal').modal('hide');
+              $('.loading-overlay').hide(); //
+              $('html, body').animate({scrollTop: 0}, 'fast');
+              setTimeout(function() { location.reload(); }, 1000);
+            }
+          });
+    }
+
+    function deleteProviders(link){
+      var checkedValues = []; // Array to store checked values
+
+      // Select all checked checkboxes with class "myCheckbox"
+      var checkedCheckboxes = $(".form-check-input:checked");
+
+      // Loop through each checked checkbox
+      checkedCheckboxes.each(function() {
+        var value = $(this).val();
+          checkedValues.push(value); // Add value to the array
+        });
+
+      var providerids = checkedValues.join(',');
+
+      // alert if no provider is selected
+      if (checkedValues.length === 0) {
+        alert('Please select at least one provider.');
+        return;
+      }
+
+      // add confirm alert
+      if(confirm('Are you sure you want to delete providers?')){
+        $.ajax({
+          url: "<%= bulk_remove_providers_office_managers_path %>",
+          method: 'POST',
+          data: {
+            authenticity_token: $('meta[name="csrf-token"]').attr('content'),
+            data: checkedValues
+          },
+          beforeSend: function() {
+                  // Show the loading button
+                  $('.loading-overlay').show(); //
                 },
                 success: function(data) {
-                $('#removeLocationModal').modal('hide');
-                $('.loading-overlay').hide(); //
-                $('html, body').animate({scrollTop: 0}, 'fast');
-                setTimeout(function() { location.reload(); }, 1000);
+                  // reload the page
+                  location.reload();
                 }
-            });
+              });
+      }
+    }
+
+    function sendBulkInvites(link) {
+      var checkedValues = []; // Array to store selected provider IDs
+      var emailAddresses = []; // Array to store email addresses
+
+      // Select all checked checkboxes
+      var checkedCheckboxes = $(".form-check-input:checked");
+
+      // Loop through each checked checkbox
+      checkedCheckboxes.each(function() {
+          var value = $(this).val();
+          var email = $(this).attr("emailaddress"); // Get email address from attribute
+
+          checkedValues.push(value); // Add provider ID
+          if (email) {
+              emailAddresses.push(email); // Add email to array
+          }
+      });
+
+      var providerids = checkedValues.join(','); // Convert to comma-separated string
+      var emails = emailAddresses.join(', '); // Convert emails to comma-separated string
+
+      // Alert if no provider is selected
+      if (checkedValues.length === 0) {
+          alert('Please select at least one provider.');
+          return;
+      }
+
+      // Show modal
+      $('#sendInviteModal').modal('show');
+
+      // Set email field values
+      $('input[name="sim_email_to"]').val(emails); // Set email addresses in input
+      $('input[name="sim_email_to"]').show(); // Make email field visible
+      $('.providers-selected').text('Providers: ' + checkedValues.length + ' selected');
+      $('.header-email').text('Send Multiple Email Invitation');
+      $('input[name="sim_subject"]').val('');
+      $('input[name="sim_email_cc"]').val('');
+      
+      // Set provider IDs for submission
+      $('#btnSendSingleInvitation').attr('data-mode', 'bulk-invites');
+      $('#btnSendSingleInvitation').attr('data-providerid', providerids);
+    }
+
+    function sendInvite(link){
+      // show modal
+      $('#sendInviteModal').modal('show');
+      $('.header-email').text('Send Email Invitation');
+      $('input[name="sim_email_to"]').show();
+      $('input[name="sim_subject"]').val('');
+      $('input[name="sim_email_cc"]').val('');
+
+      var email_address = $(link).data('emailaddress');
+      var provider_id = $(link).data('providerid');
+      $('input[name="sim_email_to"]').val(email_address);
+      $('#btnSendSingleInvitation').attr('data-providerid', provider_id);
+      $('#btnSendSingleInvitation').attr('data-mode', 'single-invite');
+    }
+
+    function sendSingleInvitationNow(btn){
+      var mode = $(btn).data('mode');
+      var email_to = $('input[name="sim_email_to"]').val();
+      var subject = $('input[name="sim_subject"]').val();
+      var email_cc = $('input[name="sim_email_cc"]').val();
+      var message = $('textarea[name="sim_message"]').val();
+
+      // add alert if email_to, subject and message are blank; use one line condition
+      if (mode === 'single-invite') {
+        if (email_to === '' || subject === '' || message === '') {
+          alert('Please fill in all required fields.');
+          return;
         }
-
-        function deleteProviders(link){
-            var checkedValues = []; // Array to store checked values
-
-            // Select all checked checkboxes with class "myCheckbox"
-            var checkedCheckboxes = $(".form-check-input:checked");
-
-            // Loop through each checked checkbox
-            checkedCheckboxes.each(function() {
-                var value = $(this).val();
-                checkedValues.push(value); // Add value to the array
-            });
-
-            var providerids = checkedValues.join(',');
-
-            // alert if no provider is selected
-            if (checkedValues.length === 0) {
-                alert('Please select at least one provider.');
-                return;
-            }
-
-            // add confirm alert
-            if(confirm('Are you sure you want to delete providers?')){
-                $.ajax({
-                    url: "<%= bulk_remove_providers_office_managers_path %>",
-                    method: 'POST',
-                    data: {
-                        authenticity_token: $('meta[name="csrf-token"]').attr('content'),
-                        data: checkedValues
-                    },
-                    beforeSend: function() {
-                        // Show the loading button
-                        $('.loading-overlay').show(); //
-                    },
-                    success: function(data) {
-                        // reload the page
-                        location.reload();
-                    }
-                });
-            }
+      }else if(mode === 'bulk-invites'){
+        if (subject === '' || message === '') {
+          alert('Please fill in all required fields.');
+          return;
         }
-
-        function sendBulkInvites(link){
-            var checkedValues = []; // Array to store checked values
-
-            // Select all checked checkboxes with class "myCheckbox"
-            var checkedCheckboxes = $(".form-check-input:checked");
-
-            // Loop through each checked checkbox
-            checkedCheckboxes.each(function() {
-                var value = $(this).val();
-                checkedValues.push(value); // Add value to the array
-            });
-            var providerids = checkedValues.join(',');
-
-            // alert if no provider is selected
-            if (checkedValues.length === 0) {
-                alert('Please select at least one provider.');
-                return;
-            }
-
-            // show modal
-            $('#sendInviteModal').modal('show');
-            // hide email to field
-            $('input[name="sim_email_to"]').hide();
-            $('.providers-selected').text('Providers: ' + checkedValues.length + ' selected');
-            $('.header-email').text('Send Multiple Email Invitation');
-            $('input[name="sim_subject"]').val('');
-            $('input[name="sim_email_cc"]').val('');
-            $('#btnSendSingleInvitation').attr('data-mode', 'bulk-invites');
-            $('#btnSendSingleInvitation').attr('data-providerid', providerids);
+      }
 
 
-        }
+    var provider_id = $(btn).data('providerid');
 
-        function sendInvite(link){
-            // show modal
-            $('#sendInviteModal').modal('show');
-            $('.header-email').text('Send Email Invitation');
-            $('input[name="sim_email_to"]').show();
-            $('input[name="sim_subject"]').val('');
-            $('input[name="sim_email_cc"]').val('');
+    $.ajax({
+      url: "<%= send_invite_office_managers_path %>",
+      method: 'POST',
+      data: {
+        authenticity_token: $('meta[name="csrf-token"]').attr('content'),
+        id: provider_id,
+        email_to: email_to,
+        subject: subject,
+        email_cc: email_cc,
+        message: message,
+        mode: mode
+      },
+      beforeSend: function() {
+        // Show the loading button
+        $('.loading-overlay').show(); //
+      },
+      success: function(data) {
+        $('#sendInviteModal').modal('hide');
+        $('.loading-overlay').hide(); //
+        $('html, body').animate({scrollTop: 0}, 'fast');
+        setTimeout(function() { location.reload(); }, 1000);
+      }
+    });
+    }
 
-            var email_address = $(link).data('emailaddress');
-            var provider_id = $(link).data('providerid');
-            $('input[name="sim_email_to"]').val(email_address);
-            $('#btnSendSingleInvitation').attr('data-providerid', provider_id);
-            $('#btnSendSingleInvitation').attr('data-mode', 'single-invite');
-        }
+    function sendInvitation(){
+      var senderName = $('input[name="sender_name"]').val();
+      var emailTo = $('input[name="email_to"]').val();
+      var subject = $('input[name="subject"]').val();
+      var emailCC = $('input[name="email_cc"]').val();
+      var message = $('textarea[name="message"]').val();
 
-        function sendSingleInvitationNow(btn){
-            var mode = $(btn).data('mode');
-            var email_to = $('input[name="sim_email_to"]').val();
-            var subject = $('input[name="sim_subject"]').val();
-            var email_cc = $('input[name="sim_email_cc"]').val();
-            var message = $('textarea[name="sim_message"]').val();
+          // Perform validation
+      if (senderName === '') {
+        $('input[name="sender_name"]').css('border-color', 'red');
+      } else {
+        $('input[name="sender_name"]').css('border-color', '');
+      }
 
-            // add alert if email_to, subject and message are blank; use one line condition
-            if (mode === 'single-invite') {
-                if (email_to === '' || subject === '' || message === '') {
-                    alert('Please fill in all required fields.');
-                    return;
-                }
-            }else if(mode === 'bulk-invites'){
-                if (subject === '' || message === '') {
-                    alert('Please fill in all required fields.');
-                    return;
-                }
-            }
+      if (emailTo === '') {
+        $('input[name="email_to"]').css('border-color', 'red');
+      } else {
+        $('input[name="email_to"]').css('border-color', '');
+      }
 
+      if (subject === '') {
+        $('input[name="subject"]').css('border-color', 'red');
+      } else {
+        $('input[name="subject"]').css('border-color', '');
+      }
 
-            var provider_id = $(btn).data('providerid');
+      if (message === '') {
+        $('textarea[name="message"]').css('border-color', 'red');
+      } else {
+        $('textarea[name="message"]').css('border-color', '');
+      }
 
-            $.ajax({
-                url: "<%= send_invite_office_managers_path %>",
-                method: 'POST',
-                data: {
-                    authenticity_token: $('meta[name="csrf-token"]').attr('content'),
-                    id: provider_id,
-                    email_to: email_to,
-                    subject: subject,
-                    email_cc: email_cc,
-                    message: message,
-                    mode: mode
-                },
-                beforeSend: function() {
-                // Show the loading button
-                $('.loading-overlay').show(); //
-                },
-                success: function(data) {
-                $('#sendInviteModal').modal('hide');
-                $('.loading-overlay').hide(); //
-                $('html, body').animate({scrollTop: 0}, 'fast');
-                setTimeout(function() { location.reload(); }, 1000);
-                }
-            });
-        }
+      // Check if any required fields are empty
+      if (senderName === '' || emailTo === '' || subject === '' || message === '') {
+          // Handle validation error (one or more required fields are empty)
+        alert('Please fill in all required fields.');
+        return;
+      }
 
-        function sendInvitation(){
-            var senderName = $('input[name="sender_name"]').val();
-            var emailTo = $('input[name="email_to"]').val();
-            var subject = $('input[name="subject"]').val();
-            var emailCC = $('input[name="email_cc"]').val();
-            var message = $('textarea[name="message"]').val();
+      $('.loading-overlay').show(); //
 
-            // Perform validation
-            if (senderName === '') {
-                $('input[name="sender_name"]').css('border-color', 'red');
-            } else {
-                $('input[name="sender_name"]').css('border-color', '');
-            }
+      // Add a delay before making the AJAX request (e.g., 2 seconds)
+      setTimeout(function() {
+          // Prepare the data to be sent
+        var data = {
+          senderName: senderName,
+          emailTo: emailTo,
+          subject: subject,
+          emailCC: emailCC,
+          message: message,
+          authenticity_token:  $('meta[name="csrf-token"]').attr('content')
+        };
 
-            if (emailTo === '') {
-                $('input[name="email_to"]').css('border-color', 'red');
-            } else {
-                $('input[name="email_to"]').css('border-color', '');
-            }
-
-            if (subject === '') {
-                $('input[name="subject"]').css('border-color', 'red');
-            } else {
-                $('input[name="subject"]').css('border-color', '');
-            }
-
-            if (message === '') {
-                $('textarea[name="message"]').css('border-color', 'red');
-            } else {
-                $('textarea[name="message"]').css('border-color', '');
-            }
-
-            // Check if any required fields are empty
-            if (senderName === '' || emailTo === '' || subject === '' || message === '') {
-                // Handle validation error (one or more required fields are empty)
-                alert('Please fill in all required fields.');
-                return;
-            }
-
-            $('.loading-overlay').show(); //
-
-            // Add a delay before making the AJAX request (e.g., 2 seconds)
-            setTimeout(function() {
-                // Prepare the data to be sent
-                var data = {
-                senderName: senderName,
-                emailTo: emailTo,
-                subject: subject,
-                emailCC: emailCC,
-                message: message,
-                authenticity_token:  $('meta[name="csrf-token"]').attr('content')
-                };
-
-                // Make the AJAX request
-                $.ajax({
-                    url: "<%= send_invitation_office_managers_path %>",
-                    type: 'POST',
-                    data: data,
-                    success: function(response) {
-                        // Handle the success response here
-                        console.log(response);
-                        // Display a success message or perform any other actions
-                        $('.loading-overlay').hide();
-                    },
-                    error: function(xhr, status, error) {
-                        // Handle the error response here
-                        alert(xhr.responseText);
-                        // Display an error message or perform any other actions
-                        $('.loading-overlay').hide();
-                    }
-                });
-            }, 2000); // Adjust the delay time (in milliseconds) as needed
-        }
-        </script>
-    <% end %>
+          // Make the AJAX request
+        $.ajax({
+          url: "<%= send_invitation_office_managers_path %>",
+          type: 'POST',
+          data: data,
+          success: function(response) {
+                  // Handle the success response here
+            console.log(response);
+                  // Display a success message or perform any other actions
+            $('.loading-overlay').hide();
+          },
+          error: function(xhr, status, error) {
+                  // Handle the error response here
+            alert(xhr.responseText);
+                  // Display an error message or perform any other actions
+            $('.loading-overlay').hide();
+          }
+        });
+      }, 2000); // Adjust the delay time (in milliseconds) as needed
+    }
+  </script>
+<% end %>

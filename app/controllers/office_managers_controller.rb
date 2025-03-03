@@ -107,31 +107,38 @@ class OfficeManagersController < ApplicationController
 
   def send_invite
     mode = params[:mode]
+    results = [] # Collect results
+
     if mode == 'single-invite'
-      send_email_to_provider params[:id]
+      results << send_email_to_provider(params[:id])
     elsif mode == 'bulk-invites'
-      providerids = params[:id].split(',')
-      providerids.each do |provider_id|
-        send_email_to_provider provider_id
+      provider_ids = params[:id].split(',')
+      provider_ids.each do |provider_id|
+        results << send_email_to_provider(provider_id)
       end
     end
+
     flash[:notice] = 'Invitation sent successfully.'
+    
+    # Only render ONCE
+    render json: { status: 'success', results: results }
   end
 
-  def send_email_to_provider provider_id
+  def send_email_to_provider(provider_id)
     api_service = ProviderSource::SendInviteService.call(
       ProviderSource.find_by(id: provider_id),
       params
     )
 
     if api_service.success?
-      render json: api_service.display_result
+      api_service.display_result
     else
-      render json: api_service.display_error, status: 500
+      { error: api_service.display_error, status: 500 }
     end
   end
 
   protected
+
   def set_client_organizations
     @client_organization = ClientOrganization.find(params[:id])
   end
