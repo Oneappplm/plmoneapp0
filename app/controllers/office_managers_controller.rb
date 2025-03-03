@@ -12,15 +12,28 @@ class OfficeManagersController < ApplicationController
 			@providers = ProviderSource.unscoped.where(practice_location_id:  params[:practice_location_id]).order(created_at: :asc).paginate(page: params[:page], per_page: 12)
   end
 
-		def manage_practice_locations
-			@locations = if params[:search].present?
-					PracticeLocation.search(params[:search]).paginate(per_page: 10, page: params[:page] || 1)
-			else
-					PracticeLocation.paginate(per_page: 10, page: params[:page] || 1)
-			end
+	def manage_practice_locations
+    @locations = if params[:search].present?
+                   PracticeLocation.search(params[:search]).paginate(per_page: 10, page: params[:page] || 1)
+                 else
+                   PracticeLocation.paginate(per_page: 10, page: params[:page] || 1)
+                 end
 
-			render	'manage_practice'
-		end
+    @non_associated_providers = ProviderSource.where(practice_location_id: nil)
+    @providers = ProviderSource.unscoped.where(practice_location_id: params[:practice_location_id])
+                                      .order(created_at: :asc)
+                                      .paginate(page: params[:page], per_page: 12)
+
+    response_data = {
+      non_associated_providers: @non_associated_providers.map { |provider| { id: provider.id, full_name: provider.full_name } },
+      providers: @providers.map { |provider| { id: provider.id, full_name: provider.full_name } }
+    }
+
+    respond_to do |format|
+      format.html { render 'manage_practice' }
+      format.json { render json: response_data } # Removed unnecessary extra hash
+    end
+  end
 
   def show
     @client_organizations = ClientOrganization.all
@@ -34,6 +47,26 @@ class OfficeManagersController < ApplicationController
       end
     end
   end
+
+  def update_provider_associations
+    practice_location_id = params[:practice_location_id]
+
+    associated_providers = params[:associated_providers].present? ? JSON.parse(params[:associated_providers]) : []
+    disassociated_providers = params[:disassociated_providers].present? ? JSON.parse(params[:disassociated_providers]) : []
+
+    # Update associated providers only if there are any
+    if associated_providers.any?
+      ProviderSource.where(id: associated_providers).update_all(practice_location_id: practice_location_id)
+    end
+
+    # Remove practice location from disassociated providers only if there are any
+    if disassociated_providers.any?
+      ProviderSource.where(id: disassociated_providers).update_all(practice_location_id: nil)
+    end
+
+    render json: { status: "success" }
+  end
+
 
   def manage_applications; end
 
