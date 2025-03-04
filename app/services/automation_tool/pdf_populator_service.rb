@@ -15,11 +15,11 @@ class AutomationTool::PdfPopulatorService < ApplicationService
       doc.acro_form.each_field do |field|
         case field.field_name
         # Dentist Information
-        when 'First Name', 'text_firstname'
+        when 'First Name', 'text_firstname', 'txt_firstname'
           field.field_value = data[:first_name]
-        when 'Middle Initial', 'text_middlename'
+        when 'Middle Initial', 'text_middlename', 'txt_middlename'
           field.field_value = data[:middle_initial]
-        when 'Last Name', 'text_lastname'
+        when 'Last Name', 'text_lastname', 'txt_lastname'
           field.field_value = data[:last_name]
         when 'Date of  birth'
           field.field_value = data[:dob]
