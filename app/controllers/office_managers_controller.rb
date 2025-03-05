@@ -2,35 +2,37 @@ class OfficeManagersController < ApplicationController
   before_action :set_provider, only: [:manage_applications, :send_invite, :remove_provider]
   before_action :set_current_provider, only: [:credentialing_application, :view_summary, :re_attest_application]
   before_action :set_client_organizations, only: [:show]
+
   def index
-			clean_empty_providers
+   clean_empty_providers
 
-			if params[:practice_location_id].present? && params[:practice_location_id] == 'All Location'
-					redirect_to office_managers_path
-			end
+   if params[:practice_location_id].present? && params[:practice_location_id] == 'All Location'
+    @providers = ProviderSource.unscoped.order(created_at: :asc).paginate(page: params[:page], per_page: 12)
+    redirect_to office_managers_path
+   end
 
-			@providers = ProviderSource.unscoped.where(practice_location_id:  params[:practice_location_id]).order(created_at: :asc).paginate(page: params[:page], per_page: 12)
-  end
+   @providers = ProviderSource.unscoped.where(practice_location_id:  params[:practice_location_id]).order(created_at: :asc).paginate(page: params[:page], per_page: 12)
+ end
 
-	def manage_practice_locations
-    @locations = if params[:search].present?
-                   PracticeLocation.search(params[:search]).paginate(per_page: 10, page: params[:page] || 1)
-                 else
-                   PracticeLocation.paginate(per_page: 10, page: params[:page] || 1)
-                 end
+ def manage_practice_locations
+  @locations = if params[:search].present?
+   PracticeLocation.search(params[:search]).paginate(per_page: 10, page: params[:page] || 1)
+ else
+   PracticeLocation.paginate(per_page: 10, page: params[:page] || 1)
+ end
 
-    @non_associated_providers = ProviderSource.where(practice_location_id: nil)
-    @providers = ProviderSource.unscoped.where(practice_location_id: params[:practice_location_id])
-                                      .order(created_at: :asc)
-                                      .paginate(page: params[:page], per_page: 12)
+ @non_associated_providers = ProviderSource.where(practice_location_id: nil)
+ @providers = ProviderSource.unscoped.where(practice_location_id: params[:practice_location_id])
+ .order(created_at: :asc)
+ .paginate(page: params[:page], per_page: 12)
 
-    response_data = {
-      non_associated_providers: @non_associated_providers.map { |provider| { id: provider.id, full_name: provider.full_name } },
-      providers: @providers.map { |provider| { id: provider.id, full_name: provider.full_name } }
-    }
+ response_data = {
+  non_associated_providers: @non_associated_providers.map { |provider| { id: provider.id, full_name: provider.full_name } },
+  providers: @providers.map { |provider| { id: provider.id, full_name: provider.full_name } }
+}
 
-    respond_to do |format|
-      format.html { render 'manage_practice' }
+respond_to do |format|
+  format.html { render 'manage_practice' }
       format.json { render json: response_data } # Removed unnecessary extra hash
     end
   end
@@ -71,7 +73,7 @@ class OfficeManagersController < ApplicationController
   def manage_applications; end
 
   def credentialing_application
-		redirect_to edit_provider_source_path(id: params[:id])
+    redirect_to edit_provider_source_path(id: params[:id])
   end
 
   def view_summary
@@ -84,7 +86,7 @@ class OfficeManagersController < ApplicationController
 
   def remove_provider
     @provider.destroy
-		redirect_to request.referrer, notice: "Provider Source is deleted."
+    redirect_to request.referrer, notice: "Provider Source is deleted."
   end
 
   def bulk_remove_providers
@@ -128,7 +130,7 @@ class OfficeManagersController < ApplicationController
     api_service = ProviderSource::SendInviteService.call(
       ProviderSource.find_by(id: provider_id),
       params
-    )
+      )
 
     if api_service.success?
       api_service.display_result
@@ -149,6 +151,6 @@ class OfficeManagersController < ApplicationController
 
   def set_current_provider
     ProviderSource.update_all(current_provider_source: false)
-		ProviderSource.find(params[:id]).update(current_provider_source: true)
+    ProviderSource.find(params[:id]).update(current_provider_source: true)
   end
 end
