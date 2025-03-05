@@ -39,7 +39,8 @@
                       </div>
                   </div>
                   <div class="col-xl-7 button-wpr">
-                      <% if params[:practice_location_id].present? && current_user.can_access?('Add Provider') %>
+                      <%# if params[:practice_location_id].present? && current_user.can_access?('Add Provider') %>
+                      <% if current_user.can_access?('Add Provider') %>
                       <button class="btn btn-primary btn-xs" id="add-provider" data-bs-toggle="modal" data-bs-target="#addProviderModal">
                           <i class='bx bx-plus' ></i>
                           Add Provider
@@ -59,20 +60,7 @@
                       <% end if current_user.can_access?('Remove Provider') %>
                   </div>
               </div>
-              <div class="row result-controls mb-4">
-                  <div class="col-lg-12">
-                      <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
-                      <div class="page_info ms-3 text-black">
-                          <%= page_entries_info @providers, entry_name: 'Providers' %>
-                      </div>
-                      <% if params[:per_page ].present? %>
-                          <%= will_paginate @providers, :params =>  {per_page: params[:page] }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                      <% else %>
-                          <%= will_paginate @providers, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                      <% end %>
-                      </div>
-                  </div>
-              </div>
+              
           </div>
 
 
@@ -142,7 +130,8 @@
               <div class="col-lg-12">
                   <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
                   <div class="page_info ms-3 text-black">
-                      <%= page_entries_info @providers, entry_name: 'Providers' %>
+                      <%#= page_entries_info @providers, entry_name: 'Providers' %>
+                      <h5 class="mt-1">Result: <%= @providers.count %> records</h5>
                   </div>
                   <% if params[:per_page ].present? %>
                       <%= will_paginate @providers, :params =>  {per_page: params[:page] }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
