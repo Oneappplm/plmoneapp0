@@ -50,7 +50,7 @@ class PdfGenerationJob < ApplicationJob
 
     rescue => e
       sleep(2)
-      queue.update!(status: 'error', message: e.message)
+      queue.update!(status: 'error', message: 'Something went wrong.')
     end
   end
 
@@ -72,6 +72,7 @@ class PdfGenerationJob < ApplicationJob
   def render_pdf(template, provider, filename_prefix)
 
     oig_details = provider.rva_informations.where(tab: 'OIG')
+    dea_details = provider.rva_informations.where(tab: 'Registration')
     pdf_dir = Rails.root.join("public/generated_pdfs")
     FileUtils.mkdir_p(pdf_dir)
 
@@ -81,7 +82,7 @@ class PdfGenerationJob < ApplicationJob
     html_content = ApplicationController.render(
       template: template,
       layout: 'pdf',
-      locals: { provider_personal_information: provider, oig_details: oig_details }
+      locals: { provider_personal_information: provider, oig_details: oig_details,  dea_details: dea_details}
     )
 
     pdf_file = WickedPdf.new.pdf_from_string(html_content)
