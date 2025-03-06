@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   root 'dashboard#dashboard' # Overview	page
   resources :provider_sources_licensures
   resources :specialty_details
+  resources :references
+  resources :professional_organizations
   get 'client-portal', to: 'pages#client_portal' # Data Access page
   get 'virtual-review-committee', to: 'pages#virtual_review_committee' # Decision Point page
   get 'provider-engage', to: 'provider_app#provider_source', as: :custom_provider_source # Provider Engage page
