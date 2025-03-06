@@ -1,0 +1,216 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition>
+<html xmlns="http://www.w3.org/1999/xhtml"><head id="j_idt2">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" lang="en" />
+			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+			<meta name="apple-mobile-web-app-capable" content="yes" /><link type="text/css" rel="stylesheet" href="https://apps.deadiversion.usdoj.gov/webforms2/spring/javax.faces.resource/theme.css?ln=primefaces-sam" /><script type="text/javascript" src="/webforms2/spring/javax.faces.resource/dw_tooltip_c.js?ln=js"></script><link type="text/css" rel="stylesheet" href="/webforms2/spring/javax.faces.resource/components.css?ln=primefaces&amp;v=6.2" /><script type="text/javascript" src="/webforms2/spring/javax.faces.resource/jquery/jquery.js?ln=primefaces&amp;v=6.2"></script><script type="text/javascript" src="/webforms2/spring/javax.faces.resource/jquery/jquery-plugins.js?ln=primefaces&amp;v=6.2"></script><script type="text/javascript" src="/webforms2/spring/javax.faces.resource/core.js?ln=primefaces&amp;v=6.2"></script><script type="text/javascript" src="/webforms2/spring/javax.faces.resource/components.js?ln=primefaces&amp;v=6.2"></script><script type="text/javascript">if(window.PrimeFaces){PrimeFaces.settings.locale='en_US';PrimeFaces.settings.projectStage='Development';}</script>
+
+		<link rel="icon" href="https://apps.deadiversion.usdoj.gov/webforms2/images/diversion.png" />
+
+		<title>CSA Registration Online Mgmt Tools</title>
+		
+		<script type="text/javascript">
+			//<![CDATA[
+            dw_Tooltip.defaultProps = {
+                klass:'tooltip_help',
+                wrapFn: dw_Tooltip.wrapToWidth,
+                hoverable:false,
+                positionFn: dw_Tooltip.posCenterAboveTgt
+
+            };
+            dw_Tooltip.content_vars = { 
+                H_taxid: {
+                    str: '<p><b>Tax ID</b>: The Debt Collection Improvement Act of 1996 (PL 104-134) requires that you furnish your federal Taxpayer Identifying Number to DEA. This number is required for debt collection procedures should your fee become uncollectable. If you do not have a Federal Taxpayer Identifying Number, use your Social Security Number. </p>'
+                },                
+                H_ssn: {
+                    str: '<p><b>Social Security Number</b>: The Debt Collection Improvement Act of 1996 (PL 104-134) requires that you furnish your federal Taxpayer Identifying Number to DEA. This number is required for debt collection procedures should your fee become uncollectable. If you do not have a Federal Taxpayer Identifying Number, use your Social Security Number. </p>'
+                },                
+                H_feeExempt : {
+                    str:'<p><b>Certification for Fee Exemption Checkbox</b>: Title 21 CFR 1301.21(a) (2) exempts from payment of the fee for registration or re-registration any hospital or other institution which is operated by an agency of the United States, any state, or any political subdivision of agency thereof, or, an individual who is required to obtain a registration in order to carry out his/her duties as an official of the Federal or State agency.</p>'
+                },
+                H_fecoInstitution : {                    
+                    str: '<p><b>Name of Fee Exempt Institution</b>: Please enter the Name of the Fee Exempt Institution located at the business address entered on page 1.</p>'
+                },
+                H_fecoCheckbox : {
+                    str: '<p><b>Certifier\'s Approval Checkbox</b>: Click here to indicate that the certifying official agrees to the terms outlined on the Fee Exempt page.</p>'
+                }
+            };
+			//]]>
+        </script>
+
+		<script type="text/javascript">
+            //<![CDATA[
+            function getChar (event){
+               var keyCode = ('which' in event) ? event.which : event.keyCode;
+               <!--alert ("The Unicode key code of the released key: " + keyCode);-->
+               return keyCode;
+            };
+
+			
+            function changeButtonColor(buttonId, color, textColor)
+            {
+               var button = getElementById(buttonId);
+               if (button)
+               {
+                  if (button.style)
+                  {
+                     button.style.backgroundColor = color;
+                  }
+               }
+            };
+            function handleEnter(event, anElement) 
+            {    
+               var keyCode = getChar(event);
+                        
+               if (keyCode == 13) 
+               {        
+                  event.preventDefault();
+                  if ("createEvent" in document) 
+                  {
+                     var evt = document.createEvent("HTMLEvents");
+                     evt.initEvent("change", false, true);
+                     anElement.dispatchEvent(evt);
+                     return true;
+                  }
+                  else
+                  {
+                     anElement.fireEvent("onchange");
+                     return true;
+                  }
+                  return false;
+               }                                                    
+               return true;
+            };
+            function InitTO(timeoutInSeconds, aurl)
+            {
+               if (timeoutInSeconds != null)
+               {
+                  actualTimeoutMS = timeoutInSeconds * 1000;
+               }
+
+               if (actualTimeoutMS < 500000 || isNaN(actualTimeoutMS)) // avoid overflow
+                  actualTimeoutMS = 500000;
+
+               if (debug == 1)alert("Debug: Setting timeout for " + window.name + " for " + actualTimeoutMS/1000 + " seconds");
+               if (aurl != null)url = aurl;
+               if (url == null)url = "jsp/keepAlive.jsp";
+               timeoutId = window.setTimeout('displayTOAlert()', actualTimeoutMS);
+               window.onUnload="window.clearTimeout("+timeoutId+");";
+
+            };
+            //]]>
+         </script></head><body style="background-image: url('https://apps.deadiversion.usdoj.gov/webforms2/images/page_bg.jpg'); background-position:center top;               background-repeat:no-repeat;background-color:#e6e7e8;" onload="var aField; aField = document.getElementById(''); if (aField)aField.focus()">
+		<link rel="stylesheet" href="https://apps.deadiversion.usdoj.gov/webforms2/styles/blueprint/screen.css" type="text/css" media="screen, projection" />
+		<link rel="stylesheet" href="https://apps.deadiversion.usdoj.gov/webforms2/styles/blueprint/print.css" type="text/css" media="print" /><!--[if lt IE 8]><link rel="stylesheet" href="https://apps.deadiversion.usdoj.gov/webforms2/styles/blueprint/ie.css" type="text/css" media="screen, projection" /><![endif]--><!--<link rel="stylesheet" href="https://apps.deadiversion.usdoj.gov/webforms2/styles/cupertino/skin.css" type="text/css" media="screen" />-->
+		<link rel="stylesheet" href="https://apps.deadiversion.usdoj.gov/webforms2/styles/blueprint/plugins/liquid/liquid.css" type="text/css" media="screen, projection" />
+		<link rel="stylesheet" href="https://apps.deadiversion.usdoj.gov/webforms2/styles/styles.css" type="text/css" media="screen, projection" />
+		<style>
+
+</style>
+		
+		<style type="text/css">
+div#tipDiv {
+	font-size: 14px;
+	line-height: 1.2;
+	padding: 6px;
+}
+
+div.tooltip_help {
+	color: #000000;
+	background-color: #E1E5F1;
+	border: 2px solid #667295;
+	width: 310px;
+}
+</style>
+
+		<div class="container">
+			<div class="span-24 last hideFromPrinter" style="background-image: url('href="https://apps.deadiversion.usdoj.gov/webforms2/images/odt_banner_ext.jpg')">
+				<img src="https://apps.deadiversion.usdoj.gov/webforms2/images/odt_banner.jpg" alt="DEA: Diversion Control" />
+			</div>
+
+			<div class="span-24 last">
+				<h4 class="alt bottom" style="color: #ffffff">
+                     Welcome, XXX_Name1 | <a class="login" href="https://apps.deadiversion.usdoj.gov/webforms2/spring/logout">Logout ALL Sessions</a>&nbsp;Need Help? <b>Email Us</b>:&nbsp;DEA.Registration.Help@usdoj.gov
+                     <b>Call Us Toll Free</b>: 1-800-882-9539
+                  
+				</h4>
+			</div>
+			<hr class="space" />
+			<div class="span-24 last">
+				<div style="margin-bottom: 20px" class="span-24 last">
+<form id="validationForm" name="validationForm" method="post" action="https://apps.deadiversion.usdoj.gov/webforms2/spring/main?execution=e2s8" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="validationForm" value="validationForm" />
+
+			<input type="hidden" /><input type='text' style='display: none;' disabled='disabled' size='1' /><fieldset id="validationForm:j_idt16" class="ui-fieldset ui-widget ui-widget-content ui-corner-all
+ ui-hidden-container" data-widget="widget_validationForm_j_idt16"><legend class="ui-fieldset-legend ui-corner-all ui-state-default">CSA Registration Online Mgmt Tools: CSA Registration Validation Tool</legend><div class="ui-fieldset-content"><div id="validationForm:topMessages" class="ui-messages ui-widget" aria-live="polite"></div>
+
+				<hr /><table id="validationForm:j_idt18" class="ui-panelgrid ui-widget noGridBorders" style="width: 950px" role="grid"><tbody>
+<tr class="ui-widget-content ui-panelgrid-even" role="row"><td role="gridcell" class="ui-panelgrid-cell" style="width: 30%">
+<label for="validationForm:deaNumber">DEA Number to be validated</label></td>
+<td role="gridcell" class="ui-panelgrid-cell">
+<input id="dea_input_field" type="text" name="validationForm:deaNumber" value="DeaNo_XXX" maxlength="9" size="10"/>&nbsp;&nbsp;&nbsp;<button id="validationForm:proceed2" name="validationForm:proceed2" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left"
+onclick="PrimeFaces.onPost();" type="submit"><span class="ui-button-icon-left ui-icon ui-c ui-icon-arrowthick-1-e"></span>
+<span class="ui-button-text ui-c">Validate</span></button><script id="validationForm:proceed2_s" type="text/javascript">
+PrimeFaces.cw("CommandButton","widget_validationForm_proceed2",{id:"validationForm:proceed2"});</script></td></tr></tbody></table>
+				<hr /><table id="validationForm:j_idt26" class="ui-panelgrid ui-widget noGridBorders" style="width: 950px" role="grid">
+<tbody>
+
+
+<tr class="ui-widget-content ui-panelgrid-even" role="row">
+<td role="gridcell" class="ui-panelgrid-cell" style="width: 30%">
+DEA Number:</td>
+<td role="gridcell" class="ui-panelgrid-cell" id="dea_value">DeaNo_XXX</td></tr>
+<tr class="ui-widget-content ui-panelgrid-odd" role="row">
+	<td role="gridcell" class="ui-panelgrid-cell" colspan="2">
+	<label>This DEA Number is Status_XXX</label><br/></td></tr>
+
+<tr class="ui-widget-content ui-panelgrid-even" role="row"><td role="gridcell" class="ui-panelgrid-cell"><label for="validationForm:regname">Name(Last, First)</label></td>
+<td role="gridcell" class="ui-panelgrid-cell"><span id="provider_name">Name2_XXX</span></td></tr><tr class="ui-widget-content ui-panelgrid-odd" role="row">
+<td role="gridcell" class="ui-panelgrid-cell"><label for="validationForm:busAct">Business Activity</label></td><td role="gridcell" class="ui-panelgrid-cell"><span id="validationForm:busAct">C</span></td></tr>
+<tr class="ui-widget-content ui-panelgrid-even" role="row"><td role="gridcell" class="ui-panelgrid-cell"><label for="validationForm:busAddr1">Business Address 1:</label></td><td role="gridcell" class="ui-panelgrid-cell">
+<span id="validationForm:busAddr1" id="provider_address">Address1_XXX</span></td></tr>
+<tr class="ui-widget-content ui-panelgrid-odd" role="row"><td role="gridcell" class="ui-panelgrid-cell"><label for="validationForm:busAddr2">Business Address 2:
+</label></td><td role="gridcell" class="ui-panelgrid-cell"><span id="validationForm:busAddr2">Address2_XXX</span></td></tr>
+<tr class="ui-widget-content ui-panelgrid-even" role="row"><td role="gridcell" class="ui-panelgrid-cell">
+<label for="validationForm:busAddr3">Business Address 3:</label></td>
+<td role="gridcell" class="ui-panelgrid-cell"><span id="validationForm:busAddr3">AdditionCompanyInfo_XXX</span></td></tr>
+<tr class="ui-widget-content ui-panelgrid-odd" role="row"><td role="gridcell" class="ui-panelgrid-cell"><label for="validationForm:city">City</label></td>
+<td role="gridcell" class="ui-panelgrid-cell"><span id="provider_city">City_XXX</span></td></tr>
+<tr class="ui-widget-content ui-panelgrid-even" role="row"><td role="gridcell" class="ui-panelgrid-cell">
+State</td>
+<td role="gridcell" class="ui-panelgrid-cell" id="provider_dea_state">
+State_XXX</td>
+</tr><tr class="ui-widget-content ui-panelgrid-odd" role="row"><td role="gridcell" class="ui-panelgrid-cell">
+<label for="validationForm:zip">Zip</label></td>
+<td role="gridcell" class="ui-panelgrid-cell"><span id="validationForm:zip">Zip_XXX</span></td></tr>
+<tr class="ui-widget-content ui-panelgrid-even" role="row"><td role="gridcell" class="ui-panelgrid-cell">
+<label for="validationForm:scheds">Schedules</label></td><td role="gridcell" class="ui-panelgrid-cell">
+<span id="provider_dea_schedules">Schedules_XXX</span></td></tr><tr class="ui-widget-content ui-panelgrid-odd" role="row">
+<td role="gridcell" class="ui-panelgrid-cell"><label for="validationForm:feeStatus">Fee Status:</label></td>
+<td role="gridcell" class="ui-panelgrid-cell"><span id="fee_status">Exempt</span></td></tr>
+<tr class="ui-widget-content ui-panelgrid-even" role="row">
+<td role="gridcell" class="ui-panelgrid-cell">
+Expire Date:
+</td>
+<td role="gridcell" class="ui-panelgrid-cell" id="dea_expiration_date">
+Expiration_XXX
+</td></tr></tbody></table>
+				<div class="bottomButtonDiv"><button id="validationForm:proceed" name="validationForm:proceed" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left" 
+onclick="PrimeFaces.onPost();" type="submit"><span class="ui-button-icon-left ui-icon ui-c ui-icon-arrowthick-1-e"></span><span class="ui-button-text ui-c">Validate</span></button><script id="validationForm:proceed_s" 
+type="text/javascript">PrimeFaces.cw("CommandButton","widget_validationForm_proceed",{id:"validationForm:proceed"});</script><button id="validationForm:cancel" name="validationForm:cancel" 
+class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left" onclick="PrimeFaces.ab({s:&quot;validationForm:cancel&quot;});return false;" style="float:right" type="submit">
+<span class="ui-button-icon-left ui-icon ui-c ui-icon-cancel"></span><span class="ui-button-text ui-c">Done</span></button><script id="validationForm:cancel_s" type="text/javascript">
+PrimeFaces.cw("CommandButton","widget_validationForm_cancel",{id:"validationForm:cancel"});</script>
+				</div></div></fieldset><script id="validationForm:j_idt16_s" type="text/javascript">PrimeFaces.cw("Fieldset","widget_validationForm_j_idt16",{id:"validationForm:j_idt16"});</script>
+            The U.S. Department of Justice, Drug Enforcement Administration, Diversion Control Division maintains registrant data and is considered the primary source of information on DEA registrants. 
+This website, https://www.deadiversion.usdoj.gov, is the official location for real time online verification. 
+
+        <input type="hidden" name="javax.faces.ViewState" id="javax.faces.ViewState" value="e2s8" />
+</form>
+					<hr />
+				</div>
+			</div>
+			<p>DateTime_XXX</p>
+
+		</div></body>

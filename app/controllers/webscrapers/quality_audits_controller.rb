@@ -56,6 +56,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
   end
 
   def run_registration_webcrawler
+    dea_number = params[:dea_number]
     last_name = params[:last_name]
     first_name = params[:first_name]
     provider_personal_info = ProviderPersonalInformation.find(params[:info_id])
@@ -77,26 +78,24 @@ class Webscrapers::QualityAuditsController < ApplicationController
     )
   
     # Create the service instance and call it with parameters
-    service = Webscraper::RegistrationService.new(last_name, first_name)
+    reference_html = 'dea_template.html'
+    service = Webscraper::DeaService.new(dea_number, reference_html)
     service.call
   
     # Define source file path
-    source_file = Rails.root.join('public', 'webscrape', 'registration', 'screenshot.pdf')
+    source_file = Rails.root.join('public', 'screenshots', 'dea_screenshot.pdf')
   
     # Generate unique filename
     timestamp = Time.now.strftime('%Y-%m-%dT%H-%M-%S')
     random_string = SecureRandom.hex(4)
-    filename = "REGISTRATION_#{last_name.upcase}_#{first_name.upcase}_#{timestamp}_#{random_string}_M.pdf"
+    filename = "DEA_#{last_name.upcase}_#{first_name.upcase}_#{timestamp}_#{random_string}_M.pdf"
   
     # Copy the file to a temporary directory for uploading
     tmp_file_path = Rails.root.join('tmp', filename)
     FileUtils.cp(source_file, tmp_file_path)
   
     # Save the file in WebscraperLog using CarrierWave
-    webscraper_log = WebcrawlerLog.new(
-      crawler_type: 'Registration',
-      status: 'completed'
-    )
+    webscraper_log = DeaWebcrawlerLog.new(status: 'completed',rva_information_id: rva_information.id, filetype: 'PDF')
     webscraper_log.filepath = File.open(tmp_file_path) # Attach the file using CarrierWave
     webscraper_log.save!
   

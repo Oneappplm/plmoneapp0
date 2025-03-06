@@ -19,6 +19,20 @@
           <label class="form-check-label" for="full-sched-radio-no">No</label>
         </div>
       </div>
+      <div class="">
+        <div class="col-lg-12 mt-3">
+          <% scheds = ['2', '2N', '3', '3N', '4', '5'] %>
+          <label>Select Schedule(s) Held</label>
+          <div class="d-flex gap-2">
+            <% scheds.each do |sched| %>
+              <label class="text-dark-grey">
+                <%= check_box_tag 'provider_dea[schedules_held][]', sched, provider_dea.schedules_held.include?(sched), class: 'multi-field' %>
+                <strong><%= sched %></strong>
+              </label>
+            <% end %>
+          </div>
+        </div>
+      </div>
       <div class="form-row d-flex align-items-center gap-3 mt-2">
         <label for="show_on_tickler">Show on Tickler?</label>
         <div class="form-check d-flex align-items-center gap-2">

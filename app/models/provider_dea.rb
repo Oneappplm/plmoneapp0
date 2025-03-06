@@ -1,5 +1,6 @@
 class ProviderDea < ApplicationRecord
   PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID','ProviderDEAID']
+  serialize :schedules_held, Array
 
   belongs_to :provider_attest
 
