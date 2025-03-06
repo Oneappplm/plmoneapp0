@@ -1339,17 +1339,19 @@
                           <button class="btn btn-primary py-1" id="run-webcrawler-btn" type="button">Run Webcrawler</button>
                         </div>
                         <div class="col-md-9">
-                        <% @registration_webcrawler_logs.each do |crawler_log| %>
-                          <div class="col-md-6">
-                            <div class="text-decoration-underline"><%= link_to "#{File.basename(crawler_log.filepath.url)}", crawler_log.filepath.url, target: '_blank' %></div>
+                          <div class="row justify-content-end" id="crawler-link">
+                            <% @registration_webcrawler_logs.each do |crawler_log| %>
+                              <div class="col-md-6">
+                                <div class="text-decoration-underline"><%= link_to "#{File.basename(crawler_log.filepath.url)}", crawler_log.filepath.url, target: '_blank' %></div>
+                              </div>
+                              <div class="col-md-3">
+                                <div class="date-time d-flex">
+                                  <span><%= crawler_log.created_at.strftime('%Y/%m/%d') %></span>
+                                  <span class="ms-2"><%= crawler_log.created_at.strftime('%H:%M') %></span>
+                                </div>
+                              </div>
+                            <% end %>
                           </div>
-                          <div class="col-md-3">
-                            <div class="date-time d-flex">
-                              <span><%= crawler_log.created_at.strftime('%Y/%m/%d') %></span>
-                              <span class="ms-2"><%= crawler_log.created_at.strftime('%H:%M') %></span>
-                            </div>
-                          </div>
-                        <% end %>
                         </div>
                       </div>
                       <hr class="form-hr">
@@ -1751,6 +1753,7 @@
 
         $('#run-webcrawler-btn').click(function (e) {
           e.preventDefault();
+          var deaNumber = $('#provider_dea_dea_number')[0].value;
           var firstName = $('#firstname').html().trim();
           var lastName = $('#lastname').html().trim();
           var personalInfoId = $('input[name="personal_info_id"]').val();
@@ -1769,6 +1772,7 @@
               'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
             },
             data: {
+              dea_number: deaNumber,
               first_name: firstName, 
               last_name: lastName,
               info_id: personalInfoId,

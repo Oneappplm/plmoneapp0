@@ -38,7 +38,7 @@ class Mhc::ProviderDeasController < ApplicationController
     params.require(:provider_dea).permit(
       :caqh_provider_deaid, :provider_attest_id, :dea_number, :state, :expiration_date,
       :caqh_provider_attest_id, :dea_license_limitation_flag, :dea_license_limitation_explanation,
-      :no_dea_explanation, :application_date, :show_on_tickler, :full_schedule)
+      :no_dea_explanation, :application_date, :show_on_tickler, :full_schedule, schedules_held: [])
   end
 
   def set_provider_dea

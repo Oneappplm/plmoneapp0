@@ -252,6 +252,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_personal_information_comment = ProviderPersonalInformationComment.new
       @provider_personal_information_comments = ProviderPersonalInformationComment.all
       @rva_information = RvaInformation.new
+      @oig_webcrawler_logs = OigWebcrawlerLog.order(updated_at: :desc)
       @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'OIG').last
     end
 
@@ -265,7 +266,7 @@ class Mhc::VerificationPlatformController < ApplicationController
 
     if params[:page_tab] == 'registration'
       @provider_personal_information = ProviderPersonalInformation.find_by(id: params[:provider_personal_information_id] || params[:id])
-      @provider_deas = @provider_personal_information.provider_deas.order(:id)
+      @provider_deas = @provider_personal_information&.provider_deas.order(:id)
       @provider_cd = ProviderCd.new(caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id)
       @states = State.all
       @provider_cds = @provider_personal_information.provider_cds.order(:id)
@@ -282,8 +283,8 @@ class Mhc::VerificationPlatformController < ApplicationController
         provider_attest_id: @provider_personal_information.provider_attest_id
       )
       @rva_information = RvaInformation.new
-      @last_rva_information = RvaInformation.last
-      @registration_webcrawler_logs = WebcrawlerLog.where(crawler_type: 'Registration').where.not(filepath: nil).order(updated_at: :desc)
+      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'Registration').last
+      @registration_webcrawler_logs = DeaWebcrawlerLog.order(updated_at: :desc)
     end
 
     if params[:page_tab] == 'billing_info'
