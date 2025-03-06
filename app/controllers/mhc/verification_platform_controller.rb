@@ -16,6 +16,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     else
       if @provider_personal_information.present?
         @rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'OIG').where.not(source_date: nil).where.not(audit_status: false)
+        @dea_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Registration').where.not(source_date: nil).where.not(audit_status: false)
       end
       render 'overview'
     end
@@ -119,6 +120,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       redirect_to mhc_verification_platform_index_path and return
     end
     @provider_oig_tab_details = @provider_personal_information.rva_informations.where(tab: 'OIG')
+    @provider_dea_tab_details = @provider_personal_information.rva_informations.where(tab: 'Registration')
     @queues = PdfGenerationQueue.all.order(created_at: :desc)
     @psv_pdfs = SavedProfile.joins(:pdf_generation_queue)
                        .where(pdf_generation_queues: { deleted: true, provider_personal_information_id: @provider_personal_information.id })
@@ -282,6 +284,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       @new_provider_military = ProviderMilitary.new(
         provider_attest_id: @provider_personal_information.provider_attest_id
       )
+      @dea_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Registration').where.not(source_date: nil).where.not(audit_status: false)
       @rva_information = RvaInformation.new
       @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'Registration').last
       @registration_webcrawler_logs = DeaWebcrawlerLog.order(updated_at: :desc)
