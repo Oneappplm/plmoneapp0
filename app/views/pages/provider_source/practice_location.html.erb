@@ -56,7 +56,9 @@
 
 					<div class="row">
 						<div class="col-lg-12 d-flex justify-content-end my-3">
-							<a href="<%= custom_provider_source_path(page: 'practice_location', component: 'general_info')%>" class="btn btn-md btn-primary">Add Practice Location</a>
+							<a href="<%= custom_provider_source_path(page: 'practice_location', component: params[:component] || 'general_info') %>" 
+								class="btn btn-md btn-primary"
+								onclick="setPracticeLocationViewed()">Add Practice Location</a>
 						</div>
 						<div class="col-lg-12">
 							<table class="table">
@@ -119,3 +121,16 @@
 	</div>
 </div>
 <input type="hidden" name="all_practice_location" value="no">
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+			let urlParams = new URLSearchParams(window.location.search);
+			if (urlParams.get('page') === 'practice_location' && !urlParams.get('component')) {
+					let lastComponent = localStorage.getItem('last_component') || 'general_info';
+					window.location.href = `/provider-engage?page=practice_location&component=${lastComponent}`;
+			}
+	});
+
+	function setPracticeLocationViewed() {
+			localStorage.setItem('last_component', 'general_info');
+	}
+</script>
