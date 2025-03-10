@@ -3,13 +3,17 @@ class OfficeManagersController < ApplicationController
   before_action :set_current_provider, only: [:credentialing_application, :view_summary, :re_attest_application]
   before_action :set_client_organizations, only: [:show]
   def index
-			clean_empty_providers
+    clean_empty_providers
 
-			if params[:practice_location_id].present? && params[:practice_location_id] == 'All Location'
-					redirect_to office_managers_path
-			end
-
-			@providers = ProviderSource.unscoped.where(practice_location_id:  params[:practice_location_id]).order(created_at: :asc).paginate(page: params[:page], per_page: 12)
+    if params[:practice_location_id].blank? || params[:practice_location_id] == 'All Location'
+      @providers = ProviderSource.unscoped.order(created_at: :asc).paginate(page: params[:page], per_page: 12)
+    else
+      # Display providers filtered by practice_location_id
+      @providers = ProviderSource.unscoped
+                                 .where(practice_location_id: params[:practice_location_id])
+                                 .order(created_at: :asc)
+                                 .paginate(page: params[:page], per_page: 12)
+    end
   end
 
 	def manage_practice_locations
