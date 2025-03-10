@@ -408,6 +408,7 @@ Rails.application.routes.draw do
     post '/send_registration_request', to: 'quality_audits#send_registration_request' 
     post '/send_liability_request', to: 'quality_audits#send_liability_request'
     post '/send_education_request', to: 'quality_audits#send_education_request' 
+    post '/send_training_request', to: 'quality_audits#send_training_request' 
     post '/send_board_cert_request', to: 'quality_audits#send_board_cert_request' 
     post '/send_licensure_request', to: 'quality_audits#send_licensure_request'
     post '/send_employment_request', to: 'quality_audits#send_employment_request'

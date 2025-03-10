@@ -68,6 +68,11 @@
                                             Skip RVA
                                         </button>
                                     </div>
+                                    <div class="col-12 m-2">
+                                      <button class="btn text-danger <%= @employment_rva_information_completed.present? ? '' : 'd-none' %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" id="re-rva">
+                                        Need ReRVA
+                                      </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -502,7 +507,7 @@
                                     <%= f.label :source_date, 'Source Date:' %>
                                   </div>
                                   <div class="col-md-6">  
-                                    <%= f.date_field :source_date, class: 'form-control'%>
+                                    <%= f.date_field :source_date, required: true, class: "form-control" %>
                                   </div>
                                 </div>
                                 <hr>
@@ -816,10 +821,10 @@
 
                               <div class="form-row d-flex align-items-center gap-3">
                                 <%= f.label :audit_status, 'Audit Status:' %>
-                                <%= f.radio_button :audit_status, 'Pass', id: 'audit-status-pass', class: 'form-check-input', disabled: true %>
+                                <%= f.radio_button :audit_status, 'Pass', id: 'audit-status-pass', class: 'form-check-input', required: true %>
                                 <%= f.label :audit_status, 'Pass', for: 'audit-status-pass', class: 'form-check-label' %>
 
-                                <%= f.radio_button :audit_status, 'Fail', id: 'audit-status-fail', class: 'form-check-input', disabled: true %>
+                                <%= f.radio_button :audit_status, 'Fail', id: 'audit-status-fail', class: 'form-check-input', required: true %>
                                 <%= f.label :audit_status, 'Fail', for: 'audit-status-fail', class: 'form-check-label' %>
                               </div>
                               <hr class="form-hr">
@@ -939,39 +944,6 @@
         </div>
 <script type="text/javascript">
     $(document).ready(function() {
-        $('.contact_method_radio').on('change',function(e) {
-            if($(this).val() == 'email') {
-                var provider_type = $('#provider_type').val()
-                console.log("provider_type")
-                if(provider_type == 'credentialing_contact') {
-                    $('#to').val($('#cred_contact_email').val())
-                }
-                if(provider_type == 'confidential_contact') {
-                    $('#to').val($('#conf_contact_email').val())
-                }
-                if(provider_type == 'client_contact') {
-                    $('#to').val($('#client_contact_email').val())
-                }
-                if(provider_type == 'intitution_contact') {
-                    $('#to').val($('#intitution_contact_email').val())
-                }
-            }
-        });
-
-        $('#provider_type').on('change',function(e) {
-            if($(this).val() == 'credentialing_contact') {
-                $('#to').val($('#cred_contact_email').val())
-            }
-            if($(this).val() == 'confidential_contact') {
-                $('#to').val($('#conf_contact_email').val())
-            }
-            if($(this).val() == 'client_contact') {
-                $('#to').val($('#client_contact_email').val())
-            }
-            if($(this).val() == 'intitution_contact') {
-                $('#to').val($('#intitution_contact_email').val())
-            }
-        });
 
         // send request parameter
         $('#send-request-btn').click(function (e) {
@@ -992,6 +964,7 @@
             success: function (response) {
               // set the values
               const data =  response.rva_information;
+              document.querySelector('[name="id"]').value = data.id;
               $('#send-request-btn').attr('disabled', 'true');
               $('#send-request-btn')[0].classList.remove('btn');
               $('.sent-request')[0].innerHTML = data.send_request;
@@ -1010,85 +983,13 @@
             },
           });
         });
-
-        $('#run-webcrawler-btn').click(function (e) {
-          e.preventDefault();
-          var firstName = $('#firstname').html().trim();
-          var lastName = $('#lastname').html().trim();
-          var personalInfoId = $('input[name="personal_info_id"]').val();
-
-          if (!firstName || !lastName) {
-            $('#qaModalMessage').text('Crawling failed due to some error: First name or last name is missing.');
-            return;
-          }
-
-          $('.loading-overlay').show();
-
-          $.ajax({
-            url: '/webscrapers/run_oig_webcrawler',
-            method: 'POST',
-            headers: {
-              'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
-            },
-            data: {
-              first_name: firstName, 
-              last_name: lastName,
-              info_id: personalInfoId,
-            },
-            success: function (response) {
-              // set the values
-              const crawlerData = response.webscraper_log;
-
-              // Ensure crawlerData and its properties are defined before proceeding
-              if (crawlerData && crawlerData.filepath && crawlerData.filepath.url && crawlerData.created_at) {
-                  const createdDate = new Date(crawlerData.created_at); // Convert to a Date object if it's a string
-
-                  // Construct HTML dynamically
-                  const crawlerLinkHTML = `
-                      <div class="row justify-content-end">
-                          <div class="col-md-6">
-                              <div class="text-decoration-underline">
-                                  <a href="${crawlerData.filepath.url}" target="_blank">
-                                      ${crawlerData.filepath.url.split('/').pop()}
-                                  </a>
-                              </div>
-                          </div>
-                          <div class="col-md-3">
-                              <div class="date-time d-flex">
-                                  <span>${createdDate.toISOString().split('T')[0]}</span> <!-- YYYY-MM-DD -->
-                                  <span class="ms-2">${createdDate.toTimeString().slice(0, 5)}</span> <!-- HH:MM -->
-                              </div>
-                          </div>
-                      </div>`;
-
-                  // Inject the HTML into the #crawler-link element
-                  document.getElementById('crawler-link').innerHTML += crawlerLinkHTML;
-              } else {
-                  console.error('Crawler data is missing or incomplete.');
-              }
-              $('#rva_information_source_date').removeAttr('disabled');
-              const data = response.rva_information;
-              document.querySelector('[name="id"]').value = data.id;
-              $('#send-request-btn').attr('disabled', 'false');
-              $('#send-request-btn')[0].classList.remove('btn');
-              $('.sent-request')[0].innerHTML = data.send_request;
-              $('.requested-by')[0].innerHTML = data.requested_by;
-              $('.requested-date')[0].innerHTML = data.requested_date;
-              $(`#method-${data.requested_method}`).checked = true;
-              $('.req-fee-amount')[0].value = data.required_fee_amount;
-              $('input[name="check_generated"]').value = data.required_fee_amount;
-              $('.received-by')[0].innerHTML = data.received_by;
-              $('.received-date')[0].innerHTML = data.received_date;
-              $('input[name="received_status"]').value = data.received_status;
-              $('.request-comment')[0].value = data.comments;
-              $('.loading-overlay').hide();
-            },
-            error: function () {
-            },
-          });
-        });
         $('#verification-btn').click(function(e) {
           e.preventDefault(); // Prevent default form submission
+           // Check if source_date is filled
+            if (!$('#rva_information_source_date').val()) {
+              alert("Please select a Source Date before saving.");
+              return;
+            }
 
           // Serialize the form data from #audit-form
           const auditFormData = $('#audit-form').serialize();
@@ -1125,6 +1026,11 @@
         });
         $('#audit-btn').click(function(e) {
           e.preventDefault(); // Prevent default form submission
+            // Check if an audit status is selected
+            if (!$('input[name="rva_information[audit_status]"]:checked').val()) {
+              alert("Please select an Audit Status before saving.");
+              return;
+            }
 
           // Serialize the form data from #audit-form
           const auditFormData = $('#audit-form').serialize();
