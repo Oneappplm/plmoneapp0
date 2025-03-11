@@ -18,6 +18,17 @@ class Mhc::ProviderLicensuresController < ApplicationController
 		end
 	end
 
+	def destroy
+		@provider_licensure = ProviderLicensure.find(params[:id])
+    if @provider_licensure.destroy
+      redirect_to mhc_verification_platform_path(page_tab: 'licensure', id: @provider_licensure.provider_attest_id), 
+                  notice: 'Licensure detail deleted successfully.'
+    else
+      redirect_to mhc_verification_platform_path(page_tab: 'licensure', id: @provider_licensure.provider_attest_id), 
+                  alert: 'Failed to delete licensure detail.'
+    end
+  end
+
 	private
 
 	def set_provider_licensure

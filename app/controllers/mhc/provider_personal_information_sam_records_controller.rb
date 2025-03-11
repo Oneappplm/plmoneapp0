@@ -28,6 +28,20 @@ class Mhc::ProviderPersonalInformationSamRecordsController < ApplicationControll
       redirect_to mhc_verification_platform_path(page_tab: params[:page_tab],id: @provider_personal_information.provider_attest_id), notice: 'Failed to create record.'
     end
   end
+  
+  def destroy
+    @provider_personal_information_sam_record = ProviderPersonalInformationSamRecord.find(params[:id])
+  
+    # Ensure provider_personal_information is loaded
+    @provider_personal_information = @provider_personal_information_sam_record.provider_personal_information
+  
+    if @provider_personal_information_sam_record.destroy
+      redirect_to mhc_verification_platform_path(id: @provider_personal_information.id, page_tab: 'sam'), notice: 'Record deleted successfully.'
+    else
+      redirect_to mhc_verification_platform_path(id: @provider_personal_information.id, page_tab: 'sam'), alert: 'Failed to delete record.'
+    end
+  end
+  
 
   private
   def provider_personal_information_sam_record_params

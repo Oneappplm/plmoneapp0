@@ -209,7 +209,7 @@
 					</div>
 
 					<% @provider_licensure.provider_supervisings.each do |provider_supervising| %>
-						<%# <% license_state = State.find(provider_supervising.license_state)%> %>
+						<% license_state = State.find(provider_supervising.license_state)%>
 						<% state = State.find(provider_supervising.state) %>
 						<div class="form-row row mt-3">
 							<div class="col-xl-12 right-pane">
@@ -227,7 +227,7 @@
 									<div class="col-xl-6">
 										<label for="firstname">Licence State:</label>
 										<span class="form-control form-control-lg">
-											<%# <%= license_state.name %> %>
+											<%= license_state.name %>
 										</span>
 									</div>
 								</div>
@@ -365,7 +365,16 @@
 			</div>
 		</div>
 	</div>
-
+	<% if @provider_licensure.persisted? %>
+			<div class="col-12 text-left" style="margin-top: 10px;">
+					<%= button_to 'Delete', 
+							mhc_provider_licensure_path(@provider_licensure), 
+							method: :delete, 
+							data: { confirm: 'Are you sure you want to delete this training detail?' }, 
+							class: 'btn btn-danger', 
+							style: 'width: 200px;' %>
+			</div>
+	<% end %>
 	<!-- Add Comment Modal -->
 	<div class="modal fade" id="addCommentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
