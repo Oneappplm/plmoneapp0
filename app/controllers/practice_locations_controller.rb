@@ -5,7 +5,8 @@ class PracticeLocationsController < ApplicationController
     # render json: params and return
     @practice_location = PracticeLocation.new(practice_location_params)
     if @practice_location.save
-      redirect_to request.referrer, notice: 'New location successfully added.'
+      flash[:notice] = 'New location successfully added.'
+      redirect_to request.referrer
     end
   end
 
