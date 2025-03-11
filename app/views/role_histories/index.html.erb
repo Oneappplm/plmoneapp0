@@ -1,0 +1,40 @@
+<div class="content container-fluid">
+	<div class="row">
+    <h1>Roles Event Logs</h1>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+      <table class="table mt-5">
+        <thead>
+          <tr>
+            <th scope="col" class="bg-primary text-white">User</th>
+            <th scope="col" class="bg-primary text-white">Previous role</th>
+            <th scope="col" class="bg-primary text-white">Current role</th>
+            <th scope="col" class="bg-primary text-white">Last updated at</th>
+            <th scope="col" class="bg-primary text-white">Updated at</th>
+            <th scope="col" class="bg-primary text-white">Updated by</th>
+            <th scope="col" class="bg-primary text-white">Severity Level</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @histories.present? %>
+            <% @histories.each do |history| %>
+              <% if history.audited_changes['user_role'].present? %>
+                <% user = history.auditable %>
+                <tr>
+                  <td><%= user.full_name %></td>
+                  <td><%= history.audited_changes['user_role'][0] %></td>
+                  <td><%= history.audited_changes['user_role'][1] %></td>
+                  <td><%= history.created_at.strftime("%B %d, %Y %I:%M %p") %></td>
+                  <td><%= user.updated_at.strftime("%B %d, %Y %I:%M %p") %></td>
+                  <td><%= history.user.full_name %></td>
+                  <td>Low</td>
+                </tr>
+              <% end %>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

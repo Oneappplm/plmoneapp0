@@ -243,6 +243,8 @@ Rails.application.routes.draw do
       post :delete_role
     end
   end
+
+  resources :role_histories, only: :index
   resources :pals_verifications, only: [:index], path: 'pals-verification'
 
   resources :manage_tools, path: 'manage-tools' do

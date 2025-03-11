@@ -5,126 +5,132 @@
 	<% if @user.errors.any? %>
     <div id="error_explanation" class="row mb-3">
 			<div class="col-lg-12">
-					<h2><%= pluralize(@user.errors.count, "error") %> prohibited this enrollment user from being saved:</h2>
-					<ul>
-						<% @user.errors.each do |error| %>
-							<li><%= error.attribute == :email ? 'Invalid email' : error.full_message %></li>
-						<% end %>
-					</ul>
+				<h2><%= pluralize(@user.errors.count, "error") %> prohibited this enrollment user from being saved:</h2>
+				<ul>
+					<% @user.errors.each do |error| %>
+						<li><%= error.attribute == :email ? 'Invalid email' : error.full_message %></li>
+					<% end %>
+				</ul>
 			</div>
     </div>
   <% end %>
-		<div class="row mb-3 rounded p-2 py-3" style="border:2px solid #f5f5f5;">
-			<h1>
-				<%= @user.new_record? ? 'Add New User' : 'Edit User' %>
-			</h1>
-			<div class="col-lg-12">
-				<div class="row mb-3">
-					<div class="col-lg-4">
-            <label class="text-dark-grey">First Name</label>
-						<%= f.text_field :first_name, class: 'form-control border border-dark', placeholder: 'Type here...' %>
-					</div>
-					<div class="col-lg-3">
-            <label class="text-dark-grey">Middle Name</label>
-						<%= f.text_field :middle_name, class: 'form-control border border-dark optional', placeholder: 'Type here...' %>
-					</div>
-					<div class="col-lg-3">
-            <label class="text-dark-grey">Last Name</label>
-						<%= f.text_field :last_name, class: 'form-control border border-dark', placeholder: 'Type here...' %>
-					</div>
-					<div class="col-lg-2">
-            <label class="text-dark-grey">Suffix</label>
-						<%= f.select :suffix, options_for_select(['Jr.', 'Sr.', 'II', 'III', 'IV', 'V'], f.object.suffix), { prompt: 'Select Option'  }, { class: 'form-select border border-dark optional' } %>
-				 </div>
-				</div>
-				<div class="row mb-3">
-					<!-- <div class="col-lg-6">
-            <label class="text-dark-grey">Select from following request</label>
-            <%#= f.select :following_request, options_for_select([], f.object.following_request), { prompt: 'Select from following request' }, { class: 'form-select border border-dark' } %>
-					</div> -->
-          <div class="col-lg-3">
-            <label class="text-dark-grey">Group</label>
-						<div style="float:right;">
-							<%= f.check_box :can_access_all_groups, class: 'form-check-input border border-dark optional'%>
-							<label class="text-primary" for="check-12">
-									Access all group
-							</label>
-						</div>
-						<%= HtmlUtils.multi_select_dropdown name: 'user[enrollment_group_ids]', id: 'enrollment_group_ids'%>
-          </div>
 
-					<div class="col-lg-2">
-            <label class="text-dark-grey">Status</label>
-						<%= f.select :status, options_for_select(['Active', 'Inactive'], f.object.status), { prompt: 'Select Option' }, { class: 'form-select border border-dark' } %>
-					</div>
-					<div class="col-lg-4">
-						<label class="text-dark-grey">Email Address</label>
-						<%= f.email_field :email, class: 'form-control border border-dark', placeholder: 'Type here...' %>
-					</div>
-					<div class="col-lg-3">
-						<label class="text-dark-grey">Temporary Password</label>
-						<%= f.text_field :temporary_password, value: @user.temporary_password, class: 'form-control border border-dark', placeholder: 'Type here...' %>
-					</div>
+	<div class="row mb-3 rounded p-2 py-3" style="border:2px solid #f5f5f5;">
+		<h1><%= @user.new_record? ? 'Add New User' : 'Edit User' %></h1>
+		<div class="col-lg-12">
+			<div class="row mb-3">
+				<div class="col-lg-4">
+					<label class="text-dark-grey">First Name</label>
+					<%= f.text_field :first_name, class: 'form-control border border-dark', placeholder: 'Type here...' %>
 				</div>
-				<% if current_user.can_access?('Select Role') %>
+				<div class="col-lg-3">
+					<label class="text-dark-grey">Middle Name</label>
+					<%= f.text_field :middle_name, class: 'form-control border border-dark optional', placeholder: 'Type here...' %>
+				</div>
+				<div class="col-lg-3">
+					<label class="text-dark-grey">Last Name</label>
+					<%= f.text_field :last_name, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+				</div>
+				<div class="col-lg-2">
+					<label class="text-dark-grey">Suffix</label>
+					<%= f.select :suffix, options_for_select(['Jr.', 'Sr.', 'II', 'III', 'IV', 'V'], f.object.suffix), { prompt: 'Select Option'  }, { class: 'form-select border border-dark optional' } %>
+				</div>
+			</div>
+
+			<div class="row mb-3">
+				<!-- <div class="col-lg-6">
+					<label class="text-dark-grey">Select from following request</label>
+					<%#= f.select :following_request, options_for_select([], f.object.following_request), { prompt: 'Select from following request' }, { class: 'form-select border border-dark' } %>
+				</div> -->
+				<div class="col-lg-3">
+					<label class="text-dark-grey">Group</label>
+					<div style="float:right;">
+						<%= f.check_box :can_access_all_groups, class: 'form-check-input border border-dark optional'%>
+						<label class="text-primary" for="check-12">Access all group</label>
+					</div>
+					<%= HtmlUtils.multi_select_dropdown name: 'user[enrollment_group_ids]', id: 'enrollment_group_ids'%>
+				</div>
+
+				<div class="col-lg-2">
+					<label class="text-dark-grey">Status</label>
+					<%= f.select :status, options_for_select(['Active', 'Inactive'], f.object.status), { prompt: 'Select Option' }, { class: 'form-select border border-dark', id: 'user_status' } %>
+				</div>
+
+				<div class="col-lg-4">
+					<label class="text-dark-grey">Email Address</label>
+					<%= f.email_field :email, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+				</div>
+
+				<div class="col-lg-3">
+					<label class="text-dark-grey">Temporary Password</label>
+					<%= f.text_field :temporary_password, value: @user.temporary_password, class: 'form-control border border-dark', placeholder: 'Type here...', id: 'user_temporary_password' %>
+				</div>
+			</div>
+
+			<% if current_user.can_access?('Select Role') %>
 				<div class="row mb-3 mt-2">
 					<div class="col-lg-5">
 						<label class="text-dark-grey">Role</label>
-					<% if current_user.can_access?('Add New Role') %>
-						<button class="btn btn-xs btn-link p-0" id="add-new-role" data-bs-toggle="modal" data-bs-target="#addNewRole" style="float:right;font-size:12px;">
-							Add new role
-						</button>
-					<% end %>
+						<% if current_user.can_access?('Add New Role') %>
+							<button class="btn btn-xs btn-link p-0" id="add-new-role" data-bs-toggle="modal" data-bs-target="#addNewRole" style="float:right;font-size:12px;">
+								Add new role
+							</button>
+							<%= link_to role_histories_path, id: "view-role-logs", class: "btn btn-xs btn-link p-0", style: "font-size:12px;float:right;margin-right:5px", data: { turbo: false } do %>
+								View role logs
+							<% end %>
+						<% end %>
 						<%= f.select :user_role, options_for_select(current_user.allowed_roles, f.object.user_role), { prompt: 'Select Option' }, class: 'form-select border border-dark', placeholder: 'Role' %>
 					<% end %>
 				</div>
+
 				<div class="col-lg-5">
 					<%= HtmlUtils.radio_toggle name: "user[is_provider_account]",
-								label: 'Enrollment Provider Account',
-								toshow: "user_accessible_provider_container",
-								hidden_field: true,
-								active: "#{f.object.is_provider_account ? 'active' : ''}",
-								data_value: "#{f.object.is_provider_account || false}",
-								isbooleantype: true
-							%>
-							<div id="user_accessible_provider_container" class="<%= f.object.is_provider_account ? '' : 'd-none' %>">
-								<%= f.select :accessible_provider, options_for_select(Provider.all.reject { |p| p.provider_name.blank? }.map { |p| ["#{p.provider_name}", p.id, {'data-enrollment_group_id'=> p.enrollment_group_id}] }, f.object.accessible_provider), { prompt: 'Select Provider' }, class: 'form-select border border-dark optional ', placeholder: 'Role', required: f.object.is_provider_account %>
-							</div>
-				</div>
-				</div>
-				<% if current_setting.groups? %>
-					<div id="assignedAccessOnlyChecBox" class="d-none">
-						<%= f.check_box :assigned_access_only, class: 'form-check-input border border-dark optional'%>
-						<label class="text-primary" for="check-12">
-							Enable Assigned Access Only
-						</label>
-					</div>
-				<% end %>
-				<div class="row">
-					<div class="col-lg-12 d-flex justify-content-end gap-2">
-						<%= f.hidden_field :hidden_role, value: '' %>
-						<% if current_user.can_access?('Add New User') && (action_name == 'index' || action_name == 'create') %>
-							<button type="submit" class="d-flex btn btn-primary btn-md">
-								<i class="bi bi-plus-lg me-2"></i>
-								<span>Add User</span>
-							</button>
-						<% end %>
-						<% if current_user.can_access?('Edit User') && action_name == 'edit' %>
-							<button type="submit" class="d-flex btn btn-primary btn-md">
-								<i class="bi bi-pencil-square me-2"></i>
-								<span>Update User</span>
-							</button>
-						<% end %>
+						label: 'Enrollment Provider Account',
+						toshow: "user_accessible_provider_container",
+						hidden_field: true,
+						active: "#{f.object.is_provider_account ? 'active' : ''}",
+						data_value: "#{f.object.is_provider_account || false}", isbooleantype: true %>
+					<div id="user_accessible_provider_container" class="<%= f.object.is_provider_account ? '' : 'd-none' %>">
+						<%= f.select :accessible_provider, options_for_select(Provider.all.reject { |p| p.provider_name.blank? }.map { |p| ["#{p.provider_name}", p.id, {'data-enrollment_group_id'=> p.enrollment_group_id}] }, f.object.accessible_provider), { prompt: 'Select Provider' }, class: 'form-select border border-dark optional ', placeholder: 'Role', required: f.object.is_provider_account %>
 					</div>
 				</div>
 			</div>
+
+			<% if current_setting.groups? %>
+				<div id="assignedAccessOnlyChecBox" class="d-none">
+					<%= f.check_box :assigned_access_only, class: 'form-check-input border border-dark optional'%>
+					<label class="text-primary" for="check-12">Enable Assigned Access Only</label>
+				</div>
+			<% end %>
+
+			<div class="row">
+				<div class="col-lg-12 d-flex justify-content-end gap-2">
+					<%= f.hidden_field :hidden_role, value: '' %>
+					<% if current_user.can_access?('Add New User') && (action_name == 'index' || action_name == 'create') %>
+						<button type="submit" class="d-flex btn btn-primary btn-md">
+							<i class="bi bi-plus-lg me-2"></i>
+							<span>Add User</span>
+						</button>
+					<% end %>
+
+					<% if current_user.can_access?('Edit User') && action_name == 'edit' %>
+						<button type="submit" class="d-flex btn btn-primary btn-md">
+							<i class="bi bi-pencil-square me-2"></i>
+							<span>Update User</span>
+						</button>
+					<% end %>
+				</div>
+			</div>
 		</div>
+	</div>
 <% end %>
+
 <div class="row">
 	<div class="col-lg-12 p-0">
 		<%= render "users/users_table"%>
 	</div>
 </div>
+
 <div class="modal fade" id="addNewRole" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-sm modal-dialog-centered">
 		<div class="modal-content">
@@ -144,6 +150,7 @@
 		</div>
 	</div>
 </div>
+
 <%= HtmlUtils.form_add_required_attribute form_id: 'user-form' %>
 
 <script>
@@ -253,15 +260,23 @@
         }
       })
     }
+
+		document.getElementById("view-role-logs").addEventListener("click", function(event) {
+			document.querySelectorAll("#user-form [required]").forEach((element) => {
+				element.removeAttribute("required")
+			})
+		})
   })
 </script>
+
 <style>
   .multi-select {
     padding: 0;
   }
+
   .single-select {
     width: 100%;
     max-width: 1000px;
     padding: 0;
-   }
+  }
 </style>
