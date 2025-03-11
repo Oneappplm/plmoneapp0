@@ -20,25 +20,25 @@ class OfficeManagersController < ApplicationController
 
 
 
- def manage_practice_locations
-  @locations = if params[:search].present?
-   PracticeLocation.search(params[:search]).paginate(per_page: 10, page: params[:page] || 1)
- else
-   PracticeLocation.paginate(per_page: 10, page: params[:page] || 1)
- end
+  def manage_practice_locations
+    @locations = if params[:search].present?
+     PracticeLocation.search(params[:search]).paginate(per_page: 10, page: params[:page] || 1)
+   else
+     PracticeLocation.order(created_at: :desc).paginate(per_page: 10, page: params[:page] || 1)
+   end
 
- @non_associated_providers = ProviderSource.where(practice_location_id: nil)
- @providers = ProviderSource.unscoped.where(practice_location_id: params[:practice_location_id])
- .order(created_at: :asc)
- .paginate(page: params[:page], per_page: 12)
+   @non_associated_providers = ProviderSource.where(practice_location_id: nil)
+   @providers = ProviderSource.unscoped.where(practice_location_id: params[:practice_location_id])
+   .order(created_at: :asc)
+   .paginate(page: params[:page], per_page: 12)
 
- response_data = {
-  non_associated_providers: @non_associated_providers.map { |provider| { id: provider.id, full_name: provider.full_name } },
-  providers: @providers.map { |provider| { id: provider.id, full_name: provider.full_name } }
-}
+   response_data = {
+    non_associated_providers: @non_associated_providers.map { |provider| { id: provider.id, full_name: provider.full_name } },
+    providers: @providers.map { |provider| { id: provider.id, full_name: provider.full_name } }
+  }
 
-respond_to do |format|
-  format.html { render 'manage_practice' }
+  respond_to do |format|
+    format.html { render 'manage_practice' }
       format.json { render json: response_data } # Removed unnecessary extra hash
     end
   end
