@@ -785,7 +785,7 @@ class EnrollmentClientsController < ApplicationController
       csv << ["Source", "Source Type", "Action Taken", "Action By", "Date Created", "Changes"]
 
       audit_trails.each do |audit_trail|
-        changes = audit_trail.dislay_changes.each_with_index.map do |changes, index|
+        changes = audit_trail.display_changes.each_with_index.map do |changes, index|
           "#{index + 1}.) #{changes}"
         end.join("\n")
 

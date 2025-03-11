@@ -1,10 +1,10 @@
 class CustomAudit < Audited::Audit
-	def dislay_changes
-			audited_changes.map do |attribute, changes|
-				next if changes.present? && changes[0].nil? && changes[1].nil? || changes[0] == changes[1] || excluded_atts.include?(attribute)
+	def display_changes
+		audited_changes.map do |attribute, changes|
+			next if changes.present? && changes[0].nil? && changes[1].nil? || changes[0] == changes[1] || excluded_atts.include?(attribute)
 
-				"<strong>#{attribute}</strong> changed from <strong style='color: red'>#{changes[0]}</strong> to <strong style='color: green'>#{changes[1]}</strong>".gsub(/<\/?[^>]*>/, "")
-			end.compact
+			"<strong>#{attribute}</strong> changed from <strong style='color: red'>#{changes[0]}</strong> to <strong style='color: green'>#{changes[1]}</strong>".gsub(/<\/?[^>]*>/, "")
+		end.compact
 	rescue
 		[]
 	end
@@ -22,7 +22,7 @@ class CustomAudit < Audited::Audit
 	end
 
 	def empty_changes?
-		dislay_changes.empty?
+		display_changes.empty?
 	end
 
 	def excluded_atts
