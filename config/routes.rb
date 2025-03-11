@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   get 'provider-engage', to: 'provider_app#provider_source', as: :custom_provider_source # Provider Engage page
   get 'show-virtual-review-committee/:id', to: 'pages#show_virtual_review_committee', as: "show_virtual_review_committee"
 
-		get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
+	get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
   post 'caqh/upload', to: 'caqh#upload'
   get 'caqh/upload', to: 'caqh#show'
 		# get 'app-tracker', to: 'pages#app_tracker'
@@ -98,9 +98,7 @@ Rails.application.routes.draw do
   post '/update_vrc_document', to: 'pages#update_vrc_document', as: :update_vrc_document
   post '/delete_vrc_documents/:id', to: 'pages#delete_vrc_documents', as: :delete_vrc_document
 
-
-  resources :manage_clients
-
+  resources :manage_client
 
   resources :provider_sources do
     collection do
@@ -139,21 +137,106 @@ Rails.application.routes.draw do
     end
     get "/delete_saved_profiles", to: "pdf_generation_queues#delete_saved_profile", as: "delete_saved_profile"
     post "/extra_queue_items", to: "pdf_generation_queues#extra_queue_items"
-  end
 
-  namespace :mhc do
     resources :billing_companies
-  end  
-
-  namespace :mhc do
     resources :provider_medicaids
-  end  
-
-  namespace :mhc do
     resources :provider_militaries
-  end
-  
+    resources :provider_cds
+    resources :client_portal
 
+    resources :client_organizations do
+      collection do
+        get 'edit_client_organization'
+        post 'load_client_organization'
+      end
+      member do
+        patch 'update_status'
+      end
+    end
+    
+    resources :manage_clients, path: 'manage-clients' do
+      collection do
+        get 'edit_provider_personal_information'
+        post 'load_provider_personal_information'
+        get :append_remove_practitioner
+        get :get_provider_uploaded_docs
+      end
+      member do
+        get 'edit'
+        patch 'update'
+      end
+    end
+    
+    resources :provider_insurance_coverages
+    resources :provider_npdbs
+    resources :provider_npdb_comments
+    resources :provider_personal_information_comments
+    resources :provider_personal_information_app_trackings
+    resources :provider_licensures
+    resources :practice_informations, path: 'practice-information'
+    resources :provider_educations, only: [:index, :create, :update, :destroy], path: 'provider-education'
+    resources :practice_information_educations, only: [:index, :create, :update, :destroy], path: 'practice-information-education'
+    resources :provider_specialties, only: [:index, :new, :create, :edit, :destroy, :update], path: 'provider-specialties'
+    resources :provider_personal_informations, only: [:update], path: 'provider-personal-information'
+    resources :provider_personal_information_sam_records, only: [:create, :show], path: 'provider-personal-information-sam-record' do
+      collection do
+        get :auto_create, path: 'auto-create'
+      end
+    end
+    resources :provider_personal_information_reinstatements, only: [:create], path: 'provider-personal-information-reinstatements'
+    resources :provider_personal_information_sam_rva_records, only: [:create, :update], path: 'provider-personal-information-sam-rva-record' do
+      member do
+        get :auto_create, path: 'auto-create'
+      end
+    end
+    resources :provider_deas, only: [:create, :update, :destroy], path: 'provider-dea'
+    resources :verification_platform, only: [:index, :show], path: 'verification-platform'
+
+    resources :client_portal, only: [:index, :show], path: 'client-portal' do
+      collection do
+        get :upload_csv
+        post :process_csv
+        get :clear_csv
+        get :download_csv
+      end
+    end
+
+    resources :client_portal do
+      collection do
+        get 'history', to: 'client_portal#history'
+      end
+    end
+
+
+    resources :manage_practitioners, only: [:index], path: 'manage-practitioners'
+    resources :manage_clients, only: [:index], path: 'manage-clients' do
+      collection do
+        post :provider_personal_uploaded_docs, path: 'provider-personal-uploaded-docs'
+        delete :delete_provider_personal_docs, path: 'delete_provider_personal_docs'
+      end
+    end
+    resources :schools
+    get 'california_participating_physician_reapplication', to: 'verification_platform#california_participating_physician_reapplication'
+    get 'california_participating_physician_addendum_b', to: 'verification_platform#california_participating_physician_addendum_b'
+  
+    get 'california_participating_physician_ipa_addendum_c', to: 'verification_platform#california_participating_physician_ipa_addendum_c'
+  
+    get 'confidential_report_of_physical_and_mental_disabilities', to: 'verification_platform#confidential_report_of_physical_and_mental_disabilities'
+    get 'minnesota_uniform_credentialing_application', to: 'verification_platform#minnesota_uniform_credentialing_application'
+    get 'minnesota_uniform_credentialing_reappointment_application', to: 'verification_platform#minnesota_uniform_credentialing_reappointment_application'
+    get 'alliance_application', to: 'verification_platform#alliance_application'
+    get 'alliance_reapplication', to: 'verification_platform#alliance_reapplication'
+    get 'alliance_professional_liability_addendum_a', to: 'verification_platform#alliance_professional_liability_addendum_a'
+    get 'michigan_application', to: 'verification_platform#michigan_application'
+    get 'arms_credential_application', to: 'verification_platform#arms_credential_application'
+    get 'memorialcare_initial_application', to: 'verification_platform#memorialcare_initial_application'
+    get 'texas_standardized_credentialing_application', to: 'verification_platform#texas_standardized_credentialing_application'
+    get 'california_participating_physician_application/addendum_a', to: 'verification_platform#california_participating_physician_application_addendum_a'
+    resources :verification_platform, only: [] do
+      get 'california_participating_physician_application', on: :collection
+    end
+    get 'verification_platform/california_participating_physician_application', to: 'verification_platform#california_participating_physician_application', as: :california_participating_physician_application
+  end
   # added these two resources just to make it different to pages_controller for now it doesn't have any model
   resources :verification_platform, path: 'verification-platform'
   resources :office_managers, path: 'group-engage' do
@@ -403,7 +486,6 @@ Rails.application.routes.draw do
     end
   end
 
-
   post '/save_attempt_details', to: 'app_trackers#save_attempt_details'
   post '/provider_personal_docs_uploaded_documents', to: 'app_trackers#provider_personal_docs_uploaded_documents'
   post '/save_provider_personal_docs_receives', to: 'app_trackers#save_provider_personal_docs_receives'
@@ -429,149 +511,6 @@ Rails.application.routes.draw do
   get '/enrollment_report_page', to: 'mhc/verification_platform#enrollment_report_page'
 
   post "/update_provider_associations", to: "office_managers#update_provider_associations"
-
-  namespace :mhc do
-    resources :provider_cds
-    resources :client_portal
-
-    resources :client_organizations do
-      collection do
-        get 'edit_client_organization'
-        post 'load_client_organization'
-      end
-      member do
-        patch 'update_status'
-      end
-    end
-    
-    resources :manage_clients, path: 'manage-clients' do
-      collection do
-        get 'edit_provider_personal_information'
-        post 'load_provider_personal_information'
-        get :append_remove_practitioner
-        get :get_provider_uploaded_docs
-      end
-      member do
-        get 'edit'
-        patch 'update'
-      end
-    end
-    
-    resources :provider_insurance_coverages
-    resources :provider_npdbs
-    resources :provider_npdb_comments
-    resources :provider_personal_information_comments
-    resources :provider_personal_information_app_trackings
-    resources :provider_licensures
-    resources :practice_informations, path: 'practice-information'
-    resources :provider_educations, only: [:index, :create, :update, :destroy], path: 'provider-education'
-    resources :practice_information_educations, only: [:index, :create, :update, :destroy], path: 'practice-information-education'
-    resources :provider_specialties, only: [:index, :new, :create, :edit, :destroy, :update], path: 'provider-specialties'
-    resources :provider_personal_informations, only: [:update], path: 'provider-personal-information'
-    resources :provider_personal_information_sam_records, only: [:create, :show], path: 'provider-personal-information-sam-record' do
-      collection do
-        get :auto_create, path: 'auto-create'
-      end
-    end
-    resources :provider_personal_information_reinstatements, only: [:create], path: 'provider-personal-information-reinstatements'
-    resources :provider_personal_information_sam_rva_records, only: [:create, :update], path: 'provider-personal-information-sam-rva-record' do
-      member do
-        get :auto_create, path: 'auto-create'
-      end
-    end
-    resources :provider_deas, only: [:create, :update, :destroy], path: 'provider-dea'
-    resources :verification_platform, only: [:index, :show], path: 'verification-platform'
-
-    resources :client_portal, only: [:index, :show], path: 'client-portal' do
-      collection do
-        get :upload_csv
-        post :process_csv
-        get :clear_csv
-        get :download_csv
-      end
-    end
-
-    resources :client_portal do
-      collection do
-        get 'history', to: 'client_portal#history'
-      end
-    end
-
-
-    resources :manage_practitioners, only: [:index], path: 'manage-practitioners'
-    resources :manage_clients, only: [:index], path: 'manage-clients' do
-      collection do
-        post :provider_personal_uploaded_docs, path: 'provider-personal-uploaded-docs'
-        delete :delete_provider_personal_docs, path: 'delete_provider_personal_docs'
-      end
-    end
-    resources :schools
-  end
-  namespace :mhc do
-    get 'california_participating_physician_reapplication', to: 'verification_platform#california_participating_physician_reapplication'
-  end
-  
-  namespace :mhc do
-    get 'california_participating_physician_addendum_b', to: 'verification_platform#california_participating_physician_addendum_b'
-  end
-   
-  namespace :mhc do
-    get 'california_participating_physician_ipa_addendum_c', to: 'verification_platform#california_participating_physician_ipa_addendum_c'
-  end
-  
-  namespace :mhc do
-    get 'confidential_report_of_physical_and_mental_disabilities', to: 'verification_platform#confidential_report_of_physical_and_mental_disabilities'
-  end
-  
-  namespace :mhc do
-    get 'minnesota_uniform_credentialing_application', to: 'verification_platform#minnesota_uniform_credentialing_application'
-  end
-  
-  namespace :mhc do
-    get 'minnesota_uniform_credentialing_reappointment_application', to: 'verification_platform#minnesota_uniform_credentialing_reappointment_application'
-  end
-  
-  namespace :mhc do
-    get 'alliance_application', to: 'verification_platform#alliance_application'
-  end
-
-  namespace :mhc do
-    get 'alliance_reapplication', to: 'verification_platform#alliance_reapplication'
-  end
-  
-  namespace :mhc do
-    get 'alliance_professional_liability_addendum_a', to: 'verification_platform#alliance_professional_liability_addendum_a'
-  end
-  
-  namespace :mhc do
-    get 'michigan_application', to: 'verification_platform#michigan_application'
-  end
-  
-  namespace :mhc do
-    get 'arms_credential_application', to: 'verification_platform#arms_credential_application'
-  end
-  
-  namespace :mhc do
-    get 'memorialcare_initial_application', to: 'verification_platform#memorialcare_initial_application'
-  end  
-
-  namespace :mhc do
-    get 'texas_standardized_credentialing_application', to: 'verification_platform#texas_standardized_credentialing_application'
-  end  
-
-  namespace :mhc do
-    get 'california_participating_physician_application/addendum_a', to: 'verification_platform#california_participating_physician_application_addendum_a'
-  end  
-  
-  namespace :mhc do
-    resources :verification_platform, only: [] do
-      get 'california_participating_physician_application', on: :collection
-    end
-  end
-
-  namespace :mhc do
-    get 'verification_platform/california_participating_physician_application', to: 'verification_platform#california_participating_physician_application', as: :california_participating_physician_application
-  end  
   get 'provider-engage', to: 'provider_app#provider_engage', as: 'provider_engage'
   post 'mhc/verification-platform/send-contact', to: 'mhc/verification_platform#send_contact'
   post 'mhc/verification-platform/generate_rva_information', to: 'mhc/verification_platform#generate_rva_information'

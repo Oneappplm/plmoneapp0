@@ -105,4 +105,5 @@ gem 'mail_form'
 gem 'sidekiq'
 gem 'combine_pdf'    # For PDF generation
 gem 'wicked_pdf'    # For rendering HTML to PDF
+gem 'wkhtmltopdf-binary' # Required dependency for wicked_pdf
 gem "hexapdf", "~> 1.0" # https://github.com/gettalong/hexapdf

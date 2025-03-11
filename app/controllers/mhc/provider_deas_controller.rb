@@ -3,7 +3,9 @@ class Mhc::ProviderDeasController < ApplicationController
   
   def create
     provider_dea = ProviderDea.new(provider_dea_params)
-  
+    if params[:provider_dea][:full_schedule] == 'Yes'
+      provider_dea.schedules_held = ["2", "2N", "3", "3N", "4", "5"]
+    end
     if provider_dea.save
       redirect_to mhc_verification_platform_path(page_tab: 'registration', id: params[:provider_dea][:provider_attest_id]),
                   notice: 'Record created successfully.'
@@ -15,9 +17,14 @@ class Mhc::ProviderDeasController < ApplicationController
   
 
   def update
+    if params[:provider_dea][:full_schedule] == 'Yes'
+      @provider_dea.schedules_held = ["2", "2N", "3", "3N", "4", "5"]
+    end
     @provider_dea.assign_attributes(provider_dea_params)
 
-    if @provider_dea.save
+    if @provider_dea.update
+      @provider_deas = @provider.provider_deas
+      @show_rva_information = @provider_deas.exists?
       redirect_to mhc_verification_platform_path(page_tab: 'registration', id: params[:provider_dea][:provider_attest_id]), notice: 'Created record successfully.'
     else
       redirect_to mhc_verification_platform_path(page_tab: 'registration', id: params[:provider_dea][:provider_attest_id]), notice: 'Failed to create record.'
