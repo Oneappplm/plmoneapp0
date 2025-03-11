@@ -2,20 +2,10 @@ class PracticeLocationsController < ApplicationController
   before_action :set_practice_location, only: [:destroy, :update]
 
   def create
-    if params[:id].present?
-      @practice_location = PracticeLocation.find(params[:id])
-    else
-      @practice_location = PracticeLocation.new(practice_location_params)
-      
-      if @practice_location.save
-        respond_to do |format|
-          format.json { render json: { success: true, notice: 'Practice Location saved successfully.', location_id: @practice_location.id } }
-        end
-      else
-        respond_to do |format|
-          format.json { render json: { success: false, errors: @practice_location.errors.full_messages } }
-        end
-      end
+    @practice_location = PracticeLocation.new(practice_location_params)
+    if @practice_location.save
+      flash[:notice] = 'New location successfully added.'
+      redirect_to request.referrer
     end
   end
 
