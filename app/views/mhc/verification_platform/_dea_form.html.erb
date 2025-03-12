@@ -19,20 +19,23 @@
           <label class="form-check-label" for="full-sched-radio-no">No</label>
         </div>
       </div>
-      <div class="">
+
+      <div class="schedule_field">
         <div class="col-lg-12 mt-3">
           <% scheds = ['2', '2N', '3', '3N', '4', '5'] %>
           <label>Select Schedule(s) Held</label>
           <div class="d-flex gap-2">
+            <% selected_schedules = (params.dig(:provider_dea, :schedules_held) || provider_dea&.schedules_held || []).map(&:to_s) %>
             <% scheds.each do |sched| %>
               <label class="text-dark-grey">
-                <%= check_box_tag 'provider_dea[schedules_held][]', sched, provider_dea.schedules_held.include?(sched), class: 'multi-field' %>
+                <%= check_box_tag 'provider_dea[schedules_held][]', sched, selected_schedules.include?(sched), class: 'multi-field', data: { schedule: sched } %>
                 <strong><%= sched %></strong>
               </label>
             <% end %>
           </div>
         </div>
       </div>
+
       <div class="form-row d-flex align-items-center gap-3 mt-2">
         <label for="show_on_tickler">Show on Tickler?</label>
         <div class="form-check d-flex align-items-center gap-2">
@@ -72,5 +75,29 @@
           <input type="submit" value="Save" class="btn btn-primary" form=<%= "provider_dea_#{provider_dea.id || index}" %>>
         </div>
       </div>
-    <% end %>                                     
+    <% end %>                              
     <%= button_to "Remove", mhc_provider_dea_path(page_tab: 'register', provider_dea_id: provider_dea.id, provider_attest_id: provider_dea.provider_attest_id), { :method => :delete, class: "btn btn-danger", form_class: ""}%>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const fullScheduleYes = document.getElementById("full-sched-radio-yes");
+    const fullScheduleNo = document.getElementById("full-sched-radio-no");
+    const checkboxes = document.querySelectorAll(".multi-field");
+
+    fullScheduleYes.addEventListener("change", function () {
+      if (this.checked) {
+        checkboxes.forEach((checkbox) => {
+          checkbox.setAttribute("checked", "true"); // Sets the value for form submission
+          checkbox.checked = false; // Ensures they remain visually unchecked
+        });
+
+      }
+    });
+
+    fullScheduleNo.addEventListener("change", function () {
+      checkboxes.forEach((checkbox) => {
+        checkbox.removeAttribute("checked"); // Removes the value if "No" is selected
+      });
+    });
+  });
+
+</script>

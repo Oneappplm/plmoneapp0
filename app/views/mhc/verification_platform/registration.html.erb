@@ -25,165 +25,76 @@
                     never enrolled in a professional education program.</span>
             </span>
         </div>
-        <%# <div class="page-applicable">
-            <div class="d-flex gap-2 mt-3">
-                <button class="btn btn-primary py-1" data-bs-toggle="modal"
-                data-bs-target="#verifLetterModal">
-                    Verification Letter
-                </button>
-                <button class="btn btn-primary py-1">
-                    Send Contact
-                </button>
-                <button class="btn btn-primary py-1">
-                    View Scanned Images
-                </button>
-            </div>
-        </div> %>
-        <%# <div class="mt-3 row page-applicable">
-            <div class="col-xl-5">
-                <div class="left-pane">
-                    <h6 class="offset-md-5">RVA Information</h6>
-                    <div class="form-row row mt-4">
-                        <div class="col-xl-4">
-                            <button class="btn btn-pane">
-                                Request
-                            </button>
-                        </div>
-                        <div class="col-xl-4">
-                            <button class="btn btn-pane">
-                                Verification
-                            </button>
-                        </div>
-                        <div class="col-xl-4">
-                            <button class="btn btn-pane">
-                                Audit
-                            </button>
-                        </div>
-                    </div>
-                    <div class="form-row row mt-2">
-                        <div class="col-xl-6">
-                            <button class="btn btn-pane" data-bs-toggle="modal"
-                            data-bs-target="#QAModal">
-                                Quality Audit
-                            </button>
-                        </div>
-                        <div class="col-xl-6">
-                            <button class="btn btn-pane">
-                                Skip RVA
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-7">
-                <div class="right-pane">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h6 class="offset-md-5">Message Board</h6>
-                        <button class="btn btn-primary py-1" data-bs-toggle="modal" data-bs-target="#addCommentModal">
-                            Add Comment
-                        </button>
-                    </div>
-                    <div class="form-row mt-2">
-                        <span class="btn span-pane" data-bs-toggle="modal" data-bs-target="#deleteCommentModal">
-                            Subject: Incomplete Record
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div> %>
         <div class="col-xl-6 p-2">
-            <div class="card other-name-card">
-                <div class="card-body">
-                    <h2 class="offset-md-5">RVA Information</h2>
-                    <div class="mt-3 row text-center">
-                        <div class="col-12 m-2">
-                            <button class="btn btn-primary btn-sm">
-                                Request
-                            </button>
-                        </div>
-                        <div class="col-12 m-2">
-                            <button class="btn btn-primary btn-sm">
-                                Verification
-                            </button>
-                        </div>
-                        <div class="col-12 m-2">
-                            <button class="btn btn-primary btn-sm">
-                                Audit
-                            </button>
-                        </div>
-                        <div class="col-12 m-2">
-                              <button class="btn btn-primary btn-audit btn-sm" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>">
-                                Quality Audit
-                            </button>
-                        </div>
-                        <div class="col-12 m-2">
-                            <button class="btn btn-primary btn-sm">
-                                Skip RVA
-                            </button>
-                        </div>
-                        <div class="col-12 m-2">
-                          <button class="btn text-danger <%= @dea_rva_information_completed.present? ? '' : 'd-none' %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" id="re-rva">
-                            Need ReRVA
-                          </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
         </div>
         <div class="form-row row page-applicable mt-3">
           <div class="col-xl-12">
             <div class="card other-name-card">
               <div class="card-body">
                 <h1>DEA Number</h1>
-                <div id="dea-forms-container">
+                <div id="dea-forms-container" class="row">
                   <% @provider_deas.each_with_index do |provider_dea, index| %>
-                    <%= render partial: 'dea_form', locals: { provider_dea: provider_dea, index: index } %>
-                  <% end %>
+                    <div class="col-md-9">
+                      <%= render partial: 'dea_form', locals: { provider_dea: provider_dea, index: index } %>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="card other-name-card">
+                        <div class="card-body">
+                            <h2 class="text-center">RVA Information</h2>
+                            <div class="mt-3 row text-center">
+                                <div class="col-12 m-2">
+                                    <button class="btn btn-primary btn-sm">
+                                        Request
+                                    </button>
+                                </div>
+                                <div class="col-12 m-2">
+                                    <button class="btn btn-primary btn-sm">
+                                        Verification
+                                    </button>
+                                </div>
+                                <div class="col-12 m-2">
+                                    <button class="btn btn-primary btn-sm">
+                                        Audit
+                                    </button>
+                                </div>
+                                <div class="col-12 m-2">
+                                      <button class="btn btn-primary btn-audit btn-sm" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" data-dea-number="<%= provider_dea.dea_number %>">
+                                        Quality Audit
+                                    </button>
+                                </div>
+                                <div class="col-12 m-2">
+                                    <button class="btn btn-primary btn-sm">
+                                        Skip RVA
+                                    </button>
+                                </div>
+                                <div class="col-12 m-2">
+                                  <button class="btn text-danger <%= @dea_rva_information_completed.present? ? '' : 'd-none' %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" id="re-rva">
+                                    Need ReRVA
+                                  </button>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>  
+                    <% end %>
+                  </div>
                 </div>
 
                 <!-- Hidden Form Template -->
-                <template id="dea-form-template">
-                  <%= render partial: 'dea_form', locals: { provider_dea: ProviderDea.new, index: 'NEW_INDEX' } %>
+                <template id="dea-form-template" class="row">
+                  <div class="col-md-9">
+                    <%= render partial: 'dea_form', locals: { provider_dea: ProviderDea.new, index: 'NEW_INDEX' } %>
+                  </div>
                 </template>
 
                 <div class="form-row d-flex justify-content-center mt-4">
-                  <button class="btn btn-primary py-1" id="add-dea-button">Add DEA Number</button>
+                  <button class="btn btn-primary py-1 mb-3" id="add-dea-button">Add DEA Number</button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <script>
-          document.addEventListener('DOMContentLoaded', () => {
-            const deaFormsContainer = document.getElementById('dea-forms-container');
-            const deaFormTemplate = document.getElementById('dea-form-template').innerHTML;
-
-            let formIndex = document.querySelectorAll('#dea-forms-container > div[id^="dea-form-"]').length;
-
-            // Get the button
-            const addDeaButton = document.getElementById('add-dea-button');
-
-            // Remove any existing listeners to avoid duplicate bindings
-            addDeaButton.replaceWith(addDeaButton.cloneNode(true));
-            const freshAddDeaButton = document.getElementById('add-dea-button');
-
-            // Add the click event listener
-            freshAddDeaButton.addEventListener('click', (e) => {
-              e.preventDefault();
-
-              console.log('Button clicked! Adding form.'); // Debugging line
-
-              // Replace placeholder "NEW_INDEX" with the current form index
-              const newDeaForm = deaFormTemplate.replace(/NEW_INDEX/g, formIndex);
-
-              // Append the new form to the container
-              deaFormsContainer.insertAdjacentHTML('beforeend', newDeaForm);
-
-              // Increment the index for uniqueness
-              formIndex++;
-            });
-          });
-        </script>
         <% @provider_cds.each do |provider_cd| %>
           <%= form_with model: provider_cd, url: mhc_provider_cd_path(provider_cd), method: :put, local: true do |f| %>
             <%= f.hidden_field :caqh_provider_attest_id %>
@@ -1683,6 +1594,35 @@
     </div>
 </div>
 <script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', () => {
+      const deaFormsContainer = document.getElementById('dea-forms-container');
+      const deaFormTemplate = document.getElementById('dea-form-template').innerHTML;
+
+      let formIndex = document.querySelectorAll('#dea-forms-container > div[id^="dea-form-"]').length;
+
+      // Get the button
+      const addDeaButton = document.getElementById('add-dea-button');
+
+      // Remove any existing listeners to avoid duplicate bindings
+      addDeaButton.replaceWith(addDeaButton.cloneNode(true));
+      const freshAddDeaButton = document.getElementById('add-dea-button');
+
+      // Add the click event listener
+      freshAddDeaButton.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        console.log('Button clicked! Adding form.'); // Debugging line
+
+        // Replace placeholder "NEW_INDEX" with the current form index
+        const newDeaForm = deaFormTemplate.replace(/NEW_INDEX/g, formIndex);
+
+        // Append the new form to the container
+        deaFormsContainer.insertAdjacentHTML('beforeend', newDeaForm);
+
+        // Increment the index for uniqueness
+        formIndex++;
+      });
+    });
     $(document).ready(function() {
         $('.contact_method_radio').on('change',function(e) {
             if($(this).val() == 'email') {
@@ -1758,7 +1698,7 @@
 
         $('#run-webcrawler-btn').click(function (e) {
           e.preventDefault();
-          var deaNumber = $('#provider_dea_dea_number')[0].value;
+          var deaNumber = this.dataset.deaNumber;
           var firstName = $('#firstname').html().trim();
           var lastName = $('#lastname').html().trim();
           var personalInfoId = $('input[name="personal_info_id"]').val();
@@ -1792,24 +1732,22 @@
 
                   // Construct HTML dynamically
                   const crawlerLinkHTML = `
-                      <div class="row justify-content-end">
-                          <div class="col-md-6">
-                              <div class="text-decoration-underline">
-                                  <a href="${crawlerData.filepath.url}" target="_blank">
-                                      ${crawlerData.filepath.url.split('/').pop()}
-                                  </a>
-                              </div>
-                          </div>
-                          <div class="col-md-3">
-                              <div class="date-time d-flex">
-                                  <span>${createdDate.toISOString().split('T')[0]}</span> <!-- YYYY-MM-DD -->
-                                  <span class="ms-2">${createdDate.toTimeString().slice(0, 5)}</span> <!-- HH:MM -->
-                              </div>
-                          </div>
-                      </div>`;
+                        <div class="col-md-6">
+                            <div class="text-decoration-underline">
+                                <a href="${crawlerData.filepath.url}" target="_blank">
+                                    ${crawlerData.filepath.url.split('/').pop()}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="date-time d-flex">
+                                <span>${createdDate.toISOString().split('T')[0]}</span> <!-- YYYY-MM-DD -->
+                                <span class="ms-2">${createdDate.toTimeString().slice(0, 5)}</span> <!-- HH:MM -->
+                            </div>
+                        </div>`;
 
                   // Inject the HTML into the #crawler-link element
-                  document.getElementById('crawler-link').innerHTML += crawlerLinkHTML;
+                  document.getElementById('crawler-link').insertAdjacentHTML('afterbegin', crawlerLinkHTML);
               } else {
                   console.error('Crawler data is missing or incomplete.');
               }
@@ -1931,11 +1869,13 @@
     qualityAuditModal.addEventListener('show.bs.modal', function (event) {
       const button = event.relatedTarget; 
       const FirstName = button.getAttribute('data-first-name');
+      const deaNumber = button.getAttribute('data-dea-number');
       const LastName = button.getAttribute('data-last-name');
       const InformationId = button.getAttribute('data-information-id');
       const personalInfoId = button.getAttribute('data-personal-information-id');
 
       // Update the hidden field in the form with the document ID
+      document.querySelector('#run-webcrawler-btn').setAttribute('data-dea-number', deaNumber);
       document.querySelector('[name="first_name"]').value = FirstName;
       document.querySelector('[name="last_name"]').value = LastName;
       document.querySelector('[name="id"]').value = InformationId;

@@ -92,7 +92,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     if params[:section] == "verification"
       @rva_information.verification_status = 'Verified'
       @rva_information.verification_date = Date.today
-      @rva_information.verifier = params[:first_name]
+      @rva_information.verifier = current_user.first_name
       params[:rva_information][:verification_comments] = 'None'
       @rva_information.other_details = 'None'
       @rva_information.adverse_action_comments = 'None'
