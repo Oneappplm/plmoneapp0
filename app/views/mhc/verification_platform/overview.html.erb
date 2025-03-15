@@ -168,7 +168,13 @@
             <% end %>
         </div>
         <div class="p-2">
-            <h2>Section XV - Employment</h2>
+            <h2>Section XV - Employment
+               <% if @employment_rva_information_completed.present? %>
+                 <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
+               <% else %>
+                 <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
+               <% end %> 
+             </h2>
             <% @provider_personal_information.provider_work_histories.each do |provider_work_history| %>
                 <div class="bg-light form-row row p-2 border-bottom border-dark">
                     <div class="col-xl-6">Facility: <%= "#{provider_work_history.employer_name} - #{provider_work_history.country_country_name}" %></div>

@@ -22,10 +22,6 @@
                                 </button>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-danger page-applicable" id="">
-                            <i class='bx bx-trash'></i>
-                            Delete Record
-                        </button>
                     </div>
                     <div class="mt-3 d-flex page-applicable align-items-center gap-2 mb-2">
                         <button class="btn btn-primary py-1 page-applicable" data-bs-toggle="modal"
@@ -59,7 +55,7 @@
                                 </div>
                                 <div class="form-row row mt-2">
                                     <div class="col-xl-6">
-                                        <button class="btn btn-primary btn-audit btn-sm" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>">
+                                        <button class="btn btn-primary btn-audit btn-sm" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" data-employment-id = "<%= @provider_employment.id%>">
                                               Quality Audit
                                         </button>
                                     </div>
@@ -67,6 +63,11 @@
                                         <button class="btn btn-pane">
                                             Skip RVA
                                         </button>
+                                    </div>
+                                    <div class="col-12 m-2">
+                                      <button class="btn text-danger <%= @employment_rva_information_completed.present? ? '' : 'd-none' %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" id="re-rva">
+                                        Need ReRVA
+                                      </button>
                                     </div>
                                 </div>
                             </div>
@@ -89,188 +90,173 @@
                             </div>
                         </div>
                     </div>
-                    <form action="">
+                      <%= form_with model: @provider_employment, url: @provider_employment.persisted? ? mhc_provider_employment_path(@provider_employment) : mhc_provider_employments_path, method: @provider_employment.persisted? ? :patch : :post, local: true do |f| %>
+                        <%= f.hidden_field :provider_attest_id %>
+
                         <div class="form-row row mt-3">
-                            <div class="col-xl-6">
-                                <label for="">Practice/Employer Name:</label>
-                                <input name=" empoyer-name" type="text" id="empoyer-name" class="form-control"
-                                    placeholder="Type here...">
-                            </div>
-                            <div class="col-xl-6">
-                                <label for="title">Title:</label>
-                                <select name="title" id="title" class="form-select">
-                                    <option value="">Select option</option>
-                                </select>
-                            </div>
+                          <div class="col-xl-6">
+                            <label for="employer_name">Practice/Employer Name:</label>
+                            <%= f.text_field :employer_name, class: "form-control", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-6">
+                            <label for="title">Contact/Supervisor Title:</label>
+                            <%= f.select :title, options_for_select(["Dr", "Madam", "Maj", "Miss", "Mr", "Mrs", "Ms", "Sir"]), { prompt: "Select option" }, class: "form-select" %>
+                          </div>
                         </div>
+
                         <div class="form-row row">
-                            <div class="col-xl-3">
-                                <label for="">Contact/Supervisor First Name:</label>
-                                <input name=" lname" type="text" id="fname" class="form-control"
-                                    placeholder="Type here...">
-                            </div>
-                            <div class="col-xl-3">
-                                <label for="">Contact/Supervisor Middle Name:</label>
-                                <input name=" lname" type="text" id="mname" class="form-control"
-                                    placeholder="Type here...">
-                            </div>
-                            <div class="col-xl-3">
-                                <label for="">Contact/Supervisor Last Name:</label>
-                                <input name=" lname" type="text" id="lname" class="form-control"
-                                    placeholder="Type here...">
-                            </div>
-                            <div class="col-xl-3">
-                                <label for="suffix">Contact/Supervisor Suffix:</label>
-                                <select name="suffix" id="suffix" class="form-select">
-                                    <option value="">Select option</option>
-                                </select>
-                            </div>
+                          <div class="col-xl-3">
+                            <label for="contact_first_name">Contact/Supervisor First Name:</label>
+                            <%= f.text_field :contact_first_name, class: "form-control", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-3">
+                            <label for="contact_middle_name">Middle Name:</label>
+                            <%= f.text_field :contact_middle_name, class: "form-control", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-3">
+                            <label for="contact_last_name">Last Name:</label>
+                            <%= f.text_field :contact_last_name, class: "form-control", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-3">
+                            <label for="contact_suffix">Suffix:</label>
+                            <%= f.select :contact_suffix, options_for_select(["Sr.", "Jr.", "I", "II", "III", "IV", "V", "VI", "VII"]), { prompt: "Select option" }, class: "form-select" %>
+                          </div>
                         </div>
+
+                        <div class="form-row row mt-3">
+                          <div class="col-xl-6">
+                            <label for="practitioner_type">Practitioner Type:</label>
+                            <%= f.text_field :practitioner_type, class: "form-control", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-6">
+                            <label for="address">Address:</label>
+                            <%= f.text_field :address, class: "form-control", placeholder: "Type here..." %>
+                          </div>
+                        </div>
+
                         <div class="form-row row">
-                            <div class="col-xl-6">
-                                <label for="prac-type">Practitioner Type:</label>
-                                <select name="prac-type" id="prac-type" class="form-select">
-                                    <option value="">Select option</option>
-                                </select>
-                            </div>
+                          <div class="col-xl-6">
+                            <label for="mail_stop">Mail Stop:</label>
+                            <%= f.text_field :mail_stop, class: "form-control", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-6">
+                            <label for="additional_address">Additional Address:</label>
+                            <%= f.text_field :additional_address, class: "form-control", placeholder: "Type here..." %>
+                          </div>
                         </div>
-                        <div class="form-row row mt-3  health-card">
-                            <div class="col-xl-12">
-                                <div class="card other-name-card">
-                                    <div class="card-body">
-                                        <h6 class="form-heading">Contact Info</h6>
-                                        <div class="form-row row">
-                                            <div class="col-xl-6">
-                                                <label for=" type-practitioner">Address:</label>
-                                                <input name=" address" type="text" id=" address" class="form-control"
-                                                    placeholder="Type here...">
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <label for="">Department/Mail Stop:</label>
-                                                <input name=" mail-stop" type="text" id=" mail-stop"
-                                                    class="form-control" placeholder="Type here...">
-                                            </div>
-                                        </div>
-                                        <div class="form-row row">
-                                            <div class="col-xl-6">
-                                                <label for=" type-practitioner">Additional Address:</label>
-                                                <input name=" additional-address" type="text" id=" additional-address"
-                                                    class="form-control" placeholder="Type here...">
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <label for="">City:</label>
-                                                <input name=" city" type="text" id=" city" class="form-control"
-                                                    placeholder="Type here...">
-                                            </div>
-                                        </div>
-                                        <div class="form-row row">
-                                            <div class="col-xl-6">
-                                                <label for="">County:</label>
-                                                <input name=" county" type="text" id=" county" class="form-control"
-                                                    placeholder="Type here...">
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <label for=" state">State/Province:</label>
-                                                <select name=" state" id=" state" class="form-select">
-                                                    <option value="">Select option</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-row row">
-                                            <div class="col-xl-6">
-                                                <label for=" country">Country:</label>
-                                                <select name=" country" id=" country" class="form-select">
-                                                    <option value="">Select option</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <label for="">Zip/Postal Code:</label>
-                                                <input name=" zip" type="text" id=" zip" class="form-control"
-                                                    placeholder="Type here...">
-                                            </div>
-                                        </div>
-                                        <div class="form-row row">
-                                            <div class="col-xl-4">
-                                                <label for=" ">Phone Number:</label>
-                                                <input name=" phone-number" type="text" id=" phone-number"
-                                                    class="form-control" placeholder="Type here...">
-                                            </div>
-                                            <div class="col-xl-4">
-                                                <label for="">Fax Number:</label>
-                                                <input name=" fax" type="text" id=" fax" class="form-control"
-                                                    placeholder="Type here...">
-                                            </div>
-                                            <div class="col-xl-4">
-                                                <label for=" ">Email Address:</label>
-                                                <input name=" email" type="email" id=" email" class="form-control"
-                                                    placeholder="Type here...">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+
+                        <div class="form-row row">
+                          <div class="col-xl-4">
+                            <label for="city">City:</label>
+                            <%= f.text_field :city, class: "form-control", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-4">
+                            <label for="county">County:</label>
+                            <%= f.text_field :county, class: "form-control", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-4">
+                            <label for="state">State:</label>
+                            <%= f.text_field :state, class: "form-control", placeholder: "Type here..." %>
+                          </div>
+                        </div>
+
+                        <div class="form-row row">
+                          <div class="col-xl-4">
+                            <label for="country">Country:</label>
+                            <%= f.text_field :country, class: "form-control", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-4">
+                            <label for="zip">ZIP Code:</label>
+                            <%= f.text_field :zip, class: "form-control", placeholder: "Type here..." %>
+                          </div>
                         </div>
 
                         <div class="form-row row mt-3">
-                            <div class="col-xl-6">
-                                <label for=" from">From:</label>
-                                <input name=" from" type="date" id=" from" class="form-control"
-                                    placeholder="Type here...">
-                            </div>
-                            <div class="col-xl-6">
-                                <label for="to">To:</label>
-                                <input name=" to" type="date" id=" to" class="form-control" placeholder="Type here...">
-                            </div>
+                          <div class="col-xl-4">
+                            <label for="phone_number">Phone Number:</label>
+                            <%= f.text_field :phone_number, class: "form-control", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-4">
+                            <label for="fax">Fax:</label>
+                            <%= f.text_field :fax, class: "form-control", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-4">
+                            <label for="email">Email:</label>
+                            <%= f.email_field :email, class: "form-control", placeholder: "Type here..." %>
+                          </div>
                         </div>
+
                         <div class="form-row row mt-3">
-                            <div class="col-xl-6">
-                                <label for=" position">Position:</label>
-                                <input name=" position" type="text" id=" position" class="form-control"
-                                    placeholder="Type here...">
-                            </div>
+                          <div class="col-xl-6">
+                            <label for="work_status">Work Status:</label>
+                            <%= f.text_field :work_status, class: "form-control", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-6">
+                            <label for="population_serviced">Population Serviced:</label>
+                            <%= f.text_field :population_serviced, class: "form-control", placeholder: "Type here..." %>
+                          </div>
                         </div>
-                        <div class="form-row row mt-2">
-                            <div class="col-xl-6">
-                                <div class="d-flex align-items-center gap-3">
-                                    <label for="" class="">Show on Tickler?</label>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="inter-input" id="inter-yes"
-                                            value="Yes">
-                                        <label class="form-check-label" for="prac-yes">
-                                            Yes
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="inter-input" id="inter-no"
-                                            value="No">
-                                        <label class="form-check-label" for="prac-no">
-                                            No
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
 
+                        <div class="form-row row mt-3">                        
+                          <div class="col-xl-6">
+                            <label for="contact_method">Contact Method:</label>
+                            <%= f.select :contact_method, options_for_select(["Fax", "Email", "Letter"]), { prompt: "Select option" }, class: "form-select" %>
+                          </div>
                         </div>
+
+                        <div class="form-row row mt-3">
+                          <div class="col-xl-6">
+                            <label for="from_date">From:</label>
+                            <%= f.date_field :from_date, class: "form-control" %>
+                          </div>
+                          <div class="col-xl-6">
+                            <label for="to_date">To:</label>
+                            <%= f.date_field :to_date, class: "form-control" %>
+                          </div>
+                        </div>
+
+                        <div class="form-row row mt-3">
+                          <div class="col-xl-6">
+                            <label for="position">Position:</label>
+                            <%= f.text_field :position, class: "form-control", placeholder: "Type here..." %>
+                          </div>
+                        </div>
+
                         <div class="form-row row mt-2">
-
-                            <div class="col-xl-25">
-                                <label for="training-com">Please List any comments</label>
-                                <input type="text" name="training-com" id="training-com" placeholder="Type here..."
-                                    class="form-control" required>
+                          <div class="col-xl-6">
+                            <label>Show on Tickler?</label>
+                            <div class="form-check">
+                              <%= f.radio_button :show_on_tickler, true, class: "form-check-input" %>
+                              <label class="form-check-label">Yes</label>
                             </div>
+                            <div class="form-check">
+                              <%= f.radio_button :show_on_tickler, false, class: "form-check-input" %>
+                              <label class="form-check-label">No</label>
+                            </div>
+                          </div>
+                        </div>
 
+                        <div class="form-row row mt-2">
+                          <div class="col-xl-12">
+                            <label for="comments">Please List any comments</label>
+                            <%= f.text_area :comments, class: "form-control", placeholder: "Type here..." %>
+                          </div>
                         </div>
 
                         <div class="form-row mt-1 d-flex justify-content-end">
-                            <button class="btn btn-training-save" type="submit">
-                                Save
-                            </button>
+                          <%= f.submit "Save", class: "btn btn-primary" %>
                         </div>
-
-
-
-                    </form>
-
+                      <% end %>
+                      <% if @provider_employment.persisted? %>
+                        <div class="col-12 text-left" style="margin-top: 10px;">
+                            <%= button_to 'Delete', 
+                                mhc_provider_employment_path(@provider_employment), 
+                                method: :delete, 
+                                data: { confirm: 'Are you sure you want to delete this training detail?' }, 
+                                class: 'btn btn-danger', 
+                                style: 'width: 200px;' %>
+                        </div>
+                    <% end %>
                 </div>
             </div>
         </div>
@@ -351,6 +337,7 @@
 
                         <%= hidden_field_tag :id, @last_rva_information&.id %>
                         <%= hidden_field_tag :personal_info_id %>
+                        <%= hidden_field_tag :practice_employment_id %>
 
                         <%= hidden_field_tag :first_name %>
                         <%= hidden_field_tag :last_name %>
@@ -977,6 +964,7 @@
         $('#send-request-btn').click(function (e) {
           e.preventDefault();
           var firstName = $('#firstname').html().trim();
+          var personalInfoId = $('input[name="personal_info_id"]').val();
 
           $('.loading-overlay').show();
 
@@ -988,6 +976,7 @@
             },
             data: {
               first_name: firstName,
+              personal_info_id: personalInfoId,
             },
             success: function (response) {
               // set the values
@@ -1128,6 +1117,7 @@
 
           // Serialize the form data from #audit-form
           const auditFormData = $('#audit-form').serialize();
+          var practiceInfoEducationId = $('input[name="practice_employment_id"]').val();
 
           // Combine the form data and additional data into a single object
           $.ajax({
@@ -1136,7 +1126,7 @@
             headers: {
               'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
             },
-            data: `${auditFormData}&section=audit`, // Combine serialized data
+            data: `${auditFormData}&section=audit&practice_employment_id=${practiceInfoEducationId}`, // Combine serialized data
             success: function(response) {
               const data = response.rva_information;
               $('input[name="rva_information[audit_status]"]').value = data.audit_status;
@@ -1187,12 +1177,14 @@
       const LastName = button.getAttribute('data-last-name');
       const InformationId = button.getAttribute('data-information-id');
       const personalInfoId = button.getAttribute('data-personal-information-id');
+      const practiceInfoEducationId = button.getAttribute('data-employment-id');
 
       // Update the hidden field in the form with the document ID
       document.querySelector('[name="first_name"]').value = FirstName;
       document.querySelector('[name="last_name"]').value = LastName;
       document.querySelector('[name="id"]').value = InformationId;
       document.querySelector('[name="personal_info_id"]').value = personalInfoId;
+      document.querySelector('[name="practice_employment_id"]').value = practiceInfoEducationId;
     });
   });
 </script>

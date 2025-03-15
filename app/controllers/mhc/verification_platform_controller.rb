@@ -17,6 +17,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       if @provider_personal_information.present?
         @rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'OIG').where.not(source_date: nil).where.not(audit_status: false)
         @dea_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Registration').where.not(source_date: nil).where.not(audit_status: false)
+        @employment_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Employment').where.not(source_date: nil).where.not(audit_status: false)
       end
       render 'overview'
     end
@@ -102,6 +103,9 @@ class Mhc::VerificationPlatformController < ApplicationController
       params[:rva_information][:auditor]  = params[:first_name]
       params[:rva_information][:audit_date] = Date.today
       params[:rva_information][:audit_comments] = 'None'
+      if params[:practice_employment_id].present?
+        ProviderEmployment.find(params[:practice_employment_id]).update(audit_status: 'Quality Audited')
+      end
     end
     if params[:personal_info_id].present?
       ProviderPersonalInformation.find(params[:personal_info_id]).update(verification_status: 'completed')
@@ -121,6 +125,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
     @provider_oig_tab_details = @provider_personal_information.rva_informations.where(tab: 'OIG')
     @provider_dea_tab_details = @provider_personal_information.rva_informations.where(tab: 'Registration')
+    @provider_employment_tab_details = @provider_personal_information.rva_informations.where(tab: 'Employment')
     @queues = PdfGenerationQueue.all.order(created_at: :desc)
     @psv_pdfs = SavedProfile.joins(:pdf_generation_queue)
                        .where(pdf_generation_queues: { deleted: true, provider_personal_information_id: @provider_personal_information.id })
@@ -320,6 +325,33 @@ class Mhc::VerificationPlatformController < ApplicationController
       end
     end
 
+    if params[:page_tab] == 'add_new_employment'
+      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+    
+      if params[:employment_id].present?
+        @provider_employment = ProviderEmployment.find(params[:employment_id])
+      else
+        @provider_employment = ProviderEmployment.new(provider_attest_id: @provider_attest_id)
+      end
+    end
+    
+    if params[:page_tab] == 'employment'
+      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+      @provider_employments = ProviderEmployment.all
+    end
+    
+    if params[:page_tab] == 'employment_record' 
+      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+      @rva_information = RvaInformation.new
+      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'Employment').last
+      @employment_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Employment').where.not(source_date: nil).where.not(audit_status: false)
+      if params[:employment_id].present?
+        @provider_employment = ProviderEmployment.find(params[:employment_id])
+      else
+        @provider_employment = ProviderEmployment.new
+      end
+    end
+
     if params[:page_tab] == 'liability_info'
       @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
       @provider_insurance_coverages = ProviderInsuranceCoverage.find(params[:coverage_id])
@@ -355,12 +387,6 @@ class Mhc::VerificationPlatformController < ApplicationController
     # code for licensure tab
     if %w[edit_licensure license_record].include?(params[:page_tab])
       @provider_licensure = ProviderLicensure.find(params[:licensure_id])
-      @rva_information = RvaInformation.new
-      @last_rva_information = RvaInformation.last
-    end
-    
-    if params[:page_tab] == 'employment_record'
-      @provider_personal_information_reinstatements = ProviderPersonalInformationReinstatement.where(provider_personal_information_id: @provider_personal_information.id)
       @rva_information = RvaInformation.new
       @last_rva_information = RvaInformation.last
     end

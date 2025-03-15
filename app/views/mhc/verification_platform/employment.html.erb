@@ -24,32 +24,34 @@
                     <i class='bx bx-error-circle font-red'></i> <span>Please check the Not Applicable box if you are not currently and have never been employed since the completion of an education or training program.</span>
                 </span>
             </div>
-            <table class="table table-bordered practice-table mt-3 page-applicable ">
-                <thead>
-                    <tr>
-                        <th  class="text-white" scope="col">Practice/Employer Name</th>
-                        <th class="text-white">Address</th>
-                        <th class="text-white">City</th>
-                        <th class="text-white">State/Province</th>
-                        <th class="text-white">Zip/Postal Code</th>
-                        <th class="text-white">Date From</th>
-                        <th class="text-white">Date To</th>
-                        <th class="text-white">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><a href="<%= mhc_verification_platform_path(page_tab: 'employment_record')%>">Lorem</a></td>
-                        <td>Lorem</td>
-                        <td>Lorem ipsum</td>
-                        <td>Lorem ipsum</td>
-                        <td>Lorem ipsum</td>
-                        <td>11/11/2011</td>
-                        <td>11/11/2011</td>
-                        <td>Lorem ipsum</td>
-                    </tr>
-
-                </tbody>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="text-white">Practice Name</th>
+                  <th class="text-white">Address</th>
+                  <th class="text-white">City</th>
+                  <th class="text-white">State/Province</th>
+                  <th class="text-white">Zip/Postal Code</th>
+                  <th class="text-white">Date From</th>
+                  <th class="text-white">Date To</th>
+                  <th class="text-white">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @provider_employments.each do |employment| %>
+                  <tr>
+                     <td><a href="<%= mhc_verification_platform_path(employment_id: employment.id, page_tab: 'employment_record')%>"
+                                class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none"><%= employment.employer_name %>
+                    <td><%= employment.address %></td>
+                    <td><%= employment.city %></td>
+                    <td><%= employment.state %></td>
+                    <td><%= employment.zip %></td>
+                    <td><%= employment.from_date&.strftime('%m/%d/%Y') %></td>
+                    <td><%= employment.to_date %></td>
+                    <td><%= employment.audit_status.presence || "Not Requested" %></td>
+                  </tr>
+                <% end %>
+              </tbody>
             </table>
             <form action="" class="page-not-applicable">
                 <div class="form-row mt-4">
