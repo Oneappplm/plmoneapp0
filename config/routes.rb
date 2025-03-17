@@ -133,7 +133,7 @@ Rails.application.routes.draw do
       post :send_invitation
       post :bulk_remove_providers
       post :send_invite
-						get :manage_practice_locations
+			get :manage_practice_locations
     end
     member do
       get :manage_applications
@@ -306,6 +306,7 @@ Rails.application.routes.draw do
   get 'organization-users', to: 'users#organization_users'
   get 'client-portal-search', to: 'pages#client_search'
   get 'download-clients', to: 'pages#download_clients'
+  get 'download-clients-data', to: 'pages#download_clients_data'
   get 'virtual-review-committee/records', to: 'pages#records', as: 'records'
 
   namespace :webscrapers do

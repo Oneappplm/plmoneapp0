@@ -1,302 +1,408 @@
-<div class="form-row row">
-	<div class="col-xl-2">
-					<label for="">Monday</label>
-	</div>
-	<div class="col-xl-6">
-					<div class="row">
-									<div class="col-xl-5">
-									 <%= f.time_field :monday_time_start, class: 'form-control' %>
-									</div>
-									<div class="col-xl-2 text-center">
-										 <label for="">To</label>
-									</div>
-									<div class="col-xl-5">
-											<%= f.time_field :monday_time_end, class: 'form-control' %>
-									</div>
-					</div>
-	</div>
-	<div class="col-xl-4">
-					<div class="row">
-									<div class="col-xl-6">
-													<div class="form-check">
-																	<%= f.check_box :monday_split_day, class: 'form-check-input' %>
-																	<!-- <input class="form-check-input" type="checkbox" value="" id="mon-split"> -->
-																	<label class="form-check-label" for="mon-split">
-																					Split Day
-																	</label>
-													</div>
-									</div>
-									<div class="col-xl-6">
-													<div class="form-check">
-																 <%= f.check_box :monday_closed, class: 'form-check-input' %>
-																	<label class="form-check-label" for="mon-closed">
-																					Closed
-																	</label>
-													</div>
-									</div>
-					</div>
-	</div>
+<div class="form-row row mt-2 mb-2">
+  <div class="col-xl-2">
+    <label for="">Monday</label>
+  </div>
+  <div class="col-xl-6">
+    <div class="row">
+      <div class="col-xl-5">
+        <%= f.time_field :monday_time_start, class: 'form-control', id: "practice_location_monday_time_start" %>
+      </div>
+      <div class="col-xl-2 text-center">
+        <label for="">To</label>
+      </div>
+      <div class="col-xl-5">
+        <%= f.time_field :monday_time_end, class: 'form-control', id: "practice_location_monday_time_end" %>
+      </div>
+    </div>
+
+    <!-- Second row for split time (Initially hidden if checkbox is unchecked) -->
+    <div class="row mt-2 split-time-row-monday" style="display: <%= f.object.monday_split_day ? 'flex' : 'none' %>;">
+      <div class="col-xl-5">
+        <%= f.time_field :monday_time_start_2, class: 'form-control', id: "practice_location_monday_time_start_2" %>
+      </div>
+      <div class="col-xl-2 text-center">
+        <label for="">To</label>
+      </div>
+      <div class="col-xl-5 d-flex align-items-center">
+        <%= f.time_field :monday_time_end_2, class: 'form-control', id: "practice_location_monday_time_end_2" %>
+        <span id="monday_closed_text" style="color: red; margin-left: 10px; display: <%= f.object.monday_split_day ? 'inline' : 'none' %>;">Closed</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4">
+    <div class="row">
+      <div class="col-xl-6">
+        <div class="form-check">
+          <%= f.check_box :monday_split_day, class: 'form-check-input', id: "monday_split_day" %>
+          <label class="form-check-label" for="monday_split_day">
+            Split Day
+          </label>
+        </div>
+      </div>
+      <div class="col-xl-6">
+        <div class="form-check">
+          <%= f.check_box :monday_closed, class: 'form-check-input', id: "practice_location_monday_closed" %>
+          <label class="form-check-label" for="practice_location_monday_closed">
+            Closed
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-<div class="form-row row">
+
+<div class="form-row row mt-2 mb-2">
 	<div class="col-xl-2">
 					<label for="">Tuesday</label>
 	</div>
 	<div class="col-xl-6">
-					<div class="row">
-									<div class="col-xl-5">
-										<%= f.time_field :tuesday_time_start, class: 'form-control' %>
-									</div>
-									<div class="col-xl-2 text-center">
-										<label for="">To</label>
-									</div>
-									<div class="col-xl-5">
-										 <%= f.time_field :tuesday_time_end, class: 'form-control' %>
-									</div>
-					</div>
+		<div class="row">
+			<div class="col-xl-5">
+				<%= f.time_field :tuesday_time_start, class: 'form-control', id: "practice_location_tuesday_time_start"   %>
+			</div>
+			<div class="col-xl-2 text-center">
+				<label for="">To</label>
+			</div>
+			<div class="col-xl-5">
+				<%= f.time_field :tuesday_time_end, class: 'form-control', id: "practice_location_tuesday_time_end"  %>
+			</div>
+		</div>
+
+		<!-- Second row for split time (Initially hidden if checkbox is unchecked) -->
+		<div class="row mt-2 split-time-row-tuesday" style="display: <%= f.object.tuesday_split_day ? 'flex' : 'none' %>;">
+			<div class="col-xl-5">
+				<%= f.time_field :tuesday_time_start_2, class: 'form-control', id: "practice_location_tuesday_time_start_2"   %>
+			</div>
+			<div class="col-xl-2 text-center">
+				<label for="">To</label>
+			</div>
+			<div class="col-xl-5 d-flex align-items-center">
+				<%= f.time_field :tuesday_time_end_2, class: 'form-control', id: "practice_location_tuesday_time_end_2"  %>
+				<span id="tuesday_closed_text" style="color: red; margin-left: 10px; display: <%= f.object.tuesday_split_day ? 'inline' : 'none' %>;">Closed</span>
+			</div>
+		</div>
 	</div>
+
 	<div class="col-xl-4">
-					<div class="row">
-									<div class="col-xl-6">
-													<div class="form-check">
-																	<%= f.check_box :tuesday_split_day, class: 'form-check-input' %>
-																	<!-- <input class="form-check-input" type="checkbox" value="" id="mon-split"> -->
-																	<label class="form-check-label" for="tues-split">
-																					Split Day
-																	</label>
-													</div>
-									</div>
-									<div class="col-xl-6">
-													<div class="form-check">
-																 <%= f.check_box :tuesday_closed, class: 'form-check-input' %>
-																	<label class="form-check-label" for="tues-closed">
-																					Closed
-																	</label>
-													</div>
-									</div>
-					</div>
+		<div class="row">
+			<div class="col-xl-6">
+				<div class="form-check">
+					<%= f.check_box :tuesday_split_day, class: 'form-check-input', id: "tuesday_split_day"  %>
+					<!-- <input class="form-check-input" type="checkbox" value="" id="mon-split"> -->
+					<label class="form-check-label" for="tuesday_split_day">
+						Split Day
+					</label>
+				</div>
+			</div>
+			<div class="col-xl-6">
+				<div class="form-check">
+					<%= f.check_box :tuesday_closed, class: 'form-check-input', id: "practice_location_tuesday_closed"  %>
+					<label class="form-check-label" for="practice_location_tuesday_closed">
+						Closed
+					</label>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
-<div class="form-row row">
+
+<div class="form-row row mt-2 mb-2">
 	<div class="col-xl-2">
 					<label for="">Wednesday</label>
 	</div>
 	<div class="col-xl-6">
-					<div class="row">
-									<div class="col-xl-5">
-										<%= f.time_field :wednesday_time_start, class: 'form-control' %>
-									</div>
-									<div class="col-xl-2 text-center">
-										<label for="">To</label>
-									</div>
-									<div class="col-xl-5">
-										 <%= f.time_field :wednesday_time_end, class: 'form-control' %>
-									</div>
-					</div>
+		<div class="row">
+			<div class="col-xl-5">
+				<%= f.time_field :wednesday_time_start, class: 'form-control', id: "practice_location_wednesday_time_start"  %>
+			</div>
+			<div class="col-xl-2 text-center">
+				<label for="">To</label>
+			</div>
+			<div class="col-xl-5">
+				<%= f.time_field :wednesday_time_end, class: 'form-control', id: "practice_location_wednesday_time_end"  %>
+			</div>
+		</div>
+
+		<!-- Second row for split time (Initially hidden if checkbox is unchecked) -->
+    <div class="row mt-2 split-time-row-wednesday" style="display: <%= f.object.wednesday_split_day ? 'flex' : 'none' %>;">
+      <div class="col-xl-5">
+        <%= f.time_field :wednesday_time_start_2, class: 'form-control', id: "practice_location_wednesday_time_start_2"   %>
+      </div>
+      <div class="col-xl-2 text-center">
+        <label for="">To</label>
+      </div>
+      <div class="col-xl-5 d-flex align-items-center">
+        <%= f.time_field :wednesday_time_end_2, class: 'form-control', id: "practice_location_wednesday_time_end_2"  %>
+        <span id="wednesday_closed_text" style="color: red; margin-left: 10px; display: <%= f.object.wednesday_split_day ? 'inline' : 'none' %>;">Closed</span>
+      </div>
+    </div>
+
 	</div>
 	<div class="col-xl-4">
-					<div class="row">
-									<div class="col-xl-6">
-													<div class="form-check">
-																	<%= f.check_box :wednesday_split_day, class: 'form-check-input' %>
-																	<!-- <input class="form-check-input" type="checkbox" value="" id="mon-split"> -->
-																	<label class="form-check-label" for="wed-split">
-																					Split Day
-																	</label>
-													</div>
-									</div>
-									<div class="col-xl-6">
-													<div class="form-check">
-																 <%= f.check_box :wednesday_closed, class: 'form-check-input' %>
-																	<label class="form-check-label" for="wed-closed">
-																					Closed
-																	</label>
-													</div>
-									</div>
-					</div>
+		<div class="row">
+			<div class="col-xl-6">
+				<div class="form-check">
+					<%= f.check_box :wednesday_split_day, class: 'form-check-input', id: "wednesday_split_day"  %>
+					<!-- <input class="form-check-input" type="checkbox" value="" id="mon-split"> -->
+					<label class="form-check-label" for="wednesday_split_day">
+						Split Day
+					</label>
+				</div>
+			</div>
+			<div class="col-xl-6">
+				<div class="form-check">
+					<%= f.check_box :wednesday_closed, class: 'form-check-input', id: "practice_location_wednesday_closed"  %>
+					<label class="form-check-label" for="practice_location_wednesday_closed">
+						Closed
+					</label>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
-<div class="form-row row">
+
+<div class="form-row row mt-2 mb-2">
 	<div class="col-xl-2">
 					<label for="">Thurday</label>
 	</div>
 	<div class="col-xl-6">
-					<div class="row">
-									<div class="col-xl-5">
-										<%= f.time_field :thursday_time_start, class: 'form-control' %>
-									</div>
-									<div class="col-xl-2 text-center">
-										<label for="">To</label>
-									</div>
-									<div class="col-xl-5">
-										 <%= f.time_field :thursday_time_end, class: 'form-control' %>
-									</div>
-					</div>
+		<div class="row">
+			<div class="col-xl-5">
+				<%= f.time_field :thursday_time_start, class: 'form-control', id: "practice_location_thursday_time_start"  %>
+			</div>
+			<div class="col-xl-2 text-center">
+				<label for="">To</label>
+			</div>
+			<div class="col-xl-5">
+				<%= f.time_field :thursday_time_end, class: 'form-control', id: "practice_location_thursday_time_end"  %>
+			</div>
+		</div>
+
+		<!-- Second row for split time (Initially hidden if checkbox is unchecked) -->
+    <div class="row mt-2 split-time-row-thursday" style="display: <%= f.object.thursday_split_day ? 'flex' : 'none' %>;">
+      <div class="col-xl-5">
+        <%= f.time_field :thursday_time_start_2, class: 'form-control', id: "practice_location_thursday_time_start_2"   %>
+      </div>
+      <div class="col-xl-2 text-center">
+        <label for="">To</label>
+      </div>
+      <div class="col-xl-5 d-flex align-items-center">
+        <%= f.time_field :thursday_time_end_2, class: 'form-control', id: "practice_location_thursday_time_end_2"  %>
+        <span id="thursday_closed_text" style="color: red; margin-left: 10px; display: <%= f.object.thursday_split_day ? 'inline' : 'none' %>;">Closed</span>
+      </div>
+    </div>
+
 	</div>
 	<div class="col-xl-4">
-					<div class="row">
-									<div class="col-xl-6">
-													<div class="form-check">
-																	<%= f.check_box :thursday_split_day, class: 'form-check-input' %>
-																	<!-- <input class="form-check-input" type="checkbox" value="" id="mon-split"> -->
-																	<label class="form-check-label" for="thu-split">
-																					Split Day
-																	</label>
-													</div>
-									</div>
-									<div class="col-xl-6">
-													<div class="form-check">
-																 <%= f.check_box :thursday_closed, class: 'form-check-input' %>
-																	<label class="form-check-label" for="thu-closed">
-																					Closed
-																	</label>
-													</div>
-									</div>
-					</div>
+		<div class="row">
+			<div class="col-xl-6">
+				<div class="form-check">
+					<%= f.check_box :thursday_split_day, class: 'form-check-input', id: "thursday_split_day"  %>
+					<!-- <input class="form-check-input" type="checkbox" value="" id="mon-split"> -->
+					<label class="form-check-label" for="thursday_split_day">
+						Split Day
+					</label>
+				</div>
+			</div>
+			<div class="col-xl-6">
+				<div class="form-check">
+					<%= f.check_box :thursday_closed, class: 'form-check-input', id: "practice_location_thursday_closed"  %>
+					<label class="form-check-label" for="practice_location_thursday_closed">
+						Closed
+					</label>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
-<div class="form-row row">
+
+<div class="form-row row mt-2 mb-2">
 	<div class="col-xl-2">
 					<label for="">Friday</label>
 	</div>
 	<div class="col-xl-6">
-					<div class="row">
-									<div class="col-xl-5">
-										<%= f.time_field :friday_time_start, class: 'form-control' %>
-									</div>
-									<div class="col-xl-2 text-center">
-										<label for="">To</label>
-									</div>
-									<div class="col-xl-5">
-										 <%= f.time_field :friday_time_end, class: 'form-control' %>
-									</div>
-					</div>
+		<div class="row">
+			<div class="col-xl-5">
+				<%= f.time_field :friday_time_start, class: 'form-control', id: "practice_location_friday_time_start"  %>
+			</div>
+			<div class="col-xl-2 text-center">
+				<label for="">To</label>
+			</div>
+			<div class="col-xl-5">
+				<%= f.time_field :friday_time_end, class: 'form-control', id: "practice_location_friday_time_end"  %>
+			</div>
+		</div>
+
+		<!-- Second row for split time (Initially hidden if checkbox is unchecked) -->
+    <div class="row mt-2 split-time-row-friday" style="display: <%= f.object.friday_split_day ? 'flex' : 'none' %>;">
+      <div class="col-xl-5">
+        <%= f.time_field :friday_time_start_2, class: 'form-control', id: "practice_location_friday_time_start_2"   %>
+      </div>
+      <div class="col-xl-2 text-center">
+        <label for="">To</label>
+      </div>
+      <div class="col-xl-5 d-flex align-items-center">
+        <%= f.time_field :friday_time_end_2, class: 'form-control', id: "practice_location_friday_time_end_2"  %>
+        <span id="friday_closed_text" style="color: red; margin-left: 10px; display: <%= f.object.friday_split_day ? 'inline' : 'none' %>;">Closed</span>
+      </div>
+    </div>
+
 	</div>
 	<div class="col-xl-4">
-					<div class="row">
-									<div class="col-xl-6">
-													<div class="form-check">
-																	<%= f.check_box :friday_split_day, class: 'form-check-input' %>
-																	<!-- <input class="form-check-input" type="checkbox" value="" id="mon-split"> -->
-																	<label class="form-check-label" for="fri-split">
-																					Split Day
-																	</label>
-																	<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
-  <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
-</svg>
-													</div>
-									</div>
-									<div class="col-xl-6">
-													<div class="form-check">
-																 <%= f.check_box :friday_closed, class: 'form-check-input' %>
-																	<label class="form-check-label" for="fri-closed">
-																					Closed
-																	</label>
-													</div>
-									</div>
-					</div>
+		<div class="row">
+			<div class="col-xl-6">
+				<div class="form-check">
+					<%= f.check_box :friday_split_day, class: 'form-check-input', id: "friday_split_day"  %>
+					<!-- <input class="form-check-input" type="checkbox" value="" id="mon-split"> -->
+					<label class="form-check-label" for="friday_split_day">
+						Split Day
+					</label>
+				</div>
+			</div>
+			<div class="col-xl-6">
+				<div class="form-check">
+					<%= f.check_box :friday_closed, class: 'form-check-input', id: "practice_location_friday_closed"  %>
+					<label class="form-check-label" for="practice_location_friday_closed">
+						Closed
+					</label>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
-<div class="form-row row">
+
+<div class="form-row row mt-2 mb-2">
 	<div class="col-xl-2">
 					<label for="">Saturday</label>
 	</div>
 	<div class="col-xl-6">
-					<div class="row">
-									<div class="col-xl-5">
-										<%= f.time_field :saturday_time_start, class: 'form-control' %>
-									</div>
-									<div class="col-xl-2 text-center">
-										<label for="">To</label>
-									</div>
-									<div class="col-xl-5">
-										 <%= f.time_field :saturday_time_end, class: 'form-control' %>
-									</div>
-					</div>
+		<div class="row">
+			<div class="col-xl-5">
+				<%= f.time_field :saturday_time_start, class: 'form-control', id: "practice_location_saturday_time_start"  %>
+			</div>
+			<div class="col-xl-2 text-center">
+				<label for="">To</label>
+			</div>
+			<div class="col-xl-5">
+				<%= f.time_field :saturday_time_end, class: 'form-control', id: "practice_location_saturday_time_end"  %>
+			</div>
+		</div>
+
+		<!-- Second row for split time (Initially hidden if checkbox is unchecked) -->
+    <div class="row mt-2 split-time-row-saturday" style="display: <%= f.object.saturday_split_day ? 'flex' : 'none' %>;">
+      <div class="col-xl-5">
+        <%= f.time_field :saturday_time_start_2, class: 'form-control', id: "practice_location_saturday_time_start_2"   %>
+      </div>
+      <div class="col-xl-2 text-center">
+        <label for="">To</label>
+      </div>
+      <div class="col-xl-5 d-flex align-items-center">
+        <%= f.time_field :saturday_time_end_2, class: 'form-control', id: "practice_location_saturday_time_end_2"  %>
+        <span id="saturday_closed_text" style="color: red; margin-left: 10px; display: <%= f.object.saturday_split_day ? 'inline' : 'none' %>;">Closed</span>
+      </div>
+    </div>
 	</div>
 	<div class="col-xl-4">
-					<div class="row">
-									<div class="col-xl-6">
-													<div class="form-check">
-																	<%= f.check_box :saturday_split_day, class: 'form-check-input' %>
-																	<!-- <input class="form-check-input" type="checkbox" value="" id="mon-split"> -->
-																	<label class="form-check-label" for="sat-split">
-																					Split Day
-																	</label>
-													</div>
-									</div>
-									<div class="col-xl-6">
-													<div class="form-check">
-																 <%= f.check_box :saturday_closed, class: 'form-check-input' %>
-																	<label class="form-check-label" for="sat-closed">
-																					Closed
-																	</label>
-													</div>
-									</div>
-					</div>
+		<div class="row">
+			<div class="col-xl-6">
+				<div class="form-check">
+					<%= f.check_box :saturday_split_day, class: 'form-check-input', id: "saturday_split_day"  %>
+					<!-- <input class="form-check-input" type="checkbox" value="" id="mon-split"> -->
+					<label class="form-check-label" for="saturday_split_day">
+						Split Day
+					</label>
+				</div>
+			</div>
+			<div class="col-xl-6">
+				<div class="form-check">
+					<%= f.check_box :saturday_closed, class: 'form-check-input', id: "practice_location_saturday_closed" %>
+					<label class="form-check-label" for="practice_location_saturday_closed">
+						Closed
+					</label>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
-<div class="form-row row">
+
+<div class="form-row row mt-2 mb-2">
 	<div class="col-xl-2">
 					<label for="">Sunday</label>
 	</div>
 	<div class="col-xl-6">
-					<div class="row">
-									<div class="col-xl-5">
-										<%= f.time_field :sunday_time_start, class: 'form-control' %>
-									</div>
-									<div class="col-xl-2 text-center">
-										<label for="">To</label>
-									</div>
-									<div class="col-xl-5">
-										 <%= f.time_field :sunday_time_end, class: 'form-control' %>
-									</div>
-					</div>
+		<div class="row">
+			<div class="col-xl-5">
+				<%= f.time_field :sunday_time_start, class: 'form-control', id: "practice_location_sunday_time_start"  %>
+			</div>
+			<div class="col-xl-2 text-center">
+				<label for="">To</label>
+			</div>
+			<div class="col-xl-5">
+				<%= f.time_field :sunday_time_end, class: 'form-control', id: "practice_location_sunday_time_end"  %>
+			</div>
+		</div>
+
+		<!-- Second row for split time (Initially hidden if checkbox is unchecked) -->
+    <div class="row mt-2 split-time-row-sunday" style="display: <%= f.object.sunday_split_day ? 'flex' : 'none' %>;">
+      <div class="col-xl-5">
+        <%= f.time_field :sunday_time_start_2, class: 'form-control', id: "practice_location_sunday_time_start_2"   %>
+      </div>
+      <div class="col-xl-2 text-center">
+        <label for="">To</label>
+      </div>
+      <div class="col-xl-5 d-flex align-items-center">
+        <%= f.time_field :sunday_time_end_2, class: 'form-control', id: "practice_location_sunday_time_end_2"  %>
+        <span id="sunday_closed_text" style="color: red; margin-left: 10px; display: <%= f.object.sunday_split_day ? 'inline' : 'none' %>;">Closed</span>
+      </div>
+    </div>
+
 	</div>
 	<div class="col-xl-4">
-					<div class="row">
-									<div class="col-xl-6">
-													<div class="form-check">
-																	<%= f.check_box :sunday_split_day, class: 'form-check-input' %>
-																	<!-- <input class="form-check-input" type="checkbox" value="" id="mon-split"> -->
-																	<label class="form-check-label" for="sun-split">
-																					Split Day
-																	</label>
-													</div>
-									</div>
-									<div class="col-xl-6">
-													<div class="form-check">
-																 <%= f.check_box :sunday_closed, class: 'form-check-input' %>
-																	<label class="form-check-label" for="sun-closed">
-																					Closed
-																	</label>
-													</div>
-									</div>
-					</div>
+		<div class="row">
+			<div class="col-xl-6">
+				<div class="form-check">
+					<%= f.check_box :sunday_split_day, class: 'form-check-input', id: "sunday_split_day"  %>
+					<!-- <input class="form-check-input" type="checkbox" value="" id="mon-split"> -->
+					<label class="form-check-label" for="sunday_split_day">
+						Split Day
+					</label>
+				</div>
+			</div>
+			<div class="col-xl-6">
+				<div class="form-check">
+					<%= f.check_box :sunday_closed, class: 'form-check-input', id: "practice_location_sunday_closed"  %>
+					<label class="form-check-label" for="practice_location_sunday_closed">
+						Closed
+					</label>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
-<div class="form-row row">
+
+<div class="form-row row mt-2 mb-2">
 	<div class="col-xl-12">
 					<label for="">Comment</label>
 					<%= f.text_area :comment, class: 'form-control', rows: '3' %>
 	</div>
 </div>
-<div class="form-row row">
-	<div class="col-xl-12">
-					<label for="">Does this location have 24 hours/7 days per week telephone coverage?</label>
-					<div class="d-flex align-items-center gap-3">
-						<div class="form-check">
-							<%= f.radio_button :telephone_coverage, 'yes', class: 'form-check-input', id: 'inter-yes'%>
-							<label class="form-check-label" for="inter-yes">
-							Yes
-							</label>
-						</div>
-						<div class="form-check">
-							<%= f.radio_button :telephone_coverage, 'no', class: 'form-check-input', id: 'inter-no'%>
-							<label class="form-check-label" for="inter-no">
-							No
-							</label>
-						</div>
-      				</div>
+<div class="form-row row mt-2 mb-2">
+	<div class="col-xl-12 mt-2 mb-2">
+		<label for=""><span class="text-danger">*</span> Does this location have 24 hours/7 days per week telephone coverage?</label>
+		<div class="d-flex align-items-center gap-3">
+			<div class="form-check">
+				<%= f.radio_button :telephone_coverage, 'yes', class: 'form-check-input', id: 'inter-yes', required: true %>
+				<label class="form-check-label" for="inter-yes">
+					Yes
+				</label>
+			</div>
+			<div class="form-check">
+				<%= f.radio_button :telephone_coverage, 'no', class: 'form-check-input', id: 'inter-no', required: true %>
+				<label class="form-check-label" for="inter-no">
+					No
+				</label>
+			</div>
+		</div>
 	</div>
 </div>
 <div class="form-row row">
@@ -315,3 +421,49 @@
 					<%= f.text_field :telephone_number_ext, class: 'form-control', placeholder: 'Type here...'%>
 	</div>
 </div>
+
+<script>
+	$(document).ready(function () {
+		function toggleTimeFields(day) {
+			let isClosed = $(`#practice_location_${day}_closed`).is(":checked");
+			$(`#practice_location_${day}_time_start, #practice_location_${day}_time_end`).prop("disabled", isClosed);
+		}
+
+	  // List of all weekdays
+		let weekdays = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+
+	  // Run on page load for each weekday
+		weekdays.forEach(toggleTimeFields);
+
+	  // Add event listeners for each day's closed checkbox
+		weekdays.forEach(function (day) {
+			$(`#practice_location_${day}_closed`).change(function () {
+				toggleTimeFields(day);
+			});
+
+			weekdays.forEach(day => {
+				const splitDayCheckbox = document.getElementById(`${day}_split_day`);
+				const splitTimeRow = document.querySelector(`.split-time-row-${day}`);
+				const closedText = document.getElementById(`${day}_closed_text`);
+
+				if (splitDayCheckbox) {
+					function toggleSplitTime() {
+						if (splitDayCheckbox.checked) {
+							splitTimeRow.style.display = "flex";
+							closedText.style.display = "inline";
+						} else {
+							splitTimeRow.style.display = "none";
+							closedText.style.display = "none";
+						}
+					}
+
+	      // Run on page load
+					toggleSplitTime();
+
+	      // Run on checkbox change
+					splitDayCheckbox.addEventListener("change", toggleSplitTime);
+				}
+			});
+		});
+	});
+</script>

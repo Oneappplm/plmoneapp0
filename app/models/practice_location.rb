@@ -123,4 +123,3 @@ class PracticeLocation < ApplicationRecord
     "MLE - Medical Laboratory Evaluation"
   ]
 end
-

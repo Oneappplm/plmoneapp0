@@ -226,6 +226,35 @@ class PagesController < ApplicationController
 		render "client_portal"
   end
 
+  # for downloading the clients data in client-portal(dashboard >> data access)
+   def download_clients_data
+    provider_attest_id = params[:provider_attest_id]
+    
+    @provider_personal_informations = ProviderPersonalInformation.where(provider_attest_id: provider_attest_id)
+
+    @q = ProviderPersonalInformation.ransack(params[:q]&.except(:advanced_search))
+
+    csv_data = CSV.generate(headers: true) do |csv|
+      csv << ['Provider Name', 'Birth Date', 'Address', 'Attested Date', 'MedvId', 'Cred Cycle']
+      
+      @provider_personal_informations.each do |provider|
+        practice_information = provider.provider_attest.practice_informations.first
+        csv << [
+          "#{provider.fullname}, #{provider.provider_type_provider_type_abbreviation}",
+          "#{provider.birth_date.strftime("%Y-%m-%d")}",
+          "#{practice_information.complete_address}",
+          "#{provider.attest_date.strftime("%Y-%m-%d")}",
+          "#{provider.caqh_provider_attest_id}"
+        ]
+      end
+    end
+    respond_to do |format|
+      format.csv { send_data csv_data, filename: "provider_report_#{Date.today}.csv" }
+    end
+  end
+
+
+  # for downloading the vrc data in virtual-review-committee(dashboard >> decision point)
   def download_clients
   	@clients = Client.where.not(id: nil)
   	respond_to do |format|

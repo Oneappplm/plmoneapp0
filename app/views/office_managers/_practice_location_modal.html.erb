@@ -1,93 +1,331 @@
 <div class="modal fade" id="addLocationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-          <div class="modal-body">
-              <div class="content">
-                  <div class="modal-title">
-                      <h6 class="">Add Location</h6>
-                      <!-- <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button> -->
-                  </div>
-                  <!-- <form action=""> -->
-                      <ul class="nav nav-tabs gap-2 mt-3" id="myTab" role="tablist">
-                          <li class="nav-item">
-                              <a class="tab active" id="tab-general-info" data-bs-toggle="tab" href="#general-info"
-                                  role="tab" aria-controls="general" aria-selected="false">
-                                  General Info
-                              </a>
-                          </li>
-                          <li class="nav-item">
-                              <a class="tab" id="tab-contacts" data-bs-toggle="tab" href="#contacts"
-                                  role="tab" aria-controls="contact" aria-selected="false">
-                                  Contacts
-                              </a>
-                          </li>
-                          <li class="nav-item">
-                              <a class="tab" id="tab-hours" data-bs-toggle="tab" href="#hours"
-                                  role="tab" aria-controls="hour" aria-selected="false">
-                                  Hours
-                              </a>
-                          </li>
-                          <li class="nav-item">
-                              <a class="tab" id="tab-patient-acceptance" data-bs-toggle="tab" href="#patient-acceptance"
-                                  role="tab" aria-controls="acceptance" aria-selected="false">
-                                  Patient Acceptance
-                              </a>
-                          </li>
-                          <li class="nav-item">
-                              <a class="tab" id="tab-patient-access" data-bs-toggle="tab" href="#patient-access"
-                                  role="tab" aria-controls="access" aria-selected="false">
-                                  Patient Access
-                              </a>
-                          </li>
-                          <li class="nav-item">
-                              <a class="tab" id="tab-patient-services" data-bs-toggle="tab" href="#services"
-                                  role="tab" aria-controls="service" aria-selected="false">
-                                  Services
-                              </a>
-                          </li>
-                      </ul>
-                      <% url = @practice_location.persisted? ? practice_location_path(id: @practice_location.id) : practice_locations_path%>
-                      <%= form_for @practice_location, url: url do |f| %>
-                      <div class="tab-content mt-3" id="myTabContent1">
-
-                      <!-- location -->
-                          <div class="tab-pane fade show active" id="general-info" role="tabpanel" aria-labelledby="general-info-tab">
-                          <%= render partial: "practice_locations/general_info", locals: { f: f } %>
-                          </div>
-                      <!-- location -->
-
-                      <!-- contacts -->
-                          <div class="tab-pane fade show" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
-                          <%= render partial: 'practice_locations/contacts', locals: { f: f } %>
-                          </div>
-                          <!-- contacts -->
-
-                          <div class="tab-pane fade show" id="hours" role="tabpanel" aria-labelledby="hours-tab">
-                          <%= render partial: 'practice_locations/hours', locals: { f: f }%>
-                          </div>
-
-                          <div class="tab-pane fade show" id="patient-acceptance" role="tabpanel" aria-labelledby="patient-acceptance-tab">
-                          <%= render partial: 'practice_locations/patient_acceptance', locals: { f: f } %>
-                          </div>
-
-                          <div class="tab-pane fade show" id="patient-access" role="tabpanel" aria-labelledby="patient-access-tab">
-                          <%= render partial: 'practice_locations/patient_access', locals: { f: f } %>
-                          </div>
-
-                          <div class="tab-pane fade show" id="services" role="tabpanel" aria-labelledby="services-tab">
-                              <%= render partial: 'practice_locations/services', locals: { f:f } %>
-                          </div>
-                      </div>
-                      <div class="form-row row mt-3">
-                          <%= f.submit "Save", class: 'btn btn-manage btn-primary skip-loader'%>
-                      </div>
-                  <% end %>
-
-                      <div class="form-row mt-3">
-                      <button type="button" class="btn btn-card-remove" data-bs-dismiss="modal">Cancel</button>
-                      </div>
-              </div>
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="content">
+          <div class="modal-title">
+            <h6 class="">Add Location</h6>
+            <!-- <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button> -->
           </div>
+          <!-- <form action=""> -->
+          <ul class="nav nav-tabs gap-2 mt-3" id="myTab" role="tablist">
+              <li class="nav-item">
+                  <a class="tab active" id="tab-general-info" data-bs-toggle="tab" href="#general-info"
+                      role="tab" aria-controls="general" aria-selected="false">
+                      General Info
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="tab" id="tab-contacts" data-bs-toggle="tab" href="#contacts"
+                      role="tab" aria-controls="contact" aria-selected="false">
+                      Contacts
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="tab" id="tab-hours" data-bs-toggle="tab" href="#hours"
+                      role="tab" aria-controls="hour" aria-selected="false">
+                      Hours
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="tab" id="tab-patient-acceptance" data-bs-toggle="tab" href="#patient-acceptance"
+                      role="tab" aria-controls="acceptance" aria-selected="false">
+                      Patient Acceptance
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="tab" id="tab-patient-access" data-bs-toggle="tab" href="#patient-access"
+                      role="tab" aria-controls="access" aria-selected="false">
+                      Patient Access
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="tab" id="tab-patient-services" data-bs-toggle="tab" href="#services"
+                      role="tab" aria-controls="service" aria-selected="false">
+                      Services
+                  </a>
+              </li>
+          </ul>
+          <% url = @practice_location.persisted? ? practice_location_path(id: @practice_location.id) : practice_locations_path %>
+          <%= form_for @practice_location, url: url, html: { id: 'practice_location_form' } do |f| %>
+            <div class="tab-content mt-3" id="myTabContent1">
+            
+              <!-- General Info Tab (Step 1) -->
+              <div class="tab-pane fade show active" id="general-info" role="tabpanel" aria-labelledby="general-info-tab">
+                <%= render partial: "practice_locations/general_info", locals: { f: f } %>
+              </div>
+            
+              <!-- Contacts Tab (Step 2) -->
+              <div class="tab-pane fade" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
+                <%= render partial: 'practice_locations/contacts', locals: { f: f } %>
+              </div>
+            
+              <!-- Hours Tab (Step 3) -->
+              <div class="tab-pane fade" id="hours" role="tabpanel" aria-labelledby="hours-tab">
+                <%= render partial: 'practice_locations/hours', locals: { f: f } %>
+              </div>
+            
+              <!-- Patient Acceptance Tab (Step 4) -->
+              <div class="tab-pane fade" id="patient-acceptance" role="tabpanel" aria-labelledby="patient-acceptance-tab">
+                <%= render partial: 'practice_locations/patient_acceptance', locals: { f: f } %>
+              </div>
+            
+              <!-- Patient Access Tab (Step 5) -->
+              <div class="tab-pane fade" id="patient-access" role="tabpanel" aria-labelledby="patient-access-tab">
+                <%= render partial: 'practice_locations/patient_access', locals: { f: f } %>
+              </div>
+            
+              <!-- Services Tab (Step 6) -->
+              <div class="tab-pane fade" id="services" role="tabpanel" aria-labelledby="services-tab">
+                <div class="services">
+                  <%= render partial: 'practice_locations/services', locals: { f: f } %>
+                </div>
+              </div>
+            </div>
+            <div class="tab-navigation">
+              <button type="button" id="save-tab" class="btn btn-primary mt-3">Save</button>
+              <button type="button" id="next-tab" class="btn btn-primary mt-3">Save & Next</button>
+              <a href="javascript:void(0);" class="btn btn-cancel w-100" data-bs-dismiss="modal" id="cancel-btn">Cancel</a>
+            </div>
+          <% end %>
+        </div>
       </div>
+    </div>
   </div>
-</div>
+</div>  
+<script>
+  let currentTab = 0; // Track the current tab index
+
+  // Function to initialize and show the current tab
+  function showTab(n) {
+    const tabs = document.querySelectorAll('.tab-pane');
+    const tabNavigationButtons = document.querySelectorAll('.nav-item .tab'); // Tab navigation buttons
+    
+    // Hide all tabs and remove 'active' class from all navigation buttons
+    tabs.forEach(tab => tab.classList.remove('show', 'active'));
+    tabNavigationButtons.forEach(button => button.classList.remove('active'));
+
+    // Show the current tab and add the 'active' class to the current navigation button
+    tabs[n].classList.add('show', 'active');
+    tabNavigationButtons[n].classList.add('active');
+    
+    // Update button visibility
+    updateButtons(n);
+
+    // If we have an ID saved, update the form action to 'update' for subsequent tabs
+    const form = document.getElementById('practice_location_form');
+    if (formDataStorage.id) {
+      form.method = 'patch'
+      form.action = '/practice_locations/' + formDataStorage.id; // Update form action for update
+    }
+  }
+
+  // Function to validate fields in the current tab
+  function validateCurrentTab() {
+    const currentTabContent = document.querySelectorAll('.tab-pane')[currentTab];
+    
+    // Select all required fields that are marked with the 'required' attribute
+    const requiredFields = currentTabContent.querySelectorAll('input[required], select[required], textarea[required], input[type="radio"]:required');
+    
+    let valid = true;
+    
+    // Remove any previous error alerts
+    const alertBox = currentTabContent.querySelector('.alert');
+    if (alertBox) {
+      alertBox.remove();
+    }
+
+    // Loop through each required field and validate if it's filled
+    let errorFound = false;
+    requiredFields.forEach(input => {
+      if (input.type === 'radio') {
+        // Check if any radio button in the group is selected
+        const radioGroup = currentTabContent.querySelectorAll(`input[name="${input.name}"]:required`);
+        const isSelected = Array.from(radioGroup).some(radio => radio.checked);
+        if (!isSelected) {
+          errorFound = true;
+          radioGroup.forEach(radio => radio.classList.add('is-invalid')); // Highlight all radio buttons in the group
+        } else {
+          radioGroup.forEach(radio => radio.classList.remove('is-invalid')); // Remove invalid class if a radio button is selected
+        }
+      } else if (!input.value.trim()) {
+        errorFound = true;
+        input.classList.add('is-invalid'); // Highlight the input if it's empty
+      } else {
+        input.classList.remove('is-invalid'); // Remove invalid class if field is filled
+      }
+    });
+
+    // If any required field is empty, display the error alert at the top of the tab
+    if (errorFound) {
+      valid = false;
+      const errorMessage = document.createElement('div');
+      errorMessage.classList.add('alert', 'alert-danger');
+      errorMessage.textContent = "Please fill out all required fields marked with *.";
+      currentTabContent.insertBefore(errorMessage, currentTabContent.firstChild);
+    }
+
+    return valid;
+  }
+
+  // Function to update buttons dynamically based on the current tab
+  function updateButtons(tabIndex) {
+    const saveButton = document.getElementById('save-tab');
+    const saveNextButton = document.getElementById('next-tab');
+    const cancelButton = document.querySelector('.btn-cancel');
+
+    // Show "Save & Next" for all tabs except the last one
+    if (tabIndex === 0) {
+      saveNextButton.style.display = "inline-block"; // Show Save & Next
+    } else if (tabIndex === document.querySelectorAll('.tab-pane').length - 1) {
+      saveNextButton.style.display = "none"; // Hide Save & Next on the last tab
+    } else {
+      saveNextButton.style.display = "inline-block"; // Show Save & Next for all other tabs
+    }
+  }
+
+  let formDataStorage = {};  // Store form data, including the record ID after creation
+
+  function submitFormViaAjax(form, buttonType) {
+    const formData = new FormData(form); // Create FormData from the form
+    const url = form.action; // Form action URL
+    const currentTabContent = document.querySelectorAll('.tab-pane')[currentTab];
+
+    // Check if it's the last tab
+    const totalTabs = document.querySelectorAll('.tab-pane').length;
+
+    // If we are on the last tab, add a hidden field to the form
+    if (currentTab === totalTabs - 1) {
+      let hiddenField = form.querySelector('input[name="last_tab_reached"]');
+      if (!hiddenField) {
+        hiddenField = document.createElement('input');
+        hiddenField.type = 'hidden';
+        hiddenField.name = 'last_tab_reached';
+        hiddenField.value = 'true'; // Set value to indicate this is the last tab
+        form.appendChild(hiddenField);
+      }
+    }
+
+    // If we have an ID stored in formDataStorage, add it to the formData for updating
+    if (formDataStorage.id) {
+      formData.append("id", formDataStorage.id); // Append the record ID for updating
+      
+      // Check if the _method field is already present in the form
+      if (!form.querySelector('input[name="_method"]')) {
+        // Add _method hidden field for PATCH request only if it doesn't exist already
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'patch'; // Specify the HTTP method as PATCH for updates
+        form.appendChild(methodField); // Append it to the form
+      }
+    }
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+    // Perform AJAX request (using fetch)
+    const method = formDataStorage.id ? 'PATCH' : 'POST'; // Determine method based on if we have an ID
+    fetch(url, {
+      method: method,
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-Token': csrfToken,
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Store the ID of the created or updated record
+        if (data.location_id) {
+          formDataStorage.id = data.location_id; // Save the ID of the created or updated record
+        }
+
+        // Handle successful response
+        if (buttonType === 'saveAndNext') {
+          // If 'Save and Next' is clicked, move to next tab
+          if (document.getElementById('next-tab').style.display !== "none") {
+            currentTab++;
+            showTab(currentTab);
+          }
+        } else if (buttonType === "save") {
+          // Only show the success message if we are on the last tab
+          if (currentTab === totalTabs - 1) {
+            document.getElementById('save-tab').style.display = 'none';
+            document.querySelector('.services').style.display = 'none';
+            const successMessage = document.createElement('h2');
+            successMessage.classList.add('mt-5', 'mb-5')
+            successMessage.textContent = 'Success! New Location added. You can now close this window.';
+            currentTabContent.insertBefore(successMessage, currentTabContent.firstChild);
+          }
+
+          // Update the form method for subsequent requests
+          const form = document.getElementById('practice_location_form');
+          if (formDataStorage.id) {
+            form.method = 'patch'
+            form.action = '/practice_locations/' + formDataStorage.id; // Update form action for update
+          }
+        } else {
+          // Close the modal if it's the last tab
+          const modal = document.getElementById('addLocationModal');
+          const bootstrapModal = new bootstrap.Modal(modal);
+          bootstrapModal.hide();  // Dismiss the modal
+        }
+      } else {
+        // Handle validation errors
+        const errorMessages = data.errors;
+        const alertBox = document.createElement('div');
+        alertBox.classList.add('alert', 'alert-danger');
+        alertBox.textContent = errorMessages.join(' ');
+        currentTabContent.insertBefore(alertBox, currentTabContent.firstChild);
+      }
+    })
+    .catch(error => {
+      console.error('Error submitting the form:', error);
+    });
+  }
+
+  // Handle the "Save" button click (Stay on the same tab)
+  document.getElementById('save-tab').addEventListener('click', function(event) {
+    event.preventDefault();  // Prevent default form submission
+
+    const form = document.getElementById('practice_location_form');
+    
+    if (validateCurrentTab()) {
+      submitFormViaAjax(form, 'save'); // Submit the form via AJAX with 'save' button type
+    }
+  });
+
+  // Handle the "Save & Next" button click (Validate and go to next tab)
+  document.getElementById('next-tab').addEventListener('click', function(event) {
+    event.preventDefault();  // Prevent default form submission
+    
+    const form = document.getElementById('practice_location_form');
+    
+    if (validateCurrentTab()) {
+      submitFormViaAjax(form, 'saveAndNext'); // Submit the form via AJAX with 'saveAndNext' button type
+    }
+  });
+
+  // Handle the "Cancel" button click (Dismiss modal)
+  const modal = document.getElementById('addLocationModal');
+  const totalTabs = document.querySelectorAll('.tab-pane').length;
+  document.querySelector('.btn-cancel').addEventListener('click', function() {
+    // Close the modal without saving
+    const bootstrapModal = new bootstrap.Modal(modal);
+    bootstrapModal.hide();  // Dismiss the modal
+    if (currentTab === totalTabs - 1) {
+      location.reload(); // This will reload the page after the modal is closed
+    }
+  });
+
+  // You can also use the modal's hidden event to refresh the page if the modal is closed by other means
+  modal.addEventListener('hidden.bs.modal', function() {
+    if (currentTab === totalTabs - 1) {
+      location.reload(); // Refresh the page when the modal is closed
+    }
+  });
+
+  // Initialize the first tab
+  showTab(currentTab);
+</script>
