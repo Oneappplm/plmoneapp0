@@ -2,21 +2,43 @@ class PracticeLocationsController < ApplicationController
   before_action :set_practice_location, only: [:destroy, :update]
 
   def create
-    # render json: params and return
-    @practice_location = PracticeLocation.new(practice_location_params)
-    if @practice_location.save
-      flash[:notice] = 'New location successfully added.'
-      redirect_to request.referrer
+    if params[:id].present?
+      @practice_location = PracticeLocation.find(params[:id])
+    else
+      @practice_location = PracticeLocation.new(practice_location_params)
+      
+      if @practice_location.save
+        respond_to do |format|
+          format.json { render json: { success: true, notice: 'Practice Location saved successfully.', location_id: @practice_location.id } }
+        end
+      else
+        respond_to do |format|
+          format.json { render json: { success: false, errors: @practice_location.errors.full_messages } }
+        end
+      end
     end
   end
 
-  def update
-    @practice_location.open_practice_status = params[:open_practice_status_display].split(',')
-    @practice_location.ada_wrp_status = params[:ada_wrp_status_display].split(',')
+
+   def update
+    # Handle the custom fields if they are present in the parameters
+    if params[:open_practice_status_display].present?
+      @practice_location.open_practice_status = params[:open_practice_status_display].split(',')
+    end
+
+    if params[:ada_wrp_status_display].present?
+      @practice_location.ada_wrp_status = params[:ada_wrp_status_display].split(',')
+    end
+
+    # Try updating the location using strong parameters
     if @practice_location.update(practice_location_params)
-      redirect_to request.referrer, notice: 'Updated location successfully.'
+      render json: { success: true, message: 'Updated location successfully.', practice_location: @practice_location }
+    else
+      # If the update fails, return the errors as a JSON response
+      render json: { success: false, errors: @practice_location.errors.full_messages }, status: :unprocessable_entity
     end
   end
+
 
   def destroy
     if @practice_location.destroy
@@ -68,7 +90,11 @@ class PracticeLocationsController < ApplicationController
                                               :public_transportation_wrp, :laboratory_services, :laboratory_services_wrp, :clia_waiver,
                                               :clia_waiver_wrp, :clia_waiver_expiration_date, :clia_certificate, :clia_certificate_wrp,
                                               :clia_certificate_expiration_date, :radiology_services, :radiology_services_xray,
-                                              :radiology_services_fda, :anesthesia_administered, :additional_procedures, open_practice_status: [], ada_wrp_status: [], disabled_other_services_wrp_status: [],
+                                              :radiology_services_fda, :anesthesia_administered, :monday_time_start_2, :monday_time_end_2, 
+                                              :tuesday_time_start_2, :tuesday_time_end_2, :wednesday_time_start_2, :wednesday_time_end_2, 
+                                              :thursday_time_start_2, :thursday_time_end_2, :friday_time_start_2, :friday_time_end_2, 
+                                              :saturday_time_start_2, :saturday_time_end_2, :sunday_time_start_2, :sunday_time_end_2,
+                                              :additional_procedures, open_practice_status: [], ada_wrp_status: [], disabled_other_services_wrp_status: [],
                                               public_transportation_wrp_status: [], laboratory_services_wrp_status: [], radiology_services_xray_status: [], anesthesia_administered_status: []
                                              )
 

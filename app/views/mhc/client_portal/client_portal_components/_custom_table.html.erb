@@ -32,7 +32,7 @@
 							<input type="text" value="<%= @page %>" style="width: 35px; text-align: center; font-size: 12px;" class="">
 		 				</div>
 		 				<div class = "mb-2">
-		 					<%= link_to download_clients_path(format: 'csv', provider_attest_id: @provider_personal_informations.present? && @provider_personal_informations.first.provider_attest_id ? @provider_personal_informations.first.provider_attest_id : nil  ), class: 'btn btn-sm btn-primary' do %>
+		 					<%= link_to download_clients_data_path(format: 'csv', provider_attest_id: @provider_personal_informations.present? && @provider_personal_informations.first.provider_attest_id ? @provider_personal_informations.first.provider_attest_id : nil  ), class: 'btn btn-sm btn-primary' do %>
 							  <!-- <  class="btn btn-sm btn-primary"> -->
 							  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 16px;height: 16px;">
 							    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -109,19 +109,38 @@
 							<% practice_information = provider_personal_information.provider_attest.practice_informations.first %>
 							<%# <tr class="p-3 <%= (provider_personal_information.present? && provider_personal_information.id == client.id) ? '' : 'bg-alt-grey'%>
 								<td>
-									<div class="form-check">
-										<input class="form-check-input user-cbs" type="checkbox" value="" id="flexCheckDefault">
-										<div class="py-1">
-											<span class="status-indicator rounded <%= provider_personal_information.cred_status&.downcase.presence || 'no-application' %>" style="margin-left: 10px;"></span>
-										</div>
-										<div class="py-1">
-												<% if provider_personal_information.cred_status == "complete-application" %>
-													<%= link_to 'javascript:void(0)' do %>
-														<%= image_tag "https://png.pngtree.com/png-clipart/20220612/original/pngtree-pdf-file-icon-png-png-image_7965915.png", size: '25x25' %>
-													<% end %>
-												<% end %>
-											</div>
-									</div>
+								  <div class="form-check">
+								    <input class="form-check-input user-cbs" type="checkbox" value="" id="flexCheckDefault">
+								    
+								    <div class="py-1">
+								      <!-- Status Indicator -->
+								      <span class="status-indicator rounded <%= provider_personal_information.cred_status&.downcase.presence || 'no-application' %>" style="margin-left: 10px;"></span>
+								    </div>
+
+								    <div class="py-1">
+								      <!-- Check the cred_status and display corresponding status indicator with text -->
+								      <% case provider_personal_information.cred_status %>
+								        <% when "complete-application" %>
+								          <%= link_to 'javascript:void(0)' do %>
+								            <%= image_tag "https://png.pngtree.com/png-clipart/20220612/original/pngtree-pdf-file-icon-png-png-image_7965915.png", size: '25x25' %>
+								          <% end %>
+								        <% when "attested" %>
+								          <span class="status-indicator rounded"></span>
+								        <% when "no-application" %>
+								          <span class="status-indicator rounded"></span>
+								        <% when "incomplete" %>
+								          <span class="status-indicator rounded"></span>
+								        <% when "pending" %>
+								          <span class="status-indicator rounded"></span>
+								        <% when "in-process" %>
+								          <span class="status-indicator rounded"></span>
+								        <% when "psv" %>
+								          <span class="status-indicator rounded"></span>
+								        <% when "returned" %>
+								          <span class="status-indicator rounded"></span>
+								      <% end %>
+								    </div>
+								  </div>
 								</td>
 
 								<%# <td>

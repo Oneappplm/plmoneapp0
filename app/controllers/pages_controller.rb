@@ -226,32 +226,35 @@ class PagesController < ApplicationController
 		render "client_portal"
   end
 
-  # def download_clients
-  #   provider_attest_id = params[:provider_attest_id]
+  # for downloading the clients data in client-portal(dashboard >> data access)
+   def download_clients_data
+    provider_attest_id = params[:provider_attest_id]
     
-  #   @provider_personal_informations = ProviderPersonalInformation.where(provider_attest_id: provider_attest_id)
+    @provider_personal_informations = ProviderPersonalInformation.where(provider_attest_id: provider_attest_id)
 
-  #   @q = ProviderPersonalInformation.ransack(params[:q]&.except(:advanced_search))
+    @q = ProviderPersonalInformation.ransack(params[:q]&.except(:advanced_search))
 
-  #   csv_data = CSV.generate(headers: true) do |csv|
-  #     csv << ['NPI', 'Provider Name', 'Address', 'MedvId', 'Cred Cycle']
+    csv_data = CSV.generate(headers: true) do |csv|
+      csv << ['Provider Name', 'Birth Date', 'Address', 'Attested Date', 'MedvId', 'Cred Cycle']
       
-  #     @provider_personal_informations.each do |provider|
-  #       practice_information = provider.provider_attest.practice_informations.first
-  #       csv << [
-  #         "#{provider.npi}",
-  #         "#{provider.fullname}, #{provider.provider_type_provider_type_abbreviation}",
-  #         "#{practice_information.complete_address}",
-  #         "#{provider.caqh_provider_attest_id}"
-  #       ]
-  #     end
-  #   end
-  #   respond_to do |format|
-  #     format.csv { send_data csv_data, filename: "provider_report_#{Date.today}.csv" }
-  #   end
-  # end
+      @provider_personal_informations.each do |provider|
+        practice_information = provider.provider_attest.practice_informations.first
+        csv << [
+          "#{provider.fullname}, #{provider.provider_type_provider_type_abbreviation}",
+          "#{provider.birth_date.strftime("%Y-%m-%d")}",
+          "#{practice_information.complete_address}",
+          "#{provider.attest_date.strftime("%Y-%m-%d")}",
+          "#{provider.caqh_provider_attest_id}"
+        ]
+      end
+    end
+    respond_to do |format|
+      format.csv { send_data csv_data, filename: "provider_report_#{Date.today}.csv" }
+    end
+  end
 
 
+  # for downloading the vrc data in virtual-review-committee(dashboard >> decision point)
   def download_clients
     selected_ids = params[:selected_ids]&.split(',')
 

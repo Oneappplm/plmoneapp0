@@ -10,4 +10,9 @@ class PracticeLocation < ApplicationRecord
   has_many :group_engage_providers
 
 	def address = "#{address1} #{address2}"
+
+
+  validates :location, :address1, :city, :state_id, :zip_code, :phone_number, :email, :group_tax_number, presence: true  
+  validates :email, presence: true, uniqueness: true, 
+                    format: { with: /\A[^@\s]+@[^@\s]+\z/, message: "must be a valid email format" }
 end
