@@ -192,7 +192,7 @@ class ProvidersController < ApplicationController
 		end
     @comment = EnrollmentComment.new
     @comment.provider = @provider
-    @comment.user = current_user
+    @comment.user_id = current_user.id
     if @provider
       @time_line = @provider.time_lines.new
     end
@@ -328,7 +328,7 @@ end
 
 
   def set_overview_details
-    if current_user.can_access_all_groups? || current_user.super_administrator? || sprout_staff_admin(current_user)
+    if current_user.can_access_all_groups? || current_user.super_administrator? || sprout_staff_admin(current_user) || current_admin
       @providers_with_missing_details ||= Provider.with_missing_required_fields.count
       @providers_with_missing_documents ||= Provider.with_missing_required_docs.count
     else

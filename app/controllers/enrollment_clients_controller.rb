@@ -146,7 +146,7 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def dashboard
-    if current_user.can_access_all_groups? || current_user.super_administrator? || sprout_staff_admin(current_user)
+    if current_user.can_access_all_groups? || current_user.super_administrator? || sprout_staff_admin(current_user) || current_admin
       @providers_with_missing_details ||= Provider.with_missing_required_fields.count
       @providers_with_missing_documents ||= Provider.with_missing_required_docs.count
     else
@@ -156,7 +156,7 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def groups
-    if current_user.can_access_all_groups? || current_user.super_administrator? || sprout_staff_admin(current_user)
+    if current_user.can_access_all_groups? || current_user.super_administrator? || sprout_staff_admin(current_user) || current_admin
       @enrollment_groups = EnrollmentGroup.search_by_params(params)
     else
       @enrollment_groups = current_user.enrollment_groups.search_by_params(params)
@@ -205,7 +205,7 @@ class EnrollmentClientsController < ApplicationController
       @providers = Provider.where(id: provider_ids)
     end
 
-    if !current_user.can_access_all_groups? && !current_user.super_administrator? && !sprout_staff_admin(current_user)
+    if !current_user.can_access_all_groups? && !current_user.super_administrator? && !sprout_staff_admin(current_user) && !current_admin
       enrollment_group_filter = current_user.enrollment_groups.present? ? "enrollment_group_id IN (#{current_user.enrollment_groups.pluck(:id).map{|s| "'#{s.to_s}'"}.join(',')})" : nil
       accessible_provider_filter = current_user.accessible_provider.present? ? "id = #{current_user.accessible_provider}" : nil
       if enrollment_group_filter.present? && accessible_provider_filter.present?
@@ -231,7 +231,7 @@ class EnrollmentClientsController < ApplicationController
       @incomplete_providers = (params[:missing_field]  == 'missing_documents' ? @incomplete_providers.with_missing_documents : @incomplete_providers.with_missing_field_fields)
     end
 
-    if !current_user.can_access_all_groups? && !current_user.super_administrator? && !sprout_staff_admin(current_user)
+    if !current_user.can_access_all_groups? && !current_user.super_administrator? && !sprout_staff_admin(current_user) && !current_admin
       enrollment_group_filter = current_user.enrollment_groups.present? ? "providers.enrollment_group_id IN (#{current_user.enrollment_groups.pluck(:id).map{|s| "'#{s.to_s}'"}.join(',')})" : nil
       accessible_provider_filter = current_user.accessible_provider.present? ? "providers.id = #{current_user.accessible_provider}" : nil
       if enrollment_group_filter.present? && accessible_provider_filter.present?
@@ -246,7 +246,7 @@ class EnrollmentClientsController < ApplicationController
   def set_comment
     @comment = EnrollmentComment.new
     @comment.provider = @provider
-    @comment.user = current_user
+    @comment.user_id = current_user.id
   end
 
   def provider_submitted_enrollments_to_csv
@@ -301,7 +301,7 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def qualifacts_inventory_to_csv
-    if current_user.can_access_all_groups? || current_user.super_administrator? || sprout_staff_admin(current_user)
+    if current_user.can_access_all_groups? || current_user.super_administrator? || sprout_staff_admin(current_user) || current_admin
       @enrollment_groups = EnrollmentGroup.all
     else
       @enrollment_groups = current_user.enrollment_groups.search_by_params(params)

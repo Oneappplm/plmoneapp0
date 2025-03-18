@@ -93,16 +93,6 @@ class RoleBasedAccess < ApplicationRecord
     "Work Tickler",
     "Manage DB",
     "Autoverify",
-    "Role Based Access",
-    "Users",
-    "Add New User",
-    "Add New Role",
-    "Edit User",
-    "Delete User",
-    "Select Role",
-    "Role Access",
-    "Edit Access",
-    "Delete Role",
     "Associate Location",
 	  "Settings"
 	]
@@ -118,12 +108,6 @@ class RoleBasedAccess < ApplicationRecord
 
 			role_access_data.each do |page|
 				RoleBasedAccess.find_or_create_by(role: role_based, page: page.first.to_s)
-			end
-
-			if role_based == 'super_administrator'
-				RoleBasedAccess.where(role: role_based).each	do |role_based_access|
-					role_based_access.update_attribute(:can_read, true) if role_based_access.can_read.nil?
-				end
 			end
 		end
 

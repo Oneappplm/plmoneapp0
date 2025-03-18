@@ -181,7 +181,7 @@ Rails.application.routes.draw do
       get :download_all_pdfs
     end
   end
-  
+
   resources :enrollments do
     collection do
       get :new_user, path: 'new-user'
@@ -278,6 +278,11 @@ Rails.application.routes.draw do
     invitations: 'users/invitations',
     sessions: 'users/sessions',
     passwords: 'users/passwords',
+  }
+
+  devise_for :admins, path: 'admin', controllers: {
+    sessions: 'admins/sessions',
+    passwords: 'admins/passwords'
   }
 
   resources :security_questions, only: [:edit, :update], controller: 'users/security_questions', path: 'security-questions'

@@ -131,7 +131,7 @@ module ApplicationHelper
 	end
 
   def groups
-		if current_user.can_access_all_groups? || current_user.super_administrator? || current_user.admin_staff?
+		if current_user.can_access_all_groups? || current_user.super_administrator? || current_user.admin_staff? || current_admin
     	@groups ||= EnrollmentGroup.all
 		else
 			@groups ||= current_user.enrollment_groups
@@ -331,7 +331,7 @@ module ApplicationHelper
   end
 
   def enrollment_group_options
-		if current_user.can_access_all_groups? || current_user.super_administrator? || current_user.admin_staff?
+		if current_user.can_access_all_groups? || current_user.super_administrator? || current_user.admin_staff? || current_admin
     	EnrollmentGroup.all.pluck(:group_name, :id)
 		else
 			current_user.enrollment_groups&.pluck(:group_name, :id)
@@ -501,7 +501,7 @@ module ApplicationHelper
 	end
 
 	def application_status_count status
-		if current_user.can_access_all_groups? || current_user.super_administrator? || current_user.admin_staff? || current_user.admin_staff?
+		if current_user.can_access_all_groups? || current_user.super_administrator? || current_user.admin_staff? || current_user.admin_staff? || current_admin
 			@enrollment_provider_details = EnrollmentProvidersDetail
 		else
 			@enrollment_provider_details = EnrollmentProvidersDetail.includes(enrollment_provider: :provider).where(provider: {enrollment_group_id: current_user.enrollment_groups.pluck(:id)})

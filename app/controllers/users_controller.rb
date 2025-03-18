@@ -96,7 +96,7 @@ class UsersController < ApplicationController
   end
 
 	def set_groups
-		if current_user.can_access_all_groups? || current_user.super_administrator?
+		if current_user.can_access_all_groups? || current_user.super_administrator? || current_admin
       @enrollment_groups = EnrollmentGroup.all
     else
       @enrollment_groups = current_user.enrollment_groups

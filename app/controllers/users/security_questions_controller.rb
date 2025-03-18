@@ -15,6 +15,7 @@ class Users::SecurityQuestionsController < ApplicationController
   private
 
   def security_questions_params
-    params.require(:user).permit(:security_question, :security_answer)
+    scope = user_admin? ? :admin : :user
+    params.require(scope).permit(:security_question, :security_answer)
   end
 end

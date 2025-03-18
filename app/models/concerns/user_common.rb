@@ -73,15 +73,14 @@ module UserCommon
   end
 
   def find_excluded_roles
-    # case user_role
-    #   when 'administrator'
-    #     ['super_administrator', 'encoder', 'test_user' ]
-    #     # ['super_administrator','encoder','calls_agent','agent', 'test_user' ,'viewer']
-    #   else
-    #     ['encoder', 'test_user']
-    #     # ['encoder','calls_agent','agent', 'test_user', 'viewer']
-    # end
-    ['administrator', 'super_administrator', 'encoder', 'test_user' ]
+    case user_role
+      when 'administrator'
+        ['super_administrator', 'encoder', 'test_user' ]
+        # ['super_administrator','encoder','calls_agent','agent', 'test_user' ,'viewer']
+      else
+        ['encoder', 'test_user']
+        # ['encoder','calls_agent','agent', 'test_user', 'viewer']
+    end
   end
 
   def role = user_role&.titleize

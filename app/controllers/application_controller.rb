@@ -2,15 +2,11 @@ class ApplicationController < ActionController::Base
   include AccountAuthenticable
   include ApplicationHelper
 
-	before_action :authenticate_user!, except: %i[terms privacy_policy]
-	before_action :ensure_security_questions_set, if: :user_signed_in?
   # exceptions for track_event are mostly ajax requests
 	before_action :track_event
 	before_action { filter_params params }
 
   # before_action :force_logout_on_close_if_expired, except: [:logout_on_close] # TODO: uncomment this line
-
-	include ApplicationHelper
 
 	protected
     def skip_validation_for_enrollment_clients?
@@ -60,7 +56,6 @@ class ApplicationController < ActionController::Base
 		end
 
 		def redirect_to_default_page
-
 			render partial: 'shared/access_denied' and return if current_user.default_page ==	'access_denied'
 
 			cname, aname = current_user.landing_page

@@ -137,7 +137,7 @@ class EnrollmentProvidersController < ApplicationController
   def show
     @comment = EnrollmentComment.new
     @comment.enrollment_provider = @enrollment_provider
-    @comment.user = current_user
+    @comment.user_id = current_user.id
   end
 
 	protected

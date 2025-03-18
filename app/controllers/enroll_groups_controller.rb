@@ -57,7 +57,7 @@ class EnrollGroupsController < ApplicationController
   def show
     @comment = EnrollmentComment.new
     @comment.enroll_group = @enroll_group
-    @comment.user = current_user
+    @comment.user_id = current_user.id
   end
 
 	protected

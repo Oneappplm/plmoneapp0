@@ -22,6 +22,69 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_18_144022) do
     t.string "add_members", default: [], array: true
   end
 
+  create_table "admins", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "last_name"
+    t.string "suffix"
+    t.string "status"
+    t.boolean "super_admin", default: false
+    t.string "user_type"
+    t.string "user_role", default: "administrator"
+    t.string "following_request"
+    t.string "from_source"
+    t.string "temporary_password"
+    t.string "temporary_password_confirmation"
+    t.string "title"
+    t.string "api_token"
+    t.string "otp_token"
+    t.string "otp_code"
+    t.datetime "otp_code_expires_at"
+    t.boolean "logout_on_close", default: false
+    t.datetime "last_logout_on_close"
+    t.boolean "can_access_all_groups"
+    t.boolean "is_provider_account"
+    t.string "accessible_provider"
+    t.string "password_change_status_via_invite"
+    t.string "security_question"
+    t.string "security_answer"
+    t.boolean "assigned_access_only"
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
+    t.string "confirmation_token"
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.string "unconfirmed_email"
+    t.integer "failed_attempts", default: 0, null: false
+    t.string "unlock_token"
+    t.datetime "locked_at"
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.integer "invitation_limit"
+    t.string "invited_by_type"
+    t.bigint "invited_by_id"
+    t.integer "invitations_count", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["confirmation_token"], name: "index_admins_on_confirmation_token", unique: true
+    t.index ["email"], name: "index_admins_on_email", unique: true
+    t.index ["invitation_token"], name: "index_admins_on_invitation_token", unique: true
+    t.index ["invited_by_id"], name: "index_admins_on_invited_by_id"
+    t.index ["invited_by_type", "invited_by_id"], name: "index_admins_on_invited_by"
+    t.index ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
+    t.index ["unlock_token"], name: "index_admins_on_unlock_token", unique: true
+  end
+
   create_table "ahoy_events", force: :cascade do |t|
     t.bigint "visit_id"
     t.bigint "user_id"
@@ -297,12 +360,12 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_18_144022) do
     t.string "client_notes"
     t.string "notes"
     t.string "password_digest"
-    t.string "portal_username"
-    t.string "portal_password"
-    t.json "upload_payor_file"
     t.string "payer_state"
     t.string "payor_submission_type"
     t.string "payor_link"
+    t.string "portal_username"
+    t.string "portal_password"
+    t.json "upload_payor_file"
     t.index ["enroll_group_id"], name: "index_enroll_groups_details_on_enroll_group_id"
   end
 
@@ -476,8 +539,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_18_144022) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "roles"
-    t.string "group_role"
     t.string "email_address"
+    t.string "group_role"
     t.index ["enrollment_group_id"], name: "index_enrollment_groups_details_on_enrollment_group_id"
   end
 
@@ -564,13 +627,15 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_18_144022) do
     t.string "descriptor"
     t.string "provider_id"
     t.string "group_id"
+    t.string "payer_state"
     t.json "upload_payor_file"
     t.string "payor_username"
     t.string "payor_password"
     t.string "processing_date"
     t.string "terminated_date"
     t.date "denied_date"
-    t.string "payer_state"
+    t.string "payor_email"
+    t.string "payor_phone"
     t.string "tax_id"
     t.string "location"
     t.index ["enrollment_provider_id"], name: "index_enrollment_providers_details_on_enrollment_provider_id"
@@ -676,26 +741,26 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_18_144022) do
     t.string "inpatient_facility"
     t.string "is_clinic"
     t.string "telehealth_provider"
-    t.boolean "is_primary_location"
+    t.string "old_address"
+    t.string "old_city"
+    t.string "old_state"
+    t.string "old_county"
+    t.string "old_zipcode"
+    t.boolean "is_old_location_primary"
     t.string "website"
-    t.string "telehealth_video_conferencing_technology"
     t.string "tax_id"
     t.string "facility_billing_npi"
     t.string "mn_medicaid_number"
     t.string "wi_medicaid_number"
     t.string "medicare_id_ptan"
     t.string "taxonomy"
+    t.string "telehealth_video_conferencing_technology"
     t.string "is_gender_affirming_treatment"
     t.string "panel_size"
     t.string "medicare_authorized_official"
     t.string "collab_name"
     t.string "collab_npi"
-    t.string "is_old_location_primary"
-    t.string "old_zipcode"
-    t.string "old_county"
-    t.string "old_state"
-    t.string "old_city"
-    t.string "old_address"
+    t.boolean "is_primary_location"
     t.date "effective_date"
     t.string "location_status"
     t.string "location_npi"
@@ -2796,6 +2861,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_18_144022) do
     t.string "caqh_answer"
     t.string "caqh_notes"
     t.integer "licensed_registered_state_id"
+    t.string "payer_login", default: "no"
     t.string "license_state_number"
     t.string "license_state_effective_date"
     t.string "license_state_id"
@@ -2871,7 +2937,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_18_144022) do
     t.string "supervising_name"
     t.string "supervising_npi"
     t.string "primary_location"
-    t.string "payer_login", default: "no"
     t.integer "secondary_enrollment_group_id"
     t.string "secondary_primary_location"
     t.string "secondary_dcos", default: "f"
@@ -2967,6 +3032,18 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_18_144022) do
     t.string "slug"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "security_logs", force: :cascade do |t|
+    t.string "trackable_type"
+    t.bigint "trackable_id"
+    t.string "activity"
+    t.integer "severity"
+    t.string "ip_address"
+    t.text "details"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["trackable_type", "trackable_id"], name: "index_security_logs_on_trackable"
   end
 
   create_table "serviced_populations", force: :cascade do |t|
@@ -3071,8 +3148,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_18_144022) do
     t.boolean "is_provider_account"
     t.string "accessible_provider"
     t.string "password_change_status_via_invite"
-    t.integer "failed_attempts", default: 0, null: false
-    t.datetime "locked_at"
     t.string "security_question"
     t.string "security_answer"
     t.boolean "assigned_access_only"
@@ -3188,11 +3263,14 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_18_144022) do
   add_foreign_key "egd_logs", "enroll_groups_details"
   add_foreign_key "enrollment_group_deleted_doc_logs", "enrollment_groups"
   add_foreign_key "enrollment_groups", "users", column: "admin_id"
+  add_foreign_key "epd_logs", "enrollment_providers_details"
   add_foreign_key "epd_questions", "enrollment_providers_details"
   add_foreign_key "group_contacts", "enrollment_groups"
+  add_foreign_key "group_dco_old_location_addresses", "group_dcos"
   add_foreign_key "group_dcos", "enrollment_groups"
   add_foreign_key "peer_recommendations", "providers"
   add_foreign_key "peer_reviews", "providers"
+  add_foreign_key "provider_deleted_document_logs", "providers"
   add_foreign_key "provider_licenses", "providers"
   add_foreign_key "provider_np_licenses", "providers"
   add_foreign_key "provider_rn_licenses", "providers"

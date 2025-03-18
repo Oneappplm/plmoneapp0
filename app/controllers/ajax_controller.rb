@@ -369,7 +369,7 @@ class AjaxController < ApplicationController
     render json: {
       'group_roles' => group_roles
     }
-  end   
+  end
 
   def update_timeline
     timeline_id = params[:timeline_id]
