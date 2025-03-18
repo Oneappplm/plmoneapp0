@@ -57,7 +57,7 @@ class EnrollmentsController < ApplicationController
 		search_param = params[:group_search]
 		if search_param.present?
 				@enrollment_groups = EnrollmentGroup.where("group_name LIKE ? OR npi_digit_type LIKE ?", "%#{search_param}%", "%#{search_param}%")
-		elsif current_user.can_access_all_groups? || current_user.super_administrator? || sprout_staff_admin(current_user)
+		elsif current_user.can_access_all_groups? || current_user.super_administrator? || sprout_staff_admin(current_user) || current_admin
       @enrollment_groups = EnrollmentGroup.all
 		elsif current_user.administrator? && current_user.assigned_access_only? && current_setting.groups?
 			@enrollment_groups = EnrollmentGroup.where(admin_id: current_user.id)

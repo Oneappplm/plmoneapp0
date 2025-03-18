@@ -1,25 +1,17 @@
 class ApplicationController < ActionController::Base
-	before_action :authenticate_user!, except: %i[terms privacy_policy]
-	before_action :configure_permitted_parameters, if: :devise_controller?
-	before_action :ensure_security_questions_set, if: :user_signed_in?
+  include AccountAuthenticable
+  include ApplicationHelper
+
   # exceptions for track_event are mostly ajax requests
 	before_action :track_event
 	before_action { filter_params params }
 
   # before_action :force_logout_on_close_if_expired, except: [:logout_on_close] # TODO: uncomment this line
 
-	include ApplicationHelper
-
 	protected
 
   def skip_validation_for_enrollment_clients?
     !(current_user.present? && current_user.is_provider_account && controller_name == "enrollment_clients" && %w[index show].include?(action_name))
-  end
-
-	 def configure_permitted_parameters
-    update_params = [:first_name, :last_name, :user_type, :password, :password_confirmation, :current_password, :security_question, :security_answer]
-    devise_parameter_sanitizer.permit(:account_update, keys: update_params)
-				devise_parameter_sanitizer.permit(:sign_up, keys: update_params)
   end
 
   def search_inputs
@@ -65,7 +57,6 @@ class ApplicationController < ActionController::Base
 		end
 
 		def redirect_to_default_page
-
 			render partial: 'shared/access_denied' and return if current_user.default_page ==	'access_denied'
 
 			cname, aname = current_user.landing_page

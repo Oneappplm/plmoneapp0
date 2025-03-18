@@ -1,7 +1,11 @@
 class AuditTrailsController < ApplicationController
 	before_action :find_auditable, only: [:show]
 	def index
-		@audit_trails	= CustomAudit.where(auditable_type: ['Provider', 'EnrollmentProvidersDetail', 'User'])
+    if params[:tab].blank? || params[:tab] == "user"
+		  @audit_trails	= CustomAudit.where(auditable_type: ['Provider', 'EnrollmentProvidersDetail', 'User'])
+    elsif params[:tab] == "admin"
+      @security_logs = SecurityLog.where(trackable_type: "Admin").order(created_at: :desc)
+    end
 	end
 
 	def show
