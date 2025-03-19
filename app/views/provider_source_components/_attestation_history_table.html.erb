@@ -21,21 +21,18 @@
 						</tr>
 					</thead>
 					<tbody class="">
-						<%# user_names = ['Dylan Deckert', 'Alan Paige', 'Rosie Thorn', 'Jack Might', 'Julie Tsu']%>
-						<%# for i in 0..4 %>
-						<%# date = "#{rand(1..12)}/#{rand(1..30)}/#{rand(2019..2022)}"%>
 						<% @provider_sources.each do |provider_source| %>
-						<tr class="bg-medium-grey">
-							<td class="fw-bold text-black">SPA</td>
-							<td class="fw-bold text-black"><%= provider_source.fetch(:signature_date) %></td>
-							<td class="fw-bold text-black"><%= provider_source&.full_name %></td>
-							<td class="fw-bold text-black">
-								<% if (provider_source.created_by_user == current_user.id) || provider_source.created_by_user.nil? %>
-									<%= link_to 'Application Pdf', view_summary_index_path %>
-								<% end %>
-								<button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
-							</td>
-						</tr>
+							<% if provider_source.created_by_user == current_user.id %>
+								<tr class="bg-medium-grey">
+									<td class="fw-bold text-black">SPA</td>
+									<td class="fw-bold text-black"><%= provider_source.fetch(:signature_date) %></td>
+									<td class="fw-bold text-black"><%= provider_source&.full_name %></td>
+									<td class="fw-bold text-black">
+										<%= link_to 'Application Pdf', view_summary_index_path %>
+										<button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
+									</td>
+								</tr>
+							<% end %>
 						<% end %>
 					</tbody>
 				</table>

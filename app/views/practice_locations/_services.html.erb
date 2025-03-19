@@ -69,7 +69,13 @@
 	</div>
 	<div class="col-xl-12">
 		<label for="">Please select all services offered at this location:</label>
-		<%= f.select :anesthesia_administered, options_for_select([]), { prompt: 'Select option' }, {:class => 'form-select'}  %>
+		<div class="d-flex gap-2">
+			<%#= text_field_tag :anesthesia_administered, '', class: 'form-control w-75', id: 'anesthesia_administered_input' %>
+			<%#= button_tag "Add to List", type: "button", class: "btn btn-primary btn-sm w-25", id: "add_to_list_anesthesia_administered" %>
+		</div>
+		<%#= f.hidden_field :anesthesia_administered_status %>
+		<%#= text_area_tag :anesthesia_administered_status_display, "#{@practice_location.anesthesia_administered_status.join(',')}", class: 'form-control mt-2', id: 'anesthesia_administered_status_display' %>
+		<%= f.select :anesthesia_administered, PracticeLocation::LOCATION_SERVICES, { prompt: 'Select option' }, {:class => 'form-select mt-2'}  %>
 	</div>
 </div>
 <div class="form-row row">
