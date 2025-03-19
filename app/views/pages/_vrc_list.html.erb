@@ -77,7 +77,16 @@
             <td><%= vrc&.recred_due_date&.strftime("%m/%d/%Y") %></td>
             <td><%= vrc&.review_date&.strftime("%m/%d/%Y") %></td>
             <td><%= vrc&.committee_date&.strftime("%m/%d/%Y") %></td>
-            <td><%= vrc&.status %></td>
+            <td>
+              <%#= vrc&.status %>
+               <% case vrc.progress_status %>
+                <% when "completed" %>
+                  <span style="font-size: 10px;">Approved</span>
+                <% when "assigned", "to_be_assigned" %>
+                  <span style="font-size: 10px;"><%#= vrc.progress_status.titleize %> Unapproved</span>
+              <% else %>
+              <% end %>
+            </td>
             <td>
               <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
               <%= vrc&.medv_id %>
@@ -86,7 +95,7 @@
         <% end %>
       </tbody>
     <% else %>
-     <p class="alert alert-danger">No Records found for the search criteria. Please refine your search.</p>
+     <p class="alert alert-warning rounded-0 text-center mt-3">No Records found.</p>
     <% end %>  
   </table>
   <!-- Below the table -->
