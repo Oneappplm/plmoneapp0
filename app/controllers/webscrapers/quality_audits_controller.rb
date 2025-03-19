@@ -157,7 +157,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
     infoId = params[:personal_info_id]
     # Create RVA information for NPDB request
     rva_information = RvaInformation.create(
-      tab: 'employment',
+      tab: 'Employment',
       send_request: 'SENT',
       requested_by: first_name,
       requested_date: Date.today,
@@ -171,7 +171,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
       provider_personal_information_id: infoId
     )
 
-    render json: { message: 'employment request sent successfully', rva_information: rva_information }, status: :ok
+    render json: { message: 'Employment request sent successfully', rva_information: rva_information }, status: :ok
   rescue => e
     render json: { error: e.message }, status: :unprocessable_entity
   end 

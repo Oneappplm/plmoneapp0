@@ -1,0 +1,2 @@
+class ProviderEmployment < ApplicationRecord
+end
