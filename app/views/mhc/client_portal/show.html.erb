@@ -1,0 +1,29 @@
+<div class="container mt-4">
+	<h2>Download History</h2>
+	<table class="table">
+	  <thead>
+	    <tr>
+	      <th>File Name</th>
+	      <th>Download Date</th>
+	      <th>Action</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	    <% @download_histories.each do |history| %>
+	      <tr>
+	        <td><%= history.file_name %></td>
+	        <td><%= history.downloaded_at.strftime("%Y-%m-%d") %></td>
+	        <td>
+	          <%= link_to 'Download', download_existing_file_path(file_name: history.file_name, format: :csv), class: "btn btn-sm btn-primary" %>
+	        </td>
+	      </tr>
+	    <% end %>
+	  </tbody>
+	</table>
+</div>
+
+<style>
+  .table thead th {
+      color: white;
+  }
+</style>
