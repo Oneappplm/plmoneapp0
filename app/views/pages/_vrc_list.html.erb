@@ -1,4 +1,3 @@
-
 <% names = ['Lindsay Bennet', 'Bose, Paul', 'Diaz, Fynn', 'Calibre, Reese'] %>
 
 <div class="row mt-3 mb-2 px-6">
@@ -14,74 +13,101 @@
       <% end %>
     </div>
     <div>
-      <%= link_to download_clients_path(format: 'csv'), class: 'btn btn-sm btn-primary' do %>
+      <a href="#" class="btn btn-sm btn-primary" id="downloadCsvButton">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 16px;height: 16px;">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
         </svg>
         <span>Download Documents</span>
-      <% end %>
+      </a>
     </div>
   </div>
 </div>
 
 <div class="row mt-2">
-	<div id="alert-notification" class="alert alert-danger text-white fs-4" style="background-color:#ff0000; display: none;" role="alert">
-	   No provider selection is made. Please select provider(s).
+  <div id="alert-notification" class="alert alert-danger text-white fs-4" style="background-color:#ff0000; display: none;" role="alert">
+     No provider selection is made. Please select provider(s).
   </div>
 </div>
   <table class="table table-striped table-bordered table-responsive">
     <thead style="background-color: #377dff; color: #fff;">
-      <tr>
-        <th class="text-white">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="selectAllCheckbox">
-          </div>
-        </th>
-        <th class="text-white">First Name</th>
-        <th class="text-white">Last Name</th>
-        <th class="text-white">State</th>
-        <th class="text-white">Review Level</th>
-        <th class="text-white">Status</th>
-        <th class="text-white">Review Date</th>
-        <th class="text-white">Provider Type</th>
-        <th class="text-white">Specialty</th>
-        <th class="text-white">Cred Cycle</th>
-        <th class="text-white">MedvId</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @vrcs.each do |vrc| %>
-        	<td class="option form-check-input">
-            <%= check_box_tag "selected_ids[]", vrc.id, nil, id: "selected_#{vrc.id}" %>
-          </td>
-          <td><%= vrc&.first_name %></td>
-          <td><%= vrc&.last_name %></td>
-          <td><%= vrc&.state %></td>
-          <td><%= vrc&.review_level %></td>
-          <td><%= vrc&.status %></td>
-          <td><%= vrc&.review_date&.strftime("%m/%d/%Y") %></td>
-          <td><%= vrc&.provider_type %></td>
-          <td><%= vrc&.specialty %></td>
-          <td><%= vrc&.cred_cycle %></td>
-          <td>
-            <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
-            <%= vrc&.medv_id %>
-          </td>
+      <% if @vrcs.present? %>
+        <tr>
+          <th class="text-white">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="selectAllCheckbox">
+            </div>
+          </th>
+          <th class="text-white">Assigned</th>
+          <th class="text-white">Provider Name</th>
+          <th class="text-white">Provider Type</th>
+          <th class="text-white">Cred Cycle</th>
+          <th class="text-white">PSV Completed Date</th>
+          <th class="text-white">Review Level</th>
+          <th class="text-white">Recred Due Date</th>
+          <th class="text-white">Review Date</th>
+          <th class="text-white">Committee Date</th>
+          <th class="text-white">Status</th>
         </tr>
-      <% end %>
-    </tbody>
+      </thead>
+      <tbody>
+        <% @vrcs.each do |vrc| %>
+          <tr>
+            <td class="option form-check-input">
+              <%= check_box_tag "selected_ids[]", vrc.id, nil, id: "selected_#{vrc.id}" %>
+            </td>
+            <td>
+              <%# Conditionally render the progress status icon %>
+              <% case vrc.progress_status %>
+              <% when "completed" %>
+                <i class="fa-solid fa-check-circle text-success ms-2"></i><span style="font-size: 10px;"> (Completed)</span>
+              <% when "assigned" %>
+                <i class="fa-solid fa-tasks text-primary ms-2"></i><span style="font-size: 10px;"> (Assigned)</span>
+              <% when "to_be_assigned" %>
+                <i class="fa-solid fa-hourglass-half text-warning ms-2"></i><span style="font-size: 10px;"> (To Be Assigned)</span>
+              <% else %>
+                <%# Optionally, handle other statuses or leave it blank %>
+              <% end %>
+            </td>
+            <td><%= link_to (vrc&.vrc_full_name.present? ? vrc&.vrc_full_name : vrc&.vrc_vrc_full_name), show_virtual_review_committee_path(vrc&.id) %></td>
+            <td><%= vrc&.provider_type %></td>
+            <td><%= vrc&.cred_cycle %></td>
+            <td><%= vrc&.psv_completed_date&.strftime("%m/%d/%Y") %></td>
+            <td><%= vrc&.review_level %></td>
+            <td><%= vrc&.recred_due_date&.strftime("%m/%d/%Y") %></td>
+            <td><%= vrc&.review_date&.strftime("%m/%d/%Y") %></td>
+            <td><%= vrc&.committee_date&.strftime("%m/%d/%Y") %></td>
+            <td>
+              <%#= vrc&.status %>
+               <% case vrc.progress_status %>
+                <% when "completed" %>
+                  <span style="font-size: 10px;">Approved</span>
+                <% when "assigned", "to_be_assigned" %>
+                  <span style="font-size: 10px;"><%#= vrc.progress_status.titleize %> Unapproved</span>
+              <% else %>
+              <% end %>
+            </td>
+            <td>
+              <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
+              <%= vrc&.medv_id %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    <% else %>
+     <p class="alert alert-warning rounded-0 text-center mt-3">No Records found.</p>
+    <% end %>  
   </table>
   <!-- Below the table -->
-	<%= form_with url: '/virtual_review_committee/update_review_committee_dates', method: :put, html: { id: 'review-committee-form-1' } do |form| %>
-	    <%= hidden_field_tag 'selected_ids[]', '', id: 'selected-ids-input-form1' %>
-			<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-			    <div class="modal-dialog modal-dialog-centered" >
-			        <div class="modal-content">
-			            <div class="modal-header">
-			              <h5 class="modal-title fs-4" id="exampleModalLabel">Assign Reviewer(s) and Date</h5>
-			              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			            </div>
-			            <div class="modal-body">
+  <%= form_with url: '/virtual_review_committee/update_review_committee_dates', method: :put, html: { id: 'review-committee-form-1' } do |form| %>
+      <%= hidden_field_tag 'selected_ids[]', '', id: 'selected-ids-input-form1' %>
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" >
+              <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title fs-4" id="exampleModalLabel">Assign Reviewer(s) and Date</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
                     <div class="form-check">
                       <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
                       <label class="form-check-label" for="flexCheckDefault">
@@ -89,7 +115,7 @@
                       </label>
                     </div>
                     <hr>
-  		              <div class="row">
+                    <div class="row">
                       <form>
                         <div class="col-lg-6 overflow-auto" style="max-height: 300px;">
                           <% @vrc_directors.each do |vrc_director| %>
@@ -121,80 +147,148 @@
                       <%= form.submit 'Update', class: 'btn btn-primary', id:"update-btn" %>
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     </div>
-					    		</div>
-					    	</div>
-							  </div>     
-			        </div>
-			    </div>
-			</div>
-	<% end %>
+                  </div>
+                </div>
+                </div>     
+              </div>
+          </div>
+      </div>
+  <% end %>
 
-	<div class="col-lg-12">
-	  <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
-	    <div class="page_info ms-3 text-black">
-	      <%= page_entries_info @vrcs %>
-	    </div>
-	    <% if params[:per_page].present? %>
-	      <%= will_paginate @vrcs, params: { per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-	    <% else %>
-	      <%= will_paginate @vrcs, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-	    <% end %>
-	  </div>
-	</div>
+  <div class="col-lg-12">
+    <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+      <div class="page_info ms-3 text-black">
+        <%= page_entries_info @vrcs %>
+      </div>
+      <% if params[:per_page].present? %>
+        <%= will_paginate @vrcs, params: { per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+      <% else %>
+        <%= will_paginate @vrcs, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+      <% end %>
+    </div>
+  </div>
 
  <div class="d-flex mt-4 justify-content-end">
-    <button type="button" class="btn btn-primary" id="submit-button" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        Assign to Committee Members
+    <button type="button" class="btn btn-primary assign-btn" id="submit-button">
+      Assign to Committee Members
     </button>
     <% if params[:'vrc-progress-status'] == "assigned" || params[:'vrc-progress-status'] == "completed"%>
-	    <%= form_with url: '/virtual_review_committee/unassigned_records', method: :put, html: { id: 'review-committee-form-2' } do |form| %>
-	            <%= hidden_field_tag 'selected_ids[]', '', id: 'selected-ids-input-form2' %>
-	            <div class="mx-3">
-	                <%= form.submit 'Unassign Providers', class: 'btn btn-primary', id:"update-btn" %>
-	            </div>
-	    <% end %>
+      <%= form_with url: '/virtual_review_committee/unassigned_records', method: :put, html: { id: 'review-committee-form-2' } do |form| %>
+              <%= hidden_field_tag 'selected_ids[]', '', id: 'selected-ids-input-form2' %>
+              <div class="mx-3">
+               <%= form.submit 'Unassign Providers', class: 'btn btn-primary', id:"unassign-btn" %>
+              </div>
+      <% end %>
     <% end %>
 </div>
 
 <script>
- document.addEventListener("DOMContentLoaded", function () {
-  const submitButton = document.getElementById("submit-button");
-  const checkboxes = document.querySelectorAll("input[name='selected_ids[]']");
-  const modal = new bootstrap.Modal(document.getElementById("exampleModal"));
-  const alertMessage = document.getElementById("alert-notification");
-  const selectedIdsInputForm1 = document.getElementById("selected-ids-input-form1");
-  const selectedIdsInputForm2 = document.getElementById("selected-ids-input-form2");
+$(document).ready(function () {
+  const $submitButton = $("#submit-button");
+  const $checkboxes = $("input[name='selected_ids[]']");
+  const modal = new bootstrap.Modal($("#exampleModal")[0]);  // Initialize the modal
+  const $alertMessage = $("#alert-notification");
+  const $selectedIdsInputForm1 = $("#selected-ids-input-form1");
+  const $selectedIdsInputForm2 = $("#selected-ids-input-form2");
+  const $unAssignBtn = $("#unassign-btn");
 
-  checkboxes.forEach(function (checkbox) {
-    checkbox.addEventListener("change", function () {
-      updateSelectedIds();
-    });
+  // Event listener for checkbox change
+  $checkboxes.on("change", function () {
+    updateSelectedIds();
   });
 
-  submitButton.addEventListener("click", function (event) {
+  // Event listener for submit button click
+  $submitButton.on("click", function (event) {
+    // Update selected IDs and check if at least one checkbox is selected
     let atLeastOneCheckboxChecked = updateSelectedIds();
 
     if (!atLeastOneCheckboxChecked) {
-      event.preventDefault();
-      alertMessage.style.display = "block";
-    } else {
-      modal.show();
+      event.preventDefault();  // Prevent form submission
+
+      // Show the alert message if no checkboxes are selected
+      $alertMessage.show();
+
+      // Scroll to the top of the page to ensure the user sees the alert
+      $("html, body").animate({ scrollTop: 0 }, "slow");
+
+      // Return early to avoid modal showing
+      return false;  // Prevent modal from showing when no checkboxes are checked
+    }
+
+    // Only show the modal if at least one checkbox is selected
+    $alertMessage.hide();
+    modal.show(); // Manually show the modal
+  });
+
+  $unAssignBtn.on("click", function(event){
+    // Update selected IDs and check if at least one checkbox is selected
+    let atLeastOneCheckboxChecked = updateSelectedIds();
+
+    if (!atLeastOneCheckboxChecked) {
+      event.preventDefault();  // Prevent form submission
+
+      // Show the alert message if no checkboxes are selected
+      $alertMessage.show();
+
+      // Scroll to the top of the page to ensure the user sees the alert
+      $("html, body").animate({ scrollTop: 0 }, "slow");
+
+      // Return early to avoid modal showing
+      return false;  // Prevent modal from showing when no checkboxes are checked
     }
   });
 
+  // Function to update the hidden input fields with selected IDs
   function updateSelectedIds() {
     let selectedIds = [];
 
-    checkboxes.forEach(function (checkbox) {
-      if (checkbox.checked) {
-        selectedIds.push(checkbox.value);
+    // Loop through checkboxes and collect selected IDs
+    $checkboxes.each(function () {
+      if ($(this).prop("checked")) {
+        selectedIds.push($(this).val());
       }
     });
 
-    selectedIdsInputForm1.value = selectedIds.join(',');
-    selectedIdsInputForm2.value = selectedIds.join(',');
+    // Update hidden form inputs with selected IDs
+    $selectedIdsInputForm1.val(selectedIds.join(','));
+    $selectedIdsInputForm2.val(selectedIds.join(','));
+
+    // Return true if there is at least one selected checkbox, otherwise false
     return selectedIds.length > 0;
   }
-});
 
+
+  // Select All functionality
+  $("#selectAllCheckbox").click(function () {
+    const isChecked = $(this).is(":checked");
+    $("input[name='selected_ids[]']").prop("checked", isChecked);
+  });
+
+  // Download button functionality
+  $("#downloadCsvButton").click(function (e) {
+    e.preventDefault(); // Prevent the default link behavior
+
+    // Collect selected checkbox values
+    let selectedIds = [];
+    $("input[name='selected_ids[]']:checked").each(function () {
+        selectedIds.push($(this).val());
+    });
+
+    // Construct the URL for the download action
+    let baseUrl = "<%= download_clients_path(format: 'csv') %>";
+    let url = baseUrl;
+
+    if (selectedIds.length > 0) {
+        // If selected IDs exist, append them as a query parameter
+        url += "?selected_ids=" + selectedIds.join(",");
+    }
+
+    // Redirect the browser to the constructed URL to trigger the download
+    window.location.href = url;
+
+    // Uncheck all checkboxes after download
+    $("input[name='selected_ids[]']").prop("checked", false);
+    $("#selectAllCheckbox").prop("checked", false);
+  });
+});
 </script>
