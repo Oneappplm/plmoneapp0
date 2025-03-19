@@ -24,6 +24,7 @@ class Mhc::VerificationPlatformController < ApplicationController
         @npdb_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'NPDB').where.not(source_date: nil).where.not(audit_status: false)
         @education_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'EDUCATION').where.not(source_date: nil).where.not(audit_status: false)
         @training_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Training').where.not(source_date: nil).where.not(audit_status: false)
+        @employment_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Employment').where.not(source_date: nil).where.not(audit_status: false)
       end
       render 'overview'
     end
@@ -112,6 +113,9 @@ class Mhc::VerificationPlatformController < ApplicationController
       if params[:practice_info_education_id].present?
         PracticeInformationEducation.find(params[:practice_info_education_id]).update(verification_status: 'Quality Audited')
       end
+      if params[:practice_employment_id].present?
+        ProviderEmployment.find(params[:practice_employment_id]).update(audit_status: 'Quality Audited')
+      end
       if params[:practice_education_id].present?
         ProviderEducation.find(params[:practice_education_id]).update(audit_status: 'Quality Audited')
       end  
@@ -153,6 +157,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     @provider_npdb_tab_details = @provider_personal_information.rva_informations.where(tab: 'NPDB')
     @provider_education_tab_details = @provider_personal_information.rva_informations.where(tab: 'EDUCATION')
     @provider_training_tab_details = @provider_personal_information.rva_informations.where(tab: 'Training')
+    @provider_employment_tab_details = @provider_personal_information.rva_informations.where(tab: 'Employment')
     @queues = PdfGenerationQueue.all.order(created_at: :desc)
     @psv_pdfs = SavedProfile.joins(:pdf_generation_queue)
                        .where(pdf_generation_queues: { deleted: true, provider_personal_information_id: @provider_personal_information.id })
@@ -391,19 +396,39 @@ class Mhc::VerificationPlatformController < ApplicationController
       @selected_reviews = @provider_personal_information_app_tracking.master_reviews
     end
 
+    if params[:page_tab] == 'add_new_employment'
+      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+    
+      if params[:employment_id].present?
+        @provider_employment = ProviderEmployment.find(params[:employment_id])
+      else
+        @provider_employment = ProviderEmployment.new(provider_attest_id: @provider_attest_id)
+      end
+    end
+    
+    if params[:page_tab] == 'employment'
+      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+      @provider_employments = ProviderEmployment.all
+    end
+    
+    if params[:page_tab] == 'employment_record' 
+      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+      @rva_information = RvaInformation.new
+      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'Employment').last
+      @employment_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Employment').where.not(source_date: nil).where.not(audit_status: false)
+      if params[:employment_id].present?
+        @provider_employment = ProviderEmployment.find(params[:employment_id])
+      else
+        @provider_employment = ProviderEmployment.new
+      end
+    end
+
     # code for licensure tab
     if %w[edit_licensure license_record].include?(params[:page_tab])
       @provider_licensure = ProviderLicensure.find(params[:licensure_id])
       @rva_information = RvaInformation.new
       @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'Licensure').last
       @licensure_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Licensure').where.not(source_date: nil).where.not(audit_status: false)
-    end
-    
-    if params[:page_tab] == 'employment_record'
-      @provider_personal_information_reinstatements = ProviderPersonalInformationReinstatement.where(provider_personal_information_id: @provider_personal_information.id)
-      @employment_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'employment_record').where.not(source_date: nil).where.not(audit_status: false)
-      @rva_information = RvaInformation.new
-      @last_rva_information = RvaInformation.last
     end
     
     case params[:page_tab]

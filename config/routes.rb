@@ -127,6 +127,7 @@ Rails.application.routes.draw do
   resources :missing_field_submissions
 
   namespace :mhc do
+    resources :provider_employments
     resources :provider_medicares
     resources :pdf_generation_queues, only: [:create, :destroy] do
       member do
