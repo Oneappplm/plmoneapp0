@@ -453,6 +453,8 @@
 
                         <%= hidden_field_tag :first_name %>
                         <%= hidden_field_tag :last_name %>
+												<%= hidden_field_tag :license_number, @provider_licensure.license_number %>
+
                         <div class="form-row row mt-3">
                           <div class="col-xl-12">
                             <div class="card other-name-card">
@@ -566,6 +568,26 @@
                                   <button class="btn btn-primary py-1" type="button">Save Request</button>
                                   <button class="btn btn-primary py-1" type="button">Restart Request</button>
                                 </div>
+																<div class="col-md-3">
+																		<button class="btn btn-primary py-1" id="run-licensure-webcrawler-btn" type="button">Run Licensure Webcrawler</button>
+																</div>
+																	<div class="col-md-9">
+																		<div class="row justify-content-end" id="licensure-crawler-link">
+																			<% @licensure_webcrawler_logs.each do |crawler_log| %>
+																				<div class="col-md-6">
+																					<div class="text-decoration-underline">
+																						<%= link_to "#{File.basename(crawler_log.filepath.url)}", crawler_log.filepath.url, target: '_blank' %>
+																					</div>
+																				</div>
+																				<div class="col-md-3">
+																					<div class="date-time d-flex">
+																						<span><%= crawler_log.created_at.strftime('%Y/%m/%d') %></span>
+																						<span class="ms-2"><%= crawler_log.created_at.strftime('%H:%M') %></span>
+																					</div>
+																				</div>
+																			<% end %>
+																		</div>
+																	</div>
                               </div>
                             </div>
                           </div>
@@ -1121,6 +1143,86 @@
               $('.received-by')[0].innerHTML = data.received_by;
               $('.received-date')[0].innerHTML = data.received_date;
               $('input[name="received_status"]').checked = data.received_status;
+              $('.request-comment')[0].value = data.comments;
+              $('.loading-overlay').hide();
+            },
+            error: function () {
+            },
+          });
+        });
+
+				// Run Licensure Webcrawler
+				$('#run-licensure-webcrawler-btn').click(function (e) {
+          e.preventDefault();
+          var firstName = $('#firstname').html().trim();
+          var lastName = $('#lastname').html().trim();
+          var personalInfoId = $('input[name="personal_info_id"]').val();
+					var licenseNumber = $('#license_number').val().trim();
+
+          if (!firstName || !lastName) {
+            $('#qaModalMessage').text('Crawling failed due to some error: First name or last name is missing.');
+            return;
+          }
+
+          $('.loading-overlay').show();
+
+          $.ajax({
+            url: '/webscrapers/run_licensure_webcrawler',
+            method: 'POST',
+            headers: {
+              'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
+            },
+            data: {
+              first_name: firstName, 
+              last_name: lastName,
+              info_id: personalInfoId,
+							license_number: licenseNumber, 
+            },
+            success: function (response) {
+              // set the values
+              const crawlerData = response.webscraper_log;
+
+              // Ensure crawlerData and its properties are defined before proceeding
+              if (crawlerData && crawlerData.filepath && crawlerData.filepath.url && crawlerData.created_at) {
+                  const createdDate = new Date(crawlerData.created_at); // Convert to a Date object if it's a string
+
+                  // Construct HTML dynamically
+                  const crawlerLinkHTML = `
+                      <div class="row justify-content-end">
+                          <div class="col-md-6">
+                              <div class="text-decoration-underline">
+                                  <a href="${crawlerData.filepath.url}" target="_blank">
+                                      ${crawlerData.filepath.url.split('/').pop()}
+                                  </a>
+                              </div>
+                          </div>
+                          <div class="col-md-3">
+                              <div class="date-time d-flex">
+                                  <span>${createdDate.toISOString().split('T')[0]}</span> <!-- YYYY-MM-DD -->
+                                  <span class="ms-2">${createdDate.toTimeString().slice(0, 5)}</span> <!-- HH:MM -->
+                              </div>
+                          </div>
+                      </div>`;
+
+                  // Inject the HTML into the #crawler-link element
+                  document.getElementById('crawler-link').insertAdjacentHTML('afterbegin', crawlerLinkHTML);
+              } else {
+                  console.error('Crawler data is missing or incomplete.');
+              }
+              $('#rva_information_source_date').removeAttr('disabled');
+              const data = response.rva_information;
+              document.querySelector('[name="id"]').value = data.id;
+              $('#send-request-btn').attr('disabled', 'false');
+              $('#send-request-btn')[0].classList.remove('btn');
+              $('.sent-request')[0].innerHTML = data.send_request;
+              $('.requested-by')[0].innerHTML = data.requested_by;
+              $('.requested-date')[0].innerHTML = data.requested_date;
+              $(`#method-${data.requested_method}`).checked = true;
+              $('.req-fee-amount')[0].value = data.required_fee_amount;
+              $('input[name="check_generated"]').value = data.required_fee_amount;
+              $('.received-by')[0].innerHTML = data.received_by;
+              $('.received-date')[0].innerHTML = data.received_date;
+              $('input[name="received_status"]').value = data.received_status;
               $('.request-comment')[0].value = data.comments;
               $('.loading-overlay').hide();
             },

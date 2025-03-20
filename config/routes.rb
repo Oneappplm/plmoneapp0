@@ -411,6 +411,7 @@ Rails.application.routes.draw do
     post '/run_oig_webcrawler', to: 'quality_audits#run_oig_webcrawler'
     post '/run_registration_webcrawler', to: 'quality_audits#run_registration_webcrawler'
     post '/send_oig_request', to: 'quality_audits#send_oig_request'
+    post '/run_licensure_webcrawler', to: 'quality_audits#run_licensure_webcrawler'
     post '/send_npdb_request', to: 'quality_audits#send_npdb_request'
     post '/send_registration_request', to: 'quality_audits#send_registration_request' 
     post '/send_liability_request', to: 'quality_audits#send_liability_request'

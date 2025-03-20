@@ -426,6 +426,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       @rva_information = RvaInformation.new
       @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'Licensure').last
       @licensure_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Licensure').where.not(source_date: nil).where.not(audit_status: false)
+      @licensure_webcrawler_logs = LicensureWebcrawlerLog.where(crawler_type: 'Licensure').where.not(filepath: nil).order(updated_at: :desc)
     end
     
     case params[:page_tab]
