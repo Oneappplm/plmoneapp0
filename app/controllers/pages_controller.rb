@@ -228,15 +228,23 @@ class PagesController < ApplicationController
 
   # for downloading the clients data in client-portal(dashboard >> data access)
   def download_clients_data
-    provider_attest_id = params[:provider_attest_id]
+    # provider_attest_id = params[:provider_attest_id]
     
-     @provider_personal_informations = if provider_attest_id.present?
-                                      ProviderPersonalInformation.where(provider_attest_id: provider_attest_id)
-                                    else
-                                      ProviderPersonalInformation.all
-                                    end
+    #  @provider_personal_informations = if provider_attest_id.present?
+    #                                   ProviderPersonalInformation.where(provider_attest_id: provider_attest_id)
+    #                                 else
+    #                                   ProviderPersonalInformation.all
+    #                                 end
+    # @q = ProviderPersonalInformation.ransack(params[:q]&.except(:advanced_search))
 
-    @q = ProviderPersonalInformation.ransack(params[:q]&.except(:advanced_search))
+    selected_ids = params[:selected_ids]&.split(',')
+
+    @provider_personal_informations = if selected_ids.present?
+                                   ProviderPersonalInformation.where(id: selected_ids)
+                                 else
+                                   ProviderPersonalInformation.all
+                                 end
+
 
     csv_data = CSV.generate(headers: true) do |csv|
       csv << ['Provider Name', 'Birth Date', 'Address', 'Attested Date', 'MedvId', 'Cred Cycle']
@@ -245,9 +253,9 @@ class PagesController < ApplicationController
         practice_information = provider.provider_attest.practice_informations.first
         csv << [
           "#{provider.fullname}, #{provider.provider_type_provider_type_abbreviation}",
-          "#{provider.birth_date.strftime("%Y-%m-%d")}",
+          "#{provider.birth_date&.strftime("%Y-%m-%d")}",
           "#{practice_information.complete_address}",
-          "#{provider.attest_date.strftime("%Y-%m-%d")}",
+          "#{provider.attest_date&.strftime("%Y-%m-%d")}",
           "#{provider.caqh_provider_attest_id}",
           "#{practice_information.cred_cycle}"
         ]
