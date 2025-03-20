@@ -257,7 +257,7 @@ class PagesController < ApplicationController
           "#{practice_information.complete_address}",
           "#{provider.attest_date&.strftime("%Y-%m-%d")}",
           "#{provider.caqh_provider_attest_id}",
-          "#{practice_information.cred_cycle}"
+          "#{practice_information&.cred_cycle}"
         ]
       end
     end
