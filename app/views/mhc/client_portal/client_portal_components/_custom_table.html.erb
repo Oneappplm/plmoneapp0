@@ -31,15 +31,12 @@
 
 							<input type="text" value="<%= @page %>" style="width: 35px; text-align: center; font-size: 12px;" class="">
 		 				</div>
-		 				<div class = "mb-2">
-		 					<%= link_to download_clients_data_path(format: 'csv', provider_attest_id: @provider_personal_informations.present? && @provider_personal_informations.first.provider_attest_id ? @provider_personal_informations.first.provider_attest_id : nil  ), class: 'btn btn-sm btn-primary' do %>
-							  <!-- <  class="btn btn-sm btn-primary"> -->
-							  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 16px;height: 16px;">
-							    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-							  </svg>
-							  <span>Download Documents</span>
-							<% end %>
-		 				</div>
+		 				<a href="#" class="btn btn-sm btn-primary" id="downloadCsvButton">
+			        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 16px;height: 16px;">
+			          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+			        </svg>
+			        <span>Download Documents</span>
+			      </a>
 		 			</div>
 		 		</div>
 		 	</div>
@@ -110,7 +107,8 @@
 							<%# <tr class="p-3 <%= (provider_personal_information.present? && provider_personal_information.id == client.id) ? '' : 'bg-alt-grey'%>
 								<td>
 								  <div class="form-check">
-								    <input class="form-check-input user-cbs" type="checkbox" value="" id="flexCheckDefault">
+								     <!-- <input class="form-check-input user-cbs" type="checkbox" value="<%= provider_personal_information.id %>" id="flexCheckDefault"> -->
+								      <%= check_box_tag "selected_ids[]", provider_personal_information.id, nil, id: "selected_#{provider_personal_information.id}" %>
 								    
 								    <div class="py-1">
 								      <!-- Status Indicator -->
@@ -145,19 +143,19 @@
 
 								<%# <td>
 									<div class="py-1">
-										<span> %><%#= provider_personal_information.npi %><%# </span>
+										<span> %><%#= provider_personal_information&.npi %><%# </span>
 									</div>
 								</td> %>
 
 								<td style="text-wrap: wrap">
 									<div class="py-1">
-										<span><%= provider_personal_information.fullname %></span>
+										<span><%= provider_personal_information&.fullname %></span>
 									</div>
 								</td>
 
 								<td style="text-wrap: wrap">
 									<div class="py-1">
-										<span><%= provider_personal_information.birth_date.strftime("%Y-%m-%d") %></span>
+										<span><%= provider_personal_information&.birth_date&.strftime("%Y-%m-%d") %></span>
 									</div>
 								</td>
 
@@ -169,13 +167,13 @@
 
 								<td style="text-wrap: wrap">
 									<div class="py-1">
-										<span><%= provider_personal_information.attest_date.strftime("%Y-%m-%d") %></span>
+										<span><%= provider_personal_information&.attest_date&.strftime("%Y-%m-%d") %></span>
 									</div>
 								</td>
 
 								<td>
 									<div class="py-1">
-										<span><%= provider_personal_information.caqh_provider_attest_id %></span>
+										<span><%= provider_personal_information&.caqh_provider_attest_id %></span>
 									</div>
 								</td>
 
@@ -221,5 +219,61 @@ function updateCbs(status) {
 		}
 	}
 }
+$(document).ready(function () {
+  const $checkboxes = $("input[name='selected_ids[]']");
+  // Event listener for checkbox change
+  $checkboxes.on("change", function () {
+    updateSelectedIds();
+  });
+
+  // Function to update the hidden input fields with selected IDs
+  function updateSelectedIds() {
+    let selectedIds = [];
+
+    // Loop through checkboxes and collect selected IDs
+    $checkboxes.each(function () {
+      if ($(this).prop("checked")) {
+        selectedIds.push($(this).val());
+      }
+    });
+
+    // Return true if there is at least one selected checkbox, otherwise false
+    return selectedIds.length > 0;
+  }
+
+
+  // Select All functionality
+  $("#selectAllCheckbox").click(function () {
+    const isChecked = $(this).is(":checked");
+    $("input[name='selected_ids[]']").prop("checked", isChecked);
+  });
+
+  // Download button functionality
+  $("#downloadCsvButton").click(function (e) {
+    e.preventDefault(); // Prevent the default link behavior
+
+    // Collect selected checkbox values
+    let selectedIds = [];
+    $("input[name='selected_ids[]']:checked").each(function () {
+        selectedIds.push($(this).val());
+    });
+
+    // Construct the URL for the download action
+    let baseUrl = "<%= download_clients_data_path(format: 'csv') %>";
+    let url = baseUrl;
+
+    if (selectedIds.length > 0) {
+        // If selected IDs exist, append them as a query parameter
+        url += "?selected_ids=" + selectedIds.join(",");
+    }
+
+    // Redirect the browser to the constructed URL to trigger the download
+    window.location.href = url;
+
+    // Uncheck all checkboxes after download
+    $("input[name='selected_ids[]']").prop("checked", false);
+    $("#selectAllCheckbox").prop("checked", false);
+  });
+});
 </script>
 <% end %>
