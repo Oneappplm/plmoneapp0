@@ -113,6 +113,9 @@ class Webscrapers::QualityAuditsController < ApplicationController
   end  
 
   def send_oig_request
+    last_name = params[:last_name] 
+    first_name = params[:first_name]
+
     infoId = params[:personal_info_id]
     # Create reva informaton for send request 
     rva_information = RvaInformation.create!(
@@ -135,6 +138,64 @@ class Webscrapers::QualityAuditsController < ApplicationController
   rescue => e
     render json: { error: e.message }, status: :unprocessable_entity
   end
+
+  def run_licensure_webcrawler
+    last_name = params[:last_name]
+    first_name = params[:first_name]
+    license_number = params[:license_number]  # License number added
+    provider_personal_info = ProviderPersonalInformation.find(params[:info_id])
+
+    # Create RVA information for Licensure when running webcrawler
+    rva_information = RvaInformation.create!(
+      tab: 'Licensure',
+      send_request: 'SENT',
+      requested_by: 'SYSTEM',
+      requested_date: Date.today,
+      requested_method: 'Letter',
+      required_fee_amount: 0,
+      check_generated: false,
+      received_status: true,
+      comments: 'Webcrawler',
+      received_by: 'SYSTEM',
+      provider_personal_information_id: provider_personal_info.id,
+      received_date: Date.today
+    )
+
+    # Create the service instance and call it with parameters
+    service = Webscraper::LicensureService.new(last_name, first_name, license_number)
+    service.call
+
+    # Define source file path
+    source_file = Rails.root.join('public', 'webscrape', 'licensure', 'screenshot.pdf')
+
+    # Generate unique filename including license_number
+    timestamp = Time.now.strftime('%Y-%m-%dT%H-%M-%S')
+    random_string = SecureRandom.hex(4)
+    filename = "LICENSURE_#{last_name.upcase}_#{first_name.upcase}_#{license_number}_#{timestamp}_#{random_string}_M.pdf"
+
+    # Copy the file to a temporary directory for uploading
+    tmp_file_path = Rails.root.join('tmp', filename)
+    FileUtils.cp(source_file, tmp_file_path)
+
+    # Save the file in WebscraperLog using CarrierWave
+    webscraper_log = LicensureWebcrawlerLog.new(
+      status: 'completed',
+      rva_information_id: rva_information.id
+    )
+    webscraper_log.filepath = File.open(tmp_file_path) # Attach the file using CarrierWave
+    webscraper_log.save!
+
+    # Remove the temporary file after saving
+    File.delete(tmp_file_path) if File.exist?(tmp_file_path)
+    if params[:info_id].present?
+      provider_personal_info.update(verification_status: 'Processing')
+    end
+
+    render json: { message: 'Licensure webcrawler completed successfully', rva_information: rva_information, webscraper_log: webscraper_log }, status: :ok
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
 
   def send_licensure_request
     infoId = params[:personal_info_id]

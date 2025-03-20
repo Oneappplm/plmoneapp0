@@ -4,4 +4,5 @@ class RvaInformation < ApplicationRecord
 	belongs_to :practice_information_education, optional: true
 	has_many :dea_webcrawler_logs, dependent: :destroy
 	has_many :oig_webcrawler_logs, dependent: :destroy
+	has_many :licensure_webcrawler_logs, dependent: :destroy  
 end
