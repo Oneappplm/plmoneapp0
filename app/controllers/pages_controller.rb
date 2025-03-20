@@ -227,10 +227,14 @@ class PagesController < ApplicationController
   end
 
   # for downloading the clients data in client-portal(dashboard >> data access)
-   def download_clients_data
+  def download_clients_data
     provider_attest_id = params[:provider_attest_id]
     
-    @provider_personal_informations = ProviderPersonalInformation.where(provider_attest_id: provider_attest_id)
+     @provider_personal_informations = if provider_attest_id.present?
+                                      ProviderPersonalInformation.where(provider_attest_id: provider_attest_id)
+                                    else
+                                      ProviderPersonalInformation.all
+                                    end
 
     @q = ProviderPersonalInformation.ransack(params[:q]&.except(:advanced_search))
 
@@ -244,7 +248,8 @@ class PagesController < ApplicationController
           "#{provider.birth_date.strftime("%Y-%m-%d")}",
           "#{practice_information.complete_address}",
           "#{provider.attest_date.strftime("%Y-%m-%d")}",
-          "#{provider.caqh_provider_attest_id}"
+          "#{provider.caqh_provider_attest_id}",
+          "#{practice_information.cred_cycle}"
         ]
       end
     end
