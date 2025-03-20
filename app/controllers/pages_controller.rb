@@ -250,11 +250,11 @@ class PagesController < ApplicationController
       csv << ['Provider Name', 'Birth Date', 'Address', 'Attested Date', 'MedvId', 'Cred Cycle']
       
       @provider_personal_informations.each do |provider|
-        practice_information = provider.provider_attest.practice_informations.first
+       practice_information = provider&.provider_attest&.practice_informations&.first if provider&.provider_attest.present?
         csv << [
           "#{provider.fullname}, #{provider.provider_type_provider_type_abbreviation}",
           "#{provider.birth_date&.strftime("%Y-%m-%d")}",
-          "#{practice_information.complete_address}",
+          "#{practice_information&.complete_address}",
           "#{provider.attest_date&.strftime("%Y-%m-%d")}",
           "#{provider.caqh_provider_attest_id}",
           "#{practice_information&.cred_cycle}"
