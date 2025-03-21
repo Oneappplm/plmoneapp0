@@ -4,9 +4,16 @@
 	</div>
 </div>
 <div class="form-row row" id="laboratory-wrp">
-	<div class="col-xl-6">
-					<label for="">If Yes, please select all accrediting/certifying programs:</label>
-					<%= f.select :laboratory_services_wrp, options_for_select([]), { prompt: 'Select option' }, {:class => 'form-select'}  %>
+	<div class="col-xl-10  mt-2 mb-2">
+		<label for="">If Yes, please select all accrediting/certifying programs:</label>
+		<div class="d-flex gap-2">
+			<%#= text_field_tag :laboratory_services_wrp, '', class: 'form-control w-75', id: 'laboratory_services_input' %>
+			<%#= button_tag "Add to List", type: "button", class: "btn btn-primary btn-sm w-25", id: "add_to_list_laboratory_services_wrp" %>
+		</div>
+		<%#= f.hidden_field :laboratory_services_wrp_status %>
+		<%#= text_area_tag :laboratory_services_wrp_status_display, "#{@practice_location.laboratory_services_wrp_status.join(',')}", class: 'form-control mt-2', id: 'laboratory_services_wrp_status_display' %>
+
+		<%= f.select :laboratory_services_wrp, PracticeLocation::LABORATORY_SERVICES, { prompt: true }, {class: 'form-select mt-2'} %>
 	</div>
 </div>
 <div class="form-row row">
@@ -45,9 +52,16 @@
 	</div>
 </div>
 <div class="form-row row" id="radiology-wrp">
-	<div class="col-xl-12">
-					<label for="">Please list all X-ray certifications:</label>
-					<%= f.select :radiology_services_xray, options_for_select([]), { prompt: 'Select option' }, {:class => 'form-select'}  %>
+	<div class="col-xl-12 mt-2 mb-2">
+		<label for="">Please list all X-ray certifications:</label>
+
+		<div class="d-flex gap-2 mt-2 mb-2">
+			<%#= text_field_tag :radiology_services_xray, '', class: 'form-control w-75', id: 'radiology_services_xray_input' %>
+			<%#= button_tag "Add to List", type: "button", class: "btn btn-primary btn-sm w-25", id: "add_to_list_radiology_services_xray" %>
+		</div>
+		<%#= f.hidden_field :radiology_services_xray_status %>
+		<%#= text_area_tag :radiology_services_xray_status_display, "#{@practice_location.radiology_services_xray_status.join(',')}", class: 'form-control mt-2', id: 'radiology_services_xray_status_display' %>
+		<%= f.select :radiology_services_xray, options_for_select(['Xray Supervisor']), { prompt: 'Select option' }, {:class => 'form-select'}  %>
 	</div>
 	<div class="col-xl-12">
 		<label for="">FDA/Radiology (Mammography) Certification Number for this location:</label>
