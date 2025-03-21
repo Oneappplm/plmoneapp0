@@ -1,4 +1,6 @@
 class Users::SessionsController < Devise::SessionsController
+  before_action :configure_sign_in_params, only: [:create]
+
   def create
     if current_user.present?
       if current_setting.qualifacts? && !current_user&.super_administrator?
@@ -13,7 +15,12 @@ class Users::SessionsController < Devise::SessionsController
         sign_out(resource_name)
         redirect_to redirect_url, notice: "An OTP Code has been sent to your email. Please check your email." and return
       else
-        super
+        if current_user.user_role != params.dig(:user, :user_role)
+          sign_out(:user)
+          redirect_to request.referrer, alert: "Role not match."
+        else
+         super
+        end
       end
     else
       if current_setting.qualifacts?
@@ -38,8 +45,12 @@ class Users::SessionsController < Devise::SessionsController
     redirect_to logout_url, allow_other_host: true
   end
 
-  private
+  protected
+  def configure_sign_in_params
+   devise_parameter_sanitizer.permit(:sign_in, keys: [:user_role])
+  end
 
+  private
   def logout_url
     request_params = {
       returnTo: root_url,

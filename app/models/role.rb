@@ -7,6 +7,8 @@ class Role < ApplicationRecord
 
 	has_many :role_based_access, class_name: 'RoleBasedAccess', foreign_key: 'role', primary_key: 'slug', dependent: :destroy
 
+	default_scope { where.not(name: ["Super Administrator", "Administrator"]) }
+
 	class << self
 		def load_data
 			['Super Administrator', 'Administrator', 'Admin Staff', 'Calls Agent', 'Agent', 'Encoder', 'Director', 'Productivity Manager'].each do |role|
@@ -21,10 +23,14 @@ class Role < ApplicationRecord
 		end
 	end
 
+	def filtered_name
+	 name.parameterize(separator: '_')
+	end
+
  private
- def set_slug
-  self.slug = name.parameterize(separator: '_')
- end
+  def set_slug
+   self.slug = filtered_name
+  end
 
 	def generate_role_based_access
 		RoleBasedAccess.initialize_access(slug)

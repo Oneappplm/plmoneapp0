@@ -61,6 +61,8 @@ class User < ApplicationRecord
   scope :agents, -> { where(user_role: 'agent') }
   scope :directors, -> { where(user_role: 'director') }
 
+  default_scope -> { not_admin }
+
   # Ex:- scope :active, -> {where(:active => true)}
 
   has_one :group_engage_provider, dependent: :destroy
