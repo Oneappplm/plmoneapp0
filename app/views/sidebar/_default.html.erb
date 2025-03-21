@@ -134,21 +134,25 @@
 													<% end %>
 
 													<% if current_setting.dcm? %>
-													 <div class="nav-item mb-1">
-															<a class="nav-link <%= active_menu('help_codes', 'index') %>" href="<%= help_codes_path %>" data-placement="left">
-																		<!-- <i class="bi-receipt nav-icon"></i> -->
-																		<!-- <i class="bi bi-person nav-icon"></i> -->
-																		<i class="bi bi-folder nav-icon"></i>
-																		<span class="nav-link-title">Help Codes</span>
-															</a>
-													 </div>
+														<% if current_user.can_access?('help_codes')%>
+															<div class="nav-item mb-1">
+																	<a class="nav-link <%= active_menu('help_codes', 'index') %>" href="<%= help_codes_path %>" data-placement="left">
+																				<!-- <i class="bi-receipt nav-icon"></i> -->
+																				<!-- <i class="bi bi-person nav-icon"></i> -->
+																				<i class="bi bi-folder nav-icon"></i>
+																				<span class="nav-link-title">Help Codes</span>
+																	</a>
+															</div>
+														<% end %>
 
-													 <div class="nav-item mb-1">
-															<a class="nav-link <%= active_menu('pdf_populators', 'index') %>" href="<%= pdf_populators_path %>" data-placement="left">
-																<i class="bi bi-folder nav-icon"></i>
-																<span class="nav-link-title">PDF Populator</span>
-															</a>
-													 </div>
+														<% if current_user.can_access?('pdf_populators')%>
+															<div class="nav-item mb-1">
+																	<a class="nav-link <%= active_menu('pdf_populators', 'index') %>" href="<%= pdf_populators_path %>" data-placement="left">
+																		<i class="bi bi-folder nav-icon"></i>
+																		<span class="nav-link-title">PDF Populator</span>
+																	</a>
+															</div>
+														<% end%>
 													<% end %>
 
 													<% if current_user.can_access?('plm_sales_tool') %>
@@ -192,12 +196,14 @@
 													</div>
 												<% end %>
 												<% if current_user&.super_administrator? || current_user&.administrator? || current_user&.agent? %>
-													<div class="nav-item mb-1">
-														<a class="nav-link <%= active_menu('audit_trails') %> <%= active_menu('index') %>" href="<%= audit_trails_path %>" data-placement="left">
-															<i class="bi bi-gear nav-icon"></i>
-															<span class="nav-link-title">Activity Logs</span>
-														</a>
-													</div>
+													<% if current_user.can_access?('audit_trails')%>
+														<div class="nav-item mb-1">
+															<a class="nav-link <%= active_menu('audit_trails') %> <%= active_menu('index') %>" href="<%= audit_trails_path %>" data-placement="left">
+																<i class="bi bi-gear nav-icon"></i>
+																<span class="nav-link-title">Activity Logs</span>
+															</a>
+														</div>
+													<% end %>
 												<% end %>
 
 												<!-- logout -->

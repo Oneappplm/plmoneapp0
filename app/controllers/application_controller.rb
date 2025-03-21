@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::Base
+  include AccountAuthenticable
+  include ApplicationHelper
+
 	before_action :authenticate_user!, except: %i[terms privacy_policy]
-	before_action :configure_permitted_parameters, if: :devise_controller?
 	before_action :ensure_security_questions_set, if: :user_signed_in?
   # exceptions for track_event are mostly ajax requests
 	before_action :track_event
@@ -11,41 +13,34 @@ class ApplicationController < ActionController::Base
 	include ApplicationHelper
 
 	protected
+    def skip_validation_for_enrollment_clients?
+      !(current_user.present? && current_user.is_provider_account && controller_name == "enrollment_clients" && %w[index show].include?(action_name))
+    end
 
-  def skip_validation_for_enrollment_clients?
-    !(current_user.present? && current_user.is_provider_account && controller_name == "enrollment_clients" && %w[index show].include?(action_name))
-  end
+    def search_inputs
+      keys = %w[first_name last_name city state_abbr zipcode
+            npi ssn medv_id cred_status vrc_status full_name
+            cred_cycle medv_ids entity tin from_attest_date
+            to_attest_date birth_date provider_type specialty]
 
-	 def configure_permitted_parameters
-    update_params = [:first_name, :last_name, :user_type, :password, :password_confirmation, :current_password, :security_question, :security_answer]
-    devise_parameter_sanitizer.permit(:account_update, keys: update_params)
-				devise_parameter_sanitizer.permit(:sign_up, keys: update_params)
-  end
+      @search_inputs = keys.map { |k| [k, params[k.to_sym]] }.to_h
+    end
 
-  def search_inputs
-  	keys = %w[first_name last_name city state_abbr zipcode
-  			  npi ssn medv_id cred_status vrc_status full_name
-  			  cred_cycle medv_ids entity tin from_attest_date
-  			  to_attest_date birth_date provider_type specialty]
+    def track_event
+      ahoy.track "Visited page", visit_properties unless request.xhr?
+    end
 
-	  @search_inputs = keys.map { |k| [k, params[k.to_sym]] }.to_h
-  end
-
-  def track_event
-    ahoy.track "Visited page", visit_properties unless request.xhr?
-  end
-
-  def force_logout_on_close_if_expired
-    if current_user.present?
-      if current_user.logout_on_close? && current_user.expired_logout_on_close?
-        current_user.reset_logout_on_close
-        sign_out(current_user)
-        redirect_to new_user_session_path, alert: "Your session has expired. Please sign in again." and return
-      else
-        current_user.reset_logout_on_close
+    def force_logout_on_close_if_expired
+      if current_user.present?
+        if current_user.logout_on_close? && current_user.expired_logout_on_close?
+          current_user.reset_logout_on_close
+          sign_out(current_user)
+          redirect_to new_user_session_path, alert: "Your session has expired. Please sign in again." and return
+        else
+          current_user.reset_logout_on_close
+        end
       end
     end
-  end
 
 		# Recursively process the params hash
 		def filter_params(params)

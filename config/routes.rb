@@ -236,11 +236,9 @@ Rails.application.routes.draw do
     end
   end
   resources :role_based_accesses, only: [:index], path: 'role-based-access' do
-    member do
-      post :update_access
-    end
     collection do
       post :delete_role
+      post :update_permissions
     end
   end
 
