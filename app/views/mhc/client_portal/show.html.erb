@@ -1,6 +1,6 @@
 <div class="container mt-4">
 	<h2>Download History</h2>
-	<table class="table">
+	<table class="table table-bordered">
 	  <thead>
 	    <tr>
 	      <th>File Name</th>
@@ -20,7 +20,22 @@
 	    <% end %>
 	  </tbody>
 	</table>
+	<% if @download_histories %>
+	  <div class="col-lg-12">
+	    <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+	      <div class="page_info ms-3 text-black">
+	          <%= page_entries_info @download_histories %>
+	      </div>
+	      <% if params[:per_page].present? %>
+	        <%= will_paginate @download_histories, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+	      <% else %>
+	        <%= will_paginate @download_histories, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+	      <% end %>
+	    </div>
+	  </div>
+	<% end %>
 </div>
+
 
 <style>
   .table thead th {

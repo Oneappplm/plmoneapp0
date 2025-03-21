@@ -114,7 +114,7 @@ class Mhc::ClientPortalController < ApplicationController
   # end
 
   def show
-    @download_histories = DownloadHistory.all.order(downloaded_at: :desc)
+    @download_histories = DownloadHistory.paginate(per_page: 10, page: params[:page] || 1).order(downloaded_at: :desc)
   end
 
   protected

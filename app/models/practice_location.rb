@@ -76,4 +76,52 @@ class PracticeLocation < ApplicationRecord
     "Women's Healthcare",
     "Wraparound Services*"  
   ]
+
+  PATIENCE_ACCEPTANCE1 = [
+    "New Patients",
+    "All New Patients",
+    "Existing Patients with a Change of Payor",
+    "New Patients from Physician Referral Only",
+    "New Medicare Patients",
+    "New Medicaid Patients",
+    "New Patients Varies by Health Plan",
+    "Medicare Patients",
+    "Medicaid Patients",
+    "New BWC (Bureau of Workers’ Compensation) Patients",
+    "New Patients in the Future",
+    "Workers’ Compensation Patients",
+    "None"
+  ]
+
+  ADA_ACCESSIBILITY = [
+   "Handicapped Building Access",
+   "Handicapped Parking Access",
+   "Handicapped Restroom Access",
+   "Other Handicapped Access"
+  ]
+
+  DISABLED_OTHER_SERVICE = [
+    "American Sign Language (ASL)",
+    "Mental/Physical Impairment Services",
+    "TDD Service (Telecommunications Device for the Deaf)",
+    "Text Telephone (TTY)",
+    "Other Disability Service"
+  ]
+
+  PUBLIC_TRANSPORTATION = [
+    "Other Transportation",
+    "Bus Transportation",
+    "Light Rail Transportation",
+    "Regional Train Transportation",
+    "Subway Transportation"
+  ]
+
+  LABORATORY_SERVICES = [
+    "AAFP - America Academy of Family Physicians",
+    "CAP - College of American Pathologists.",
+    "CLIA - Clinical Laboratory Improvement Amendments",
+    "COLA - Commission on Office Laboratory Accreditation",
+    "MLE - Medical Laboratory Evaluation"
+  ]
+
 end
