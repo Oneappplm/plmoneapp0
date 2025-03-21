@@ -40,6 +40,22 @@ class Mhc::ProviderDeasController < ApplicationController
     end
   end
 
+  def quality_audit_details
+    provider_dea = ProviderDea.find(params[:id])
+    @dea_rva_information_completed = provider_dea.rva_informations
+                                  .where(tab: 'Registration')
+                                  .where.not(source_date: nil)
+                                  .where.not(audit_status: false)
+      
+    @last_rva_information = provider_dea.rva_informations
+                          .where(tab: 'Registration')
+                          .order(:created_at)
+                          .last
+    @registration_webcrawler_logs = @last_rva_information.dea_webcrawler_logs.order(updated_at: :desc) if @last_rva_information.present?
+
+    render json: { success: true, rva_information: @last_rva_information, webscraper_log: @registration_webcrawler_logs }, status: :ok
+  end
+
   private
   def provider_dea_params
     params.require(:provider_dea).permit(

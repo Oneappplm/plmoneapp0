@@ -107,7 +107,7 @@
                                 </button>
                             </div>
                             <div class="col-12 m-2">
-                                 <button class="btn btn-primary btn-audit btn-sm" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>">
+                                 <button class="btn btn-primary btn-audit btn-sm" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-personal-information-id="<%= @provider_personal_information&.id %>">
                                     Quality Audit
                                 </button>
                             </div>
@@ -858,18 +858,14 @@
         // send request parameter
         $('#send-request-btn').click(function (e) {
           e.preventDefault();
-          var firstName = $('#firstname').html().trim();
 
           $('.loading-overlay').show();
 
           $.ajax({
-            url: '/webscrapers/send_request',
+            url: '/webscrapers/send_oig_request',
             method: 'POST',
             headers: {
               'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
-            },
-            data: {
-              first_name: firstName,
             },
             success: function (response) {
               // set the values

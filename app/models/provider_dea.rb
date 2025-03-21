@@ -3,6 +3,7 @@ class ProviderDea < ApplicationRecord
   serialize :schedules_held, Array
 
   belongs_to :provider_attest
+  has_many :rva_informations, dependent: :destroy
 
   validates :provider_attest_id, presence: true
 

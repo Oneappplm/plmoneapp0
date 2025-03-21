@@ -192,7 +192,11 @@ Rails.application.routes.draw do
         get :auto_create, path: 'auto-create'
       end
     end
-    resources :provider_deas, only: [:create, :update, :destroy], path: 'provider-dea'
+    resources :provider_deas, only: [:create, :update, :destroy], path: 'provider-dea' do
+      member do
+        get :quality_audit_details
+      end
+    end
     resources :verification_platform, only: [:index, :show], path: 'verification-platform'
 
     resources :client_portal, only: [:index, :show], path: 'client-portal' do
@@ -406,7 +410,7 @@ Rails.application.routes.draw do
     root to: 'logs#index'
     post '/run_oig_webcrawler', to: 'quality_audits#run_oig_webcrawler'
     post '/run_registration_webcrawler', to: 'quality_audits#run_registration_webcrawler'
-    post '/send_request', to: 'quality_audits#send_request'
+    post '/send_oig_request', to: 'quality_audits#send_oig_request'
     post '/send_npdb_request', to: 'quality_audits#send_npdb_request'
     post '/send_registration_request', to: 'quality_audits#send_registration_request' 
     post '/send_liability_request', to: 'quality_audits#send_liability_request'
@@ -415,6 +419,8 @@ Rails.application.routes.draw do
     post '/send_board_cert_request', to: 'quality_audits#send_board_cert_request' 
     post '/send_licensure_request', to: 'quality_audits#send_licensure_request'
     post '/send_employment_request', to: 'quality_audits#send_employment_request'
+    post '/send_education_skip_rva', to: 'quality_audits#send_education_skip_rva'
+    post '/send_dea_skip_rva', to: 'quality_audits#send_dea_skip_rva'
     resources :alaska_states, only: [:index], path: 'state-alaska' do
       collection do
         get :crawl

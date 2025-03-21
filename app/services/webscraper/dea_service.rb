@@ -51,6 +51,7 @@ class Webscraper::DeaService < WebscraperService
     doc.at_css('#provider_dea_state')&.content = provider_dea&.state
     doc.at_css('#provider_dea_schedules')&.content = provider_dea&.schedules_held.join(" ")
     doc.at_css('#dea_expiration_date')&.content = provider_dea&.expiration_date&.strftime('%m/%d/%Y')
+    doc.at_css('#dea_source_date')&.content = Date.today.strftime('%m/%d/%Y')
   end
 
   def generate_pdf(html_content)

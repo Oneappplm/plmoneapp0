@@ -107,7 +107,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       @rva_information.adverse_action_status = 'close'
     end
     if params[:section] == 'audit'
-      params[:rva_information][:auditor]  = params[:first_name]
+      params[:rva_information][:auditor]  = current_user.first_name
       params[:rva_information][:audit_date] = Date.today
       params[:rva_information][:audit_comments] = 'None'
       if params[:practice_info_education_id].present?
@@ -186,8 +186,8 @@ class Mhc::VerificationPlatformController < ApplicationController
       @q = School.ransack(params[:q])
       @practice_information_education = PracticeInformationEducation.find_or_initialize_by(id: params[:practice_information_education_id], provider_attest_id: @provider_personal_information.provider_attest_id, caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id)
       @rva_information = RvaInformation.new
-      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'EDUCATION').last
-      @education_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'EDUCATION').where.not(source_date: nil).where.not(audit_status: false)
+      @last_rva_information = @practice_information_education.rva_informations.last
+      @education_rva_information_completed = @practice_information_education.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
 
     if params[:page_tab] == 'board_cert'
@@ -326,10 +326,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       @new_provider_military = ProviderMilitary.new(
         provider_attest_id: @provider_personal_information.provider_attest_id
       )
-      @dea_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Registration').where.not(source_date: nil).where.not(audit_status: false)
       @rva_information = RvaInformation.new
-      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'Registration').last
-      @registration_webcrawler_logs = DeaWebcrawlerLog.order(updated_at: :desc)
     end
 
     if params[:page_tab] == 'billing_info'

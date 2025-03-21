@@ -59,7 +59,8 @@ class Webscrapers::QualityAuditsController < ApplicationController
     dea_number = params[:dea_number]
     last_name = params[:last_name]
     first_name = params[:first_name]
-    provider_personal_info = ProviderPersonalInformation.find(params[:info_id])
+
+    provider_dea = ProviderDea.find(params[:provider_dea_id])
   
     # Create RVA information for Registration when running webcrawler
     rva_information = RvaInformation.create!(
@@ -73,7 +74,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
       received_status: true,
       comments: 'Webcrawler',
       received_by: 'SYSTEM',
-      provider_personal_information_id: provider_personal_info.id,
+      provider_dea_id: provider_dea.id,
       received_date: Date.today
     )
   
@@ -111,13 +112,22 @@ class Webscrapers::QualityAuditsController < ApplicationController
     render json: { error: e.message }, status: :unprocessable_entity
   end  
 
-  def send_request
-    last_name = params[:last_name] 
-    first_name = params[:first_name]
-
+  def send_oig_request
     infoId = params[:personal_info_id]
     # Create reva informaton for send request 
-    rva_information = RvaInformation.create!(tab: 'OIG', send_request: 'SENT', requested_by: first_name, requested_date: Date.today, requested_method: 'Letter', required_fee_amount: 0, check_generated: false, received_by: first_name, received_status: true, comments: 'none', received_date: Date.today, provider_personal_information_id: infoId)
+    rva_information = RvaInformation.create!(
+      tab: 'OIG', 
+      send_request: 'SENT',
+      requested_by: current_user.first_name,
+      requested_date: Date.today, 
+      requested_method: 'Letter', 
+      required_fee_amount: 0, 
+      check_generated: false, 
+      received_by: current_user.first_name, 
+      received_status: true, 
+      comments: 'none', 
+      received_date: Date.today, 
+      provider_personal_information_id: infoId)
     render json: { message: 'requestsent sccessfully',  rva_information: rva_information}, status: :ok
     if infoId.present?
       ProviderPersonalInformation.find(infoId).update(verification_status: 'Processing')
@@ -127,19 +137,17 @@ class Webscrapers::QualityAuditsController < ApplicationController
   end
 
   def send_licensure_request
-    last_name = params[:last_name] 
-    first_name = params[:first_name]
     infoId = params[:personal_info_id]
     # Create RVA information for NPDB request
     rva_information = RvaInformation.create(
       tab: 'Licensure',
       send_request: 'SENT',
-      requested_by: first_name,
+      requested_by: current_user.first_name,
       requested_date: Date.today,
       requested_method: 'Letter',
       required_fee_amount: 0,
       check_generated: false,
-      received_by: first_name,
+      received_by: current_user.first_name,
       received_status: true,
       comments: 'none',
       received_date: Date.today,
@@ -152,19 +160,17 @@ class Webscrapers::QualityAuditsController < ApplicationController
   end  
 
   def send_employment_request
-    last_name = params[:last_name] 
-    first_name = params[:first_name]
     infoId = params[:personal_info_id]
     # Create RVA information for NPDB request
     rva_information = RvaInformation.create(
       tab: 'Employment',
       send_request: 'SENT',
-      requested_by: first_name,
+      requested_by: current_user.first_name,
       requested_date: Date.today,
       requested_method: 'Letter',
       required_fee_amount: 0,
       check_generated: false,
-      received_by: first_name,
+      received_by: current_user.first_name,
       received_status: true,
       comments: 'none',
       received_date: Date.today,
@@ -177,19 +183,17 @@ class Webscrapers::QualityAuditsController < ApplicationController
   end 
 
   def send_npdb_request
-    last_name = params[:last_name] 
-    first_name = params[:first_name]
     infoId = params[:personal_info_id]
     # Create RVA information for NPDB request
     rva_information = RvaInformation.create(
       tab: 'NPDB',
       send_request: 'SENT',
-      requested_by: first_name,
+      requested_by: current_user.first_name,
       requested_date: Date.today,
       requested_method: 'Letter',
       required_fee_amount: 0,
       check_generated: false,
-      received_by: first_name,
+      received_by: current_user.first_name,
       received_status: true,
       comments: 'NPDB Webcrawler Request',
       received_date: Date.today,
@@ -202,23 +206,21 @@ class Webscrapers::QualityAuditsController < ApplicationController
   end
   
   def send_registration_request
-    last_name = params[:last_name] 
-    first_name = params[:first_name]
-    infoId = params[:personal_info_id]
+    provider_dea_id = params[:provider_dea_id]
     # Create RVA information for NPDB request
     rva_information = RvaInformation.create(
       tab: 'Registration',
       send_request: 'SENT',
-      requested_by: first_name,
+      requested_by: current_user.first_name,
       requested_date: Date.today,
       requested_method: 'Letter',
       required_fee_amount: 0,
       check_generated: false,
-      received_by: first_name,
+      received_by: current_user.first_name,
       received_status: true,
       comments: 'none',
       received_date: Date.today,
-      provider_personal_information_id: infoId
+      provider_dea_id: provider_dea_id
     )
 
     render json: { message: 'Registration request sent successfully', rva_information: rva_information }, status: :ok
@@ -227,12 +229,10 @@ class Webscrapers::QualityAuditsController < ApplicationController
   end  
   
   def send_liability_request
-    last_name = params[:last_name] 
-    first_name = params[:first_name]
 
     infoId = params[:personal_info_id]
     # Create reva informaton for send request 
-    rva_information = RvaInformation.create(tab: 'Liability', send_request: 'SENT', requested_by: first_name, requested_date: Date.today, requested_method: 'Letter', required_fee_amount: 0, check_generated: false, received_by: first_name, received_status: true, comments: 'none', received_date: Date.today, provider_personal_information_id: infoId)
+    rva_information = RvaInformation.create(tab: 'Liability', send_request: 'SENT', requested_by: current_user.first_name, requested_date: Date.today, requested_method: 'Letter', required_fee_amount: 0, check_generated: false, received_by: current_user.first_name, received_status: true, comments: 'none', received_date: Date.today, provider_personal_information_id: infoId)
     render json: { message: 'requestsent sccessfully',  rva_information: rva_information}, status: :ok
       if infoId.present?
         ProviderPersonalInformation.find(infoId).update(verification_status: 'Processing')
@@ -242,19 +242,17 @@ class Webscrapers::QualityAuditsController < ApplicationController
   end
 
   def send_board_cert_request
-    last_name = params[:last_name] 
-    first_name = params[:first_name]
     infoId = params[:personal_info_id]
     # Create RVA information for NPDB request
     rva_information = RvaInformation.create(
       tab: 'BOARDCERT',
       send_request: 'SENT',
-      requested_by: first_name,
+      requested_by: current_user.first_name,
       requested_date: Date.today,
       requested_method: 'Letter',
       required_fee_amount: 0,
       check_generated: false,
-      received_by: first_name,
+      received_by: current_user.first_name,
       received_status: true,
       comments: 'none',
       received_date: Date.today,
@@ -267,44 +265,115 @@ class Webscrapers::QualityAuditsController < ApplicationController
   end  
 
   def send_education_request
-    last_name = params[:last_name] 
-    first_name = params[:first_name]
     infoId = params[:personal_info_id]
+    education_id = params[:practice_education_id]
     # Create RVA information for NPDB request
     rva_information = RvaInformation.create(
       tab: 'EDUCATION',
       send_request: 'SENT',
-      requested_by: first_name,
+      requested_by: current_user.first_name,
       requested_date: Date.today,
       requested_method: 'Letter',
       required_fee_amount: 0,
       check_generated: false,
-      received_by: first_name,
+      received_by: current_user.first_name,
       received_status: true,
       comments: 'none',
       received_date: Date.today,
-      provider_personal_information_id: infoId
+      provider_personal_information_id: infoId,
+      practice_information_education_id: education_id
     )
      
     render json: { message: 'EDUCATION cert request sent successfully', rva_information: rva_information }, status: :ok
   rescue => e
     render json: { error: e.message }, status: :unprocessable_entity
+  end
+
+  def send_education_skip_rva
+    infoId = params[:personal_information_id]
+    education_id = params[:education_id]
+    # Create RVA information for NPDB request
+    rva_information = RvaInformation.create(
+      tab: 'EDUCATION',
+      send_request: 'SENT',
+      requested_by: current_user.first_name,
+      requested_date: Date.today,
+      requested_method: 'Letter',
+      required_fee_amount: 0,
+      check_generated: false,
+      received_by: current_user.first_name,
+      received_status: true,
+      comments: 'SkipRVA',
+      received_date: Date.today,
+      provider_personal_information_id: infoId,
+      practice_information_education_id: education_id,
+      source_name: 'ADA',
+      source_date: Date.today,
+      status: 'completed',
+      verification_status: 'Verified',
+      verification_date: Date.today,
+      verifier: current_user.first_name,
+      verification_comments: 'SkipRVA',
+      audit_status: true,
+      auditor: current_user.first_name,
+      audit_date: Date.today,
+      audit_comments: 'SkipRVA'
+    )
+    PracticeInformationEducation.find(params[:education_id]).update(verification_status: 'SkipRVA')
+     
+    render json: { message: 'EDUCATION cert request sent successfully', rva_information: rva_information, success: true }, status: :ok
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
   end  
 
+  def send_dea_skip_rva
+    infoId = params[:personal_information_id]
+    provider_dea_id = params[:provider_dea_id]
+    # Create RVA information for NPDB request
+    rva_information = RvaInformation.create(
+      tab: 'Registration',
+      send_request: 'SENT',
+      requested_by: current_user.first_name,
+      requested_date: Date.today,
+      requested_method: 'Letter',
+      required_fee_amount: 0,
+      check_generated: false,
+      received_by: current_user.first_name,
+      received_status: true,
+      comments: 'SkipRVA',
+      received_date: Date.today,
+      provider_personal_information_id: infoId,
+      provider_dea_id: provider_dea_id,
+      source_name: 'ADA',
+      source_date: Date.today,
+      status: 'completed',
+      verification_status: 'Verified',
+      verification_date: Date.today,
+      verifier: current_user.first_name,
+      verification_comments: 'SkipRVA',
+      audit_status: true,
+      auditor: current_user.first_name,
+      audit_date: Date.today,
+      audit_comments: 'SkipRVA'
+    )
+     
+    render json: { message: 'dea request sent successfully', rva_information: rva_information, success: true }, status: :ok
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
   def send_training_request
-    last_name = params[:last_name] 
-    first_name = params[:first_name]
     infoId = params[:personal_info_id]
     # Create RVA information for NPDB request
     rva_information = RvaInformation.create(
       tab: 'Training',
       send_request: 'SENT',
-      requested_by: first_name,
+      requested_by: current_user.first_name,
       requested_date: Date.today,
       requested_method: 'Letter',
       required_fee_amount: 0,
       check_generated: false,
-      received_by: first_name,
+      received_by: current_user.first_name,
       received_status: true,
       comments: 'none',
       received_date: Date.today,
@@ -314,5 +383,5 @@ class Webscrapers::QualityAuditsController < ApplicationController
     render json: { message: 'Training request sent successfully', rva_information: rva_information }, status: :ok
   rescue => e
     render json: { error: e.message }, status: :unprocessable_entity
-  end 
+  end
 end
