@@ -5,7 +5,6 @@ class AddProviderEducationInRvaInformations < ActiveRecord::Migration[7.0]
     add_reference :rva_informations, :provider_specialty, foreign_key: true
     add_reference :rva_informations, :provider_licensure, foreign_key: true
     add_reference :rva_informations, :provider_insurance_coverage, foreign_key: true
-    add_reference :rva_informations, :provider_insurance_coverage, foreign_key: true
     add_reference :rva_informations, :provider_employment, foreign_key: true
   end
 end
