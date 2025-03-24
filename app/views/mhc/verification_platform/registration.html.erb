@@ -59,12 +59,12 @@
                                     </button>
                                 </div>
                                 <div class="col-12 m-2">
-                                      <button class="btn btn-primary dea-audit-btn btn-sm" data-information-id="<%= @last_rva_information&.id %>" data-provider-dea-id="<%= provider_dea&.id %>" data-dea-number="<%= provider_dea.dea_number %>" id="quality_audit_button-<%= provider_dea.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" onclick="populateAuditDeatils(this)"> 
+                                      <button class="btn btn-primary dea-audit-btn btn-sm" data-information-id="<%= @last_rva_information&.id %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-provider-dea-id="<%= provider_dea&.id %>" data-dea-number="<%= provider_dea.dea_number %>" id="quality_audit_button-<%= provider_dea.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" onclick="populateAuditDeatils(this)"> 
                                         Quality Audit
                                     </button>
                                 </div>
                                 <div class="col-12 m-2">
-                                  <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" data-information-id="<%= @last_rva_information&.id %>" data-personal-information-id="<%= @provider_personal_information&.id %>" data-provider-dea-id="<%= provider_dea.id %>" id="skip-rva-btn">
+                                  <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" data-information-id="<%= @last_rva_information&.id %>" data-personal-information-id="<%= @provider_personal_information&.id %>" data-provider-dea-id="<%= provider_dea.id %>" id="skip-rva-btn" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>">
                                         Skip RVA
                                   </button>
                                 </div>
@@ -1860,13 +1860,13 @@
   document.addEventListener('DOMContentLoaded', function() {
     const qualityAuditModal = document.getElementById('QAModal');
     qualityAuditModal.addEventListener('show.bs.modal', function (event) {
+      
       const button = event.relatedTarget; 
       const FirstName = button.getAttribute('data-first-name');
       const deaNumber = button.getAttribute('data-dea-number');
       const LastName = button.getAttribute('data-last-name');
       const InformationId = button.getAttribute('data-information-id');
       const providerDeaId = button.getAttribute('data-provider-dea-id');
-      debugger
 
       // Update the hidden field in the form with the document ID
       document.querySelector('#run-webcrawler-btn').setAttribute('data-dea-number', deaNumber);
@@ -1932,6 +1932,8 @@ function populateAuditDeatils(button) {
     const informationId = button.dataset.informationId;
     const personalInformationId = button.dataset.personalInformationId;
     const providerDeaId = button.dataset.providerDeaId;
+    const firstName = button.dataset.firstName;
+    const lastName = button.dataset.lastName;
     document.querySelector('.loading-overlay').style.display = 'block';
 
     fetch('/webscrapers/send_dea_skip_rva', {
