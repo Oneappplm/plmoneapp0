@@ -148,16 +148,8 @@ class Mhc::VerificationPlatformController < ApplicationController
       flash[:error] = "Provider personal information not found."
       redirect_to mhc_verification_platform_index_path and return
     end
-    @provider_oig_tab_details = @provider_personal_information.rva_informations.where(tab: 'OIG')
-    @provider_dea_tab_details = @provider_personal_information.rva_informations.where(tab: 'Registration')
-    @provider_liability_tab_details = @provider_personal_information.rva_informations.where(tab: 'Liability')
-    @provider_board_cert_tab_details = @provider_personal_information.rva_informations.where(tab: 'BOARDCERT')
-    @provider_licensure_tab_details = @provider_personal_information.rva_informations.where(tab: 'Licensure')
-    @provider_employment_tab_details = @provider_personal_information.rva_informations.where(tab: 'employment_record')
+    @provider_oig_tab_details = @provider_personal_information.rva_informations.where(tab: 'OIG').where(status: 'completed').where.not(source_date: nil)
     @provider_npdb_tab_details = @provider_personal_information.rva_informations.where(tab: 'NPDB')
-    @provider_education_tab_details = @provider_personal_information.rva_informations.where(tab: 'EDUCATION')
-    @provider_training_tab_details = @provider_personal_information.rva_informations.where(tab: 'Training')
-    @provider_employment_tab_details = @provider_personal_information.rva_informations.where(tab: 'Employment')
     @queues = PdfGenerationQueue.all.order(created_at: :desc)
     @psv_pdfs = SavedProfile.joins(:pdf_generation_queue)
                        .where(pdf_generation_queues: { deleted: true, provider_personal_information_id: @provider_personal_information.id })
@@ -201,8 +193,8 @@ class Mhc::VerificationPlatformController < ApplicationController
         @provider_personal_information_comments = ProviderPersonalInformationComment.all
       end
       @rva_information = RvaInformation.new
-      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'BOARDCERT').last
-      @board_cert_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'BOARDCERT').where.not(source_date: nil).where.not(audit_status: false)
+      @last_rva_information = @provider_specialty.rva_informations.last
+      @board_cert_rva_information_completed = @provider_specialty.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
 
     # Common logic for handling nested associations
@@ -274,8 +266,8 @@ class Mhc::VerificationPlatformController < ApplicationController
         @provider_personal_information_comments = ProviderPersonalInformationComment.all
       end
       @rva_information = RvaInformation.new
-      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'Training').last
-      @training_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Training').where.not(source_date: nil).where.not(audit_status: false)
+      @last_rva_information = @provider_education.rva_informations.last
+      @training_rva_information_completed = @provider_education.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
 
     if params[:page_tab] == 'sam'
@@ -363,8 +355,8 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
       @provider_insurance_coverages = ProviderInsuranceCoverage.find(params[:coverage_id])
       @rva_information = RvaInformation.new
-      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'Liability').last
-      @liability_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Liability').where.not(source_date: nil).where.not(audit_status: false)
+      @last_rva_information = @provider_insurance_coverages&.rva_informations&.last
+      @liability_rva_information_completed = @provider_insurance_coverages&.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
 
     if params[:page_tab] == 'npdb'
@@ -379,7 +371,6 @@ class Mhc::VerificationPlatformController < ApplicationController
       @rva_information = RvaInformation.new
       @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'NPDB').last
       @npdb_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'NPDB').where.not(source_date: nil).where.not(audit_status: false)
-      @npdb_webcrawler_logs = WebcrawlerLog.where(crawler_type: 'NPDB').where.not(filepath: nil).order(updated_at: :desc)
     end
 
     if params[:page_tab] == 'app_tracking'
@@ -410,23 +401,22 @@ class Mhc::VerificationPlatformController < ApplicationController
     
     if params[:page_tab] == 'employment_record' 
       @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
-      @rva_information = RvaInformation.new
-      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'Employment').last
-      @employment_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Employment').where.not(source_date: nil).where.not(audit_status: false)
       if params[:employment_id].present?
         @provider_employment = ProviderEmployment.find(params[:employment_id])
       else
         @provider_employment = ProviderEmployment.new
       end
+      @rva_information = RvaInformation.new
+      @last_rva_information = @provider_employment.rva_informations.last
+      @employment_rva_information_completed = @provider_employment.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
 
     # code for licensure tab
     if %w[edit_licensure license_record].include?(params[:page_tab])
       @provider_licensure = ProviderLicensure.find(params[:licensure_id])
       @rva_information = RvaInformation.new
-      @last_rva_information = @provider_licensure.rva_informations.where(tab: 'Licensure').last
-      @licensure_rva_information_completed = @provider_licensure.rva_informations.where(tab: 'Licensure').where.not(source_date: nil).where.not(audit_status: false)
-      @licensure_webcrawler_logs = @last_rva_information.licensure_webcrawler_logs.order(updated_at: :desc) if @last_rva_information.present?
+      @last_rva_information = @provider_licensure.rva_informations.last
+      @licensure_rva_information_completed = @provider_licensure.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
     
     case params[:page_tab]

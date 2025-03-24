@@ -2,6 +2,7 @@ class ProviderEducation < ApplicationRecord
   PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID','ProviderEducationID']
 
   belongs_to :provider_attest
+  has_many :rva_informations, dependent: :destroy
 
   has_many :provider_education_associates
 

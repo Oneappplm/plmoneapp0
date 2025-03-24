@@ -21,22 +21,21 @@ class Mhc::ProviderDeasController < ApplicationController
       @provider_dea.schedules_held = ["2", "2N", "3", "3N", "4", "5"]
     end
     @provider_dea.assign_attributes(provider_dea_params)
-
-    if @provider_dea.update
-      @provider_deas = @provider.provider_deas
-      @show_rva_information = @provider_deas.exists?
-      redirect_to mhc_verification_platform_path(page_tab: 'registration', id: params[:provider_dea][:provider_attest_id]), notice: 'Created record successfully.'
+    # Pass provider_dea_params to update
+    if @provider_dea.update(provider_dea_params)
+      redirect_to mhc_verification_platform_path(page_tab: 'registration', id: params[:provider_dea][:provider_attest_id]), notice: 'updated record successfully.'
     else
       redirect_to mhc_verification_platform_path(page_tab: 'registration', id: params[:provider_dea][:provider_attest_id]), notice: 'Failed to create record.'
     end
   end
 
+
   def destroy
     @provider_dea = ProviderDea.find(params[:provider_dea_id])
     if @provider_dea.destroy
-      redirect_to mhc_verification_platform_path(page_tab: 'registration', id: params[:provider_attest_id]), notice: 'Created record successfully.'
+      redirect_to mhc_verification_platform_path(page_tab: 'registration', id: params[:provider_attest_id]), notice: 'deleted record successfully.'
     else
-      redirect_to mhc_verification_platform_path(page_tab: 'registration', id: params[:provider_attest_id]), notice: 'Failed to create record.'
+      redirect_to mhc_verification_platform_path(page_tab: 'registration', id: params[:provider_attest_id]), notice: 'Failed to delete record.'
     end
   end
 
