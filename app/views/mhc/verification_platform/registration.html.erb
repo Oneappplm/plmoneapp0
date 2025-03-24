@@ -1471,10 +1471,10 @@
 
                     <div class="form-row d-flex align-items-center gap-3">
                       <%= f.label :audit_status, 'Audit Status:' %>
-                      <%= f.radio_button :audit_status, 'Pass', id: 'audit-status-pass', class: 'form-check-input', disabled: true %>
+                      <%= f.radio_button :audit_status, true, id: 'audit-status-pass', class: 'form-check-input' %>
                       <%= f.label :audit_status, 'Pass', for: 'audit-status-pass', class: 'form-check-label' %>
 
-                      <%= f.radio_button :audit_status, 'Fail', id: 'audit-status-fail', class: 'form-check-input', disabled: true %>
+                      <%= f.radio_button :audit_status, false, id: 'audit-status-fail', class: 'form-check-input' %>
                       <%= f.label :audit_status, 'Fail', for: 'audit-status-fail', class: 'form-check-label' %>
                     </div>
                     <hr class="form-hr">
@@ -1806,7 +1806,6 @@
 
         // Serialize the form data from #audit-form
         const auditFormData = $('#audit-form').serialize();
-
         // Combine the form data and additional data into a single object
         $.ajax({
           url: '/mhc/verification-platform/generate_rva_information',
@@ -1828,6 +1827,10 @@
           }
         });
       });
+      $('#QAModal').on('hidden.bs.modal', function () {
+        location.reload(); // Reload the page when modal is closed
+      });
+
   });
 
   var csrfToken = $('meta[name="csrf-token"]').attr('content');
@@ -1978,7 +1981,7 @@ function populateAuditDeatils(button) {
 // Function to populate modal data dynamically
 function updateAuditData(rvaInformation, webscraperLog, metadata) {
   // set details for the request section
-  document.querySelector('input[name="id"]').value = metadata.informationId || '';
+  document.querySelector('input[name="id"]').value = rvaInformation.id || '';
   document.querySelector('input[name="provider_dea_id"]').value = metadata.providerDeaId || '';
   document.querySelector('input[name="first_name"]').value = metadata.firstName || '';
   document.querySelector('input[name="last_name"]').value = metadata.lastName || '';
@@ -2089,12 +2092,6 @@ function updateAuditData(rvaInformation, webscraperLog, metadata) {
     inGoodStandingElement.checked = rvaInformation?.in_good_standing;
   }
 
-  // set details audit section
-  const auditStatusInput = document.querySelector('input[name="rva_information[audit_status]"]');
-  if (auditStatusInput) {
-    auditStatusInput.value = rvaInformation?.audit_status || '';
-  }
-
   // Set inner HTML for audit_date and auditor
   const auditDateElement = document.getElementById('rva_information_audit_date');
   if (auditDateElement) {
@@ -2111,13 +2108,12 @@ function updateAuditData(rvaInformation, webscraperLog, metadata) {
   if (auditCommentsElement) {
     auditCommentsElement.value = rvaInformation?.audit_comments || '';
   }
-
-  if (rvaInformation?.audit_status === true) {
+  if (rvaInformation?.audit_status === "Pass") {
     const passRadio = document.getElementById('audit-status-pass');
     if (passRadio) {
       passRadio.checked = true;
     }
-  } else {
+  } else if (rvaInformation?.audit_status === "Fail") {
     const failRadio = document.getElementById('audit-status-fail');
     if (failRadio) {
       failRadio.checked = true;

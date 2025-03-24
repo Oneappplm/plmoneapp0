@@ -23,6 +23,7 @@ class ProviderAttest < ApplicationRecord
   has_many :provider_certifications, dependent: :destroy
   has_many :provider_criminal_actions, dependent: :destroy
   has_many :provider_deas, dependent: :destroy
+  has_many :provider_employments
   has_many :provider_degrees, dependent: :destroy
   has_many :provider_disclosures, dependent: :destroy
   has_many :provider_educations, dependent: :destroy
