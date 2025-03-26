@@ -84,7 +84,7 @@
 						<div class="row my-3">
 							<div class="col-lg-12">
 								<div class="d-flex align-items-center gap-2 my-3">
-									<p class="my-0 text-dark-grey fw-semibold">Have you ever used another name?</p>
+									<p class="my-0 text-dark-grey fw-semibold"><span class="text-danger">*</span> Have you ever used another name?</p>
 									<label class="text-dark-grey">
 										<input type="radio" name="other_name" value="yes" class="other_name_rbtn">
 										Yes
@@ -94,65 +94,138 @@
 										No
 									</label>
 								</div>
-								<div id="other_name_field" class="d-none">
-									<div class="row">
-                    <div class="col-lg-12 card py-3 mb-3">
-                        <h3>Other Names
-												<span class="ms-2" data-bs-toggle="tooltip" data-bs-placement="right" 
-														title="If 'Yes' is selected, you MUST provide other name alias you have used or are currently using.">
-														<i class="bi bi-info-circle text-primary fs-5"></i>
-												</span> </h3>
-                        <div class="row my-3">
-                          <div class="col-lg-6">
-                              <label class="text-dark-grey">Name type</label>
-                              <input type="text" name="other_names" class="form-control border-dark" placeholder="Other Names" >
-                          </div>
-                        </div>
-                        <div class="row mb-3">
-                          <div class="col-lg-3">
-                              <label class="text-dark-grey">Other First Name <span class="text-danger">*</span></label>
-                              <input type="text" name="other_first_name" class="form-control border-dark" placeholder="Other First Name" >
-                          </div>
-                          <div class="col-lg-3">
-                              <label class="text-dark-grey">Other Middle Name</label>
-                              <input type="text" name="other_middle_name" class="form-control border-dark" placeholder="Other Middle Name" >
-                          </div>
-                          <div class="col-lg-3">
-                              <label class="text-dark-grey">Other Last Name <span class="text-danger">*</span></label>
-                              <input type="text" name="other_last_name" class="form-control border-dark" placeholder="Other Last Name" >
-                          </div>
-                          <div class="col-lg-3">
-                              <label class="text-dark-grey">Other Suffix</label>
-                              <select class="form-select border-dark">
-                                <option value="Jr.">Jr.</option>
-                                <option value="Sr.">Sr.</option>
-                                <option value="II">II</option>
-                                <option value="II">III</option>
-                                <option value="IV">IV</option>
-                                <option value="V">V</option>
-                              </select>
-                          </div>
-                        </div>
-                        <div class="row mb-3">
-                          <div class="col-lg-6">
-                              <label class="text-dark-grey">Date Started Using Other Name</label>
-                              <input type="date" name="other_name_date_started" class="form-control border-dark" placeholder="Date Started Using Other Name" >
-                          </div>
-                          <div class="col-lg-6">
-                              <label class="text-dark-grey">Date Stopped Using Other Name</label>
-                              <% if  @provider.fetch("other_name_in_use") == 'yes'%>
-                                <input type="date" name="other_name_date_stopped" class="form-control border-dark" placeholder="Date Started Using Other Name" id="stopped_date_other_name" readonly>
-                              <% else %>
-                                <input type="date" name="other_name_date_stopped" class="form-control border-dark" placeholder="Date Started Using Other Name" id="stopped_date_other_name">
-                              <% end %>
-                              <span class="d-flex mt-2">
-                                <input type="checkbox" name="other_name_in_use" class="me-2 other_name_still_use" <%= @provider.fetch("other_name_in_use") == 'yes' ? 'checked: checked' : '' %>>
-                                <label>Name is still in use</label>
-                              </span>
-                          </div>
-                        </div>
-                    </div>
-                  </div>
+								<div id="other_name_section">
+								  <div id="other_names_container">
+								    <% current_provider_source.other_names.each_with_index do |other_name, index| %>
+								      <div class="row other-name-entry" data-id="<%= other_name.id %>">
+								        <div class="col-lg-12 card py-3 mb-3">
+								          <h3>Other Names <i class="bi bi-info-circle text-primary fs-5"></i></h3>
+								          <div class="other-name-form">
+								            <div class="row my-3">
+								              <div class="col-lg-6">
+								                <label class="text-dark-grey">Name type</label>
+								                <select name="other_names[<%= index %>][name_type]" class="form-select border-dark">
+								                  <option value="Legal" <%= "selected" if other_name.name_type == "Legal" %>>Legal</option>
+								                  <option value="Maiden" <%= "selected" if other_name.name_type == "Maiden" %>>Maiden</option>
+								                  <option value="Professional" <%= "selected" if other_name.name_type == "Professional" %>>Professional</option>
+								                </select>
+								              </div>
+								            </div>
+								            <div class="row mb-3">
+								              <div class="col-lg-3">
+								                <label class="text-dark-grey">Other First Name <span class="text-danger">*</span></label>
+								                <input type="text" name="other_names[<%= index %>][first_name]" value="<%= other_name.first_name %>" class="form-control border-dark">
+								              </div>
+								              <div class="col-lg-3">
+								                <label class="text-dark-grey">Other Middle Name</label>
+								                <input type="text" name="other_names[<%= index %>][middle_name]" value="<%= other_name.middle_name %>" class="form-control border-dark">
+								              </div>
+								              <div class="col-lg-3">
+								                <label class="text-dark-grey">Other Last Name <span class="text-danger">*</span></label>
+								                <input type="text" name="other_names[<%= index %>][last_name]" value="<%= other_name.last_name %>" class="form-control border-dark">
+								              </div>
+								              <div class="col-lg-3">
+								                <label class="text-dark-grey">Other Suffix</label>
+								                <select name="other_names[<%= index %>][suffix]" class="form-select border-dark">
+								                  <option value="II" <%= "selected" if other_name.suffix == "II" %>>II</option>
+								                  <option value="III" <%= "selected" if other_name.suffix == "III" %>>III</option>
+								                  <option value="IV" <%= "selected" if other_name.suffix == "IV" %>>IV</option>
+								                  <option value="Jr." <%= "selected" if other_name.suffix == "Jr." %>>Jr.</option>
+								                  <option value="Sr." <%= "selected" if other_name.suffix == "Sr." %>>Sr.</option>
+								                </select>
+								              </div>
+								            </div>
+								            <div class="row mb-3">
+								              <div class="col-lg-6">
+								                <label class="text-dark-grey">Date Started Using Other Name</label>
+								                <input type="date" name="other_names[<%= index %>][date_started]" value="<%= other_name.date_started %>" class="form-control border-dark">
+								              </div>
+								              <div class="col-lg-6">
+								                <label class="text-dark-grey">Date Stopped Using Other Name</label>
+								                <input type="date" name="other_names[<%= index %>][date_stopped]" value="<%= other_name.date_stopped %>" class="form-control border-dark">
+								                <span class="d-flex mt-2">
+								                  <input type="checkbox" name="other_names[<%= index %>][in_use]" class="me-2 other_name_still_use" <%= "checked" if other_name.in_use %>>
+								                  <label>Name is still in use</label>
+								                </span>
+								              </div>
+								            </div>
+								            <button type="button" class="btn btn-danger remove_other_name">Remove</button>
+								          </div>  
+								        </div>
+								      </div>
+								    <% end %>
+								  </div>
+
+								  <!-- Hidden template for new Other Name entries -->
+								  <div id="other_name_field" style="display: none;">
+								    <div class="row other-name-entry">
+								      <div class="col-lg-12 card py-3 mb-3">
+								        <h3>Other Names <i class="bi bi-info-circle text-primary fs-5"></i></h3>
+								        <div class="other-name-form">
+								          <div class="row my-3">
+								            <div class="col-lg-6">
+								              <label class="text-dark-grey">Name type</label>
+								              <select name="other_names[][name_type]" class="form-select border-dark">
+								                <option value="Legal">Legal</option>
+								                <option value="Maiden">Maiden</option>
+								                <option value="Professional">Professional</option>
+								              </select>
+								            </div>
+								          </div>
+								          <div class="row mb-3">
+								            <div class="col-lg-3">
+								              <label class="text-dark-grey">Other First Name <span class="text-danger">*</span></label>
+								              <input type="text" name="other_names[][first_name]" class="form-control border-dark">
+								            </div>
+								            <div class="col-lg-3">
+								              <label class="text-dark-grey">Other Middle Name</label>
+								              <input type="text" name="other_names[][middle_name]" class="form-control border-dark">
+								            </div>
+								            <div class="col-lg-3">
+								              <label class="text-dark-grey">Other Last Name <span class="text-danger">*</span></label>
+								              <input type="text" name="other_names[][last_name]" class="form-control border-dark">
+								            </div>
+								            <div class="col-lg-3">
+								              <label class="text-dark-grey">Other Suffix</label>
+								              <select name="other_names[][suffix]" class="form-select border-dark">
+								                <option value="II">II</option>
+								                <option value="III">III</option>
+								                <option value="IV">IV</option>
+								                <option value="Jr.">Jr.</option>
+								                <option value="Sr.">Sr.</option>
+								              </select>
+								            </div>
+								          </div>
+								          <div class="row mb-3">
+											      <div class="col-lg-3">
+											        <label class="text-dark-grey">Date From</label>
+											        <input type="date" name="other_names[][date_from]" class="form-control border-dark other-name-input" data-field="date_from">
+											      </div>
+											      <div class="col-lg-3">
+											        <label class="text-dark-grey">Date To</label>
+											        <input type="date" name="other_names[][date_to]" class="form-control border-dark other-name-input" data-field="date_to">
+											      </div>
+											      <div class="col-lg-6">
+											        <label class="text-dark-grey">Is this name currently in use?</label>
+											        <div>
+											          <div class="form-check form-check-inline">
+											            <input class="form-check-input other-name-input" type="radio" name="other_names[][in_use]" value="yes" data-field="in_use">
+											            <label class="form-check-label">Yes</label>
+											          </div>
+											          <div class="form-check form-check-inline">
+											            <input class="form-check-input other-name-input" type="radio" name="other_names[][in_use]" value="no" data-field="in_use">
+											            <label class="form-check-label">No</label>
+											          </div>
+											        </div>
+											      </div>
+											    </div>
+								          <button type="button" class="btn btn-danger remove_other_name">Remove</button>
+								        </div>  
+								      </div>
+								    </div>
+								  </div>
+
+								  <button type="button" id="add_other_name" class="btn btn-primary mt-3">Add Another Name</button>
 								</div>
 							</div>
 						</div>
@@ -311,6 +384,87 @@
 		// console.log($(this).val());
 		($(this).val() == 'yes') ?	$('#other_name_field').removeClass('d-none') : $('#other_name_field').addClass('d-none');
 	})
+	$(document).ready(function () {
+	  let index = $("#other_names_container .other-name-entry").length; // Start index at existing count
+
+	  $("#add_other_name").on("click", function () {
+	    let newEntry = $("#other_name_field").clone();
+	    newEntry.removeClass("d-none").css("display", "block").removeAttr("id");
+
+	    // Clear all input/select values
+	    newEntry.find("input, select").each(function () {
+	      let oldName = $(this).attr("name");
+	      if (oldName) {
+	        let newName = oldName.replace(/\[\]/, `[${index}]`);
+	        $(this).attr("name", newName);
+	      }
+
+	      if ($(this).is("select")) {
+	        $(this).val(""); // Reset select
+	      } else if ($(this).attr("type") === "checkbox" || $(this).attr("type") === "radio") {
+	        $(this).prop("checked", false); // Uncheck
+	      } else {
+	        $(this).val(""); // Clear text input
+	      }
+	    });
+
+	    newEntry.attr("data-id", ""); // Clear any data-id
+
+	    index++; // Increment index
+	    $("#other_names_container").append(newEntry);
+	  });
+
+	  $(document).on("click", ".remove_other_name", function () {
+	    let entry = $(this).closest(".other-name-entry");
+	    let otherNameId = entry.data("id");
+
+	    entry.remove();
+
+	    if (otherNameId) {
+	      $.ajax({
+	        url: `/provider_sources/autosave`,
+	        type: "POST",
+	        dataType: "json",
+	        data: { delete_other_name_id: otherNameId },
+	        headers: { "X-CSRF-Token": $("meta[name='csrf-token']").attr("content") },
+	        success: function () {
+	          console.log("Other Name entry deleted.");
+	        },
+	      });
+	    }
+	  });
+
+	  // Autosave
+	  $(document).on("change", "#other_names_container input, #other_names_container select", function () {
+	    let field = $(this).attr("name");
+	    let value = $(this).val();
+	    let otherNameId = $(this).closest(".other-name-entry").data("id");
+
+	    $.ajax({
+	      url: "/provider_sources/autosave",
+	      type: "POST",
+	      dataType: "json",
+	      data: {
+	        field_name: field,
+	        value: value,
+	        other_name_id: otherNameId
+	      },
+	      headers: {
+	        "X-CSRF-Token": $("meta[name='csrf-token']").attr("content")
+	      },
+	      success: function (response) {
+	        if (response.id) {
+	          let inputElement = $('[name="' + field + '"]');
+	          let entry = inputElement.closest('.other-name-entry');
+	          entry.attr('data-id', response.id);
+	        }
+	      },
+	      error: function (xhr, status, error) {
+	        console.error("Autosave failed:", error);
+	      }
+	    });
+	  });
+	});
 </script>
 
 

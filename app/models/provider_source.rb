@@ -7,6 +7,12 @@ class ProviderSource < ApplicationRecord
   has_many :licensures, class_name: 'ProviderSourceLicensure', inverse_of: :provider_source, dependent: :destroy
   has_many :registrations, class_name: 'ProviderSourcesRegistration', inverse_of: :provider_source, dependent: :destroy
 
+  has_many :other_names, dependent: :destroy
+  accepts_nested_attributes_for :other_names, allow_destroy: true
+
+  has_many :provider_source_specialities, dependent: :destroy
+  accepts_nested_attributes_for :provider_source_specialities, allow_destroy: true
+
   accepts_nested_attributes_for :deas, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :cds, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :registrations, allow_destroy: true, reject_if: :all_blank
