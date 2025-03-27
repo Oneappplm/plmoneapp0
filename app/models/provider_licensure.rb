@@ -1,7 +1,9 @@
 class ProviderLicensure < ApplicationRecord
   belongs_to :provider_attest
+  has_many :rva_informations, dependent: :destroy
 
-   PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID','ProviderEducationID']
+
+  PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID','ProviderEducationID']
   
   has_many :provider_supervisings, dependent: :destroy, class_name: 'ProviderSupervising'
   accepts_nested_attributes_for :provider_supervisings, allow_destroy: true, reject_if: :all_blank

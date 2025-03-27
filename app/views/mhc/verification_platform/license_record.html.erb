@@ -53,7 +53,7 @@
 								</div>
 								<div class="form-row row mt-2">
 									<div class="col-xl-6">
-										<button class="btn btn-primary btn-audit btn-sm" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" data-licensure-id = "<%= @provider_licensure.id%>">
+										<button class="btn btn-primary btn-audit btn-sm" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" data-licensure-id = "<%= @provider_licensure.id %>">
 													Quality Audit
 										</button>
 									</div>
@@ -449,11 +449,11 @@
 
                         <%= hidden_field_tag :id, @last_rva_information&.id %>
                         <%= hidden_field_tag :personal_info_id %>
-												<%= hidden_field_tag :practice_licensure_id %>
+						<%= hidden_field_tag :practice_licensure_id %>
 
                         <%= hidden_field_tag :first_name %>
                         <%= hidden_field_tag :last_name %>
-												<%= hidden_field_tag :license_number, @provider_licensure.license_number %>
+					    <%= hidden_field_tag :license_number, @provider_licensure.license_number %>
 
                         <div class="form-row row mt-3">
                           <div class="col-xl-12">
@@ -568,12 +568,13 @@
                                   <button class="btn btn-primary py-1" type="button">Save Request</button>
                                   <button class="btn btn-primary py-1" type="button">Restart Request</button>
                                 </div>
-																<div class="col-md-3">
-																		<button class="btn btn-primary py-1" id="run-licensure-webcrawler-btn" type="button">Run Licensure Webcrawler</button>
-																</div>
+                                <div class="row mt-3">
+																  <div class="col-md-3">
+																		<button class="btn btn-primary py-1" id="run-licensure-webcrawler-btn" type="button">Run Webcrawler</button>
+																  </div>
 																	<div class="col-md-9">
 																		<div class="row justify-content-end" id="licensure-crawler-link">
-																			<% @licensure_webcrawler_logs.each do |crawler_log| %>
+																			<% @licensure_webcrawler_logs&.each do |crawler_log| %>
 																				<div class="col-md-6">
 																					<div class="text-decoration-underline">
 																						<%= link_to "#{File.basename(crawler_log.filepath.url)}", crawler_log.filepath.url, target: '_blank' %>
@@ -588,6 +589,7 @@
 																			<% end %>
 																		</div>
 																	</div>
+																</div>
                               </div>
                             </div>
                           </div>
@@ -1152,14 +1154,13 @@
         });
 
 				// Run Licensure Webcrawler
-				$('#run-licensure-webcrawler-btn').click(function (e) {
+		$('#run-licensure-webcrawler-btn').click(function (e) {
           e.preventDefault();
-          var firstName = $('#firstname').html().trim();
-          var lastName = $('#lastname').html().trim();
           var personalInfoId = $('input[name="personal_info_id"]').val();
-					var licenseNumber = $('#license_number').val().trim();
+		      var licenseNumber = $('#license_number').val().trim();
+          var providerLicensureId = $('input[name="practice_licensure_id"]').val();
 
-          if (!firstName || !lastName) {
+          if (!licenseNumber) {
             $('#qaModalMessage').text('Crawling failed due to some error: First name or last name is missing.');
             return;
           }
@@ -1173,10 +1174,9 @@
               'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
             },
             data: {
-              first_name: firstName, 
-              last_name: lastName,
               info_id: personalInfoId,
-							license_number: licenseNumber, 
+			        license_number: licenseNumber, 
+			        provider_licensure_id: providerLicensureId
             },
             success: function (response) {
               // set the values
@@ -1204,8 +1204,8 @@
                           </div>
                       </div>`;
 
-                  // Inject the HTML into the #crawler-link element
-                  document.getElementById('crawler-link').insertAdjacentHTML('afterbegin', crawlerLinkHTML);
+                  // Inject the HTML into the #licensure-crawler-link element
+                  document.getElementById('licensure-crawler-link').insertAdjacentHTML('afterbegin', crawlerLinkHTML);
               } else {
                   console.error('Crawler data is missing or incomplete.');
               }
@@ -1342,14 +1342,14 @@
       const LastName = button.getAttribute('data-last-name');
       const InformationId = button.getAttribute('data-information-id');
       const personalInfoId = button.getAttribute('data-personal-information-id');
-			const practiceInfoEducationId = button.getAttribute('data-licensure-id');
+	    const practiceInfoEducationId = button.getAttribute('data-licensure-id');
 
       // Update the hidden field in the form with the document ID
       document.querySelector('[name="first_name"]').value = FirstName;
       document.querySelector('[name="last_name"]').value = LastName;
       document.querySelector('[name="id"]').value = InformationId;
       document.querySelector('[name="personal_info_id"]').value = personalInfoId;
-			document.querySelector('[name="practice_licensure_id"]').value = practiceInfoEducationId;
+	  document.querySelector('[name="practice_licensure_id"]').value = practiceInfoEducationId;
     });
   });
 </script>

@@ -424,9 +424,9 @@ class Mhc::VerificationPlatformController < ApplicationController
     if %w[edit_licensure license_record].include?(params[:page_tab])
       @provider_licensure = ProviderLicensure.find(params[:licensure_id])
       @rva_information = RvaInformation.new
-      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'Licensure').last
-      @licensure_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Licensure').where.not(source_date: nil).where.not(audit_status: false)
-      @licensure_webcrawler_logs = LicensureWebcrawlerLog.where(crawler_type: 'Licensure').where.not(filepath: nil).order(updated_at: :desc)
+      @last_rva_information = @provider_licensure.rva_informations.where(tab: 'Licensure').last
+      @licensure_rva_information_completed = @provider_licensure.rva_informations.where(tab: 'Licensure').where.not(source_date: nil).where.not(audit_status: false)
+      @licensure_webcrawler_logs = @last_rva_information.licensure_webcrawler_logs.order(updated_at: :desc) if @last_rva_information.present?
     end
     
     case params[:page_tab]
