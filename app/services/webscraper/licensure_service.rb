@@ -1,45 +1,56 @@
 # frozen_string_literal: true
 class Webscraper::LicensureService < WebscraperService
-  attr_reader :last_name, :first_name, :license_number
+  attr_reader :license_number
 
-  def initialize(last_name = 'emmet', first_name = '', license_number = '')
-    @last_name = last_name
-    @first_name = first_name
+  def initialize(license_number)
     @license_number = license_number
-    @crawler_folder = 'licensure'
+    @crawler_folder = 'Licensure'
   end
 
   def call
-    crawl!
+    crawl
   end
 
   def crawl!
-    crawler.get('https://mqa-internet.doh.state.fl.us/mqasearchservices/healthcareproviders') # Replace with actual URL
+    crawler.get('https://mqa-internet.doh.state.fl.us/mqasearchservices/healthcareproviders')
 
-    # Fill in last name, first name, and license number
     crawler.find_element(:id, 'SearchDto_LicenseNumber').send_keys(license_number)
-    crawler.execute_script("document.getElementById('SearchDto_LicenseNumber').value = '#{license_number}';")
 
-    # Click search button
-    search_button = crawler.find_element(:xpath, "//input[@type='submit' and @value='Search']")
+    # click search button with id  ctl00_cpExclusions_ibSearchSP
+    search_button = wait.until { crawler.find_element(:xpath, "//input[@type='submit' and @value='Search']") }
     search_button.click
-    sleep(2)
+    sleep(3)
 
-    # Find results table
-    table = crawler.find_element(:class, 'search_results') rescue nil
+   
+    # Check if the search result page is loaded correctly
+    if crawler.current_url.include?('LicenseVerification')
+      puts "✅ Redirected to URL: #{crawler.current_url}"
 
-    if table.present?
-      # Find row with matching license number
-      row = table.find_element(xpath: "//tr[contains(., '#{license_number}')]")
-      # Find link in row with text 'View Details'
-      link = row.find_element(xpath: "//a[contains(., 'View Details')]")
-      link.click
-      sleep(2)
+      # Look for the 'Printer Friendly Version' link
+      link = wait.until { crawler.find_element(:xpath, "//a[contains(., 'Printer Friendly Version')]") } rescue nil
+
+      if link
+        # Scroll into view and click using JavaScript
+        crawler.execute_script("arguments[0].scrollIntoView();", link)
+        sleep(1) # Small delay after scrolling
+        crawler.execute_script("arguments[0].click();", link)
+        sleep(5) # Allow PDF page to load
+      else
+        puts "❌ 'Printer Friendly Version' link not found."
+      end
+    else
+      puts "❌ No redirect to LicenseVerification found after search."
     end
 
     webcrawler_log = save_screenshot
 
     sleep(2)
-    crawler.quit
+    crawler.quit()
+  end
+
+  private
+
+  def wait
+    Selenium::WebDriver::Wait.new(timeout: 10)
   end
 end
