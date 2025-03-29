@@ -1,7 +1,13 @@
 <div class="row mb-3">
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Education Type <span class="text-danger">*</span></label>
-  <%= select_tag :education_types, options_for_select([['Select Option', ''], ['Graduate School','Graduate School'], ['Professional School', 'Professional School'], ['Other', 'Other']] + @education_types.map { |education| [education.name, education.name] }), required: true, class: 'form-select border-dark', placeholder: 'Education Type' %>
+		      <% existing_options = ['Graduate School', 'Professional School', 'Other'] %>
+						<%= select_tag :education_types, 
+							options_for_select(
+								[['Select Option', '']] + 
+								(existing_options + @education_types.map(&:name)).uniq.map { |name| [name, name] }
+							), 
+							required: true, class: 'form-select border-dark', placeholder: 'Education Type' %>
 	</div>
 	<div class="col-lg-6">
 		<%= HtmlUtils::dropdown name: 'prof_school_location', label: 'Graduate/Professional School Location <span class="text-danger"> *</span>' %>
