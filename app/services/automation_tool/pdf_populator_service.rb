@@ -1,6 +1,6 @@
 class AutomationTool::PdfPopulatorService < ApplicationService
   attr_reader :template_path, :data, :output_path, :template
-  
+
   def initialize(template_path, data, template = "careington", custom_file_name = nil)
     @template_path = template_path
     @data = data
@@ -15,13 +15,21 @@ class AutomationTool::PdfPopulatorService < ApplicationService
       doc.acro_form.each_field do |field|
         case field.field_name
         # Dentist Information
+<<<<<<< HEAD
         when 'First Name', 'text_firstname', 'txt_firstname'
+=======
+        when 'First Name', 'text_firstname', 'text_15hdnp'
+>>>>>>> 056e3895 (feat(pdf): add paper provider application populator - caqh)
           field.field_value = data[:first_name]
         when 'Middle Initial', 'text_middlename', 'txt_middlename'
           field.field_value = data[:middle_initial]
+<<<<<<< HEAD
         when 'Last Name', 'text_lastname', 'txt_lastname'
+=======
+        when 'Last Name', 'text_lastname', 'text_14xnba'
+>>>>>>> 056e3895 (feat(pdf): add paper provider application populator - caqh)
           field.field_value = data[:last_name]
-        when 'Date of  birth'
+        when 'Date of  birth', 'text_23giep'
           field.field_value = data[:dob]
         when 'National Provider Identifier Individual NPI'
           field.field_value = data[:npi]
@@ -61,7 +69,7 @@ class AutomationTool::PdfPopulatorService < ApplicationService
           field.field_value = coverage_valid_through_end_of_month?(data[:liability_coverage])
         # TODO: Malpractice Checkbox missing in the form.
 
-        # Practice Location 
+        # Practice Location
         when 'Dental School'
           field.field_value = data[:dental_school]
         when 'Dental Office Name'
@@ -217,13 +225,13 @@ class AutomationTool::PdfPopulatorService < ApplicationService
 
   def generate_unique_output_path(custom_file_name = nil)
     folder_path = generate_folder_path
-   
-    if custom_file_name.blank? 
+
+    if custom_file_name.blank?
       timestamp = Time.current.strftime('%Y%m%d%H%M%S')
       unique_id = SecureRandom.hex(4)
       custom_file_name = "Populated_#{timestamp}_#{unique_id}.pdf"
     end
-   
+
     folder_path.join(custom_file_name)
   end
 
