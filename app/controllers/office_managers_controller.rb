@@ -22,7 +22,7 @@ class OfficeManagersController < ApplicationController
     @locations = if params[:search].present?
      PracticeLocation.search(params[:search]).paginate(per_page: 10, page: params[:page] || 1)
    else
-     PracticeLocation.paginate(per_page: 10, page: params[:page] || 1)
+     PracticeLocation.order(created_at: :desc).paginate(per_page: 10, page: params[:page] || 1)
    end
 
    @non_associated_providers = ProviderSource.where(practice_location_id: nil)

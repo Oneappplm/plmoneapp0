@@ -2,12 +2,23 @@ class PracticeLocationsController < ApplicationController
   before_action :set_practice_location, only: [:destroy, :update]
 
   def create
-    @practice_location = PracticeLocation.new(practice_location_params)
-    if @practice_location.save
-      flash[:notice] = 'New location successfully added.'
-      redirect_to request.referrer
+    if params[:id].present?
+      @practice_location = PracticeLocation.find(params[:id])
+    else
+      @practice_location = PracticeLocation.new(practice_location_params)
+      
+      if @practice_location.save
+        respond_to do |format|
+          format.json { render json: { success: true, notice: 'Practice Location saved successfully.', location_id: @practice_location.id } }
+        end
+      else
+        respond_to do |format|
+          format.json { render json: { success: false, errors: @practice_location.errors.full_messages } }
+        end
+      end
     end
   end
+
 
    def update
     # Handle the custom fields if they are present in the parameters
@@ -79,7 +90,6 @@ class PracticeLocationsController < ApplicationController
                                               :public_transportation_wrp, :laboratory_services, :laboratory_services_wrp, :clia_waiver,
                                               :clia_waiver_wrp, :clia_waiver_expiration_date, :clia_certificate, :clia_certificate_wrp,
                                               :clia_certificate_expiration_date, :radiology_services, :radiology_services_xray,
-
                                               :radiology_services_fda, :anesthesia_administered, :monday_time_start_2, :monday_time_end_2, 
                                               :tuesday_time_start_2, :tuesday_time_end_2, :wednesday_time_start_2, :wednesday_time_end_2, 
                                               :thursday_time_start_2, :thursday_time_end_2, :friday_time_start_2, :friday_time_end_2, 
