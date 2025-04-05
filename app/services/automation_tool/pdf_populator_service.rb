@@ -15,19 +15,11 @@ class AutomationTool::PdfPopulatorService < ApplicationService
       doc.acro_form.each_field do |field|
         case field.field_name
         # Dentist Information
-<<<<<<< HEAD
-        when 'First Name', 'text_firstname', 'txt_firstname'
-=======
-        when 'First Name', 'text_firstname', 'text_15hdnp'
->>>>>>> 056e3895 (feat(pdf): add paper provider application populator - caqh)
+        when 'First Name', 'text_firstname', 'txt_firstname', 'text_15hdnp'
           field.field_value = data[:first_name]
         when 'Middle Initial', 'text_middlename', 'txt_middlename'
           field.field_value = data[:middle_initial]
-<<<<<<< HEAD
-        when 'Last Name', 'text_lastname', 'txt_lastname'
-=======
-        when 'Last Name', 'text_lastname', 'text_14xnba'
->>>>>>> 056e3895 (feat(pdf): add paper provider application populator - caqh)
+        when 'Last Name', 'text_lastname', 'txt_lastname', 'text_14xnba'
           field.field_value = data[:last_name]
         when 'Date of  birth', 'text_23giep'
           field.field_value = data[:dob]
