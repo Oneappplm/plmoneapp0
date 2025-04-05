@@ -3,7 +3,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
     send_oig_request send_licensure_request send_employment_request
     send_npdb_request send_registration_request send_liability_request
     send_board_cert_request send_education_request send_education_skip_rva
-    send_dea_skip_rva send_training_request send_employment_skip_rva
+    send_dea_skip_rva send_training_request send_employment_skip_rva send_npdb_skip_rva
   ]
   def run_oig_webcrawler
     last_name = params[:last_name]
@@ -198,6 +198,15 @@ class Webscrapers::QualityAuditsController < ApplicationController
   def send_npdb_request
     create_rva_information('NPDB', 'NPDB Webcrawler Request')
   end
+  
+  def send_npdb_skip_rva
+    npdb_id = params[:npdb_id]
+    create_rva_information(
+      'NPDB', 'SkipRVA',
+      npdb_id: npdb_id,
+      skip_rva: true
+    )
+  end
 
   def send_registration_request
     provider_dea_id = params[:provider_dea_id]
@@ -250,7 +259,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
     @provider_dea_id = params[:provider_dea_id]
   end
 
-  def create_rva_information(tab, comments, provider_dea_id: nil, education_id: nil, licensure_id: nil, employment_id: nil, liability_id: nil, board_id: nil, training_id: nil, skip_rva: false)
+  def create_rva_information(tab, comments, provider_dea_id: nil, education_id: nil, licensure_id: nil, employment_id: nil, liability_id: nil, board_id: nil, training_id: nil, npdb_id: nil, skip_rva: false)
     rva_params = {
       tab: tab,
       send_request: 'SENT',
