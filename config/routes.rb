@@ -423,6 +423,7 @@ Rails.application.routes.draw do
     post '/send_education_skip_rva', to: 'quality_audits#send_education_skip_rva'
     post '/send_dea_skip_rva', to: 'quality_audits#send_dea_skip_rva'
     post '/send_employment_skip_rva', to: 'quality_audits#send_employment_skip_rva'
+    post '/send_npdb_skip_rva', to: 'quality_audits#send_npdb_skip_rva'
     resources :alaska_states, only: [:index], path: 'state-alaska' do
       collection do
         get :crawl
