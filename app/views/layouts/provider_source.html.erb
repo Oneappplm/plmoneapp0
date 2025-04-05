@@ -579,7 +579,7 @@ $('.multi-select').on('change', function() {
   var dropdownId = $(this).attr('id');
   if([
       'multi-select-lang-speak', 'multi-select-lang-write', 'state_of_practice',
-      'primary-practioner-type', 'languages-you-speak', 'languages-you-write', 'hp_health_plans', 'hp_hospitals', 'hp_directories', 'populations_served'
+      'primary-practioner-type', 'languages-you-speak', 'languages-you-write', 'hp_health_plans', 'hp_hospitals', 'hp_directories', 'populations_served', 'specialty'
      ].includes(dropdownId)) {
       saveInput($(this));
   }
@@ -979,6 +979,8 @@ function displayFieldsFromMultiSelectElement(data, inputName, tagName){
     path = '<%= hospitals_multi_select_data_path %>';
    } else if(['populations_served', 'population_serviced'].includes(inputName)){
     path = '<%= serviced_populations_multi_select_data_path %>';
+    } else if(['specialty', 'specialty'].includes(inputName)){
+    path = '<%= specialties_multi_select_data_path %>';
   } else if(['hp_directories', 'hp_directories'].includes(inputName)){
     path = '<%= directories_multi_select_data_path %>';
     multiselect = false
