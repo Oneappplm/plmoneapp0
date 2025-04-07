@@ -100,6 +100,10 @@ Rails.application.routes.draw do
   get '/auth/failure' => 'auth0#failure'
   get '/auth/logout' => 'auth0#logout'
 
+  post '/upload_vrc_document', to: 'pages#upload_vrc_document', as: :upload_document
+  post '/update_vrc_document', to: 'pages#update_vrc_document', as: :update_vrc_document
+  post '/delete_vrc_documents/:id', to: 'pages#delete_vrc_documents', as: :delete_vrc_document
+
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 
   resources :manage_clients

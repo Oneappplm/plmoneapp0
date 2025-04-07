@@ -113,6 +113,17 @@ class PagesController < ApplicationController
 			VirtualReviewCommittee.all
 		end
 
+    # for searching the document "vrc >> document"
+    if params[:vrc] == 'documents'
+      @vrc_documents = if params[:query].present?
+                         VrcDocument.where("name ILIKE ?", "%#{params[:query]}%")
+                       else
+                         VrcDocument.all
+                       end
+
+      @vrc_documents = @vrc_documents.paginate(per_page: 10, page: params[:page] || 1)
+    end
+
     if (params[:review_date_from].present? && params[:review_date_to].present?) && (params[:committee_date_from].present? && params[:committee_date_to])&&params[:PSV_date_from].present? && params[:PSV_date_to].present?
         review_date_range = Date.parse(params[:review_date_from])..Date.parse(params[:review_date_to])
         committee_date_range = Date.parse(params[:committee_date_from])..Date.parse(params[:committee_date_to])
@@ -137,7 +148,7 @@ class PagesController < ApplicationController
 			@vrcs = @vrcs.send(params[:'vrc-progress-status'])
 		end
 
-		@vrcs = @vrcs.paginate(page: params[:page], per_page: 50)
+		@vrcs = @vrcs.paginate(per_page: 10, page: params[:page] || 1)
 
 		if params[:vrc].present? && params[:vrc] == 'work-tickler'
 			render 'work_tickler'
@@ -256,10 +267,41 @@ class PagesController < ApplicationController
 
   # for downloading the vrc data in virtual-review-committee(dashboard >> decision point)
   def download_clients
-  	@clients = Client.where.not(id: nil)
-  	respond_to do |format|
-  		format.csv { send_data @clients.to_csv, filename: "Clients-#{Time.now.to_date}.csv" }
-  	end
+    selected_ids = params[:selected_ids]&.split(',')
+
+    @virtual_review_committees = if selected_ids.present?
+                                   VirtualReviewCommittee.where(id: selected_ids)
+                                 else
+                                   VirtualReviewCommittee.all
+                                 end
+
+    csv_data = CSV.generate(headers: true) do |csv|
+      csv << [
+        'Assigned','Provider Name', 'Provider Type', 'Cred Cycle', 'PSV Completed Date',
+        'Review Level', 'Recred Due Date', 'Review Date', 'Committee Date',
+        'Status'
+      ]
+
+      @virtual_review_committees.each do |vrc|
+        csv << [
+          vrc.progress_status,
+          vrc.provider_name,
+          vrc.provider_type,
+          vrc.cred_cycle,
+          vrc.psv_completed_date&.strftime('%Y-%m-%d'),
+          vrc.review_level,
+          vrc.recred_due_date&.strftime('%Y-%m-%d'),
+          vrc.review_date&.strftime('%Y-%m-%d'),
+          vrc.committee_date&.strftime('%Y-%m-%d'),
+          vrc.status
+        ]
+      end
+    end
+
+    respond_to do |format|
+      filename = selected_ids.present? ? "selected_vrcs_#{Date.today}.csv" : "all_vrcs_#{Date.today}.csv"
+      format.csv { send_data csv_data, filename: filename }
+    end
   end
 
   def show_virtual_review_committee
@@ -275,13 +317,19 @@ class PagesController < ApplicationController
   def record_approval
     @record = DirectorProvider.where(virtual_review_committee_id: params[:id])
 
-    if @record.update(record_approval_params)
-     if record_approval_params[:status] != "Pending"
-        @vrc = VirtualReviewCommittee.find(params[:id]).update(progress_status: "completed")
+    if @record
+      if params[:status].present? && params[:status] != "Pending"
+        @vrc = VirtualReviewCommittee.find(params[:id])
+        @vrc.update(
+          progress_status: "completed",
+          review_details: params[:description],
+          review_level: params[:status]
+        )
       end
-      redirect_to virtual_review_committee_path
+      redirect_to show_virtual_review_committee_path(params[:id]), notice: "Records updated successfully."
     else
-      render :show_virtual_review_committee, notice: "There was an error updating the records."
+      flash[:alert] = "There was an error updating the records."
+      render :show_virtual_review_committee
     end
   end
 
@@ -311,9 +359,40 @@ class PagesController < ApplicationController
   	render "client_portal"
   end
 
-		def settings
-			@setting = Setting.take || Setting.new
-		end
+	def settings
+		@setting = Setting.take || Setting.new
+	end
+
+  # for uploading and downloading the document in "VRC Document"
+  def upload_vrc_document
+    @vrc_document = VrcDocument.new(vrc_document_params)
+    if @vrc_document.save
+      redirect_to virtual_review_committee_path(vrc: 'documents'), notice: "Document uploaded successfully."
+    else
+      render :vrc_list_document, alert: "Failed to upload document."
+    end
+  end
+
+  def update_vrc_document
+    document = VrcDocument.find(params[:document_id])
+    if document.update(vrc_document_params)
+      redirect_to virtual_review_committee_path(vrc: 'documents'), notice: "Document updated successfully."
+    else
+      redirect_to virtual_review_committee_path(vrc: 'documents'), alert: 'Document or file not found.'
+    end
+  end
+
+  def delete_vrc_documents
+    document = VrcDocument.find(params[:id])
+    if document && document.destroy
+      flash[:notice] = 'Document was successfully deleted.'
+      render json: { success: true }
+    else
+      flash[:alert] = 'Failed to delete the document.'
+      render json: { success: false }, status: :not_found
+    end
+  end
+
 
 	protected
 
@@ -454,6 +533,10 @@ class PagesController < ApplicationController
 
     def record_approval_params
       params.permit(:status, :description, :signature_upload)
+    end
+
+     def vrc_document_params
+      params.permit(:name, :committee_date, :file_upload)
     end
 end
 

@@ -26,16 +26,31 @@
 				</div>
 				<div class="col-lg-2">
 					<div style="float: right">
-						<button class="btn btn-sm btn-primary d-inline-flex align-items-center">
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 16px; margin-right: 0.5rem;">
-								<path d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625z" />
-								<path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
+						<button type="button" class="btn btn-primary d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#exampleModal">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 16px; margin-right: 0.5rem;">
+							<path d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625z" />
+							<path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
 						</svg>
-							<span>Verified Profile</span>
+						  Verified Profile
 						</button>
+
+						<!-- Modal -->
+						<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+						  <div class="modal-dialog modal-xl" >
+						    <div class="modal-content">
+						      <div class="modal-header">
+						        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						      </div>
+						      <div class="modal-body">
+						        <%= render 'mhc/manage_clients/verified_profile' %>
+						      </div>
+						    </div>
+						  </div>
+						</div>
 					</div>
 				</div>
 			</div>
+		</div>
 
 			<div class="row">
 				<div class="col-lg-12 table-responsive">
@@ -89,13 +104,15 @@
 												</td>
 												<td>
 													<strong for="">PSV Date:</strong> <br>
-													2/10/2016
+													<%= @vrc.psv_completed_date&.strftime("%m/%d/%Y") %>
 												</td>
 												<td>
 													<strong for="">Cred Cycle Cred:</strong> <br>
+													<%= @vrc.cred_cycle %>
 												</td>
 												<td>
 													<strong for="">Recred Due Date:</strong> <br>
+													<%= @vrc.recred_due_date&.strftime("%m/%d/%Y") %>
 												</td>
 												<td></td>
 												<td></td>
@@ -104,11 +121,11 @@
 											<tr>
 												<td>
 													<strong for="">Level of Review:</strong> <br>
-													2/10/2016
+													<span id="review-level"><%= @vrc.review_level %></span>
 												</td>
 												<td>
 													<strong for="">Review Details:</strong> <br>
-													2/10/2016
+													<%= @vrc.review_details %>
 												</td>
 												<td></td>
 												<td></td>
@@ -133,18 +150,19 @@
 							  <div class="form-group mb-3">
 							    <label for="record_status">Review Level:</label>
 							    <%= form.hidden_field :id, value: @vrc.id %>
-							   	<%= form.select :status, options_for_select(['Final Approval', 'Deny', 'Recommend termination', 'Pending', 'Tabled']), {}, { id: 'record_status', class: 'form-control' } %>
+							   	<%= form.select :status, options_for_select([['All', ''], 'Expedited', 'Non-Expedited']), {}, { id: 'record_status', class: 'form-control' } %>
                  </div>
 
-								<div class="form-group mb-3">
+								<div class="form-group mb-3" style="position: relative;">
 										<label for="">Reason to Change:</label>
-										<%= form.text_area :description, class:"form-control", style:"border: 1px solid #000;", cols:25 , rows:10 %>
-								</div>
+										<%= form.text_area :description, class:"form-control", style:"border: 1px solid #000;", cols:25 , rows:10, required: true %>
 
-								<div class="my-2">
-									  <%= form.file_field :signature_upload %>
+										<div id="other-checkbox" style="position: absolute; top: 18px; left: 0; padding: 8px 0 0 10px; display: none;">
+							      <input id="description" type="checkbox" name="description" value="OTHER:" tabindex="12">
+							      <label for="description">OTHER: </label>
+							    </div>
 								</div>
-
+								
 							  <%= form.submit "Submit", class: "btn btn-primary" %>
 							<% end %>	
 				</div>
@@ -153,7 +171,7 @@
 
 		</div>
 		<div class="col-lg-3">
-			<%= render 'sidebar_profile'%>
+			<%#= render 'sidebar_profile'%>
 		</div>
 	</div>
 </div>
@@ -170,10 +188,40 @@
 		$(this).removeClass('btn-light').addClass('btn-primary');
 	});
 
+	// $('#record_status').change(function() {
+  //   $('#review-level')[0].innerHTML = this.value;
+	// })
+
 	$('#btn-profile').on('click', function(){
 		$('#change-review-level-container').fadeOut();
 		$('#btn-change-review-level').removeClass('btn-primary').addClass('btn-light');
 		$(this).removeClass('btn-light	').addClass('btn-primary')
 	});
+	$(document).ready(function () {
+	  const $recordStatus = $('#record_status');
+	  const $descriptionTextarea = $('#description');
+	  const $otherCheckbox = $('#other-checkbox input');
+
+	  // Handle the change event on the select dropdown
+	  $recordStatus.on('change', function () {
+	    const selectedStatus = $(this).val();
+
+	    if (selectedStatus === 'Non-Expedited') {
+	      $descriptionTextarea[0].setAttribute('disabled', 'true');
+
+	      // Show the disabled checkbox and label
+	      $('#other-checkbox').show();
+
+	    } else {
+	      $descriptionTextarea[0].removeAttribute('disabled');
+
+	      // Hide the checkbox
+	      $('#other-checkbox').hide();
+	    }
+	  });
+
+	  $recordStatus.trigger('change');
+	});
+
 </script>
 <% end %>
