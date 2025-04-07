@@ -19,151 +19,69 @@
       </div>
     </div>
 
-			<div class="row">
-				<div class="col-lg-12">
-					<div class="card rounded shadow-lg p-3 mb-3">
-						<%= render partial: "global_components/collapsible_sidebar_header_with_checkbox", locals: { title: 'Overview', collapse_name: 'role_access_overview'} %>
-						<div class="collapsible" style="<%= can_view?('Overview', @role_based) ? '' : 'display: none;' %>">
-						</div>
-					</div>
-					<div class="card rounded shadow-lg p-3 mb-3">
-						<%= render partial: "global_components/collapsible_sidebar_header_with_checkbox", locals: { title: 'Dashboard', collapse_name: 'role_access_dashbord'} %>
-						<div class="collapsible mt-3" style="<%= can_view?('Dashboard', @role_based) ? '' : 'display: none;' %> ">
-							<div class="row">
-								<div class="col-lg-4">
-									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
-										<div class='row d-flex align-items-center padding-5'>
-											<h5>
-												<%= HtmlUtils.role_based_access_checkbox title: 'Data Access' %>
-											</h5>
-										</div>
-									</div>
-								</div>
-
-								<div class="col-lg-4">
-									<div class="border rounded padding-10 h-100" style="border-width:2px!important;">
-										<div class='row d-flex align-items-center padding-5'>
-											<h5>
-												<%= HtmlUtils.role_based_access_checkbox title: 'Decision Point' %>
-											</h5>
-										</div>
-										<div class="padding-25">
-											<div class="padding-5">
-												<h5>
-													<%= HtmlUtils.role_based_access_checkbox title: 'Scheduler' %>
-												</h5>
-											</div>
-											<div class="padding-5">
-												<h5>
-													<%= HtmlUtils.role_based_access_checkbox title: 'Work Tickler' %>
-												</h5>
-											</div>
-											<div class="padding-5">
-												<h5>
-													<%= HtmlUtils.role_based_access_checkbox title: 'Documents' %>
-												</h5>
-											</div>
-											<div class="padding-5">
-												<h5>
-													<%= HtmlUtils.role_based_access_checkbox title: 'Reports' %>
-												</h5>
-											</div>
-											<div class="padding-5">
-												<h5>
-													<%= HtmlUtils.role_based_access_checkbox title: 'Minutes' %>
-												</h5>
-											</div>
-											<div class="padding-5">
-												<h5>
-													<%= HtmlUtils.role_based_access_checkbox title: 'Issue' %>
-												</h5>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="card rounded shadow-lg p-3 mb-3">
-						<%= render partial: "global_components/collapsible_sidebar_header_with_checkbox", locals: { title: 'Provider Engage', collapse_name: 'role_access_provider_engage'} %>
-					</div>
-					<div class="card rounded shadow-lg p-3 mb-3">
-						<%= render partial: "global_components/collapsible_sidebar_header_with_checkbox", locals: { title: 'App Tracker', collapse_name: 'role_access_app_tracker'} %>
-					</div>
-					<div class="card rounded shadow-lg p-3 mb-3">
-						<%= render partial: "global_components/collapsible_sidebar_header_with_checkbox", locals: { title: 'Group Engage', collapse_name: 'role_access_group_engage'} %>
-
-        <% if current_user.can_access?('Delete Role') && @role_based.present? %>
-          <% if current_user.can_access?('Delete Role') && @role_based.present? %>
-            <%= link_to 'Delete Role', "javascript:void(0);", class: 'btn btn-danger text-white btn-sm', id: 'delete-role' %>
+		<% if @role_based %>
+      <div class="row mb-3">
+        <div class="col-12 col-md-7">
+          <%= form_with url: role_based_accesses_path, method: :get, local: true, html: { class: 'd-flex gap-2' } do |form| %>
+            <%= form.hidden_field :role_based, value: @role_based %>
+            <%= form.text_field :query, value: params[:query], class: 'form-control', placeholder: 'Search Item...' %>
+            <button class="btn btn-secondary">
+              <i class="bi bi-search"></i>
+            </button>
           <% end %>
-
-        <% end %>
+        </div>
       </div>
-    </div>
 
-    <div class="row mb-3">
-      <div class="col-12 col-md-7">
-        <%= form_with url: role_based_accesses_path, method: :get, local: true, html: { class: 'd-flex gap-2' } do |form| %>
-          <%= form.hidden_field :role_based, value: @role_based %>
-          <%= form.text_field :query, value: params[:query], class: 'form-control', placeholder: 'Search Item...' %>
-          <button class="btn btn-secondary">
-            <i class="bi bi-search"></i>
-          </button>
-        <% end %>
-      </div>
-    </div>
+      <div class="row">
+        <div class="col-12 col-md-7">
+          <%= form_with url: update_permissions_role_based_accesses_path, method: :post, local: true do %>
+            <input type="hidden" name="role_based" value="<%= @role_based %>">
 
-    <div class="row">
-      <div class="col-12 col-md-7">
-        <%= form_with url: update_permissions_role_based_accesses_path, method: :post, local: true do %>
-          <input type="hidden" name="role_based" value="<%= @role_based %>">
-
-          <table class="table table-bordered text-center">
-            <thead class="table-primary">
-              <tr>
-                <th class="bg-primary text-white">Configuration Item</th>
-                <th class="bg-primary text-white">Full Access</th>
-                <th class="bg-primary text-white">Read</th>
-                <th class="bg-primary text-white">Write</th>
-                <th class="bg-primary text-white">Create</th>
-                <th class="bg-primary text-white">Delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% @permissions.each do |page, accesses| %>
+            <table class="table table-bordered text-center">
+              <thead class="table-primary">
                 <tr>
-                  <td class="fw-bold"><%= page.titleize %></td>
-                  <% accesses.each do |access| %>
-                    <td>
-                      <%= check_box_tag "permissions[#{access.id}][full_access]", "1",
-                          (access.can_read && access.can_update && access.can_create && access.can_delete),
-                          class: "full-access", data: { target_id: access.id } %>
-                    </td>
-                    <td>
-                      <%= check_box_tag "permissions[#{access.id}][read]", "1", access.can_read, class: "permission-#{access.id} permission-checkbox" %>
-                    </td>
-                    <td>
-                      <%= check_box_tag "permissions[#{access.id}][write]", "1", access.can_update, class: "permission-#{access.id} permission-checkbox" %>
-                    </td>
-                    <td>
-                      <%= check_box_tag "permissions[#{access.id}][create]", "1", access.can_create, class: "permission-#{access.id} permission-checkbox" %>
-                    </td>
-                    <td>
-                      <%= check_box_tag "permissions[#{access.id}][delete]", "1", access.can_delete, class: "permission-#{access.id} permission-checkbox" %>
-                    </td>
-                  <% end %>
+                  <th class="bg-primary text-white">Configuration Item</th>
+                  <th class="bg-primary text-white">Full Access</th>
+                  <th class="bg-primary text-white">Read</th>
+                  <th class="bg-primary text-white">Write</th>
+                  <th class="bg-primary text-white">Create</th>
+                  <th class="bg-primary text-white">Delete</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <% @permissions.each do |page, accesses| %>
+                  <tr>
+                    <td class="fw-bold"><%= page.titleize %></td>
+                    <% accesses.each do |access| %>
+                      <td>
+                        <%= check_box_tag "permissions[#{access.id}][full_access]", "1",
+                            (access.can_read && access.can_update && access.can_create && access.can_delete),
+                            class: "full-access", data: { target_id: access.id } %>
+                      </td>
+                      <td>
+                        <%= check_box_tag "permissions[#{access.id}][read]", "1", access.can_read, class: "permission-#{access.id} permission-checkbox" %>
+                      </td>
+                      <td>
+                        <%= check_box_tag "permissions[#{access.id}][write]", "1", access.can_update, class: "permission-#{access.id} permission-checkbox" %>
+                      </td>
+                      <td>
+                        <%= check_box_tag "permissions[#{access.id}][create]", "1", access.can_create, class: "permission-#{access.id} permission-checkbox" %>
+                      </td>
+                      <td>
+                        <%= check_box_tag "permissions[#{access.id}][delete]", "1", access.can_delete, class: "permission-#{access.id} permission-checkbox" %>
+                      </td>
+                    <% end %>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
 
-          <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
-        <% end %>
+            <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+          <% end %>
+        </div>
       </div>
-    </div>
-  </div>
-<% end %>
+    <% end %>
+  <% end %>
 
 <% content_for :js do %>
   <script>

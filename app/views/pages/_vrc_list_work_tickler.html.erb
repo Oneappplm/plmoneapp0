@@ -1,6 +1,30 @@
 <div class="row mt-3 mb-3">
    <div class="col-lg-6">
-      <h5>Search Result: 113 records</h5>
+      <!-- Count Assigned Records -->
+       <%
+        assigned_count = 0
+
+        if @director.present?
+          assigned_count = @director.virtual_review_committees.count { |r| r.progress_status == "assigned" }
+
+        elsif params[:director].present? && params[:director] != "All"
+          selected_director = User.find_by(id: params[:director])
+          if selected_director.present?
+            assigned_count = selected_director.virtual_review_committees.count { |r| r.progress_status == "assigned" }
+          end
+
+        elsif params[:director] == "All" || @params_present.present? || @selected_committee_dates.present?.!
+          # Count for all directors
+          User.directors.each do |director|
+            assigned_count += director.virtual_review_committees.count { |r| r.progress_status == "assigned" }
+          end
+
+        elsif @selected_committee_dates.present?
+          assigned_count = @selected_committee_dates.count { |r| r.progress_status == "assigned" }
+        end
+      %>
+      <!-- Count Assigned Records -->
+      <h5>Show Records: <%= assigned_count %></h5>
    </div>
    <div class="col-lg-6" style="padding: 0;">
       <div style="float: right;" class="d-flex gap-4">
@@ -20,7 +44,7 @@
          <label for="">Page 3 of 32 </label>
          <input type="text" value="1" style="width: 35px; text-align: center; font-size: 12px;" class="">
          <form id="directorForm" action="/virtual-review-committee/records" method="get">
-            <select name="director" id="directors" class="custom-select">
+            <select name="director" id="directors" class="custom-select form-select form-select-sm border-dark">
                <option value="All">All</option>
                <% @vrc_directors.each do |vrc_director| %>
                   <option value="<%= vrc_director.id %>">
@@ -47,8 +71,6 @@
     <% end %>
   <% end %>
 </div>
-
-
 
 <div class="row mt-2">
    <table id="vrc-table" class="border shadow p-3 mb-5 <%= dark_mode %> rounded table table-striped">

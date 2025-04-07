@@ -1,106 +1,203 @@
+
 <div class="row mt-3 mb-3">
 	<div class="col-lg-6">
-		<button class="btn btn-sm btn-light">
-			<i class="bi bi-upload"></i>
-			Upload
+		<button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#uploadModal">
+		  <i class="bi bi-upload"></i> Upload
 		</button>
-		<button class="btn btn-sm btn-primary">
+
+		<!-- Modal for Upload -->
+		<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="uploadModalLabel">Upload Document</h5>
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		      </div>
+		      <div class="modal-body">
+			       <%= form_with(model: @vrc_document, url: upload_document_path, local: true) do |f| %>
+						  <div class="mb-3">
+						    <%= f.label :name, "Document Name" %>
+						    <%= f.text_field :name, class: "form-control", autocomplete: "off" %>
+						  </div>
+						  <div class="mb-3">
+						    <%= f.label :committee_date, "Committee Date" %>
+						    <%= f.date_field :committee_date, class: "form-control" %>
+						  </div>
+						  <div class="mb-3">
+						    <%= f.label :file_upload, "Choose File" %>
+						    <%= f.file_field :file_upload, class: "form-control" %>
+						  </div>
+						  <%= f.submit "Upload", class: "btn btn-primary" %>
+						<% end %>
+
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+	<!-- 	<button class="btn btn-sm btn-primary">
 			<i class="bi bi-download"></i>
 			Download
-		</button>
+		</button> -->
 	</div>
-	<div class="col-lg-6" style="padding: 0;">
+	<%# <div class="col-lg-6" style="padding: 0;">
 		<div style="float: right;" class="d-flex gap-4">
-		 				<div>
-		 					<label class="text-dark-grey">Show limit</label>
-		 					<% per_page_limits = [5,10,15,20,25,30,35,40,45,50]%>
-		 					<select name="per_page" class="border ms-2 px-1 <%= dark_mode %>" onchange="document.getElementById('per_page_selector').submit();">
-		 						<% per_page_limits.each do |per_page| %>
-		 							<% if per_page == @per_page.to_i%>
-		 								<option selected><%= per_page %></option>
-		 							<% else %>
-		 								<option><%= per_page %></option>
-		 							<% end %>
-		 						<% end %>
-		 					</select>
-		 				</div>
-				<label for="">Page 3 of 32 </label>
-				<input type="text" value="1" style="width: 35px; text-align: center; font-size: 12px;" class="">
-			</div>
+			<div> %>
+				<%# <label class="text-dark-grey">Show limit</label> %>
+				<%# per_page_limits = [5,10,15,20,25,30,35,40,45,50]%>
+				<%# <select name="per_page" class="border ms-2 px-1 <%#= dark_mode" onchange="document.getElementById('per_page_selector').submit();"> %>
+					<%# per_page_limits.each do |per_page| %>
+						<%# if per_page == @per_page.to_i%>
+							<%# <option selected><%#= per_page</option> %>
+						<%# else %>
+							<%# <option><%#= per_page</option> %>
+						<%# end %>
+					<%# end %>
+				<%# </select>
+			</div> %>
+			<%# <label for="">Page 3 of 32 </label> %>
+			<%# <input type="text" value="1" style="width: 35px; text-align: center; font-size: 12px;" class=""> %>
+		<%# </div>
+	</div>
+</div> %>
+
+<div class="row mt-2">
+	<% if @vrc_documents.present? %>
+		<table id="vrc-table" class="border shadow p-3 mb-5 <%= dark_mode %> rounded table table-striped" >
+			<thead style="background-color: #377dff; color: #fff;">
+				<tr>
+					<th>Upload Date</th>
+					<th>Document Name</th>
+					<th>Document Type</th>
+					<th>Committee Date</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody class="bg-light">
+			  <% @vrc_documents.each do |document| %>
+			    <tr>
+			      <td><%= document.created_at.strftime("%Y-%m-%d") %></td>
+			      <td><%= document.name %></td>
+			      <td><%= link_to document.file_upload.identifier, document.file_upload.url %></td>
+			      <td><%= document.committee_date %></td>
+			      <td>
+			        <!-- Button to open the modal -->
+			        
+			        <a href="javascript:void(0);" data-document-id="<%= document.id %>" data-document-name="<%= document.name %>" data-committed-date="<%= document.committee_date %>" data-bs-toggle="modal" data-bs-target="#editVrcDocumentModel">
+			          <i class="bi bi-pencil"></i>
+			        </a>
+			        <a href="javascript:void(0);" class="delete-document" data-id="<%= document.id %>" data-confirm="Are you sure you want to delete this document?">
+			        	<i class="bi bi-trash text-danger"></i>
+			        </a>
+			      </td>
+			    </tr>
+			  <% end %>
+			</tbody>
+		</table>
+	<% else %>
+	  <p class="text-center bg-warning py-2 text-dark">No documents found. Please upload the document.</p>
+	<% end %>
+</div>
+
+<!-- Modal for editing the document -->
+<div class="modal fade" id="editVrcDocumentModel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+		    <h5 class="modal-title">Edit Document</h5>
+		    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		  </div>
+		  <div class="modal-body">
+		    <%= form_with(url: update_vrc_document_path, method: :post, multipart: true, local: true) do |f| %>
+		      <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+		      <%= f.hidden_field :document_id, value: '' %>
+		      <div class="mb-3">
+		        <%= f.label :name, "Document Name" %>
+		        <%= f.text_field :name, class: "form-control", autocomplete: "off", required: true %>
+		      </div>
+		      <div class="mb-3">
+		        <%= f.label :committee_date, "Committee Date" %>
+		        <%= f.date_field :committee_date, class: "form-control", required: true %>
+		      </div>
+		      <div class="mb-3">
+		        <%= f.label :file_upload, "Choose File" %>
+		        <%= f.file_field :file_upload, class: "form-control", required: true %>
+		      </div>
+		      <%= f.submit "Update", class: "btn btn-primary" %>
+		    <% end %>
+		  </div>
+		  <div class="modal-footer">
+		    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+		  </div>
+		</div>
 	</div>
 </div>
 
-<div class="row mt-2">
-	<table id="vrc-table" class="border shadow p-3 mb-5 <%= dark_mode %> rounded table table-striped" >
-		<thead style="background-color: #377dff; color: #fff;">
-			<tr>
-				<th>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				</div>
-				</th>
-				<th>Document Name</th>
-				<th>Upload Date</th>
-				<th>Committee Date</th>
-				<th>Document Type</th>
-				<th>Actions</th>
-			</tr>
-		</thead>
-		<tbody class="bg-light">
-			<tr>
-				<td>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				</div>
-				</td>
-				<td>Agenda</td>
-				<td>9/23/2021</td>
-				<td>10/23/2021</td>
-				<td>PDF</td>
-				<td>
-					<i class="bi bi-pencil-square text-primary"></i>
-					<i class="bi bi-trash text-danger"></i>
-					<button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				</div>
-				</td>
-				<td>Agenda</td>
-				<td>9/23/2021</td>
-				<td>10/23/2021</td>
-				<td>PDF</td>
-				<td>
-					<i class="bi bi-pencil-square text-primary"></i>
-					<i class="bi bi-trash text-danger"></i>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				</div>
-				</td>
-				<td>Agenda</td>
-				<td>9/23/2021</td>
-				<td>10/23/2021</td>
-				<td>PDF</td>
-				<td>
-					<i class="bi bi-pencil-square text-primary"></i>
-					<i class="bi bi-trash text-danger"></i>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-</div>
+<div class="col-lg-12">
+	  <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+	    <div class="page_info ms-3 text-black">
+	      <%= page_entries_info @vrc_documents %>
+	    </div>
+	    <% if params[:per_page].present? %>
+	      <%= will_paginate @vrc_documents, params: { per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+	    <% else %>
+	      <%= will_paginate @vrc_documents, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+	    <% end %>
+	  </div>
+	</div>
 
 <% content_for :js do %>
 <script>
-		$('#vrc-table tbody tr').on('click', function(){
-			location.href = "/show-virtual-review-committee"
-		});
+	// $('#vrc-table tbody tr').on('click', function(){
+	// 	location.href = "/show-virtual-review-committee"
+	// });
+  document.addEventListener('DOMContentLoaded', function() {
+    const editVrcDocumentModal = document.getElementById('editVrcDocumentModel');
+    editVrcDocumentModal.addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget; 
+      const documentId = button.getAttribute('data-document-id');
+      const documentName = button.getAttribute('data-document-name');
+      const documentCommittedDate = button.getAttribute('data-committed-date');
+
+      // Update the hidden field in the form with the document ID
+      var form = editVrcDocumentModal.querySelector('form');
+      form.querySelector('[name="name"]').value = documentName;
+      form.querySelector('[name="document_id"]').value = documentId;
+      form.querySelector('[name="committee_date"]').value = documentCommittedDate;
+    });
+  });
+  $(document).ready(function() {
+    $('.delete-document').on('click', function(e) {
+      e.preventDefault();
+
+      var documentId = $(this).data('id');
+      var confirmMessage = $(this).data('confirm');
+      var row = $(this).closest('tr');
+
+      if (confirm(confirmMessage)) {
+        $.ajax({
+				  url: '/delete_vrc_documents/' + documentId, // Use the correct URL with documentId
+				  type: 'POST',
+				  contentType: 'application/json',
+          headers: {
+            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+          },
+          success: function(data) {
+          	debugger
+            if (data.success) {
+              row.remove();
+              // Reload the page to show the flash message
+              location.reload();
+            } else {
+              alert('Failed to delete the document.');
+            }
+          },
+          error: function() {
+            alert('An error occurred. Please try again.');
+          }
+        });
+      }
+    });
+  });
 </script>
 <% end %>

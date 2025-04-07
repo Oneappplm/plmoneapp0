@@ -2,15 +2,17 @@
    <%= render "vrc_components/vrc_nav"%>
 	<div class="row">
 		<div class="col-lg-8">
-
+			<%= form_with url: virtual_review_committee_path, method: :get, local: true do %>
+				<%= hidden_field_tag :vrc, 'documents' %>
 				<div class="input-group">
-						<input type="text" class="form-control bg-light" placeholder="Search Documents">
+						<%= text_field_tag :query, params[:query], class: "form-control bg-light", placeholder: "Search Documents" %>
 						<div class="input-group-append">
-							 <i class="bi bi-search input-group-text"></i>
-								<i class="bi bi-three-dots-vertical input-group-text"></i>
+							 <button class="btn btn-outline-secondary" type="submit">
+					        <i class="bi bi-search"></i>
+					      </button>
 						</div>
 				</div>
-
+			<% end %>
 		</div>
 		<div class="col-lg-4">
 		</div>
