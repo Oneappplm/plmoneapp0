@@ -1,6 +1,13 @@
 class ProviderPersonalInformation < ApplicationRecord
-  ransacker :full_name do
-    Arel.sql("CONCAT_WS(' ', provider_personal_informations.first_name, provider_personal_informations.last_name)")
+  ransacker :name_or_attest_id do
+    Arel.sql("
+      CONCAT_WS(' ',
+        COALESCE(first_name, ''),
+        COALESCE(last_name, ''),
+        COALESCE(caqh_provider_attest_id::text, ''),
+        COALESCE(provider_attest_id::text, '')
+      )
+    ")
   end
 
   PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID','ProviderID']

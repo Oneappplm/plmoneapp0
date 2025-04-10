@@ -15,13 +15,8 @@
 										<img class="navbar-brand-logo-mini" src="<%= current_logo_sm %>" alt="Logo" data-hs-theme-appearance="default" style="width: auto;height: 60%;"  data-hs-theme-appearance="default">
 									<% end %>
 									
-									<% if current_setting.mhc? %>
-										<img class="navbar-brand-logo" src="<%= current_logo %>" alt="Logo" data-hs-theme-appearance="default" data-hs-theme-appearance="default" style="width: 50; height: 220%;">
-									<% else %>
-										<img class="navbar-brand-logo" src="<%= current_logo %>" alt="Logo" data-hs-theme-appearance="default" data-hs-theme-appearance="default">
-									<% end %>
-
-									
+									<img class="navbar-brand-logo" src="<%= current_logo %>" alt="Logo" data-hs-theme-appearance="default" data-hs-theme-appearance="default">
+																		
 							</a>
 							<button type="button" class="js-navbar-vertical-aside-toggle-invoker navbar-aside-toggler" id="navbar-aside-toggler">
 							<i class="bi-arrow-bar-left navbar-toggler-short-align" data-bs-template='<div class="tooltip d-none d-md-block" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>' data-bs-toggle="tooltip" data-bs-placement="right" title="Collapse"></i>
@@ -140,22 +135,26 @@
 														</div>
 													<% end %>
 
-													<% if current_setting.mhc? %>
-													 <div class="nav-item mb-1">
-															<a class="nav-link <%= active_menu('help_codes', 'index') %>" href="<%= help_codes_path %>" data-placement="left">
-																		<!-- <i class="bi-receipt nav-icon"></i> -->
-																		<!-- <i class="bi bi-person nav-icon"></i> -->
-																		<i class="bi bi-folder nav-icon"></i>
-																		<span class="nav-link-title">Help Codes</span>
-															</a>
-													 </div>
+													<% if current_setting.mhc?%>
+														<% if current_user.can_access?('Help Codes') %>
+														 <div class="nav-item mb-1">
+																<a class="nav-link <%= active_menu('help_codes', 'index') %>" href="<%= help_codes_path %>" data-placement="left">
+																			<!-- <i class="bi-receipt nav-icon"></i> -->
+																			<!-- <i class="bi bi-person nav-icon"></i> -->
+																			<i class="bi bi-folder nav-icon"></i>
+																			<span class="nav-link-title">Help Codes</span>
+																</a>
+														 </div>
+														 <% end %>
 
-													 <div class="nav-item mb-1">
-															<a class="nav-link <%= active_menu('pdf_populators', 'index') %>" href="<%= pdf_populators_path %>" data-placement="left">
-																<i class="bi bi-folder nav-icon"></i>
-																<span class="nav-link-title">PDF Populator</span>
-															</a>
-													 </div>
+														 <% if current_user.can_access?('Pdf Populator') %>
+															 <div class="nav-item mb-1">
+																	<a class="nav-link <%= active_menu('pdf_populators', 'index') %>" href="<%= pdf_populators_path %>" data-placement="left">
+																		<i class="bi bi-folder nav-icon"></i>
+																		<span class="nav-link-title">PDF Populator</span>
+																	</a>
+															 </div>
+														 <% end %>
 													<% end %>
 
 													<% if current_user.can_access?('plm_sales_tool') %>
