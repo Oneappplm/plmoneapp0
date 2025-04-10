@@ -6,8 +6,10 @@ class Mhc::ClientPortalController < ApplicationController
   require 'csv'
 
   def index
+    @page = params[:page] || 1
+    @per_page = params[:per_page] || 100
     @q = ProviderPersonalInformation.ransack(params[:q]&.except(:advanced_search))
-    @provider_personal_informations = @q.result(distinct: true).paginate(per_page: 100, page: params[:page] || 1)
+    @provider_personal_informations = @q.result(distinct: true).paginate(per_page: @per_page, page: @page)
     @provider_personal_informations = @provider_personal_informations.order(first_name: params[:sort] == 'desc' ? :desc : :asc) if params[:sort].present?
   end
 
