@@ -3,11 +3,14 @@
       <h6>Client Organization Tree</h6>
    </div>
    <div class="enc-sidebar-content">
-      <div class>
-         <%= search_form_for @q, url: mhc_verification_platform_index_url, method: :get, html: { class: 'form_search_with_icon'} do |f|%>
-            <div>
-               <%= f.text_field :full_name_or_first_name_or_last_name_cont, value: "#{params[:q][:full_name_or_first_name_or_last_name_cont] rescue ''}", placeholder: 'Search Facility or Provider', class: "form-control py-1" %>
-               <i class="bx bx-search"></i>
+      <div>
+         <%= search_form_for @q, url: mhc_verification_platform_index_url, method: :get, html: { class: 'form_search_with_icon' } do |f| %>
+            <div class="input-group mb-3">
+              <%= f.text_field :name_or_attest_id_cont, 
+                  value: "#{params.dig(:q, :name_or_attest_id_cont)}", 
+                  placeholder: 'Search Name or Attest ID', 
+                  class: "form-control py-1"  %>
+              <%= f.submit class: "btn btn-primary" %>
             </div>
          <% end %>
       </div>
@@ -22,7 +25,7 @@
             <% if @client_organizations.present? %>
                <% @client_organizations.each do | client_organization | %>
                   <i class='bx bx-buildings' ></i>
-                  <h6><%= client_organization.organization_name %></h6>
+                  <h6><%= client_organization.organization_name %></h6><br>
                <% end %>
             <% end %>
          </div>

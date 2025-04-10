@@ -19,23 +19,9 @@
                                 <%# end %>
                             <%# </div> %>
                         <%# </div> %>
-                        <% if @provider_personal_informations %>
-                        <div class="col-lg-12 mt-2">
-                            <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center ">
-                            <div class="page_info ms-3 text-black">
-                                <%= page_entries_info @provider_personal_informations %>
-                            </div>
-                            <% if params[:per_page ].present? %>
-                            <%= will_paginate @provider_personal_informations, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                            <% else %>
-                            <%= will_paginate @provider_personal_informations, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                            <% end %>
-                            </div>
-                        </div>
-                        <% end %>
-
+                        
                         <div class="d-flex">
-                            <div class="legend-wrp mt-3">
+                            <div class="legend-wrp">
                                 <span class="enc-legend">
                                     <i class='bx bxs-check-circle enc-orange-icon'></i>
                                     In Process
@@ -51,25 +37,23 @@
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                          <div class="col-md-6">
-                            <%= form_with url: generate_report_path(format: :csv), method: :get, class: "form-inline", id: 'download-report-form' do %>
-                              <%= hidden_field_tag :provider_attest_id, @provider_personal_informations.first.provider_attest_id  if  @provider_personal_informations.present? %>
-                              <div class="form-group mr-2">
-                                <label for="date_range" class="mr-2 text-white">Select Date Range</label>
-                                <%= text_field_tag :date_range, params[:date_range], class: "form-control", placeholder: "Select date range" %>
-                              </div>
-                              <div class="form-group">
-                                <%= submit_tag 'Generate Report', class: "btn btn-primary mt-2" %>
-                              </div>
+                        <div class="col-lg-6 mt-3">
+                          <%= form_with url: generate_report_path(format: :csv), method: :get, class: "form-inline", id: 'download-report-form' do %>
+                            <% if @provider_personal_informations.present? %>
+                              <%= hidden_field_tag :provider_attest_id, @provider_personal_informations.first&.provider_attest_id %>
                             <% end %>
-                          </div>
+                            <div class="input-group">
+                              <%= text_field_tag :date_range, params[:date_range], class: "form-control", placeholder: "Select date range" %>
+                              <%= submit_tag 'Generate Report', class: "btn btn-primary" %>
+                            </div>
+                          <% end %>
                         </div>
                         
                         <table class="table practice-table mt-3">
                           <thead>
                             <tr>
                               <th class="text-white" scope="col">Practitioner Name</th>
+                              <th class="text-white" scope="col">Encompass ID</th>
                               <th class="text-white" scope="col">Verification Status</th>
                               <th class="text-white">Ready for download</th>
                               <th class="text-white">In Process</th>
@@ -91,6 +75,9 @@
                                         <% else %>
                                         <%= "#{provider_personal_information&.fullname}, #{provider_personal_information.provider_type_provider_type_abbreviation}" %>
                                         <% end %>
+                                    </td>
+                                    <td>
+                                      <%= provider_personal_information&.caqh_provider_attest_id || provider_personal_information&.provider_attest_id %>
                                     </td>
                                     <td><%= provider_personal_information&.verification_status ? provider_personal_information&.verification_status : 'Pending' %></td>
                                     <td></td>
