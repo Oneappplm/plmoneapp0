@@ -4,7 +4,7 @@
    </div>
    <div class="enc-sidebar-content">
       <div>
-         <%= search_form_for @q, url: mhc_verification_platform_index_url, method: :get, html: { class: 'form_search_with_icon' } do |f| %>
+         <%= search_form_for @q, url: mhc_manage_clients_path, method: :get, html: { class: 'form_search_with_icon' } do |f| %>
             <div class="input-group mb-3">
               <%= f.text_field :name_or_attest_id_cont, 
                   value: "#{params.dig(:q, :name_or_attest_id_cont)}", 
@@ -18,23 +18,27 @@
 
          <div class="enc-sidebar-content-heading">
             <i class='bx bx-buildings' ></i>
-            <h6>MHC</h6>
+            <h6 class="fs-5"><%= current_setting.client_name.upcase %></h6>
          </div>
 
          <div class="enc-sidebar-content-heading">
-            <% if @client_organizations.present? %>
-               <% @client_organizations.each do | client_organization | %>
-                  <i class='bx bx-buildings' ></i>
-                  <h6><%= client_organization.organization_name %></h6><br>
+           <% if @client_organizations.present? %>
+             <ul class="list-unstyled">
+               <% @client_organizations.each do |client_organization| %>
+                 <li class="mb-2 d-flex align-items-center">
+                   <i class='bx bx-buildings me-2'></i>
+                   <span><%= client_organization.organization_name %></span>
+                 </li>
                <% end %>
-            <% end %>
+             </ul>
+           <% end %>
          </div>
 
-         <hr class="text-dark">
+         <%# <hr class="text-dark"> %>
 
-         <ul class="enc-sidebar-content-submenu">
+         <%# <ul class="enc-sidebar-content-submenu">
             <li>Providers</li>
-         </ul>
+         </ul> %>
       </div>
    </div>
 </div>
