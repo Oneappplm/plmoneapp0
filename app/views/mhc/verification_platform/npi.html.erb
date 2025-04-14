@@ -44,12 +44,12 @@
                 </div>
             </div>
             <div class="form-row row">
-                <div class="col-xl-6">
+                  <div class="col-xl-6">
                     <div class="form-row">
-                        <label for="">NPI Number (from Registration tab):</label>
-                        <%= f.text_field :npi,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                      <label for="">NPI Number (from Registration tab):</label>
+                      <%= f.text_field :npi, placeholder: 'Type here...', class: 'form-control border border-dark', id: 'npi_input' %>
                     </div>
-                </div>
+                  </div>
                 <div class="col-xl-6">
                     <div class="form-row">
                         <label for="">NPI Number (from Organization Info tab):</label>
@@ -57,9 +57,54 @@
                     </div>
                 </div>
             </div>
+            <div class="col-xl-6 mt-2">
+              <button type="button" class="btn btn-info" id="verify_npi_button">Auto Rva</button>
+            </div>
             <div class="form-row mt-2 d-flex justify-content-end">
                <%= f.submit 'Save', class: 'btn btn-primary', style: 'width: 200px;' %>
             </div>
         <% end %>
     </div>
 </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const verifyButton = document.getElementById("verify_npi_button");
+    const npiInput = document.getElementById("npi_input");
+
+    // Check if handler already exists (prevent multiple bindings)
+    if (verifyButton && !verifyButton.dataset.listenerAttached) {
+      verifyButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        console.log("🧪 Verify NPI Clicked");
+
+        const npiNumber = npiInput.value.trim();
+
+        if (!npiNumber) {
+          alert("⚠️ Please enter an NPI number before verifying.");
+          return;
+        }
+
+        fetch(`/mhc/verify_npi/${npiNumber}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === "match") {
+              alert("✅ Match found for NPI Number.");
+              document.querySelector("[name='provider_personal_information[npi_verification_status]']").value = "match";
+            } else if (data.status === "no_match") {
+              alert("❌ No match found.");
+              document.querySelector("[name='provider_personal_information[npi_verification_status]']").value = "no_match";
+            } else {
+              alert("⚠️ An unexpected error occurred.");
+            }
+          })
+          .catch(error => {
+            console.error("Error during NPI lookup:", error);
+            alert("⚠️ An error occurred while verifying NPI.");
+          });
+      });
+
+      // Mark that we've attached the listener
+      verifyButton.dataset.listenerAttached = "true";
+    }
+  });
+</script>
