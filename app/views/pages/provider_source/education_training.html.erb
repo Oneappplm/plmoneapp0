@@ -39,21 +39,38 @@
 									</div>
 								</div>	
 						    </div>	
-						</div>	
-							<div class="<%= toggle_hide_current_provider_source('undergraduate_school', @provider) %>" id="undergrad_school_details">
-								<%= render partial: 'provider_source_components/undergrad_school_details'%>
+						</div>
+            <div class="<%= toggle_hide_current_provider_source('undergraduate_school', @provider) %>" id="undergrad_school_details">
+              <div id="undergraduate_school_container">
+                <% @provider.provider_source_undergrad_schools.each_with_index do |school, index| %>
+                  <%= render partial: 'provider_source_components/undergrad_school_details', locals: { index: index, school: school } %>
+                <% end %>
+              </div>
+
+              <!-- Template to clone -->
+              <div id="undergraduate_school_template" class="undergrad-school-entry d-none">
+                <%= render partial: 'provider_source_components/undergrad_school_details', locals: { index: 'REPLACE_INDEX', school: ProviderSourceUndergradSchool.new } %>
+              </div>
+
+              <button type="button" class="btn btn-outline-primary mt-2" id="add_undergraduate_school">
+                <i class="bi bi-plus-circle me-1"></i> Add Another Undergraduate School
+              </button>
+            </div>
+
+							<div class="<%#= toggle_hide_current_provider_source('undergraduate_school', @provider) %>" id="undergrad_school_details">
+								<%#= render partial: 'provider_source_components/undergrad_school_details'%>
 							</div>
                    <!-- <h4 class="fw-semibold text-secondary">Undergraduate School</h4>
                     <div class="d-flex align-items-center my-3">
-                        <%= HtmlUtils.radio_toggle name: 'undergraduate_school',
+                        <%#= HtmlUtils.radio_toggle name: 'undergraduate_school',
                             label: 'Did you attend an Undergraduate school? <span class="text-danger"> *</span>',
                             toshow: 'undergrad_school_details',
                             hidden_field: true
                         %>
 
                     </div>
-                        <div id="undergrad_school_details" class="<%= toggle_hide('undergraduate_school') %>">
-                            <%= render partial: 'provider_source_components/undergrad_school_details'%>
+                        <div id="undergrad_school_details" class="<%#= toggle_hide('undergraduate_school') %>">
+                            <%#= render partial: 'provider_source_components/undergrad_school_details'%>
                         </div> -->
                 </div>
 
@@ -77,21 +94,33 @@
 						    </div>	
 						</div>	
 							<div class="<%= toggle_hide_current_provider_source('professional_school', @provider) %>" id="prof_school_details">
-								 <%= render partial: 'provider_source_components/prof_school_details'%>
+                  <div id="graduate_details_container">
+                    <% @provider.graduate_details.each_with_index do |gd, index| %>
+                      <%= render partial: 'provider_source_components/prof_school_details', locals: { graduate_detail: gd, index: index } %>
+                    <% end %>
+                  </div>
+
+                  <!-- Hidden clone template -->
+                  <div id="graduate_detail_template" class="d-none">
+                    <%= render partial: 'provider_source_components/prof_school_details', locals: { graduate_detail: GraduateDetail.new, index: 'REPLACE_INDEX' } %>
+                  </div>
+
+                  <button id="add_graduate_detail" class="btn btn-outline-primary">Add Graduate/Professional School</button>
+
                 </div>
 
 
                <!-- <div class="col-lg-12 card py-3 my-3">
                     <h4 class="fw-semibold text-secondary">Graduate/Professional School</h4>
                     <div class="d-flex align-items-center my-3">
-                        <%= HtmlUtils.radio_toggle name: 'professional_school',
+                        <%#= HtmlUtils.radio_toggle name: 'professional_school',
                         label: 'Did you complete your professional education at this school? <span class="text-danger"> *</span>',
                         toshow: 'prof_school_details',
                         hidden_field: true
                         %>
                     </div>
-                        <div id="prof_school_details" class="<%= toggle_hide('professional_school') %>">
-                            <%= render partial: 'provider_source_components/prof_school_details'%>
+                        <div id="prof_school_details" class="<%#= toggle_hide('professional_school') %>">
+                            <%#= render partial: 'provider_source_components/prof_school_details'%>
                         </div>
                 </div> -->
 
@@ -99,3 +128,214 @@
       </div>
    </div>
 </div>
+<% content_for :js do %>
+  <script>
+ $(document).ready(function () {
+  let index = $("#undergraduate_school_container .undergrad-school-entry").length;
+  const pendingRequests = {}; // Track pending AJAX by input name
+
+  $("#add_undergraduate_school").on("click", function () {
+    let newEntry = $("#undergraduate_school_template").clone();
+    newEntry.removeClass("d-none").css("display", "block").removeAttr("id");
+
+    // Clear all inputs and assign names with new index
+    newEntry.find("input, select, textarea").each(function () {
+      let oldName = $(this).attr("name");
+      if (oldName) {
+        let newName = oldName.replace(/\[REPLACE_INDEX\]/, `[${index}]`);
+        $(this).attr("name", newName);
+      }
+
+      // Reset values
+      if ($(this).is("select")) {
+        $(this).val("");
+      } else if ($(this).attr("type") === "checkbox" || $(this).attr("type") === "radio") {
+        $(this).prop("checked", false);
+      } else {
+        $(this).val("");
+      }
+    });
+
+    newEntry.attr("data-id", ""); // Reset ID
+    newEntry.attr("data-saving", "false"); // Custom flag to avoid race conditions
+
+    index++;
+    $("#undergraduate_school_container").append(newEntry);
+  });
+
+  $(document).on("click", ".remove_undergraduate_school", function () {
+    let entry = $(this).closest(".undergrad-school-entry");
+    let schoolId = entry.data("id");
+
+    entry.remove();
+
+    if (schoolId) {
+      $.ajax({
+        url: `/provider_sources/autosave`,
+        type: "POST",
+        dataType: "json",
+        data: { delete_undergraduate_school_id: schoolId },
+        headers: {
+          "X-CSRF-Token": $("meta[name='csrf-token']").attr("content")
+        },
+        success: function () {
+          console.log("Undergraduate School entry deleted.");
+        },
+        error: function (xhr, status, error) {
+          console.error("Delete failed:", error);
+        }
+      });
+    }
+  });
+
+  // Debounce logic
+  let debounceTimeout;
+  $(document).on("change", "#undergraduate_school_container input, #undergraduate_school_container select, #undergraduate_school_container textarea", function () {
+    const $field = $(this);
+    const fieldName = $field.attr("name");
+    const value = $field.val();
+    const $entry = $field.closest(".undergrad-school-entry");
+    const $container = $("#undergraduate_school_container");
+
+    clearTimeout(debounceTimeout);
+
+    debounceTimeout = setTimeout(function () {
+      // Prevent duplicate autosave if already pending for this field
+      if (pendingRequests[fieldName]) {
+        return;
+      }
+
+      pendingRequests[fieldName] = true;
+      $.ajax({
+        url: "/provider_sources/autosave",
+        type: "POST",
+        dataType: "json",
+        data: {
+          field_name: fieldName,
+          value: value,
+          undergraduate_school_id: $entry[0].dataset.id,
+          nested_form: true
+        },
+        headers: {
+          "X-CSRF-Token": $("meta[name='csrf-token']").attr("content")
+        },
+        success: function (response) {
+          if (response.id) {
+            $entry.attr("data-id", response.id);
+          }
+        },
+        complete: function () {
+          pendingRequests[fieldName] = false;
+        },
+        error: function (xhr, status, error) {
+          console.error("Autosave failed:", error);
+        }
+      });
+    }, 300); // Debounce delay (ms)
+  });
+
+
+  // gradute school netsed form js 
+  let graduateIndex = $("#graduate_details_container .graduate-school-entry").length;
+
+  $("#add_graduate_detail").on("click", function () {
+    let newEntry = $("#graduate_detail_template").clone();
+    newEntry.removeClass("d-none").css("display", "block").removeAttr("id");
+
+    // Clear all inputs and assign names with new index
+    newEntry.find("input, select, textarea").each(function () {
+      let oldName = $(this).attr("name");
+      if (oldName) {
+        let newName = oldName.replace(/\[REPLACE_INDEX\]/, `[${graduateIndex}]`);
+        $(this).attr("name", newName);
+      }
+
+      // Reset values
+      if ($(this).is("select")) {
+        $(this).val("");
+      } else if ($(this).attr("type") === "checkbox" || $(this).attr("type") === "radio") {
+        $(this).prop("checked", false);
+      } else {
+        $(this).val("");
+      }
+    });
+
+    newEntry.attr("data-id", ""); // Reset ID
+    newEntry.attr("data-saving", "false"); // Custom flag to avoid race conditions
+
+    graduateIndex++;
+    $("#graduate_details_container").append(newEntry);
+  });
+
+  $(document).on("click", ".remove_graduate_school", function () {
+    let entry = $(this).closest(".graduate-school-entry");
+    let schoolId = entry.data("id");
+
+    entry.remove();
+
+    if (schoolId) {
+      $.ajax({
+        url: `/provider_sources/autosave`,
+        type: "POST",
+        dataType: "json",
+        data: { delete_graduate_detail_id: schoolId },
+        headers: {
+          "X-CSRF-Token": $("meta[name='csrf-token']").attr("content")
+        },
+        success: function () {
+          console.log("graduate School entry deleted.");
+        },
+        error: function (xhr, status, error) {
+          console.error("Delete failed:", error);
+        }
+      });
+    }
+  });
+
+  $(document).on("change", "#graduate_details_container input, #graduate_details_container select, #graduate_details_container textarea", function () {
+    const $field = $(this);
+    const fieldName = $field.attr("name");
+    const value = $field.val();
+    const $entry = $field.closest(".graduate-school-entry");
+    const $container = $("#graduate_details_container");
+
+    clearTimeout(debounceTimeout);
+
+    debounceTimeout = setTimeout(function () {
+      // Prevent duplicate autosave if already pending for this field
+      if (pendingRequests[fieldName]) {
+        return;
+      }
+
+      pendingRequests[fieldName] = true;
+      $.ajax({
+        url: "/provider_sources/autosave",
+        type: "POST",
+        dataType: "json",
+        data: {
+          field_name: fieldName,
+          value: value,
+          graduate_school_id: $entry[0].dataset.id,
+          nested_form: true
+        },
+        headers: {
+          "X-CSRF-Token": $("meta[name='csrf-token']").attr("content")
+        },
+        success: function (response) {
+          if (response.id) {
+            $entry.attr("data-id", response.id);
+          }
+        },
+        complete: function () {
+          pendingRequests[fieldName] = false;
+        },
+        error: function (xhr, status, error) {
+          console.error("Autosave failed:", error);
+        }
+      });
+    }, 300); // Debounce delay (ms)
+  });
+});
+
+</script>
+<% end %>

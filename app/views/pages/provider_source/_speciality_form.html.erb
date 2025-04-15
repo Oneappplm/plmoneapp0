@@ -1,0 +1,232 @@
+<div class="specialities-entry position-relative" data-id="<%= specialty&.id %>" data-index="<%= index %>">
+  <input type="hidden" name="provider_source_specialities[<%= index %>][id]" value="<%= specialty&.id %>">
+  <div class="bg-light mt-4 p-5">
+		<div class="row mb-3">
+			<div class="col-lg-6">
+				<div class="form-group">
+					<label class="text-dark-grey">Ranking <span class="text-danger">*</span></label>
+					<select name="provider_source_specialities[<%= index %>][speciality_ranking]" class="form-select border-dark">
+						<option value="">Ranking*</option>
+						<option value="Primary" <%= 'selected' if specialty.speciality_ranking == 'Primary' %>>Primary</option>
+						<option value="Secondary" <%= 'selected' if specialty.speciality_ranking == 'Secondary' %>>Secondary</option>
+						<option value="Tertiary" <%= 'selected' if specialty.speciality_ranking == 'Tertiary' %>>Tertiary</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<div class="form-group">
+					<%#= HtmlUtils::dropdown name: "provider_source_specialities[#{index}][specialty]",  label: 'Specialty <span class="text-danger"> *</span>' %>
+					<label class="text-dark-grey">Speciality <span class="text-danger">*</span></label>
+					<select name="provider_source_specialities[<%= index %>][speciality]" class="form-select border-dark">
+						<option value="">Select Specialty</option>
+						<% LicensedMember::SPECIALTY.each do |sp| %>
+						<option value="<%= sp %>" <%= 'selected' if sp == specialty.speciality %>>
+							<%= sp %>
+						</option>
+						<% end %>
+					</select>
+				</div>
+			</div>
+		</div>
+
+		<!-- Certified Specialty Section -->
+		<div class="d-flex align-items-center my-3 gap-3">
+			<label class="mb-0"><span class="text-danger">*</span> Are/We you certified by any board in this specialty?</label>
+
+			<div class="d-flex gap-2">
+				<input 
+				type="radio" 
+				name="provider_source_specialities[<%= index %>][board_certified]" 
+				value="yes" 
+				id="certified_yes_<%= index %>" 
+				<%= 'checked' if specialty.board_certified == true %>>
+				<span>YES</span>
+			</div>
+
+			<div class="d-flex gap-2">
+				<input 
+				type="radio" 
+				name="provider_source_specialities[<%= index %>][board_certified]" 
+				value="no" 
+				id="certified_no_<%= index %>" 
+				<%= 'checked' if specialty.board_certified == false %>>
+				<span>NO</span>
+			</div>
+		</div>
+
+		<div id="certification_fields_<%= index %>" style="display: none;">
+			<div class="row">
+				<% ["certifying_board", "address_line_1", "address_line_2", "city", "state", "zipcode"].each do |field| %>
+				<div class="col-lg-6 mb-3">
+					<label class="text-dark-grey"><%= field.titleize.gsub("_", " ") %> <span class="text-danger">*</span></label>
+					<input type="text" name="provider_source_specialities[<%= index %>][<%= field %>]" value="<%= specialty.send(field) %>" class="form-control border-dark">
+				</div>
+				<% end %>
+				<div class="col-lg-6 mb-3">
+					<label class="text-dark-grey">Telephone <span class="text-danger">*</span></label>
+					<input type="text" name="provider_source_specialities[<%= index %>][telephone]" value="<%= specialty.telephone %>" class="form-control border-dark">
+				</div>
+				<div class="col-lg-6 mb-3">
+					<label class="text-dark-grey">Ext</label>
+					<input type="text" name="provider_source_specialities[<%= index %>][ext]" value="<%= specialty.ext %>" class="form-control border-dark">
+				</div>
+				<div class="col-lg-6 mb-3">
+					<label class="text-dark-grey">Fax Number</label>
+					<input type="text" name="provider_source_specialities[<%= index %>][fax_number]" value="<%= specialty.fax_number %>" class="form-control border-dark">
+				</div>
+				<div class="col-lg-6 mb-3">
+					<label class="text-dark-grey">Board Certificate Number</label>
+					<input type="text" name="provider_source_specialities[<%= index %>][bord_certificate_number]" value="<%= specialty.board_certificate_number %>" class="form-control border-dark">
+				</div>
+				<div class="col-lg-6 mb-3">
+					<label class="text-dark-grey">Initial Certification Date</label>
+					<input type="date" name="provider_source_specialities[<%= index %>][initial_certification_date]" value="<%= specialty.initial_certification_date %>" class="form-control border-dark">
+				</div>
+				<div class="col-lg-6 mb-3">
+					<label class="text-dark-grey">Expiration Certification Date</label>
+					<input type="date" name="provider_source_specialities[<%= index %>][expiration_certification_date]" value="<%= specialty.expiration_certification_date %>" class="form-control border-dark">
+				</div>
+				<div class="col-lg-6 mb-3">
+					<label class="text-dark-grey">Recertification Date</label>
+					<input type="date" name="provider_source_specialities[<%= index %>][recertification_date]" value="<%= specialty.recertification_date %>" class="form-control border-dark">
+				</div>
+			</div>
+		</div>
+
+		<div id="eligibility_section" style="display: none;">
+			<div class="d-flex align-items-center my-3 gap-3">
+				<label class="mb-0"><span class="text-danger">*</span>Are you eligible to be certified in this specialty?</label>
+				<div class="d-flex gap-2">
+					<input type="radio" name="provider_source_specialities[<%= index %>][eligible_certified]" value="yes" id="eligible_yes">
+					<span>YES</span>
+				</div>
+				<div class="d-flex gap-2">
+					<input type="radio" name="provider_source_specialities[<%= index %>][eligible_certified]" value="no" id="eligible_no">
+					<span>NO</span>
+				</div>
+			</div>
+
+			<!-- Admissibility Expiration Date (only if eligible is yes) -->
+			<div id="admissibility_expiration" class="mb-3" style="display: none;">
+				<label class="text-dark-grey">Admissibility Expiration Date</label>
+				<input type="date" name="provider_source_specialities[<%= index %>][admissibility_expiration_date]" class="form-control border-dark">
+			</div>
+		</div>
+
+		<div id="board-cert-section" style="display: none">
+			<!-- Board Exam Pending Section -->
+			<div class="d-flex align-items-center my-3 gap-3 specialties_board_exam_pending">
+				<label class="mb-0">Do you have board exam results pending for this specialty?</label>
+				<div class="d-flex gap-2">
+					<input type="radio" name="provider_source_specialities[<%= index %>][board_exam_results_pending]" value="yes" id="exam_pending_yes">
+					<span>YES</span>
+				</div>
+				<div class="d-flex gap-2">
+					<input type="radio" name="provider_source_specialities[<%= index %>][board_exam_results_pending]" value="no" id="exam_pending_no">
+					<span>NO</span>
+				</div>
+			</div>
+
+			<div id="pending_certification_fields" style="display: none;">
+				<div class="row">
+					<% ["certifying_board", "address_line_1", "address_line_2", "city", "state", "zipcode"].each do |field| %>
+					<div class="col-lg-6 mb-3">
+						<label class="text-dark-grey">Pending <%= field.titleize.gsub("_", " ") %></label>
+						<input type="text" name="provider_source_specialities[<%= index %>][pending_<%= field %>]" class="form-control border-dark">
+					</div>
+					<% end %>
+					<div class="col-lg-6 mb-3">
+						<label class="text-dark-grey">Pending Telephone</label>
+						<input type="text" name="provider_source_specialities[<%= index %>][pending_telephone]" class="form-control border-dark">
+					</div>
+					<div class="col-lg-6 mb-3">
+						<label class="text-dark-grey">Pending Ext</label>
+						<input type="text" name="provider_source_specialities[<%= index %>][pending_ext]" class="form-control border-dark">
+					</div>
+					<div class="col-lg-6 mb-3">
+						<label class="text-dark-grey">Pending Fax Number</label>
+						<input type="text" name="provider_source_specialities[<%= index %>][pending_fax_number]" class="form-control border-dark">
+					</div>
+					<div class="col-lg-6 mb-3">
+						<label class="text-dark-grey">Board Exam Date</label>
+						<input type="date" name="provider_source_specialities[<%= index %>][board_exam_date]" class="form-control border-dark">
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Shown only when specialties_board_exam_pending is NO -->
+		<div id="applied_certification_field" style="display: none !important;">
+			<div class="d-flex align-items-center my-3 gap-3">
+				<label class="mb-0">
+					<span class="text-danger">*</span>
+					Have you applied for this certification exam?
+				</label>
+				<div class="d-flex gap-2">
+					<input type="radio" name="provider_source_specialities[<%= index %>][applied_for_certification_exam]" value="yes" id="applied_yes">
+					<span>YES</span>
+				</div>
+				<div class="d-flex gap-2">
+					<input type="radio" name="provider_source_specialities[<%= index %>][applied_for_certification_exam]" value="no" id="applied_no">
+					<span>NO</span>
+				</div>
+			</div>
+		</div>
+		<!-- Accepted to Take Certification Exam -->
+		<div id="accepted_certification_field" style="display: none !important;">
+			<div class="d-flex align-items-center my-3 gap-3">
+				<label class="mb-0">
+					<span class="text-danger">*</span>
+					Have you been accepted to take this certification exam?
+				</label>
+				<div class="d-flex gap-2">
+					<input type="radio" name="provider_source_specialities[<%= index %>][accepted_for_certification_exam]" value="yes" id="accepted_yes">
+					<span>YES</span>
+				</div>
+				<div class="d-flex gap-2">
+					<input type="radio" name="provider_source_specialities[<%= index %>][accepted_for_certification_exam]" value="no" id="accepted_no">
+					<span>NO</span>
+				</div>
+			</div>
+			<!-- Admissibility Expiration Date (only if eligible is yes) -->
+			<div id="board-exm-date" class="mb-3" style="display: none;">
+				<label class="text-dark-grey">Board Exam Date (MM/DD/YYYY) </label>
+				<input type="date" name="provider_source_specialities[<%= index %>][board_exam_date]" class="form-control border-dark">
+			</div>
+		</div>
+		<div id="intend_accepted_certification_field" style="display: none !important;">
+			<div class="d-flex align-items-center my-3 gap-3">
+				<label class="mb-0">
+					<span class="text-danger">*</span>
+					Do you intend to apply for this certification exam?
+				</label>
+				<div class="d-flex gap-2">
+					<input type="radio" name="provider_source_specialities[<%= index %>][intend_applied_for_certification_exam]" value="yes" id="intend_accepted_yes">
+					<span>YES</span>
+				</div>
+				<div class="d-flex gap-2">
+					<input type="radio" name="provider_source_specialities[<%= index %>][intend_applied_for_certification_exam]" value="no" id="intend_accepted_no">
+					<span>NO</span>
+				</div>
+			</div>
+			<!-- Admissibility Expiration Date (only if eligible is yes) -->
+			<div id="intend-date-apply" class="mb-3" style="display: none;">
+				<label class="text-dark-grey">Date you intend to apply (MM/DD/YYYY)  </label>
+				<input type="date" name="provider_source_specialities[<%= index %>][intend_date_apply]" class="form-control border-dark">
+			</div>
+			<div id="no_board_exam_reason_field" style="display: none;">
+				<div class="mb-3">
+					<label class="text-dark-grey">
+						<span class="text-danger">*</span>
+						Please explain why you do not intend to sit for a Board exam.
+					</label>
+					<textarea name="provider_source_specialities[<%= index %>][specialties_no_board_exam_reason]" class="form-control border-dark" rows="4"></textarea>
+					<span>2500 characters max.</span>
+				</div>
+			</div>
+		</div>
+		<button type="button" class="btn btn-link text-danger position-absolute end-0 top-0 remove_speciality">
+	    <i class="bi bi-x-circle"></i> Remove
+	  </button>
+	</div>  
+</div>

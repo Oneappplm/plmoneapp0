@@ -58,82 +58,122 @@ class ProviderSourcesController < ApplicationController
 	      render(json: { error: "Failed to delete specialty" }, status: :unprocessable_entity)
 	  end
 
+	  if params[:delete_undergraduate_school_id].present?
+	    school = current_provider_source.provider_source_undergrad_schools.find_by(id: params[:delete_undergraduate_school_id])
+	    return school&.destroy ?
+	      render(json: { message: "Undergraduate school deleted successfully!" }, status: :ok) :
+	      render(json: { error: "Failed to delete undergraduate school" }, status: :unprocessable_entity)
+	  end
+
+	  if params[:delete_graduate_detail_id].present?
+	    school = current_provider_source.graduate_details.find_by(id: params[:delete_graduate_detail_id])
+	    return school&.destroy ?
+	      render(json: { message: "Graduate/professional school deleted successfully!" }, status: :ok) :
+	      render(json: { error: "Failed to delete graduate school" }, status: :unprocessable_entity)
+	  end
+
+	  if params[:delete_privilege_id].present?
+	    privilege = current_provider_source.hospital_privileges.find_by(id: params[:delete_privilege_id])
+	    return privilege&.destroy ?
+	      render(json: { message: "hospital privileges deleted successfully!" }, status: :ok) :
+	      render(json: { error: "Failed to delete hospital privileges" }, status: :unprocessable_entity)
+	  end
+
+	  if params[:delete_admitting_id].present?
+	    admitting = current_provider_source.admitting_arrangements.find_by(id: params[:delete_admitting_id])
+	    return admitting&.destroy ?
+	      render(json: { message: "admitting arrangements deleted successfully!" }, status: :ok) :
+	      render(json: { error: "Failed to delete admitting arrangements" }, status: :unprocessable_entity)
+	  end
+
 	  # === Autosave Logic ===
 	  field_name   = params[:field_name]
 	  value        = params[:value]
 	  specialty_id = params[:speciality_id] || params[:specialty_id]
 	  other_name_id = params[:other_name_id]
+	  undergrad_id  = params[:undergraduate_school_id]
+	  graduate_id   = params[:graduate_school_id]
+	  privilege_id   = params[:privilege_id]
+	  admitting_id   = params[:admitting_id]
 	  nested_form  = ActiveModel::Type::Boolean.new.cast(params[:nested_form])
 
-	  unless field_name.present? && value.present?
-	    return render json: { error: "Missing field name or value" }, status: :bad_request
+	  unless field_name.present?
+	    return render json: { error: "Missing field name" }, status: :bad_request
 	  end
 
-	  if field_name.include?("provider_source_specialities") && !nested_form
-	    return render json: { error: "Invalid nested specialty save attempt" }, status: :forbidden
-	  end
-
+	  # === Handle nested fields ===
 	  match = field_name.match(/\[(\d+)\]\[(\w+)\]$/)
-	  unless match
-	    return render json: { error: "Invalid field format" }, status: :unprocessable_entity
-	  end
 
-	  field = match[2]
+	  if match
+	    field = match[2]
 
-	  record =
-	    if field_name.include?("other_names")
-	      other_name_id.present? ?
-	        current_provider_source.other_names.find_or_initialize_by(id: other_name_id) :
-	        current_provider_source.other_names.new
-	    elsif field_name.include?("provider_source_specialities")
-	      specialty_id.present? ?
-	        current_provider_source.provider_source_specialities.find_or_initialize_by(id: specialty_id) :
-	        current_provider_source.provider_source_specialities.new
-	    else
-	      return render json: { error: "Unknown nested attribute" }, status: :unprocessable_entity
+	    record =
+	      if field_name.include?("other_names") && params[:nested_form] == "true"
+	        other_name_id.present? ?
+	          current_provider_source.other_names.find_or_initialize_by(id: other_name_id) :
+	          current_provider_source.other_names.new
+	      elsif field_name.include?("provider_source_specialities") && params[:nested_form] == "true"
+	        specialty_id.present? ?
+	          current_provider_source.provider_source_specialities.find_or_initialize_by(id: specialty_id) :
+	          current_provider_source.provider_source_specialities.new
+	      elsif field_name.include?("provider_source_undergrad_schools") && params[:nested_form] == "true"
+	        undergrad_id.present? ?
+	          current_provider_source.provider_source_undergrad_schools.find_or_initialize_by(id: undergrad_id) :
+	          current_provider_source.provider_source_undergrad_schools.new
+	      elsif field_name.include?("graduate_details") && params[:nested_form] == "true"
+	        graduate_id.present? ?
+	          current_provider_source.graduate_details.find_or_initialize_by(id: graduate_id) :
+	          current_provider_source.graduate_details.new
+	      elsif field_name.include?("hospital_privileges") && params[:nested_form] == "true"
+	        privilege_id.present? ?
+	          current_provider_source.hospital_privileges.find_or_initialize_by(id: privilege_id) :
+	          current_provider_source.hospital_privileges.new    
+	      elsif field_name.include?("admitting_arrangements") && params[:nested_form] == "true"
+	        admitting_id.present? ?
+	          current_provider_source.admitting_arrangements.find_or_initialize_by(id: admitting_id) :
+	          current_provider_source.admitting_arrangements.new    
+	      else
+	        return render json: { error: "Unknown nested attribute" }, status: :unprocessable_entity
+	      end
+
+	    unless record.respond_to?(field)
+	      return render json: { error: "Invalid field: #{field}" }, status: :unprocessable_entity
 	    end
 
-	  unless record.respond_to?(field)
-	    return render json: { error: "Invalid field: #{field}" }, status: :unprocessable_entity
-	  end
+	    # Convert boolean if needed
+	    converted_value =
+	      if record.has_attribute?(field) && record.column_for_attribute(field).type == :boolean
+	        case value.to_s.strip.downcase
+	        when "yes", "true", "1" then true
+	        when "no", "false", "0" then false
+	        else nil
+	        end
+	      else
+	        value
+	      end
 
-	  # Only update if value changed or it's a new record
-
-	  converted_value =
-		  if record.has_attribute?(field) && record.column_for_attribute(field).type == :boolean
-		    case value.to_s.strip.downcase
-		    when "yes", "true", "1" then true
-		    when "no", "false", "0" then false
-		    else nil
-		    end
-		  else
-		    value
-		  end
-
-	  if record.new_record? || record.send(field) != converted_value
-	    # Convert "yes"/"no" to boolean if applicable
-	    if record.has_attribute?(field) && record.column_for_attribute(field).type == :boolean
-	      record[field] = case value.to_s.strip.downcase
-	                      when "yes" then true
-	                      when "no"  then false
-	                      else value
-	                      end
+	    if record.new_record? || record.send(field) != converted_value
+	      record[field] = converted_value
+	      if record.save
+	        return render json: { message: "Saved successfully!", id: record.id }, status: :ok
+	      else
+	        return render json: { error: "Failed to save", details: record.errors.full_messages }, status: :unprocessable_entity
+	      end
 	    else
-	      record[field] = value
+	      return render json: { success: true, data_key: field_name, data_value: value }
 	    end
-	    if record.save
-	      return render json: { message: "Saved successfully!", id: record.id }, status: :ok
-	    else
-	      Rails.logger.error "Autosave failed for #{record.class.name} - #{field}: #{value} | Errors: #{record.errors.full_messages.join(', ')}"
-	      return render json: {
-	        error: "Failed to save",
-	        field: field,
-	        attempted_value: value,
-	        details: record.errors.full_messages
-	      }, status: :unprocessable_entity
-	    end
+
 	  else
-	    render json: { success: true, data_key: field_name, data_value: value }
+	    # === Handle flat fields (non-nested, fallback to provider_source.data) ===
+	    field_key = field_name.parameterize(separator: "_")
+	    data_record = current_provider_source.data.find_or_initialize_by(data_key: field_key)
+	    data_record.data_value = value.is_a?(Array) ? value.join(",") : value
+
+	    if data_record.save
+	      return render json: { success: true, data_key: field_key, data_value: value }
+	    else
+	      return render json: { error: "Failed to save field data", details: data_record.errors.full_messages }, status: :unprocessable_entity
+	    end
 	  end
 	end
 
@@ -192,36 +232,25 @@ class ProviderSourcesController < ApplicationController
 	  return unless params[:field_name].present?
 
 	  field_name = params[:field_name].parameterize(separator: '_')
+
+	  # 🚫 Skip fetching if it's part of the specialty section
+	  return if field_name.include?("provider_source_specialities")
+
 	  data = current_provider_source.data.find_or_create_by(data_key: field_name)
 
 	  other_names = current_provider_source.other_names.as_json(
 	    only: [:id, :name_type, :first_name, :middle_name, :last_name, :suffix, :date_started, :date_stopped, :in_use]
 	  )
 
-	  specialties = current_provider_source.provider_source_specialities.as_json(
-	    only: [
-	      :id, :ranking, :specialty, :board_certified, :certifying_board, :address_line_1, :address_line_2, :city, :state,
-	      :zipcode, :telephone, :ext, :fax_number, :bord_certificate_number, :initial_date, :exipration_date,
-	      :recertification_date, :eligible_certified, :admissibility_expiration_date, :board_exam_results_pending,
-	      :pending_certifying_board, :pending_address_line_1, :pending_address_line_2, :pending_city, :pending_state,
-	      :pending_zipcode, :pending_telephone, :pending_ext, :pending_fax_number, :board_exam_date,
-	      :applied_for_certification_exam, :accepted_for_certification_exam, :intend_applied_for_certification_exam,
-	      :intend_date_apply, :specialties_no_board_exam_reason
-	    ]
-	  )
-
 	  respond_to do |format|
 	    format.json do
 	      render json: {
 	        value: filtered_value(data&.data_value, field_name),
-	        other_names: other_names,
-	        specialties: specialties
+	        other_names: other_names
 	      }
 	    end
 	  end
 	end
-
-
 
 	def filtered_value field_value, field_name
 		case field_name

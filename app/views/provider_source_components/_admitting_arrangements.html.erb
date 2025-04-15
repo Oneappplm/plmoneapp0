@@ -1,52 +1,59 @@
-<div class="bg-light bg-gradient p-3">
-	<h4 class="fw-semibold text-secondary mb-3">Inpatient Coverage Plan</h4>
-	<div class="row mb-3">
-		<div class="col-lg-12">
-			<label class="text-dark-grey">Name of Admitting Physician/Practice/Clinic/Group</label>
-			<input type="text" class="form-control border-dark" name="admitting-physician-practice-clinic-group" placeholder="Name of Admitting Physician/Practice/Clinic/Group">
-		</div>
-	</div>
-	<div class="row mb-3">
-		<div class="col-lg-12">
-			<label class="text-dark-grey">Facility Location <span class="text-danger"> *</span></label>
-			<%= HtmlUtils::dropdown name: 'admit_state' %>
-		</div>	
-	</div>
-	<div class="row mb-3">
-		<div class="col-lg-12">
-			<label class="text-dark-grey">Facility Name<span class="text-danger">*</span></label>
-			<input type="text" class="form-control border-dark" name="facility-name" placeholder="Facility Name">
-		</div>
-	</div>
-	<div class="row mb-3">
-		<div class="col-lg-6">
-			<label class="text-dark-grey">Address Line 1<span class="text-danger">*</span></label>
-			<input type="text" class="form-control border-dark" name="facility-address-line1" placeholder="Address Line 1">
-		</div>
-		<div class="col-lg-6">
-			<label class="text-dark-grey">Address Line 2</label>
-			<input type="text" class="form-control border-dark" name="facility-address-line2" placeholder="Address Line 2">
-		</div>
-	</div>
-	<div class="row mb-3">
-		<div class="col-lg-6">
-			<label class="text-dark-grey">City</label>
-			<input type="text" class="form-control border-dark" name="facility-city" placeholder="City">
-		</div>
-		<div class="col-lg-6">
-			<label class="text-dark-grey">Zip Code <span class="text-danger">*</span></label>
-			<input type="text" class="form-control border-dark" name="facility-zipcode" placeholder="Zip Code">
-		</div>
-	</div>
-	<div class="row mb-3">
-		<label class="text-dark-grey">Please explain your admitting arrangements.</label>
-		<textarea class="form-control border-dark" rows="8" placeholder="2500 max characters" name="admitting-arrangements"></textarea>
-	</div>
+<div class="admitting-arrangements-entry position-relative" data-id="<%= admitting&.id %>">
+  <input type="hidden" name="admitting_arrangements[<%= index %>][id]" value="<%= admitting&.id %>">
+  <div class="bg-light bg-gradient p-3">
+    <h4 class="fw-semibold text-secondary mb-3">Inpatient Coverage Plan</h4>
 
-<!-- <div class="row">
-	<div class="col-lg-12 mb-3 d-flex justify-content-end">
-		  	<button class="btn btn-primary">Save This Record</button>
-	</div>
-</div> -->
+    <div class="row mb-3">
+      <div class="col-lg-12">
+        <label class="text-dark-grey">Name of Admitting Physician/Practice/Clinic/Group</label>
+        <input type="text" class="form-control border-dark" name="admitting_arrangements[<%= index %>][admitting_physician_practice_clinic_group]" placeholder="Name of Admitting Physician/Practice/Clinic/Group" value="<%= admitting&.admitting_physician_practice_clinic_group %>">
+      </div>
+    </div>
 
+    <div class="row mb-3">
+      <div class="col-lg-12">
+        <label class="text-dark-grey">Facility Location <span class="text-danger">*</span></label>
+        <select name="admitting_arrangements[<%= index %>][admit_state]" class="form-select border-dark">
+          <option value="">Select State</option>
+          <% State.all.each do |state| %>
+            <option value="<%= state.alpha_code %>" <%= 'selected' if admitting&.admit_state == state.alpha_code %>><%= state.name %></option>
+          <% end %>
+        </select>
+      </div>  
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-12">
+        <label class="text-dark-grey">Facility Name<span class="text-danger">*</span></label>
+        <input type="text" class="form-control border-dark" name="admitting_arrangements[<%= index %>][facility_name]" placeholder="Facility Name" value="<%= admitting&.facility_name %>">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Address Line 1<span class="text-danger">*</span></label>
+        <input type="text" class="form-control border-dark" name="admitting_arrangements[<%= index %>][facility_address_line1]" placeholder="Address Line 1" value="<%= admitting&.facility_address_line1 %>">
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Address Line 2</label>
+        <input type="text" class="form-control border-dark" name="admitting_arrangements[<%= index %>][facility_address_line2]" placeholder="Address Line 2" value="<%= admitting&.facility_address_line2 %>">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">City</label>
+        <input type="text" class="form-control border-dark" name="admitting_arrangements[<%= index %>][facility_city]" placeholder="City" value="<%= admitting&.facility_city %>">
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Zip Code <span class="text-danger">*</span></label>
+        <input type="text" class="form-control border-dark" name="admitting_arrangements[<%= index %>][facility_zipcode]" placeholder="Zip Code" value="<%= admitting&.facility_zipcode %>">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <label class="text-dark-grey">Please explain your admitting arrangements.</label>
+      <textarea class="form-control border-dark" rows="8" placeholder="2500 max characters" name="admitting_arrangements[<%= index %>][admitting_arrangements]"><%= admitting&.admitting_arrangements %></textarea>
+    </div>
+  </div>
 </div>

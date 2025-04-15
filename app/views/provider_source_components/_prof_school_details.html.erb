@@ -1,226 +1,197 @@
-<div class="row mb-3">
-	<div class="col-lg-6">
-		<label class="text-dark-grey">Education Type <span class="text-danger">*</span></label>
-						<%= select_tag :education_types, 
-							options_for_select(
-								[['Select Option', '']] + 
-								(@education_types.map(&:name)).uniq.map { |name| [name, name] }
-							), 
-							required: true, class: 'form-select border-dark', placeholder: 'Education Type' %>
-	</div>
-	<div class="col-lg-6">
-		<%= HtmlUtils::dropdown name: 'prof_school_location', label: 'Graduate/Professional School Location <span class="text-danger"> *</span>' %>
-	</div>
-</div>
-<div class="row mb-3">
-	<div class="col-lg-12">
-		<label class="text-dark-grey">Professional School Name <span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" name="psd-psn" placeholder="Professional School Name">
-	</div>
-</div>
+<div class="graduate-school-entry border rounded p-3 my-3 position-relative" data-id="<%= graduate_detail&.id %>">
+  <input type="hidden" name="graduate_details[<%= index %>][id]" value="<%= graduate_detail&.id %>">
 
-<div class="row mb-3">
-	<div class="col-lg-6">
-		<label class="text-dark-grey">Address Line 1 <span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" name="psd-address-line1" placeholder="Address Line 1 ">
-	</div>
-	<div class="col-lg-6">
-		<label class="text-dark-grey">Address Line 2</label>
-		<input type="text" class="form-control border-dark" name="psd-address-line2" placeholder="Address Line 2">
-	</div>
-</div>
+  <div class="row mb-3">
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Graduate School Location <span class="text-danger">*</span></label>
+      <select name="graduate_details[<%= index %>][location]" class="form-select border-dark">
+        <option value="">Select State</option>
+        <% State.all.each do |state| %>
+          <option value="<%= state.alpha_code %>" <%= 'selected' if graduate_detail.location == state.alpha_code %>><%= state.name %></option>
+        <% end %>
+      </select>
+    </div>
+  </div>
 
-<div class="row mb-3">
-	<div class="col-lg-6">
-		<label class="text-dark-grey">City <span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" name="psd-city" placeholder="City">
-	</div>
-	<div class="col-lg-6">
-		<label class="text-dark-grey">Zip Code <span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" name="psd-zipcode" placeholder="Zip Code">
-	</div>
-</div>
+  <div class="row mb-3">
+    <div class="col-lg-12">
+      <label class="text-dark-grey">Professional School Name <span class="text-danger">*</span></label>
+      <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][professional_school_name]" value="<%= graduate_detail.professional_school_name %>">
+    </div>
+  </div>
 
-<div class="row mb-3">
-	<div class="col-lg-6">
-		<div class="row">
-			<div class="col-lg-8">
-				<label class="text-dark-grey">Telephone Number <span class="text-danger">*</span></label>
-				<input type="text" class="form-control border-dark" name="psd-telephone-number" placeholder="Telephone Number">
-			</div>
-			<div class="col-lg-4">
-				<label class="text-dark-grey">Ext</label>
-				<input type="text" class="form-control border-dark" name="psd-ext" placeholder="Ext">
-			</div>
-		</div>
-	</div>
-	<div class="col-lg-6">
-		<label class="text-dark-grey">Fax Number</label>
-		<input type="text" class="form-control border-dark" name="psd-fax-number" placeholder="Fax Number">
-	</div>
-</div>
-<div class="row mb-3">
-<div class="col-lg-6">
-		<label class="text-dark-grey">Email</label>
-		<input type="email"  class="form-control border-dark" name="psd-email" placeholder="Email">
-</div>
-</div>
-<div class="row mb-3">
-<div class="col-lg-6">
-    <label class="text-dark-grey">Graduate Type</label>
-		<select name="psd-graduate-type" class="form-select border-dark">
-		<option value="">Graduate Type</option>
-		<option>Fifth Pathway Graduate</option>
-		<option>Non-US Graduate</option>
-		<option>US Graduate</option>						
-		</select>
-</div>
-</div>
-<div class="row mb-3">
-	<div class="col-lg-12">
-			<label class="text-dark-grey">Specialization</label>
-			<input type="text" class="form-control border-dark" name="psd-specialization" placeholder="Specialization">
-	</div>
-</div>
-<div class="row mb-3">
-	<div class="col-lg-12">
-		<label class="text-dark-grey">Degree Awarded <span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" name="psd-degree-awarded" placeholder="Degree Awarded">
-	</div>
-</div>
-<div class="row mb-3">
-	<div class="col-lg-6">
-		<label class="text-dark-grey">Faculty Director First Name</label>
-		<input type="text" class="form-control border-dark" name="psd-fd-first-name" placeholder="Faculty Director First Name">
-	</div>
-	<div class="col-lg-6">
-		<label class="text-dark-grey">Faculty Director Last Name</label>
-		<input type="text" class="form-control border-dark" name="psd-fd-last-name" placeholder="Faculty Director Last Name">
-	</div>
-</div>
-<div class="row mb-3">
-	<div class="col-lg-12">
-		<label class="text-dark-grey">Director Degree</label>
-		<input type="text" name="psd-director-degree" class="form-control border-dark" placeholder="Director Degree">
-	</div>
-</div>
+  <div class="row mb-3">
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Address Line 1<span class="text-danger">*</span></label>
+      <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][address_line1]" placeholder="Address Line 1" value="<%= graduate_detail.address_line1 %>">
+    </div>
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Address Line 2</label>
+      <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][address_line2]" placeholder="Address Line 2" value="<%= graduate_detail.address_line2 %>">
+    </div>
+  </div>
 
-<div class="row mb-3">
-	<div class="col-lg-6">
-		<label class="text-dark-grey">Start Date</label>
-		<input type="date" class="form-control border-dark" name="prof_date_start">
-	</div>
-	<div class="col-lg-6">
-		<label class="text-dark-grey">End(Graduation) Date <span class="text-danger">*</span></label>
-		<input type="date" class="form-control border-dark" name="prof_date_graduation">
-	</div>
+  <div class="row mb-3">
+    <div class="col-lg-6">
+      <label class="text-dark-grey">City<span class="text-danger">*</span></label>
+      <input type="text" class="form-control border-dark" required name="graduate_details[<%= index %>][city]" placeholder="City" value="<%= graduate_detail.city %>">
+    </div>
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Zip Code<span class="text-danger">*</span></label>
+      <input type="text" class="form-control border-dark" required name="graduate_details[<%= index %>][zip_code]" placeholder="Zip Code" value="<%= graduate_detail.zip_code %>">
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-lg-6">
+      <div class="row">
+        <div class="col-lg-8">
+          <label class="text-dark-grey">Telephone Number</label>
+          <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][telephone_number]" placeholder="Telephone Number" value="<%= graduate_detail.telephone_number %>">
+        </div>
+        <div class="col-lg-4">
+          <label class="text-dark-grey">Ext</label>
+          <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][ext]" placeholder="Ext" value="<%= graduate_detail.telephone_ext %>">
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Fax Number</label>
+      <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][fax_number]" placeholder="Fax Number" value="<%= graduate_detail.fax_number %>">
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-lg-5">
+      <label class="text-dark-grey">Email</label>
+      <input type="email" class="form-control border-dark" name="graduate_details[<%= index %>][email]" placeholder="Email" value="<%= graduate_detail.email %>">
+    </div>
+  </div>
+
+  <div class="graduate-fields mb-4" data-index="<%= index %>">
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Graduate Type</label>
+        <select name="graduate_details[<%= index %>][graduate_type]" class="form-select border-dark">
+          <option value="">Graduate Type</option>
+          <option <%= 'selected' if graduate_detail.graduate_type == 'Fifth Pathway Graduate' %>>Fifth Pathway Graduate</option>
+          <option <%= 'selected' if graduate_detail.graduate_type == 'Non-US Graduate' %>>Non-US Graduate</option>
+          <option <%= 'selected' if graduate_detail.graduate_type == 'US Graduate' %>>US Graduate</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-12">
+        <label class="text-dark-grey">Specialization</label>
+        <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][specialization]" placeholder="Specialization" value="<%= graduate_detail.specialization %>">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-12">
+        <label class="text-dark-grey">Degree Awarded <span class="text-danger">*</span></label>
+        <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][degree_awarded]" placeholder="Degree Awarded" value="<%= graduate_detail.degree_awarded %>">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Faculty Director First Name</label>
+        <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][faculty_director_first_name]" placeholder="Faculty Director First Name" value="<%= graduate_detail.faculty_director_first_name %>">
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Faculty Director Last Name</label>
+        <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][faculty_director_last_name]" placeholder="Faculty Director Last Name" value="<%= graduate_detail.faculty_director_last_name %>">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-12">
+        <label class="text-dark-grey">Director Degree</label>
+        <input type="text" name="graduate_details[<%= index %>][director_degree]" class="form-control border-dark" placeholder="Director Degree" value="<%= graduate_detail.director_degree %>">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Start Date</label>
+        <input type="date" class="form-control border-dark" name="graduate_details[<%= index %>][start_date]" value="<%= graduate_detail.start_date %>">
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">End(Graduation) Date <span class="text-danger">*</span></label>
+        <input type="date" class="form-control border-dark" name="graduate_details[<%= index %>][graduation_date]" value="<%= graduate_detail.graduation_date %>">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-12">
+        <div class="d-flex justify-content-between">
+          <label class="text-dark-grey">Did you complete your professional education at this school? <span class="text-danger">*</span></label>
+          <div class="d-flex me-4 gap-2">
+            <div>
+              <input type="radio" name="graduate_details[<%= index %>][education_completed]" class="radio-with-form" data-form="prof_school_reason_<%= index %>" value="true" <%= 'checked' if graduate_detail.education_completed == true %> >
+              <span>YES</span>
+            </div>
+            <div>
+              <input type="radio" name="graduate_details[<%= index %>][education_completed]" class="radio-with-form" data-form="prof_school_reason_<%= index %>" value="false" <%= 'checked' if graduate_detail.education_completed == false %> >
+              <span>NO</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="prof_school_reason_<%= index %>" style="<%= graduate_detail.education_completed == false ? '' : 'display: none;' %>">
+        <div class="form-group">
+          <label>Reason for not completing <span class="text-danger">*</span></label>
+          <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][incomplete_education_reason]" value="<%= graduate_detail.incomplete_education_reason %>">
+        </div>
+      </div>
+
+      <div class="border p-3 mt-3">
+        <h6 class="fw-bold">ECFMG</h6>
+
+        <div class="d-flex align-items-center gap-3">
+          <label class="mb-0">Are you ECFMG certified (non-U.S./Canadian graduates only)?</label>
+          <div class="d-flex gap-2">
+            <input type="radio" name="graduate_details[<%= index %>][ecfmg_certified]" value="true" <%= 'checked' if graduate_detail.ecfmg_certified == true %> >
+            <span>YES</span>
+          </div>
+          <div class="d-flex gap-2">
+            <input type="radio" name="graduate_details[<%= index %>][ecfmg_certified]" value="false" <%= 'checked' if graduate_detail.ecfmg_certified == false %> >
+            <span>NO</span>
+          </div>
+        </div>
+
+        <div id="ecfmg_fields_<%= index %>" style="<%= graduate_detail.ecfmg_certified ? '' : 'display: none;' %> margin-top: 15px;">
+          <div class="row mb-2">
+            <div class="col-lg-6">
+              <label class="text-dark-grey">ECFMG Certification Number</label>
+              <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][ecfmg_number]" value="<%= graduate_detail.ecfmg_number %>">
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-lg-6">
+              <label class="text-dark-grey">Issue Date (MM/DD/YYYY)</label>
+              <input type="date" class="form-control border-dark" name="graduate_details[<%= index %>][ecfmg_issue_date]" value="<%= graduate_detail.ecfmg_issue_date %>">
+            </div>
+            <div class="col-lg-6">
+              <label class="text-dark-grey">Valid Through Date (MM/DD/YYYY)</label>
+              <input type="date" class="form-control border-dark" name="graduate_details[<%= index %>][ecfmg_valid_through]" value="<%= graduate_detail.ecfmg_valid_through %>">
+            </div>
+          </div>
+
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" name="graduate_details[<%= index %>][ecfmg_permanent]" value="true" <%= 'checked' if graduate_detail.ecfmg_permanent %>>
+            <label class="form-check-label">Permanent</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button type="button" class="btn btn-link text-danger position-absolute end-0 top-0 remove_graduate_school">
+    <i class="bi bi-x-circle"></i> Remove
+  </button>
 </div>
-<div class="row mb-3">
-   		<div class="col-lg-12">
-			<div class="d-flex justify-content-between">
-				<label class="text-dark-grey">Did you complete your professional education at this school? <span class="text-danger"> *</span></label>
-					<div class="d-flex me-4 gap-2">
-						<div class="gap-2">
-							<input type="radio" name="incomplete_prof" class="radio-with-form" data-form='prof_school_reason' value="no" checked='checked' >
-							<span>YES</span>
-						</div>	
-						<div class="gap-2">
-							<input type="radio" name="incomplete_prof" class="radio-with-form" data-form='prof_school_reason' value="yes" >
-							<span>NO</span>
-						</div>
-					</div>
-			</div>	
-		</div>	
-		
-		<div class="<%= toggle_hide_current_provider_source('incomplete_prof', @provider) %>" id="prof_school_reason">
-			<%= render partial: 'provider_source_components/prof_school_reason'%>
-		</div>
-					
-		<div class="border p-3">
-			<h6 class="fw-bold">ECFMG</h6>
-			
-			<div class="d-flex align-items-center gap-3">
-				<label class="mb-0">Are you ECFMG certified (non-U.S./Canadian graduates only)?</label>
-				
-				<div class="d-flex gap-2">
-					<input type="radio" name="ecfmg_certified" value="yes" id="ecfmg_yes">
-					<span>YES</span>
-				</div>
-
-				<div class="d-flex gap-2">
-					<input type="radio" name="ecfmg_certified" value="no" id="ecfmg_no">
-					<span>NO</span>
-				</div>
-			</div>
-
-			<!-- ECFMG Certification Fields (Initially Hidden) -->
-			<div id="ecfmg_fields" style="display: none; margin-top: 15px;">
-				<div class="row mb-2">
-					<div class="col-lg-6">
-						<label class="text-dark-grey">ECFMG Certification Number</label>
-						<input type="text" class="form-control border-dark" name="psd-ecfmg-number" placeholder="ECFMG Certification Number">
-					</div>
-				</div>
-
-				<div class="row mb-2">
-					<div class="col-lg-6">
-						<label class="text-dark-grey">Issue Date (MM/DD/YYYY)</label>
-						<input type="date" class="form-control border-dark" name="prof_issue_start">
-					</div>
-					<div class="col-lg-6">
-						<label class="text-dark-grey">Valid Through Date (MM/DD/YYYY)</label>
-						<input type="date" class="form-control border-dark" name="prof_vaild_start">
-					</div>
-				</div>
-
-				<div class="form-check">
-					<input type="checkbox" class="form-check-input" id="permanent_cert">
-					<label class="form-check-label" for="permanent_cert">Permanent</label>
-				</div>
-			</div>
-		</div>
-		<!-- <div class="row mb-3">
-			<div class="d-flex align-items-center my-3">
-			<%= HtmlUtils.radio_toggle name: 'incomplete_prof',
-					label: 'Did you not complete your undergraduate education at this school? <span class="text-danger"> *</span>',
-				toshow: 'prof_school_reason'
-			%>
-			<input type="hidden" id="incomplete_prof" name="incomplete_prof" value="no">
-			</div>
-			<div id="prof_school_reason" class="d-none">
-				<%= render partial: 'provider_source_components/prof_school_reason'%>
-			</div>
-			</div> 
-
-			<div class="row">
-				<div class="col-lg-12 mb-3 d-flex justify-content-end">
-						<button class="btn btn-primary">Save This Record</button>
-				</div>
-			</div>
-			-->
-</div>
-
-<!-- JavaScript for Toggling Fields -->
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const yesOption = document.getElementById("ecfmg_yes");
-    const noOption = document.getElementById("ecfmg_no");
-    const fieldsDiv = document.getElementById("ecfmg_fields");
-
-    // Default "No" ko select karo aur fields ko hide rakho
-    noOption.checked = true;
-    fieldsDiv.style.display = "none";
-
-    function toggleFields() {
-      if (yesOption.checked) {
-        fieldsDiv.style.display = "block";
-      } else {
-        fieldsDiv.style.display = "none";
-      }
-    }
-
-    yesOption.addEventListener("change", toggleFields);
-    noOption.addEventListener("change", toggleFields);
-  });
-</script>
-

@@ -98,6 +98,7 @@
 								  <div id="other_names_container">
 								    <% current_provider_source.other_names.each_with_index do |other_name, index| %>
 								      <div class="row other-name-entry" data-id="<%= other_name.id %>">
+								      	<%= hidden_field_tag :other_name_id, other_name.id %>
 								        <div class="col-lg-12 card py-3 mb-3">
 								          <h3>Other Names <i class="bi bi-info-circle text-primary fs-5"></i></h3>
 								          <div class="other-name-form">
@@ -385,13 +386,14 @@
 		($(this).val() == 'yes') ?	$('#other_name_field').removeClass('d-none') : $('#other_name_field').addClass('d-none');
 	})
 	$(document).ready(function () {
-	  let index = $("#other_names_container .other-name-entry").length; // Start index at existing count
+	  let index = $("#other_names_container .other-name-entry").length;
+	  const debounceTimeouts = {}; // For debounce per field
 
 	  $("#add_other_name").on("click", function () {
 	    let newEntry = $("#other_name_field").clone();
 	    newEntry.removeClass("d-none").css("display", "block").removeAttr("id");
 
-	    // Clear all input/select values
+	    // Clear values and update names
 	    newEntry.find("input, select").each(function () {
 	      let oldName = $(this).attr("name");
 	      if (oldName) {
@@ -400,17 +402,18 @@
 	      }
 
 	      if ($(this).is("select")) {
-	        $(this).val(""); // Reset select
+	        $(this).val("");
 	      } else if ($(this).attr("type") === "checkbox" || $(this).attr("type") === "radio") {
-	        $(this).prop("checked", false); // Uncheck
+	        $(this).prop("checked", false);
 	      } else {
-	        $(this).val(""); // Clear text input
+	        $(this).val("");
 	      }
+
+	      $(this).data("last-saved-value", ""); // Initialize last saved value
 	    });
 
-	    newEntry.attr("data-id", ""); // Clear any data-id
-
-	    index++; // Increment index
+	    newEntry.attr("data-id", ""); // Reset data-id
+	    index++;
 	    $("#other_names_container").append(newEntry);
 	  });
 
@@ -429,41 +432,49 @@
 	        headers: { "X-CSRF-Token": $("meta[name='csrf-token']").attr("content") },
 	        success: function () {
 	          console.log("Other Name entry deleted.");
-	        },
+	        }
 	      });
 	    }
 	  });
 
-	  // Autosave
-	  $(document).on("change", "#other_names_container input, #other_names_container select", function () {
-	    let field = $(this).attr("name");
-	    let value = $(this).val();
-	    let otherNameId = $(this).closest(".other-name-entry").data("id");
+	  let autosaveTimeout;
 
-	    $.ajax({
-	      url: "/provider_sources/autosave",
-	      type: "POST",
-	      dataType: "json",
-	      data: {
-	        field_name: field,
-	        value: value,
-	        other_name_id: otherNameId
-	      },
-	      headers: {
-	        "X-CSRF-Token": $("meta[name='csrf-token']").attr("content")
-	      },
-	      success: function (response) {
-	        if (response.id) {
-	          let inputElement = $('[name="' + field + '"]');
-	          let entry = inputElement.closest('.other-name-entry');
-	          entry.attr('data-id', response.id);
-	        }
-	      },
-	      error: function (xhr, status, error) {
-	        console.error("Autosave failed:", error);
-	      }
-	    });
-	  });
+		$(document).on("input", "#other_names_container input, #other_names_container select", function () {
+		  const $input = $(this);
+		  const $entry = $input.closest(".other-name-entry");
+
+		  // Delay to avoid immediately sending before ID is set
+		  clearTimeout(autosaveTimeout);
+		  autosaveTimeout = setTimeout(() => {
+		    let field = $input.attr("name");
+		    let value = $input.val();
+		    let otherNameId = $entry.data("id");
+
+		    $.ajax({
+		      url: "/provider_sources/autosave",
+		      type: "POST",
+		      dataType: "json",
+		      data: {
+		        field_name: field,
+		        value: value,
+		        other_name_id: otherNameId,
+		        nested_form: true
+		      },
+		      headers: {
+		        "X-CSRF-Token": $("meta[name='csrf-token']").attr("content")
+		      },
+		      success: function (response) {
+		        if (response.id && !otherNameId) {
+		          // Set new ID only once
+		          $entry.attr("data-id", response.id);
+		        }
+		      },
+		      error: function (xhr, status, error) {
+		        console.error("Autosave failed:", error);
+		      }
+		    });
+		  }, 800); // Debounce slightly to avoid race
+		});
 	});
 </script>
 
