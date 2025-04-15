@@ -33,442 +33,21 @@
             <i class="bi bi-info-circle" style="font-size: 20px;"></i>
             <small class="ms-2 fw-semibold text-dark-grey">Please enter all practicing specialty information.</small>
           </div>
-
-          <div id="specialties_container">
-            <% current_provider_source.provider_source_specialities.each_with_index do |specialty, index| %>
-              <div class="row specialties-entry" data-id="<%= specialty&.id %>">
-                <div class="d-flex align-items-center divider gap-3 my-3">
-                  <span class="line flex-grow-1 bg-medium-grey"></span>
-                  <div class="bg-medium-grey rounded px-3 py-2">
-                    <h6 class="my-0 text-secondary">SPECIALTY</h6>
-                  </div>
-                  <span class="line flex-grow-1 bg-medium-grey"></span>
-                </div>
-
-                <div class="row mb-3">
-                  <div class="col-lg-6">
-                    <div class="form-group">
-                      <label class="text-dark-grey">Ranking <span class="text-danger">*</span></label>
-                      <select name="provider_source_specialities[<%= index %>][ranking]" class="form-select border-dark">
-                        <option value="">Ranking*</option>
-                        <option value="Primary">Primary</option>
-                        <option value="Secondary">Secondary</option>
-                        <option value="Tertiary">Tertiary</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-lg-6">
-                    <div class="form-group">
-                      <%= HtmlUtils::dropdown name: "provider_source_specialities[#{index}][specialty]", label: 'Specialty <span class="text-danger"> *</span>' %>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Certified Specialty Section -->
-                <div class="d-flex align-items-center my-3 gap-3">
-                  <label class="mb-0"><span class="text-danger">*</span> Are/We you certified by any board in this specialty?</label>
-                  <div class="d-flex gap-2">
-                    <input type="radio" name="provider_source_specialities[<%= index %>][board_certified]" value="yes" id="certified_yes">
-                    <span>YES</span>
-                  </div>
-                  <div class="d-flex gap-2">
-                    <input type="radio" name="provider_source_specialities[<%= index %>][board_certified]" value="no" id="certified_no">
-                    <span>NO</span>
-                  </div>
-                </div>
-
-                <div id="certification_fields" style="display: none;">
-                  <div class="row">
-                    <% ["certifying_board", "address_line_1", "address_line_2", "city", "state", "zipcode"].each do |field| %>
-                      <div class="col-lg-6 mb-3">
-                        <label class="text-dark-grey"><%= field.titleize.gsub("_", " ") %> <span class="text-danger">*</span></label>
-                        <input type="text" name="provider_source_specialities[<%= index %>][<%= field %>]" class="form-control border-dark">
-                      </div>
-                    <% end %>
-                    <div class="col-lg-6 mb-3">
-                      <label class="text-dark-grey">Telephone <span class="text-danger">*</span></label>
-                      <input type="text" name="provider_source_specialities[<%= index %>][telephone]" class="form-control border-dark">
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                      <label class="text-dark-grey">Ext</label>
-                      <input type="text" name="provider_source_specialities[<%= index %>][ext]" class="form-control border-dark">
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                      <label class="text-dark-grey">Fax Number</label>
-                      <input type="text" name="provider_source_specialities[<%= index %>][fax_number]" class="form-control border-dark">
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                      <label class="text-dark-grey">Board Certificate Number</label>
-                      <input type="text" name="provider_source_specialities[<%= index %>][bord_certificate_number]" class="form-control border-dark">
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                      <label class="text-dark-grey">Initial Certification Date</label>
-                      <input type="date" name="provider_source_specialities[<%= index %>][initial_date]" class="form-control border-dark">
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                      <label class="text-dark-grey">Expiration Certification Date</label>
-                      <input type="date" name="provider_source_specialities[<%= index %>][exipration_date]" class="form-control border-dark">
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                      <label class="text-dark-grey">Recertification Date</label>
-                      <input type="date" name="provider_source_specialities[<%= index %>][recertification_date]" class="form-control border-dark">
-                    </div>
-                  </div>
-                </div>
-
-                <div id="eligibility_section" style="display: none;">
-                  <div class="d-flex align-items-center my-3 gap-3">
-                    <label class="mb-0"><span class="text-danger">*</span>Are you eligible to be certified in this specialty?</label>
-                    <div class="d-flex gap-2">
-                      <input type="radio" name="provider_source_specialities[<%= index %>][eligible_certified]" value="yes" id="eligible_yes">
-                      <span>YES</span>
-                    </div>
-                    <div class="d-flex gap-2">
-                      <input type="radio" name="provider_source_specialities[<%= index %>][eligible_certified]" value="no" id="eligible_no">
-                      <span>NO</span>
-                    </div>
-                  </div>
-
-                  <!-- Admissibility Expiration Date (only if eligible is yes) -->
-                  <div id="admissibility_expiration" class="mb-3" style="display: none;">
-                    <label class="text-dark-grey">Admissibility Expiration Date</label>
-                    <input type="date" name="provider_source_specialities[<%= index %>][admissibility_expiration_date]" class="form-control border-dark">
-                  </div>
-                </div>
-
-                <div id="board-cert-section" style="display: none">
-                  <!-- Board Exam Pending Section -->
-                  <div class="d-flex align-items-center my-3 gap-3 specialties_board_exam_pending">
-                    <label class="mb-0">Do you have board exam results pending for this specialty?</label>
-                    <div class="d-flex gap-2">
-                      <input type="radio" name="provider_source_specialities[<%= index %>][board_exam_results_pending]" value="yes" id="exam_pending_yes">
-                      <span>YES</span>
-                    </div>
-                    <div class="d-flex gap-2">
-                      <input type="radio" name="provider_source_specialities[<%= index %>][board_exam_results_pending]" value="no" id="exam_pending_no">
-                      <span>NO</span>
-                    </div>
-                  </div>
-
-                  <div id="pending_certification_fields" style="display: none;">
-                    <div class="row">
-                      <% ["certifying_board", "address_line_1", "address_line_2", "city", "state", "zipcode"].each do |field| %>
-                        <div class="col-lg-6 mb-3">
-                          <label class="text-dark-grey">Pending <%= field.titleize.gsub("_", " ") %></label>
-                          <input type="text" name="provider_source_specialities[<%= index %>][pending_<%= field %>]" class="form-control border-dark">
-                        </div>
-                      <% end %>
-                      <div class="col-lg-6 mb-3">
-                        <label class="text-dark-grey">Pending Telephone</label>
-                        <input type="text" name="provider_source_specialities[<%= index %>][pending_telephone]" class="form-control border-dark">
-                      </div>
-                      <div class="col-lg-6 mb-3">
-                        <label class="text-dark-grey">Pending Ext</label>
-                        <input type="text" name="provider_source_specialities[<%= index %>][pending_ext]" class="form-control border-dark">
-                      </div>
-                      <div class="col-lg-6 mb-3">
-                        <label class="text-dark-grey">Pending Fax Number</label>
-                        <input type="text" name="provider_source_specialities[<%= index %>][pending_fax_number]" class="form-control border-dark">
-                      </div>
-                      <div class="col-lg-6 mb-3">
-                        <label class="text-dark-grey">Board Exam Date</label>
-                        <input type="date" name="provider_source_specialities[<%= index %>][board_exam_date]" class="form-control border-dark">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Shown only when specialties_board_exam_pending is NO -->
-                <div id="applied_certification_field" style="display: none !important;">
-                  <div class="d-flex align-items-center my-3 gap-3">
-                    <label class="mb-0">
-                      <span class="text-danger">*</span>
-                      Have you applied for this certification exam?
-                    </label>
-                    <div class="d-flex gap-2">
-                      <input type="radio" name="provider_source_specialities[<%= index %>][applied_for_certification_exam]" value="yes" id="applied_yes">
-                      <span>YES</span>
-                    </div>
-                    <div class="d-flex gap-2">
-                      <input type="radio" name="provider_source_specialities[<%= index %>][applied_for_certification_exam]" value="no" id="applied_no">
-                      <span>NO</span>
-                    </div>
-                  </div>
-                </div>
-                <!-- Accepted to Take Certification Exam -->
-                <div id="accepted_certification_field" style="display: none !important;">
-                  <div class="d-flex align-items-center my-3 gap-3">
-                    <label class="mb-0">
-                      <span class="text-danger">*</span>
-                      Have you been accepted to take this certification exam?
-                    </label>
-                    <div class="d-flex gap-2">
-                      <input type="radio" name="provider_source_specialities[<%= index %>][accepted_for_certification_exam]" value="yes" id="accepted_yes">
-                      <span>YES</span>
-                    </div>
-                    <div class="d-flex gap-2">
-                      <input type="radio" name="provider_source_specialities[<%= index %>][accepted_for_certification_exam]" value="no" id="accepted_no">
-                      <span>NO</span>
-                    </div>
-                  </div>
-                  <!-- Admissibility Expiration Date (only if eligible is yes) -->
-                  <div id="board-exm-date" class="mb-3" style="display: none;">
-                    <label class="text-dark-grey">Board Exam Date (MM/DD/YYYY) </label>
-                    <input type="date" name="provider_source_specialities[<%= index %>][board_exam_date]" class="form-control border-dark">
-                  </div>
-                </div>
-                <div id="intend_accepted_certification_field" style="display: none !important;">
-                  <div class="d-flex align-items-center my-3 gap-3">
-                    <label class="mb-0">
-                      <span class="text-danger">*</span>
-                      Do you intend to apply for this certification exam?
-                    </label>
-                    <div class="d-flex gap-2">
-                      <input type="radio" name="provider_source_specialities[<%= index %>][intend_applied_for_certification_exam]" value="yes" id="intend_accepted_yes">
-                      <span>YES</span>
-                    </div>
-                    <div class="d-flex gap-2">
-                      <input type="radio" name="provider_source_specialities[<%= index %>][intend_applied_for_certification_exam]" value="no" id="intend_accepted_no">
-                      <span>NO</span>
-                    </div>
-                  </div>
-                  <!-- Admissibility Expiration Date (only if eligible is yes) -->
-                  <div id="intend-date-apply" class="mb-3" style="display: none;">
-                    <label class="text-dark-grey">Date you intend to apply (MM/DD/YYYY)  </label>
-                    <input type="date" name="provider_source_specialities[<%= index %>][intend_date_apply]" class="form-control border-dark">
-                  </div>
-                  <div id="no_board_exam_reason_field" style="display: none;">
-                    <div class="mb-3">
-                      <label class="text-dark-grey">
-                        <span class="text-danger">*</span>
-                        Please explain why you do not intend to sit for a Board exam.
-                      </label>
-                      <textarea name="provider_source_specialities[<%= index %>][specialties_no_board_exam_reason]" class="form-control border-dark" rows="4"></textarea>
-                      <span>2500 characters max.</span>
-                    </div>
-                  </div>
-                </div>
-                <button type="button" class="btn btn-danger remove_speciality">Remove</button>
-              </div>
-            <% end %>  
+          <div id="specialities_container">
+            <% @provider.provider_source_specialities.each_with_index do |specialty, index| %>
+              <%= render partial: 'pages/provider_source/speciality_form', locals: { index: index, specialty: specialty } %>
+            <% end %>
           </div>
-          <div id="specialties_field" style="display: none;">
-            <div class="row specialties-entry">
-              <div class="d-flex align-items-center divider gap-3 my-3">
-                <span class="line flex-grow-1 bg-medium-grey"></span>
-                <div class="bg-medium-grey rounded px-3 py-2">
-                  <h6 class="my-0 text-secondary">SPECIALTY</h6>
-                </div>
-                <span class="line flex-grow-1 bg-medium-grey"></span>
-              </div>
 
-              <div class="row mb-3">
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label class="text-dark-grey">Ranking <span class="text-danger">*</span></label>
-                    <select name="provider_source_specialities[][ranking]" class="form-select border-dark">
-                      <option value="">Ranking*</option>
-                      <option value="Primary">Primary</option>
-                      <option value="Secondary">Secondary</option>
-                      <option value="Tertiary">Tertiary</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <%= HtmlUtils::dropdown name: "provider_source_specialities[][specialty]", label: 'Specialty <span class="text-danger"> *</span>' %>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Certified Specialty Section -->
-              <div class="d-flex align-items-center my-3 gap-3">
-                <label class="mb-0"><span class="text-danger">*</span> Are/We you certified by any board in this specialty?</label>
-                <div class="d-flex gap-2">
-                  <input type="radio" name="provider_source_specialities[][board_certified]" value="yes" id="certified_yes">
-                  <span>YES</span>
-                </div>
-                <div class="d-flex gap-2">
-                  <input type="radio" name="provider_source_specialities[][board_certified]" value="no" id="certified_no">
-                  <span>NO</span>
-                </div>
-              </div>
-
-              <div id="certification_fields" style="display: none;">
-                <div class="row">
-                  <% ["certifying_board", "address_line_1", "address_line_2", "city", "state", "zipcode"].each do |field| %>
-                    <div class="col-lg-6 mb-3">
-                      <label class="text-dark-grey"><%= field.titleize.gsub("_", " ") %> <span class="text-danger">*</span></label>
-                      <input type="text" name="provider_source_specialities[][<%= field %>]" class="form-control border-dark">
-                    </div>
-                  <% end %>
-                  <div class="col-lg-6 mb-3">
-                    <label class="text-dark-grey">Telephone <span class="text-danger">*</span></label>
-                    <input type="text" name="provider_source_specialities[][telephone]" class="form-control border-dark">
-                  </div>
-                  <div class="col-lg-6 mb-3">
-                    <label class="text-dark-grey">Ext</label>
-                    <input type="text" name="provider_source_specialities[][ext]" class="form-control border-dark">
-                  </div>
-                  <div class="col-lg-6 mb-3">
-                    <label class="text-dark-grey">Fax Number</label>
-                    <input type="text" name="provider_source_specialities[][fax_number]" class="form-control border-dark">
-                  </div>
-                  <div class="col-lg-6 mb-3">
-                    <label class="text-dark-grey">Board Certificate Number</label>
-                    <input type="text" name="provider_source_specialities[][bord_certificate_number]" class="form-control border-dark">
-                  </div>
-                  <div class="col-lg-6 mb-3">
-                    <label class="text-dark-grey">Initial Certification Date</label>
-                    <input type="date" name="provider_source_specialities[][initial_date]" class="form-control border-dark">
-                  </div>
-                  <div class="col-lg-6 mb-3">
-                    <label class="text-dark-grey">Expiration Certification Date</label>
-                    <input type="date" name="provider_source_specialities[][exipration_date]" class="form-control border-dark">
-                  </div>
-                  <div class="col-lg-6 mb-3">
-                    <label class="text-dark-grey">Recertification Date</label>
-                    <input type="date" name="provider_source_specialities[][recertification_date]" class="form-control border-dark">
-                  </div>
-                </div>
-              </div>
-
-              <div id="eligibility_section" style="display: none;">
-                <div class="d-flex align-items-center my-3 gap-3">
-                  <label class="mb-0"><span class="text-danger">*</span>Are you eligible to be certified in this specialty?</label>
-                  <div class="d-flex gap-2">
-                    <input type="radio" name="provider_source_specialities[][eligible_certified]" value="yes" id="eligible_yes">
-                    <span>YES</span>
-                  </div>
-                  <div class="d-flex gap-2">
-                    <input type="radio" name="provider_source_specialities[][eligible_certified]" value="no" id="eligible_no">
-                    <span>NO</span>
-                  </div>
-                </div>
-
-                <!-- Admissibility Expiration Date (only if eligible is yes) -->
-                <div id="admissibility_expiration" class="mb-3" style="display: none;">
-                  <label class="text-dark-grey">Admissibility Expiration Date</label>
-                  <input type="date" name="provider_source_specialities[][admissibility_expiration_date]" class="form-control border-dark">
-                </div>
-              </div>
-
-              <div id="board-cert-section" style="display: none">
-                <!-- Board Exam Pending Section -->
-                <div class="d-flex align-items-center my-3 gap-3 specialties_board_exam_pending">
-                  <label class="mb-0">Do you have board exam results pending for this specialty?</label>
-                  <div class="d-flex gap-2">
-                    <input type="radio" name="provider_source_specialities[][board_exam_results_pending]" value="yes" id="exam_pending_yes">
-                    <span>YES</span>
-                  </div>
-                  <div class="d-flex gap-2">
-                    <input type="radio" name="provider_source_specialities[][board_exam_results_pending]" value="no" id="exam_pending_no">
-                    <span>NO</span>
-                  </div>
-                </div>
-
-                <div id="pending_certification_fields" style="display: none;">
-                  <div class="row">
-                    <% ["certifying_board", "address_line_1", "address_line_2", "city", "state", "zipcode"].each do |field| %>
-                      <div class="col-lg-6 mb-3">
-                        <label class="text-dark-grey">Pending <%= field.titleize.gsub("_", " ") %></label>
-                        <input type="text" name="provider_source_specialities[][pending_<%= field %>]" class="form-control border-dark">
-                      </div>
-                    <% end %>
-                    <div class="col-lg-6 mb-3">
-                      <label class="text-dark-grey">Pending Telephone</label>
-                      <input type="text" name="provider_source_specialities[][pending_telephone]" class="form-control border-dark">
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                      <label class="text-dark-grey">Pending Ext</label>
-                      <input type="text" name="provider_source_specialities[][pending_ext]" class="form-control border-dark">
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                      <label class="text-dark-grey">Pending Fax Number</label>
-                      <input type="text" name="provider_source_specialities[][pending_fax_number]" class="form-control border-dark">
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                      <label class="text-dark-grey">Board Exam Date</label>
-                      <input type="date" name="provider_source_specialities[][board_exam_date]" class="form-control border-dark">
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Shown only when specialties_board_exam_pending is NO -->
-              <div id="applied_certification_field" style="display: none !important;">
-                <div class="d-flex align-items-center my-3 gap-3">
-                  <label class="mb-0">
-                    <span class="text-danger">*</span>
-                    Have you applied for this certification exam?
-                  </label>
-                  <div class="d-flex gap-2">
-                    <input type="radio" name="provider_source_specialities[][applied_for_certification_exam]" value="yes" id="applied_yes">
-                    <span>YES</span>
-                  </div>
-                  <div class="d-flex gap-2">
-                    <input type="radio" name="provider_source_specialities[][applied_for_certification_exam]" value="no" id="applied_no">
-                    <span>NO</span>
-                  </div>
-                </div>
-              </div>
-              <!-- Accepted to Take Certification Exam -->
-              <div id="accepted_certification_field" style="display: none !important;">
-                <div class="d-flex align-items-center my-3 gap-3">
-                  <label class="mb-0">
-                    <span class="text-danger">*</span>
-                    Have you been accepted to take this certification exam?
-                  </label>
-                  <div class="d-flex gap-2">
-                    <input type="radio" name="provider_source_specialities[][accepted_for_certification_exam]" value="yes" id="accepted_yes">
-                    <span>YES</span>
-                  </div>
-                  <div class="d-flex gap-2">
-                    <input type="radio" name="provider_source_specialities[][accepted_for_certification_exam]" value="no" id="accepted_no">
-                    <span>NO</span>
-                  </div>
-                </div>
-                <!-- Admissibility Expiration Date (only if eligible is yes) -->
-                <div id="board-exm-date" class="mb-3" style="display: none;">
-                  <label class="text-dark-grey">Board Exam Date (MM/DD/YYYY) </label>
-                  <input type="date" name="provider_source_specialities[][board_exam_date]" class="form-control border-dark">
-                </div>
-              </div>
-              <div id="intend_accepted_certification_field" style="display: none !important;">
-                <div class="d-flex align-items-center my-3 gap-3">
-                  <label class="mb-0">
-                    <span class="text-danger">*</span>
-                    Do you intend to apply for this certification exam?
-                  </label>
-                  <div class="d-flex gap-2">
-                    <input type="radio" name="provider_source_specialities[][intend_applied_for_certification_exam]" value="yes" id="intend_accepted_yes">
-                    <span>YES</span>
-                  </div>
-                  <div class="d-flex gap-2">
-                    <input type="radio" name="provider_source_specialities[][intend_applied_for_certification_exam]" value="no" id="intend_accepted_no">
-                    <span>NO</span>
-                  </div>
-                </div>
-                <!-- Admissibility Expiration Date (only if eligible is yes) -->
-                <div id="intend-date-apply" class="mb-3" style="display: none;">
-                  <label class="text-dark-grey">Date you intend to apply (MM/DD/YYYY)  </label>
-                  <input type="date" name="provider_source_specialities[][intend_date_apply]" class="form-control border-dark">
-                </div>
-                <div id="no_board_exam_reason_field" style="display: none;">
-                  <div class="mb-3">
-                    <label class="text-dark-grey">
-                      <span class="text-danger">*</span>
-                      Please explain why you do not intend to sit for a Board exam.
-                    </label>
-                    <textarea name="provider_source_specialities[][specialties_no_board_exam_reason]" class="form-control border-dark" rows="4"></textarea>
-                    <span>2500 characters max.</span>
-                  </div>
-                </div>
-              </div>
-              <button type="button" class="btn btn-danger remove_speciality">Remove</button>
-            </div>
-          </div> 
-          <button type="button" id="add_speciality" class="btn btn-primary mt-3">Add Speciality</button>    
+          <!-- Template to clone -->
+          <div id="specialities_template" class="specialities-entry d-none">
+            <%= render partial: 'pages/provider_source/speciality_form', locals: { index: 'REPLACE_INDEX', specialty: ProviderSourceSpeciality.new } %>
+          </div>
+          <div>
+            <button type="button" class="btn btn-outline-primary mt-2" id="add_specialty">
+              <i class="bi bi-plus-circle me-1"></i> Add New
+            </button>
+          </div>
         </div>
 
         <div class="col-lg-12 card py-3 mb-3">
@@ -585,205 +164,234 @@
 </div>
 <script>
 $(document).ready(function () {
-  let index = $("#specialties_container .specialties-entry").length;
+  let index = $("#specialities_container .specialities-entry").length;
+  const pendingRequests = {}; // Track pending AJAX by input name
 
-  // Add new specialty entry
-  $("#add_speciality").on("click", function () {
-    let template = $("#specialties_field").html(); // Use html, not clone
-    let newHtml = template.replace(/\[\]/g, `[${index}]`);
-    let newEntry = $('<div class="row specialties-entry" data-id="">').html(newHtml);
+  $("#add_specialty").on("click", function () {
+    let newEntry = $("#specialities_template").clone();
+    newEntry.removeClass("d-none").css("display", "block").removeAttr("id");
 
-    // Append new form block
-    $("#specialties_container").append(newEntry);
+    // Clear all inputs and assign names with new index
+    newEntry.find("input, select, textarea").each(function () {
+      let oldName = $(this).attr("name");
+      if (oldName) {
+        let newName = oldName.replace(/\[REPLACE_INDEX\]/, `[${index}]`);
+        $(this).attr("name", newName);
+      }
 
-    // Rebind logic to new entry
-    bindConditionalDisplay(newEntry);
+      // Reset values
+      if ($(this).is("select")) {
+        $(this).val("");
+      } else if ($(this).attr("type") === "checkbox" || $(this).attr("type") === "radio") {
+        $(this).prop("checked", false);
+      } else {
+        $(this).val("");
+      }
+    });
+
+    newEntry.attr("data-id", ""); // Reset ID
+    newEntry.attr("data-saving", "false"); // Custom flag to avoid race conditions
 
     index++;
+    $("#specialities_container").append(newEntry);
   });
 
-  // Remove specialty entry
-  $(document).on("click", ".remove_speciality", function () {
-    let entry = $(this).closest(".specialties-entry");
-    let specialityId = entry.data("id");
 
-    if (specialityId) {
+  $(document).on("click", ".remove_speciality", function () {
+    let entry = $(this).closest(".specialities-entry");
+    let specilaity_id = entry.data("id");
+
+    entry.remove();
+
+    if (specilaity_id) {
+      $.ajax({
+        url: `/provider_sources/autosave`,
+        type: "POST",
+        dataType: "json",
+        data: { delete_speciality_id: specilaity_id },
+        headers: {
+          "X-CSRF-Token": $("meta[name='csrf-token']").attr("content")
+        },
+        success: function () {
+          console.log("Undergraduate School entry deleted.");
+        },
+        error: function (xhr, status, error) {
+          console.error("Delete failed:", error);
+        }
+      });
+    }
+  });
+
+  // Debounce logic
+  let debounceTimeout;
+  $(document).on("change", "#specialities_container input, #specialities_container select, #specialities_container textarea", function () {
+    const $field = $(this);
+    const fieldName = $field.attr("name");
+    const value = $field.val();
+    const $entry = $field.closest(".specialities-entry");
+    const $container = $("#specialities_container");
+
+    clearTimeout(debounceTimeout);
+
+    debounceTimeout = setTimeout(function () {
+      // Prevent duplicate autosave if already pending for this field
+      if (pendingRequests[fieldName]) {
+        return;
+      }
+
+      pendingRequests[fieldName] = true;
       $.ajax({
         url: "/provider_sources/autosave",
         type: "POST",
         dataType: "json",
-        data: { delete_speciality_id: specialityId },
-        headers: { "X-CSRF-Token": $("meta[name='csrf-token']").attr("content") },
-        success: function () {
-          console.log("Specialty entry deleted.");
+        data: {
+          field_name: fieldName,
+          value: value,
+          speciality_id: $entry[0].dataset.id,
+          nested_form: true
         },
-      });
-    }
-
-    entry.remove();
-  });
-
-  // Autosave on input change
-  $(document).on("change", "#specialties_container input, #specialties_container select, #specialties_container textarea", function () {
-    let $this = $(this);
-    let field = $this.attr("name");
-    let value = $this.is(":radio") || $this.is(":checkbox") ? ($this.prop("checked") ? $this.val() : null) : $this.val();
-
-    if (value === null) return;
-
-    let specialityEntry = $this.closest(".specialties-entry");
-    let specialityId = specialityEntry.data("id");
-
-    $.ajax({
-      url: "/provider_sources/autosave",
-      type: "POST",
-      dataType: "json",
-      data: {
-        field_name: field,
-        value: value,
-        speciality_id: specialityId,
-        nested_form: true
-      },
-      headers: {
-        "X-CSRF-Token": $("meta[name='csrf-token']").attr("content")
-      },
-      success: function (response) {
-        if (response.id) {
-          specialityEntry.attr("data-id", response.id);
+        headers: {
+          "X-CSRF-Token": $("meta[name='csrf-token']").attr("content")
+        },
+        success: function (response) {
+          if (response.id) {
+            $entry.attr("data-id", response.id);
+          }
+        },
+        complete: function () {
+          pendingRequests[fieldName] = false;
+        },
+        error: function (xhr, status, error) {
+          console.error("Autosave failed:", error);
         }
-      },
-      error: function (xhr, status, error) {
-        console.error("Autosave failed:", error);
-      }
-    });
+      });
+    }, 300); // Debounce delay (ms)
   });
 
-  // Init conditional logic for existing entries
-  $("#specialties_container .specialties-entry").each(function () {
+  $("#specialities_container .specialities-entry").each(function () {
     bindConditionalDisplay($(this));
   });
 
   function bindConditionalDisplay(entry) {
     const get = (id) => entry.find(`[id$="${id}"]`);
+    const nestedIndex = entry[0].dataset.index;
     const section = {
-      certified: entry.find("#certification_fields"),
-      eligibility: entry.find("#eligibility_section"),
-      admissibility: entry.find("#admissibility_expiration"),
-      board: entry.find("#board-cert-section"),
-      pending: entry.find("#pending_certification_fields"),
-      applied: entry.find("#applied_certification_field"),
-      accepted: entry.find("#accepted_certification_field"),
-      intend: entry.find("#intend_accepted_certification_field"),
-      intendDate: entry.find("#intend-date-apply"),
-      boardExamDate: entry.find("#board-exm-date"),
-      noExamReason: entry.find("#no_board_exam_reason_field"),
+      certified: entry.find(`#certification_fields_${nestedIndex}`),
+      eligibility: entry.find(`#eligibility_section_${nestedIndex}`),
+      admissibility: entry.find(`#admissibility_expiration_${nestedIndex}`),
+      board: entry.find(`#board-cert-section_${nestedIndex}`),
+      pending: entry.find(`#pending_certification_fields_${nestedIndex}`),
+      applied: entry.find(`#applied_certification_field_${nestedIndex}`),
+      accepted: entry.find(`#accepted_certification_field_${nestedIndex}`),
+      intend: entry.find(`#intend_accepted_certification_field_${nestedIndex}`),
+      intendDate: entry.find(`#intend-date-apply_${nestedIndex}`),
+      boardExamDate: entry.find(`#board-exm-date_${nestedIndex}`),
+      noExamReason: entry.find(`#no_board_exam_reason_field_${nestedIndex}`),
     };
 
 
     function updateVisibility() {
-      const certifiedName = entry.find('#certified_yes').attr('name');
+      const certifiedName = entry.find(`#certified_yes_${nestedIndex}`).attr('name');
       let certified = entry.find(`input[name="${certifiedName}"]:checked`).val();
 
-      const eligibleName = entry.find('#eligible_yes').attr('name');
+      const eligibleName = entry.find(`#eligible_yes_${nestedIndex}`).attr('name');
       let eligible = entry.find(`input[name="${eligibleName}"]:checked`).val();
 
-      const pendingName = entry.find('#exam_pending_yes').attr('name');
+      const pendingName = entry.find(`#exam_pending_yes_${nestedIndex}`).attr('name');
       let pending = entry.find(`input[name="${pendingName}"]:checked`).val();
 
-      const intendName = entry.find('#intend_accepted_yes').attr('name');
+      const intendName = entry.find(`#intend_accepted_yes_${nestedIndex}`).attr('name');
       let intend = entry.find(`input[name="${intendName}"]:checked`).val();
 
-      const appliedName = entry.find('#applied_yes').attr('name');
+      const appliedName = entry.find(`#applied_yes_${nestedIndex}`).attr('name');
       let applied = entry.find(`input[name="${appliedName}"]:checked`).val();
 
-      const acceptedName = entry.find('#accepted_yes').attr('name');
+      const acceptedName = entry.find(`#accepted_yes_${nestedIndex}`).attr('name');
       let accepted = entry.find(`input[name="${acceptedName}"]:checked`).val();
 
 
 
-    // Certified
-    if (certified === "yes") {
-      section.certified.show();
-      section.eligibility.hide();
-    } else if (certified === "no") {
-      section.certified.hide();
-      section.eligibility.show();
-    } else {
-      section.certified.hide();
-      section.eligibility.hide();
+      // Certified
+      if (certified === "yes") {
+        section.certified.show();
+        section.eligibility.hide();
+      } else if (certified === "no") {
+        section.certified.hide();
+        section.eligibility.show();
+      } else {
+        section.certified.hide();
+        section.eligibility.hide();
+      }
+
+      // Eligible
+      if (eligible === "yes") {
+        section.admissibility.show();
+        section.board.show();
+      } else {
+        section.admissibility.hide();
+        section.board.hide();
+        section.pending.hide();
+      }
+
+      // Exam Pending
+      if (pending === "yes") {
+        section.pending.show();
+        section.applied.hide();
+        section.accepted.hide();
+        section.intend.hide();
+        section.noExamReason.hide();
+      } else if (pending === "no") {
+        section.pending.hide();
+        section.applied.show();
+        section.accepted.show();
+        section.intend.show();
+        section.noExamReason.show();
+      } else {
+        section.pending.hide();
+        section.applied.hide();
+        section.accepted.hide();
+        section.intend.hide();
+        section.noExamReason.hide();
+      }
+
+      // Intend
+      if (intend === "yes") {
+        section.intendDate.show();
+        section.noExamReason.hide();
+      } else if (intend === "no") {
+        section.intendDate.hide();
+        section.noExamReason.show();
+      } else {
+        section.intendDate.hide();
+        section.noExamReason.hide();
+      }
+
+      // Applied
+      if (applied === "yes") {
+        section.accepted.show();
+        section.intend.hide();
+      } else if (applied === "no") {
+        section.accepted.hide();
+        section.intend.show();
+      } else {
+        section.accepted.hide();
+        section.intend.hide();
+      }
+
+      // Accepted
+      if (accepted === "yes") {
+        section.boardExamDate.show();
+      } else {
+        section.boardExamDate.hide();
+      }
     }
 
-    // Eligible
-    if (eligible === "yes") {
-      section.admissibility.show();
-      section.board.show();
-    } else {
-      section.admissibility.hide();
-      section.board.hide();
-      section.pending.hide();
-    }
+    // Attach listeners
+    entry.find('input[type="radio"]').on("change", updateVisibility);
 
-    // Exam Pending
-    if (pending === "yes") {
-      section.pending.show();
-      section.applied.hide();
-      section.accepted.hide();
-      section.intend.hide();
-      section.noExamReason.hide();
-    } else if (pending === "no") {
-      section.pending.hide();
-      section.applied.show();
-      section.accepted.show();
-      section.intend.show();
-      section.noExamReason.show();
-    } else {
-      section.pending.hide();
-      section.applied.hide();
-      section.accepted.hide();
-      section.intend.hide();
-      section.noExamReason.hide();
-    }
-
-    // Intend
-    if (intend === "yes") {
-      section.intendDate.show();
-      section.noExamReason.hide();
-    } else if (intend === "no") {
-      section.intendDate.hide();
-      section.noExamReason.show();
-    } else {
-      section.intendDate.hide();
-      section.noExamReason.hide();
-    }
-
-    // Applied
-    if (applied === "yes") {
-      section.accepted.show();
-      section.intend.hide();
-    } else if (applied === "no") {
-      section.accepted.hide();
-      section.intend.show();
-    } else {
-      section.accepted.hide();
-      section.intend.hide();
-    }
-
-    // Accepted
-    if (accepted === "yes") {
-      section.boardExamDate.show();
-    } else {
-      section.boardExamDate.hide();
-    }
-  }
-
-  // Attach listeners
-  entry.find('input[type="radio"]').on("change", updateVisibility);
-
-  // Trigger on load
-  updateVisibility();
+    // Trigger on load
+    updateVisibility();
   }
 });
-
-
 </script>
 

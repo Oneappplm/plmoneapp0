@@ -13,6 +13,19 @@ class ProviderSource < ApplicationRecord
   has_many :provider_source_specialities, dependent: :destroy
   accepts_nested_attributes_for :provider_source_specialities, allow_destroy: true
 
+  has_many :provider_source_undergrad_schools, dependent: :destroy
+  accepts_nested_attributes_for :provider_source_undergrad_schools, allow_destroy: true
+
+  has_many :graduate_details, dependent: :destroy
+  accepts_nested_attributes_for :graduate_details, allow_destroy: true
+
+  has_many :admitting_arrangements, dependent: :destroy
+  accepts_nested_attributes_for :admitting_arrangements, allow_destroy: true
+
+  has_many :hospital_privileges, dependent: :destroy
+  accepts_nested_attributes_for :hospital_privileges, allow_destroy: true
+
+
   accepts_nested_attributes_for :deas, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :cds, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :registrations, allow_destroy: true, reject_if: :all_blank

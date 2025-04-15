@@ -691,6 +691,11 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
   var isMultiRecord = $(this).hasClass('multi-field');
 
   //  add multi-select and single-select to inputType name
+  if (inputName && inputName.includes('provider_source_specialities')) return true; // skip this iteration
+  if (inputName && inputName.includes('graduate_details')) return true; // skip this iteration
+  if (inputName && inputName.includes('provider_source_undergrad_schools')) return true; // skip this iteration
+  if (inputName && inputName.includes('hospital_privileges')) return true; // skip this iteration
+  if (inputName && inputName.includes('admitting_arrangements')) return true; // skip this iteration
   if (
       [
         'state_of_practice', 'primary-practioner-type',
@@ -705,21 +710,22 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
 
 
 	// Make an AJAX request to retrieve the value for the input field
+
 	$.ajax({
 			url: '/provider_sources/fetch',
 			type: 'GET',
 			data: { authenticity_token: csrfToken, field_name: inputName },
 			dataType: 'json',
 			success: function(data) {
-          if (data.other_names) {
-            data.other_names.forEach(function (otherName) {
+          if (data?.other_names) {
+            data?.other_names.forEach(function (otherName) {
               populateOtherNameEntry(otherName);
             });
           }
           if (inputType == 'radio' || inputType == 'checkbox') {
-            var radioInput = $(tagName + '[name="' + inputName + '"][value="' + data.value + '"]');
+            var radioInput = $(tagName + '[name="' + inputName + '"][value="' + data?.value + '"]');
 
-            if (data.value == 'yes' || data.value == 'on'){
+            if (data?.value == 'yes' || data?.value == 'on'){
               if(inputType == 'radio'){
                 radioInput.prop("checked", true);
                 $('#'+inputName+'-holder').removeClass('d-none')
@@ -737,7 +743,7 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
             }
 
             if (inputName == 'other_name'){
-              if (data.value == 'yes'){
+              if (data?.value == 'yes'){
                 $('#other_name_field').removeClass('d-none');
               }else{
                 $('#other_name_field').addClass('d-none');
@@ -745,7 +751,7 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
             }
 
             if (inputName == 'ssn'){
-              if (data.value == 'yes'){
+              if (data?.value == 'yes'){
                 $('#ssn_field').removeClass('d-none');
               }else{
                 $('#ssn_field').addClass('d-none');
@@ -753,7 +759,7 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
             }
 
              if (inputName == 'dea_full_schedule'){
-              if (data.value == 'no'){
+              if (data?.value == 'no'){
                 $('#dea_tarea').removeClass('d-none');
               }else{
                 $('#dea_tarea').addClass('d-none');
@@ -761,7 +767,7 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
             }
 
             if(inputName == 'licensure_require_supervision'){
-              if (data.value == 'yes'){
+              if (data?.value == 'yes'){
                 $('#supervised_fields').removeClass('d-none');
               }else{
                 $('#supervised_fields').addClass('d-none');
@@ -769,7 +775,7 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
             }
 
             if (inputName == 'edc_collab'){
-              if (data.value == 'yes'){
+              if (data?.value == 'yes'){
                 $('#collab_form').removeClass('d-none');
               }else{
                 $('#collab_form').addClass('d-none');
@@ -777,7 +783,7 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
             }
 
             if (inputName == 'medicare_field'){
-              if (data.value == 'yes'){
+              if (data?.value == 'yes'){
                 $('#medicare_fields_test').removeClass('d-none');
               }else{
                 $('#medicare_fields_test').addClass('d-none');
@@ -785,7 +791,7 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
             }
 
             if (inputName == 'medicaid_field'){
-              if (data.value == 'yes'){
+              if (data?.value == 'yes'){
                 $('#medicaid_fields').removeClass('d-none');
               }else{
                 $('#medicaid_fields').addClass('d-none');
@@ -793,7 +799,7 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
             }
 
             if (inputName == 'caqh_field'){
-              if (data.value == 'yes'){
+              if (data?.value == 'yes'){
                 $('#caqh_fields').removeClass('d-none');
               }else{
                 $('#caqh_fields').addClass('d-none');
@@ -801,7 +807,7 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
             }
 
             if (inputName == 'other_cert_field'){
-              if (data.value == 'yes'){
+              if (data?.value == 'yes'){
                 $('#other_cert_fields').removeClass('d-none');
               }else{
                 $('#other_cert_fields').addClass('d-none');
@@ -810,7 +816,7 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
 
 
             if (inputName == 'honorably_discharge'){
-              if (data.value == 'no'){
+              if (data?.value == 'no'){
                 $('#is-discharged-field').removeClass('d-none');
               }else{
                 $('#is-discharged-field').addClass('d-none');
@@ -818,7 +824,7 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
             }
 
             if (inputName == 'military_court_martialed'){
-              if (data.value == 'yes'){
+              if (data?.value == 'yes'){
                 $('#court-martialed-field').removeClass('d-none');
               }else{
                 $('#court-martialed-field').addClass('d-none');
@@ -826,7 +832,7 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
             }
 
             if (inputName == 'military_reserve'){
-              if (data.value == 'yes'){
+              if (data?.value == 'yes'){
                 $('#military-reserve-field').removeClass('d-none');
               }else{
                 $('#military-reserve-field').addClass('d-none');
@@ -951,14 +957,14 @@ function populateOtherNameEntry(otherName) {
 function displayFieldsFromSelectElement(data, inputName, tagName) {
   if (['state_of_practice', 'health_plans', 'hospitals', 'directories', 'languages-you-speak', 'languages-you-write'].includes(inputName)) {
     // InputName is in the list, so the values are expected to be an array
-    var values = eval(data.value);
+    var values = eval(data?.value);
     for (let index = 0; index < values.length; index++) {
       const element = values[index];
       $(tagName + '[name="' + inputName + '"] option[value="' + element + '"]').prop('selected', true);
     }
   } else {
     // InputName is NOT in the list, so a single select dropdown is expected
-    $(tagName + '[name="' + inputName + '"]').val(data.value);
+    $(tagName + '[name="' + inputName + '"]').val(data?.value);
   }
 
   // Manually trigger the change event for the single select dropdown
@@ -966,12 +972,12 @@ function displayFieldsFromSelectElement(data, inputName, tagName) {
 }
 
 function displayFieldsFromMultiSelectElement(data, inputName, tagName){
-  // convert data.value string with comma separated to array
+  // convert data?.value string with comma separated to array
   // sample: 'Arizona,Alaska,Alabama'
   var splitted_values = [];
 
-  if(data.value !== null){
-    splitted_values = data.value.split(',');
+  if(data?.value !== null){
+    splitted_values = data?.value.split(',');
   }
   // add more div element that is using multi-select
   var multi_select_name = '.multi-select-' + inputName;
@@ -1025,11 +1031,11 @@ function displayFieldsFromMultiSelectElement(data, inputName, tagName){
 }
 
 function displayFieldsFromInputElement(data, inputName, tagName, inputType){
-  $(tagName + '[name="' + inputName + '"]').val(data.value);
+  $(tagName + '[name="' + inputName + '"]').val(data?.value);
 }
 
 function displayFieldsFromHiddenElement(data, inputName, tagName){
-  if(data.value == 'yes'){
+  if(data?.value == 'yes'){
     var element = $('[data-tochange="'+inputName+'"]');
     var to_show_id = $(element).data('toshow');
 

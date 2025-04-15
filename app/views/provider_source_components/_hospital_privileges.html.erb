@@ -1,103 +1,117 @@
-<div class="bg-light bg-gradient p-3">
-   <div class="row mb-3">
+<div class="hp-privilege-entry position-relative" data-id="<%= privilege&.id %>">
+  <input type="hidden" name="hospital_privileges[<%= index %>][id]" value="<%= privilege&.id %>">
+  <div class="bg-light bg-gradient p-3">
+    <div class="row mb-3">
       <div class="col-lg-6">
-          <label class="text-dark-grey">Facility Location <span class="text-danger"> *</span></label>
-         <%= HtmlUtils::dropdown name: 'state_abbr' %>
+        <label class="text-dark-grey">Facility Location <span class="text-danger"> *</span></label>
+        <select name="hospital_privileges[<%= index %>][state_abbr]" class="form-select border-dark">
+          <option value="">Select State</option>
+          <% State.all.each do |state| %>
+            <option value="<%= state.alpha_code %>" <%= 'selected' if privilege&.state_abbr == state.alpha_code %>><%= state.name %></option>
+          <% end %>
+        </select>
       </div>
       <div class="col-lg-6">
-         <label class="text-dark-grey">Facility Name <span class="text-danger">*</span></label>
-         <input type="text" class="form-control border-dark" name="hp-facility-name" placeholder="Facility name">
-         <span class="d-flex">
-         <input type="checkbox" name="hp-no_longer_in_business">
-         <small class="fw-semibold ms-2 mt-2">No Longer in Business</small>
-         </span>
+        <label class="text-dark-grey">Facility Name <span class="text-danger">*</span></label>
+        <input type="text" class="form-control border-dark" name="hospital_privileges[<%= index %>][hp-facility-name]" placeholder="Facility name" value="<%= privilege&.hp_facility_name %>">
+        <span class="d-flex">
+          <input type="checkbox" name="hospital_privileges[<%= index %>][hp_no_longer_in_business]" <%= 'checked' if privilege&.hp_no_longer_in_business %>>
+          <small class="fw-semibold ms-2 mt-2">No Longer in Business</small>
+        </span>
       </div>
-   </div>
-   <div class="row mb-3">
+    </div>
+
+    <div class="row mb-3">
       <div class="col-lg-6">
-         <label class="text-dark-grey">Medical Staff Office Address Line 1 <span class="text-danger">*</span></label>
-         <input type="text" class="form-control border-dark" name="hp-mso-address-line1" placeholder="Medical Staff Office Address Line 1">
-      </div>
-      <div class="col-lg-6">
-         <label class="text-dark-grey">Medical Staff Office Address Line 2</label>
-         <input type="text" class="form-control border-dark" name="hp-mso-address-line2" placeholder="Medical Staff Office Address Line 2">
-      </div>
-   </div>
-   <div class="row mb-3">
-      <div class="col-lg-6">
-         <label class="text-dark-grey">City <span class="text-danger">*</span></label>
-         <input type="text" class="form-control border-dark" name="hp-city" placeholder="City">
+        <label class="text-dark-grey">Medical Staff Office Address Line 1 <span class="text-danger">*</span></label>
+        <input type="text" class="form-control border-dark" name="hospital_privileges[<%= index %>][hp_mso_address_line1]" placeholder="Medical Staff Office Address Line 1" value="<%= privilege&.hp_mso_address_line1 %>">
       </div>
       <div class="col-lg-6">
-         <label class="text-dark-grey">Zip Code <span class="text-danger">*</span></label>
-         <input type="text" class="form-control border-dark" name="hp-zipcode" placeholder="Zip Code">
+        <label class="text-dark-grey">Medical Staff Office Address Line 2</label>
+        <input type="text" class="form-control border-dark" name="hospital_privileges[<%= index %>][hp_mso_address_line2]" placeholder="Medical Staff Office Address Line 2" value="<%= privilege&.hp_mso_address_line2 %>">
       </div>
-   </div>
-   <div class="row mb-3">
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">City <span class="text-danger">*</span></label>
+        <input type="text" class="form-control border-dark" name="hospital_privileges[<%= index %>][hp_city]" placeholder="City" value="<%= privilege&.hp_city %>">
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Zip Code <span class="text-danger">*</span></label>
+        <input type="text" class="form-control border-dark" name="hospital_privileges[<%= index %>][hp-zipcode]" placeholder="Zip Code" value="<%= privilege&.hp_zipcode %>">
+      </div>
+    </div>
+
+    <div class="row mb-3">
       <div class="col-lg-3">
-         <label class="text-small text-dark-grey">Medical Staff Office Telephone Number <span class="text-danger">*</span></label>
-         <input type="text" class="form-control border-dark" name="hp-mso-telephone-number" placeholder="Medical Staff Office Telephone Number">
+        <label class="text-small text-dark-grey">Medical Staff Office Telephone Number <span class="text-danger">*</span></label>
+        <input type="text" class="form-control border-dark" name="hospital_privileges[<%= index %>][hp_mso_telephone_number]" placeholder="Medical Staff Office Telephone Number" value="<%= privilege&.hp_mso_telephone_number %>">
       </div>
       <div class="col-lg-3">
-         <label class="text-dark-grey">Ext</label>
-         <input type="text" class="form-control border-dark" name="hp-ext" placeholder="Ext">
+        <label class="text-dark-grey">Ext</label>
+        <input type="text" class="form-control border-dark" name="hospital_privileges[<%= index %>][hp_ext]" placeholder="Ext" value="<%= privilege&.hp_ext %>">
       </div>
       <div class="col-lg-6">
-         <label class="text-dark-grey">Medical Staff Office Fax Number <span class="text-danger">*</span></label>
-         <input type="text" class="form-control border-dark" name="hp-mso-fax-number" placeholder="Medical Staff Office Fax Number">
+        <label class="text-dark-grey">Medical Staff Office Fax Number <span class="text-danger">*</span></label>
+        <input type="text" class="form-control border-dark" name="hospital_privileges[<%= index %>][hp_mso_fax_number]" placeholder="Medical Staff Office Fax Number" value="<%= privilege&.hp_mso_fax_number %>">
       </div>
-      
-   </div>
-   <div class="row mb-3">
+    </div>
+
+    <div class="row mb-3">
       <div class="col-lg-6">
-         <label class="text-dark-grey">Medical Staff/Credentialing E-mail Address</label>
-         <input type="text" class="form-control border-dark" name="hp-mso-email-address" placeholder="Medical Staff/Credentialing E-mail Address">
+        <label class="text-dark-grey">Medical Staff/Credentialing E-mail Address</label>
+        <input type="text" class="form-control border-dark" name="hospital_privileges[<%= index %>][hp_mso_email_address]" placeholder="Medical Staff/Credentialing E-mail Address" value="<%= privilege&.hp_mso_email_address %>">
       </div>
       <div class="col-lg-6">
-         <label class="text-dark-grey">Department Name <span class="text-danger">*</label>
-         <input type="text" class="form-control border-dark" name="mso-department-name" placeholder="Department Name">
+        <label class="text-dark-grey">Department Name <span class="text-danger">*</span></label>
+        <input type="text" class="form-control border-dark" name="hospital_privileges[<%= index %>][hp_department_name]" placeholder="Department Name" value="<%= privilege&.hp_department_name %>">
       </div>
-   </div>
-   <div class="row mb-3">
+    </div>
+
+    <div class="row mb-3">
       <div class="col-lg-6">
-         <label class="text-dark-grey">Division Name</label>
-         <input type="text" class="form-control border-dark" name="mso-division-name" placeholder="Division Name">
+        <label class="text-dark-grey">Division Name</label>
+        <input type="text" class="form-control border-dark" name="hospital_privileges[<%= index %>][hp_division_name]" placeholder="Division Name" value="<%= privilege&.hp_division_name %>">
       </div>
-   </div>
-   <div class="card p-3">
+    </div>
+
+    <div class="card p-3">
       <h4 class="fw-semibold text-secondary mb-3">Department/Division Director</h4>
       <div class="row mb-3">
-         <div class="col-lg-6">
-            <label class="text-dark-grey">First Name</label>
-            <input type="text" name="mso-first-name" class="form-control border-dark" placeholder="First Name">
-         </div>
-         <div class="col-lg-6">
-            <label class="text-dark-grey">Last Name</label>
-            <input type="text" name="mso-last-name" class="form-control border-dark" placeholder="Last Name">
-         </div>
+        <div class="col-lg-6">
+          <label class="text-dark-grey">First Name</label>
+          <input type="text" name="hospital_privileges[<%= index %>][director_first_name]" class="form-control border-dark" placeholder="First Name" value="<%= privilege&.director_first_name %>">
+        </div>
+        <div class="col-lg-6">
+          <label class="text-dark-grey">Last Name</label>
+          <input type="text" name="hospital_privileges[<%= index %>][director_last_name]" class="form-control border-dark" placeholder="Last Name" value="<%= privilege&.director_last_name %>">
+        </div>
       </div>
-   </div>
-   <div class="row mb-3">
+    </div>
+
+    <div class="row mb-3">
       <div class="col-lg-12">
-         <div class="d-flex justify-content-between my-3">
-            <%= HtmlUtils.radio_options name: 'hp-unrestricted-privileges', label: 'Do/Did you have full, unrestricted privileges?' %>
-         </div>
-	   </div>
+        <div class="d-flex justify-content-between my-3">
+          <%= HtmlUtils.radio_options name: "hospital_privileges[#{index}][unrestricted_privileges]", label: 'Do/Did you have full, unrestricted privileges?', value: privilege&.unrestricted_privileges %>
+        </div>
+      </div>
       <div class="col-lg-12">
-         <div class="d-flex justify-content-between my-3">
-            <%= HtmlUtils.radio_options name: 'ai-previleges-temporary', label: 'Are/Were your privileges temporary?' %>
-         </div>
-	   </div>
-   </div>
-   <div class="card p-3">
+        <div class="d-flex justify-content-between my-3">
+          <%= HtmlUtils.radio_options name: "hospital_privileges[#{index}][privileges_temporary]", label: 'Are/Were your privileges temporary?', value: privilege&.privileges_temporary %>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-3">
       <h4 class="fw-semibold text-secondary mb-3">Privileges Status</h4>
       <div class="col-lg-12">
-         <%= HtmlUtils::dropdown name: 'hfa_privilege_status', label: 'Privileges Status(Select Pending if your application is in process.)' %>
+        <%= HtmlUtils::dropdown name: "hospital_privileges[#{index}][privilege_status]", label: 'Privileges Status(Select Pending if your application is in process.)', selected: privilege&.privilege_status %>
       </div>
-   </div>
-<!--    <div class="row my-3">
-      <div class="col-lg-12 mb-3 d-flex justify-content-end">
-         <button class="btn btn-primary">Save This Record</button>
-      </div>
-   </div> -->
+    </div>
+
+    <button type="button" class="btn btn-link text-danger position-absolute end-0 top-0 remove_hp_privilege">
+      <i class="bi bi-x-circle"></i> Remove
+    </button>
+  </div>
 </div>
