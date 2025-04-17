@@ -209,8 +209,8 @@
 					</div>
 
 					<% @provider_licensure.provider_supervisings.each do |provider_supervising| %>
-						<% license_state = State.find(provider_supervising.license_state)%>
-						<% state = State.find(provider_supervising.state) %>
+						<% license_state = State.find(provider_supervising.license_state) if provider_supervising.license_state.present? %>
+						<% state = State.find(provider_supervising.state) if provider_supervising.state.present? %>
 						<div class="form-row row mt-3">
 							<div class="col-xl-12 right-pane">
 								<div class="form-row row">
@@ -220,14 +220,14 @@
 									<div class="col-xl-5">
 										<label for="supervising-prac">Name of Supervising Practitioner/Group:</label>
 										<span class="form-control form-control-lg">
-											<%= provider_supervising.name_of_supervising %>
+											<%= provider_supervising&.name_of_supervising || "N/A" %>
 										</span>
 
 									</div>
 									<div class="col-xl-6">
 										<label for="firstname">Licence State:</label>
 										<span class="form-control form-control-lg">
-											<%= license_state.name %>
+											<%= license_state&.name || "N/A" %>
 										</span>
 									</div>
 								</div>
@@ -235,13 +235,13 @@
 									<div class="col-xl-6">
 										<label for="group-license-type">License Type:</label>
 										<span class="form-control form-control-lg">
-											<%= provider_supervising.license_type %>
+											<%= provider_supervising&.license_type || "N/A" %>
 										</span>
 									</div>
 									<div class="col-xl-6">
 										<label for="group-license-number">License Number:</label>
 										<span class="form-control form-control-lg">
-											<%= provider_supervising.license_number %>
+											<%= provider_supervising&.license_number || "N/A" %>
 										</span>
 									</div>
 								</div>
@@ -249,13 +249,13 @@
 									<div class="col-xl-6">
 										<label for="group-facility">Facility</label>
 										<span class="form-control form-control-lg">
-											<%= provider_supervising.facility %>
+											<%= provider_supervising&.facility || "N/A" %>
 										</span>
 									</div>
 									<div class="col-xl-6">
 										<label for="group-address">Address:</label>
 										<span class="form-control form-control-lg">
-											<%= provider_supervising.address %>
+											<%= provider_supervising&.address || "N/A" %>
 										</span>
 									</div>
 								</div>
@@ -263,13 +263,13 @@
 									<div class="col-xl-6">
 										<label for="group-suite">Suite/Dept/Mail Stop:</label>
 										<span class="form-control form-control-lg">
-											<%= provider_supervising.mail_stop %>
+											<%= provider_supervising&.mail_stop || "N/A" %>
 										</span>
 									</div>
 									<div class="col-xl-6">
 										<label for="group-add-address">Additional Address:</label>
 										<span class="form-control form-control-lg">
-											<%= provider_supervising.address2 %>
+											<%= provider_supervising&.address2 || "N/A" %>
 										</span>
 									</div>
 								</div>
@@ -277,13 +277,13 @@
 									<div class="col-xl-6">
 										<label for="group-city">City:</label>
 										<span class="form-control form-control-lg">
-											<%= provider_supervising.city %>
+											<%= provider_supervising&.city || "N/A" %>
 										</span>
 									</div>
 									<div class="col-xl-6">
 										<label for="group-county">County:</label>
 										<span class="form-control form-control-lg">
-											<%= provider_supervising.country %>
+											<%= provider_supervising&.country || "N/A" %>
 										</span>
 									</div>
 								</div>
@@ -291,19 +291,19 @@
 									<div class="col-xl-4">
 										<label for="group-state">State/Province:</label>
 										<span class="form-control form-control-lg">
-											<%= state.name %>
+											<%= state&.name || "N/A" %>
 										</span>
 									</div>
 									<div class="col-xl-4">
 										<label for="group-zip">Zip/Postal Code:</label>
 										<span class="form-control form-control-lg">
-											<%= provider_supervising.zipcode %>
+											<%= provider_supervising&.zipcode || "N/A" %>
 										</span>
 									</div>
 									<div class="col-xl-4">
 										<label for="group-country">Country:</label>
 										<span class="form-control form-control-lg">
-											<%= provider_supervising.country %>
+											<%= provider_supervising&.country || "N/A" %>
 										</span>
 									</div>
 								</div>
@@ -311,19 +311,19 @@
 									<div class="col-xl-4">
 										<label for="group-phone">Phone Number:</label>
 										<span class="form-control form-control-lg">
-											<%= provider_supervising.phone_number %>
+											<%= provider_supervising&.phone_number || "N/A" %>
 										</span>
 									</div>
 									<div class="col-xl-4">
 										<label for="group-fax">Fax Number:</label>
 										<span class="form-control form-control-lg">
-											<%= provider_supervising.fax_number %>
+											<%= provider_supervising&.fax_number || "N/A" %>
 										</span>
 									</div>
 									<div class="col-xl-4">
 										<label for="group-email">Email Address:</label>
 										<span class="form-control form-control-lg">
-											<%= provider_supervising.email_address %>
+											<%= provider_supervising&.email_address || "N/A" %>
 										</span>
 									</div>
 								</div>
@@ -469,10 +469,14 @@
                                 <hr class="form-hr">
                                 <div class="row pt-3 pb-3">
                                   <div class="col-md-6">
-                                    <button class="btn btn-sm btn-light" id="send-request-btn">Send Request</button>
+																		<button class="btn btn-sm btn-light <%= @last_rva_information.present? ? '' : 'btn-disabled' %>" 
+                                             id="send-request-btn" 
+                                             <%= 'disabled' if @last_rva_information.present? %>>
+                                       Send Request
+                                    </button>
                                   </div>
                                   <div class="col-md-6">
-                                    <span class="font-bold sent-request" style="line-height: 38px;"></span>
+																		<span class="font-bold sent-request" style="line-height: 38px;"><%= @last_rva_information&.send_request %></span>
                                   </div>
                                 </div>
                                 <hr class="form-hr">
@@ -481,7 +485,7 @@
                                     <label for="">Requested By:</label>
                                   </div>
                                   <div class="col-md-6">
-                                    <span class="font-bold requested-by"></span>
+																		<span class="font-bold requested-by"><%= @last_rva_information&.requested_by %></span>
                                   </div>
                                 </div>
                                 <hr class="form-hr">
@@ -490,54 +494,81 @@
                                     <label for="">Requested Date:</label>
                                   </div>
                                   <div class="col-md-6">
-                                    <span class="font-bold requested-date"></span>
+																		<span class="font-bold requested-date"><%= @last_rva_information&.requested_date %></span>
                                   </div>
                                 </div>
                                 <hr class="form-hr">
                                 <div class="form-row d-flex align-items-center gap-3">
                                   <label for="">Requested Method:</label>
-                                  <%= f.radio_button :requested_method, 'AutoFax', id: 'method-autofax' %>
-                                  <label class="form-check-label" for="method-autofax">AutoFax</label>
-                                  <%= f.radio_button :requested_method, 'E-Mail', id: 'method-email' %>
-                                  <label class="form-check-label" for="method-email">E-Mail</label>
-                                  <%= f.radio_button :requested_method, 'Letter', id: 'method-letter', checked: true %>
-                                  <label class="form-check-label" for="method-letter">Letter</label>
-                                  <%= f.radio_button :requested_method, 'Phone', id: 'method-phone' %>
-                                  <label class="form-check-label" for="method-phone">Phone</label>
-                                  <%= f.radio_button :requested_method, 'Website', id: 'method-website' %>
-                                  <label class="form-check-label" for="method-website">Website</label>
+																	   <%= f.radio_button :requested_method, 'AutoFax', id: 'method-autofax', checked: (@last_rva_information.present? && @last_rva_information.requested_method == "AutoFax") %>
+                                     <label class="form-check-label" for="method-autofax">AutoFax</label>
+     
+                                     <%= f.radio_button :requested_method, 'E-Mail', id: 'method-email', checked: (@last_rva_information.present? && @last_rva_information.requested_method == "E-Mail") %>
+                                     <label class="form-check-label" for="method-email">E-Mail</label>
+     
+                                     <%= f.radio_button :requested_method, 'Letter', id: 'method-letter', checked: (@last_rva_information.present? && @last_rva_information.requested_method == "Letter") %>
+                                     <label class="form-check-label" for="method-letter">Letter</label>
+     
+                                     <%= f.radio_button :requested_method, 'Phone', id: 'method-phone', checked: (@last_rva_information.present? && @last_rva_information.requested_method == "Phone") %>
+                                     <label class="form-check-label" for="method-phone">Phone</label>
+     
+                                     <%= f.radio_button :requested_method, 'Website', id: 'method-website', checked: (@last_rva_information.present? && @last_rva_information.requested_method == "Website") %>
+                                     <label class="form-check-label" for="method-website">Website</label>
                                 </div>
                                 <span>The default contact method is letter.</span>
                                 <hr class="form-hr">
                                 <div class="form-row row">
                                   <div class="col-xl-6">
                                     <%= f.label :required_fee_amount, "Required Fee Amount:" %>
-                                    <%= f.text_field :required_fee_amount, class: 'form-control req-fee-amount', placeholder: "Type here...", disabled: true %>
+																		<%= f.text_field :required_fee_amount, 
+                                     class: 'form-control req-fee-amount', 
+                                     placeholder: "Type here...", 
+                                     value: @last_rva_information&.required_fee_amount, 
+                                     disabled: true %>
                                   </div>
                                   <div class="col-xl-6">
                                     <%= f.label :check_payable_to, "Check Payable To:" %>
-                                    <%= f.text_field :check_payable_to, class: 'form-control', placeholder: "Type here...", disabled: true %>
+																		<%= f.text_field :check_payable_to, 
+                                       class: 'form-control', 
+                                       placeholder: "Type here...", 
+                                       value: @last_rva_information&.check_payable_to, 
+                                       disabled: true %>
                                   </div>
                                 </div>
                                 <hr class="form-hr">
                                 <div class="form-row mt-2">
-                                  <%= f.check_box :include_delineation, id: 'inc-delineation-check', value: "Include Delineation of Privileges"%>
+																	<%= f.check_box :include_delineation, 
+                                     id: 'inc-delineation-check', 
+                                     value: "Include Delineation of Privileges", 
+                                     checked: @last_rva_information&.include_delineation == true %>
                                   <%= f.label :include_delineation, "Include Delineation of Privileges", for: 'inc-delineation-check' %>
                                 </div>
                                 <hr class="form-hr">
                                 <div class="form-row d-flex align-items-center gap-3">
                                   <label for="">Check has generated?</label>
-                                  <%= f.radio_button :check_generated, 'Yes', id: 'check-generate-yes', disabled: true %>
+																	<%= f.radio_button :check_generated, 'true', 
+                                           id: 'check-generate-yes', 
+                                           disabled: true, 
+                                           checked: @last_rva_information&.check_generated == true %>
                                   <label for="check-generate-yes">Yes</label>
-                                  <%= f.radio_button :check_generated, 'No', id: 'check-generate-no', disabled: true %>
+																	<%= f.radio_button :check_generated, 'false', 
+                                     id: 'check-generate-no', 
+                                     disabled: true, 
+                                     checked: @last_rva_information&.check_generated == false %>
                                   <label for="check-generate-no">No</label>
                                 </div>
                                 <hr class="form-hr">
                                 <div class="form-row d-flex align-items-center gap-3">
                                   <label for="">Received Status:</label>
-                                  <%= f.radio_button :received_status, 'Yes', id: 'received-status-yes', disabled: true %>
+																	<%= f.radio_button :received_status, 'Yes', 
+                                         id: 'received-status-yes', 
+                                         disabled: true, 
+                                         checked: @last_rva_information&.received_status == 'Yes' %>
                                   <label for="received-status-yes">Yes</label>
-                                  <%= f.radio_button :received_status, 'No', id: 'received-status-no', disabled: true %>
+																	<%= f.radio_button :received_status, 'No', 
+                                           id: 'received-status-no', 
+                                           disabled: true, 
+                                           checked: @last_rva_information&.received_status == 'No' %>
                                   <label for="received-status-no">No</label>
                                 </div>
                                 <hr class="form-hr">
@@ -546,7 +577,9 @@
                                     <label for="">Received by:</label>
                                   </div>
                                   <div class="col-md-6">
-                                    <span class="font-bold received-by"></span>
+																		<span class="font-bold received-by">
+                                        <%= @last_rva_information&.received_by.presence || ' ' %>
+                                    </span>
                                   </div>
                                 </div>
                                 <hr class="form-hr">
@@ -555,18 +588,20 @@
                                     <label for="">Received date:</label>
                                   </div>
                                   <div class="col-md-6">
-                                    <span class="font-bold received-date"></span>
+																		<span class="font-bold received-date">
+																			<%= @last_rva_information&.received_date.presence || ' ' %>
+																		</span>
                                   </div>
                                 </div>
                                 <hr class="form-hr">
                                 <div class="form-row">
                                   <%= f.label :comments, "Comments:" %>
-                                  <%= f.text_area :comments, rows: 3, class: 'form-control request-comment'%>
+																	<%= f.text_area :comments, rows: 3, class: 'form-control request-comment', value: @last_rva_information&.comments%>
                                 </div>
                                 <div class="form-row d-flex justify-content-end gap-2 mt-3">
                                   <button class="btn btn-primary py-1" type="button">View Received Images</button>
-                                  <button class="btn btn-primary py-1" type="button">Save Request</button>
-                                  <button class="btn btn-primary py-1" type="button">Restart Request</button>
+																	<button class="btn btn-primary py-1" type="button" <%= 'disabled' if @last_rva_information.present? %>>Save Request</button>
+                                  <button class="btn btn-primary py-1" type="button" <%= 'disabled' if !@last_rva_information.present? %>>Restart Request</button>
                                 </div>
                                 <div class="row mt-3">
 																  <div class="col-md-3">
@@ -607,7 +642,7 @@
                                     <%= f.label :source_name, 'Source Name:' %>
                                   </div>
                                   <div class="col-md-6">  
-                                    <%= f.select :source_name, options_for_select([['ABSA', 'ABSA'] , ['Behavior Analyst Certification Board', 'Behavior Analyst Certification Board'], ['City/County Business Tax Receipt', 'City/County Business Tax Receipt'], ['Dept. of Children and Family Services', 'Dept. of Children and Family Services'] , ['NURSYS', 'NURSYS'], ['Pharmacy', 'Pharmacy'], ['Radioactive Material License', 'Radioactive Material License'], ['State Board', 'State Board'], ['State of Florida (AHCA)', 'State of Florida (AHCA)'] , ['Texas Medical Board', 'Texas Medical Board'] , ['Unable to Verify', 'Unable to Verify']], selected: @oig_webcrawler_logs.present? ? 'OIG' : ''), { include_blank: 'Select option' }, class: 'form-select' %>
+                                    <%= f.select :source_name, options_for_select([['ABSA', 'ABSA'] , ['Behavior Analyst Certification Board', 'Behavior Analyst Certification Board'], ['City/County Business Tax Receipt', 'City/County Business Tax Receipt'], ['Dept. of Children and Family Services', 'Dept. of Children and Family Services'] , ['NURSYS', 'NURSYS'], ['Pharmacy', 'Pharmacy'], ['Radioactive Material License', 'Radioactive Material License'], ['State Board', 'State Board'], ['State of Florida (AHCA)', 'State of Florida (AHCA)'] , ['Texas Medical Board', 'Texas Medical Board'] , ['Unable to Verify', 'Unable to Verify']], selected: @last_rva_information&.source_name.present? ? @last_rva_information&.source_name : ''), { include_blank: 'Select option' }, class: 'form-select' %>
                                   </div>
                                 </div>
                                 <hr>
@@ -616,7 +651,7 @@
                                     <%= f.label :source_date, 'Source Date:' %>
                                   </div>
                                   <div class="col-md-6">  
-																		<%= f.date_field :source_date, required: true, class: "form-control" %>
+																		<%= f.date_field :source_date, required: true, class: "form-control", value: @last_rva_information&.source_date %>
                                   </div>
                                 </div>
                                 <hr>
@@ -715,7 +750,7 @@
 																			['Volun.Restrict/ACTIVE', 'Volun.Restrict/ACTIVE'],
 																			['Volun.Withdraw/ACTIVE', 'Volun.Withdraw/ACTIVE'],
 																			['VOLUNTARY SURRENDER', 'VOLUNTARY SURRENDER']
-																		], selected: 'ACTIVE'), { include_blank: 'Select option' }, class: 'form-select' %>
+																		], @last_rva_information&.status), { include_blank: 'Select option' }, class: 'form-select' %>
 
                                   </div>
                                 </div>
@@ -788,30 +823,44 @@
 																			['Under Board Order', 'Under Board Order'],
 																			['Voluntary surrender', 'Voluntary surrender'],
 																			['Yes', 'Yes']
-																		], selected: 'None'), { include_blank: 'Select option' }, class: 'form-select' %>
+																		], @last_rva_information&.adverse_action), { include_blank: 'Select option' }, class: 'form-select' %>
 																		</div>
                                     <div class="form-row row">
                                       <div class="col-xl-6">
                                         <%= f.label :other_details, 'Other:' %>
-                                        <%= f.text_area :other_details, rows: 5, class: 'form-control' %>
+																				<%= f.text_area :other_details, rows: 5, class: 'form-control', value: @last_rva_information&.other_details  %>
                                       </div>
                                       <div class="col-xl-6">
                                         <%= f.label :adverse_action_comments, 'Comments:' %>
-                                        <%= f.text_area :adverse_action_comments, rows: 5, class: 'form-control' %>
+																				<%= f.text_area :adverse_action_comments, rows: 5, class: 'form-control', value: @last_rva_information&.adverse_action_comments  %>
                                       </div>
                                     </div>
                                     <div class="form-row d-flex align-items-center gap-2 mt-1">
-                                      <%= f.radio_button :adverse_action_status, 'Open', id: 'verif-open' %>
-                                      <%= f.label :adverse_action_status, 'Open' %>
-                                      <%= f.radio_button :adverse_action_status, 'Close', id: 'verif-close' %>
-                                      <%= f.label :adverse_action_status, 'Close' %>
+                                       <%= f.radio_button :adverse_action_status, 'Open', 
+                                                          id: 'verif-open', 
+                                                          checked: @last_rva_information&.adverse_action_status == 'Open' %>
+                                       <%= f.label :adverse_action_status, 'Open', for: 'verif-open' %>
+  
+                                       <%= f.radio_button :adverse_action_status, 'Close', 
+                                                          id: 'verif-close', 
+                                                          checked: @last_rva_information&.adverse_action_status == 'Close' %>
+                                       <%= f.label :adverse_action_status, 'Close', for: 'verif-close' %>
                                     </div>
                                     <div class="form-row d-flex align-items-center gap-2">
                                       <%= f.label :in_good_standing, 'In Good Standing?' %>
-                                      <%= f.radio_button :in_good_standing, 'Yes', id: 'good-standing-yes' %>
-                                      <%= f.label :in_good_standing, 'Yes', for: 'good-standing-yes', class: 'form-check-label' %>
-                                      <%= f.radio_button :in_good_standing, 'No', id: 'good-standing-no' %>
-                                      <%= f.label :in_good_standing, 'No', for: 'good-standing-no', class: 'form-check-label' %>
+																			<%= f.radio_button :in_good_standing, 'Yes', 
+																												id: 'good-standing-yes', 
+																												checked: @last_rva_information&.in_good_standing == true %>
+																			<%= f.label :in_good_standing, 'Yes', 
+																								for: 'good-standing-yes', 
+																								class: 'form-check-label' %>
+
+																			<%= f.radio_button :in_good_standing, 'No', 
+																												id: 'good-standing-no', 
+																												checked: @last_rva_information&.in_good_standing == false %>
+																			<%= f.label :in_good_standing, 'No', 
+																								for: 'good-standing-no', 
+																								class: 'form-check-label' %>
                                     </div>
                                   </div>
                                 </div>
@@ -835,12 +884,12 @@
 																							['Require Supervision', 'Require Supervision'],
 																							['State', 'State'],
 																							['Type', 'Type']
-																						], selected: 'None'), { include_blank: 'Select option' }, class: 'form-select' %>
+																						], @last_rva_information&.error_type || 'None'), { include_blank: 'Select option' }, class: 'form-select' %>
 
                                           </div>
                                           <div class="col-xl-6">
                                             <%= f.label :error_comments, 'Comments:' %>
-                                            <%= f.text_area :error_comments, rows: 3, class: 'form-control' %>
+																						<%= f.text_area :error_comments, rows: 3, class: 'form-control', value: @last_rva_information&.error_comments %>
                                           </div>
                                         </div>
                                         <div class="d-flex align-items-center justify-content-between mt-3">
@@ -875,12 +924,12 @@
 																							['Require Supervision', 'Require Supervision'],
 																							['State', 'State'],
 																							['Type', 'Type']
-																						], selected: nil), { include_blank: 'Select option' }, class: 'form-select' %>
+																						],  @last_rva_information&.correct_info_selected), { include_blank: 'Select option' }, class: 'form-select' %>
 
                                           </div>
                                           <div class="col-xl-6">
                                             <%= f.label :correct_info_text, 'Enter Details:' %>
-                                            <%= f.text_field :correct_info_text, class: 'form-control' %>
+																						<%= f.text_field :correct_info_text, class: 'form-control', value: @last_rva_information&.correct_info_text %>
                                           </div>
                                         </div>
                                         <div class="d-flex align-items-center justify-content-between mt-3">
@@ -897,7 +946,7 @@
                                     <label for="">Verification Status:</label>
                                   </div>
                                   <div class="col-md-6">
-                                    <span class="font-bold verification-status"></span>
+																		<span class="font-bold verification-status"><%= @last_rva_information&.verification_status.presence || '' %></span>
                                   </div>
                                 </div>
                                 <hr class="form-hr">
@@ -906,7 +955,7 @@
                                     <label for="">Notification Status:</label>
                                   </div>
                                   <div class="col-md-6">
-                                    <span class="font-bold notification-status"></span>
+																		<span class="font-bold notification-status"><%= @last_rva_information&.notification_status.presence || '' %></span>
                                   </div>
                                 </div>
                                 <hr class="form-hr">
@@ -915,7 +964,7 @@
                                     <label for="">Verification Date:</label>
                                   </div>
                                   <div class="col-md-6">
-                                    <span class="font-bold verification-date"></span>
+																		<span class="font-bold verification-date"><%= @last_rva_information&.verification_date.presence || '' %></span>
                                   </div>
                                 </div>
                                 <hr class="form-hr">
@@ -924,7 +973,7 @@
                                     <label for="">Verifier:</label>
                                   </div>
                                   <div class="col-md-6">
-                                    <span class="font-bold verifier"></span>
+																		<span class="font-bold verifier"><%= @last_rva_information&.verifier.presence || '' %></span>
                                   </div>
                                 </div>
                                 <hr class="form-hr">
@@ -933,7 +982,7 @@
                                 <div class="form-row row mt-3">
                                   <div class="col-xl-12">
                                     <%= f.label :verification_comments, 'Comments:' %>
-                                    <%= f.text_area :verification_comments, rows: 3, class: 'form-control' %>
+																		<%= f.text_area :verification_comments, rows: 3, class: 'form-control', value: @last_rva_information&.verification_comments %>
                                   </div>
                                 </div>
                                 <div class="d-flex justify-content-end gap-2 mt-3">
@@ -974,12 +1023,12 @@
 																						['Type Incorrect', 'Type Incorrect'],
 																						['Verification Not Uploaded', 'Verification Not Uploaded'],
 																						['Verification Status Incorrect', 'Verification Status Incorrect']
-																					], selected: nil), { include_blank: 'Select option' }, class: 'form-select' %>
+																					],    @last_rva_information&.audit_reason), { include_blank: 'Select option' }, class: 'form-select' %>
 
                                         </div>
                                         <div class="col-xl-6">
                                           <%= f.label :audit_reason_comments, 'Comments:' %>
-                                          <%= f.text_field :audit_reason_comments, class: 'form-control' %>
+																					<%= f.text_field :audit_reason_comments, class: 'form-control', value: @last_rva_information&.audit_reason_comments %>
                                         </div>
                                       </div>
                                       <div class="d-flex align-items-center justify-content-between mt-3">
@@ -993,11 +1042,23 @@
 
                               <div class="form-row d-flex align-items-center gap-3">
                                 <%= f.label :audit_status, 'Audit Status:' %>
-                                <%= f.radio_button :audit_status, 'Pass', id: 'audit-status-pass', class: 'form-check-input', required: true %>
-                                <%= f.label :audit_status, 'Pass', for: 'audit-status-pass', class: 'form-check-label' %>
+																<%= f.radio_button :audit_status, 'Pass', 
+																										id: 'audit-status-pass', 
+																										class: 'form-check-input', 
+																										required: true, 
+																										checked: @last_rva_information&.audit_status == true %>
+																<%= f.label :audit_status, 'Pass', 
+																							for: 'audit-status-pass', 
+																							class: 'form-check-label' %>
 
-                                <%= f.radio_button :audit_status, 'Fail', id: 'audit-status-fail', class: 'form-check-input', required: true %>
-                                <%= f.label :audit_status, 'Fail', for: 'audit-status-fail', class: 'form-check-label' %>
+																<%= f.radio_button :audit_status, 'Fail', 
+																										id: 'audit-status-fail', 
+																										class: 'form-check-input', 
+																										required: true, 
+																										checked: @last_rva_information&.audit_status == false %>
+																<%= f.label :audit_status, 'Fail', 
+																							for: 'audit-status-fail', 
+																							class: 'form-check-label' %>
                               </div>
                               <hr class="form-hr">
 
@@ -1006,7 +1067,7 @@
                                   <label for="">Audit Date:</label>
                                 </div>
                                 <div class="col-md-6">
-                                  <span class="font-bold" id="rva_information_audit_date"></span>
+																	<span class="font-bold" id="rva_information_audit_date"><%= @last_rva_information&.audit_date.presence || '' %></span>
                                 </div>
                               </div>
                               <hr class="form-hr">
@@ -1016,7 +1077,7 @@
                                   <label for="">Auditor:</label>
                                 </div>
                                 <div class="col-md-6">
-                                  <span class="font-bold" id="rva_information_auditor"></span>
+																	<span class="font-bold" id="rva_information_auditor"><%= @last_rva_information&.auditor.presence || '' %></span>
                                 </div>
                               </div>
                               <hr class="form-hr">
@@ -1024,7 +1085,7 @@
                               <div class="form-row row">
                                 <div class="col-xl-12">
                                   <%= f.label :audit_comments, 'Comments:' %>
-                                  <%= f.text_area :audit_comments, rows: 3, class: 'form-control' %>
+																	<%= f.text_area :audit_comments, rows: 3, class: 'form-control', value: @last_rva_information&.audit_comments %>
                                 </div>
                               </div>
 

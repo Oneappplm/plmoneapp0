@@ -3,7 +3,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
     send_oig_request send_licensure_request send_employment_request
     send_npdb_request send_registration_request send_liability_request
     send_board_cert_request send_education_request send_education_skip_rva
-    send_dea_skip_rva send_training_request send_employment_skip_rva send_npdb_skip_rva
+    send_dea_skip_rva send_training_request send_employment_skip_rva send_npdb_skip_rva send_board_cert_skip_rva
   ]
   def run_oig_webcrawler
     last_name = params[:last_name]
@@ -221,6 +221,16 @@ class Webscrapers::QualityAuditsController < ApplicationController
   def send_board_cert_request
     board_id = params[:board_id]
     create_rva_information('BOARDCERT', 'none', board_id: board_id)
+  end
+
+  def send_board_cert_skip_rva
+    board_id = params[:board_id]
+    create_rva_information(
+      'BOARDCERT', 'SkipRVA',
+      board_id: board_id,
+      skip_rva: true
+    )
+    ProviderSpecialty.find(board_id).update(audit_status: 'SkipRVA')
   end
 
   def send_education_request
