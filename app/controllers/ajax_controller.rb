@@ -175,15 +175,17 @@ class AjaxController < ApplicationController
   end
 
   def get_enrollment_groups
-    if current_user&.can_access_all_groups || current_user&.super_administrator?
-      enrollment_groups = EnrollmentGroup.all.map { |m| { label: m.group_name, value: m.id} }
+    if current_user.is_a?(User) && (current_user.can_access_all_groups || current_user.super_administrator?)
+      enrollment_groups = EnrollmentGroup.all.map { |m| { label: m.group_name, value: m.id } }
+    elsif current_user.is_a?(User)
+      enrollment_groups = current_user.enrollment_groups.map { |m| { label: m.group_name, value: m.id } }
     else
-      enrollment_groups = current_user.enrollment_groups.map { |m| { label: m.group_name, value: m.id} }
+      enrollment_groups = [] # fallback or error for admin
     end
-    render json: {
-      'enrollment_groups' => enrollment_groups
-    }
+
+    render json: { 'enrollment_groups' => enrollment_groups }
   end
+
 
   def get_selected_provider_types
     enrollment_group = EnrollmentGroup.find(params[:group_id])

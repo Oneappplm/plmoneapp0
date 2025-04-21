@@ -121,7 +121,7 @@
 													</div>
 													<% end %>
 
-													<% if current_setting.dcm? %>
+													<% if current_setting.dcm? && current_user.can_access?('caqh') %>
 														<div class="nav-item mb-1">
 															<a class="nav-link <%= active_menu('caqh', 'show') %> <%= active_menu('manage_tools') %>" href="<%= current_setting.mhc? ? mhc_verification_platform_index_path : caqh_upload_path %>" data-placement="left">
 																	<!-- <i class="bi-receipt nav-icon"></i> -->
@@ -132,7 +132,7 @@
 														</div>
 													<% end %>
 
-													<% if current_setting.dcm? %>
+													<% if current_setting.dcm? && current_user.can_access?('app_tracking') %>
 														<div class="nav-item mb-1">
 														  <a class="nav-link <%= active_menu('app_tracking') %> <%= ['app_tracking', 'app_tracking_record'].include?(params[:page_tab]) || request.path == '/mhc/verification-platform' ? 'active bg-primary text-white' : '' %>" 
 														     href="<%= current_setting.dcm? ? '/mhc/verification-platform' : '#' %>" 
@@ -143,7 +143,7 @@
 														</div>
 													<% end %>
 
-													<% if current_setting.dcm? %>
+													<% if current_setting.dcm? && current_user.can_access?('app-tracker') %>
 														<div class="nav-item mb-1">
 														  <a class="nav-link <%= active_menu('app-tracker') %> <%= ['app-tracker'].include?(params[:page_tab]) || request.path == '/app-tracker' ? 'active bg-primary text-white' : '' %>" 
 														     href="<%= current_setting.dcm? ? '/app-tracker' : '#' %>" 
@@ -212,7 +212,7 @@
 													</div>
 													<% end %>
 
-												<% if current_user.can_access?('Role Based Access') %>
+												<% if current_user.can_access?('role_based_accesses') %>
 													<div class="nav-item mb-1">
 														<a class="nav-link <%= active_menu('role_based_accesses,roles,users') %> <%= active_menu('index') %>" href="<%= role_based_accesses_path %>" data-placement="left">
 															<i class="bi bi-gear nav-icon"></i>

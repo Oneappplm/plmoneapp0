@@ -14,8 +14,8 @@ class RoleBasedAccess < ApplicationRecord
 		:work_ticklers,
 		:enrollment_clients,
 		:notifications,
-        :notification_bell,
-        :enrollment_details_notes,
+    :notification_bell,
+    :enrollment_details_notes,
 		:enrollment_groups,
 		:locations,
 		:alt_enrollment_groups,
@@ -100,8 +100,14 @@ class RoleBasedAccess < ApplicationRecord
     "Manage DB",
     "Autoverify",
     "Associate Location",
-	"Settings",
-    "App Tracker"
+	  "Settings",
+    "CAQH",
+    "app_tracking",
+    "app-tracker",
+    "Help Codes",
+    "PDF Populator",
+    "Role Access",
+    "settings"
 	]
 
 	default_scope { order(:id) }
