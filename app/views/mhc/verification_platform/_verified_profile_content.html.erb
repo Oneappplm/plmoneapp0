@@ -376,6 +376,7 @@
 				<% provider_personal_information.practice_information_educations
 			   .joins(:rva_informations)
 			   .where(rva_informations: { audit_status: true })
+				 .where(verification_status: "Quality Audited")
 			   .where.not(rva_informations: { source_date: nil })
 			   .distinct
 			   .each do |education| %>
