@@ -22,7 +22,7 @@ class AutomationTool::PdfPopulatorService < ApplicationService
           field.field_value = "#{data[:first_name]} #{data[:middle_initial]} #{data[:last_name]}"
         when 'Degree', 'Degree Earned'
           field.field_value = "#{data[:degree]}"
-        when 'Contact Email'
+        when 'Contact Email', 'Email'
           field.field_value = data[:email_address]
         when 'Street address 1'
           field.field_value = "#{data[:address_line_1]}"
@@ -30,7 +30,7 @@ class AutomationTool::PdfPopulatorService < ApplicationService
           field.field_value = "#{data[:address_line_2]}"
         when 'State', 'State_3', 'State_6', 'State_7'
           field.field_value = "#{data[:state_id]}"
-        when '232791942'
+        when '232791942', 'Zip'
           field.field_value = "#{data[:zip_code]}"
         # when 'From', 'undefined_3'
         when 'From'
@@ -72,16 +72,16 @@ class AutomationTool::PdfPopulatorService < ApplicationService
           field.field_value = "#{data[:board_recertification_date]}"
         when 'Expiration Date_10'
           field.field_value = "#{data[:board_expiration_date]}"
-        when 'Institution Name'
+        when 'Institution Name', 'Complete School Name'
           field.field_value = "#{data[:prof_medical_school_name]}"
-        when 'From_2', 'undefined_54'
+        when 'From_2', 'undefined_54', 'Graduation Datemmyy'
           if data[:prof_medical_start_date].is_a?(String)
             prof_medical_start_date = Date.parse(data[:prof_medical_start_date]) rescue nil
             field.field_value = prof_medical_start_date.strftime('%m') if prof_medical_start_date
           else
             field.field_value = data[:prof_medical_start_date].strftime('%m') if data[:prof_medical_start_date]
           end
-        when 'Address_4'
+        when 'Address_4', 'Address 111'
           field.field_value = "#{data[:prof_medical_school_address]}"
         when 'City_4'
           field.field_value = "#{data[:prof_medical_school_city]}"
@@ -91,19 +91,25 @@ class AutomationTool::PdfPopulatorService < ApplicationService
           field.field_value = "#{data[:prof_medical_school_zipcode]}"
         when 'Country if nonUS'
           field.field_value = "#{data[:prof_medical_school_country]}"
+        when 'DegreesCertification Received'
+          field.field_value = "#{data[:prof_medical_school_degree_awarded]}"
+        when 'Facility Name'
+          field.field_value = "#{data[:facility_name]}"
+        when 'Address_13'
+          field.field_value = "#{data[:admitting_facility_address_line1]} #{data[:admitting_facility_address_line2]} #{data[:admitting_facility_city]} #{data[:admitting_facility_state]}"
 
 
-        when 'First Name', 'text_firstname', 'txt_firstname', 'text_15hdnp', '232791939'
+        when 'First Name', 'text_firstname', 'txt_firstname', 'text_15hdnp', '232791939', 'First'
           field.field_value = data[:first_name]
-        when 'Middle Initial', 'text_middlename', 'txt_middlename'
+        when 'Middle Initial', 'text_middlename', 'txt_middlename', 'Middle'
           field.field_value = data[:middle_initial]
         when 'Last Name', 'text_lastname', 'txt_lastname', 'text_14xnba'
           field.field_value = data[:last_name]
-        when 'Suffix'
+        when 'Suffix', 'Title'
           field.field_value = data[:suffix]
         when 'Date of  birth', 'text_23giep', 'Birth Date'
           field.field_value = data[:dob]
-        when 'National Provider Identifier Individual NPI', '232791941'
+        when 'National Provider Identifier Individual NPI', '232791941', 'National Provider Identifier #'
           field.field_value = data[:npi]
         when 'Social Security Number'
           field.field_value = data[:ssn]
@@ -113,6 +119,14 @@ class AutomationTool::PdfPopulatorService < ApplicationService
           field.field_value = data[:license_number]
         when 'Graduation Date Month  Year'
           field.field_value = set_date_field(field, :graduation_date, data)
+        when 'C Home Address'
+          field.field_value = "#{data[:address_line_1]} #{data[:address_line_2]}"
+        when 'City'
+          field.field_value = "#{data[:city]}"
+        when 'D Home Telephone Number'
+          field.field_value = "#{data[:telephone_number]}"
+        when 'Place of birth'
+          field.field_value = "#{data[:birth_city]} #{data[:birth_state]}"
 
         # Specialist Details
         when 'dochub_cb_ffde27df45375493' # Board certified cb
@@ -142,13 +156,13 @@ class AutomationTool::PdfPopulatorService < ApplicationService
         # TODO: Malpractice Checkbox missing in the form.
 
         # Practice Location
-        when 'Dental School'
+        when 'Dental School', 'Name of Clinical Practice'
           field.field_value = data[:dental_school]
         when 'Dental Office Name'
           field.field_value = data[:office_name]
-        when 'Address'
+        when 'Address', '1'
           field.field_value = "#{data[:address]}, #{data[:office_city]}, #{data[:state]}, #{data[:zip]}"
-        when 'City_3'
+        when 'City_3', 'Clinical Practice City'
           field.field_value = data[:office_city]
         when 'State_6'
           field.field_value = data[:state]
@@ -156,29 +170,29 @@ class AutomationTool::PdfPopulatorService < ApplicationService
           field.field_value = data[:zip]
         when 'Tax ID  Required'
           field.field_value = data[:tax_id]
-        when 'Tel No'
+        when 'Tel No', 'Office Telephone #'
           field.field_value = data[:phone_number]
-        when 'Fax No'
+        when 'Fax No', 'Office Fax #'
           field.field_value = data[:fax_number]
-        when 'Mon'
+        when 'Mon', 'Monday_pg5'
           field.field_value = time_value(data[:office_hours][:monday], 0)
-        when 'ampm'
+        when 'ampm', 'pg5_to'
           field.field_value = time_value(data[:office_hours][:monday], 1)
-        when 'Tues'
+        when 'Tues', 'Tuesday_pg5'
           field.field_value = time_value(data[:office_hours][:tuesday], 0)
-        when 'ampm_2'
+        when 'ampm_2', 'pg5_to_2'
           field.field_value = time_value(data[:office_hours][:tuesday], 1)
-        when 'Wed'
+        when 'Wed', 'Wednesday_pg5'
           field.field_value = time_value(data[:office_hours][:wednesday], 0)
-        when 'ampm_3'
+        when 'ampm_3', 'pg5_to_3'
           field.field_value = time_value(data[:office_hours][:wednesday], 1)
-        when 'Thurs'
+        when 'Thurs', 'Thursday_pg5'
           field.field_value = time_value(data[:office_hours][:thursday], 0)
-        when 'ampm_4'
+        when 'ampm_4', 'pg5_to_4'
           field.field_value = time_value(data[:office_hours][:thursday], 1)
-        when 'Fri'
+        when 'Fri', 'Friday_pg5'
           field.field_value = time_value(data[:office_hours][:friday], 0)
-        when 'ampm_5'
+        when 'ampm_5', 'pg5_to_5'
           field.field_value = time_value(data[:office_hours][:friday], 1)
         when 'dochub_cb_8208742f40a35fe2'
           field.field_value = data[:ada_compliance] == 'Yes'
@@ -196,19 +210,19 @@ class AutomationTool::PdfPopulatorService < ApplicationService
           field.field_value = data[:middle_initial]
         when 'Last Name_2'
           field.field_value = data[:last_name]
-        when 'Practice NameInstitution', 'Employer'
+        when 'Practice NameInstitution', 'Employer', 'Name of Current PracticeEmployer'
           field.field_value = data[:work_history][0][:practice_name]
-        when 'Address_4', 'Address_6'
+        when 'Address_4', 'Address_6', 'Address_20'
           field.field_value = address_value(data[:work_history][0][:address], 0)
         when 'City_6'
           field.field_value = address_value(data[:work_history][0][:address], 1)
         when 'ZIP'
           field.field_value = address_value(data[:work_history][0][:address], 3)
-        when 'From', 'Date MMYYYY From', 'undefined_58'
+        when 'From', 'Date MMYYYY From', 'undefined_58', 'Date 7'
           field.field_value = set_date_field(field, [:work_history, 0, :start_date], data)
-        when 'To_3', 'to_8', 'undefined_59'
+        when 'To_3', 'to_8', 'undefined_59', 'Date 814'
           field.field_value = set_date_field(field, [:work_history, 0, :end_date], data)
-        when 'Practice NameInstitution_2', 'Employer_2'
+        when 'Practice NameInstitution_2', 'Employer_2', 'Name of Prior PracticeEmployer'
           field.field_value = data[:work_history][1][:practice_name]
         when 'Address_5'
           field.field_value = address_value(data[:work_history][1][:address], 0)
@@ -216,11 +230,13 @@ class AutomationTool::PdfPopulatorService < ApplicationService
           field.field_value = address_value(data[:work_history][1][:address], 1)
         when 'ZIP_2'
           field.field_value = address_value(data[:work_history][1][:address], 3)
-        when 'From_2', 'Date MMYYYY From_2', 'undefined_60'
-          field.field_value = set_date_field(field, [:work_history, 1, :start_date], data)
-        when 'To_4', 'to_9', 'undefined_61'
-          field.field_value = set_date_field(field, [:work_history, 1, :end_date], data)
-        when 'Practice NameInstitution_3', 'Employer_3'
+        when 'From_2', 'Date MMYYYY From_2', 'undefined_60', 'From mmyy'
+          # field.field_value = set_date_field(field, [:work_history, 1, :start_date], data)
+          set_date_field(field, [:work_history, 1, :start_date], data)
+        when 'To_4', 'to_9', 'undefined_61', 'To mmyy_01'
+          # field.field_value = set_date_field(field, [:work_history, 1, :end_date], data)
+          set_date_field(field, [:work_history, 1, :end_date], data)
+        when 'Practice NameInstitution_3', 'Employer_3', 'Name of Prior PracticeEmployer_2'
           field.field_value = data[:work_history][2][:practice_name]
         when 'Address_6'
           field.field_value = address_value(data[:work_history][2][:address], 0)
@@ -228,11 +244,12 @@ class AutomationTool::PdfPopulatorService < ApplicationService
           field.field_value = address_value(data[:work_history][2][:address], 1)
         when 'ZIP_3'
           field.field_value = address_value(data[:work_history][2][:address], 3)
-        when 'From_3', 'Date MMYYYY From_3', 'undefined_62'
-          field.field_value = set_date_field(field, [:work_history, 2, :start_date], data)
-        when 'To_5', 'to_10', 'undefined_63'
-          field.field_value = set_date_field(field, [:work_history, 2, :start_date], data)
-
+        when 'From_3', 'Date MMYYYY From_3', 'undefined_62', 'From mmyy_2'
+          # field.field_value = set_date_field(field, [:work_history, 2, :start_date], data)
+          set_date_field(field, [:work_history, 2, :start_date], data)
+        when 'To_5', 'to_10', 'undefined_63', 'To mmyy_2-1'
+          # field.field_value = set_date_field(field, [:work_history, 2, :end_date], data)
+          set_date_field(field, [:work_history, 2, :end_date], data)
         when 'dochub_cb_2a9c64dd4c683c8c' # Liability Insurance CB Yes
           field.field_value = data[:liability_insurance_issues] == 'Yes'
         when 'dochub_cb_3b0949394101b2fc' # Liability Insurance CB No
@@ -338,7 +355,9 @@ class AutomationTool::PdfPopulatorService < ApplicationService
   def valid_date_format!(date)
     return if date.nil?
 
-    raise ArgumentError, "Invalid date format. Expected MM/DD/YYYY or MM/YYYY." unless date =~ /(0[1-9]|1[0-2])\/(\d{2}|\d{4})/
+    unless date =~ /\A(0?[1-9]|1[0-2])\/(\d{1,2})?(\/\d{4})?\z/
+      raise ArgumentError, "Invalid date format. Expected MM/DD/YYYY or MM/YYYY."
+    end
   end
 
   def validate_data(data)

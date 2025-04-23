@@ -6,6 +6,8 @@ module PdfPopulatorsHelper
    Rails.root.join('public', 'templates', 'Paper Provider Application Template.pdf')
   elsif pdf_form == "guardian"
    Rails.root.join('public', 'templates', 'Guardian-PPO-New.pdf')
+  elsif pdf_form == "credentialing"
+   Rails.root.join('public', 'templates', 'co-credentialing-form.pdf')
   else
    Rails.root.join('public', 'templates', 'Careington Template.pdf')
   end
