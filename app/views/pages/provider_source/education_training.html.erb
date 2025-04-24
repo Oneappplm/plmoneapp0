@@ -42,8 +42,13 @@
 						</div>
             <div class="<%= toggle_hide_current_provider_source('undergraduate_school', @provider) %>" id="undergrad_school_details">
               <div id="undergraduate_school_container">
-                <% @provider.provider_source_undergrad_schools.each_with_index do |school, index| %>
-                  <%= render partial: 'provider_source_components/undergrad_school_details', locals: { index: index, school: school } %>
+                <% if @provider.provider_source_undergrad_schools.empty? %>
+                  <!-- Render initial blank entry (index 0) if none exist -->
+                  <%= render partial: 'provider_source_components/undergrad_school_details', locals: { index: 0, school: ProviderSourceUndergradSchool.new } %>
+                <% else %>
+                  <% @provider.provider_source_undergrad_schools.each_with_index do |school, index| %>
+                    <%= render partial: 'provider_source_components/undergrad_school_details', locals: { index: index, school: school } %>
+                  <% end %>
                 <% end %>
               </div>
 
@@ -51,10 +56,12 @@
               <div id="undergraduate_school_template" class="undergrad-school-entry d-none">
                 <%= render partial: 'provider_source_components/undergrad_school_details', locals: { index: 'REPLACE_INDEX', school: ProviderSourceUndergradSchool.new } %>
               </div>
-
-              <button type="button" class="btn btn-outline-primary mt-2" id="add_undergraduate_school">
-                <i class="bi bi-plus-circle me-1"></i> Add Another Undergraduate School
-              </button>
+              
+              <% if @provider.provider_source_undergrad_schools.any?(&:persisted?) %>
+                <button type="button" class="btn btn-outline-primary mt-2" id="add_undergraduate_school">
+                  <i class="bi bi-plus-circle me-1"></i> Add Another Undergraduate School
+                </button>
+              <% end %>  
             </div>
 
 							<div class="<%#= toggle_hide_current_provider_source('undergraduate_school', @provider) %>" id="undergrad_school_details">
@@ -95,8 +102,13 @@
 						</div>	
 							<div class="<%= toggle_hide_current_provider_source('professional_school', @provider) %>" id="prof_school_details">
                   <div id="graduate_details_container">
-                    <% @provider.graduate_details.each_with_index do |gd, index| %>
-                      <%= render partial: 'provider_source_components/prof_school_details', locals: { graduate_detail: gd, index: index } %>
+                    <% if @provider.graduate_details.empty? %>
+                      <!-- Render initial blank entry (index 0) if none exist -->
+                      <%= render partial: 'provider_source_components/prof_school_details', locals: { index: 0, graduate_detail: GraduateDetail.new } %>
+                    <% else %>
+                      <% @provider.graduate_details.each_with_index do |gd, index| %>
+                        <%= render partial: 'provider_source_components/prof_school_details', locals: { graduate_detail: gd, index: index } %>
+                      <% end %>
                     <% end %>
                   </div>
 
@@ -104,8 +116,10 @@
                   <div id="graduate_detail_template" class="d-none">
                     <%= render partial: 'provider_source_components/prof_school_details', locals: { graduate_detail: GraduateDetail.new, index: 'REPLACE_INDEX' } %>
                   </div>
-
-                  <button id="add_graduate_detail" class="btn btn-outline-primary">Add Graduate/Professional School</button>
+                  
+                  <% if @provider.graduate_details.any?(&:persisted?) %>
+                    <button id="add_graduate_detail" class="btn btn-outline-primary">Add Graduate/Professional School</button>
+                  <% end %>  
 
                 </div>
 
@@ -158,10 +172,15 @@
 
     newEntry.attr("data-id", ""); // Reset ID
     newEntry.attr("data-saving", "false"); // Custom flag to avoid race conditions
+    newEntry.attr("data-index", index);
 
     index++;
     $("#undergraduate_school_container").append(newEntry);
   });
+
+  if ($("#undergraduate_school_container .undergrad-school-entry").length === 1) {
+    $("#undergraduate_school_container .undergrad-school-entry").first().find(".remove_undergraduate_school").hide();
+  }
 
   $(document).on("click", ".remove_undergraduate_school", function () {
     let entry = $(this).closest(".undergrad-school-entry");
@@ -262,10 +281,15 @@
 
     newEntry.attr("data-id", ""); // Reset ID
     newEntry.attr("data-saving", "false"); // Custom flag to avoid race conditions
+    newEntry.attr("data-index", index);
 
     graduateIndex++;
     $("#graduate_details_container").append(newEntry);
   });
+
+  if ($("#graduate_details_container .graduate-school-entry").length === 1) {
+    $("#graduate_details_container .graduate-school-entry").first().find(".remove_graduate_school").hide();
+  }
 
   $(document).on("click", ".remove_graduate_school", function () {
     let entry = $(this).closest(".graduate-school-entry");
