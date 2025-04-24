@@ -23,6 +23,7 @@ class UsersController < ApplicationController
 			updated_params = user_params.merge!({ users_enrollment_groups_attributes: users_enrollment_group_attributes })
 		end
 		@user = User.where(email: updated_params[:email]).first_or_initialize(updated_params.except(:enrollment_group_ids))
+		@user.password = user_params.dig(:temporary_password)
 		if @user.persisted?
 			@user = User.new(updated_params.except(:enrollment_group_ids))
 			@user.errors.add(:base, 'Invalid account')

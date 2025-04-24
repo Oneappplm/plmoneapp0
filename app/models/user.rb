@@ -38,9 +38,13 @@ class User < ApplicationRecord
     "Where were you born?"
   ].freeze
 
+  NAME_REGEX = /\A[a-zA-Z\s\-]+\z/
 
   validates :first_name, presence: true,  on: :create
   validates :last_name, presence: true, on: :create
+  validates :first_name, :middle_name, :last_name,
+            format: { with: NAME_REGEX, message: "must only contain letters, spaces, or hyphens" },
+            allow_blank: true
   # temporarily commented to cater only using temporary password
   # validate :password_match
 
@@ -51,8 +55,8 @@ class User < ApplicationRecord
     # user.validates_confirmation_of :password
   end
 
-  before_save :set_temporary_password_as_password, :set_user_role
-  before_create :generate_api_token
+  before_save :set_user_role
+  before_create :generate_api_token, :set_temporary_password_as_password
   after_create :set_sidebar_preferences
 
   scope :from_enrollment, -> { where(from_source: 'enrollment')}
