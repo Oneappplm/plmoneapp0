@@ -198,6 +198,16 @@ class Webscrapers::QualityAuditsController < ApplicationController
   def send_npdb_request
     create_rva_information('NPDB', 'NPDB Webcrawler Request')
   end
+
+  def delete_npdb_request
+    rvas = RvaInformation.where(tab: 'NPDB', provider_personal_information_id: params[:personal_info_id])
+    if rvas.any?
+      rvas.destroy_all
+      render json: { success: true }
+    else
+      render json: { success: false, message: "Not found" }, status: :not_found
+    end
+  end  
   
   def send_npdb_skip_rva
     npdb_id = params[:npdb_id]

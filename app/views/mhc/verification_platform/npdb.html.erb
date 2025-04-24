@@ -473,7 +473,9 @@
                                 <div class="form-row d-flex justify-content-end gap-2 mt-3">
                                   <button class="btn btn-primary py-1" type="button">View Received Images</button>
                                   <button class="btn btn-primary py-1" type="button" <%= 'disabled' if @last_rva_information.present? %>>Save Request</button>
-                                  <button class="btn btn-primary py-1" type="button" <%= 'disabled' if !@last_rva_information.present? %>>Restart Request</button>
+                                  <button class="btn btn-primary py-1" type="button" id="restart-request-btn" <%= 'disabled' if !@last_rva_information.present? %>>
+                                    Restart Request
+                                  </button>
                                 </div>
                                 <hr class="form-hr">
                                 <%# <div class="row">
@@ -981,6 +983,7 @@ $(document).ready(function() {
             success: function (response) {
               // set the values
               const data =  response.rva_information;
+              document.querySelector('[name="id"]').value = data.id;
               $('#send-request-btn').attr('disabled', 'true');
               $('#send-request-btn')[0].classList.remove('btn');
               $('.sent-request')[0].innerHTML = data.send_request;
@@ -1103,6 +1106,41 @@ $(document).ready(function() {
             $('.loading-overlay').hide();
         });
     });
+    $('#restart-request-btn').click(function (e) {
+      e.preventDefault();
+
+      var personalInfoId = $('input[name="personal_info_id"]').val();
+      $('.loading-overlay').show();
+
+      $.ajax({
+        url: '/webscrapers/delete_npdb_request',
+        method: 'DELETE',
+        headers: {
+          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
+        },
+        data: {
+          personal_info_id: personalInfoId
+        },
+        success: function (response) {
+          // Clear the NPDB tab fields only
+          $('.sent-request').html('');
+          $('.requested-by').html('');
+          $('.requested-date').html('');
+          $('input[name="check_generated"]').prop('checked', false);
+          $('.req-fee-amount').val('');
+          $('.received-by').html('');
+          $('.received-date').html('');
+          $('input[name="received_status"]').prop('checked', false);
+          $('.request-comment').val('');
+          $('.loading-overlay').hide();
+        },
+        error: function () {
+          alert('Failed to delete request data');
+          $('.loading-overlay').hide();
+        }
+      });
+      });
+
      // Skip RVA Button Click
     if (!document.getElementById('skip-rva-btn').dataset.listenerAttached) {
       document.getElementById('skip-rva-btn').dataset.listenerAttached = 'true';

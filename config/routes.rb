@@ -426,8 +426,8 @@ Rails.application.routes.draw do
     post '/send_employment_skip_rva', to: 'quality_audits#send_employment_skip_rva'
     post '/send_npdb_skip_rva', to: 'quality_audits#send_npdb_skip_rva'
     post '/send_board_cert_skip_rva', to: 'quality_audits#send_board_cert_skip_rva'
-    post '/send_liability_skip_rva', to: 'quality_audits#send_liability_skip_rva'
     post '/send_training_skip_rva', to: 'quality_audits#send_training_skip_rva'
+    delete 'delete_npdb_request', to: 'quality_audits#delete_npdb_request'
     resources :alaska_states, only: [:index], path: 'state-alaska' do
       collection do
         get :crawl
@@ -533,7 +533,7 @@ Rails.application.routes.draw do
   post 'mhc/verification-platform/send-contact', to: 'mhc/verification_platform#send_contact'
   post 'mhc/verification-platform/generate_rva_information', to: 'mhc/verification_platform#generate_rva_information'
   post 'mhc/verification-platform/generate_npdb_information', to: 'mhc/verification_platform#generate_npdb_information'
-
+  
   namespace :api do
     namespace :v1 do
       resources :providers, only: [:index, :create]
