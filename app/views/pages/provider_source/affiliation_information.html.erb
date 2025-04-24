@@ -44,19 +44,26 @@
 					</div>	
 					<div class="<%= toggle_hide_current_provider_source('has_hospital_privilege', @provider) %>" id="hospital_privileges">
 						<div id="hp_privilege_container">
-							<% @provider.hospital_privileges.each_with_index do |hp_privilege, index| %>
-							<%= render partial: 'provider_source_components/hospital_privileges', locals: { index: index, privilege: hp_privilege } %>
-							<% end %>
+							<% if @provider.hospital_privileges.empty? %>
+                <!-- Render initial blank entry (index 0) if none exist -->
+                <%= render partial: 'provider_source_components/hospital_privileges', locals: { index: 0, privilege: HospitalPrivilege.new } %>
+              <% else %>
+                <% @provider.hospital_privileges.each_with_index do  |hp_privilege, index| %>
+                  <%= render partial: 'provider_source_components/hospital_privileges', locals: { index: index, privilege: hp_privilege }  %>
+                <% end %>
+              <% end %>
 						</div>
 
 						<!-- Template to clone -->
 						<div id="hp_privilege_template" class="hp-privilege-entry d-none">
 							<%= render partial: 'provider_source_components/hospital_privileges', locals: { index: 'REPLACE_INDEX', privilege: HospitalPrivilege.new } %>
 						</div>
-
-						<button type="button" class="btn btn-outline-primary mt-2" id="add_hp_privilege">
-							<i class="bi bi-plus-circle me-1"></i> Add New
-						</button>
+            
+            <% if @provider.hospital_privileges.any?(&:persisted?) %>
+							<button type="button" class="btn btn-outline-primary mt-2" id="add_hp_privilege">
+								<i class="bi bi-plus-circle me-1"></i> Add New Hospital Privilege
+							</button>
+						<% end %>	
 					</div>
 					<div class="row mt-3">
 						<div class="col-lg-12">
@@ -76,19 +83,27 @@
 						</div>	
 						<div class="<%= toggle_hide_current_provider_source('has_admitting_arrangement', @provider) %>" id="admitting_arrangements">
 							<div id="admitting_arrangements_container">
-								<% @provider.admitting_arrangements.each_with_index do |admitting_arrangements, index| %>
-								<%= render partial: 'provider_source_components/admitting_arrangements', locals: { index: index, admitting: admitting_arrangements } %>
-								<% end %>
+
+								<% if @provider.admitting_arrangements.empty? %>
+	                <!-- Render initial blank entry (index 0) if none exist -->
+	                <%= render partial: 'provider_source_components/admitting_arrangements', locals: { index: 0, admitting: AdmittingArrangement.new } %>
+	              <% else %>
+	                <% @provider.admitting_arrangements.each_with_index do  |admitting_arrangements, index| %>
+	                  <%= render partial: 'provider_source_components/admitting_arrangements', locals: { index: index, admitting: admitting_arrangements }  %>
+	                <% end %>
+	              <% end %>
 							</div>
 
 							<!-- Template to clone -->
 							<div id="admitting_arrangements_template" class="admitting-arrangements-entry d-none">
 								<%= render partial: 'provider_source_components/admitting_arrangements', locals: { index: 'REPLACE_INDEX', admitting: AdmittingArrangement.new } %>
 							</div>
-
-							<button type="button" class="btn btn-outline-primary mt-2" id="add_admitting_arrangements">
-								<i class="bi bi-plus-circle me-1"></i> Add New
-							</button>
+              
+              <% if @provider.admitting_arrangements.any?(&:persisted?) %>
+								<button type="button" class="btn btn-outline-primary mt-2" id="add_admitting_arrangements">
+									<i class="bi bi-plus-circle me-1"></i> Add New Arrangments
+								</button>
+							<% end %>	
 						</div>
 					</div>
 
@@ -133,10 +148,16 @@ $(document).ready(function () {
 
     newEntry.attr("data-id", ""); // Reset ID
     newEntry.attr("data-saving", "false"); // Custom flag to avoid race conditions
+    newEntry.attr("data-index", index);
+
 
     index++;
     $("#hp_privilege_container").append(newEntry);
   });
+
+  if ($("#hp_privilege_container .hp-privilege-entry").length === 1) {
+    $("#hp_privilege_container .hp-privilege-entry").first().find(".remove_hp_privilege").hide();
+  }
 
   $("#add_admitting_arrangements").on("click", function () {
     let newEntry = $("#admitting_arrangements_template").clone();
@@ -162,10 +183,15 @@ $(document).ready(function () {
 
     newEntry.attr("data-id", ""); // Reset ID
     newEntry.attr("data-saving", "false"); // Custom flag to avoid race conditions
+    newEntry.attr("data-index", index);
 
     index++;
     $("#admitting_arrangements_container").append(newEntry);
   });
+
+  if ($("#admitting_arrangements_container .admitting-arrangements-entry").length === 1) {
+    $("#admitting_arrangements_container .admitting-arrangements-entry").first().find(".remove_admitting_arrangements").hide();
+  }
 
   $(document).on("click", ".remove_hp_privilege", function () {
     let entry = $(this).closest(".hp-privilege-entry");

@@ -34,20 +34,27 @@
             <small class="ms-2 fw-semibold text-dark-grey">Please enter all practicing specialty information.</small>
           </div>
           <div id="specialities_container">
-            <% @provider.provider_source_specialities.each_with_index do |specialty, index| %>
-              <%= render partial: 'pages/provider_source/speciality_form', locals: { index: index, specialty: specialty } %>
+            <% if @provider.provider_source_specialities.empty? %>
+              <!-- Render initial blank entry (index 0) if none exist -->
+              <%= render partial: 'pages/provider_source/speciality_form', locals: { index: 0, specialty: ProviderSourceSpeciality.new } %>
+            <% else %>
+              <% @provider.provider_source_specialities.each_with_index do |specialty, index| %>
+                <%= render partial: 'pages/provider_source/speciality_form', locals: { index: index, specialty: specialty } %>
+              <% end %>
             <% end %>
           </div>
 
-          <!-- Template to clone -->
+          <!-- Hidden template to clone -->
           <div id="specialities_template" class="specialities-entry d-none">
             <%= render partial: 'pages/provider_source/speciality_form', locals: { index: 'REPLACE_INDEX', specialty: ProviderSourceSpeciality.new } %>
           </div>
-          <div>
-            <button type="button" class="btn btn-outline-primary mt-2" id="add_specialty">
-              <i class="bi bi-plus-circle me-1"></i> Add New
-            </button>
-          </div>
+          <% if @provider.provider_source_specialities.any?(&:persisted?) %>
+            <div>
+              <button type="button" class="btn btn-outline-primary mt-2" id="add_specialty">
+                <i class="bi bi-plus-circle me-1"></i> Add New
+              </button>
+            </div>
+          <% end %>  
         </div>
 
         <div class="col-lg-12 card py-3 mb-3">
@@ -155,10 +162,6 @@
           </div>
         </div>
       </div>
-      <%=link_to "Add More Specialties", new_specialty_detail_path, class:
-      "btn btn-primary" %>
-        <%=link_to "Show More Specialty", specialty_details_path, class:
-        "btn btn-secondary" %>
     </div>
   </div>
 </div>
@@ -191,11 +194,27 @@ $(document).ready(function () {
 
     newEntry.attr("data-id", ""); // Reset ID
     newEntry.attr("data-saving", "false"); // Custom flag to avoid race conditions
+    newEntry.attr("data-index", index); // Add index for bindConditionalDisplay
+
+    newEntry.find(".remove_speciality").show();
+    newEntry.find("[id]").each(function () {
+      let oldId = $(this).attr("id");
+      if (oldId && oldId.includes("REPLACE_INDEX")) {
+        let newId = oldId.replace(/REPLACE_INDEX/g, index);
+        $(this).attr("id", newId);
+      }
+    });
 
     index++;
     $("#specialities_container").append(newEntry);
+    bindConditionalDisplay(newEntry); // <--- Important!
+
   });
 
+  if ($("#specialities_container .specialities-entry").length === 1) {
+    $("#specialities_container .specialities-entry").first().find(".remove_speciality").hide();
+    bindConditionalDisplay($("#specialities_container .specialities-entry").first());
+  }
 
   $(document).on("click", ".remove_speciality", function () {
     let entry = $(this).closest(".specialities-entry");

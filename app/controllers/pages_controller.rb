@@ -323,9 +323,14 @@ class PagesController < ApplicationController
     if @record
       if params[:status].present? && params[:status] != "Pending"
         @vrc = VirtualReviewCommittee.find(params[:id])
+        if params[:other_checkbox] == "OTHER"
+          desc = 'OTHER'
+        else
+          desc = params[:description]
+        end
         @vrc.update(
           progress_status: "completed",
-          review_details: params[:description],
+          review_details: desc,
           review_level: params[:status]
         )
       end
