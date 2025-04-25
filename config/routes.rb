@@ -182,7 +182,7 @@ Rails.application.routes.draw do
     resources :practice_information_educations, only: [:index, :create, :update, :destroy], path: 'practice-information-education'
     resources :provider_specialties, only: [:index, :new, :create, :edit, :destroy, :update], path: 'provider-specialties'
     resources :provider_personal_informations, only: [:update], path: 'provider-personal-information'
-    resources :provider_personal_information_sam_records, only: [:create, :show], path: 'provider-personal-information-sam-record' do
+    resources :provider_personal_information_sam_records, only: [:create, :show, :destroy], path: 'provider-personal-information-sam-record' do
       collection do
         get :auto_create, path: 'auto-create'
       end
