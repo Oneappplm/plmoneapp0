@@ -28,10 +28,12 @@
 			<div class="col-xl-4">
 	      <%= search_form_for @q, url: mhc_verification_platform_path(page_tab: 'licensure'), method: :get, html: { class: 'form_search_with_icon'} do |f|%>
 	          <%= hidden_field_tag "page_tab", "licensure" %>
-	          <div>
-	             <%= f.text_field :license_number_cont, value: "#{params[:q][:license_number_cont] rescue ''}", placeholder: 'Search...', class: "form-control py-1" %>
-	             <i class="bx bx-search"></i>
-	          </div>
+						<div class="position-relative">
+							<%= f.text_field :license_number_cont, value: "#{params.dig(:q, :license_number_cont) || ''}", placeholder: 'Search...', class: "form-control py-1 pr-5" %>
+							<button type="submit" class="search-btn" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); border: none; background: none;">
+								<i class="bx bx-search"></i>
+							</button>
+						</div>
 	       <% end %>
 	     </div>
     </div>
@@ -79,18 +81,18 @@
 			</thead>
 			<tbody>
 				<% @provider_licensures.each do |licensure| %>
-				<tr>
-					<td><%= licensure.state.name %></td>
-					<td><%= licensure.license_type %></td>
-					<td>
-						<%= link_to mhc_verification_platform_path(page_tab: 'license_record', licensure_id: licensure.id) do %>
-							<%= licensure.license_number %>
-						<% end %>
-					</td>
-					<td><%= licensure.license_expiration_date %></td>
-					<td><%= licensure.is_primary_license %></td>
-					<td><%= licensure.audit_status.presence || "Not Requested" %></td>
-				</tr>
+					<tr>
+						<td><%= licensure.state&.name || '-' %></td>
+						<td><%= licensure.license_type.presence || '-' %></td>
+						<td>
+							<%= link_to mhc_verification_platform_path(page_tab: 'license_record', licensure_id: licensure.id) do %>
+								<%= licensure.license_number.presence || '-' %>
+							<% end %>
+						</td>
+						<td><%= licensure.license_expiration_date.present? ? licensure.license_expiration_date : '-' %></td>
+						<td><%= licensure.is_primary_license.present? ? licensure.is_primary_license : '-' %></td>
+						<td><%= licensure.audit_status.presence || "Not Requested" %></td>
+					</tr>
 				<% end %>
 			</tbody>
 		</table>
