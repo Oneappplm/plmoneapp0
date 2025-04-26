@@ -57,191 +57,193 @@
             </div>
         </div>
     </div>
-    <div class="container">
-        <div class="p-2">
-            <h2>Section II - Practitioner Information</h2>
-            <div class="bg-light form-row row p-2">
-                <div class="col-xl-6">Practitioner Name: <%= @provider_personal_information&.fullname %></div>
-                <div class="col-xl-6">Social Security No.: <%= @provider_personal_information&.ssn %></div>
-                <div class="col-xl-6">Specialty 1:</div>
-                <div class="col-xl-6">Practitioner Type: <%= @provider_personal_information&.provider_type_provider_type_abbreviation %></div>
-                <div class="col-xl-6">Date of Birth: <%= @provider_personal_information.birth_date&.strftime('%B %d, %Y') %></div>
+    <% if @provider_personal_information.present? %>
+        <div class="container">
+            <div class="p-2">
+                <h2>Section II - Practitioner Information</h2>
+                <div class="bg-light form-row row p-2">
+                    <div class="col-xl-6">Practitioner Name: <%= @provider_personal_information&.fullname %></div>
+                    <div class="col-xl-6">Social Security No.: <%= @provider_personal_information&.ssn %></div>
+                    <div class="col-xl-6">Specialty 1:</div>
+                    <div class="col-xl-6">Practitioner Type: <%= @provider_personal_information&.provider_type_provider_type_abbreviation %></div>
+                    <div class="col-xl-6">Date of Birth: <%= @provider_personal_information&.birth_date&.strftime('%B %d, %Y') %></div>
+                </div>
+            </div>
+            <div class="p-2">
+                <h2>Section III - Practice Information</h2>
+                <% @provider_personal_information&.practice_informations.each do |practice_information| %>
+                    <div class="bg-light form-row row p-2 border-bottom border-dark">
+                        <div class="col-xl-6">Practice/Facility Name: <%= practice_information&.practice_name %></div>
+                        <div class="col-xl-6">Office Address: <%= practice_information&.complete_address %></div>
+                        <div class="col-xl-6">Office Phone: <%= practice_information&.phone_number %></div>
+                        <div class="col-xl-6">Office Fax: <%= practice_information&.fax_number %></div>
+                    </div>
+                    <div class="bg-light form-row row border-bottom border-dark">
+                        <h4>Patient Acceptance Addendum</h4>
+                    </div>
+                <% end %>
+            </div>
+            <div class="p-2">
+                <h2>Section IV - Education
+                   <% if @education_rva_information_completed.present? %>
+                     <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
+                   <% else %>
+                     <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
+                   <% end %> 
+                 </h2>
+                <% @provider_personal_information&.provider_educations.where(specialty_specialty_name: nil).each do |provider_education| %>
+                    <div class="bg-light form-row row p-2 border-bottom border-dark">
+                        <div class="col-xl-6">Education: <%= provider_education&.institution_name %></div>
+                        <div class="col-xl-6">Degree/Certificate: <%= provider_education&.degree_degree_abbreviation %></div>
+                        <div class="col-xl-6">Dates Attended: <%= "#{provider_education&.start_date&.strftime('%B %d, %Y')} - #{provider_education.end_date&.strftime('%B %d, %Y')}" %></div>
+                    </div>
+                <% end %>
+            </div>
+            <div class="p-2">
+                <h2>Section V - Training
+                   <% if @training_rva_information_completed.present? %>
+                     <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
+                   <% else %>
+                     <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
+                   <% end %> 
+                 </h2>
+                <% @provider_personal_information&.provider_educations.where.not(specialty_specialty_name: nil).each do |provider_education| %>
+                    <div class="bg-light form-row row p-2 border-bottom border-dark">
+                        <div class="col-xl-6">Institution Name: <%= provider_education&.institution_name %></div>
+                        <div class="col-xl-6">Training Type: <%= provider_education&.education_type_name %></div>
+                        <div class="col-xl-12">Dates Attended: <%= "#{provider_education&.start_date&.strftime('%B %d, %Y')} - #{provider_education.end_date&.strftime('%B %d, %Y')}" %></div>
+                        <div class="col-xl-12">Specialty: <%= provider_education&.specialty_specialty_name %></div>
+                    </div>
+                <% end %>
+            </div>
+             <div class="p-2">
+                 <h2>Section VIII - Board Certification
+                  <% if @board_cert_rva_information_completed.present? %>
+                    <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
+                  <% else %>
+                    <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
+                  <% end %> 
+                </h2>
+                <% @provider_personal_information&.provider_specialties.each do |provider_specialty| %>
+                    <div class="bg-light form-row row p-2 border-bottom border-dark">
+                        <div class="col-xl-6">Specialty: <%= provider_specialty&.specialty_specialty_name %></div>
+                        <div class="col-xl-6">Board Certification Status: <%= %></div>
+                    </div>
+                <% end %>
+            </div>
+             <div class="p-2">
+                <h2>Section X - Registration/Certification
+                  <% if @dea_rva_information_completed.present? %>
+                    <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
+                  <% else %>
+                    <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
+                  <% end %> 
+                </h2>
+                <% @provider_personal_information&.provider_deas.each do |provider_dea| %>
+                    <div class="bg-light form-row row p-2 border-bottom border-dark">
+                        <div class="col-xl-12">DEA Number: <%= provider_dea.dea_number %></div>
+                        <div class="col-xl-6">Schedule: <%# provider_dea.degree_degree_abbreviation %></div>
+                        <div class="col-xl-6">Expiration Date: <%= provider_dea.expiration_date&.strftime('%B %d, %Y') %></div>
+                        <div class="col-xl-6">Limits/Restrictions?: <%= provider_dea&.dea_license_limitation_flag ? 'Yes' : 'No' %></div>
+                    </div>
+                <% end %>
+                <% @provider_personal_information&.provider_cds.each do |provider_cd| %>
+                    <div class="bg-light form-row row p-2 border-bottom border-dark">
+                        <div class="col-xl-6">CDS/DPS Number: <%= provider_cd&.cds_number %></div>
+                        <div class="col-xl-6">State: <%= provider_cd&.state %></div>
+                        <div class="col-xl-6">Issue Date: <%= provider_cd.issue_date&.strftime('%B %d, %Y') %></div>
+                        <div class="col-xl-6">ECFMG Number: <%# provider_cd %></div>
+                    </div>
+                <% end %>
+                <div class="bg-light form-row row p-2 border-bottom border-dark">
+                    <div class="col-xl-12">ECFMG Number: <%= @provider_personal_information&.ecfmg_number %></div>
+                    <div class="col-xl-6">Issue Date: <%= @provider_personal_information.ecfmg_issue_date&.strftime('%B %d, %Y') %></div>
+                    <div class="col-xl-6">Valid Through: <%= @provider_personal_information.ecfmg_expiration_date&.strftime('%B %d, %Y') %></div>
+                </div>
+            </div>
+            <div class="p-2">
+                <h2>Section XI - Licensure
+                   <% if @licensure_rva_information_completed.present? %>
+                     <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
+                   <% else %>
+                     <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
+                   <% end %> 
+                 </h2>
+                <% @provider_personal_information&.provider_medical_licenses.each do |provider_medical_license| %>
+                    <div class="bg-light form-row row p-2 border-bottom border-dark">
+                        <div class="col-xl-6">License: <%= provider_medical_license&.license_number %></div>
+                        <div class="col-xl-6">State: <%= provider_medical_license&.state %></div>
+                        <div class="col-xl-6">Issue Date: <%= provider_medical_license&.issue_date&.strftime('%B %d, %Y') %></div>
+                        <div class="col-xl-6">Expiration Date: <%= provider_medical_license&.expiration_date&.strftime('%B %d, %Y') %></div>
+                    </div>
+                <% end %>
+            </div>
+            <div class="p-2">
+                  <h2>Section XII - Professional Liability
+                  <% if @liability_rva_information_completed.present? %>
+                    <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
+                  <% else %>
+                    <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
+                  <% end %> 
+                </h2>
+                <% @provider_personal_information&.provider_insurance_coverages.each do |provider_insurance_coverage| %>
+                    <div class="bg-light form-row row p-2 border-bottom border-dark">
+                        <div class="col-xl-6">Malpractice Carrier: <%= provider_insurance_coverage&.insurance_carrier_name %></div>
+                        <div class="col-xl-6">Policy Number: <%= provider_insurance_coverage&.policy_number %></div>
+                        <div class="col-xl-6">Original Effective Date: <%= provider_insurance_coverage&.original_start_date&.strftime('%B %d, %Y') %></div>
+                        <div class="col-xl-6">Coverage Expiration Date: <%= provider_insurance_coverage&.end_date&.strftime('%B %d, %Y') %></div>
+                        <div class="col-xl-6">Per Claim Amount: <%= provider_insurance_coverage&.coverage_amount_occurrence %></div>
+                        <div class="col-xl-6">Aggregate Amount: <%= provider_insurance_coverage&.coverage_amount_aggregate %></div>
+                        <div class="col-xl-6">Exclusions:</div>
+                    </div>
+                <% end %>
+            </div>
+            <div class="p-2">
+                <h2>Section XV - Employment
+                   <% if @employment_rva_information_completed.present? %>
+                     <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
+                   <% else %>
+                     <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
+                   <% end %> 
+                 </h2>
+                <% @provider_personal_information&.provider_work_histories.each do |provider_work_history| %>
+                    <div class="bg-light form-row row p-2 border-bottom border-dark">
+                        <div class="col-xl-6">Facility: <%= "#{provider_work_history&.employer_name} - #{provider_work_history&.country_country_name}" %></div>
+                        <div class="col-xl-6">Dates: <%= "#{provider_work_history&.start_date&.strftime('%B %d, %Y')} - #{provider_work_history.status_description.present? ? provider_work_history&.status_description : provider_work_history&.end_date&.strftime('%B %d, %Y')}"  %></div>
+                        <div class="col-xl-6">Position: <%=  %></div>
+                    </div>
+                <% end %>
+            </div>
+            <div class="p-2">
+                <h2>Section XVI - Billing Information</h2>
+                <% @provider_personal_information&.practice_associates.each do |practice_associate| %>
+                    <div class="bg-light form-row row p-2 border-bottom border-dark">
+                        <div class="col-xl-6">Billing Company: <%= practice_associate&.billing_company %></div>
+                        <div class="col-xl-6">Name Affiliated with Tax ID Number: <%= practice_associate&.tax_id_name %></div>
+                        <div class="col-xl-6">Federal Tax ID Number: <%= practice_associate&.tax_id %></div>
+                    </div>
+                <% end %>
+            </div>
+            <caption>1.NPDB Verification 
+                   <% if @npdb_rva_information_completed.present? %>
+                     <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
+                   <% else %>
+                     <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
+                   <% end %> 
+            </caption><br>
+            <caption> 2.Application Tracking</caption><br>
+            <caption>3.Standard Disclosures</caption><br>
+            <div class="mt-2">
+                <% if @rva_information_completed.present? %>
+                  <h2>OIG <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i></h2>
+                <% else %>
+                  <h2>OIG <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i></h2>
+                <% end %> 
+             </div>    
+            </div>
             </div>
         </div>
-        <div class="p-2">
-            <h2>Section III - Practice Information</h2>
-            <% @provider_personal_information.practice_informations.each do |practice_information| %>
-                <div class="bg-light form-row row p-2 border-bottom border-dark">
-                    <div class="col-xl-6">Practice/Facility Name: <%= practice_information&.practice_name %></div>
-                    <div class="col-xl-6">Office Address: <%= practice_information&.complete_address %></div>
-                    <div class="col-xl-6">Office Phone: <%= practice_information&.phone_number %></div>
-                    <div class="col-xl-6">Office Fax: <%= practice_information&.fax_number %></div>
-                </div>
-                <div class="bg-light form-row row border-bottom border-dark">
-                    <h4>Patient Acceptance Addendum</h4>
-                </div>
-            <% end %>
-        </div>
-        <div class="p-2">
-            <h2>Section IV - Education
-               <% if @education_rva_information_completed.present? %>
-                 <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
-               <% else %>
-                 <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
-               <% end %> 
-             </h2>
-            <% @provider_personal_information.provider_educations.where(specialty_specialty_name: nil).each do |provider_education| %>
-                <div class="bg-light form-row row p-2 border-bottom border-dark">
-                    <div class="col-xl-6">Education: <%= provider_education&.institution_name %></div>
-                    <div class="col-xl-6">Degree/Certificate: <%= provider_education&.degree_degree_abbreviation %></div>
-                    <div class="col-xl-6">Dates Attended: <%= "#{provider_education&.start_date&.strftime('%B %d, %Y')} - #{provider_education.end_date&.strftime('%B %d, %Y')}" %></div>
-                </div>
-            <% end %>
-        </div>
-        <div class="p-2">
-            <h2>Section V - Training
-               <% if @training_rva_information_completed.present? %>
-                 <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
-               <% else %>
-                 <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
-               <% end %> 
-             </h2>
-            <% @provider_personal_information.provider_educations.where.not(specialty_specialty_name: nil).each do |provider_education| %>
-                <div class="bg-light form-row row p-2 border-bottom border-dark">
-                    <div class="col-xl-6">Institution Name: <%= provider_education&.institution_name %></div>
-                    <div class="col-xl-6">Training Type: <%= provider_education&.education_type_name %></div>
-                    <div class="col-xl-12">Dates Attended: <%= "#{provider_education&.start_date&.strftime('%B %d, %Y')} - #{provider_education.end_date&.strftime('%B %d, %Y')}" %></div>
-                    <div class="col-xl-12">Specialty: <%= provider_education&.specialty_specialty_name %></div>
-                </div>
-            <% end %>
-        </div>
-         <div class="p-2">
-             <h2>Section VIII - Board Certification
-              <% if @board_cert_rva_information_completed.present? %>
-                <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
-              <% else %>
-                <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
-              <% end %> 
-            </h2>
-            <% @provider_personal_information.provider_specialties.each do |provider_specialty| %>
-                <div class="bg-light form-row row p-2 border-bottom border-dark">
-                    <div class="col-xl-6">Specialty: <%= provider_specialty&.specialty_specialty_name %></div>
-                    <div class="col-xl-6">Board Certification Status: <%= %></div>
-                </div>
-            <% end %>
-        </div>
-         <div class="p-2">
-            <h2>Section X - Registration/Certification
-              <% if @dea_rva_information_completed.present? %>
-                <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
-              <% else %>
-                <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
-              <% end %> 
-            </h2>
-            <% @provider_personal_information.provider_deas.each do |provider_dea| %>
-                <div class="bg-light form-row row p-2 border-bottom border-dark">
-                    <div class="col-xl-12">DEA Number: <%= provider_dea.dea_number %></div>
-                    <div class="col-xl-6">Schedule: <%# provider_dea.degree_degree_abbreviation %></div>
-                    <div class="col-xl-6">Expiration Date: <%= provider_dea.expiration_date&.strftime('%B %d, %Y') %></div>
-                    <div class="col-xl-6">Limits/Restrictions?: <%= provider_dea&.dea_license_limitation_flag ? 'Yes' : 'No' %></div>
-                </div>
-            <% end %>
-            <% @provider_personal_information.provider_cds.each do |provider_cd| %>
-                <div class="bg-light form-row row p-2 border-bottom border-dark">
-                    <div class="col-xl-6">CDS/DPS Number: <%= provider_cd&.cds_number %></div>
-                    <div class="col-xl-6">State: <%= provider_cd&.state %></div>
-                    <div class="col-xl-6">Issue Date: <%= provider_cd.issue_date&.strftime('%B %d, %Y') %></div>
-                    <div class="col-xl-6">ECFMG Number: <%# provider_cd %></div>
-                </div>
-            <% end %>
-            <div class="bg-light form-row row p-2 border-bottom border-dark">
-                <div class="col-xl-12">ECFMG Number: <%= @provider_personal_information&.ecfmg_number %></div>
-                <div class="col-xl-6">Issue Date: <%= @provider_personal_information.ecfmg_issue_date&.strftime('%B %d, %Y') %></div>
-                <div class="col-xl-6">Valid Through: <%= @provider_personal_information.ecfmg_expiration_date&.strftime('%B %d, %Y') %></div>
-            </div>
-        </div>
-        <div class="p-2">
-            <h2>Section XI - Licensure
-               <% if @licensure_rva_information_completed.present? %>
-                 <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
-               <% else %>
-                 <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
-               <% end %> 
-             </h2>
-            <% @provider_personal_information.provider_medical_licenses.each do |provider_medical_license| %>
-                <div class="bg-light form-row row p-2 border-bottom border-dark">
-                    <div class="col-xl-6">License: <%= provider_medical_license&.license_number %></div>
-                    <div class="col-xl-6">State: <%= provider_medical_license&.state %></div>
-                    <div class="col-xl-6">Issue Date: <%= provider_medical_license&.issue_date&.strftime('%B %d, %Y') %></div>
-                    <div class="col-xl-6">Expiration Date: <%= provider_medical_license&.expiration_date&.strftime('%B %d, %Y') %></div>
-                </div>
-            <% end %>
-        </div>
-        <div class="p-2">
-              <h2>Section XII - Professional Liability
-              <% if @liability_rva_information_completed.present? %>
-                <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
-              <% else %>
-                <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
-              <% end %> 
-            </h2>
-            <% @provider_personal_information.provider_insurance_coverages.each do |provider_insurance_coverage| %>
-                <div class="bg-light form-row row p-2 border-bottom border-dark">
-                    <div class="col-xl-6">Malpractice Carrier: <%= provider_insurance_coverage&.insurance_carrier_name %></div>
-                    <div class="col-xl-6">Policy Number: <%= provider_insurance_coverage&.policy_number %></div>
-                    <div class="col-xl-6">Original Effective Date: <%= provider_insurance_coverage&.original_start_date&.strftime('%B %d, %Y') %></div>
-                    <div class="col-xl-6">Coverage Expiration Date: <%= provider_insurance_coverage&.end_date&.strftime('%B %d, %Y') %></div>
-                    <div class="col-xl-6">Per Claim Amount: <%= provider_insurance_coverage&.coverage_amount_occurrence %></div>
-                    <div class="col-xl-6">Aggregate Amount: <%= provider_insurance_coverage&.coverage_amount_aggregate %></div>
-                    <div class="col-xl-6">Exclusions:</div>
-                </div>
-            <% end %>
-        </div>
-        <div class="p-2">
-            <h2>Section XV - Employment
-               <% if @employment_rva_information_completed.present? %>
-                 <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
-               <% else %>
-                 <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
-               <% end %> 
-             </h2>
-            <% @provider_personal_information.provider_work_histories.each do |provider_work_history| %>
-                <div class="bg-light form-row row p-2 border-bottom border-dark">
-                    <div class="col-xl-6">Facility: <%= "#{provider_work_history&.employer_name} - #{provider_work_history&.country_country_name}" %></div>
-                    <div class="col-xl-6">Dates: <%= "#{provider_work_history&.start_date&.strftime('%B %d, %Y')} - #{provider_work_history.status_description.present? ? provider_work_history&.status_description : provider_work_history&.end_date&.strftime('%B %d, %Y')}"  %></div>
-                    <div class="col-xl-6">Position: <%=  %></div>
-                </div>
-            <% end %>
-        </div>
-        <div class="p-2">
-            <h2>Section XVI - Billing Information</h2>
-            <% @provider_personal_information.practice_associates.each do |practice_associate| %>
-                <div class="bg-light form-row row p-2 border-bottom border-dark">
-                    <div class="col-xl-6">Billing Company: <%= practice_associate&.billing_company %></div>
-                    <div class="col-xl-6">Name Affiliated with Tax ID Number: <%= practice_associate&.tax_id_name %></div>
-                    <div class="col-xl-6">Federal Tax ID Number: <%= practice_associate&.tax_id %></div>
-                </div>
-            <% end %>
-        </div>
-        <caption>1.NPDB Verification 
-               <% if @npdb_rva_information_completed.present? %>
-                 <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
-               <% else %>
-                 <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
-               <% end %> 
-        </caption><br>
-        <caption> 2.Application Tracking</caption><br>
-        <caption>3.Standard Disclosures</caption><br>
-        <div class="mt-2">
-            <% if @rva_information_completed.present? %>
-              <h2>OIG <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i></h2>
-            <% else %>
-              <h2>OIG <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i></h2>
-            <% end %> 
-         </div>    
-        </div>
-        </div>
-    </div>
+    <% end %>    
 </div>
 
   <style>
