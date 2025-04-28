@@ -184,6 +184,8 @@ class Mhc::VerificationPlatformController < ApplicationController
 
     if params[:page_tab] == 'board_cert'
       @provider_specialties = ProviderSpecialty.where(provider_attest_id: @provider_personal_information.provider_attest_id)
+      @q = @provider_personal_information.provider_attest.provider_specialties.ransack(params[:q]&.except(:page_tab))
+      @provider_specialties = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
     end
 
     if params[:page_tab] == 'board_cert_info'
@@ -397,6 +399,8 @@ class Mhc::VerificationPlatformController < ApplicationController
     if params[:page_tab] == 'employment'
       @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
       @provider_employments = ProviderEmployment.all
+      @q = @provider_personal_information.provider_attest.provider_employments.ransack(params[:q]&.except(:page_tab))
+      @provider_employments = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
     end
     
     if params[:page_tab] == 'employment_record' 
