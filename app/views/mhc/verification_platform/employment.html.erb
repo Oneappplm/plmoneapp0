@@ -24,6 +24,20 @@
                     <i class='bx bx-error-circle font-red'></i> <span>Please check the Not Applicable box if you are not currently and have never been employed since the completion of an education or training program.</span>
                 </span>
             </div>
+            <div class="row mt-3 page-applicable">
+              <div class="col-xl-4">
+                <%= search_form_for @q, url: mhc_verification_platform_path(page_tab: 'employment'), method: :get, html: { class: 'form_search_with_icon' } do |f| %>
+                  <%= hidden_field_tag :id, @provider_personal_information.provider_attest_id %>
+                  <%= hidden_field_tag :page_tab, 'employment' %>
+                  <div class="position-relative">
+                    <%= f.text_field :employer_name_cont, value: (params.dig(:q, :employer_name_cont) || ''), placeholder: 'Search record', class: "form-control py-1" %>
+                    <button type="submit" class="search-icon-btn">
+                      <i class="bx bx-search"></i>
+                    </button>
+                  </div>
+                <% end %>
+              </div>
+            </div>
             <table class="table">
               <thead>
                 <tr>
@@ -67,4 +81,33 @@
             </form>
         </div>
     </div>
-    
+<style>
+    .enc-search-wrp {
+      position: relative;
+    }
+
+    .enc-search-input {
+      width: 100%;
+      padding: 0.5rem;
+      padding-right: 30px; /* To make space for the search icon */
+    }
+
+    .search-icon-btn {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .search-icon-btn i {
+      font-size: 20px;
+      color: #007bff; /* Blue color */
+    }
+
+    .search-icon-btn:hover i {
+      color: #0056b3; /* Darker blue on hover */
+    }
+</style>

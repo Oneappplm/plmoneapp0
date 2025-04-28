@@ -25,12 +25,18 @@
                 </span>
             </div>
             <div class="row mt-3 page-applicable">
-                <div class="col-xl-4">
-                    <div class="form-control enc-search-wrp">
-                        <input type="" class="enc-search-input" placeholder="Search">
-                        <i class='bx bx-search' ></i>
-                    </div>
-                </div>
+              <div class="col-xl-4">
+                <%= search_form_for @q, url: mhc_verification_platform_path(page_tab: 'board_cert'), method: :get, html: { class: 'form_search_with_icon' } do |f| %>
+                  <%= hidden_field_tag :id, @provider_personal_information.provider_attest_id %>
+                  <%= hidden_field_tag :page_tab, 'board_cert' %>
+                  <div class="position-relative">
+                    <%= f.text_field :specialty_specialty_name_cont, value: (params.dig(:q, :specialty_specialty_name_cont) || ''), placeholder: 'Search record', class: "form-control py-1" %>
+                    <button type="submit" class="search-icon-btn">
+                      <i class="bx bx-search"></i>
+                    </button>
+                  </div>
+                <% end %>
+              </div>
             </div>
             <div class="row result-controls page-applicable">
                 <div class="col-xl-6 filter-result">
@@ -94,3 +100,23 @@
             </form>
         </div>
     </div>
+<style>
+  .search-icon-btn {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .search-icon-btn i {
+    font-size: 20px;
+    color: #007bff; /* Blue color */
+  }
+
+  .search-icon-btn:hover i {
+    color: #0056b3; /* Darker blue on hover */
+  }
+</style>
