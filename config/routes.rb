@@ -426,6 +426,7 @@ Rails.application.routes.draw do
     post '/send_employment_skip_rva', to: 'quality_audits#send_employment_skip_rva'
     post '/send_npdb_skip_rva', to: 'quality_audits#send_npdb_skip_rva'
     post '/send_board_cert_skip_rva', to: 'quality_audits#send_board_cert_skip_rva'
+    post '/send_liability_skip_rva', to: 'quality_audits#send_liability_skip_rva'
     post '/send_training_skip_rva', to: 'quality_audits#send_training_skip_rva'
     delete 'delete_npdb_request', to: 'quality_audits#delete_npdb_request'
     delete 'delete_education_request', to: 'quality_audits#delete_education_request'
