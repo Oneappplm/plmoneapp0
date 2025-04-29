@@ -38,23 +38,20 @@
                 <% end %>
               </div>
             </div>
-            <div class="row result-controls page-applicable">
-                <div class="col-xl-6 filter-result">
-                    <h6 class="">Result: 2 records</h6>
-                </div>
-                <div class="col-xl-6">
-                    <div class="table-controls">
-                        <div class="control-wrp">
-                            <label for="limit">Show limit</label>
-                            <input type="text" id="limit" class="form-control" value="20">
+            <% if @provider_specialties %>
+                <div class="col-lg-12">
+                    <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-0">
+                        <div class="page_info ms-3 text-black">
+                        <%= page_entries_info @provider_specialties %>
                         </div>
-                        <div class="control-wrp">
-                            <label for="page">Page 1 of 32</label>
-                            <input type="text" id="page" class="form-control" value="1">
-                        </div>
+                        <% if params[:per_page ].present? %>
+                        <%= will_paginate @provider_specialties, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                        <% else %>
+                        <%= will_paginate @provider_specialties, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                        <% end %>
                     </div>
                 </div>
-            </div>
+            <% end %>
             <table class="table table-bordered practice-table mt-3 page-applicable">
               <thead>
                 <tr>
