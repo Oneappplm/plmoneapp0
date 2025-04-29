@@ -68,6 +68,7 @@ group :development do
   # gem "spring"
 
   gem 'letter_opener_web' # https://github.com/fgrehm/letter_opener_web
+  gem 'rspec-rails'
 end
 
 group :test do

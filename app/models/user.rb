@@ -39,12 +39,16 @@ class User < ApplicationRecord
   ].freeze
 
   NAME_REGEX = /\A[a-zA-Z\s\-]+\z/
+  VALID_EMAIL_REGEX = /\A[^@\s]+@[^@\s]+\z/
 
   validates :first_name, presence: true,  on: :create
   validates :last_name, presence: true, on: :create
   validates :first_name, :middle_name, :last_name,
             format: { with: NAME_REGEX, message: "must only contain letters, spaces, or hyphens" },
             allow_blank: true
+  
+  validates :email, format: { with: VALID_EMAIL_REGEX, message: "must be a valid email format" }
+  validate :email_must_contain_dot
   # temporarily commented to cater only using temporary password
   # validate :password_match
 
@@ -128,4 +132,12 @@ class User < ApplicationRecord
       find_by(user_role: 'admin_staff')
     end
   end
+
+  private
+    def email_must_contain_dot
+      return if email.blank?
+      unless email.include?('.')
+        errors.add(:email, "must contain a dot ('.')")
+      end
+    end
 end
