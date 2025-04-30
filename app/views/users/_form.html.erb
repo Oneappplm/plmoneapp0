@@ -20,7 +20,9 @@
 		<div class="col-lg-12">
 			<div class="row mb-3">
 				<div class="col-lg-4">
-					<label class="text-dark-grey">First Name</label>
+					<label class="text-dark-grey">
+            First Name <span class="text-danger">*</span>
+          </label>
 					<%= f.text_field :first_name, class: 'form-control border border-dark', placeholder: 'Type here...' %>
 				</div>
 				<div class="col-lg-3">
@@ -28,7 +30,10 @@
 					<%= f.text_field :middle_name, class: 'form-control border border-dark optional', placeholder: 'Type here...' %>
 				</div>
 				<div class="col-lg-3">
-					<label class="text-dark-grey">Last Name</label>
+					<label class="text-dark-grey">
+            Last Name
+            <span class="text-danger">*</span>
+          </label>
 					<%= f.text_field :last_name, class: 'form-control border border-dark', placeholder: 'Type here...' %>
 				</div>
 				<div class="col-lg-2">
@@ -52,17 +57,26 @@
 				</div>
 
 				<div class="col-lg-2">
-					<label class="text-dark-grey">Status</label>
+					<label class="text-dark-grey">
+            Status
+            <span class="text-danger">*</span>
+          </label>
 					<%= f.select :status, options_for_select(['Active', 'Inactive'], f.object.status), { prompt: 'Select Option' }, { class: 'form-select border border-dark', id: 'user_status' } %>
 				</div>
 
 				<div class="col-lg-4">
-					<label class="text-dark-grey">Email Address</label>
+					<label class="text-dark-grey">
+            Email Address
+            <span class="text-danger">*</span>
+          </label>
 					<%= f.email_field :email, class: 'form-control border border-dark', placeholder: 'Type here...' %>
 				</div>
 
 				<div class="col-lg-3">
-					<label class="text-dark-grey">Temporary Password</label>
+					<label class="text-dark-grey">
+            Temporary Password
+            <span class="text-danger">*</span>
+          </label>
 					<%= f.text_field :temporary_password, value: @user.temporary_password, class: 'form-control border border-dark', placeholder: 'Type here...', id: 'user_temporary_password' %>
 				</div>
 			</div>
@@ -70,7 +84,10 @@
 			<% if current_user.can_access?('Select Role') %>
 				<div class="row mb-3 mt-2">
 					<div class="col-lg-5">
-						<label class="text-dark-grey">Role</label>
+						<label class="text-dark-grey">
+              Role
+              <span class="text-danger">*</span>
+            </label>
 						<% if current_user.can_access?('Add New Role') %>
 							<button class="btn btn-xs btn-link p-0" id="add-new-role" data-bs-toggle="modal" data-bs-target="#addNewRole" style="float:right;font-size:12px;">
 								Add new role
@@ -219,7 +236,7 @@
 			 }
   	});
 
-  	// Disbale provider on select group and set deafult user role 
+  	// Disbale provider on select group and set deafult user role
   	$(enrollment_group_ids).on('change', function(){
   		if($(this).val().length > 0) {
   			$("#user_user_role").attr("enable", true);
