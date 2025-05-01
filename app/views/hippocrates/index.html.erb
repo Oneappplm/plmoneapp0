@@ -1,0 +1,57 @@
+<div class="col-lg-10 mx-auto mt-5">
+  <h2>Hippocrates Prompt</h2>
+
+  <div id="hippocrates-prompt", class="input-group w-50">
+    <input type="text" id="hippocrates-input" placeholder="Ask something...", class="form-control" />
+    <button id="hippocrates-submit", class="btn btn-success">Submit</button>
+  </div>
+
+  <%= turbo_frame_tag "hippocrates-results" do %>
+    <!-- Results will appear here -->
+  <% end %>
+</div>
+
+<script>
+  $(document).ready(function () {
+    // CSRF setup
+    const csrfToken = $('meta[name="csrf-token"]').attr('content');
+    $.ajaxSetup({
+      headers: {
+        'X-CSRF-Token': csrfToken
+      }
+    });
+
+    // Submit button
+    $("#hippocrates-submit").on("click", function () {
+      const promptValue = $("#hippocrates-input").val();
+
+      $.ajax({
+        url: "/hippocrates/expired_licenses",
+        type: "POST",
+        data: { prompt: promptValue },
+        dataType: "script", // JS response (use .js.erb template)
+        error: function (xhr) {
+          alert("Something went wrong.");
+          console.error(xhr.responseText);
+        }
+      });
+    });
+
+    // ✅ When user selects a format in the dropdown
+    $(document).on("change", ".format-select", function () {
+      const selectedFormat = $(this).val(); // fix: was 'format' before
+      const licenseNumber = $(this).data("license");
+
+      if (selectedFormat === "pdf" || selectedFormat === "csv") {
+        // Trigger download
+        window.location.href = `/hippocrates/download_expired_license?license=${licenseNumber}&format=${selectedFormat}`;
+
+        // Reset dropdown back to placeholder after download
+        $(this).val("");
+      }
+    });
+  });
+</script>
+
+
+
