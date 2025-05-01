@@ -535,6 +535,10 @@ Rails.application.routes.draw do
   post 'mhc/verification-platform/send-contact', to: 'mhc/verification_platform#send_contact'
   post 'mhc/verification-platform/generate_rva_information', to: 'mhc/verification_platform#generate_rva_information'
   post 'mhc/verification-platform/generate_npdb_information', to: 'mhc/verification_platform#generate_npdb_information'
+  get '/hippocrates', to: 'hippocrates#index'
+  post "hippocrates/expired_licenses", to: "hippocrates#expired_licenses"
+  get "hippocrates/download_expired_license", to: "hippocrates#download_expired_license"
+  get "hippocrates/download_pdf", to: "hippocrates#download_pdf"
   
   namespace :api do
     namespace :v1 do

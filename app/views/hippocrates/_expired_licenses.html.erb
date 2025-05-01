@@ -1,0 +1,40 @@
+<div class="col-lg-12 mt-5">
+  <% if results.present? %>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th class="text-white">License Number</th>
+          <th class="text-white">Effective Date</th>
+          <th class="text-white">Expiration Date</th>
+          <th class="text-white">Renewal Date</th>
+          <th class="text-white">License Type</th>
+          <th class="text-white">No State License</th>
+          <th class="text-white">State ID</th>
+          <th class="text-white">Download</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% results.each do |license| %>
+          <tr>
+            <td><%= license.license_number %></td>
+            <td><%= license.license_effective_date.strftime("%b %d, %Y") %></td>
+            <td><%= license.license_expiration_date.strftime("%b %d, %Y") %></td>
+            <td><%= license.license_state_renewal_date %></td>
+            <td><%= license.license_type %></td>
+            <td><%= license.no_state_license %></td>
+            <td><%= license.state_id %></td>
+            <td>
+              <select class="form-select form-select-sm format-select" data-license="<%= license.license_number %>">
+                <option value="">Download</option>
+                <option value="pdf">PDF</option>
+                <option value="csv">CSV</option>
+              </select>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="fs-5">No data found.</p>
+  <% end %>
+</div>
