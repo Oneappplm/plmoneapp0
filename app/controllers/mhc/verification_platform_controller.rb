@@ -20,6 +20,7 @@ class Mhc::VerificationPlatformController < ApplicationController
         @liability_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Liability').where.not(source_date: nil).where.not(audit_status: false)
         @board_cert_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'BOARDCERT').where.not(source_date: nil).where.not(audit_status: false)
         @licensure_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Licensure').where.not(source_date: nil).where.not(audit_status: false)
+        @certification_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Certification').where.not(source_date: nil).where.not(audit_status: false)
         @employment_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'employment_record').where.not(source_date: nil).where.not(audit_status: false)
         @npdb_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'NPDB').where.not(source_date: nil).where.not(audit_status: false)
         @education_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'EDUCATION').where.not(source_date: nil).where.not(audit_status: false)
@@ -119,6 +120,9 @@ class Mhc::VerificationPlatformController < ApplicationController
       if params[:practice_education_id].present?
         ProviderEducation.find(params[:practice_education_id]).update(audit_status: 'Quality Audited')
       end  
+      if params[:certification_id].present?
+        Certification.find(params[:certification_id]).update(audit_status: 'Quality Audited')
+      end
       if params[:practice_licensure_id].present?
         ProviderLicensure.find(params[:practice_licensure_id]).update(audit_status: 'Quality Audited')
       end  
@@ -252,6 +256,28 @@ class Mhc::VerificationPlatformController < ApplicationController
       @q = @provider_personal_information.provider_attest.practice_information_educations.ransack(params[:q]&.except(:page_tab))
       @practice_information_educations = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
     end
+
+    if params[:page_tab] == 'certifications'
+      @certifications = Certification.all
+      @q = @provider_personal_information.provider_attest.certifications.ransack(params[:q]&.except(:page_tab))
+      @certifications = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
+    end  
+     
+    if params[:page_tab] == 'add_new_certification'
+      @certification = Certification.new(
+        provider_attest_id: @provider_personal_information&.provider_attest_id,
+        caqh_provider_attest_id: @provider_personal_information&.caqh_provider_attest_id
+      )
+      @url = mhc_certifications_path(provider_attest_id: @provider_personal_information&.provider_attest_id)
+    end 
+
+    if params[:page_tab] == 'certification_info' && params[:certification_id].present?
+      @certification = Certification.find_by(id: params[:certification_id])
+      @url = mhc_certification_path(@certification) 
+      @rva_information = RvaInformation.new
+      @last_rva_information = @certification.rva_informations.last
+      @certification_rva_information_completed = @certification.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
+    end       
 
     if params[:page_tab] == 'training'
       @q = @provider_personal_information.provider_attest.provider_educations.ransack(params[:q]&.except(:page_tab))

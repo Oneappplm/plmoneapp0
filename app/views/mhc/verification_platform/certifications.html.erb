@@ -6,26 +6,81 @@
                 <div class="d-flex align-items-center gap-3">
                     <h4 class="page-heading">Certifications</h4>
                 </div>
-                <a class="btn btn-primary py-1 page-applicable" href="<%= mhc_verification_platform_index_path(page_tab: 'add_new_certification')%>" id="AddNewEducation">
-                    <i class='bx bx-plus'></i>
+                <a href="<%= mhc_verification_platform_path(page_tab: 'add_new_certification')%>" class="btn btn-primary py-1">
+                    <i class='bx bx-plus' ></i>
                     Add New Certifications
                 </a>
             </div>
-            <table class="table table-bordered practice-table mt-3 page-applicable ">
-                <thead>
-                    <tr>
-                        <th  class="text-white" scope="col">Type</th>
-                        <th class="text-white">Verification Source</th>
-                        <th class="text-white">Certifications Number</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><a href="<%= mhc_verification_platform_index_path(page_tab: 'certification_info')%>" id="" class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none">Lorem.</a></td>
-                        <td>Lorem</td>
-                        <td>Lorem ipsum</td>
-                    </tr>
-                </tbody>
+            <div class="col-xl-4">
+                <%= search_form_for @q, url: mhc_verification_platform_path(page_tab: 'certification'), method: :get, html: { class: 'form_search_with_icon' } do |f| %>
+                  <%= hidden_field_tag :id, @provider_personal_information.provider_attest_id %>
+                  <%= hidden_field_tag :page_tab, 'certifications' %>
+                  <div class="position-relative">
+                    <%= f.text_field :certification_type_cont, value: (params.dig(:q, :certification_type_cont) || ''), placeholder: 'Search record', class: "form-control py-1" %>
+                    <button type="submit" class="search-icon-btn">
+                      <i class="bx bx-search"></i>
+                    </button>
+                  </div>
+                <% end %>
+            </div>
+            <% if @certifications %>
+              <div class="col-lg-12">
+                  <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-0">
+                      <div class="page_info ms-3 text-black">
+                      <%= page_entries_info @certifications %>
+                      </div>
+                      <% if params[:per_page ].present? %>
+                      <%= will_paginate @certifications, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                      <% else %>
+                      <%= will_paginate @certifications, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                      <% end %>
+                  </div>
+              </div>
+            <% end %>
+            <table class="table table-bordered practice-table mt-3 page-applicable">
+              <thead>
+                <tr>
+                  <th class="text-white" scope="col">Type</th>
+                  <th class="text-white">Verification Source</th>
+                  <th class="text-white">Certification Number</th>
+                  <th class="text-white">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @certifications.each do |certification| %>
+                  <tr>
+                    <td>
+                      <a href="<%= mhc_verification_platform_path(certification_id: certification.id, page_tab: 'certification_info') %>"
+                        class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none">
+                        <%= certification.certification_type.presence || "N/A" %>
+                      </a>
+                    </td>
+                    <td><%= certification.issuing_agency.presence || "N/A" %></td>
+                    <td><%= certification.certification_number.presence || "N/A" %></td>
+                    <td><%= certification.audit_status.presence || "Not Requested" %></td>
+                  </tr>
+                <% end %>
+              </tbody>
             </table>
         </div>
     </div>
+<style>
+   .search-icon-btn {
+     position: absolute;
+     top: 50%;
+     right: 10px;
+     transform: translateY(-50%);
+     background: none;
+     border: none;
+     cursor: pointer;
+   }
+ 
+   .search-icon-btn i {
+     font-size: 20px;
+     color: #007bff; /* Blue color */
+   }
+ 
+   .search-icon-btn:hover i {
+     color: #0056b3; /* Darker blue on hover */
+   }
+ </style>

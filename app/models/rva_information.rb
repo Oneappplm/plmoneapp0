@@ -7,6 +7,7 @@ class RvaInformation < ApplicationRecord
 	belongs_to :provider_licensure, optional: true
 	belongs_to :provider_insurance_coverage, optional: true
 	belongs_to :provider_employment, optional: true
+	belongs_to :certification, optional: true
 	has_many :dea_webcrawler_logs, dependent: :destroy
 	has_many :oig_webcrawler_logs, dependent: :destroy
 	has_many :licensure_webcrawler_logs, dependent: :destroy  
