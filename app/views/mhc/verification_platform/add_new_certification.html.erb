@@ -13,81 +13,100 @@
                     </div>
                 </div>
             </div>
-            <form action="">
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label for="" class=" ">Certification Type:</label>
-                        <select name="CertificationType" id="CertificationType" class="form-select ">
-                            <option value="">Select Option</option>
-                        </select>
-                    </div>
-                    <div class="col-xl-6">
-                        <label for="" class=" ">Verification Source:</label>
-                        <select name="VerificationSource" id="VerificationSource" class="form-select ">
-                            <option value="">Select Option</option>
-                        </select>
-                    </div>
+            <%= form_with model: @certification, url: @url, method: :post do |f| %>
+              <!-- Type -->
+                    <%= f.hidden_field :caqh_provider_attest_id %>
+                    <%= f.hidden_field :provider_attest_id %>
+              <div class="mb-3 row align-items-center">
+                <%= f.label :certification_type, class: "col-sm-3 col-form-label fw-bold" %>
+                <div class="col-sm-9">
+                  <%= f.text_field :certification_type, class: "form-control form-control-sm" %>
                 </div>
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label for="" class=" ">Available:</label>
-                        <select name="Available" id="Available" class="form-select ">
-                            <option value="">Select Option</option>
-                        </select>
-                    </div>
-                    <div class="col-xl-6">
-                        <label for="" class=" ">Certification Number:</label>
-                        <input type="text" name="CertificationNumber" id="CertificationNumber" class="form-control form-control-lg"
-                            placeholder="Type here..">
-                    </div>
+              </div>
+
+              <!-- Issuing Agency -->
+              <div class="mb-3 row align-items-center">
+                <%= f.label :issuing_agency, class: "col-sm-3 col-form-label fw-bold" %>
+                <div class="col-sm-9">
+                  <%= f.text_field :issuing_agency, class: "form-control form-control-sm" %>
                 </div>
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label class=" " for="EffectiveDate">Effective Date:</label>
-                        <input type="text" id="EffectiveDate" name="EffectiveDate" class="form-control form-control-lg"
-                            placeholder="MM/DD/YYYY" onfocus="(this.type='date')" onblur="(this.type='text')">
-                    </div>
-                    <div class="col-xl-6">
-                        <label class=" " for="ExpirationDate">Expiration Date:</label>
-                        <input type="text" id="ExpirationDate" name="ExpirationDate" class="form-control form-control-lg"
-                            placeholder="MM/DD/YYYY" onfocus="(this.type='date')" onblur="(this.type='text')">
-                    </div>
+              </div>
+
+              <!-- Certification Status -->
+              <div class="mb-3 row align-items-center">
+                <%= f.label :certification_status, "Certification Status", class: "col-sm-3 col-form-label fw-bold" %>
+                <div class="col-sm-9">
+                  <%= f.text_field :certification_status, class: "form-control form-control-sm" %>
                 </div>
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label for="" class=" ">Occurence Limit:</label>
-                        <input type="text" name="OccurenceLimit" id="OccurenceLimit" class="form-control form-control-lg"
-                            placeholder="Type here..">
-                    </div>
-                    <div class="col-xl-6">
-                        <label for="" class=" ">Aggregate Limit:</label>
-                        <input type="text" name="AggregateLimit" id="AggregateLimit" class="form-control form-control-lg"
-                            placeholder="Type here..">
-                    </div>
+              </div>
+
+              <!-- Certification Number -->
+              <div class="mb-3 row align-items-center">
+                <%= f.label :certification_number, class: "col-sm-3 col-form-label fw-bold" %>
+                <div class="col-sm-9">
+                  <%= f.text_field :certification_number, class: "form-control form-control-sm", placeholder: "Enter number" %>
                 </div>
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label class=" " for="SourceDate">Source Date:</label>
-                        <input type="text" id="SourceDate" name="SourceDate" class="form-control form-control-lg"
-                            placeholder="MM/DD/YYYY" onfocus="(this.type='date')" onblur="(this.type='text')">
-                    </div>
-                    <div class="col-xl-6">
-                        <label for="" class=" ">Verifier:</label>
-                        <input type="text" name="Verifier" id="Verifier" class="form-control form-control-lg" placeholder="Type here..">
-                    </div>
+              </div>
+
+              <!-- Initial Certification Date -->
+              <div class="mb-3 row align-items-center">
+                <%= f.label :initial_certification_date, "Initial Certification Date", class: "col-sm-3 col-form-label fw-bold" %>
+                <div class="col-sm-9">
+                  <%= f.date_select :initial_certification_date, { start_year: 1950, end_year: Date.today.year }, { class: "form-select form-select-sm d-inline w-auto me-1" } %>
                 </div>
-                <div class="form-row row justify-content-end mb-3">
-                    <div class="col-xl-6">
-                        <label class=" " for="VerificationDate">Verification Date:</label>
-                        <input type="text" id="VerificationDate" name="VerificationDate" class="form-control form-control-lg"
-                            placeholder="MM/DD/YYYY" onfocus="(this.type='date')" onblur="(this.type='text')">
-                    </div>
+              </div>
+
+              <!-- Recertification Dates -->
+              <div class="mb-3 p-3 bg-white border rounded">
+                <div class="fw-bold mb-2">Recertification Dates</div>
+                <div class="row align-items-center">
+                  <%= f.label :recertification_dates, "Recertification Date", class: "col-sm-3 col-form-label fw-bold" %>
+                  <div class="col-sm-9 d-flex gap-2 align-items-center">
+                    <%= f.date_select :recertification_dates, { start_year: 1950, end_year: Date.today.year }, { class: "form-select form-select-sm w-auto" } %>
+                  </div>
                 </div>
-                <div class="form-row row justify-content-end">
-                    <div class="col-xl-2">
-                        <button class="btn btn-primary form-control">Save</button>
-                    </div>
+              </div>
+
+              <!-- Certification Expiration Date -->
+              <div class="mb-3 row align-items-center">
+                <%= f.label :certification_expiration_date, "Certification Expiration Date", class: "col-sm-3 col-form-label fw-bold" %>
+                <div class="col-sm-9">
+                  <div class="form-check form-check-inline">
+                    <%= f.radio_button :does_not_expire, true, id: "doesNotExpire", class: "form-check-input" %>
+                    <%= f.label :does_not_expire, "Does Not Expire", class: "form-check-label", for: "doesNotExpire" %>
+                  </div>
+                  <div class="d-flex gap-2 mt-2">
+                    <%= f.date_select :certification_expiration_date, { start_year: 1950, end_year: Date.today.year }, { class: "form-select form-select-sm w-auto" } %>
+                  </div>
                 </div>
-            </form>
+              </div>
+
+              <!-- Comments -->
+              <div class="mb-3">
+                <%= f.label :comments, "Please list any comments:", class: "form-label fw-bold text-purple" %>
+                <%= f.text_area :comments, class: "form-control", rows: 3, maxlength: 250 %>
+                <small class="form-text text-muted text-center">[ Less than 250 characters ]</small>
+              </div>
+
+              <!-- Show On Tickler -->
+              <div class="mb-3 row align-items-center">
+                <%= f.label :show_on_tickler, "Show On Tickler?", class: "col-sm-3 col-form-label fw-bold text-success" %>
+                <div class="col-sm-9 d-flex gap-3">
+                  <div class="form-check">
+                    <%= f.radio_button :show_on_tickler, true, id: "ticklerYes", class: "form-check-input" %>
+                    <%= f.label :show_on_tickler, "Yes", class: "form-check-label", for: "ticklerYes" %>
+                  </div>
+                  <div class="form-check">
+                    <%= f.radio_button :show_on_tickler, false, id: "ticklerNo", class: "form-check-input" %>
+                    <%= f.label :show_on_tickler, "No", class: "form-check-label", for: "ticklerNo" %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="text-end">
+                <%= f.submit "Save", class: "btn btn-primary" %>
+              </div>
+            <% end %>
         </div>
     </div>

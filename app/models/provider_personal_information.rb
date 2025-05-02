@@ -18,6 +18,7 @@ class ProviderPersonalInformation < ApplicationRecord
   has_many :practice_information_educations, through: :provider_attest
   has_many :provider_employments, through: :provider_attest
   has_many :provider_educations, through: :provider_attest
+  has_many :certifications, through: :provider_attest
   has_many :provider_insurance_coverages, through: :provider_attest
   has_many :provider_deas, through: :provider_attest
   has_many :provider_cds, through: :provider_attest

@@ -179,6 +179,7 @@ Rails.application.routes.draw do
     resources :provider_licensures
     resources :practice_informations, path: 'practice-information'
     resources :provider_educations, only: [:index, :create, :update, :destroy], path: 'provider-education'
+    resources :certifications, only: [:index, :create, :update, :destroy], path: 'certifications'
     resources :practice_information_educations, only: [:index, :create, :update, :destroy], path: 'practice-information-education'
     resources :provider_specialties, only: [:index, :new, :create, :edit, :destroy, :update], path: 'provider-specialties'
     resources :provider_personal_informations, only: [:update], path: 'provider-personal-information'
@@ -420,6 +421,7 @@ Rails.application.routes.draw do
     post '/send_training_request', to: 'quality_audits#send_training_request' 
     post '/send_board_cert_request', to: 'quality_audits#send_board_cert_request' 
     post '/send_licensure_request', to: 'quality_audits#send_licensure_request'
+    post '/send_certification_request', to: 'quality_audits#send_certification_request'
     post '/send_employment_request', to: 'quality_audits#send_employment_request'
     post '/send_education_skip_rva', to: 'quality_audits#send_education_skip_rva'
     post '/send_dea_skip_rva', to: 'quality_audits#send_dea_skip_rva'

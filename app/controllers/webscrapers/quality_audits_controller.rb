@@ -1,7 +1,7 @@
 class Webscrapers::QualityAuditsController < ApplicationController
   before_action :set_common_params, only: %i[
     send_oig_request send_licensure_request send_employment_request
-    send_npdb_request send_registration_request send_liability_request
+    send_npdb_request send_registration_request send_liability_request send_certification_request
     send_board_cert_request send_education_request send_education_skip_rva send_liability_skip_rva send_training_skip_rva
     send_dea_skip_rva send_training_request send_employment_skip_rva send_npdb_skip_rva send_board_cert_skip_rva
   ]
@@ -180,6 +180,11 @@ class Webscrapers::QualityAuditsController < ApplicationController
     create_rva_information('Licensure', 'none', licensure_id: licensure_id)
   end
 
+  def send_certification_request
+    certification_id = params[:certification_id]
+    create_rva_information('Certification', 'none', certification_id: certification_id)
+  end
+
   def send_employment_request
     employment_id = params[:employment_id]
     create_rva_information('Employment', 'none', employment_id: employment_id)
@@ -316,7 +321,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
     @provider_dea_id = params[:provider_dea_id]
   end
 
-  def create_rva_information(tab, comments, provider_dea_id: nil, education_id: nil, licensure_id: nil, employment_id: nil, liability_id: nil, board_id: nil, training_id: nil, npdb_id: nil, skip_rva: false)
+  def create_rva_information(tab, comments, provider_dea_id: nil, education_id: nil, licensure_id: nil, employment_id: nil, liability_id: nil, board_id: nil, training_id: nil, npdb_id: nil, certification_id: nil, skip_rva: false)
     rva_params = {
       tab: tab,
       send_request: 'SENT',
@@ -336,7 +341,8 @@ class Webscrapers::QualityAuditsController < ApplicationController
       provider_employment_id: employment_id,
       provider_insurance_coverage_id: liability_id,
       provider_specialty_id: board_id,
-      provider_education_id: training_id
+      provider_education_id: training_id,
+      certification_id: certification_id,
     }
 
     if skip_rva
