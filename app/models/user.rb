@@ -127,7 +127,7 @@ class User < ApplicationRecord
   def find_excluded_roles
     case user_role
       when 'administrator'
-        ['super_administrator', 'encoder', 'test_user' ]
+        ['super_administrator', 'encoder', 'test_user', 'demo_administrator' ]
         # ['super_administrator','encoder','calls_agent','agent', 'test_user' ,'viewer']
       else
         ['encoder', 'test_user']
