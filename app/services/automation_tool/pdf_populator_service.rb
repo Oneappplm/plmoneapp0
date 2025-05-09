@@ -104,7 +104,7 @@ class AutomationTool::PdfPopulatorService < ApplicationService
           field.field_value = data[:suffix]
         when 'Date of  birth', 'text_23giep', 'Birth Date', 'BirthDate'
           field.field_value = data[:dob]
-        when 'National Provider Identifier Individual NPI', '232791941', 'National Provider Identifier #'. 'National Provider Identification Number NPI'
+        when 'National Provider Identifier Individual NPI', '232791941', 'National Provider Identifier #', 'National Provider Identification Number NPI'
           field.field_value = data[:npi]
         when 'Social Security Number', 'SSN'
           field.field_value = data[:ssn]
