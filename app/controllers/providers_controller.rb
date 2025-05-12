@@ -34,14 +34,21 @@ class ProvidersController < ApplicationController
 		end
 
 		if !current_user.can_access_all_groups? && !current_user.super_administrator? && !current_user.provider? && !sprout_staff_admin(current_user)
-			if current_user.administrator? && current_user.assigned_access_only? && current_setting.groups? 
-				@providers = @providers.where(admin_id: current_user.id)
-			else
-				@providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
-			end
+		  if current_user.administrator? && current_user.assigned_access_only? && current_setting.groups?
+		    # Admins see providers they "own"
+		    @providers = @providers.where(admin_id: current_user.id)
+		  else
+		    # For normal users, scope by their enrollment groups
+		    if current_user.is_a?(User)
+		      @providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
+		    elsif current_user.is_a?(Admin)
+		      @providers = @providers.where(enrollment_group_id: current_user.enrollment_group_ids)
+		    else
+		      # fallback, show none
+		      @providers = @providers.none
+		    end
+		  end
 		end
-
-
 
 			@providers = @providers.reorder("f asc NULLS last", "m asc NULLS last", "l asc NULLS last")
 			@providers_without_pagination =	@providers
@@ -178,25 +185,47 @@ class ProvidersController < ApplicationController
 	end
 
   def show
-    @providers = Provider.all
-		if !current_user.can_access_all_groups? && !current_user.super_administrator? && !sprout_staff_admin(current_user)
-			@providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
-		end
-		if !current_user.can_access_all_groups? && !current_user.super_administrator? && !sprout_staff_admin(current_user)
-    	@provider = Provider.includes(:group).where(group: { id: current_user.enrollment_groups.pluck(:id) }).where(id: params[:id] || params[:provider_id]).last
-			if !@provider.present?
-				redirect_back(fallback_location: root_path, alert: "You don't have access to the provider.")
-			end
-		else
-			@provider = Provider.find(params[:id] || params[:provider_id])
-		end
-    @comment = EnrollmentComment.new
-    @comment.provider = @provider
-    @comment.user_id = current_user.id
-    if @provider
-      @time_line = @provider.time_lines.new
-    end
-  end
+	  @providers = Provider.all
+
+	  # Scope providers if user can't access all groups
+	  unless current_user.can_access_all_groups? || current_user.super_administrator? || sprout_staff_admin(current_user)
+	    # If current_user is User, scope by enrollment groups
+	    if current_user.is_a?(User)
+	      group_ids = current_user.enrollment_groups.pluck(:id)
+	      @providers = @providers.where(enrollment_group_id: group_ids)
+	    elsif current_user.is_a?(Admin)
+	      # If Admins are only scoped by admin_id, don't call enrollment_groups
+	      @providers = @providers.where(admin_id: current_user.id)
+	    end
+	  end
+
+	  # Load provider with access check
+	  unless current_user.can_access_all_groups? || current_user.super_administrator? || sprout_staff_admin(current_user)
+	    if current_user.is_a?(User)
+	      group_ids = current_user.enrollment_groups.pluck(:id)
+	      @provider = Provider.includes(:group)
+	                          .where(group: { id: group_ids })
+	                          .where(id: params[:id] || params[:provider_id])
+	                          .last
+	    elsif current_user.is_a?(Admin)
+	      @provider = Provider.where(admin_id: current_user.id)
+	                          .where(id: params[:id] || params[:provider_id])
+	                          .last
+	    end
+
+	    unless @provider.present?
+	      redirect_back(fallback_location: root_path, alert: "You don't have access to the provider.") and return
+	    end
+	  else
+	    @provider = Provider.find(params[:id] || params[:provider_id])
+	  end
+
+	  @comment = EnrollmentComment.new(provider: @provider, user_id: current_user.id)
+
+	  if @provider
+	    @time_line = @provider.time_lines.new
+	  end
+	end
 
 	def download_all_pdfs
     @provider = Provider.find(params[:id])

@@ -108,3 +108,4 @@ gem 'composite_primary_keys'
 gem 'omniauth-auth0', '~> 3.0'
 gem 'omniauth-rails_csrf_protection', '~> 1.0' # prevents forged authentication requests
 gem "rubyzip"
+gem 'ransack'

@@ -77,6 +77,7 @@ class User < ApplicationRecord
 
   has_many :director_providers
   has_many :virtual_review_committees, through: :director_providers
+  has_many :users_enrollment_groups
   has_many :enrollment_groups, through: :users_enrollment_groups
   accepts_nested_attributes_for :users_enrollment_groups, allow_destroy: true, reject_if: :all_blank
 
