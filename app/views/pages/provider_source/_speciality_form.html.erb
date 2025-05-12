@@ -79,11 +79,11 @@
 					<input type="text" name="provider_source_specialities[<%= index %>][bord_certificate_number]" value="<%= specialty.board_certificate_number %>" class="form-control border-dark">
 				</div>
 				<div class="col-lg-6 mb-3">
-					<label class="text-dark-grey">Initial Certification Date</label>
+					<label class="text-dark-grey">Initial Certification Date<span class="text-danger">*</span></label>
 					<input type="date" name="provider_source_specialities[<%= index %>][initial_certification_date]" value="<%= specialty.initial_certification_date %>" class="form-control border-dark">
 				</div>
 				<div class="col-lg-6 mb-3">
-					<label class="text-dark-grey">Expiration Certification Date</label>
+					<label class="text-dark-grey">Expiration Certification Date<span class="text-danger">*</span></label>
 					<input type="date" name="provider_source_specialities[<%= index %>][expiration_certification_date]" value="<%= specialty.expiration_certification_date %>" class="form-control border-dark">
 				</div>
 				<div class="col-lg-6 mb-3">
@@ -97,11 +97,11 @@
 			<div class="d-flex align-items-center my-3 gap-3">
 				<label class="mb-0"><span class="text-danger">*</span>Are you eligible to be certified in this specialty?</label>
 				<div class="d-flex gap-2">
-					<input type="radio" name="provider_source_specialities[<%= index %>][eligible_certified]" value="yes" id="eligible_yes_<%= index %>">
+					<input type="radio" name="provider_source_specialities[<%= index %>][eligible_certified]" value="yes" id="eligible_yes_<%= index %>" <%= 'checked' if specialty.eligible_certified == true %>>
 					<span>YES</span>
 				</div>
 				<div class="d-flex gap-2">
-					<input type="radio" name="provider_source_specialities[<%= index %>][eligible_certified]" value="no" id="eligible_no_<%= index %>">
+					<input type="radio" name="provider_source_specialities[<%= index %>][eligible_certified]" value="no" id="eligible_no_<%= index %>" <%= 'checked' if specialty.eligible_certified == false %>>
 					<span>NO</span>
 				</div>
 			</div>
@@ -118,11 +118,11 @@
 			<div class="d-flex align-items-center my-3 gap-3 specialties_board_exam_pending">
 				<label class="mb-0">Do you have board exam results pending for this specialty?</label>
 				<div class="d-flex gap-2">
-					<input type="radio" name="provider_source_specialities[<%= index %>][board_exam_results_pending]" value="yes" id="exam_pending_yes_<%= index %>">
+					<input type="radio" name="provider_source_specialities[<%= index %>][board_exam_results_pending]" value="yes" id="exam_pending_yes_<%= index %>" <%= 'checked' if specialty.board_exam_results_pending == true %>>
 					<span>YES</span>
 				</div>
 				<div class="d-flex gap-2">
-					<input type="radio" name="provider_source_specialities[<%= index %>][board_exam_results_pending]" value="no" id="exam_pending_no_<%= index %>">
+					<input type="radio" name="provider_source_specialities[<%= index %>][board_exam_results_pending]" value="no" id="exam_pending_no_<%= index %>" <%= 'checked' if specialty.board_exam_results_pending == false %>>
 					<span>NO</span>
 				</div>
 			</div>
@@ -131,8 +131,8 @@
 				<div class="row">
 					<% ["certifying_board", "address_line_1", "address_line_2", "city", "state", "zipcode"].each do |field| %>
 					<div class="col-lg-6 mb-3">
-						<label class="text-dark-grey">Pending <%= field.titleize.gsub("_", " ") %></label>
-						<input type="text" name="provider_source_specialities[<%= index %>][pending_<%= field %>]" class="form-control border-dark">
+						<label class="text-dark-grey">Pending <%= field.titleize.gsub("_", " ") %><span class="text-danger">*</span></label>
+						<input type="text" name="provider_source_specialities[<%= index %>][pending_<%= field %>]" class="form-control border-dark" value="<%= specialty.send(field) %>">
 					</div>
 					<% end %>
 					<div class="col-lg-6 mb-3">
@@ -163,11 +163,11 @@
 					Have you applied for this certification exam?
 				</label>
 				<div class="d-flex gap-2">
-					<input type="radio" name="provider_source_specialities[<%= index %>][applied_for_certification_exam]" value="yes" id="applied_yes_<%= index %>">
+					<input type="radio" name="provider_source_specialities[<%= index %>][applied_for_certification_exam]" value="yes" id="applied_yes_<%= index %>" <%= 'checked' if specialty.applied_for_certification_exam == true %>>
 					<span>YES</span>
 				</div>
 				<div class="d-flex gap-2">
-					<input type="radio" name="provider_source_specialities[<%= index %>][applied_for_certification_exam]" value="no" id="applied_no_<%= index %>">
+					<input type="radio" name="provider_source_specialities[<%= index %>][applied_for_certification_exam]" value="no" id="applied_no_<%= index %>" <%= 'checked' if specialty.applied_for_certification_exam == false %>>
 					<span>NO</span>
 				</div>
 			</div>
@@ -180,18 +180,18 @@
 					Have you been accepted to take this certification exam?
 				</label>
 				<div class="d-flex gap-2">
-					<input type="radio" name="provider_source_specialities[<%= index %>][accepted_for_certification_exam]" value="yes" id="accepted_yes_<%= index %>">
+					<input type="radio" name="provider_source_specialities[<%= index %>][accepted_for_certification_exam]" value="yes" id="accepted_yes_<%= index %>" <%= 'checked' if specialty.accepted_for_certification_exam == true %>>
 					<span>YES</span>
 				</div>
 				<div class="d-flex gap-2">
-					<input type="radio" name="provider_source_specialities[<%= index %>][accepted_for_certification_exam]" value="no" id="accepted_no_<%= index %>">
+					<input type="radio" name="provider_source_specialities[<%= index %>][accepted_for_certification_exam]" value="no" id="accepted_no_<%= index %>" <%= 'checked' if specialty.accepted_for_certification_exam == false %>>
 					<span>NO</span>
 				</div>
 			</div>
 			<!-- Admissibility Expiration Date (only if eligible is yes) -->
 			<div id="board-exm-date_<%= index %>" class="mb-3" style="display: none;">
-				<label class="text-dark-grey">Board Exam Date (MM/DD/YYYY) </label>
-				<input type="date" name="provider_source_specialities[<%= index %>][board_exam_date]" class="form-control border-dark">
+				<label class="text-dark-grey">Board Exam Date (MM/DD/YYYY) <span class="text-danger">*</span></label>
+				<input type="date" name="provider_source_specialities[<%= index %>][board_exam_date]" class="form-control border-dark" value="<%= specialty.board_exam_date %>">
 			</div>
 		</div>
 		<div id="intend_accepted_certification_field_<%= index %>" style="display: none !important;">
@@ -201,18 +201,18 @@
 					Do you intend to apply for this certification exam?
 				</label>
 				<div class="d-flex gap-2">
-					<input type="radio" name="provider_source_specialities[<%= index %>][intend_applied_for_certification_exam]" value="yes" id="intend_accepted_yes_<%= index %>">
+					<input type="radio" name="provider_source_specialities[<%= index %>][intend_applied_for_certification_exam]" value="yes" id="intend_accepted_yes_<%= index %>" <%= 'checked' if specialty.intend_applied_for_certification_exam == true %>>
 					<span>YES</span>
 				</div>
 				<div class="d-flex gap-2">
-					<input type="radio" name="provider_source_specialities[<%= index %>][intend_applied_for_certification_exam]" value="no" id="intend_accepted_no_<%= index %>">
+					<input type="radio" name="provider_source_specialities[<%= index %>][intend_applied_for_certification_exam]" value="no" id="intend_accepted_no_<%= index %>" <%= 'checked' if specialty.intend_applied_for_certification_exam == false %>>
 					<span>NO</span>
 				</div>
 			</div>
 			<!-- Admissibility Expiration Date (only if eligible is yes) -->
 			<div id="intend-date-apply_<%= index %>" class="mb-3" style="display: none;">
-				<label class="text-dark-grey">Date you intend to apply (MM/DD/YYYY)  </label>
-				<input type="date" name="provider_source_specialities[<%= index %>][intend_date_apply]" class="form-control border-dark">
+				<label class="text-dark-grey">Date you intend to apply (MM/DD/YYYY) <span class="text-danger">*</span></label>
+				<input type="date" name="provider_source_specialities[<%= index %>][intend_date_apply]" class="form-control border-dark" value="<%= specialty.intend_date_apply %>">
 			</div>
 			<div id="no_board_exam_reason_field_<%= index %>" style="display: none;">
 				<div class="mb-3">
@@ -220,7 +220,9 @@
 						<span class="text-danger">*</span>
 						Please explain why you do not intend to sit for a Board exam.
 					</label>
-					<textarea name="provider_source_specialities[<%= index %>][specialties_no_board_exam_reason]" class="form-control border-dark" rows="4"></textarea>
+					<textarea name="provider_source_specialities[<%= index %>][specialties_no_board_exam_reason]"
+          class="form-control border-dark"
+          rows="4"><%= specialty.specialties_no_board_exam_reason %></textarea>
 					<span>2500 characters max.</span>
 				</div>
 			</div>

@@ -1,0 +1,57 @@
+<div class="row other-names-entry" data-id="<%= other_name.id %>">
+	<%= hidden_field_tag :other_name_id, other_name.id %>
+	<div class="col-lg-12 card py-3 mb-3">
+		<h3>Other Names <i class="bi bi-info-circle text-primary fs-5"></i></h3>
+		<div class="other-name-form">
+			<div class="row my-3">
+				<div class="col-lg-6">
+					<label class="text-dark-grey">Name type</label>
+					<select name="other_names[<%= index %>][name_type]" class="form-select border-dark">
+						<option value="Legal" <%= "selected" if other_name.name_type == "Legal" %>>Legal</option>
+						<option value="Maiden" <%= "selected" if other_name.name_type == "Maiden" %>>Maiden</option>
+						<option value="Professional" <%= "selected" if other_name.name_type == "Professional" %>>Professional</option>
+					</select>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<div class="col-lg-3">
+					<label class="text-dark-grey">Other First Name <span class="text-danger">*</span></label>
+					<input type="text" name="other_names[<%= index %>][first_name]" value="<%= other_name.first_name %>" class="form-control border-dark">
+				</div>
+				<div class="col-lg-3">
+					<label class="text-dark-grey">Other Middle Name</label>
+					<input type="text" name="other_names[<%= index %>][middle_name]" value="<%= other_name.middle_name %>" class="form-control border-dark">
+				</div>
+				<div class="col-lg-3">
+					<label class="text-dark-grey">Other Last Name <span class="text-danger">*</span></label>
+					<input type="text" name="other_names[<%= index %>][last_name]" value="<%= other_name.last_name %>" class="form-control border-dark">
+				</div>
+				<div class="col-lg-3">
+					<label class="text-dark-grey">Other Suffix</label>
+					<select name="other_names[<%= index %>][suffix]" class="form-select border-dark">
+						<option value="II" <%= "selected" if other_name.suffix == "II" %>>II</option>
+						<option value="III" <%= "selected" if other_name.suffix == "III" %>>III</option>
+						<option value="IV" <%= "selected" if other_name.suffix == "IV" %>>IV</option>
+						<option value="Jr." <%= "selected" if other_name.suffix == "Jr." %>>Jr.</option>
+						<option value="Sr." <%= "selected" if other_name.suffix == "Sr." %>>Sr.</option>
+					</select>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<div class="col-lg-6">
+					<label class="text-dark-grey">Date Started Using Other Name</label>
+					<input type="date" name="other_names[<%= index %>][date_started]" value="<%= other_name.date_started %>" class="form-control border-dark">
+				</div>
+				<div class="col-lg-6">
+					<label class="text-dark-grey">Date Stopped Using Other Name</label>
+					<input type="date" name="other_names[<%= index %>][date_stopped]" value="<%= other_name.date_stopped %>" class="form-control border-dark">
+					<span class="d-flex mt-2">
+						<input type="checkbox" name="other_names[<%= index %>][in_use]" class="me-2 other_name_still_use" <%= "checked" if other_name.in_use %>>
+						<label>Name is still in use</label>
+					</span>
+				</div>
+			</div>
+			<!-- <button type="button" class="btn btn-danger remove_other_name">Remove</button> -->
+		</div>  
+	</div>
+</div>

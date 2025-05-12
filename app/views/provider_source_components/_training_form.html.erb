@@ -167,31 +167,53 @@
 </div>
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-    const yesButton = document.getElementById("yes_button");
-    const noButton = document.getElementById("no_button");
-    const formSection = document.getElementById("training_reason_form");
-    const hiddenInput = document.getElementById("incomplete_training");
+  const yesButton = document.getElementById("yes_button");
+  const noButton = document.getElementById("no_button");
+  const formSection = document.getElementById("training_reason_form");
+  const hiddenInput = document.getElementById("incomplete_training");
 
-    yesButton.addEventListener("click", function() {
-      formSection.classList.add("d-none"); // Hide form
-      hiddenInput.value = "yes";
-
-      yesButton.classList.add("btn-primary");
-      yesButton.classList.remove("btn-outline-primary");
-
-      noButton.classList.add("btn-outline-primary");
-      noButton.classList.remove("btn-primary");
+  function autosave(field, value) {
+    $.ajax({
+      url: '/provider_sources/autosave',
+      method: 'POST',
+      dataType: 'json',
+      data: {
+        authenticity_token: $('meta[name="csrf-token"]').attr('content'),
+        field_name: field,
+        value: value
+      },
+      success: function(response) {
+        console.log('Autosaved', field, value);
+      },
+      error: function(error) {
+        console.error('Autosave failed for', field, value, error);
+      }
     });
+  }
 
-    noButton.addEventListener("click", function() {
-      formSection.classList.remove("d-none"); // Show form
-      hiddenInput.value = "no";
+  yesButton.addEventListener("click", function() {
+    formSection.classList.add("d-none");
+    hiddenInput.value = "yes";
+    autosave("incomplete_training", "yes");
 
-      noButton.classList.add("btn-primary");
-      noButton.classList.remove("btn-outline-primary");
+    yesButton.classList.add("btn-primary");
+    yesButton.classList.remove("btn-outline-primary");
 
-      yesButton.classList.add("btn-outline-primary");
-      yesButton.classList.remove("btn-primary");
-    });
+    noButton.classList.add("btn-outline-primary");
+    noButton.classList.remove("btn-primary");
   });
+
+  noButton.addEventListener("click", function() {
+    formSection.classList.remove("d-none");
+    hiddenInput.value = "no";
+    autosave("incomplete_training", "no");
+
+    noButton.classList.add("btn-primary");
+    noButton.classList.remove("btn-outline-primary");
+
+    yesButton.classList.add("btn-outline-primary");
+    yesButton.classList.remove("btn-primary");
+  });
+});
+
 </script>
