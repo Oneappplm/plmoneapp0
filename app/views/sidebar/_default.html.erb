@@ -205,7 +205,40 @@
 															</a>
 														</div>
 													<% end %>
-													<!-- logout -->
+
+													<% if current_user.can_access?('Verification Products') %>
+														 <div class="nav-item mb-1">
+																<a class="nav-link <%= active_menu('verification_products', 'index') %>" href="<%= verification_products_path %>" data-placement="left">
+																	<i class="bi bi-folder nav-icon"></i>
+																	<span class="nav-link-title">Verification Products</span>
+																</a>
+														 </div>
+													<% end %>
+
+													<% if current_user.can_access?('plm_sales_tool') %>
+													<div class="nav-item mb-2">
+																<a class="nav-link <%= active_menu('pages', 'plm_sales_tool') %> d-none" target="_blank" href="<%= plm_sales_tool_path %>" data-placement="left">
+																			<!-- <i class="bi-layers nav-icon"></i> -->
+																			<i class="bi bi-currency-dollar nav-icon"></i>
+																			<!-- <span class="nav-link-title">PLM Sales Tool <small class="fw-semibold">Coming soon</small></span> -->
+																			<span class="nav-link-title">PLM Sales Tool </span>
+																</a>
+													</div>
+													<% end %>
+
+													<% if current_user.can_access?('smart_contract')%>
+													<div class="nav-item mb-2">
+																<a class="nav-link <%= active_menu('pages', 'smart_contract') %> text-muted d-none" href="javascript:void(0);" data-placement="left">
+																			<!-- <i class="bi-layers nav-icon"></i> -->
+																			<i class="bi bi-file-earmark-lock nav-icon"></i>
+																			<span class="nav-link-title">
+																			Smart Contract <small class="fw-semibold">Coming soon</small>
+																			</span>
+																</a>
+													</div>
+													<% end %>
+
+												<% if current_user.can_access?('Role Based Access') %>
 													<div class="nav-item mb-1">
 														<%= button_to destroy_user_session_path, method: :delete, class: 'nav-link w-100 ml-1', data: { placement: 'left' } do %>
 														<i class="bi bi-box-arrow-right nav-icon"></i>

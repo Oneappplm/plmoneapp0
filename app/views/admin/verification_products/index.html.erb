@@ -1,0 +1,44 @@
+<div class="container mt-5">
+	<h1>Select Verification Types</h1>
+	
+	<%= form_with url: new_order_path, method: :get, local: true do %>
+	  <table class="table table-bordered">
+	    <thead>
+	      <tr>
+	        <th class="text-white">Select</th>
+	        <th class="text-white">Name</th>
+	        <th class="text-white">Description</th>
+	        <th class="text-white">Price (USD)</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	      <% @verification_products.each do |product| %>
+	        <tr>
+	          <td>
+	            <%= check_box_tag "product_ids[]", product.id %>
+	          </td>
+	          <td><%= product.name %></td>
+	          <td><%= product.description %></td>
+	          <td>$<%= product.price %></td>
+	        </tr>
+	      <% end %>
+	    </tbody>
+	  </table>
+	  <%= submit_tag "Continue", class: 'btn btn-primary mt-2 btn-sm' %>
+	<% end %>
+
+	<% if @verification_products %>
+		<div class="col-lg-12 mt-3 mb-3">
+			<div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+				<div class="page_info ms-3 text-black">
+					<%= page_entries_info @verification_products %>
+				</div>
+				<% if params[:per_page ].present? %>
+					<%= will_paginate @verification_products, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+				<% else %>
+					<%= will_paginate @verification_products, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+				<% end %>
+			</div>
+		</div>
+	<% end %>
+</div>

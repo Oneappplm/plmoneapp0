@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'orders/index'
   resources :hvhs_data
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -541,7 +542,44 @@ Rails.application.routes.draw do
   post "hippocrates/expired_licenses", to: "hippocrates#expired_licenses"
   get "hippocrates/download_expired_license", to: "hippocrates#download_expired_license"
   get "hippocrates/download_pdf", to: "hippocrates#download_pdf"
-  
+
+  #------for solana routes start here------
+  resources :orders do
+    member do
+      get :upload_providers
+      post :submit_providers
+      get :checkout
+      get :payment_success
+      get :cancel_order
+      get :pay
+      post :confirm_payment
+      get :confirm_crypto_payment  # <-- Add this
+      get :status                  # <-- Add this
+    end
+
+    collection do
+      get :new
+      post :create
+    end
+  end
+
+  resources :verification_products
+
+  namespace :admin do
+    resources :orders, only: [:index, :show]
+    resources :verification_products, only: [:new, :create]
+    resources :transaction_logs
+    
+    resources :provider_profiles, only: [] do
+      member do
+        post :mark_verified
+        post :mark_failed
+      end
+    end
+  end
+  #------for solana routes end here------
+
+
   namespace :api do
     namespace :v1 do
       resources :providers, only: [:index, :create]

@@ -110,7 +110,8 @@ class RoleBasedAccess < ApplicationRecord
 	"App Tracker",
     "Help Codes",
     "Pdf Populator",
-    "Hippocrates"
+    "Hippocrates",
+    "Verification Products"
 	]
 
 	default_scope { order(:id) }
