@@ -238,15 +238,11 @@ class ProviderSourcesController < ApplicationController
 
 	  data = current_provider_source.data.find_or_create_by(data_key: field_name)
 
-	  other_names = current_provider_source.other_names.as_json(
-	    only: [:id, :name_type, :first_name, :middle_name, :last_name, :suffix, :date_started, :date_stopped, :in_use]
-	  )
 
 	  respond_to do |format|
 	    format.json do
 	      render json: {
 	        value: filtered_value(data&.data_value, field_name),
-	        other_names: other_names
 	      }
 	    end
 	  end

@@ -692,6 +692,7 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
 
   //  add multi-select and single-select to inputType name
   if (inputName && inputName.includes('provider_source_specialities')) return true; // skip this iteration
+  if (inputName && inputName.includes('other_names')) return true; // skip this iteration
   if (inputName && inputName.includes('graduate_details')) return true; // skip this iteration
   if (inputName && inputName.includes('provider_source_undergrad_schools')) return true; // skip this iteration
   if (inputName && inputName.includes('hospital_privileges')) return true; // skip this iteration
@@ -717,11 +718,6 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
 			data: { authenticity_token: csrfToken, field_name: inputName },
 			dataType: 'json',
 			success: function(data) {
-          if (data?.other_names) {
-            data?.other_names.forEach(function (otherName) {
-              populateOtherNameEntry(otherName);
-            });
-          }
           if (inputType == 'radio' || inputType == 'checkbox') {
             var radioInput = $(tagName + '[name="' + inputName + '"][value="' + data?.value + '"]');
 
@@ -938,21 +934,6 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
 	  });
 });
 
-function populateOtherNameEntry(otherName) {
-  let existingEntry = $(`.other-name-entry[data-id="${otherName.id}"]`);
-
-  if (existingEntry.length) {
-    // If entry already exists, populate fields
-    existingEntry.find("select[name*='[name_type]']").val(otherName.name_type);
-    existingEntry.find("input[name*='[first_name]']").val(otherName.first_name);
-    existingEntry.find("input[name*='[middle_name]']").val(otherName.middle_name);
-    existingEntry.find("input[name*='[last_name]']").val(otherName.last_name);
-    existingEntry.find("select[name*='[suffix]']").val(otherName.suffix);
-    existingEntry.find("input[name*='[date_started]']").val(otherName.date_started);
-    existingEntry.find("input[name*='[date_stopped]']").val(otherName.date_stopped);
-    existingEntry.find("input[name*='[in_use]']").prop("checked", otherName.in_use);
-  }
-}
 
 function displayFieldsFromSelectElement(data, inputName, tagName) {
   if (['state_of_practice', 'health_plans', 'hospitals', 'directories', 'languages-you-speak', 'languages-you-write'].includes(inputName)) {

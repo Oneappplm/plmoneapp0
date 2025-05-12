@@ -13,7 +13,7 @@
       </div>
       <div class="col-lg-6">
         <label class="text-dark-grey">Facility Name <span class="text-danger">*</span></label>
-        <input type="text" class="form-control border-dark" name="hospital_privileges[<%= index %>][hp-facility-name]" placeholder="Facility name" value="<%= privilege&.hp_facility_name %>">
+        <input type="text" class="form-control border-dark" name="hospital_privileges[<%= index %>][hp_facility_name]" placeholder="Facility name" value="<%= privilege&.hp_facility_name %>">
         <span class="d-flex">
           <input type="checkbox" name="hospital_privileges[<%= index %>][hp_no_longer_in_business]" <%= 'checked' if privilege&.hp_no_longer_in_business %>>
           <small class="fw-semibold ms-2 mt-2">No Longer in Business</small>
@@ -39,7 +39,7 @@
       </div>
       <div class="col-lg-6">
         <label class="text-dark-grey">Zip Code <span class="text-danger">*</span></label>
-        <input type="text" class="form-control border-dark" name="hospital_privileges[<%= index %>][hp-zipcode]" placeholder="Zip Code" value="<%= privilege&.hp_zipcode %>">
+        <input type="text" class="form-control border-dark" name="hospital_privileges[<%= index %>][hp_zipcode]" placeholder="Zip Code" value="<%= privilege&.hp_zipcode %>">
       </div>
     </div>
 
@@ -106,7 +106,23 @@
     <div class="card p-3">
       <h4 class="fw-semibold text-secondary mb-3">Privileges Status</h4>
       <div class="col-lg-12">
-        <%= HtmlUtils::dropdown name: "hospital_privileges[#{index}][privilege_status]", label: 'Privileges Status(Select Pending if your application is in process.)', selected: privilege&.privilege_status %>
+        <label for="hospital_privileges_<%= index %>_privilege_status" class="form-label">
+          Privileges Status (Select Pending if your application is in process.)
+        </label>
+        <select name="hospital_privileges[<%= index %>][privilege_status]"
+                id="hospital_privileges_<%= index %>_privilege_status"
+                class="form-select">
+
+          <% [
+            '', 'Active', 'Adjunctive', 'Admitting', 'Affiliate', 'Associate', 'Attending',
+            'Co-Admissions', 'Consulting-Admitting', 'Courtesy', 'Emeritus', 'Non-admitting',
+            'None', 'Pending', 'Provisional', 'Senior', 'Staff', 'Temporary-Admitting'
+          ].each do |option| %>
+            <option value="<%= option %>" <%= 'selected' if privilege&.privilege_status == option %>>
+              <%= option.presence || 'Select status' %>
+            </option>
+          <% end %>
+        </select>
       </div>
     </div>
 
