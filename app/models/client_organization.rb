@@ -1,6 +1,9 @@
 class ClientOrganization < ApplicationRecord
 	def address = "#{address1} #{address2}"
 
+	has_many :orders, dependent: :destroy
+	has_many :transaction_logs, dependent: :destroy		
+
 	PRIMARY_SERVICE = [
 		"Air Ambulance",
 		"Alcohol/Chemical Dependency",

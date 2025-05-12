@@ -1,0 +1,38 @@
+<div class="container mt-5">
+	<%= link_to "Add New Verification Types", new_admin_verification_product_path, class: "btn btn-success btn-sm mb-2" %>
+	<% if @orders.present? %>
+		<h1>Incoming Orders</h1>
+		<table class="table table-bordered table-striped">
+		  <thead>
+		    <tr>
+		      <th class="text-white">Order #</th>
+		      <th class="text-white">Client</th>
+		      <th class="text-white">Providers</th>
+		      <th class="text-white">Total Paid</th>
+		      <th class="text-white">Payment Status</th>
+		      <th class="text-white">Actions</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <% @orders.each do |order| %>
+		      <tr>
+		        <td><%= order.id %></td>
+		        <td><%= order.client_organization.organization_name %></td>
+		        <td><%= order.provider_profiles.count %></td>
+		        <td>$<%= order.total_amount %></td>
+		        <td>
+		          <span class="badge <%= order.status == 'paid' ? 'bg-success' : 'bg-secondary' %>">
+		            <%= order.status.capitalize %>
+		          </span>
+		        </td>
+		        <td>
+		          <%= link_to "View", admin_order_path(order), class: "btn btn-primary btn-sm" %>
+		        </td>
+		      </tr>
+		    <% end %>
+		  </tbody>
+		</table>
+	<% else %>
+		<p class="fs-4 fw-bold bg-warning py-2 text-center ">No orders found.</p>
+	<% end %>
+</div>

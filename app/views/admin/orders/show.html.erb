@@ -1,0 +1,112 @@
+<div class="container py-5">
+  <!-- Order Header -->
+  <div class="mb-4">
+    <h2 class="mb-1">Order #<%= @order.id %></h2>
+    <h5>
+      Payment Status:
+      <span class="badge rounded-pill <%= @order.status == 'paid' ? 'bg-success' : 'bg-secondary' %>">
+        <%= @order.status.capitalize %>
+      </span>
+    </h5>
+    <p class="mt-2"><strong>Total Paid:</strong> <span class="text-success">$<%= @order.total_amount %></span></p>
+    <p><strong>Memo:</strong> <code><%= @order.payment_memo %></code></p>
+    <% if @order.payment&.solana_signature %>
+      <p><strong>Tx:</strong> <code><%= @order.payment.solana_signature %></code></p>
+    <% end %>
+  </div>
+
+  <hr>
+
+  <!-- Providers Section -->
+  <h3 class="mb-3">Providers</h3>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle shadow-sm">
+      <thead>
+        <tr>
+          <th class="text-white">Name</th>
+          <th class="text-white">NPI</th>
+          <th class="text-white">Status</th>
+          <th class="text-white">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @order.provider_profiles.each do |provider| %>
+          <tr>
+            <td><%= provider.first_name %> <%= provider.last_name %></td>
+            <td><%= provider.npi_number %></td>
+            <td>
+              <span class="badge
+                <%= case provider.verification_status
+                    when 'verified' then 'bg-success'
+                    when 'failed' then 'bg-danger'
+                    else 'bg-warning text-dark' end %>">
+                <%= provider.verification_status.capitalize %>
+              </span>
+            </td>
+            <td>
+              <% if provider.verification_status == 'pending' %>
+                <div class="d-flex flex-column gap-1">
+                  <%= button_to "Mark Verified", mark_verified_admin_provider_profile_path(provider),
+                        method: :post, class: "btn btn-sm btn-success" %>
+
+                  <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#failModal<%= provider.id %>">
+                    Mark as Failed
+                  </button>
+                </div>
+
+                <!-- Modal for failure reason -->
+                <div class="modal fade" id="failModal<%= provider.id %>" tabindex="-1" aria-labelledby="failModalLabel<%= provider.id %>" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="failModalLabel<%= provider.id %>">Failure Reason for <%= provider.first_name %> <%= provider.last_name %></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <%= form_with url: mark_failed_admin_provider_profile_path(provider), method: :post, local: true do |f| %>
+                        <div class="modal-body">
+                          <div class="form-floating">
+                            <%= f.text_area :reason, class: "form-control", placeholder: "Enter failure reason", rows: 4 %>
+                            <label>Failure Reason</label>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <%= f.submit "Mark as Failed", class: "btn btn-danger" %>
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              <% else %>
+                <span class="text-muted">No actions</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- Order Items Section -->
+  <h3 class="mt-5 mb-3">Order Items</h3>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped align-middle shadow-sm">
+      <thead>
+        <tr>
+          <th class="text-white">Product</th>
+          <th class="text-white">Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @order.order_items.each do |item| %>
+          <tr>
+            <td><%= item.verification_product.name %></td>
+            <td>$<%= item.verification_product.price %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

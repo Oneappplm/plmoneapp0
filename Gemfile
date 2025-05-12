@@ -20,7 +20,7 @@ gem "puma", "~> 5.0"
 gem "importmap-rails"
 
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-# gem "turbo-rails"
+gem "turbo-rails"
 
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
 gem "stimulus-rails"
@@ -66,6 +66,9 @@ group :development do
 
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+
+  gem 'letter_opener_web' # https://github.com/fgrehm/letter_opener_web
+  gem 'rspec-rails'
 end
 
 group :test do
@@ -98,12 +101,18 @@ gem 'exception_notification' # https://github.com/smartinez87/exception_notifica
 gem "geocoder" # https://github.com/alexreisner/geocoder
 gem "audited" # https://github.com/collectiveidea/audited
 gem 'chunky_png', '~> 1.3', '>= 1.3.5'
+gem 'combine_pdf'
+gem "hexapdf", "~> 1.0" # https://github.com/gettalong/hexapdf
 gem "iprog_string_utils", "~> 0.1.0" # https://github.com/iprog21/iprog_string_utils
 gem 'composite_primary_keys'
+gem 'omniauth-auth0', '~> 3.0'
+gem 'omniauth-rails_csrf_protection', '~> 1.0' # prevents forged authentication requests
+gem "rubyzip"
+gem 'wicked_pdf'    # For rendering HTML to PDF
+gem 'wkhtmltopdf-binary' # Required dependency for wicked_pdf
 gem 'ransack'
 gem 'mail_form'
 gem 'sidekiq'
-gem 'combine_pdf'    # For PDF generation
-gem 'wicked_pdf'    # For rendering HTML to PDF
-gem 'wkhtmltopdf-binary' # Required dependency for wicked_pdf
-gem "hexapdf", "~> 1.0" # https://github.com/gettalong/hexapdf
+
+gem 'stripe'
+
