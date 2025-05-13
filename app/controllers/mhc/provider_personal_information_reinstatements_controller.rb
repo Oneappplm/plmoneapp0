@@ -1,5 +1,6 @@
 class Mhc::ProviderPersonalInformationReinstatementsController < ApplicationController
   before_action :set_provider_personal_information, only: [:create]
+  before_action :set_provider_personal_information_reinstatement, only: [:edit, :update, :destroy]
 
   def create
     provider_personal_information_reinstatement = @provider_personal_information.provider_personal_information_reinstatements.new(
@@ -10,6 +11,26 @@ class Mhc::ProviderPersonalInformationReinstatementsController < ApplicationCont
     else
       redirect_to mhc_verification_platform_path(page_tab: params[:page_tab],id:  @provider_personal_information.provider_attest_id), notice: 'Failed to create record.'
     end
+  end
+
+  def edit
+    # ye action form ke liye render karega automatically
+  end
+
+  # UPDATE
+  def update
+    if @provider_personal_information_reinstatement.update(provider_personal_information_reinstatement_params)
+      redirect_to mhc_verification_platform_path(page_tab: params[:page_tab], id: @provider_personal_information_reinstatement.provider_personal_information.provider_attest_id), notice: 'Record updated successfully.'
+    else
+      render :edit, alert: 'Failed to update record.'
+    end
+  end
+
+  # DELETE
+  def destroy
+    provider_attest_id = @provider_personal_information_reinstatement.provider_personal_information.provider_attest_id
+    @provider_personal_information_reinstatement.destroy
+    redirect_to mhc_verification_platform_path(page_tab: 'oig', id: provider_attest_id), notice: 'Record deleted successfully.'
   end
 
   private

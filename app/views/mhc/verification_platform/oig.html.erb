@@ -56,7 +56,16 @@
                         <tbody>
                             <% @provider_personal_information_reinstatements.each do |provider_personal_information_reinstatement| %>
                                 <tr>
-                                    <td><%= provider_personal_information_reinstatement.state %></td>
+                                    <td>
+                                        <%= link_to provider_personal_information_reinstatement.state, 
+                                          mhc_verification_platform_path(
+                                            @provider_personal_information.provider_attest_id,
+                                            page_tab: 'add_oig_info',
+                                            provider_personal_information_id: @provider_personal_information.id,
+                                            reinstatement_id: provider_personal_information_reinstatement.id
+                                          ),
+                                          class: "text-primary", style: "text-decoration: underline;" %>
+                                    </td>
                                     <td><%= provider_personal_information_reinstatement.general %></td>
                                     <td><%= provider_personal_information_reinstatement.exclusion_type %></td>
                                     <td><%= provider_personal_information_reinstatement.specialty %></td>
