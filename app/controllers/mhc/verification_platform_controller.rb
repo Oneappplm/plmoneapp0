@@ -321,7 +321,12 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'add_oig_info'
-      @provider_personal_information_reinstatement = ProviderPersonalInformationReinstatement.new(provider_personal_information_id:  @provider_personal_information.id)
+      @provider_personal_information = ProviderPersonalInformation.find_by(id: params[:provider_personal_information_id])
+      if params[:reinstatement_id].present?
+        @provider_personal_information_reinstatement = ProviderPersonalInformationReinstatement.find(params[:reinstatement_id])
+      else
+        @provider_personal_information_reinstatement = ProviderPersonalInformationReinstatement.new(provider_personal_information_id: @provider_personal_information.id)
+      end
     end
 
     if params[:page_tab] == 'show_sam_record'

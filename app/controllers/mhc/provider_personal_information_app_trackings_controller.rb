@@ -32,6 +32,23 @@ class Mhc::ProviderPersonalInformationAppTrackingsController < ApplicationContro
     end
   end
 
+  def destroy
+    @provider_personal_information_app_tracking = ProviderPersonalInformationAppTracking.find(params[:id])
+    provider_attest_id = @provider_personal_information_app_tracking.provider_personal_information.provider_attest_id
+  
+    if @provider_personal_information_app_tracking.destroy
+      redirect_to mhc_verification_platform_path(
+        page_tab: 'app_tracking',
+        id: provider_attest_id
+      ), notice: 'Record deleted successfully.'
+    else
+      redirect_to mhc_verification_platform_path(
+        page_tab: 'app_tracking',
+        id: provider_attest_id
+      ), alert: 'Failed to delete record.'
+    end
+  end  
+
   private
 
   def set_provider_personal_information_app_tracking

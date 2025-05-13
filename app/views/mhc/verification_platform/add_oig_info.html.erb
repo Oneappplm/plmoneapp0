@@ -9,49 +9,66 @@
                             <i class='bx bx-left-arrow-alt'></i>
                         </a>
                         <h4 class="page-heading">Add New Info</h4>
+													<% if @provider_personal_information_reinstatement.persisted? %>
+														<div class="mb-3">
+															<%= button_to 'Delete Record',
+																	mhc_provider_personal_information_reinstatement_path(@provider_personal_information_reinstatement),
+																	method: :delete,
+																	data: { confirm: 'Are you sure you want to delete this record?' },
+																	class: 'btn btn-danger' %>
+														</div>
+													<% end %>
                     </div>
                 </div>
             </div>
-            <%= form_for(@provider_personal_information_reinstatement, url: mhc_provider_personal_information_reinstatements_path(page_tab: 'oig')) do |f| %>
-                <%= f.hidden_field :provider_personal_information_id %>
-                <div class="form-row row mt-3">
-                    <div class="col-xl-6">
-                        <label for="state">State:</label>
-                        <div class="search-select form-control border border-dark" name="provider_personal_information_reinstatement[state]" id="provider_personal_information_reinstatement_state">
-                        </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <label for="general">General:</label>
-                        <%= f.text_field :general,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label for="ExclutionType">Exclution Type:</label>
-                        <%= f.text_field :exclusion_type,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+						<div class="border border-dark p-4 rounded mt-4">
+							<%= form_for @provider_personal_information_reinstatement,
+									url: @provider_personal_information_reinstatement.new_record? ?
+										mhc_provider_personal_information_reinstatements_path(page_tab: 'oig') :
+										mhc_provider_personal_information_reinstatement_path(@provider_personal_information_reinstatement, page_tab: 'oig'),
+									html: { method: @provider_personal_information_reinstatement.new_record? ? :post : :patch } do |f| %>
+									<%= f.hidden_field :provider_personal_information_id, value: @provider_personal_information.id %>
+									<div class="form-row row mt-3">
+												<label for="state">State:</label>
+												<%= f.select :state, 
+														options_for_select(us_states_list, @provider_personal_information_reinstatement.state),
+														{ include_blank: 'Select State' },
+														class: 'form-control border border-dark' %>
+									</div>
+									<div class="form-row row">
+											<div class="col-xl-6">
+													<label for="ExclutionType">Exclution Type:</label>
+													<%= f.text_field :exclusion_type,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
 
-                    </div>
-                    <div class="col-xl-6">
-                        <label for="Specialty">Specialty:</label>
-                        <%= f.text_field :specialty,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                    </div>
-                </div>
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label for="Date">Date:</label>
-                        <%= f.date_field :process_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
-                    </div>
-                    <div class="col-xl-6">
-                        <label for="Reinstatement">Reinstatement:</label>
-                        <%= f.date_field :reinstatement_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
-                    </div>
-                </div>
-                <div class="form-row mt-3 d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary">
-                        Save
-                    </button>
-                </div>
-            <% end %>
+											</div>
+											<div class="col-xl-6">
+													<label for="Specialty">Specialty:</label>
+													<%= f.text_field :specialty,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+											</div>
+									</div>
+									<div class="form-row row">
+											<div class="col-xl-6">
+													<label for="Date">Date:</label>
+													<%= f.date_field :process_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
+											</div>
+											<div class="col-xl-6">
+													<label for="Reinstatement">Reinstatement:</label>
+													<%= f.date_field :reinstatement_date, placeholder: 'Select a date...', class: 'form-control border border-dark' %>
+											</div>
+									</div>
+									<div class="form-row row">
+										<div class="col-xl-6">
+												<label for="general">General:</label>
+												<%= f.text_field :general,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+										</div>
+									</div>
+									<div class="form-row mt-3 d-flex justify-content-end">
+											<button type="submit" class="btn btn-primary">
+													Save
+											</button>
+									</div>
+							<% end %>
+            </div>
         </div>
     </div>
 

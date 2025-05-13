@@ -188,7 +188,7 @@ Rails.application.routes.draw do
         get :auto_create, path: 'auto-create'
       end
     end
-    resources :provider_personal_information_reinstatements, only: [:create], path: 'provider-personal-information-reinstatements'
+    resources :provider_personal_information_reinstatements, only: [:create, :edit, :update, :destroy], path: 'provider-personal-information-reinstatements'
     resources :provider_personal_information_sam_rva_records, only: [:create, :update], path: 'provider-personal-information-sam-rva-record' do
       member do
         get :auto_create, path: 'auto-create'
