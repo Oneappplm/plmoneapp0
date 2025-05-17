@@ -64,20 +64,32 @@
 										title="Please enter professional degrees earned in the order you like them to appear after last name">
 										<i class="bi bi-info-circle text-primary fs-5"></i>
 								</span>
-								<input type="text" name="degree_titles" placeholder="Degree Titles *" class="form-control border-dark">
+								  <input 
+										type="text" 
+										name="degree_titles" 
+										placeholder="Degree Titles *" 
+										class="form-control border-dark"
+										id="degree-input"
+										oninput="validateDegreeTitles()"
+									>
+									<small id="degree-error" class="text-danger d-none">Only letters, commas, periods, and spaces are allowed</small>
 							</div>
 							<div class="col-lg-6"></div>
 						</div>
 
 						<div class="row my-3">
 							<div class="col-lg-12">
-								<%= HtmlUtils::dropdown name: 'state_of_practice', label: 'State(s) of Practice <span class="text-danger">*</span>', multiple: true %>
+								<div class="custom-dropdown-wrapper position-relative">
+									<%= HtmlUtils::dropdown name: 'state_of_practice', label: 'State(s) of Practice <span class="text-danger">*</span>', multiple: true, class: 'custom-dropdown form-select pe-5' %>
+									<i class="fa fa-chevron-down dropdown-icon"></i>
+								</div>
 							</div>
 						</div>
 
 						<div class="row my-3">
-							<div class="col-lg-12">
-								<%= HtmlUtils::dropdown name: 'primary-practioner-type', label: 'Primary Practitioner Type <span class="text-danger">*</span>', multiple: true %>
+							<div class="custom-dropdown-wrapper position-relative">
+								<%= HtmlUtils::dropdown name: 'primary-practioner-type', label: 'Primary Practitioner Type <span class="text-danger">*</span>', multiple: true, class: 'custom-dropdown form-select pe-5' %>
+								<i class="fa fa-chevron-down dropdown-icon"></i>
 							</div>
 						</div>
 
@@ -185,34 +197,78 @@
 
 						<div class="row my-3">
 							<div class="col-lg-6">
-                <label class="text-dark-grey">City <span class="text-danger">*</span></label>
-								<input type="text" required class="form-control border-dark" name="city" placeholder="City *">
+								<label class="text-dark-grey">City <span class="text-danger">*</span></label>
+								<input 
+									type="text" 
+									class="form-control border-dark" 
+									name="city" 
+									id="city-input"
+									placeholder="City *"
+									oninput="validateCity()"
+									required
+								>
+								<small id="city-error" class="text-danger d-none">Only alphabetic characters are allowed</small>
 							</div>
 							<div class="col-lg-6">
-                <label class="text-dark-grey">Country</label>
-								<input type="text" class="form-control border-dark" name="county" placeholder="County">
+								<label class="text-dark-grey">Country</label>
+								<input 
+									type="text" 
+									class="form-control border-dark" 
+									name="county" 
+									id="county-input"
+									placeholder="County"
+									oninput="validateCounty()"
+								>
+								<small id="county-error" class="text-danger d-none">Only alphabetic characters are allowed</small>
 							</div>
 						</div>
 
 						<div class="row my-3">
 							<div class="col-lg-6">
-								<%= HtmlUtils::dropdown name: 'ps-state', label: 'State <span class="text-danger">*</span>' %>
+								<div class="custom-dropdown-wrapper position-relative">
+									<%= HtmlUtils::dropdown name: 'ps-state', label: 'State <span class="text-danger">*</span>', class: 'custom-dropdown form-select pe-5' %>
+									<i class="fa fa-chevron-down dropdown-icon"></i>
+								</div>
 							</div>
 							<div class="col-lg-6">
-							 <label class="text-dark-grey">Zip Code <span class="text-danger">*</span></label>
-								<input type="text" class="form-control border-dark" name="zipcode" placeholder="Zip Code">
+								<label class="text-dark-grey">Zip Code <span class="text-danger">*</span></label>
+								<input 
+									type="text" 
+									name="zipcode" 
+									id="zipcode-input"
+									class="form-control border-dark" 
+									placeholder="Zip Code"
+									oninput="validateZipCode()"
+								>
+								<small id="zipcode-error" class="text-danger d-none">Zip Code must contain numbers only</small>
 							</div>
 						</div>
 
 
 						<div class="row my-3">
 							<div class="col-lg-6">
-                <label class="text-dark-grey">Telephone <span class="text-danger">*</span></label>
-								<input type="text" class="form-control border-dark" name="telephone" placeholder="Telephone *">
+								<label class="text-dark-grey">Telephone <span class="text-danger">*</span></label>
+								<input 
+									type="text" 
+									name="telephone" 
+									id="telephone-input"
+									class="form-control border-dark" 
+									placeholder="Telephone *"
+									oninput="validateTelephone()"
+								>
+								<small id="telephone-error" class="text-danger d-none">Telephone must contain numbers only</small>
 							</div>
 							<div class="col-lg-6">
-                <label class="text-dark-grey">Fax Number</label>
-								<input type="text" class="form-control border-dark" name="fax_number" placeholder="Fax Number">
+								<label class="text-dark-grey">Fax Number</label>
+								<input 
+									type="text" 
+									name="fax_number" 
+									id="fax-number-input"
+									class="form-control border-dark" 
+									placeholder="Fax Number"
+									oninput="validateFaxNumber()"
+								>
+								<small id="fax-number-error" class="text-danger d-none">Fax Number must contain numbers only</small>
 							</div>
 						</div>
 
@@ -229,27 +285,66 @@
 
 						<div class="row my-3">
 							<div class="col-lg-6">
-                <label class="text-dark-grey">Mobile Number</label>
-								<input type="text" class="form-control border-dark" name="mobile_number" placeholder="Mobile Number">
+								<label class="text-dark-grey">Mobile Number</label>
+								<input 
+									type="text" 
+									name="mobile_number" 
+									id="mobile-number-input"
+									class="form-control border-dark" 
+									placeholder="Mobile Number"
+									oninput="validateMobileNumber()"
+								>
+								<small id="mobile-number-error" class="text-danger d-none">Mobile Number must contain numbers only</small>
 							</div>
 							<div class="col-lg-6">
 								<div class="row">
 									<div class="col-lg-6">
-                    <label class="text-dark-grey">Page Number</label>
-										<input type="text" name="page_number" class="form-control border-dark" placeholder="Page Number">
+										<label class="text-dark-grey">Page Number</label>
+										<input 
+											type="text" 
+											name="page_number" 
+											id="page-number-input"
+											class="form-control border-dark" 
+											placeholder="Page Number"
+											oninput="validatePageNumber()"
+										>
+										<small id="page-number-error" class="text-danger d-none">Page Number must contain numbers only</small>
 									</div>
 									<div class="col-lg-6">
-                    <label class="text-dark-grey">Ext</label>
-										<input type="text" name="ext" class="form-control border-dark" placeholder="Ext">
+										<label class="text-dark-grey">Ext</label>
+										<input 
+											type="text" 
+											name="ext" 
+											id="ext-input"
+											class="form-control border-dark" 
+											placeholder="Ext"
+											oninput="validateExt()"
+										>
+										<small id="ext-error" class="text-danger d-none">Extension must contain numbers only</small>
 									</div>
 								</div>
 							</div>
 						</div>
 
 						<div class="row my-3">
-							<div class="col-lg-12">
-                <label class="text-dark-grey">Email Address <span class="text-danger">*</span></label>
-								<input type="email" name="email_address" class="form-control border-dark" placeholder="Email Address *">
+							<div class="col-lg-12 card py-3 my-3">
+								<h4 class="fw-semibold text-secondary">Email Address</h4>
+								
+								<div class="form-group">
+									<label class="text-dark-grey">
+										Email Address <span class="text-danger">*</span>
+									</label>
+									<input 
+										type="email" 
+										name="email_address" 
+										id="email-input"
+										class="form-control border-dark" 
+										placeholder="Email Address *"
+										oninput="validateEmail()"
+										required
+									>
+									<small id="email-error" class="text-danger d-none">Please enter a valid email address (e.g. name@example.com)</small>
+								</div>
 							</div>
 						</div>
 
@@ -386,6 +481,152 @@
 	    }, 300); // Debounce delay (ms)
 	  });
 	});
+	function validateEmail() {
+    const emailInput = document.getElementById("email-input");
+    const emailError = document.getElementById("email-error");
+
+    // Simple email pattern
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (emailInput.value && !pattern.test(emailInput.value)) {
+      emailError.classList.remove("d-none");
+    } else {
+      emailError.classList.add("d-none");
+    }
+  }
+  function validateExt() {
+    const extInput = document.getElementById("ext-input");
+    const extError = document.getElementById("ext-error");
+
+    // Remove non-digit characters immediately
+    const cleaned = extInput.value.replace(/\D/g, '');
+    if (extInput.value !== cleaned) {
+      extInput.value = cleaned;
+      extError.classList.remove("d-none");
+    } else {
+      extError.classList.add("d-none");
+    }
+  }
+	function validatePageNumber() {
+    const input = document.getElementById("page-number-input");
+    const error = document.getElementById("page-number-error");
+
+    const cleaned = input.value.replace(/\D/g, '');
+    if (input.value !== cleaned) {
+      input.value = cleaned;
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+	function validateMobileNumber() {
+    const input = document.getElementById("mobile-number-input");
+    const error = document.getElementById("mobile-number-error");
+
+    const cleaned = input.value.replace(/\D/g, '');
+    if (input.value !== cleaned) {
+      input.value = cleaned;
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+	function validateFaxNumber() {
+    const input = document.getElementById("fax-number-input");
+    const error = document.getElementById("fax-number-error");
+
+    const cleaned = input.value.replace(/\D/g, '');
+    if (input.value !== cleaned) {
+      input.value = cleaned;
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+	function validateTelephone() {
+    const input = document.getElementById("telephone-input");
+    const error = document.getElementById("telephone-error");
+
+    const cleaned = input.value.replace(/\D/g, '');
+    if (input.value !== cleaned) {
+      input.value = cleaned;
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+	function validateZipCode() {
+    const input = document.getElementById("zipcode-input");
+    const error = document.getElementById("zipcode-error");
+
+    const cleaned = input.value.replace(/\D/g, '');
+    if (input.value !== cleaned) {
+      input.value = cleaned;
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+	function validateCity() {
+    const input = document.getElementById("city-input");
+    const error = document.getElementById("city-error");
+
+    // Remove all non-alphabet characters (except space)
+    const cleanedValue = input.value.replace(/[^a-zA-Z\s]/g, '');
+
+    if (input.value !== cleanedValue) {
+      input.value = cleanedValue;
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+	function validateCounty() {
+    const input = document.getElementById("county-input");
+    const error = document.getElementById("county-error");
+
+    // Remove all non-alphabet characters (except space)
+    const cleanedValue = input.value.replace(/[^a-zA-Z\s]/g, '');
+
+    if (input.value !== cleanedValue) {
+      input.value = cleanedValue;
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+	function validateDegreeTitles() {
+    const input = document.getElementById("degree-input");
+    const error = document.getElementById("degree-error");
+
+    // Allow only alphabets, spaces, commas, and dots
+    const cleaned = input.value.replace(/[^a-zA-Z.,\s]/g, '');
+
+    if (input.value !== cleaned) {
+      input.value = cleaned;
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
 </script>
+<style>
+	.custom-dropdown-wrapper {
+		position: relative;
+		width: 100%;
+	}
 
+	.custom-dropdown {
+		width: 100%;
+		padding-right: 2.5rem; /* Ensure space for icon */
+	}
 
+	.dropdown-icon {
+		position: absolute;
+		top: 50%;
+		right: 1rem;
+		transform: translateY(-50%);
+		pointer-events: none;
+		color: #888;
+	}
+</style>

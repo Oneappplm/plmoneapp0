@@ -7,7 +7,7 @@
 <div class="row mb-3">
    <div class="col-lg-12">
     <label class="text-dark-grey">License Type <span class="text-danger">*</span></label>
-    <select name="license_type" required class="form-control border-dark">
+    <select name="license_type" required class="form-select border-dark">
       <option value="" disabled selected>Select License Type</option>
       <option value="licensed_medical_esthetician">Licensed Medical Esthetician</option>
       <option value="medical_assistant">Medical Assistant</option>
@@ -17,30 +17,47 @@
   </div>
 </div>
 <div class="row mb-3">
-   <div class="col-lg-6">
+    <div class="col-lg-6">
       <label class="text-dark-grey">License Number <span class="text-danger">*</span></label>
-      <input type="text" name="license_number" required class="form-control border-dark
-         " placeholder="License Number">
-   </div>
-   <div class="col-lg-6">
+      <input 
+        type="text" 
+        name="license_number" 
+        id="license-number-input" 
+        required 
+        class="form-control border-dark" 
+        placeholder="License Number"
+        oninput="validateLicenseNumber()"
+      >
+      <small id="license-number-error" class="text-danger d-none">Only numbers are allowed.</small>
+    </div>
+    <div class="col-lg-6">
       <label class="text-dark-grey">License Status <span class="text-danger">*</span></label>
-      <input type="text" name="license_status" required class="form-control border-dark
-         ">
-   </div>
+      <input 
+        type="text" 
+        name="license_status" 
+        id="license-status-input"
+        required 
+        class="form-control border-dark"
+        oninput="validateLicenseStatus()"
+      >
+      <small id="license-status-error" class="text-danger d-none">Numbers are not allowed.</small>
+    </div>
 </div>
 <div class="row mb-3">
-   <div class="col-lg-6">
-      <label class="text-dark-grey">Issue Date <span class="text-danger">*</span></label>
-      <input type="date" name="licensure_issue_date" required class="form-control border-dark">
-   </div>
-   <div class="col-lg-6">
-      <label class="text-dark-grey">Expiration Date <span class="text-danger">*</span></label>
-      <input type="date" name="licensure_expiration_date"  required class="form-control border-dark licensure-expire">
-      <span class="d-flex gap-2">
+  <div class="col-lg-6">
+    <label class="text-dark-grey">Issue Date <span class="text-danger">*</span></label>
+    <input type="date" name="licensure_issue_date" id="issue-date" required class="form-control border-dark">
+  </div>
+
+  <div class="col-lg-6">
+    <label class="text-dark-grey">Expiration Date <span class="text-danger">*</span></label>
+    <input type="date" name="licensure_expiration_date" id="expire-date" required class="form-control border-dark licensure-expire" disabled>
+
+    <span class="d-flex gap-2 mt-1">
       <input type="checkbox" name="licensure_not_expire" id="licensure-not-expire">
       <small>Does not expire</small>
-      </span>
-   </div>
+    </span>
+  </div>
 </div>
 <div class="row mb-3">
    <div class="col-lg-12">
@@ -119,10 +136,17 @@
          <option>IV.</option>
       </select>
    </div>
-   <div class="col-lg-12 mt-3">
+    <div class="col-lg-12 mt-3">
       <label class="text-dark-grey">Degree</label>
-      <input type="text" name="licensure_sponsor_degree" class="form-control border-dark">
-   </div>
+      <input 
+        type="text" 
+        name="licensure_sponsor_degree" 
+        id="degree-input"
+        class="form-control border-dark" 
+        oninput="validateDegreeInput()"
+      >
+      <small id="degree-error" class="text-danger d-none">Numbers are not allowed.</small>
+    </div>
 </div>
 </div>
 <script>
@@ -141,4 +165,87 @@
       $('.licensure-expire').removeAttr('disabled');
 
    });
+  document.addEventListener("DOMContentLoaded", () => {
+    const issueDateInput = document.getElementById("issue-date");
+    const expireDateInput = document.getElementById("expire-date");
+    const notExpireCheckbox = document.getElementById("licensure-not-expire");
+
+    issueDateInput.addEventListener("change", () => {
+      const issueDateValue = issueDateInput.value;
+      if (issueDateValue) {
+        const issueDate = new Date(issueDateValue);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Use the later of today or issue date
+        const minExpireDate = issueDate > today ? issueDate : today;
+        const minDateStr = minExpireDate.toISOString().split('T')[0];
+
+        expireDateInput.disabled = false;
+        expireDateInput.min = minDateStr;
+
+        if (expireDateInput.value && new Date(expireDateInput.value) < minExpireDate) {
+          alert(`Expiration date must be after ${minDateStr}`);
+          expireDateInput.value = '';
+        }
+      } else {
+        expireDateInput.disabled = true;
+        expireDateInput.value = '';
+        expireDateInput.removeAttribute("min");
+      }
+    });
+
+    expireDateInput.addEventListener("focus", () => {
+      if (expireDateInput.disabled) {
+        alert("Please select Issue Date first.");
+        expireDateInput.blur();
+      }
+    });
+
+    notExpireCheckbox.addEventListener("change", () => {
+      if (notExpireCheckbox.checked) {
+        expireDateInput.disabled = true;
+        expireDateInput.required = false;
+        expireDateInput.value = '';
+      } else {
+        if (issueDateInput.value) {
+          expireDateInput.disabled = false;
+          expireDateInput.required = true;
+        }
+      }
+    });
+  });
+  function validateDegreeInput() {
+    const input = document.getElementById("degree-input");
+    const error = document.getElementById("degree-error");
+
+    if (/\d/.test(input.value)) {
+      error.classList.remove("d-none");
+      input.value = input.value.replace(/\d/g, '');
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+  function validateLicenseStatus() {
+    const input = document.getElementById("license-status-input");
+    const error = document.getElementById("license-status-error");
+
+    if (/\d/.test(input.value)) {
+      error.classList.remove("d-none");
+      input.value = input.value.replace(/\d/g, '');
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+  function validateLicenseNumber() {
+    const input = document.getElementById("license-number-input");
+    const error = document.getElementById("license-number-error");
+
+    if (/[^0-9]/.test(input.value)) {
+      error.classList.remove("d-none");
+      input.value = input.value.replace(/[^0-9]/g, '');
+    } else {
+      error.classList.add("d-none");
+    }
+  }
 </script>
