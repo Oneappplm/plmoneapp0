@@ -256,12 +256,14 @@
 
 										<div class="col-lg-6 mb-3">
 											<label class="text-dark-grey">Issue Date <span class="text-danger">*</span></label>
-											<input type="text" name="other_certification_issue_date" required class="form-control border-dark" placeholder="MM/DD/YYYY" onfocus="(this.type = 'date')">
+											<input type="text" name="other_certification_issue_date" id="other-certification-issue-date" required class="form-control border-dark" placeholder="MM/DD/YYYY" onfocus="(this.type = 'date')">
 										</div>
+
 										<div class="col-lg-6 mb-3">
 											<label class="text-dark-grey">Expiration Date <span class="text-danger">*</span></label>
-											<input type="text" name="other_certification_expiration_date" required class="form-control border-dark other-cert-expire" placeholder="MM/DD/YYYY" onfocus="(this.type = 'date')">
-											<label class="text-dark-grey">
+											<input type="text" name="other_certification_expiration_date" id="other-certification-expire-date" required class="form-control border-dark other-cert-expire" placeholder="MM/DD/YYYY" onfocus="(this.type = 'date')" disabled>
+
+											<label class="text-dark-grey mt-1 d-block">
 												<input type="checkbox" name="other_certification_not_expire" id="other-certification-not-expire">
 												<strong>Does not expire</strong>
 											</label>
@@ -353,6 +355,63 @@ $('.other-cert-radio').on('change',function(){
 		// console.log($(this).val());
 		($(this).val() == 'yes') ?	$('#other_cert_fields').removeClass('d-none') : $('#other_cert_fields').addClass('d-none');
 })
+	document.addEventListener("DOMContentLoaded", () => {
+		function setupDateFields(issueId, expireId, checkboxId) {
+			const issueDateInput = document.getElementById(issueId);
+			const expireDateInput = document.getElementById(expireId);
+			const notExpireCheckbox = document.getElementById(checkboxId);
+
+			if (!issueDateInput || !expireDateInput || !notExpireCheckbox) return;
+
+			issueDateInput.addEventListener("change", () => {
+				const issueDateValue = issueDateInput.value;
+				if (issueDateValue) {
+					const issueDate = new Date(issueDateValue);
+					const today = new Date();
+					today.setHours(0, 0, 0, 0);
+
+					const minExpireDate = issueDate > today ? issueDate : today;
+					const minDateStr = minExpireDate.toISOString().split('T')[0];
+
+					expireDateInput.disabled = false;
+					expireDateInput.min = minDateStr;
+
+					if (expireDateInput.value && new Date(expireDateInput.value) < minExpireDate) {
+						alert(`Expiration date must be after ${minDateStr}`);
+						expireDateInput.value = '';
+					}
+				} else {
+					expireDateInput.disabled = true;
+					expireDateInput.value = '';
+					expireDateInput.removeAttribute("min");
+				}
+			});
+
+			expireDateInput.addEventListener("focus", () => {
+				if (expireDateInput.disabled) {
+					alert("Please select Issue Date first.");
+					expireDateInput.blur();
+				}
+			});
+
+			notExpireCheckbox.addEventListener("change", () => {
+				if (notExpireCheckbox.checked) {
+					expireDateInput.disabled = true;
+					expireDateInput.required = false;
+					expireDateInput.value = '';
+				} else {
+					if (issueDateInput.value) {
+						expireDateInput.disabled = false;
+						expireDateInput.required = true;
+					}
+				}
+			});
+		}
+
+		// Apply to both sets
+		setupDateFields("issue-date", "expire-date", "licensure-not-expire");
+		setupDateFields("other-certification-issue-date", "other-certification-expire-date", "other-certification-not-expire");
+	});
 </script>
 
 

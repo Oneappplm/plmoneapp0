@@ -8,7 +8,19 @@
   <div class="col-lg-12">
     <div class="form-group">
       <label class="text-dark-grey">Registration Number <span class="text-danger">*</span></label>
-      <input type="text" name="registration_number" required class="form-control border-dark multi-field" placeholder="Registration Number" data-model="registration" data-id="<%= registration.id %>"  value="<%= registration.registration_number%>">
+      <input 
+        type="text" 
+        name="registration_number" 
+        required 
+        class="form-control border-dark multi-field" 
+        placeholder="Registration Number" 
+        data-model="registration" 
+        data-id="<%= registration.id %>"  
+        value="<%= registration.registration_number %>"
+        id="registration-number-input"
+        oninput="validateRegistrationNumber()"
+      >
+      <small id="registration-number-error" class="text-danger d-none">Only numbers are allowed</small>
     </div>
   </div>
 </div>
@@ -18,13 +30,17 @@
     <input type="text" name="specialty" required class="form-control border-dark multi-field" placeholder="Specialty"  value="<%= registration.specialty %>" data-model="registration" data-id="<%= registration.id %>"> 
   </div>
   <div class="col-lg-6">
-    <%= HtmlUtils::dropdown name: 'issue_state', label: 'State <span class="text-danger">*</span>', model: 'registration', modelId: registration.id %>
+    <%= HtmlUtils::dropdown_with_model name: 'issue_state', label: 'State', model: 'registration', modelId: registration.id %>
   </div>
 </div>
 <div class="row mb-3">
   <div class="col-lg-12">
     <label class="text-dark-grey">Issuing Board <span class="text-danger">*</span></label>
-    <input type="text" name="issuing_board" class="form-control border-dark multi-field" placeholder="Issuing Board" required  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.issuing_board%>">
+    <input type="text" name="issuing_board" id="issuing-board-input"
+      class="form-control border-dark multi-field" placeholder="Issuing Board" required
+      data-model="registration" data-id="<%= registration.id %>" value="<%= registration.issuing_board %>"
+      oninput="validateIssuingBoardInput()">
+    <small id="issuing-board-error" class="text-danger d-none">Only letters and spaces are allowed.</small>
   </div>
 </div>
 <div class="row mb-3">
@@ -40,7 +56,10 @@
 <div class="row mb-3">
   <div class="col-lg-6">
     <label class="text-dark-grey">City <span class="text-danger">*</span></label>
-    <input type="text" name="city" class="form-control border-dark multi-field" placeholder="City" required  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.city%>">
+    <input type="text" name="city" class="form-control border-dark multi-field"
+      placeholder="City" required data-model="registration" data-id="<%= registration.id %>"
+      value="<%= registration.city %>" id="city-input" oninput="validateCityInput()">
+    <small id="city-error" class="text-danger d-none">Only letters and spaces are allowed.</small>
   </div>
   <div class="col-lg-6">
     <%= HtmlUtils::dropdown_with_model name: 'registration_state', label: 'State', model: 'registration', modelId: registration.id %>
@@ -56,38 +75,43 @@
   <div class="col-lg-6">
     <div class="row">
       <div class="col-lg-8">
-        <label class="text-dark-grey">Telephone Number </label>
-        <input type="" class="form-control border-dark multi-field" name="telephone_number" placeholder="Telephone Number"  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.telephone_number%>">
+        <label class="text-dark-grey">Telephone Number</label>
+        <input type="text" class="form-control border-dark multi-field"
+          name="telephone_number" placeholder="Telephone Number"
+          data-model="registration" data-id="<%= registration.id %>"
+          value="<%= registration.telephone_number %>" id="telephone-input" oninput="validateTelephoneInput()">
+        <small id="telephone-error" class="text-danger d-none">Only numbers are allowed.</small>
       </div>
       <div class="col-lg-4">
-        <label class="text-dark-grey">Ext </label>
-        <input type="" class="form-control border-dark multi-field" name="ext" placeholder="Ext"  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.ext%>">
+        <label class="text-dark-grey">Ext</label>
+        <input type="text" class="form-control border-dark multi-field"
+          name="ext" placeholder="Ext"
+          data-model="registration" data-id="<%= registration.id %>"
+          value="<%= registration.ext %>" id="ext-input" oninput="validateExtInput()">
+        <small id="ext-error" class="text-danger d-none">Only numbers are allowed.</small>
       </div>
     </div>
   </div>
   <div class="col-lg-6">
-    <label class="text-dark-grey">Fax Number </label>
-    <input type="" class="form-control border-dark multi-field" name="fax_number" placeholder="Fax Number"  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.fax_number%>">
+    <label class="text-dark-grey">Fax Number</label>
+    <input type="text" class="form-control border-dark multi-field" name="fax_number"
+      placeholder="Fax Number" data-model="registration" data-id="<%= registration.id %>"
+      value="<%= registration.fax_number %>" id="fax-number" oninput="validateFaxInput()">
+    <small id="fax-error" class="text-danger d-none">Only numbers are allowed.</small>
   </div>
 </div>
 <div class="row mb-3">
   <div class="col-lg-6">
     <label class="text-dark-grey">Issue Date <span class="text-danger">*</span></label>
-      <span class="ms-2" data-bs-toggle="tooltip" data-bs-placement="right" 
-        title="Type the date as mm/dd/yyyy or select from the calendar.">
-        <i class="bi bi-info-circle text-primary fs-5"></i>
-      </span>
-    <input type="date" name="issue_date" class="form-control border-dark multi-field" placeholder="Issue Date"  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.issue_date%>">
+    <input type="date" name="issue_date" id="issue-date" required class="form-control border-dark">
   </div>
+
   <div class="col-lg-6">
     <label class="text-dark-grey">Expiration Date <span class="text-danger">*</span></label>
-      <span class="ms-2" data-bs-toggle="tooltip" data-bs-placement="right" 
-        title="Type the date as mm/dd/yyyy or select from the calendar.">
-        <i class="bi bi-info-circle text-primary fs-5"></i>
-      </span>
-    <input type="date" name="expiration_date" class="form-control border-dark multi-field ps-registration-expire" placeholder="Expiration Date"  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.expiration_date%>"> 
-    <span class="d-flex gap-2">
-      <input type="checkbox" class="multi-field" name="ps_registration_not_expire" id="ps-registration-not-expire"  data-model="registration" data-id="<%= registration.id %>" >
+    <input type="date" name="expiration_date" id="expire-date" required class="form-control border-dark licensure-expire" disabled>
+
+    <span class="d-flex gap-2 mt-1">
+      <input type="checkbox" name="ps_registration_not_expire" id="ps-registration-not-expire">
       <small>Does not expire</small>
     </span>
   </div>
@@ -122,4 +146,119 @@ $('#ps-registration-not-expire').on('change',function(){
       $('.ps-registration-expire').removeAttr('disabled');
 
    });
+  document.addEventListener("DOMContentLoaded", () => {
+    const issueDateInput = document.getElementById("issue-date");
+    const expireDateInput = document.getElementById("expire-date");
+    const notExpireCheckbox = document.getElementById("ps-registration-not-expire");
+
+    issueDateInput.addEventListener("change", () => {
+      const issueDateValue = issueDateInput.value;
+      if (issueDateValue) {
+        const issueDate = new Date(issueDateValue);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const minExpireDate = issueDate > today ? issueDate : today;
+        const minDateStr = minExpireDate.toISOString().split('T')[0];
+
+        expireDateInput.disabled = false;
+        expireDateInput.min = minDateStr;
+
+        if (expireDateInput.value && new Date(expireDateInput.value) < minExpireDate) {
+          alert(`Expiration date must be after ${minDateStr}`);
+          expireDateInput.value = '';
+        }
+      } else {
+        expireDateInput.disabled = true;
+        expireDateInput.value = '';
+        expireDateInput.removeAttribute("min");
+      }
+    });
+
+    expireDateInput.addEventListener("focus", () => {
+      if (expireDateInput.disabled) {
+        alert("Please select Issue Date first.");
+        expireDateInput.blur();
+      }
+    });
+
+    notExpireCheckbox.addEventListener("change", () => {
+      if (notExpireCheckbox.checked) {
+        expireDateInput.disabled = true;
+        expireDateInput.required = false;
+        expireDateInput.value = '';
+      } else {
+        if (issueDateInput.value) {
+          expireDateInput.disabled = false;
+          expireDateInput.required = true;
+        }
+      }
+    });
+  });
+  function validateFaxInput() {
+    const input = document.getElementById("fax-number");
+    const error = document.getElementById("fax-error");
+
+    if (/[^0-9]/.test(input.value)) {
+      error.classList.remove("d-none");
+      input.value = input.value.replace(/[^0-9]/g, '');
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+  function validateExtInput() {
+    const input = document.getElementById("ext-input");
+    const error = document.getElementById("ext-error");
+
+    if (/[^0-9]/.test(input.value)) {
+      error.classList.remove("d-none");
+      input.value = input.value.replace(/[^0-9]/g, '');
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+  function validateTelephoneInput() {
+    const input = document.getElementById("telephone-input");
+    const error = document.getElementById("telephone-error");
+
+    if (/[^0-9]/.test(input.value)) {
+      error.classList.remove("d-none");
+      input.value = input.value.replace(/[^0-9]/g, '');
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+  function validateCityInput() {
+    const input = document.getElementById("city-input");
+    const error = document.getElementById("city-error");
+
+    if (/[^a-zA-Z\s]/.test(input.value)) {
+      error.classList.remove("d-none");
+      input.value = input.value.replace(/[^a-zA-Z\s]/g, '');
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+  function validateIssuingBoardInput() {
+    const input = document.getElementById("issuing-board-input");
+    const error = document.getElementById("issuing-board-error");
+
+    if (/[^a-zA-Z\s]/.test(input.value)) {
+      error.classList.remove("d-none");
+      input.value = input.value.replace(/[^a-zA-Z\s]/g, '');
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+  function validateRegistrationNumber() {
+    const input = document.getElementById("registration-number-input");
+    const error = document.getElementById("registration-number-error");
+
+    if (/[^0-9]/.test(input.value)) {
+      error.classList.remove("d-none");
+      input.value = input.value.replace(/[^0-9]/g, '');
+    } else {
+      error.classList.add("d-none");
+    }
+  }
 </script>

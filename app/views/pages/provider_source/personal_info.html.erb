@@ -150,14 +150,26 @@
                         </select>
                      </div>
                   </div>
-                   <div class="row mb-3">
-                     <div class="col-lg-6">
-                        <label class="text-dark-grey">Visa Issue Date </label>
-                        <input name="ps-vid" type="date" class="form-control border-dark" name="">
-                     </div>
+                  <div class="row mb-3">
                     <div class="col-lg-6">
-                        <label class="text-dark-grey">Visa Expiration Date </label>
-                        <input name="ps-ved" type="date" class="form-control border-dark" name="">
+                      <label class="text-dark-grey">Visa Issue Date</label>
+                      <input id="visa-issue-date" name="ps-vid" type="date" class="form-control border-dark">
+                    </div>
+                    <div class="col-lg-6">
+                      <label class="text-dark-grey">Visa Expiration Date</label>
+                      <input id="visa-expire-date" name="ps-ved" type="date" class="form-control border-dark" disabled>
+                    </div>
+                  </div>
+                  <div class="row my-3">
+                      <div class="col-lg-12">
+                        <span class="ms-2" data-bs-toggle="tooltip" data-bs-placement="right" 
+                           title="Type the first few letters of the language. Click on the correct language, then click the Add to List button. Repeat to add more languages.">
+                           <i class="bi bi-info-circle text-primary fs-5"></i>
+                        </span>
+                        <div class="custom-dropdown-wrapper position-relative">
+                          <%= HtmlUtils::dropdown name: 'languages-you-speak', label: 'Please select all the languages you speak <span class="text-danger">*</span>', multiple: true, class: 'custom-dropdown form-select pe-5' %>
+                          <i class="fa fa-chevron-down dropdown-icon"></i>
+                        </div>
                      </div>
                   </div>
                   <div class="row my-3">
@@ -166,16 +178,10 @@
                            title="Type the first few letters of the language. Click on the correct language, then click the Add to List button. Repeat to add more languages.">
                            <i class="bi bi-info-circle text-primary fs-5"></i>
                         </span>
-                        <%= HtmlUtils::dropdown name: 'languages-you-speak', label: 'Please select all the languages you speak <span class="text-danger">*</span>', multiple: true %>
-                     </div>
-                  </div>
-                  <div class="row my-3">
-                     <div class="col-lg-12">
-                        <span class="ms-2" data-bs-toggle="tooltip" data-bs-placement="right" 
-                           title="Type the first few letters of the language. Click on the correct language, then click the Add to List button. Repeat to add more languages.">
-                           <i class="bi bi-info-circle text-primary fs-5"></i>
-                        </span>
-                        <%= HtmlUtils::dropdown name: 'languages-you-write', label: 'Please select all the languages you write <span class="text-danger">*</span>', multiple: true %>
+                        <div class="custom-dropdown-wrapper position-relative">
+                          <%= HtmlUtils::dropdown name: 'languages-you-write', label: 'Please select all the languages you write <span class="text-danger">*</span>', multiple: true, class: 'custom-dropdown form-select pe-5' %>
+                          <i class="fa fa-chevron-down dropdown-icon"></i>
+                        </div>
                      </div>
                   </div>
                   <div class="row mb-3">
@@ -221,10 +227,19 @@
                            </div>
                         </div>
                         <div class="row">
-                           <div class="col-lg-12">
-                              <label class="text-dark-grey">Emergency Contact Phone Number</label>
-                              <input type="text" name="emergency-contact-phone-number" class="form-control border-dark" placeholder="Emergency Contact Phone Number">
-                           </div>
+                              <div class="form-group">
+                                <label class="text-dark-grey">Emergency Contact Phone Number</label>
+                                <input 
+                                  type="text" 
+                                  name="emergency-contact-phone-number" 
+                                  class="form-control border-dark"
+                                  id="emergency-contact-phone"
+                                  maxlength="10"
+                                  oninput="validateEmergencyPhone()"
+                                  placeholder="Enter 10-digit Phone Number"
+                                >
+                                <small id="phone-error" class="text-danger d-none">Phone number must be exactly 10 digits. Alphabets are not allowed.</small>
+                              </div>
                         </div>
                      </div>
                   </div>
@@ -240,6 +255,83 @@
    $('input[name="ps-ssn"]').on('change',function(){
        $(this).val() == 'yes' ? $('#ps-ssn-holder').removeClass('d-none') : $('#ps-ssn-holder').addClass('d-none');
    });
+  document.addEventListener("DOMContentLoaded", () => {
+    function setupDateFields(issueId, expireId) {
+      const issueDateInput = document.getElementById(issueId);
+      const expireDateInput = document.getElementById(expireId);
+
+      if (!issueDateInput || !expireDateInput) return;
+
+      // When issue date changes
+      issueDateInput.addEventListener("change", () => {
+        const issueDateValue = issueDateInput.value;
+        if (issueDateValue) {
+          const issueDate = new Date(issueDateValue);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          const minExpireDate = issueDate > today ? issueDate : today;
+          const minDateStr = minExpireDate.toISOString().split('T')[0];
+
+          expireDateInput.disabled = false;
+          expireDateInput.min = minDateStr;
+
+          if (expireDateInput.value && new Date(expireDateInput.value) < minExpireDate) {
+            alert(`Expiration date must be after ${minDateStr}`);
+            expireDateInput.value = '';
+          }
+        } else {
+          expireDateInput.disabled = true;
+          expireDateInput.value = '';
+          expireDateInput.removeAttribute("min");
+        }
+      });
+
+      // Prevent focusing Expire Date before Issue Date
+      expireDateInput.addEventListener("focus", () => {
+        if (expireDateInput.disabled) {
+          alert("Please select Issue Date first.");
+          expireDateInput.blur();
+        }
+      });
+    }
+
+    // ✅ Apply only to Visa
+    setupDateFields("visa-issue-date", "visa-expire-date");
+  });
+  function validateEmergencyPhone() {
+    const input = document.getElementById("emergency-contact-phone");
+    const error = document.getElementById("phone-error");
+
+    // Remove non-digit characters
+    input.value = input.value.replace(/\D/g, '');
+
+    // Show error if not 10 digits and field is not empty
+    if (input.value.length > 0 && input.value.length !== 10) {
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
 </script>
 <% end %>
+<style>
+  .custom-dropdown-wrapper {
+    position: relative;
+    width: 100%;
+  }
 
+  .custom-dropdown {
+    width: 100%;
+    padding-right: 2.5rem; /* Space for icon */
+  }
+
+  .dropdown-icon {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #888;
+  }
+</style>
