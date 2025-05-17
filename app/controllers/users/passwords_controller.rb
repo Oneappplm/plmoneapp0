@@ -1,4 +1,6 @@
 class Users::PasswordsController < Devise::PasswordsController
+  skip_before_action :authenticate_user!, only: [:new, :create, :edit, :update]
+  skip_before_action :authenticate_account!, only: [:new, :create, :edit, :update]
   def new
     redirect_to root_path if current_setting.qualifacts?
 
