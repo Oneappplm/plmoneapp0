@@ -82,7 +82,7 @@ gem "devise", "~> 4.8" # https://github.com/heartcombo/devise
 gem "roo", "~> 2.9.0" # https://github.com/roo-rb/roo
 gem 'carrierwave', '>= 3.0.0.beta', '< 4.0' # https://github.com/carrierwaveuploader/carrierwave
 gem "fog-aws" # https://github.com/fog/fog-aws
-gem 'rack-cors'
+gem 'rack-cors', '>= 3.0.0'
 gem 'nokogiri'
 gem 'mechanize', '~> 2.7', '>= 2.7.6'
 gem 'active_model_serializers'
