@@ -1,5 +1,15 @@
 class Users::SessionsController < Devise::SessionsController
+  before_action :set_captcha, only: [:new, :create]
+
   def create
+    sign_out(resource_name) if user_signed_in?
+  
+    if params[:captcha_answer].to_i != (session[:captcha_num1] + session[:captcha_num2])
+      set_captcha
+      flash[:alert] = "Captcha answer is incorrect"
+      redirect_to new_user_session_path and return
+    end  
+
     if current_user.present?
       if Rails.env.production? && current_setting.enable_otp?
         current_user.generate_otp_code_and_expiration
@@ -30,5 +40,10 @@ class Users::SessionsController < Devise::SessionsController
       user_id: user.id,
       audited_changes: { 'Login' => "User #{user.full_name} logged in at #{Time.current}" }
     )
+  end
+
+  def set_captcha
+    session[:captcha_num1] ||= rand(1..10)
+    session[:captcha_num2] ||= rand(1..10)
   end
 end
