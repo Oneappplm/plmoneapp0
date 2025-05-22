@@ -49,10 +49,15 @@
 							</label>
 						</div>
 						<div class="form-check">
-							<input class="form-check-input" type="checkbox" name="type_keyboard" value="" id="flexCheckDefault">
-							<label class="form-check-label" for="flexCheckDefault">
+							<input class="form-check-input" type="checkbox" id="typeNameCheckbox">
+							<label class="form-check-label" for="typeNameCheckbox">
 								Type name using keyboard
 							</label>
+						</div>
+
+						<div id="typedSignatureInput" class="mt-2" style="display: none;">
+							<label for="typedSignatureField">Enter your name as signature:</label>
+							<input type="text" id="typedSignatureField" class="form-control border-dark" style="width: 250px;">
 						</div>
 					</div>
 				</div>
@@ -75,14 +80,26 @@
 		</div>
 	</div>
 </div>
-
-
-
 <script>
 	jQuery(document).ready(function($){
 		var canvas = document.getElementById("signature");
 		var signaturePad = new SignaturePad(canvas);
 		var signatureInput = $('#provider_source_signature');
+
+		// Function to resize canvas according to devicePixelRatio
+		function resizeCanvas() {
+			var ratio = Math.max(window.devicePixelRatio || 1, 1);
+			canvas.width = canvas.offsetWidth * ratio;
+			canvas.height = canvas.offsetHeight * ratio;
+			canvas.getContext("2d").scale(ratio, ratio);
+			signaturePad.clear(); // clear previous content
+		}
+
+		// Call it once on load
+		resizeCanvas();
+
+		// Optional: resize again on window resize
+		window.addEventListener("resize", resizeCanvas);
 
     // Function to save signature data
 		function saveSignature() {
@@ -118,5 +135,67 @@
 			signaturePad.clear();
 		});
 	});
+	
+  document.addEventListener("DOMContentLoaded", function () {
+    const canvas = document.getElementById("signature");
+    const ctx = canvas.getContext("2d");
+    const checkbox = document.getElementById("typeNameCheckbox");
+    const inputField = document.getElementById("typedSignatureField");
+    const inputDiv = document.getElementById("typedSignatureInput");
 
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Show input field if checkbox checked
+    checkbox.addEventListener("change", function () {
+      if (checkbox.checked) {
+        inputDiv.style.display = "block";
+        clearCanvas(); // Clear canvas when checkbox is selected
+        inputField.focus();
+      } else {
+        inputDiv.style.display = "none";
+        clearCanvas(); // Clear canvas if typing is turned off
+      }
+    });
+
+    // Draw typed text to canvas
+		inputField.addEventListener("input", function () {
+			if (checkbox.checked) {
+				clearCanvas();
+				ctx.font = "24px cursive";
+				ctx.fillStyle = "black";
+				ctx.fillText(inputField.value, 10, 80); // position on canvas
+
+				// Convert typed signature canvas to dataURL and save to hidden input
+				const typedSignatureData = canvas.toDataURL();
+				$('#provider_source_signature').val(typedSignatureData);
+
+				// Send AJAX request to autosave
+				$.ajax({
+					url: '/provider_sources/autosave',
+					method: 'POST',
+					dataType: 'json',
+					data: {
+						authenticity_token: csrfToken,
+						field_name: 'signature',
+						value: typedSignatureData
+					},
+					success: function(response) {
+						console.log('Typed signature autosaved:', response);
+					},
+					error: function(xhr, status, error) {
+						console.error('Error autosaving typed signature:', error);
+					}
+				});
+			}
+		});
+
+    // Optional: Clear button support
+    document.getElementById("clear-signature").addEventListener("click", function (e) {
+      e.preventDefault();
+      clearCanvas();
+      inputField.value = "";
+    });
+  });
 </script>

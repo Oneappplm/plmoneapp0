@@ -101,7 +101,9 @@
 
                 <div class="dropdown-divider"></div>
                 <%= link_to 'Profile & Account', edit_user_path(current_user), class: 'dropdown-item' %>
-                <a class="dropdown-item" href="/settings">Settings</a>
+                <% if current_user.super_administrator? %>
+                  <a class="dropdown-item" href="/settings">Settings</a>
+                <% end %>
                 <div class="dropdown-divider"></div>
                 <%= button_to(
                   "Log Out",
