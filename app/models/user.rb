@@ -29,6 +29,7 @@ class User < ApplicationRecord
 
   validates :first_name, presence: true,  on: :create
   validates :last_name, presence: true, on: :create
+  validates :password, confirmation: true, if: -> { from_source_enrollment? && password.present? }, on: :create
   # temporarily commented to cater only using temporary password
   # validate :password_match
 
@@ -36,7 +37,7 @@ class User < ApplicationRecord
     # user.validates_presence_of :status
     user.validates_presence_of :password_confirmation
     user.validates_length_of :password, within: 6..40
-    # user.validates_confirmation_of :password
+    user.validates_confirmation_of :password
   end
 
   before_validation :set_temporary_password_as_password

@@ -30,7 +30,7 @@
                           <% end %>
                           <% select_tag('location_filter_select', options_for_select(PracticeLocation.all.map{|m| [m.location, m.id]}.prepend("All Location"), params[:practice_location_id]), class: 'form-control',  id: 'filter-select', onchange: 'this.form.submit();')%>
                           <!--  data-bs-toggle="modal" data-bs-target="#removeLocationModal" -->
-                          <% if params[:practice_location_id].present? && current_user.can_access?('Remove Location') %>
+                          <% if params[:practice_location_id].present? && PracticeLocation.exists?(params[:practice_location_id]) && current_user.can_access?('Remove Location') %>
                               <button class="btn btn-danger btn-xs" id="remove-location">
                                   <i class="bx bx-trash"></i>
                                   Remove Location
@@ -248,7 +248,7 @@
                                   </div>
                                   <div class="col-xl-4">
                                       <label for="">Email <span class="text-red">*</span></label>
-                                      <input type="text" class="form-control form-field" placeholder="" name="email">
+                                      <input type="email" class="form-control form-field" placeholder="" name="email">
                                   </div>
                               </div>
 
@@ -423,6 +423,12 @@
         if (first_name === '' || last_name === '' || date_of_birth === '' || email === '' || ssn === '') {
           alert('Firstname, lastname, birthday, ssn and email are required.')
           return;
+        }
+           // Email format validation using regex
+        var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            alert('Please enter a valid email address (e.g., abc@example.com).');
+            return;
         }
 
           // post ajax

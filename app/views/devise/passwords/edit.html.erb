@@ -11,17 +11,25 @@
                 <%= render "devise/shared/error_messages", resource: resource %>
                 <%= f.hidden_field :reset_password_token %>
 
-                <div class="form-group my-2">
+                <div class="form-group my-2 position-relative">
                   <%= f.label :password, "New password" %><br />
-                  <%= f.password_field :password, autofocus: true, autocomplete: "new-password", class: 'form-control' %>
+                  <%= f.password_field :password, autofocus: true, autocomplete: "new-password", class: 'form-control', id: 'password' %>
+                    <span class="toggle-password" toggle="#password">
+                      <i class="bx bx-show eye-icon"></i>
+                    </span>
+                     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
                   <% if @minimum_password_length %>
-                  <em>(<%= @minimum_password_length %> characters minimum)</em><br />
-                <% end %>
+                    <em>(<%= @minimum_password_length %> characters minimum)</em><br />
+                  <% end %>
                 </div>
 
-                <div class="form-group my-2">
+                <div class="form-group my-2 position-relative">
                   <%= f.label :password_confirmation, "Confirm new password" %><br />
-                  <%= f.password_field :password_confirmation, autocomplete: "new-password", class: 'form-control' %>
+                  <%= f.password_field :password_confirmation, autocomplete: "new-password", class: 'form-control', id: 'password_confirmation' %>
+                  <span class="toggle-password" toggle="#password_confirmation">
+                    <i class="bx bx-show eye-icon"></i>
+                  </span>
+                   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
                 </div>
 
                 <div class="actions d-flex flex-column gap-3 justify-content-center align-items-center my-3 mb-4">
@@ -34,3 +42,36 @@
      </div>
   </div>
 </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".toggle-password").forEach(function (toggle) {
+      toggle.addEventListener("click", function () {
+        const input = document.querySelector(this.getAttribute("toggle"));
+        const icon = this.querySelector("i");
+
+        if (input.type === "password") {
+          input.type = "text";
+          icon.classList.remove("bx-show");
+          icon.classList.add("bx-hide");
+        } else {
+          input.type = "password";
+          icon.classList.remove("bx-hide");
+          icon.classList.add("bx-show");
+        }
+      });
+    });
+  });
+</script>
+<style>
+  .toggle-password {
+    position: absolute;
+    top: 38px;
+    right: 10px;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .eye-icon {
+    font-size: 20px;
+    color: #666;
+  }
+</style>
