@@ -2,7 +2,7 @@
 
 class Webscraper::ReportGenerationService < WebscraperService
 	attr_reader :encompass_id, :username, :password
-	def initialize(encompass_id, username: "devs", password: "Test123!")
+	def initialize(encompass_id, username: "devs", password: "Test1234!")
 		@encompass_id = encompass_id
 		@username = username
 		@password = password
@@ -33,6 +33,12 @@ class Webscraper::ReportGenerationService < WebscraperService
 		crawler.find_element(:name, 'txtUserName').send_keys(username)
 		crawler.find_element(:id, "txtPassword").send_keys(password)
 		crawler.find_element(:xpath, "//a[@href='javascript:submitbutton()']").click
+
+		sleep(3) # small delay for page load
+
+		if crawler.page_source.include?("reset password") || crawler.current_url.include?("ResetPassword")
+		  raise "Login failed — redirected to reset password page"
+		end
 
 		# capture_full_page_screenshot_old(crawler, "screenshot.png")
 		# save_screenshot
@@ -85,15 +91,20 @@ class Webscraper::ReportGenerationService < WebscraperService
 	private
 
 	def folder_path
-	  path = Rails.root.join('public', 'webscrape', 'report_generation')
+	  @folder_path ||= begin
+	    base_path = Rails.root.join('public', 'webscrape', 'report_generation')
+	    FileUtils.rm_rf(base_path) if File.exist?(base_path) # Remove old folder
+	    FileUtils.mkdir_p(base_path)                          # Create fresh folder
+	    base_path
+	  end
 	end
 
   def save_path
-    folder_path.join('screenshot.png')
+    folder_path.join('report_generation_screenshot.png')
   end
 
   def save_path_pdf
-    folder_path.join('screenshot.pdf')
+    folder_path.join('report_generation_screenshot.pdf')
   end
   
 	def capture_bottom_page_screenshot(driver, file_path)
