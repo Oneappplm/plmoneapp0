@@ -54,26 +54,33 @@ class WebscraperService < ApplicationService
 	end
 
 	def save_screenshot
-	  crawler.execute_script('window.scrollTo(0,0);')
-	  crawler.manage.window.resize_to(1024, 1024)
+	  if crawler_folder_name == 'pals'
+	    # Scroll to bottom and resize to full height for PALS
+	    crawler.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+	    sleep 2
+	    height = crawler.execute_script("return document.body.scrollHeight")
+	    crawler.manage.window.resize_to(1024, height)
+	  else
+	    # Default behavior for all other scrapers
+	    crawler.execute_script('window.scrollTo(0, 0);')
+	    crawler.manage.window.resize_to(1024, 1024)
+	  end
 
-	  # Save screenshot as PNG
+	  # Save screenshot
 	  save_path = PUBLIC_PATH.join(crawler_folder_name, SCREENSHOT_FILENAME)
 	  crawler.save_screenshot(save_path)
 
-	  # Generate a new PDF document
+	  # Generate PDF from screenshot
 	  pdf = Prawn::Document.new
-
-	  # Add the PNG image to the PDF
 	  png_path = Rails.root.join('public', 'webscrape', crawler_folder_name, 'screenshot.png')
 	  pdf.image png_path, fit: [500, 500], position: :center
 
-	  # Save the PDF to a file
+	  # Save PDF
 	  pdf_filename = 'screenshot.pdf'
 	  pdf_path = Rails.root.join('public', 'webscrape', crawler_folder_name, pdf_filename)
 	  pdf.render_file pdf_path
 
-	  # Create a new WebcrawlerLog record with the generated PDF path
+	  # Create WebcrawlerLog or log output (if needed)
 	  filepath = ['public', 'webscrape', crawler_folder_name, pdf_filename].join('/')
 	  extension = File.extname(pdf_path)
 	  crawl_type = crawler_folder_name.upcase
