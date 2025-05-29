@@ -33,7 +33,7 @@ class WebscraperService < ApplicationService
 				# )
 
 				# for vps server
-				Webdrivers::Chromedriver.required_version = 'latest'
+				# Webdrivers::Chromedriver.required_version = 'latest'
 				options = Selenium::WebDriver::Chrome::Options.new(
 						prefs: { 'profile.default_content_setting_values.notifications': 2 },
 						binary: '/usr/bin/google-chrome'  # Use the correct path to Chrome
