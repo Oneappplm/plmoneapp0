@@ -115,4 +115,4 @@ gem 'mail_form'
 gem 'sidekiq'
 
 gem 'stripe'
-
+gem 'prawn-table', '~> 0.2.2'

@@ -77,18 +77,7 @@
 			      <%= form.date_field :file_due_date, class: "form-control auto-submit border-dark" %>
 			    </div>
 			  </div>
-
-			  <div class="row mt-3">
-			    <div class="col-lg-12">
-			      <% if flash[:alert] %>
-			        <div class="alert alert-warning">
-			          <%= flash[:alert] %>
-			        </div>
-			      <% end %>
-			    </div>
-			  </div>
 			<% end %>
-
 		</div>
 	</div>
 	<div class="row">
@@ -150,13 +139,13 @@
 
 										 <div class="form-group">
 											<%= form.label :address %>
-											<%= form.text_field :address, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.address %>
-											<%= form.text_field :address2, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.address2 %>
-											<%= form.text_field :city, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.city %>
+											<%= form.text_field :address, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.address %>
+											<%= form.text_field :address2, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.address2 %>
+											<%= form.text_field :city, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.city %>
 											<label class="text-dark-grey">State <span class="text-red">*</span></label>
 											<%#= form.collection_select :state, State.all, :alpha_code, :name, { prompt: 'Select State' }, class: 'form-control mt-1 mb-1 border-dark' %>
 											<%= form.select :state,
-				                options_from_collection_for_select(State.all, :alpha_code, :name, provider.practice_informations.first.state),
+				                options_from_collection_for_select(State.all, :alpha_code, :name, provider.practice_informations.first&.state),
 				                { prompt: 'Select State' },
 				                class: 'form-select border-dark' %>
 										</div>
@@ -164,88 +153,88 @@
 										<div>
 											<div class="form-group">
 												<%= form.label :fax %>
-												<%= form.text_field :fax_number, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.fax_number %>
+												<%= form.text_field :fax_number, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.fax_number %>
 											</div>
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :phone %>
-												<%= form.text_field :phone_number, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.phone_number  %>
+												<%= form.text_field :phone_number, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.phone_number  %>
 											</div>
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :email_address %>
-												<%= form.text_field :email_address, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.email_address  %>
+												<%= form.text_field :email_address, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.email_address  %>
 											</div>
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :provider_type %>
-												<%= form.text_field :provider_type, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.provider_type %>
+												<%= form.text_field :provider_type, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.provider_type %>
 											</div>
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :cred_cycle %>
-												<%= form.text_field :cred_cycle, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.cred_cycle %>
+												<%= form.text_field :cred_cycle, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.cred_cycle %>
 											</div>
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :npi %>
-												<%= form.text_field :npi, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.npi %>
+												<%= form.text_field :npi, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.npi %>
 											</div>
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :ssn %>
-												<%= form.text_field :ssn, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.ssn %>
+												<%= form.text_field :ssn, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.ssn %>
 											</div>
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :caqhid %>
-												<%= form.text_field :caqh_provider_practice_id, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.caqh_provider_practice_id %>
+												<%= form.text_field :caqh_provider_practice_id, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.caqh_provider_practice_id %>
 											</div>
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :encompass_id %>
-												<%= form.text_field :caqh_provider_attest_id, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.caqh_provider_attest_id %>
+												<%= form.text_field :caqh_provider_attest_id, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.caqh_provider_attest_id %>
 											</div>
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :birth_date %>
-												<%= form.date_field :birth_date, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.birth_date  %>
+												<%= form.date_field :birth_date, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.birth_date  %>
 											</div>
 
 											<div class="form-group">
 												<%= form.label :provider_status %>
-												<%= form.select :provider_status, options_for_select(['Change of Ownership', 'Credential Once', 'Deceased', 'Delegated', 'Incomplete App', 'No Application Received', 'No Longer in Private Sector', 'No Longer Practices Medicine', 'Non-Participant', 'Non-Responder', 'On Leave', 'Out of Network', 'Paper App', 'Relocated Out of State', 'Retired', 'Terminated', 'Undeliverable' ]), { prompt: true },  {class: "form-select border-dark"} %>
+												<%= form.select :provider_status, options_for_select(['Change of Ownership', 'Credential Once', 'Deceased', 'Delegated', 'Incomplete App', 'No Application Received', 'No Longer in Private Sector', 'No Longer Practices Medicine', 'Non-Participant', 'Non-Responder', 'On Leave', 'Out of Network', 'Paper App', 'Relocated Out of State', 'Retired', 'Terminated', 'Undeliverable' ], provider.practice_informations.first&.provider_status), { prompt: true },  {class: "form-select border-dark"} %>
 											</div>
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :attestation_date %>
-												<%= form.date_field :attestation_date, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.attestation_date %>
+												<%= form.date_field :attestation_date, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.attestation_date %>
 											</div>
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :file_due_date %>
-												<%= form.date_field :file_due_date, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.file_due_date %>
+												<%= form.date_field :file_due_date, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.file_due_date %>
 											</div>
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :app_complete_date %>
-												<%= form.date_field :app_complete_date, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.app_complete_date %>
+												<%= form.date_field :app_complete_date, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.app_complete_date %>
 											</div>
 
 											<div class="form-group mt-2 mb-2">
 											  <%= form.label :app_reviewed %>
-											  <%= form.check_box :app_reviewed, class: "form-input-check mt-1 mb-1", checked: provider.practice_informations.first.app_reviewed || false %>
+											  <%= form.check_box :app_reviewed, class: "form-input-check mt-1 mb-1", checked: provider.practice_informations.first&.app_reviewed || false %>
 											</div>
 
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :batch_description %>
-												<%= form.text_area :batch_description, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first.batch_description %>
+												<%= form.text_area :batch_description, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.batch_description %>
 											</div>
 
 											<div class="form-group mt-1 mb-1">
 												<%= form.label :comment %>
-												<%= form.text_area :comment, rows: 4, cols: 50, class: 'form-control mt-1 mb-1 border-dark', value: provider.practice_informations.first.comment %>
+												<%= form.text_area :comment, rows: 4, cols: 50, class: 'form-control mt-1 mb-1 border-dark', value: provider.practice_informations.first&.comment %>
 											</div>
 										</div>
 
