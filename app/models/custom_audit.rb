@@ -2,12 +2,12 @@ class CustomAudit < Audited::Audit
 	def dislay_changes
 	  if action.in?(%w[login logout])
     user_name = user&.full_name || "Unknown User"
-    timestamp = created_at.in_time_zone('Asia/Kolkata').strftime('%d/%m/%Y %I:%M %p')
+    timestamp = created_at.in_time_zone('America/Los_Angeles').strftime('%d/%m/%Y %I:%M %p')
 
     if action == 'login'
-      ["<strong>#{user_name}</strong> logged in at <strong style='color: green'>#{timestamp} IST</strong>"]
+      ["<strong>#{user_name}</strong> logged in at <strong style='color: green'>#{timestamp} PT</strong>"]
     elsif action == 'logout'
-      ["<strong>#{user_name}</strong> logged out at <strong style='color: green'>#{timestamp} IST</strong>"]
+      ["<strong>#{user_name}</strong> logged out at <strong style='color: green'>#{timestamp} PT</strong>"]
     end
   else
     audited_changes.map do |attribute, changes|
