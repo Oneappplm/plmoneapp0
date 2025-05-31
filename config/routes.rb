@@ -509,6 +509,8 @@ Rails.application.routes.draw do
     end
   end
 
+  post 'app_trackers/zip_download', to: 'app_trackers#zip_download', as: 'zip_download_documents'
+
   post '/save_attempt_details', to: 'app_trackers#save_attempt_details'
   post '/provider_personal_docs_uploaded_documents', to: 'app_trackers#provider_personal_docs_uploaded_documents'
   post '/save_provider_personal_docs_receives', to: 'app_trackers#save_provider_personal_docs_receives'
