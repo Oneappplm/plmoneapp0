@@ -81,8 +81,8 @@
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-lg table-responsive">
-			<table class="table table-bordered">
+		<div class="col-lg">
+			<table class="table table-bordered table-responsive">
 					<thead>
 							<tr>
 								<th scope="col" class="bg-primary text-white">Provider ID</th>
@@ -312,7 +312,7 @@
 															<td><%= attempt.contact_method %></td>
 											        <td><%= attempt.attempt_status %></td>
 											        <td><%= attempt.contact_date %></td>
-											        <td><%= attempt.comments %></td>
+											        <td style="word-break: break-word; white-space: pre-wrap;"><%= attempt.comments %></td>
 														</tr>
 													<% end %>
 									  		</tbody>
@@ -337,7 +337,7 @@
 										  	<thead>
 										  		<tr>
 										  			<th scope="col" class="bg-primary text-white">
-										  				<input type="checkbox" name="checkbox" class="form-check-input border-dark" >
+										  				<input type="checkbox" name="checkbox" id="select-all" class="form-check-input border-dark" >
 										  			</th>
 										  			<th scope="col" class="bg-primary text-white">Document Name</th>
 										  			<th scope="col" class="bg-primary text-white">Upload Date</th>
@@ -352,20 +352,20 @@
 													  			<td>
 													  				<div class="form-check">
 																			<div class="align-items-center">
-																				<input class="form-check-input user-cbs border-dark" type="checkbox" value=""  >
+																				<input class="form-check-input user-cbs border-dark" type="checkbox" value="<%= doc.file_upload.url %>"  >
 																			</div>
 																	</div>
 													  			</td>
 													  			<td><%= link_to doc.file_upload.identifier, doc.file_upload.url, target: '_blank' %></td>
 													  			<td><%= doc.created_at.strftime("%Y-%m-%d") %></td>
-													  			<td><%= provider.fullname %></td>
+													  			<td><%= current_user.full_name %></td>
 													  		</tr>
 													  	<% end %>	
 														<% end %>
 													<% end %>
 										  	</tbody>
 										  </table>
-									  	<%= link_to 'Download', 'javascript:void(0)', class: 'btn btn-primary mt-2 mb-2' %>
+									  	<%= link_to 'Download', 'javascript:void(0)', class: 'btn btn-primary mt-2 mb-2', id: 'download-selected' %>
 									  </div>
 
 									  <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
@@ -383,9 +383,9 @@
 										      </tr>
 										    </thead>
 										    <tbody>
-										    	<%= form_with model: @provider_personal_docs_receive, url: save_provider_personal_docs_receives_path, local: true do |form| %>
+										    	<%= form_with model: @provider_personal_docs_receive, url: save_provider_personal_docs_receives_path(anchor: 'pills-contact'), local: true do |form| %>
 
-										    		<%= provider.provider_personal_docs_receive.inspect %>
+										    		<%#= provider.provider_personal_docs_receive.inspect %>
  														
  														<%= form.hidden_field :provider_attest_id, value: provider.provider_attest_id %>
 				 	 									<%= form.hidden_field :caqh_provider_attest_id, value: provider.caqh_provider_attest_id %>
@@ -537,12 +537,108 @@
 <% end %>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const autoSubmitElements = document.querySelectorAll('.auto-submit');
-    autoSubmitElements.forEach(function(element) {
-      element.addEventListener('change', function() {
+  document.addEventListener("DOMContentLoaded", function () {
+    const autoSubmitElements = document.querySelectorAll(".auto-submit");
+    autoSubmitElements.forEach(function (element) {
+      element.addEventListener("change", function () {
         this.form.submit();
       });
     });
+    
+    // for redirecting on the same page
+    const hash = window.location.hash;
+    if (hash) {
+      const tabTriggerEl = document.querySelector(`[data-bs-target="${hash}"]`);
+      if (tabTriggerEl) {
+        new bootstrap.Tab(tabTriggerEl).show();
+      }
+    }
+
+    const selectAllCheckbox = document.getElementById("select-all");
+    const checkboxes = document.querySelectorAll(".user-cbs");
+    const downloadButton = document.getElementById("download-selected");
+
+    // ✅ Select All functionality
+    if (selectAllCheckbox) {
+      selectAllCheckbox.addEventListener("change", function () {
+        checkboxes.forEach((cb) => {
+          cb.checked = this.checked;
+        });
+      });
+
+      // Optional: sync "select all" state if any individual checkbox is changed
+      checkboxes.forEach((cb) => {
+        cb.addEventListener("change", function () {
+          if (!cb.checked) {
+            selectAllCheckbox.checked = false;
+          } else if (Array.from(checkboxes).every((c) => c.checked)) {
+            selectAllCheckbox.checked = true;
+          }
+        });
+      });
+    }
+
+    // ✅ Prevent duplicate listeners (e.g. from Turbo)
+    if (downloadButton?.dataset.listenerAttached === "true") return;
+
+    let isDownloading = false;
+
+    downloadButton?.addEventListener("click", async (e) => {
+      if (isDownloading) return;
+
+      const selected = Array.from(checkboxes).filter((cb) => cb.checked);
+      const urls = selected.map((cb) => cb.value);
+
+      if (urls.length === 0) {
+        alert("Please select at least one document to download.");
+        return;
+      }
+
+      isDownloading = true;
+
+      try {
+        if (urls.length === checkboxes.length) {
+          // ZIP download
+          const response = await fetch("/app_trackers/zip_download", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": document.querySelector("[name=csrf-token]").content,
+            },
+            body: JSON.stringify({ document_urls: urls }),
+          });
+
+          if (!response.ok) throw new Error("Download failed");
+
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "documents.zip";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        } else {
+          // Individual files
+          urls.forEach((url) => {
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          });
+        }
+      } catch (error) {
+        alert("Error downloading files.");
+        console.error(error);
+      } finally {
+        isDownloading = false;
+      }
+    });
+
+    downloadButton.dataset.listenerAttached = "true";
   });
 </script>
+

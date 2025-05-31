@@ -1,3 +1,5 @@
+require 'zip'
+
 class AppTrackersController < ProvidersController
 	before_action :set_providers, only: [:index]
 	before_action :set_provider, only: [:upload_documents, :delete_uploaded_document, :view_uploaded_documents]
@@ -52,7 +54,7 @@ class AppTrackersController < ProvidersController
 		if request.post?
 			@document = ProviderPersonalDocsUpload.new(provider_personal_docs_upload_params)
 			if @document.save
-				redirect_to app_trackers_path, notice: 'Document uploaded successfully.'
+				redirect_to app_trackers_path(anchor: 'pills-profile'), notice: 'Document uploaded successfully.'
 			end
 		end
 	end
@@ -132,6 +134,37 @@ class AppTrackersController < ProvidersController
 	    end
 	  end
 	end
+
+	def zip_download
+    doc_urls = params[:document_urls]
+
+    if doc_urls.blank?
+      return head :bad_request
+    end
+
+    temp_file = Tempfile.new("documents-#{Time.now.to_i}.zip")
+
+    begin
+      Zip::OutputStream.open(temp_file.path) do |zos|
+        doc_urls.each_with_index do |url, index|
+          filename = "document_#{index + 1}#{File.extname(URI.parse(url).path)}"
+
+          # Fetch file content
+          file_data = URI.open(url).read
+          zos.put_next_entry(filename)
+          zos.write(file_data)
+        end
+      end
+
+      send_data File.read(temp_file.path),
+                filename: "documents.zip",
+                type: 'application/zip',
+                disposition: 'attachment'
+    ensure
+      temp_file.close
+      temp_file.unlink
+    end
+  end
 
 	protected
 
