@@ -2,6 +2,9 @@ Rails.application.routes.draw do
   resources :hvhs_data
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
+  # Mount the Grape API
+  mount Api::Base => '/'
+
   # Defines the root path route ("/")
   root 'dashboard#dashboard' # Overview	page
   get 'client-portal', to: 'pages#client_portal' # Data Access page
