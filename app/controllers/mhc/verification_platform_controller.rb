@@ -159,6 +159,10 @@ class Mhc::VerificationPlatformController < ApplicationController
                        .where(pdf_generation_queues: { deleted: true, provider_personal_information_id: @provider_personal_information.id })
 
   end
+
+  def application_page
+    @provider_personal_information = ProviderPersonalInformation.find(params[:provider_personal_info])
+  end
   
   protected
   

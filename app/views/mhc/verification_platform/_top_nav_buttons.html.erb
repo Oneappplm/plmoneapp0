@@ -20,12 +20,21 @@
         <div class="enc-navs">
             <button class="btn enc-btn-nav btn-sm btn-primary active">Home</button>
             <%= link_to 'Profile', profile_page_path(provider_personal_info: @provider_personal_information&.id), class: 'btn enc-btn-nav btn-sm btn-primary' %>
-            <%= link_to 'Application', application_page_path, class: 'btn enc-btn-nav btn-sm btn-primary' %>
+            <%= link_to 'Application', application_page_path(provider_personal_info: @provider_personal_information&.id), class: 'btn enc-btn-nav btn-sm btn-primary' %>
         </div>
     </div>
 </div>
 <div class="enc-tabs-wrp mt-4">
-    <a href="<%= mhc_verification_platform_path(page_tab: 'overview')%>" class="btn enc-btn-nav btn-sm  <%= params[:page_tab] == 'overview' ? encompass_active_classes : encompass_idle_classes %>">Overview</a>
+    <%
+      is_overview_tab = params[:page_tab] == 'overview'
+      is_default_overview = params[:page_tab].blank? && request.path == "/mhc/verification-platform/#{@provider_personal_information.id}"
+      active = is_overview_tab || is_default_overview
+    %>
+    <a href="<%= mhc_verification_platform_path(page_tab: 'overview') %>"
+       class="btn enc-btn-nav btn-sm <%= active ? encompass_active_classes : encompass_idle_classes %>">
+      Overview
+    </a>
+
     <a href="<%= mhc_verification_platform_path(page_tab: 'agreement')%>" class="btn enc-btn-nav btn-sm <%= params[:page_tab] == 'agreement' ? encompass_active_classes : encompass_idle_classes %>">Agreement</a>
     <a href="<%= mhc_verification_platform_path(page_tab: 'practitioner_info')%>" class="btn enc-btn-nav btn-sm  <%= params[:page_tab] == 'practitioner_info'? encompass_active_classes : encompass_idle_classes %>">Practitioner Info</a>
     <a href="<%= mhc_verification_platform_path(page_tab: 'practice_info')%>" class="btn enc-btn-nav btn-sm <%= ['practice_info_record', 'practice_info', 'add_practice_info', 'edit_practice_info'].include?(params[:page_tab])  ? encompass_active_classes : encompass_idle_classes %>">Practice Info</a>
@@ -63,3 +72,8 @@
     <a href="<%= mhc_verification_platform_path(page_tab: 'ins_coverage')%>"  class="btn enc-btn-nav btn-sm <%= ['ins_coverage', 'add_insurance_coverage', 'insurance_coverage_info'].include?(params[:page_tab]) ? encompass_active_classes : encompass_idle_classes %>">Ins. Coverage</a>
     <a href="<%= mhc_verification_platform_path(page_tab: 'org_information')%>"  class="btn enc-btn-nav btn-sm <%= ['org_information'].include?(params[:page_tab]) ? encompass_active_classes : encompass_idle_classes %>">Organization Information</a>
 </div>
+<style>
+ .link-back i {
+   font-size: 1.5rem;
+ }
+</style>
