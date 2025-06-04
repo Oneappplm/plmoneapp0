@@ -30,15 +30,15 @@
 									# ['CALIFORNIA','CALIFORNIA']
 							], params[:search_state]), { prompt: 'Select State of Practice' }, {:class => 'form-select'}  %>
 							<br>
-							<label for="">Search by License Number</label>
-					<div class="">
+					<div class="licenseNumber">
+						<label for="">Search by License Number</label>
 						<input type="text" name="license_number" value="<%= params[:license_number] %>" class="form-control">
 						<i class="bi bi-search"></i>
 				</div>
 
 					<br>
-					<label for="">OIG/SAM FIELDS</label>
 					<div class="oig">
+					  <label for="">OIG/SAM FIELDS</label>
 						<div class="">
 							<input type="text" name="first_name" placeholder="First name" value="<%= params[:first_name] %>" class="form-control">
 						</div>
@@ -82,8 +82,10 @@
 			$('select[name="search_state"]').change(function() {
 				if ($(this).val() == 'OIG' || $(this).val() == 'SAM') {
 					$('.oig').show();
+					$('.licenseNumber').hide();
 				} else {
 					$('.oig').hide();
+					$('.licenseNumber').show();
 				}
 			});
 		});

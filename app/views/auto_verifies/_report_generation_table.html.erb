@@ -1,4 +1,12 @@
+<% screenshot_path = Rails.root.join('public', 'webscrape', 'report_generation', 'report_generation_screenshot.png') %>
 
-<img src="/webscrape/report_generation/report_generation_screenshot.png" alt="" width="100%">
+<% if File.exist?(screenshot_path) %>
+  <img src="/webscrape/report_generation/report_generation_screenshot.png?v=<%= File.mtime(screenshot_path).to_i %>" alt="" width="100%">
+<% else %>
+  <div class="alert alert-warning mt-3">
+    The data entered is not correct. Please add a correct license number.
+  </div>
+<% end %>
+
 
 <%= link_to 'Download PDF', download_as_pdf_auto_verifies_path(webscrape: 'report_generation'), class: 'btn btn-primary mt-4' %>
