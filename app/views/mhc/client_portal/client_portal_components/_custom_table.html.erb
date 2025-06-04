@@ -111,28 +111,20 @@
 								    </div>
 
 								    <div class="py-1">
-								      <!-- Check the cred_status and display corresponding status indicator with text -->
-								      <% case provider_personal_information.cred_status %>
-								        <% when "complete-application" %>
-								          <%= link_to 'javascript:void(0)' do %>
-								            <%= image_tag "https://png.pngtree.com/png-clipart/20220612/original/pngtree-pdf-file-icon-png-png-image_7965915.png", size: '25x25' %>
-								          <% end %>
-								        <% when "attested" %>
-								          <span class="status-indicator rounded"></span>
-								        <% when "no-application" %>
-								          <span class="status-indicator rounded"></span>
-								        <% when "incomplete" %>
-								          <span class="status-indicator rounded"></span>
-								        <% when "pending" %>
-								          <span class="status-indicator rounded"></span>
-								        <% when "in-process" %>
-								          <span class="status-indicator rounded"></span>
-								        <% when "psv" %>
-								          <span class="status-indicator rounded"></span>
-								        <% when "returned" %>
-								          <span class="status-indicator rounded"></span>
-								      <% end %>
-								    </div>
+										  <% case provider_personal_information.cred_status %>
+										    <% when "psv" %>
+										      <% if @psv_pdf.present? %>
+										        <%= link_to @psv_pdf.file_path.url, target: "_blank", class: "text-danger fs-5" do %>
+										          <i class="fas fa-file-pdf fa-xl"></i>
+										        <% end %>
+										      <% else %>
+										        <span class="text-warning">PDF not available</span>
+										      <% end %>
+
+										    <% when "attested", "no-application", "incomplete", "pending", "in-process", "returned" %>
+										      <span class="status-indicator rounded"></span>
+										  <% end %>
+										</div>
 								  </div>
 								</td>
 

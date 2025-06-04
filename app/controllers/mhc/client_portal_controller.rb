@@ -11,6 +11,7 @@ class Mhc::ClientPortalController < ApplicationController
     @q = ProviderPersonalInformation.ransack(params[:q]&.except(:advanced_search))
     @provider_personal_informations = @q.result(distinct: true).paginate(per_page: @per_page, page: @page)
     @provider_personal_informations = @provider_personal_informations.order(first_name: params[:sort] == 'desc' ? :desc : :asc) if params[:sort].present?
+    @psv_pdf = SavedProfile.last
   end
 
   def upload_csv
