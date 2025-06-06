@@ -16,15 +16,33 @@
 			<div class="row mb-3">
 				<div class="col-lg-3">
 					<label class="text-dark-grey">Other First Name <span class="text-danger">*</span></label>
-					<input type="text" name="other_names[<%= index %>][first_name]" value="<%= other_name.first_name %>" class="form-control border-dark">
+					<input type="text" 
+								name="other_names[<%= index %>][first_name]" 
+								value="<%= other_name.first_name %>" 
+								class="form-control border-dark"
+								id="other-first-name-<%= index %>"
+								oninput="validateAlphaOnly(this, 'other-first-name-error-<%= index %>')">
+					<div id="other-first-name-error-<%= index %>" class="text-danger d-none">Only alphabets allowed.</div>
 				</div>
 				<div class="col-lg-3">
 					<label class="text-dark-grey">Other Middle Name</label>
-					<input type="text" name="other_names[<%= index %>][middle_name]" value="<%= other_name.middle_name %>" class="form-control border-dark">
+					<input type="text" 
+								 name="other_names[<%= index %>][middle_name]" 
+								 value="<%= other_name.middle_name %>" 
+								 class="form-control border-dark"
+								 id="other-middle-name-<%= index %>"
+         				 oninput="validateAlphaOnly(this, 'other-middle-name-error-<%= index %>')">
+         	<div id="other-middle-name-error-<%= index %>" class="text-danger d-none">Only alphabets allowed.</div>
 				</div>
 				<div class="col-lg-3">
 					<label class="text-dark-grey">Other Last Name <span class="text-danger">*</span></label>
-					<input type="text" name="other_names[<%= index %>][last_name]" value="<%= other_name.last_name %>" class="form-control border-dark">
+					<input type="text" 
+								 name="other_names[<%= index %>][last_name]" 
+								 value="<%= other_name.last_name %>" 
+								 class="form-control border-dark"
+								 id="other-last-name-<%= index %>"
+         				 oninput="validateAlphaOnly(this, 'other-last-name-error-<%= index %>')">
+         	<div id="other-last-name-error-<%= index %>" class="text-danger d-none">Only alphabets allowed.</div>
 				</div>
 				<div class="col-lg-3">
 					<label class="text-dark-grey">Other Suffix</label>
@@ -43,15 +61,54 @@
 					<input type="date" name="other_names[<%= index %>][date_started]" value="<%= other_name.date_started %>" class="form-control border-dark">
 				</div>
 				<div class="col-lg-6">
-					<label class="text-dark-grey">Date Stopped Using Other Name</label>
-					<input type="date" name="other_names[<%= index %>][date_stopped]" value="<%= other_name.date_stopped %>" class="form-control border-dark">
-					<span class="d-flex mt-2">
-						<input type="checkbox" name="other_names[<%= index %>][in_use]" class="me-2 other_name_still_use" <%= "checked" if other_name.in_use %>>
-						<label>Name is still in use</label>
-					</span>
+				  <label class="text-dark-grey">Date Stopped Using Other Name</label>
+				  <input type="date"
+				         name="other_names[<%= index %>][date_stopped]"
+				         value="<%= other_name.date_stopped %>"
+				         class="form-control border-dark">
+
+				  <span class="d-flex mt-2">
+				    <input type="checkbox"
+				           name="other_names[<%= index %>][in_use]"
+				           class="me-2 other_name_still_use"
+				           <%= "checked" if other_name.in_use %>>
+				    <label>Name is still in use</label>
+				  </span>
 				</div>
+
 			</div>
 			<!-- <button type="button" class="btn btn-danger remove_other_name">Remove</button> -->
 		</div>  
 	</div>
 </div>
+
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+	  // Delegate to the whole document to support dynamically added entries
+	  document.addEventListener("change", function (e) {
+	    if (e.target.classList.contains("other_name_still_use")) {
+	      const checkbox = e.target;
+	      const dateInput = checkbox.closest(".col-lg-6").querySelector('input[type="date"]');
+	      if (checkbox.checked) {
+	        dateInput.disabled = true;
+	        dateInput.value = ""; // Optional: clear value
+	      } else {
+	        dateInput.disabled = false;
+	      }
+	    }
+	  });
+	});
+
+	function validateAlphaOnly(input, errorId) {
+	  const error = document.getElementById(errorId);
+	  const cleaned = input.value.replace(/[^a-zA-Z\s]/g, '');
+
+	  if (input.value !== cleaned) {
+	    input.value = cleaned;
+	    if (error) error.classList.remove("d-none");
+	  } else {
+	    if (error) error.classList.add("d-none");
+	  }
+	}
+</script>
