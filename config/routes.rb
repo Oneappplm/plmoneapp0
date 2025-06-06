@@ -101,6 +101,8 @@ Rails.application.routes.draw do
   post '/update_vrc_document', to: 'pages#update_vrc_document', as: :update_vrc_document
   post '/delete_vrc_documents/:id', to: 'pages#delete_vrc_documents', as: :delete_vrc_document
 
+  get 'view_summary/download_pdf', to: 'view_summary#download_pdf', as: :download_application_pdf
+
   resources :manage_client
 
   resources :provider_sources do

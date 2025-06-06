@@ -29,11 +29,27 @@
 								<div class="row">
 									<div class="col-lg-7">
                     <label class="text-dark-grey">First Name <span class="text-danger">*</span></label>
-										<input type="text" required name="first_name" placeholder="First Name *" class="form-control border-dark">
+										<input type="text" 
+													 id="first-name-input"
+													 required name="first_name" 
+													 placeholder="First Name *" 
+													 class="form-control border-dark"
+													 oninput="validateAlphaOnly(this, 'first-name-error')">
+										<small id="first-name-error" class="text-danger d-none">
+									    Only alphabetical characters and spaces are allowed.
+									  </small>
 									</div>
 									<div class="col-lg-5">
                     <label class="text-dark-grey">Middle Name</label>
-										 <input type="text" name="middle_name" placeholder="Middle Name" class="form-control border-dark" >
+										 <input type="text" 
+										 				id="middle-name-input"
+										 				required name="middle_name" 
+										 				placeholder="Middle Name" 
+										 				class="form-control border-dark" 
+										 				oninput="validateAlphaOnly(this, 'middle-name-error')">
+										<small id="middle-name-error" class="text-danger d-none">
+									    Only alphabetical characters and spaces are allowed.
+									  </small>
 									</div>
 								</div>
 							</div>
@@ -41,7 +57,15 @@
 								<div class="row">
 									<div class="col-lg-7">
                     <label class="text-dark-grey">Last Name <span class="text-danger">*</span></label>
-										<input type="text" required name="last_name" placeholder="Last Name *" class="form-control border-dark">
+										<input type="text" 
+													 id="last-name-input"
+													 required name="last_name" 
+													 placeholder="Last Name *" 
+													 class="form-control border-dark"
+													 oninput="validateAlphaOnly(this, 'last-name-error')">
+										<small id="last-name-error" class="text-danger d-none">
+									    Only alphabetical characters and spaces are allowed.
+									  </small>
 									</div>
 									<div class="col-lg-5">
                     <label class="text-dark-grey">Suffix</label>
@@ -96,13 +120,14 @@
 						<div class="row my-3">
 							<div class="col-lg-12">
 								<div class="d-flex align-items-center gap-2 my-3">
-									<p class="my-0 text-dark-grey fw-semibold"><span class="text-danger">*</span> Have you ever used another name?</p>
+									<p class="my-0 text-dark-grey fw-semibold">
+										<span class="text-danger">*</span> Have you ever used another name?</p>
 									<label class="text-dark-grey">
 										<input type="radio" name="other_name" value="yes" class="other_name_rbtn">
 										Yes
 									</label>
 									<label class="text-dark-grey">
-										<input type="radio" name="other_name" value="no" class="other_name_rbtn">
+										<input type="radio" name="other_name" value="no" class="other_name_rbtn" checked>
 										No
 									</label>
 								</div>
@@ -121,13 +146,13 @@
 					          <div id="other_names_template" class="other-names-entry d-none">
 					            <%= render partial: 'pages/provider_source/other_name_form', locals: { index: 'REPLACE_INDEX', other_name: OtherName.new } %>
 					          </div>
-					          <% if @provider.other_names.any?(&:persisted?) %>
-					            <div>
+					          <%# if @provider.other_names.any?(&:persisted?) %>
+					            <%# <div>
 					              <button type="button" class="btn btn-outline-primary mt-2" id="add_other_name">
 					                <i class="bi bi-plus-circle me-1"></i> Add New
 					              </button>
-					            </div>
-					          <% end %>  
+					            </div> %>
+					          <%# end %>  
 								  </div>
 								</div>
 							</div>
@@ -210,7 +235,7 @@
 								<small id="city-error" class="text-danger d-none">Only alphabetic characters are allowed</small>
 							</div>
 							<div class="col-lg-6">
-								<label class="text-dark-grey">Country</label>
+								<label class="text-dark-grey">County</label>
 								<input 
 									type="text" 
 									class="form-control border-dark" 
@@ -240,7 +265,7 @@
 									placeholder="Zip Code"
 									oninput="validateZipCode()"
 								>
-								<small id="zipcode-error" class="text-danger d-none">Zip Code must contain numbers only</small>
+								<small id="zipcode-error" class="text-danger d-none">Zip Code must be exactly 5 digits</small>
 							</div>
 						</div>
 
@@ -299,7 +324,7 @@
 							<div class="col-lg-6">
 								<div class="row">
 									<div class="col-lg-6">
-										<label class="text-dark-grey">Page Number</label>
+										<label class="text-dark-grey">Pager Number</label>
 										<input 
 											type="text" 
 											name="page_number" 
@@ -366,10 +391,6 @@
 
 	$('.select-search').select2();
 
-	$('.other_name_rbtn').on('change',function(){
-		// console.log($(this).val());
-		($(this).val() == 'yes') ?	$('#other_name_field').removeClass('d-none') : $('#other_name_field').addClass('d-none');
-	})
 	$(document).ready(function () {
 	  let index = $("#other_names_container .other_names-entry").length;
 	  const pendingRequests = {}; // Track pending AJAX by input name
@@ -555,18 +576,24 @@
       error.classList.add("d-none");
     }
   }
-	function validateZipCode() {
-    const input = document.getElementById("zipcode-input");
-    const error = document.getElementById("zipcode-error");
 
-    const cleaned = input.value.replace(/\D/g, '');
-    if (input.value !== cleaned) {
-      input.value = cleaned;
-      error.classList.remove("d-none");
-    } else {
-      error.classList.add("d-none");
-    }
-  }
+	function validateZipCode() {
+	  const input = document.getElementById("zipcode-input");
+	  const error = document.getElementById("zipcode-error");
+
+	  // Keep only digits and limit to 5 characters
+	  let cleaned = input.value.replace(/\D/g, '').slice(0, 5);
+	  input.value = cleaned;
+
+	  // Show error if not exactly 5 digits
+	  if (cleaned.length !== 5) {
+	    error.classList.remove("d-none");
+	  } else {
+	    error.classList.add("d-none");
+	  }
+	}
+
+
 	function validateCity() {
     const input = document.getElementById("city-input");
     const error = document.getElementById("city-error");
@@ -609,6 +636,41 @@
       error.classList.add("d-none");
     }
   }
+
+  // for first_name, middle_name, last_name
+  function validateAlphaOnly(inputElement, errorElementId) {
+	  const cleaned = inputElement.value.replace(/[^a-zA-Z\s]/g, '');
+
+	  if (inputElement.value !== cleaned) {
+	    inputElement.value = cleaned;
+	    document.getElementById(errorElementId).classList.remove("d-none");
+	  } else {
+	    document.getElementById(errorElementId).classList.add("d-none");
+	  }
+	}
+
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const radioButtons = document.querySelectorAll(".other_name_rbtn");
+    const otherNameSection = document.getElementById("other_name_section");
+
+    function toggleOtherNameSection() {
+      const selected = document.querySelector('input[name="other_name"]:checked');
+      if (selected && selected.value === "yes") {
+        otherNameSection.style.display = "block";
+      } else {
+        otherNameSection.style.display = "none";
+      }
+    }
+
+    // Initial toggle on page load
+    toggleOtherNameSection();
+
+    // Toggle on radio change
+    radioButtons.forEach(radio => {
+      radio.addEventListener("change", toggleOtherNameSection);
+    });
+  });
 </script>
 <style>
 	.custom-dropdown-wrapper {

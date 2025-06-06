@@ -213,19 +213,23 @@
                      <div class="col-lg-12">
                         <h4 class="fw-semibold text-secondary mb-3">Emergency Contact</h4>
                         <div class="row mb-3">
-                           <div class="col-lg-4">
-                              <label class="text-dark-grey">First Name</label>
-                              <input type="text" name="emergency-first-name" class="form-control border-dark" placeholder="First Name">
-                           </div>
-                           <div class="col-lg-4">
-                              <label class="text-dark-grey">Middle Name</label>
-                              <input type="text" name="emergency-middle-name" class="form-control border-dark" placeholder="Middle Name">
-                           </div>
-                           <div class="col-lg-4">
-                              <label class="text-dark-grey">Last Name</label>
-                              <input type="text" name="emergency-last-name" class="form-control border-dark" placeholder="Last Name">
-                           </div>
+                          <div class="col-lg-4">
+                            <label class="text-dark-grey">First Name</label>
+                            <input type="text" id="emergency-first-name" name="emergency-first-name" class="form-control border-dark" placeholder="First Name" oninput="validateEmergencyName(this)">
+                            <small id="emergency-first-name-error" class="text-danger d-none">Only alphabets and spaces are allowed</small>
+                          </div>
+                          <div class="col-lg-4">
+                            <label class="text-dark-grey">Middle Name</label>
+                            <input type="text" id="emergency-middle-name" name="emergency-middle-name" class="form-control border-dark" placeholder="Middle Name" oninput="validateEmergencyName(this)">
+                            <small id="emergency-middle-name-error" class="text-danger d-none">Only alphabets and spaces are allowed</small>
+                          </div>
+                          <div class="col-lg-4">
+                            <label class="text-dark-grey">Last Name</label>
+                            <input type="text" id="emergency-last-name" name="emergency-last-name" class="form-control border-dark" placeholder="Last Name" oninput="validateEmergencyName(this)">
+                            <small id="emergency-last-name-error" class="text-danger d-none">Only alphabets and spaces are allowed</small>
+                          </div>
                         </div>
+
                         <div class="row">
                               <div class="form-group">
                                 <label class="text-dark-grey">Emergency Contact Phone Number</label>
@@ -313,6 +317,19 @@
       error.classList.add("d-none");
     }
   }
+
+  function validateEmergencyName(input) {
+     const cleaned = input.value.replace(/[^a-zA-Z\s]/g, '');
+     const error = document.getElementById(`${input.id}-error`);
+
+     if (input.value !== cleaned) {
+       input.value = cleaned;
+       error.classList.remove("d-none");
+     } else {
+       error.classList.add("d-none");
+     }
+   }
+
 </script>
 <% end %>
 <style>
