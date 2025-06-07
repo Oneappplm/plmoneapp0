@@ -6,14 +6,16 @@
   </div>
 </div>
   <div class="col-lg-6">
-    <label class="text-dark-grey">CDS Registration Number</label>
+    <label class="text-dark-grey"><span class="text-danger">*</span>CDS Registration Number</label>
     <input type="text" name="registration_number" required class="form-control border-dark multi-field" placeholder="CDS Registration Number" value="<%= cds.registration_number%>" data-model="cds" data-id="<%= cds.id %>">
   </div>
   <div class="col-lg-6">
-    <%= HtmlUtils::dropdown_with_model name: 'state', label: 'CDS Registration State', model: 'cds', modelId: "#{cds.id}" %>
+    <label class="text-dark-grey"><span class="text-danger">*</span>CDS Registration State</label>
+    <%= select_tag 'state', options_for_select(State.all.pluck(:name, :id), cds.state), class: 'form-control border-dark' %>
+    <%#= HtmlUtils::dropdown_with_model name: 'state', label: 'CDS Registration State', model: 'cds', modelId: "#{cds.id}" %>
   </div>
   <div class="col-lg-6">
-    <label class="text-dark-grey">Issue Date</label>
+    <label class="text-dark-grey"><span class="text-danger">*</span>Issue Date</label>
       <span class="ms-2" data-bs-toggle="tooltip" data-bs-placement="right" 
         title="Type the date as mm/dd/yyyy or select from the calendar.">
         <i class="bi bi-info-circle text-primary fs-5"></i>
@@ -21,7 +23,7 @@
     <input type="date" name="issue_date" required class="form-control border-dark multi-field" data-model="cds" data-id="<%= cds.id %>"  value="<%= cds.issue_date%>"> 
   </div>
   <div class="col-lg-6">
-    <label class="text-dark-grey">Expiration Date <span class="text-danger">*</span></label>
+    <label class="text-dark-grey"><span class="text-danger">*</span>Expiration Date</label>
       <span class="ms-2" data-bs-toggle="tooltip" data-bs-placement="right" 
         title="Type the date as mm/dd/yyyy or select from the calendar.">
         <i class="bi bi-info-circle text-primary fs-5"></i>
@@ -35,7 +37,7 @@
 
   <div class="col-lg-12">
       <div class="d-flex justify-content-between my-3">
-         <label class="form-label">Are you currently practicing in this state? *</label>
+         <label class="form-label"><span class="text-danger">*</span>Are you currently practicing in this state? *</label>
          <div class="d-flex me-4 gap-2">
             <span>
             <input type="radio" value="yes" name="practicing_in_state" class="multi-field" data-model="cds" data-id="<%= cds.id %>">
@@ -48,29 +50,42 @@
          </div>
       </div>
   </div>
-<!--   <div class="col-lg-12">
+  <div class="col-lg-12">
       <div class="d-flex justify-content-between my-3">
-         <label class="form-label">Full Schedule?</label>
+         <label class="form-label">Full Schedule (2 2N 3 3N 4 5)?</label>
          <div class="d-flex me-4 gap-2">
             <span>
-            <input type="radio" value="yes" name="full_schedule" class="multi-field full-sched-radio" data-model="cds" data-id="<%= cds.id %>">
+            <input type="radio" value="yes" name="full_schedule_<%= cds.id %>" class="multi-field full-sched-radio" data-textarea="no_cds_explanation-<%= cds.id %>" data-altname="full_schedule" data-model="cds" data-id="<%= cds.id %>">
             <span>YES</span>
             </span>
             <span>
-            <input type="radio" value="no" name="full_schedule" class="multi-field full-sched-radio" data-model="cds" data-id="<%= cds.id %>">
+            <input type="radio" value="no" name="full_schedule_<%= cds.id %>" class="multi-field full-sched-radio" data-textarea="no_cds_explanation-<%= cds.id %>" data-altname="full_schedule" data-model="cds" data-id="<%= cds.id %>">
             <span>NO</span>
             </span>
          </div>
       </div>
-    <div id="record_tarea-<%= cds.id %>" class="<%= cds.full_schedule == 'no' ? '' : 'd-none' %>">
-      <div class="col-lg-12">
-        <label class="text-dark-grey">Please explain schedule limitations</label>
-        <textarea name="schedule_limit_explanation" class="form-control border-dark" rows="8" data-model="cds" data-id="<%= cds.id%>"></textarea>
-      </div>
+  </div>
+
+  <div id="no_cds_explanation-<%= cds.id %>" class="<%= cds.full_schedule == 'no' ? '' : 'd-none' %>">
+    <div class="col-lg-12">
+      <label class="text-dark-grey">Please explain schedule limitations</label>
+      <textarea name="schedule_limit_explanation" class="form-control border-dark multi-field" rows="8" data-model="cds" data-id="<%= cds.id%>"></textarea>
     </div>
-  </div> -->
+      <div class="col-lg-12 mt-3">
+        <% scheds = ['2', '2N', '3', '3N', '4', '5'] %>
+        <h5>Select Schedule(s) Held</h5>
+        <div class="d-flex gap-2">
+          <% scheds.each do |sched| %>
+          <label class="text-dark-grey">
+            <input type="checkbox" name="sched_<%= sched %>" value="<%= sched %>" class="cb_sched-<%= cds.id %> cb_sched multi-field" data-id="<%= cds.id%>">
+            <strong><%= sched %></strong>
+          </label>
+          <% end %> 
 
-
+        <!-- <input type="text" name="schedule_helds" class="multi-field sched-field" data-model="cds" data-id="<%#= cds.id %>" id="schedules-<%#= cds.id %>"> -->
+       </div>
+      </div>
+  </div> 
 </div>
 
 <script>
