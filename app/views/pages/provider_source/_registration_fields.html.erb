@@ -68,7 +68,15 @@
 <div class="row mb-3">
   <div class="col-lg-6">
     <label class="text-dark-grey">Zip Code <span class="text-danger">*</span></label>
-    <input type="text" name="zip_code" class="form-control border-dark multi-field" placeholder="Zip Code" required  data-model="registration" data-id="<%= registration.id %>" value="<%= registration.zip_code%>">
+    <input 
+      type="text" 
+      name="zipcode" 
+      id="zipcode-input"
+      class="form-control border-dark" 
+      placeholder="Zip Code"
+      oninput="validateZipCode()"
+    >
+    <small id="zipcode-error" class="text-danger d-none">Zip Code must be exactly 5 digits</small>
   </div>
 </div>
 <div class="row mb-3">
@@ -257,6 +265,21 @@ $('#ps-registration-not-expire').on('change',function(){
     if (/[^0-9]/.test(input.value)) {
       error.classList.remove("d-none");
       input.value = input.value.replace(/[^0-9]/g, '');
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+  function validateZipCode() {
+    const input = document.getElementById("zipcode-input");
+    const error = document.getElementById("zipcode-error");
+
+    // Keep only digits and limit to 5 characters
+    let cleaned = input.value.replace(/\D/g, '').slice(0, 5);
+    input.value = cleaned;
+
+    // Show error if not exactly 5 digits
+    if (cleaned.length !== 5) {
+      error.classList.remove("d-none");
     } else {
       error.classList.add("d-none");
     }

@@ -37,9 +37,8 @@
               class="form-control border-dark" 
               maxlength="10"
               id="npi-input"
-              oninput="validateNPI()"
               placeholder="Enter 10-digit NPI Number"
-            >
+            />
             <small id="npi-error" class="text-danger d-none">NPI must be exactly 10 digits</small>
           </div>
         </div>
@@ -51,16 +50,16 @@
             </span>
           </h4>
           <div class="d-flex justify-content-between align-items-center my-3">
-            <p class="mb-0">Do/Did you have a DEA Registration Number?</p>
+            <p class="mb-0"><span class="text-danger">*</span>Do/Did you have a DEA Registration Number?</p>
             <div class="d-flex gap-3">
-              <div class="d-flex gap-2">
-                <input type="radio" name="has_dea_registration_number" class="radio-with-form has-textarea textarea-no" data-textarea="no_dea_explanation" data-form='dea_form' value="no">
-                <span>NO</span>
-              </div>  
               <div class="d-flex gap-2">
                 <input type="radio" name="has_dea_registration_number" class="radio-with-form has-textarea textarea-no" data-form='dea_form' data-textarea="no_dea_explanation" value="yes" checked='checked'>
                 <span>YES</span>
               </div>
+              <div class="d-flex gap-2">
+                <input type="radio" name="has_dea_registration_number" class="radio-with-form has-textarea textarea-no" data-textarea="no_dea_explanation" data-form='dea_form' value="no">
+                <span>NO</span>
+              </div>  
             </div>
           </div>
           <!-- <div class="<%#= toggle_hide_current_provider_source('has_dea_registration_number', @provider) %>" id="dea_form">
@@ -96,16 +95,15 @@
             </span>
           </h4>
           <div class="d-flex justify-content-between align-items-center my-3">
-            <p class="mb-0">Do/Did you have a CDS Registration Number?</p>
+            <p class="mb-0"><span class="text-danger">*</span>Do/Did you have a CDS Registration Number?</p>
             <div class="d-flex gap-3">
-              <div class="d-flex gap-2">
-                <input type="radio" name="has_cds_registration_number" class="radio-with-form has-textarea textarea-no" data-textarea="ps-cds-registration-number" data-form='cds_form' value="no">
-                <span>NO</span>
-              </div>
-
               <div class="d-flex gap-2">
                 <input type="radio" name="has_cds_registration_number" class="radio-with-form has-textarea textarea-no" data-textarea="ps-cds-registration-number" data-form='cds_form' value="yes">
                 <span>YES</span>
+              </div>
+              <div class="d-flex gap-2">
+                <input type="radio" name="has_cds_registration_number" class="radio-with-form has-textarea textarea-no" data-textarea="ps-cds-registration-number" data-form='cds_form' value="no">
+                <span>NO</span>
               </div>
             </div>
           </div>
@@ -175,16 +173,16 @@
         <div class="col-lg-12 card py-3 mb-3 ">
           <h4 class="fw-semibold text-secondary">Registration</h4>
           <div class="d-flex justify-content-between align-items-center my-3">
-            <p class="mb-0">Do/Did you have a registration number related to your practicing specialty?</p>
+            <p class="mb-0"><span class="text-danger">*</span>Do/Did you have a registration number related to your practicing specialty?</p>
             <div class="d-flex gap-3">
-              <div class="d-flex gap-2">
-                <input type="radio" name="registration_id_form" class="radio-with-form" data-form='registration_ids_form' value="no">
-                <span>NO</span>
-              </div>
 
               <div class="d-flex gap-2">
                 <input type="radio" name="registration_id_form" class="radio-with-form" data-form='registration_ids_form' value="yes">
                 <span>YES</span>
+              </div>
+              <div class="d-flex gap-2">
+                <input type="radio" name="registration_id_form" class="radio-with-form" data-form='registration_ids_form' value="no">
+                <span>NO</span>
               </div>
             </div>
           </div>
@@ -243,4 +241,12 @@
       error.classList.add("d-none");
     }
   }
+
+  // Optional: attach explicitly after DOM load
+  document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("npi-input");
+    if (input) {
+      input.addEventListener("input", validateNPI);
+    }
+  });
 </script>

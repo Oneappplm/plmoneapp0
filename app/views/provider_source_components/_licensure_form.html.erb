@@ -1,7 +1,7 @@
 <div class="licensure-field" id="fields">
 <div class="row mb-3">
    <div class="col-lg-12">
-      <%= HtmlUtils::dropdown name: 'licensure_state', label: 'Licensure State' %>
+      <%= HtmlUtils::dropdown name: 'licensure_state', label: 'Licensure State <span class="text-danger">*</span>' %>
    </div>
 </div>
 <div class="row mb-3">
@@ -116,15 +116,24 @@
    </div>
    <div class="col-lg-4">
       <label class="text-dark-grey">First Name</label>
-      <input type="text" name="licensure_sponsor_fname" class="form-control border-dark">
+      <input type="text" name="licensure_sponsor_fname" class="form-control border-dark" oninput="validateAlphaOnly(this, 'first-name-error')" id="first-name-input">
+      <small id="first-name-error" class="text-danger d-none">
+        Only alphabetical characters and spaces are allowed.
+      </small>
    </div>
    <div class="col-lg-2">
       <label class="text-dark-grey">Middle Name</label>
-      <input type="text" name="licensure_sponsor_mname" class="form-control border-dark">
+      <input type="text" name="licensure_sponsor_mname" class="form-control border-dark" oninput="validateAlphaOnly(this, 'first-name-error')" id="middle-name-input">
+      <small id="middle-name-error" class="text-danger d-none">
+        Only alphabetical characters and spaces are allowed.
+      </small>
    </div>
    <div class="col-lg-4">
       <label class="text-dark-grey">Last Name</label>
-      <input type="text" name="licensure_sponsor_lname" class="form-control border-dark">
+      <input type="text" name="licensure_sponsor_lname" class="form-control border-dark" oninput="validateAlphaOnly(this, 'last-name-error')" id="last-name-input">
+      <small id="last-name-error" class="text-danger d-none">
+        Only alphabetical characters and spaces are allowed.
+      </small>
    </div>
    <div class="col-lg-2">
       <label class="text-dark-grey">Suffix</label>
@@ -246,6 +255,16 @@
       input.value = input.value.replace(/[^0-9]/g, '');
     } else {
       error.classList.add("d-none");
+    }
+  }
+  function validateAlphaOnly(inputElement, errorElementId) {
+    const cleaned = inputElement.value.replace(/[^a-zA-Z\s]/g, '');
+
+    if (inputElement.value !== cleaned) {
+      inputElement.value = cleaned;
+      document.getElementById(errorElementId).classList.remove("d-none");
+    } else {
+      document.getElementById(errorElementId).classList.add("d-none");
     }
   }
 </script>
