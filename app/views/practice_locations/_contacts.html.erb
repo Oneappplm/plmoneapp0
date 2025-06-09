@@ -1,15 +1,35 @@
 <div class="form-row row">
 	<div class="col-xl-4">
 		<label for=""><span class="text-danger">*</span> First Name</label>
-		<%= f.text_field :contact_first_name, class: 'form-control', placeholder: 'Type here...', required: true, autocomplete: 'off' %>
+		<%= f.text_field :contact_first_name,
+					class: 'form-control',
+					placeholder: 'Type here...',
+					required: true,
+					autocomplete: 'off',
+					id: 'contact-first-name-input',
+					oninput: 'validateFirstName()' %>
+		<small id="first-name-error" class="text-danger d-none">Only letters are allowed in first name</small>
 	</div>
 	<div class="col-xl-4">
 		<label for="">Middle Name</label>
-		<%= f.text_field :contact_middle_name, class: 'form-control', placeholder: 'Type here...', autocomplete: 'off' %>
+		<%= f.text_field :contact_middle_name,
+					class: 'form-control',
+					placeholder: 'Type here...',
+					autocomplete: 'off',
+					id: 'contact-middle-name-input',
+					oninput: 'validateMiddleName()' %>
+		<small id="middle-name-error" class="text-danger d-none">Only letters are allowed in middle name</small>
 	</div>
 	<div class="col-xl-4">
 		<label for=""><span class="text-danger">*</span> Last Name</label>
-		<%= f.text_field :contact_last_name, class: 'form-control', placeholder: 'Type here...', required: true, autocomplete: 'off' %>
+		<%= f.text_field :contact_last_name,
+					class: 'form-control',
+					placeholder: 'Type here...',
+					required: true,
+					autocomplete: 'off',
+					id: 'contact-last-name-input',
+					oninput: 'validateLastName()' %>
+		<small id="last-name-error" class="text-danger d-none">Only letters are allowed in last name</small>
 	</div>
 </div>
 
@@ -21,21 +41,132 @@
 </div>
 <div class="form-row row">
 	<div class="col-xl-6">
-		<label for=""><span class="text-danger">*</span> Telephone Number</label>
-		<%= f.text_field :contact_phone_number, class: 'form-control', placeholder: 'Type here...', required: true, pattern: '^\+?\d{10,15}$', maxlength: 15, title: "Enter a valid phone number (10-15 digits, optional '+')", autocomplete: 'off' %>
+  <label for=""><span class="text-danger">*</span> Telephone Number</label>
+		<%= f.text_field :contact_phone_number,
+					class: 'form-control',
+					placeholder: 'Type here...',
+					required: true,
+					id: 'contact-phone-number-input',
+					maxlength: 15,
+					title: "Enter a valid phone number (10-15 digits, optional '+')",
+					autocomplete: 'off',
+					oninput: 'validateContactPhoneNumber()' %>
+		<small id="contact-phone-error" class="text-danger d-none">Telephone must contain numbers only</small>
 	</div>
 	<div class="col-xl-6">
 		<label for="">Ext</label>
-		<%= f.text_field :contact_ext, class: 'form-control', placeholder: 'Type here...', pattern: '^\+?\d{6,10}$', maxlength: 10, title: "Enter a valid phone number (06-10 digits)", autocomplete: 'off' %>
+		<%= f.text_field :contact_ext,
+					class: 'form-control',
+					placeholder: 'Type here...',
+					id: 'contact-ext-input',
+					maxlength: 10,
+					title: "Enter a valid extension (6–10 digits)",
+					autocomplete: 'off',
+					oninput: 'validateContactExt()' %>
+		<small id="contact-ext-error" class="text-danger d-none">Extension must contain numbers only</small>
 	</div>
 </div>
 <div class="form-row row">
 	<div class="col-xl-6">
 		<label for="">Fax Number</label>
-		<%= f.text_field :contact_fax_number, class: 'form-control', placeholder: 'Type here...', autocomplete: 'off' %>
+		<%= f.text_field :contact_fax_number,
+					class: 'form-control',
+					placeholder: 'Type here...',
+					id: 'contact-fax-number-input',
+					maxlength: 15,
+					title: "Enter a valid fax number (10-15 digits, optional '+')",
+					autocomplete: 'off',
+					oninput: 'validateFaxNumber()' %>
+		<small id="fax-number-error" class="text-danger d-none">Fax number must contain numbers only</small>
 	</div>
 	<div class="col-xl-6">
 		<label for=""><span class="text-danger">*</span> Email</label>
-		<%= f.text_field :contact_email, class: 'form-control', placeholder: 'Type here...', required: true, autocomplete: 'off', pattern: '\A[^@\s]+@[^@\s]+\z'  %>
+		<%= f.text_field :contact_email, class: 'form-control', placeholder: 'Type here...', required: true, autocomplete: 'off', id: 'contact_email', oninput: 'validateEmail(this)' %>
+		<div id="contact_email_error" class="text-danger" style="display: none;">Please enter a valid email address.</div>
 	</div>
 </div>
+<script>
+  function validateEmail(input) {
+    const email = input.value;
+    const errorDiv = document.getElementById('contact_email_error');
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (emailPattern.test(email) || email === "") {
+      errorDiv.style.display = 'none';
+    } else {
+      errorDiv.style.display = 'block';
+    }
+  }
+	function validateContactPhoneNumber() {
+		const input = document.getElementById("contact-phone-number-input");
+		const error = document.getElementById("contact-phone-error");
+
+		const cleaned = input.value.replace(/\D/g, '');
+		if (input.value !== cleaned) {
+			input.value = cleaned;
+			error.classList.remove("d-none");
+		} else {
+			error.classList.add("d-none");
+		}
+	}
+	function validateContactExt() {
+		const input = document.getElementById("contact-ext-input");
+		const error = document.getElementById("contact-ext-error");
+
+		const cleaned = input.value.replace(/\D/g, '');
+		if (input.value !== cleaned) {
+			input.value = cleaned;
+			error.classList.remove("d-none");
+		} else {
+			error.classList.add("d-none");
+		}
+	}
+	function validateFaxNumber() {
+		const input = document.getElementById("contact-fax-number-input");
+		const error = document.getElementById("fax-number-error");
+
+		const cleaned = input.value.replace(/\D/g, '');
+		if (input.value !== cleaned) {
+			input.value = cleaned;
+			error.classList.remove("d-none");
+		} else {
+			error.classList.add("d-none");
+		}
+	}
+	function validateLastName() {
+		const input = document.getElementById("contact-last-name-input");
+		const error = document.getElementById("last-name-error");
+
+		const cleaned = input.value.replace(/[^a-zA-Z\s\-']/g, ''); // allows letters, space, hyphen, apostrophe
+		if (input.value !== cleaned) {
+			input.value = cleaned;
+			error.classList.remove("d-none");
+		} else {
+			error.classList.add("d-none");
+		}
+	}
+	function validateMiddleName() {
+		const input = document.getElementById("contact-middle-name-input");
+		const error = document.getElementById("middle-name-error");
+
+		const cleaned = input.value.replace(/[^a-zA-Z\s\-']/g, ''); // allows letters, spaces, hyphen, apostrophe
+		if (input.value !== cleaned) {
+			input.value = cleaned;
+			error.classList.remove("d-none");
+		} else {
+			error.classList.add("d-none");
+		}
+	}
+	function validateFirstName() {
+		const input = document.getElementById("contact-first-name-input");
+		const error = document.getElementById("first-name-error");
+
+		const cleaned = input.value.replace(/[^a-zA-Z\s\-']/g, ''); // allows letters, spaces, hyphen, apostrophe
+		if (input.value !== cleaned) {
+			input.value = cleaned;
+			error.classList.remove("d-none");
+		} else {
+			error.classList.add("d-none");
+		}
+	}
+</script>

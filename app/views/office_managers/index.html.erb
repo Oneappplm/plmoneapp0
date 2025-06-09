@@ -82,7 +82,7 @@
                           <h6>Attest Date:</h6>
                       </div>
                       <div class="col-xl-6">
-                          <p></p>
+                          <p><%= provider.fetch(:signature_date) %></p>
                       </div>
                   </div>
                   <div class="row">
@@ -225,26 +225,51 @@
                               </div>
                               <div class="form-row row">
                                   <div class="col-xl-4">
-                                      <label for="">First Name <span class="text-red">*</span></label>
-                                      <input type="text" class="form-control form-field" placeholder="" name="first_name">
+                                    <label for="first_name">First Name <span class="text-red">*</span></label>
+                                    <input type="text" 
+                                          class="form-control form-field" 
+                                          placeholder="Enter your first name"
+                                          name="first_name" 
+                                          id="first_name"
+                                          required>
+                                    <small id="first-name-error" class="text-danger d-none">Only letters are allowed in First Name.</small>
                                   </div>
                                   <div class="col-xl-4">
-                                      <label for="">Middle Name</label>
-                                      <input type="text" class="form-control form-field" placeholder="" name="middle_name">
+                                    <label for="middle_name">Middle Name</label>
+                                    <input type="text"
+                                          class="form-control form-field"
+                                          placeholder="Enter your middle name"
+                                          name="middle_name"
+                                          id="middle_name">
+                                    <small id="middle-name-error" class="text-danger d-none">Only letters are allowed in Middle Name.</small>
                                   </div>
                                   <div class="col-xl-4">
-                                      <label for="">Last Name <span class="text-red">*</span></label>
-                                      <input type="text" class="form-control form-field" placeholder="" name="last_name">
+                                    <label for="last_name">Last Name <span class="text-red">*</span></label>
+                                    <input type="text"
+                                          class="form-control form-field"
+                                          placeholder="Enter your last name"
+                                          name="last_name"
+                                          id="last_name"
+                                          required>
+                                    <small id="last-name-error" class="text-danger d-none">Only letters are allowed in Last Name.</small>
                                   </div>
                               </div>
                               <div class="form-row row mt-2">
                                   <div class="col-xl-4">
-                                      <label for="">SSN <span class="text-red">*</span></label>
-                                      <input type="text" class="form-control form-field" placeholder="" name="ssn">
+                                    <label for="ssn">SSN <span class="text-red">*</span></label>
+                                    <input type="text"
+                                          class="form-control form-field"
+                                          placeholder="Enter 9-digit SSN"
+                                          name="ssn"
+                                          id="ssn"
+                                          maxlength="9"
+                                          required>
+                                    <small id="ssn-error" class="text-danger d-none">SSN must be exactly 9 digits (numbers only).</small>
                                   </div>
                                   <div class="col-xl-4">
-                                      <label for="">Date of Birth <span class="text-red">*</span></label>
-                                      <input type="date" class="form-control form-field" placeholder="" name="date_of_birth">
+                                    <label for="">Date of Birth <span class="text-red">*</span></label>
+                                    <input type="date" class="form-control form-field" name="date_of_birth" id="date_of_birth" max="" required>
+                                    <div class="invalid-feedback d-none" id="dob-error">Date of Birth cannot be in the future.</div>
                                   </div>
                                   <div class="col-xl-4">
                                       <label for="">Email <span class="text-red">*</span></label>
@@ -331,6 +356,7 @@
   </div>
 
   <script>
+    const alreadyInvitedProviderIds = <%= @already_invited_providers.to_json.html_safe %>;
     $(document).ready(function(){
       // reload page when modal is closed
       $('#addProviderModal').on('hidden.bs.modal', function () {
@@ -581,6 +607,7 @@
     function sendBulkInvites(link) {
       var checkedValues = []; // Array to store selected provider IDs
       var emailAddresses = []; // Array to store email addresses
+      var alreadyInvitedSelected = [];
 
       // Select all checked checkboxes
       var checkedCheckboxes = $(".form-check-input:checked");
@@ -594,6 +621,10 @@
           if (email) {
               emailAddresses.push(email); // Add email to array
           }
+             // ✅ Check if this provider was already invited
+            if (alreadyInvitedProviderIds.includes(parseInt(value))) {
+              alreadyInvitedSelected.push(value);
+            }
       });
 
       var providerids = checkedValues.join(','); // Convert to comma-separated string
@@ -604,6 +635,14 @@
           alert('Please select at least one provider.');
           return;
       }
+
+      if (alreadyInvitedSelected.length > 0) {
+        const proceed = confirm("Some selected providers have already been invited. Do you want to send the invites again?");
+        if (!proceed) return;
+      }
+      
+      var providerids = checkedValues.join(",");
+       var emails = emailAddresses.join(", ");
 
       // Show modal
       $('#sendInviteModal').modal('show');
@@ -636,12 +675,32 @@
       $('#btnSendSingleInvitation').attr('data-mode', 'single-invite');
     }
 
+    function validateEmails(emails) {
+      const emailArray = emails.split(',').map(e => e.trim()).filter(e => e !== '');
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      return emailArray.every(email => emailRegex.test(email));
+    }
+
     function sendSingleInvitationNow(btn){
       var mode = $(btn).data('mode');
       var email_to = $('input[name="sim_email_to"]').val();
       var subject = $('input[name="sim_subject"]').val();
       var email_cc = $('input[name="sim_email_cc"]').val();
       var message = $('textarea[name="sim_message"]').val();
+
+
+      // ✅ Validate CC field (optional, only if filled)
+      if (email_cc && !validateEmails(email_cc)) {
+        alert("Please enter valid email address(es) in CC field. Separate multiple emails with commas.");
+        return;
+      }
+
+      // ✅ You can also validate 'To' email here if needed
+      if (!validateEmails(email_to)) {
+        alert("Please enter valid email address(es) in the To field.");
+        return;
+      }
 
       // add alert if email_to, subject and message are blank; use one line condition
       if (mode === 'single-invite') {
@@ -757,5 +816,135 @@
         });
       }, 2000); // Adjust the delay time (in milliseconds) as needed
     }
+      document.addEventListener('DOMContentLoaded', function () {
+        const firstNameInput = document.getElementById('first_name');
+        const errorMsg = document.getElementById('first-name-error');
+
+        // BLOCK NUMBERS and SPECIAL CHARACTERS WHILE TYPING
+        firstNameInput.addEventListener('keypress', function (e) {
+          const key = e.key;
+          const allowed = /^[a-zA-Z\s]$/;
+          if (!allowed.test(key)) {
+            e.preventDefault(); // stop from typing numbers or symbols
+            errorMsg.classList.remove('d-none');
+            firstNameInput.classList.add('is-invalid');
+          }
+        });
+
+        // Remove error if input is valid
+        firstNameInput.addEventListener('input', function () {
+          const nameRegex = /^[a-zA-Z\s]*$/;
+          if (nameRegex.test(firstNameInput.value)) {
+            errorMsg.classList.add('d-none');
+            firstNameInput.classList.remove('is-invalid');
+          } else {
+            errorMsg.classList.remove('d-none');
+            firstNameInput.classList.add('is-invalid');
+          }
+        });
+      });
+
+      document.addEventListener('DOMContentLoaded', function () {
+        const middleNameInput = document.getElementById('middle_name');
+        const middleNameError = document.getElementById('middle-name-error');
+
+        middleNameInput.addEventListener('keypress', function (e) {
+          const key = e.key;
+          const allowed = /^[a-zA-Z\s]$/;
+          if (!allowed.test(key)) {
+            e.preventDefault(); // prevent typing invalid characters
+            middleNameError.classList.remove('d-none');
+            middleNameInput.classList.add('is-invalid');
+          }
+        });
+
+        middleNameInput.addEventListener('input', function () {
+          const nameRegex = /^[a-zA-Z\s]*$/;
+          if (nameRegex.test(middleNameInput.value)) {
+            middleNameError.classList.add('d-none');
+            middleNameInput.classList.remove('is-invalid');
+          } else {
+            middleNameError.classList.remove('d-none');
+            middleNameInput.classList.add('is-invalid');
+          }
+        });
+      });
+
+      document.addEventListener('DOMContentLoaded', function () {
+        const lastNameInput = document.getElementById('last_name');
+        const lastNameError = document.getElementById('last-name-error');
+
+        lastNameInput.addEventListener('keypress', function (e) {
+          const key = e.key;
+          const allowed = /^[a-zA-Z\s]$/;
+          if (!allowed.test(key)) {
+            e.preventDefault(); // block invalid character
+            lastNameError.classList.remove('d-none');
+            lastNameInput.classList.add('is-invalid');
+          }
+        });
+
+        lastNameInput.addEventListener('input', function () {
+          const nameRegex = /^[a-zA-Z\s]*$/;
+          if (nameRegex.test(lastNameInput.value)) {
+            lastNameError.classList.add('d-none');
+            lastNameInput.classList.remove('is-invalid');
+          } else {
+            lastNameError.classList.remove('d-none');
+            lastNameInput.classList.add('is-invalid');
+          }
+        });
+      });
+      document.addEventListener('DOMContentLoaded', function () {
+        const ssnInput = document.getElementById('ssn');
+        const errorBox = document.getElementById('ssn-error');
+
+        // Prevent typing anything except numbers
+        ssnInput.addEventListener('keypress', function (e) {
+          if (!/\d/.test(e.key)) {
+            e.preventDefault();
+          }
+        });
+
+        // Also validate on input (for pasted content)
+        ssnInput.addEventListener('input', function () {
+          const value = ssnInput.value;
+
+          // Remove non-digit characters immediately
+          ssnInput.value = value.replace(/\D/g, '');
+
+          // Show error if not exactly 9 digits
+          if (ssnInput.value.length !== 9) {
+            ssnInput.classList.add('is-invalid');
+            errorBox.classList.remove('d-none');
+          } else {
+            ssnInput.classList.remove('is-invalid');
+            errorBox.classList.add('d-none');
+          }
+        });
+      });
+      document.addEventListener('DOMContentLoaded', function () {
+        const dobInput = document.getElementById('date_of_birth');
+        const errorBox = document.getElementById('dob-error');
+
+        // Set max date to yesterday
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const maxDate = yesterday.toISOString().split('T')[0];
+        dobInput.max = maxDate;
+
+        // Validation on input
+        dobInput.addEventListener('input', function () {
+          const selectedDate = new Date(this.value);
+          if (selectedDate > yesterday) {
+            dobInput.classList.add('is-invalid');
+            errorBox.classList.remove('d-none');
+          } else {
+            dobInput.classList.remove('is-invalid');
+            errorBox.classList.add('d-none');
+          }
+        });
+      });
   </script>
 <% end %>

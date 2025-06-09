@@ -13,9 +13,16 @@ class PracticeLocation < ApplicationRecord
 
 
   validates :location, :address1, :city, :state_id, :zip_code, :phone_number, :email, :group_tax_number, presence: true  
-  validates :email, presence: true, uniqueness: true, 
-                    format: { with: /\A[^@\s]+@[^@\s]+\z/, message: "must be a valid email format" }
+  
+  validates :email, presence: true, uniqueness: true,
+                  format: {
+                    with: /\A[^@\s]+@[^@\s]+\.[^@\s]+\z/,
+                    message: "must be a valid email format"
+                  }
 
+  validates :phone_number, presence: true,
+                     format: { with: /\A\+?\d{10,15}\z/, message: "must be 10-15 digits and may start with '+'" }
+                     
   LOCATION_SERVICES = [
     "Acupuncture - SUD",
     "Age Appropriate Immunizations",

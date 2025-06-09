@@ -37,13 +37,13 @@
               <table class="table practice-table mt-4">
                 <thead>
                   <tr>
-                    <th class="text-white"  scope="col">Practice Name</th>
+                    <th class="text-white"  scope="col">Location</th>
                     <th class="text-white"  scope="col">Address</th>
                     <th class="text-white"  scope="col">City</th>
                     <th class="text-white"  scope="col">State/ZIP Code</th>
                     <th class="text-white"  scope="col">Phone</th>
-                    <th class="text-white"  scope="col"></th>
-                    <th class="text-white"  scope="col"></th>
+                    <th class="text-white"  scope="col">Provider</th>
+                    <th class="text-white"  scope="col">Edit</th>
                   </tr>
                 </thead>
                 <tbody id="practice-location">
@@ -176,9 +176,12 @@
                     <% if @non_associated_providers.present? %>
                       <% @non_associated_providers.each do |provider| %>
                         <% next unless provider.full_name.present? || provider.email_address.present? %>
-                        <h6 class="provider-item mt-3" data-provider-id="<%= provider.id %>" draggable="true" style="width: fit-content;">
-                          <%= provider.full_name %>
-                        </h6>
+                        <div class="provider-item mt-3" data-provider-id="<%= provider.id %>" draggable="true" style="width: fit-content;">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="<%= provider.id %>" id="check-<%= provider.id %>">
+                            <label class="form-check-label" for="check-<%= provider.id %>"><%= provider.full_name %></label>
+                          </div>
+                        </div>
                         <br>
                       <% end %>
                     <% else %>
@@ -196,9 +199,9 @@
                     <% if @providers.present? %>
                       <% @providers.each do |provider| %>
                         <% next unless provider.full_name.present? || provider.email_address.present? %>
-                        <h6 class="provider-item mt-3" data-provider-id="<%= provider.id %>" draggable="true" style="width: fit-content;">
+                        <div class="provider-item mt-3" data-provider-id="<%= provider.id %>" draggable="true" style="width: fit-content;">
                           <%= provider.full_name %>
-                        </h6>
+                        </div>
                         <br>
                       <% end %>
                     <% else %>
@@ -284,144 +287,180 @@
 <% end %>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const leftPane = document.querySelector(".associate-left-pane");
-    const rightPane = document.querySelector(".associate-right-pane");
-    const saveButton = document.getElementById("saveProviderAssociations");
-    const practiceLocationInput = document.getElementById("practice_location_id");
+ document.addEventListener("DOMContentLoaded", function () {
+  const leftPane = document.querySelector(".associate-left-pane");
+  const rightPane = document.querySelector(".associate-right-pane");
+  const saveButton = document.getElementById("saveProviderAssociations");
+  const practiceLocationInput = document.getElementById("practice_location_id");
 
-    // Function to fetch and update provider lists
-    function fetchProviders(practiceLocationId) {
-        fetch(`/group-engage/manage_practice_locations?practice_location_id=${practiceLocationId}`, {
-            method: "GET",
-            headers: {
-                "X-Requested-With": "XMLHttpRequest",
-                "Accept": "application/json"
-            }
-        })
-        .then(response => response.json())
-        .then(data => updateProviderLists(data))
-        .catch(error => console.error("Error fetching practice locations:", error));
-    }
+  // Save Button Click
+  saveButton.addEventListener("click", function () {
+    // Sirf checked checkboxes ka value lo for associated providers (right pane)
+    const associatedProviderIds = Array.from(leftPane.querySelectorAll('input.form-check-input:checked'))
+      .map(input => input.value);
 
-    // Function to update the provider lists in UI
-    function updateProviderLists(data) {
-        leftPane.innerHTML = "";
-        rightPane.innerHTML = "";
+    // Sirf checked checkboxes ka value lo for disassociated providers (left pane)
+    const disassociatedProviderIds = Array.from(rightPane.querySelectorAll('input.form-check-input:checked'))
+      .map(input => input.value);
 
-        // Populate left pane with unassociated providers
-        data.non_associated_providers.forEach(provider => {
-            leftPane.innerHTML += `
-                <span class="provider-check mt-3" draggable="true" id="provider-${provider.id}" data-provider-id="${provider.id}">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="${provider.id}" id="check-${provider.id}">
-                    <label class="form-check-label" for="check-${provider.id}">${provider.full_name}</label>
-                  </div>
-                </span>`;
-        });
+    // Hidden inputs me JSON set karo
+    document.getElementById("associated_providers").value = JSON.stringify(associatedProviderIds);
+    document.getElementById("disassociated_providers").value = JSON.stringify(disassociatedProviderIds);
 
-        // Populate right pane with associated providers
-        data.providers.forEach(provider => {
-            rightPane.innerHTML += `
-                <span class="provider-check mt-3" draggable="true" id="provider-${provider.id}" data-provider-id="${provider.id}">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="${provider.id}" id="check-${provider.id}">
-                    <label class="form-check-label" for="check-${provider.id}">${provider.full_name}</label>
-                  </div>
-                </span>`;
-        });
+    // Form submit karo
+    const form = document.getElementById("associateProvidersForm");
+    const formData = new FormData(form);
 
-        initializeDragAndDrop();
-    }
-
-    // Attach event listeners for the associate buttons
-    document.querySelectorAll(".associate-provider-button").forEach(button => {
-        button.addEventListener("click", function () {
-            const practiceLocationId = this.getAttribute("data-practice-location-id");
-            practiceLocationInput.value = practiceLocationId; // Set the selected practice location ID
-            fetchProviders(practiceLocationId);
-        });
-    });
-
-    // Initialize drag-and-drop functionality
-    function initializeDragAndDrop() {
-        document.querySelectorAll(".provider-check").forEach(provider => {
-            provider.addEventListener("dragstart", (e) => {
-                e.dataTransfer.setData("text/plain", provider.dataset.providerId);
-                e.target.classList.add("dragging");
-            });
-
-            provider.addEventListener("dragend", (e) => {
-                e.target.classList.remove("dragging");
-            });
-        });
-
-        [leftPane, rightPane].forEach(pane => {
-            pane.addEventListener("dragover", (e) => {
-                e.preventDefault();
-                pane.classList.add("drag-over");
-            });
-
-            pane.addEventListener("dragleave", () => {
-                pane.classList.remove("drag-over");
-            });
-
-            pane.addEventListener("drop", (e) => {
-                e.preventDefault();
-                pane.classList.remove("drag-over");
-
-                let providerId = e.dataTransfer.getData("text/plain");
-                let draggedElement = document.getElementById(`provider-${providerId}`);
-
-                if (draggedElement && !pane.contains(draggedElement)) {
-                    pane.appendChild(draggedElement);
-                    
-                    // Determine association status and update backend
-                    let isAssociated = pane.classList.contains("associate-right-pane");
-                    updateProviderAssociation([providerId], isAssociated);
-                }
-            });
-        });
-    }
-
-    // Function to send AJAX request when provider is dragged & dropped
-    function updateProviderAssociation(providerIds, isAssociated) {
-        let formData = new FormData();
-        formData.append("practice_location_id", practiceLocationInput.value);
-
-        if (isAssociated) {
-            formData.append("associated_providers", JSON.stringify(providerIds));
-        } else {
-            formData.append("disassociated_providers", JSON.stringify(providerIds));
-        }
-
-        fetch("/update_provider_associations", {
-            method: "POST",
-            headers: {
-                "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content"),
-                "Accept": "application/json"
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "success") {
-                console.log("Provider association updated successfully.");
-               
-            } else {
-                alert("Error updating provider association.");
-            }
-        })
-        .catch(error => console.error("Error updating provider association:", error));
-    }
-    saveButton.addEventListener("click", function () {
-      let modal = document.getElementById("providerAssociationModal"); // Replace with actual modal ID
-      let bootstrapModal = bootstrap.Modal.getInstance(modal);
-      if (bootstrapModal) {
-        bootstrapModal.hide();
+    fetch(form.action, {
+      method: "POST",
+      body: formData,
+      headers: {
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
       }
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          window.location.reload();
+        } else {
+          alert("Error saving provider associations.");
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("Something went wrong.");
+      });
+  });
+
+  // Fetch Providers
+  function fetchProviders(practiceLocationId) {
+    fetch(`/group-engage/manage_practice_locations?practice_location_id=${practiceLocationId}`, {
+      method: "GET",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        "Accept": "application/json"
+      }
+    })
+      .then(response => response.json())
+      .then(data => updateProviderLists(data))
+      .catch(error => console.error("Error fetching practice locations:", error));
+  }
+
+  // Update Left & Right Pane
+  function updateProviderLists(data) {
+    leftPane.innerHTML = "";
+    rightPane.innerHTML = "";
+
+    data.non_associated_providers.forEach(provider => {
+      leftPane.innerHTML += `
+        <div class="provider-item mt-3" draggable="true" id="provider-${provider.id}" data-provider-id="${provider.id}">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="${provider.id}" id="check-${provider.id}">
+            <label class="form-check-label" for="check-${provider.id}">${provider.full_name}</label>
+          </div>
+        </div>`;
     });
 
+    data.providers.forEach(provider => {
+      rightPane.innerHTML += `
+        <div class="provider-item mt-3" draggable="true" id="provider-${provider.id}" data-provider-id="${provider.id}">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="${provider.id}" id="check-${provider.id}">
+            <label class="form-check-label" for="check-${provider.id}">${provider.full_name}</label>
+          </div>
+        </div>`;
+    });
+
+    initializeDragAndDrop();
+  }
+
+  // Button to Fetch Providers
+  document.querySelectorAll(".associate-provider-button").forEach(button => {
+    button.addEventListener("click", function () {
+      const practiceLocationId = this.getAttribute("data-practice-location-id");
+      practiceLocationInput.value = practiceLocationId;
+      fetchProviders(practiceLocationId);
+    });
+  });
+
+  // Drag and Drop Logic
+    function initializeDragAndDrop() {
+    document.querySelectorAll(".provider-item").forEach(provider => {
+      provider.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("text/plain", provider.dataset.providerId);
+        e.target.classList.add("dragging");
+      });
+
+      provider.addEventListener("dragend", (e) => {
+        e.target.classList.remove("dragging");
+      });
+    });
+
+    [leftPane, rightPane].forEach(pane => {
+      pane.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        pane.classList.add("drag-over");
+      });
+
+      pane.addEventListener("dragleave", () => {
+        pane.classList.remove("drag-over");
+      });
+
+      pane.addEventListener("drop", (e) => {
+        e.preventDefault();
+        pane.classList.remove("drag-over");
+
+        let providerId = e.dataTransfer.getData("text/plain");
+        let draggedElement = document.getElementById(`provider-${providerId}`);
+
+        if (draggedElement && !pane.contains(draggedElement)) {
+          pane.appendChild(draggedElement);
+
+          // Checkbox update karte hain:
+          let checkbox = draggedElement.querySelector("input.form-check-input");
+          if (checkbox) {
+            checkbox.checked = pane.classList.contains("associate-right-pane"); // agar right pane me hai to checked, left pane to unchecked
+          }
+
+          // Optional: Agar turant server update chahiye on drag-drop, to uncomment karo:
+          /*
+          let isAssociated = pane.classList.contains("associate-right-pane");
+          updateProviderAssociation([providerId], isAssociated);
+          */
+        }
+      });
+    });
+  }
+
+  // API call after drag-and-drop
+  function updateProviderAssociation(providerIds, isAssociated) {
+    let formData = new FormData();
+    formData.append("practice_location_id", practiceLocationInput.value);
+
+    if (isAssociated) {
+      formData.append("associated_providers", JSON.stringify(providerIds));
+    } else {
+      formData.append("disassociated_providers", JSON.stringify(providerIds));
+    }
+
+    fetch("/update_provider_associations", {
+      method: "POST",
+      headers: {
+        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content"),
+        "Accept": "application/json"
+      },
+      body: formData
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "success") {
+          console.log("Provider association updated successfully.");
+        } else {
+          alert("Error updating provider association.");
+        }
+      })
+      .catch(error => console.error("Error updating provider association:", error));
+  }
 });
 
 </script>

@@ -13,7 +13,7 @@ class ClientOrganizationsController < ApplicationController
     client_organization = ClientOrganization.take
 
     if client_organization.update(client_organization_params)
-      redirect_to request.referrer, notice: 'Client organization successfully added.'
+      redirect_to request.referrer, notice: 'Client organization successfully updated.'
     else
       redirect_to request.referrer, alert: 'Something went wrong. Please try again.'
     end
