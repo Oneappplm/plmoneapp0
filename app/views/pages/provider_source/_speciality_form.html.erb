@@ -56,24 +56,92 @@
 
 		<div id="certification_fields_<%= index %>" style="display: none;">
 			<div class="row">
-				<% ["certifying_board", "address_line_1", "address_line_2", "city", "state", "zipcode"].each do |field| %>
+			  <% ["certifying_board", "address_line_1", "address_line_2", "city", "zipcode"].each do |field| %>
+			    <div class="col-lg-6 mb-3">
+			      <label class="text-dark-grey">
+			        <%= field.titleize.gsub("_", " ") %> <span class="text-danger">*</span>
+			      </label>
+
+			      <input type="text"
+			             name="provider_source_specialities[<%= index %>][<%= field %>]"
+			             value="<%= specialty.send(field) %>"
+			             class="form-control border-dark <%= 'city-input' if field.include?('city') %> <%= 'zipcode-input' if field.include?('zipcode') %>"
+			             data-type="normal"
+			             data-index="<%= index %>"
+			             maxlength="<%= 5 if field == 'zipcode' %>">
+
+			      <% if field.include?("city") %>
+						  <div class="text-danger city-error-msg" data-index="<%= index %>" data-type="normal" style="display: none;">
+						    Only alphabets allowed in city.
+						  </div>
+						<% elsif field.include?("zipcode") %>
+						  <div class="text-danger zipcode-error-msg" data-index="<%= index %>" data-type="normal" style="display: none;">
+						    Only digits allowed in zipcode.
+						  </div>
+						<% end %>
+			    </div>
+			  <% end %>
+
+			  <div class="col-lg-6 mb-3">
+			    <label><span class="text-danger">*</span> State</label>
+			    <%= select_tag "provider_source_specialities[#{index}][state]",
+			          options_for_select(State.all.pluck(:name, :name), specialty.state),
+			          prompt: "Select a State",
+			          class: "form-select", required: true %>
+			  </div>
 				<div class="col-lg-6 mb-3">
-					<label class="text-dark-grey"><%= field.titleize.gsub("_", " ") %> <span class="text-danger">*</span></label>
-					<input type="text" name="provider_source_specialities[<%= index %>][<%= field %>]" value="<%= specialty.send(field) %>" class="form-control border-dark">
+				  <label class="text-dark-grey">Telephone <span class="text-danger">*</span></label>
+				  <input type="text"
+				         name="provider_source_specialities[<%= index %>][telephone]"
+				         value="<%= specialty.telephone %>"
+				         class="form-control border-dark telephone-input"
+				         data-index="<%= index %>"
+				         data-type="normal"
+				         data-field="telephone">
+				  <div class="text-danger telephone-error-msg"
+				       data-index="<%= index %>"
+				       data-type="normal"
+				       style="display: none;">
+				    Only digits allowed.
+				  </div>
 				</div>
-				<% end %>
+
 				<div class="col-lg-6 mb-3">
-					<label class="text-dark-grey">Telephone <span class="text-danger">*</span></label>
-					<input type="text" name="provider_source_specialities[<%= index %>][telephone]" value="<%= specialty.telephone %>" class="form-control border-dark">
+				  <label class="text-dark-grey">Ext</label>
+				  <input type="text"
+				         name="provider_source_specialities[<%= index %>][ext]"
+				         value="<%= specialty.ext %>"
+				         class="form-control border-dark ext-input"
+				         data-index="<%= index %>"
+				         data-type="normal"
+				         data-field="ext"
+				         maxlength="10">
+				  <div class="text-danger ext-error-msg"
+				       data-index="<%= index %>"
+				       data-type="normal"
+				       style="display: none;">
+				    Only digits allowed.
+				  </div>
 				</div>
+
 				<div class="col-lg-6 mb-3">
-					<label class="text-dark-grey">Ext</label>
-					<input type="text" name="provider_source_specialities[<%= index %>][ext]" value="<%= specialty.ext %>" class="form-control border-dark">
+				  <label class="text-dark-grey">Fax Number</label>
+				  <input type="text"
+				         name="provider_source_specialities[<%= index %>][fax_number]"
+				         value="<%= specialty.fax_number %>"
+				         class="form-control border-dark fax_number-input"
+				         data-index="<%= index %>"
+				         data-type="normal"
+				         data-field="fax_number"
+				         maxlength="10">
+				  <div class="text-danger fax_number-error-msg"
+				       data-index="<%= index %>"
+				       data-type="normal"
+				       style="display: none;">
+				    Only digits allowed.
+				  </div>
 				</div>
-				<div class="col-lg-6 mb-3">
-					<label class="text-dark-grey">Fax Number</label>
-					<input type="text" name="provider_source_specialities[<%= index %>][fax_number]" value="<%= specialty.fax_number %>" class="form-control border-dark">
-				</div>
+
 				<div class="col-lg-6 mb-3">
 					<label class="text-dark-grey">Board Certificate Number</label>
 					<input type="text" name="provider_source_specialities[<%= index %>][bord_certificate_number]" value="<%= specialty.board_certificate_number %>" class="form-control border-dark">
@@ -129,23 +197,88 @@
 
 			<div id="pending_certification_fields_<%= index %>" style="display: none;">
 				<div class="row">
-					<% ["certifying_board", "address_line_1", "address_line_2", "city", "state", "zipcode"].each do |field| %>
+					<% ["certifying_board", "address_line_1", "address_line_2", "city", "zipcode"].each do |field| %>
+				    <div class="col-lg-6 mb-3">
+				      <label class="text-dark-grey">
+				        <%= field.titleize.gsub("_", " ") %> <span class="text-danger">*</span>
+				      </label>
+
+				      <input type="text"
+				             name="provider_source_specialities[<%= index %>][pending_<%= field %>]"
+				             value="<%= specialty.send(field) %>"
+				             class="form-control border-dark <%= 'city-input' if field.include?('city') %> <%= 'zipcode-input' if field.include?('zipcode') %>"
+				             data-type="pending"
+				              data-index="<%= index if field == 'city' || field == 'zipcode' %>"
+					             maxlength="<%= 5 if field == 'zipcode' %>">
+
+				      <% if field.include?("city") %>
+							  <div class="text-danger city-error-msg" data-index="<%= index %>" data-type="pending" style="display: none;">
+							    Only alphabets allowed in city.
+							  </div>
+							<% elsif field.include?("zipcode") %>
+							  <div class="text-danger zipcode-error-msg" data-index="<%= index %>" data-type="pending" style="display: none;">
+							    Only digits allowed in zipcode.
+							  </div>
+							<% end %>
+				    </div>
+				  <% end %>
+
+				  <div class="col-lg-6 mb-3">
+				    <label><span class="text-danger">*</span> State</label>
+				    <%= select_tag "provider_source_specialities[#{index}][pending_state]",
+				          options_for_select(State.all.pluck(:name, :name), specialty.pending_state),
+				          prompt: "Select a State",
+				          class: "form-select", required: true %>
+				  </div>
 					<div class="col-lg-6 mb-3">
-						<label class="text-dark-grey">Pending <%= field.titleize.gsub("_", " ") %><span class="text-danger">*</span></label>
-						<input type="text" name="provider_source_specialities[<%= index %>][pending_<%= field %>]" class="form-control border-dark" value="<%= specialty.send(field) %>">
+					  <label class="text-dark-grey">Telephone</label>
+					  <input type="text"
+					         name="provider_source_specialities[<%= index %>][pending_telephone]"
+					         value="<%= specialty.pending_telephone %>"
+					         class="form-control border-dark pending_telephone-input"
+					         data-index="<%= index %>"
+					         data-type="pending"
+					         data-field="telephone">
+					  <div class="text-danger telephone-error-msg"
+					       data-index="<%= index %>"
+					       data-type="pending"
+					       style="display: none;">
+					    Only digits allowed.
+					  </div>
 					</div>
-					<% end %>
+
 					<div class="col-lg-6 mb-3">
-						<label class="text-dark-grey">Pending Telephone</label>
-						<input type="text" name="provider_source_specialities[<%= index %>][pending_telephone]" class="form-control border-dark">
+					  <label class="text-dark-grey">Ext</label>
+					  <input type="text"
+					         name="provider_source_specialities[<%= index %>][pending_ext]"
+					         value="<%= specialty.pending_ext %>"
+					         class="form-control border-dark pending_ext-input"
+					         data-index="<%= index %>"
+					         data-type="pending"
+					         data-field="ext">
+					  <div class="text-danger ext-error-msg"
+					       data-index="<%= index %>"
+					       data-type="pending"
+					       style="display: none;">
+					    Only digits allowed.
+					  </div>
 					</div>
+
 					<div class="col-lg-6 mb-3">
-						<label class="text-dark-grey">Pending Ext</label>
-						<input type="text" name="provider_source_specialities[<%= index %>][pending_ext]" class="form-control border-dark">
-					</div>
-					<div class="col-lg-6 mb-3">
-						<label class="text-dark-grey">Pending Fax Number</label>
-						<input type="text" name="provider_source_specialities[<%= index %>][pending_fax_number]" class="form-control border-dark">
+					  <label class="text-dark-grey">Fax Number</label>
+					  <input type="text"
+					         name="provider_source_specialities[<%= index %>][pending_fax_number]"
+					         value="<%= specialty.pending_fax_number %>"
+					         class="form-control border-dark pending_fax_number"
+					         data-index="<%= index %>"
+					         data-type="pending"
+					         data-field="fax_number">
+					  <div class="text-danger fax_number-error-msg"
+					       data-index="<%= index %>"
+					       data-type="pending"
+					       style="display: none;">
+					    Only digits allowed.
+					  </div>
 					</div>
 					<div class="col-lg-6 mb-3">
 						<label class="text-dark-grey">Board Exam Date</label>
@@ -232,3 +365,76 @@
 	  </button>
 	</div>  
 </div>
+<script>
+$(document).on('input', '.city-input', function () {
+  var $this = $(this);
+  var value = $this.val();
+  var index = $this.data('index');
+  var type = $this.data('type');
+
+  var errorMsg = $('.city-error-msg[data-index="' + index + '"][data-type="' + type + '"]');
+
+  if (!/^[a-zA-Z\s]*$/.test(value)) {
+    errorMsg.show();
+    $this.addClass('is-invalid');
+  } else {
+    errorMsg.hide();
+    $this.removeClass('is-invalid');
+  }
+});
+
+
+$(document).on('input', '.zipcode-input', function () {
+  var $this = $(this);
+  var value = $this.val();
+  var index = $this.data('index');
+  var type = $this.data('type');
+
+  var errorMsg = $('.zipcode-error-msg[data-index="' + index + '"][data-type="' + type + '"]');
+
+  if (/\D/.test(value)) {
+    errorMsg.show();
+    $this.addClass('is-invalid');
+
+    setTimeout(function () {
+      $this.val(value.replace(/\D/g, ''));
+    }, 0);
+
+    setTimeout(function () {
+      errorMsg.fadeOut();
+      $this.removeClass('is-invalid');
+    }, 2000);
+  } else {
+    errorMsg.hide();
+    $this.removeClass('is-invalid');
+  }
+});
+$(document).on('input', '.telephone-input, .pending_telephone-input, .ext-input, .pending_ext-input, .fax_number-input, .pending_fax_number', function () {
+  var $this = $(this);
+  var value = $this.val();
+  var index = $this.data('index');
+  var type = $this.data('type');
+  var field = $this.data('field'); // 'telephone', 'ext', or 'fax_number'
+
+  var errorClass = '.' + field + '-error-msg[data-index="' + index + '"][data-type="' + type + '"]';
+  var errorMsg = $(errorClass);
+
+  if (/\D/.test(value)) {
+    errorMsg.show();
+    $this.addClass('is-invalid');
+
+    setTimeout(function () {
+      $this.val(value.replace(/\D/g, ''));
+    }, 0);
+
+    setTimeout(function () {
+      errorMsg.fadeOut();
+      $this.removeClass('is-invalid');
+    }, 2000);
+  } else {
+    errorMsg.hide();
+    $this.removeClass('is-invalid');
+  }
+});
+
+</script>
