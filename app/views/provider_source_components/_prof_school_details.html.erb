@@ -34,11 +34,28 @@
   <div class="row mb-3">
     <div class="col-lg-6">
       <label class="text-dark-grey">City<span class="text-danger">*</span></label>
-      <input type="text" class="form-control border-dark" required name="graduate_details[<%= index %>][city]" placeholder="City" value="<%= graduate_detail.city %>">
+      <input type="text"
+       class="form-control border-dark prof-city-input"
+       required
+       name="graduate_details[<%= index %>][city]"
+       placeholder="City"
+       value="<%= graduate_detail.city %>"
+       data-index="<%= index %>"
+       data-field="prof-city"
+       data-validate="alpha">
+
+      <div class="text-danger prof-city-error-msg"
+           data-index="<%= index %>"
+           style="display: none;">
+        Only alphabets allowed in city.
+      </div>
     </div>
     <div class="col-lg-6">
       <label class="text-dark-grey">Zip Code<span class="text-danger">*</span></label>
-      <input type="text" class="form-control border-dark" required name="graduate_details[<%= index %>][zip_code]" placeholder="Zip Code" value="<%= graduate_detail.zip_code %>">
+      <input type="text" class="form-control border-dark prof-zipcode-input" required name="graduate_details[<%= index %>][zip_code]" placeholder="Zip Code" value="<%= graduate_detail.zip_code %>" data-index="<%= index %>">
+      <div class="text-danger prof-zipcode-error-msg" data-index="<%= index %>"style="display: none;">
+        Only digits allowed in zipcode.
+      </div>
     </div>
   </div>
 
@@ -47,31 +64,46 @@
       <div class="row">
         <div class="col-lg-8">
           <label class="text-dark-grey">Telephone Number</label>
-          <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][telephone_number]" placeholder="Telephone Number" value="<%= graduate_detail.telephone_number %>">
+          <input type="text" class="form-control border-dark prof-telephone-input" name="graduate_details[<%= index %>][telephone_number]" placeholder="Telephone Number" value="<%= graduate_detail.telephone_number %>" data-index="<%= index %>" data-field="prof-telephone">
+          <div class="text-danger prof-telephone-error-msg"
+             data-index="<%= index %>"
+             style="display: none;">
+            Only digits allowed.
+          </div>
         </div>
         <div class="col-lg-4">
           <label class="text-dark-grey">Ext</label>
-          <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][ext]" placeholder="Ext" value="<%= graduate_detail.telephone_ext %>">
+          <input type="text" class="form-control border-dark prof-ext-input" name="graduate_details[<%= index %>][ext]" placeholder="Ext" value="<%= graduate_detail.telephone_ext %>" data-index="<%= index %>" data-field="prof-ext">
+          <div class="text-danger prof-ext-error-msg"
+             data-index="<%= index %>"
+             style="display: none;">
+            Only digits allowed.
+          </div>
         </div>
       </div>
     </div>
     <div class="col-lg-6">
       <label class="text-dark-grey">Fax Number</label>
-      <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][fax_number]" placeholder="Fax Number" value="<%= graduate_detail.fax_number %>">
+      <input type="text" class="form-control border-dark prof_fax_number-input" name="graduate_details[<%= index %>][fax_number]" placeholder="Fax Number" value="<%= graduate_detail.fax_number %>" data-index="<%= index %>" data-field="prof_fax_number">
+      <div class="text-danger prof_fax_number-error-msg"
+           data-index="<%= index %>"
+           style="display: none;">
+        Only digits allowed.
+      </div>
     </div>
   </div>
 
-  <div class="row mb-3">
+ <!--  <div class="row mb-3">
     <div class="col-lg-5">
       <label class="text-dark-grey">Email</label>
-      <input type="email" class="form-control border-dark" name="graduate_details[<%= index %>][email]" placeholder="Email" value="<%= graduate_detail.email %>">
+      <input type="email" class="form-control border-dark" name="graduate_details[<%#= index %>][email]" placeholder="Email" value="<%#= graduate_detail.email %>">
     </div>
-  </div>
+  </div> -->
 
   <div class="graduate-fields mb-4" data-index="<%= index %>">
     <div class="row mb-3">
       <div class="col-lg-6">
-        <label class="text-dark-grey">Graduate Type</label>
+        <label class="text-dark-grey">Education Type</label>
         <select name="graduate_details[<%= index %>][graduate_type]" class="form-select border-dark">
           <option value="">Graduate Type</option>
           <option <%= 'selected' if graduate_detail.graduate_type == 'Fifth Pathway Graduate' %>>Fifth Pathway Graduate</option>
@@ -84,32 +116,97 @@
     <div class="row mb-3">
       <div class="col-lg-12">
         <label class="text-dark-grey">Specialization</label>
-        <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][specialization]" placeholder="Specialization" value="<%= graduate_detail.specialization %>">
+        <input type="text"
+               class="form-control border-dark specialization-input"
+               name="graduate_details[<%= index %>][specialization]"
+               placeholder="Specialization"
+               value="<%= graduate_detail.specialization %>"
+               data-index="<%= index %>"
+               data-field="specialization"
+               data-validate="alpha">
+
+        <div class="text-danger specialization-error-msg"
+             data-index="<%= index %>"
+             style="display: none;">
+          Only alphabets allowed.
+        </div>
       </div>
     </div>
 
     <div class="row mb-3">
       <div class="col-lg-12">
         <label class="text-dark-grey">Degree Awarded <span class="text-danger">*</span></label>
-        <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][degree_awarded]" placeholder="Degree Awarded" value="<%= graduate_detail.degree_awarded %>">
+        <input type="text"
+               class="form-control border-dark prof-degree-awarded-input"
+               name="graduate_details[<%= index %>][degree_awarded]"
+               placeholder="Degree Awarded"
+               value="<%= graduate_detail.degree_awarded %>"
+               data-index="<%= index %>"
+               data-field="prof-degree-awarded"
+               data-validate="alpha">
+
+        <div class="text-danger prof-degree-awarded-error-msg"
+             data-index="<%= index %>"
+             style="display: none;">
+          Only alphabets allowed in degree awarded.
+        </div>
       </div>
     </div>
 
     <div class="row mb-3">
       <div class="col-lg-6">
         <label class="text-dark-grey">Faculty Director First Name</label>
-        <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][faculty_director_first_name]" placeholder="Faculty Director First Name" value="<%= graduate_detail.faculty_director_first_name %>">
+        <input type="text"
+               class="form-control border-dark faculty_director_first_name-input"
+               name="graduate_details[<%= index %>][faculty_director_first_name]"
+               placeholder="First Name"
+               value="<%= graduate_detail.faculty_director_first_name %>"
+               data-index="<%= index %>"
+               data-field="faculty_director_first_name"
+               data-validate="alpha">
+
+        <div class="text-danger faculty_director_first_name-error-msg"
+             data-index="<%= index %>"
+             style="display: none;">
+          Only alphabets allowed.
+        </div>
       </div>
       <div class="col-lg-6">
         <label class="text-dark-grey">Faculty Director Last Name</label>
-        <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][faculty_director_last_name]" placeholder="Faculty Director Last Name" value="<%= graduate_detail.faculty_director_last_name %>">
+         <input type="text"
+               class="form-control border-dark faculty_director_last_name-input"
+               name="graduate_details[<%= index %>][faculty_director_last_name]"
+               placeholder="Last Name"
+               value="<%= graduate_detail.faculty_director_last_name %>"
+               data-index="<%= index %>"
+               data-field="faculty_director_last_name"
+               data-validate="alpha">
+
+        <div class="text-danger faculty_director_last_name-error-msg"
+             data-index="<%= index %>"
+             style="display: none;">
+          Only alphabets allowed.
+        </div>
       </div>
     </div>
 
     <div class="row mb-3">
       <div class="col-lg-12">
         <label class="text-dark-grey">Director Degree</label>
-        <input type="text" name="graduate_details[<%= index %>][director_degree]" class="form-control border-dark" placeholder="Director Degree" value="<%= graduate_detail.director_degree %>">
+         <input type="text"
+               class="form-control border-dark director_degree-input"
+               name="graduate_details[<%= index %>][director_degree]"
+               placeholder="Director Degree"
+               value="<%= graduate_detail.director_degree %>"
+               data-index="<%= index %>"
+               data-field="director_degree"
+               data-validate="alpha">
+
+        <div class="text-danger director_degree-error-msg"
+             data-index="<%= index %>"
+             style="display: none;">
+          Only alphabets allowed.
+        </div>
       </div>
     </div>
 
@@ -130,64 +227,77 @@
           <label class="text-dark-grey">Did you complete your professional education at this school? <span class="text-danger">*</span></label>
           <div class="d-flex me-4 gap-2">
             <div>
-              <input type="radio" name="graduate_details[<%= index %>][education_completed]" class="radio-with-form" data-form="prof_school_reason_<%= index %>" value="true" <%= 'checked' if graduate_detail.education_completed == true %> >
+              <input type="radio"
+                     name="graduate_details[<%= index %>][education_completed]"
+                     class="prof-edu-complete-toggle"
+                     data-index="<%= index %>"
+                     value="true"
+                     <%= 'checked' if graduate_detail.education_completed == true %>>
               <span>YES</span>
             </div>
             <div>
-              <input type="radio" name="graduate_details[<%= index %>][education_completed]" class="radio-with-form" data-form="prof_school_reason_<%= index %>" value="false" <%= 'checked' if graduate_detail.education_completed == false %> >
+              <input type="radio"
+                     name="graduate_details[<%= index %>][education_completed]"
+                     class="prof-edu-complete-toggle"
+                     data-index="<%= index %>"
+                     value="false"
+                     <%= 'checked' if graduate_detail.education_completed == false %>>
               <span>NO</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div id="prof_school_reason_<%= index %>" style="<%= graduate_detail.education_completed == false ? '' : 'display: none;' %>">
-        <div class="form-group">
-          <label>Reason for not completing <span class="text-danger">*</span></label>
-          <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][incomplete_education_reason]" value="<%= graduate_detail.incomplete_education_reason %>">
+      <div id="prof_school_reason_<%= index %>" class="<%= graduate_detail.education_completed == false ? '' : 'd-none' %>">
+        <div class="form-group mt-2">
+          <label>Please explain why you did not complete your professional education at this school.</label>
+          <textarea class="form-control border-dark"
+                    name="graduate_details[<%= index %>][incomplete_education_reason]"
+                    rows="5"><%= graduate_detail.incomplete_education_reason %></textarea>
         </div>
       </div>
 
-      <div class="border p-3 mt-3">
-        <h6 class="fw-bold">ECFMG</h6>
+
+      <!-- <div class="border p-3 mt-3"> -->
+        <!-- <h6 class="fw-bold">ECFMG</h6>
 
         <div class="d-flex align-items-center gap-3">
           <label class="mb-0">Are you ECFMG certified (non-U.S./Canadian graduates only)?</label>
           <div class="d-flex gap-2">
-            <input type="radio" name="graduate_details[<%= index %>][ecfmg_certified]" value="true" <%= 'checked' if graduate_detail.ecfmg_certified == true %> >
+            <input type="radio" name="graduate_details[<%#= index %>][ecfmg_certified]" value="true" <%#= 'checked' if graduate_detail.ecfmg_certified == true %> >
             <span>YES</span>
           </div>
           <div class="d-flex gap-2">
-            <input type="radio" name="graduate_details[<%= index %>][ecfmg_certified]" value="false" <%= 'checked' if graduate_detail.ecfmg_certified == false %> >
+            <input type="radio" name="graduate_details[<%#= index %>][ecfmg_certified]" value="false" <%#= 'checked' if graduate_detail.ecfmg_certified == false %> >
             <span>NO</span>
           </div>
         </div>
-
-        <div id="ecfmg_fields_<%= index %>" style="<%= graduate_detail.ecfmg_certified ? '' : 'display: none;' %> margin-top: 15px;">
+ -->
+        <!-- <div id="ecfmg_fields_<%#= index %>" style="<%#= graduate_detail.ecfmg_certified ? '' : 'display: none;' %> margin-top: 15px;">
           <div class="row mb-2">
             <div class="col-lg-6">
               <label class="text-dark-grey">ECFMG Certification Number</label>
-              <input type="text" class="form-control border-dark" name="graduate_details[<%= index %>][ecfmg_number]" value="<%= graduate_detail.ecfmg_number %>">
+              <input type="text" class="form-control border-dark" name="graduate_details[<%#= index %>][ecfmg_number]" value="<%#= graduate_detail.ecfmg_number %>">
             </div>
           </div>
 
           <div class="row mb-2">
             <div class="col-lg-6">
               <label class="text-dark-grey">Issue Date (MM/DD/YYYY)</label>
-              <input type="date" class="form-control border-dark" name="graduate_details[<%= index %>][ecfmg_issue_date]" value="<%= graduate_detail.ecfmg_issue_date %>">
+              <input type="date" class="form-control border-dark" name="graduate_details[<%#= index %>][ecfmg_issue_date]" value="<%#= graduate_detail.ecfmg_issue_date %>">
             </div>
             <div class="col-lg-6">
               <label class="text-dark-grey">Valid Through Date (MM/DD/YYYY)</label>
-              <input type="date" class="form-control border-dark" name="graduate_details[<%= index %>][ecfmg_valid_through]" value="<%= graduate_detail.ecfmg_valid_through %>">
+              <input type="date" class="form-control border-dark" name="graduate_details[<%#= index %>][ecfmg_valid_through]" value="<%#= graduate_detail.ecfmg_valid_through %>">
             </div>
           </div>
 
           <div class="form-check">
-            <input type="checkbox" class="form-check-input" name="graduate_details[<%= index %>][ecfmg_permanent]" value="true" <%= 'checked' if graduate_detail.ecfmg_permanent %>>
+            <input type="checkbox" class="form-check-input" name="graduate_details[<%#= index %>][ecfmg_permanent]" value="true" <%#= 'checked' if graduate_detail.ecfmg_permanent %>>
             <label class="form-check-label">Permanent</label>
           </div>
-        </div>
-      </div>
+        </div> -->
+      <!-- </div> -->
     </div>
   </div>
 
@@ -195,3 +305,85 @@
     <i class="bi bi-x-circle"></i> Remove
   </button>
 </div>
+<script>
+$(document).on('input', 'input[data-validate="alpha"]', function () {
+  var $this = $(this);
+  var value = $this.val();
+  var index = $this.data('index');
+  var field = $this.data('field'); // e.g., 'city', 'degree-awarded', 'specialization'
+
+  var errorMsg = $('.' + field + '-error-msg[data-index="' + index + '"]');
+
+  if (!/^[a-zA-Z\s]*$/.test(value)) {
+    errorMsg.show();
+    $this.addClass('is-invalid');
+  } else {
+    errorMsg.hide();
+    $this.removeClass('is-invalid');
+  }
+});
+
+
+
+$(document).on('input', '.prof-zipcode-input', function () {
+  var $this = $(this);
+  var value = $this.val();
+  var index = $this.data('index');
+
+  var errorMsg = $('.prof-zipcode-error-msg[data-index="' + index + '"]');
+
+  if (/\D/.test(value)) {
+    errorMsg.show();
+    $this.addClass('is-invalid');
+
+    setTimeout(function () {
+      $this.val(value.replace(/\D/g, ''));
+    }, 0);
+
+    setTimeout(function () {
+      errorMsg.fadeOut();
+      $this.removeClass('is-invalid');
+    }, 2000);
+  } else {
+    errorMsg.hide();
+    $this.removeClass('is-invalid');
+  }
+});
+$(document).on('input', '.prof-telephone-input,  .prof-ext-input , .prof-fax_number-input', function () {
+  var $this = $(this);
+  var value = $this.val();
+  var index = $this.data('index');
+  var field = $this.data('field'); // 'telephone', 'ext', or 'fax_number'
+  var errorClass = '.' + field + '-error-msg[data-index="' + index + '"]';
+  var errorMsg = $(errorClass);
+
+  if (/\D/.test(value)) {
+    errorMsg.show();
+    $this.addClass('is-invalid');
+
+    setTimeout(function () {
+      $this.val(value.replace(/\D/g, ''));
+    }, 0);
+
+    setTimeout(function () {
+      errorMsg.fadeOut();
+      $this.removeClass('is-invalid');
+    }, 2000);
+  } else {
+    errorMsg.hide();
+    $this.removeClass('is-invalid');
+  }
+});
+$(document).on('change', '.prof-edu-complete-toggle', function () {
+  var index = $(this).data('index');
+  var value = $(this).val(); // "true" or "false"
+  var $reasonBox = $('#prof_school_reason_' + index);
+
+  if (value === "false") {
+    $reasonBox.removeClass('d-none');
+  } else {
+    $reasonBox.addClass('d-none');
+  }
+});
+
+</script>

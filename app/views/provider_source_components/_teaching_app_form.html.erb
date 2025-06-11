@@ -7,6 +7,7 @@
 	<div class="col-lg-12">
 		<label class="form-label">Teaching Program Name <span class="text-danger">*</span></label>
 		<input type="text" class="form-control border-dark" name="taf-psn">
+		<div class="validation-error-msg text-danger small d-none"></div>
 	</div>
 </div>
 
@@ -25,10 +26,12 @@
 	<div class="col-lg-6">
 		<label class="form-label">City <span class="text-danger">*</span></label>
 		<input type="text" class="form-control border-dark" name="taf-city">
+		<div class="validation-error-msg text-danger small d-none"></div>
 	</div>
 	<div class="col-lg-6">
 		<label class="form-label">Zip Code <span class="text-danger">*</span></label>
 		<input type="text" class="form-control border-dark" name="taf-zipcode">
+		<div class="validation-error-msg text-danger small d-none"></div>
 	</div>
 </div>
 
@@ -38,44 +41,52 @@
 			<div class="col-lg-8">
 				<label class="form-label">Telephone Number</label>
 				<input type="text" class="form-control border-dark" name="taf-telephone-number">
+				<div class="validation-error-msg text-danger small d-none"></div>
 			</div>
 			<div class="col-lg-4">
 				<label class="form-label">Ext</label>
 				<input type="text" class="form-control border-dark" name="taf-ext">
+				<div class="validation-error-msg text-danger small d-none"></div>
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-6">
 		<label class="form-label">Fax Number</label>
 		<input type="text" class="form-control border-dark" name="taf-fax-number">
+		<div class="validation-error-msg text-danger small d-none"></div>
 	</div>
 </div>
 <div class="row mb-3">
 	<div class="col-lg-5">
 		<label class="form-label">Email</label>
 		<input type="email"  class="form-control border-dark" name="taf-email">
+		<div class="validation-error-msg text-danger small d-none"></div>
 	</div>
 </div>
 <div class="row mb-3">
 	<div class="col-lg-6">
 		<label class="form-label">Program Director First Name</label>
 		<input type="text" class="form-control border-dark" name="taf-pd-first-name">
+		<div class="validation-error-msg text-danger small d-none"></div>
 	</div>
 	<div class="col-lg-6">
 		<label class="form-label">Program Director Last Name</label>
 		<input type="text" class="form-control border-dark" name="taf-pd-last-name">
+		<div class="validation-error-msg text-danger small d-none"></div>
 	</div>
 </div>
 <div class="row mb-3">
 	<div class="col-lg-12">
 		<label class="form-label">Program Director Degree</label>
 		<input type="text" name="taf-pd-degree" class="form-control border-dark">
+		<div class="validation-error-msg text-danger small d-none"></div>
 	</div>
 </div>
 <div class="row mb-3">
 	<div class="col-lg-12">
 		<label class="form-label">Academic Rank or Title</label>
 		<input type="text" name="taf-ar-degree" class="form-control border-dark">
+		<div class="validation-error-msg text-danger small d-none"></div>
 	</div>
 </div>
 <div class="row mb-3">
@@ -128,6 +139,63 @@ $(document).ready(function() {
   $('#teaching-school-location').on('change', function() {
     var selectedValue = $(this).val();
     localStorage.setItem('teachingSchoolLocation', selectedValue);
+  });
+});
+
+$(document).ready(function () {
+  function showError($input, message) {
+    $input.addClass('is-invalid');
+    const $errorDiv = $input.siblings('.validation-error-msg');
+    if ($errorDiv.length) {
+      $errorDiv.text(message).removeClass('d-none');
+    }
+  }
+
+  function clearError($input) {
+    $input.removeClass('is-invalid');
+    const $errorDiv = $input.siblings('.validation-error-msg');
+    if ($errorDiv.length) {
+      $errorDiv.addClass('d-none');
+    }
+  }
+
+  const validators = [
+    {
+      selector: 'input[name="taf-city"], input[name="taf-pd-first-name"], input[name="taf-pd-last-name"], input[name="taf-psn"]',
+      regex: /^[a-zA-Z\s]*$/,
+      message: 'Only alphabets and spaces allowed.'
+    },
+    {
+      selector: 'input[name="taf-zipcode"]',
+      regex: /^\d{5,6}$/,
+      message: 'Zip code must be 5 or 6 digits.'
+    },
+    {
+      selector: 'input[name="taf-email"]',
+      regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      message: 'Enter a valid email address.'
+    },
+    {
+      selector: 'input[name*="telephone-number"], input[name*="fax-number"], input[name*="ext"]',
+      regex: /^[0-9+\-\s]*$/,
+      message: 'Only numbers, +, and - are allowed.'
+    },
+    {
+      selector: 'input[name="taf-pd-degree"], input[name="taf-ar-degree"]',
+      regex: /^[a-zA-Z.\s]*$/,
+      message: 'Only alphabets, spaces, and periods allowed.'
+    }
+  ];
+
+  validators.forEach(({ selector, regex, message }) => {
+    $(document).on('input', selector, function () {
+      const $this = $(this);
+      if (!regex.test($this.val())) {
+        showError($this, message);
+      } else {
+        clearError($this);
+      }
+    });
   });
 });
 
