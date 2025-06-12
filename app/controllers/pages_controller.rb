@@ -105,6 +105,7 @@ class PagesController < ApplicationController
 	end
 
 	def virtual_review_committee
+    @provider_personal_informations = ProviderPersonalInformation.all
     @q = VirtualReviewCommittee.ransack(params[:q])
     @vrc_documents = VrcDocument.all
     @vrc_directors = User.directors
@@ -308,6 +309,7 @@ class PagesController < ApplicationController
 
 
   def show_virtual_review_committee
+    @provider_personal_informations = ProviderPersonalInformation.all
   	if params[:client_id].present?
   		@vrc = VirtualReviewCommittee.find(params[:client_id])
     elsif params[:id].present?
