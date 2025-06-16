@@ -56,6 +56,10 @@ GEM
       globalid (>= 0.3.6)
     activemodel (7.0.4.2)
       activesupport (= 7.0.4.2)
+    activemodel-serializers-xml (1.0.3)
+      activemodel (>= 5.0.0.a)
+      activesupport (>= 5.0.0.a)
+      builder (~> 3.1)
     activerecord (7.0.4.2)
       activemodel (= 7.0.4.2)
       activesupport (= 7.0.4.2)
@@ -77,6 +81,9 @@ GEM
       activesupport (>= 5.2)
       device_detector
       safely_block (>= 0.2.1)
+    audited (5.8.0)
+      activerecord (>= 5.2, < 8.2)
+      activesupport (>= 5.2, < 8.2)
     base64 (0.3.0)
     bcrypt (3.1.18)
     bindex (0.8.1)
@@ -101,11 +108,19 @@ GEM
       ssrf_filter (~> 1.0)
     case_transform (0.2)
       activesupport
+    chunky_png (1.4.0)
+    cmdparse (3.0.7)
+    combine_pdf (1.0.31)
+      matrix
+      ruby-rc4 (>= 0.1.5)
+    composite_primary_keys (14.0.10)
+      activerecord (~> 7.0.2)
     concurrent-ruby (1.2.2)
     connection_pool (2.4.1)
     countries (5.4.0)
       unaccent (~> 0.3)
     crass (1.0.6)
+    csv (3.3.5)
     date (3.3.3)
     debug (1.7.1)
       irb (>= 1.5.0)
@@ -121,14 +136,32 @@ GEM
       actionmailer (>= 5.0)
       devise (>= 4.6)
     domain_name (0.6.20240107)
+    draper (4.0.4)
+      actionpack (>= 5.0)
+      activemodel (>= 5.0)
+      activemodel-serializers-xml (>= 1.0)
+      activesupport (>= 5.0)
+      request_store (>= 1.0)
+      ruby2_keywords
     erubi (1.12.0)
+    exception_notification (4.6.0)
+      actionmailer (>= 5.2, < 9)
+      activesupport (>= 5.2, < 9)
     excon (0.99.0)
     faker (3.1.1)
       i18n (>= 1.8.11, < 2)
+    faraday (2.13.1)
+      faraday-net_http (>= 2.0, < 3.5)
+      json
+      logger
+    faraday-net_http (3.4.1)
+      net-http (>= 0.5.0)
     ffi (1.17.2)
     ffi-compiler (1.3.2)
       ffi (>= 1.15.5)
       rake
+    figaro (1.2.0)
+      thor (>= 0.14.0, < 2)
     fog-aws (3.18.0)
       fog-core (~> 2.1)
       fog-json (~> 1.1)
@@ -145,8 +178,18 @@ GEM
       fog-core
       nokogiri (>= 1.5.11, < 2.0.0)
     formatador (1.1.0)
+    geocoder (1.8.5)
+      base64 (>= 0.1.0)
+      csv (>= 3.0.0)
+    geom2d (0.4.1)
     globalid (1.2.1)
       activesupport (>= 6.1)
+    hashie (5.0.0)
+    hexapdf (1.3.0)
+      cmdparse (~> 3.0, >= 3.0.3)
+      geom2d (~> 0.4, >= 0.4.1)
+      openssl (>= 2.2.1)
+      strscan (>= 3.1.2)
     http (5.2.0)
       addressable (~> 2.8)
       base64 (~> 0.1)
@@ -165,15 +208,20 @@ GEM
       actionpack (>= 6.0.0)
       railties (>= 6.0.0)
     io-console (0.6.0)
+    iprog_string_utils (0.1.0)
     irb (1.6.2)
       reline (>= 0.3.0)
     jbuilder (2.11.5)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
+    json (2.12.2)
     jsonapi-renderer (0.2.2)
+    jwt (3.0.0)
+      base64
     llhttp-ffi (0.5.1)
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
+    logger (1.7.0)
     loofah (2.19.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -182,6 +230,9 @@ GEM
       net-imap
       net-pop
       net-smtp
+    mail_form (1.10.1)
+      actionmailer (>= 5.2)
+      activemodel (>= 5.2)
     marcel (1.0.2)
     matrix (0.4.2)
     mechanize (2.9.1)
@@ -204,6 +255,9 @@ GEM
     minitest (5.17.0)
     msgpack (1.6.0)
     multi_json (1.15.0)
+    multi_xml (0.6.0)
+    net-http (0.6.0)
+      uri
     net-http-digest_auth (1.4.1)
     net-http-persistent (4.0.2)
       connection_pool (~> 2.2)
@@ -219,7 +273,33 @@ GEM
     nio4r (2.5.8)
     nokogiri (1.14.2-x86_64-linux)
       racc (~> 1.4)
+    noticed (1.6.3)
+      http (>= 4.0.0)
+      rails (>= 5.2.0)
+    oauth2 (2.0.12)
+      faraday (>= 0.17.3, < 4.0)
+      jwt (>= 1.0, < 4.0)
+      logger (~> 1.2)
+      multi_xml (~> 0.5)
+      rack (>= 1.2, < 4)
+      snaky_hash (~> 2.0, >= 2.0.3)
+      version_gem (>= 1.1.8, < 3)
+    omniauth (2.1.3)
+      hashie (>= 3.4.6)
+      rack (>= 2.2.3)
+      rack-protection
+    omniauth-auth0 (3.1.1)
+      omniauth (~> 2)
+      omniauth-oauth2 (~> 1)
+    omniauth-oauth2 (1.8.0)
+      oauth2 (>= 1.4, < 3)
+      omniauth (~> 2.0)
+    omniauth-rails_csrf_protection (1.0.2)
+      actionpack (>= 4.2)
+      omniauth (~> 2.0)
+    openssl (3.3.0)
     orm_adapter (0.5.0)
+    ostruct (0.6.1)
     pdf-core (0.9.0)
     pg (1.4.6)
     pg_search (2.3.6)
@@ -228,6 +308,8 @@ GEM
     prawn (2.4.0)
       pdf-core (~> 0.9.0)
       ttfunk (~> 1.7)
+    prawn-table (0.2.2)
+      prawn (>= 1.3.0, < 3.0.0)
     public_suffix (6.0.2)
     puma (5.6.5)
       nio4r (~> 2.0)
@@ -235,6 +317,9 @@ GEM
     rack (2.2.6.2)
     rack-cors (2.0.1)
       rack (>= 2.0.0)
+    rack-protection (3.2.0)
+      base64 (>= 0.1.0)
+      rack (~> 2.2, >= 2.2.4)
     rack-test (2.0.2)
       rack (>= 1.3)
     rails (7.0.4.2)
@@ -264,11 +349,19 @@ GEM
       thor (~> 1.0)
       zeitwerk (~> 2.5)
     rake (13.3.0)
+    ransack (4.3.0)
+      activerecord (>= 6.1.5)
+      activesupport (>= 6.1.5)
+      i18n
     recaptcha (5.19.0)
     redis (4.8.1)
+    redis-client (0.24.0)
+      connection_pool
     regexp_parser (2.7.0)
     reline (0.3.2)
       io-console (~> 0.5)
+    request_store (1.7.0)
+      rack (>= 1.4)
     responders (3.1.0)
       actionpack (>= 5.2)
       railties (>= 5.2)
@@ -276,8 +369,14 @@ GEM
     roo (2.9.0)
       nokogiri (~> 1)
       rubyzip (>= 1.3.0, < 3.0.0)
+    rqrcode (3.1.0)
+      chunky_png (~> 1.0)
+      rqrcode_core (~> 2.0)
+    rqrcode_core (2.0.0)
+    ruby-rc4 (0.1.5)
     ruby-vips (2.1.4)
       ffi (~> 1.12)
+    ruby2_keywords (0.0.5)
     rubyntlm (0.6.3)
     rubyzip (2.3.2)
     safely_block (0.4.0)
@@ -285,6 +384,15 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
+    sidekiq (7.3.9)
+      base64
+      connection_pool (>= 2.3.0)
+      logger
+      rack (>= 2.2.4)
+      redis-client (>= 0.22.2)
+    snaky_hash (2.0.3)
+      hashie (>= 0.1.0, < 6)
+      version_gem (>= 1.1.8, < 3)
     sprockets (4.2.0)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
@@ -295,6 +403,8 @@ GEM
     ssrf_filter (1.1.1)
     stimulus-rails (1.2.1)
       railties (>= 6.0.0)
+    stripe (15.2.1)
+    strscan (3.1.5)
     sys-filesystem (1.4.3)
       ffi (~> 1.1)
     thor (1.2.1)
@@ -303,6 +413,8 @@ GEM
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unaccent (0.4.0)
+    uri (1.0.3)
+    version_gem (1.1.8)
     warden (1.2.9)
       rack (>= 2.0.9)
     web-console (4.2.0)
@@ -320,9 +432,13 @@ GEM
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    wicked_pdf (2.8.2)
+      activesupport
+      ostruct
     will_paginate (3.3.1)
     will_paginate-bootstrap-style (0.2.4)
       will_paginate (~> 3.0, >= 3.0.0)
+    wkhtmltopdf-binary (0.12.6.9)
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.6.7)
@@ -333,39 +449,61 @@ PLATFORMS
 DEPENDENCIES
   active_model_serializers
   ahoy_matey
+  audited
   bootsnap
   capybara
   carrierwave (>= 3.0.0.beta, < 4.0)
+  chunky_png (~> 1.3, >= 1.3.5)
+  combine_pdf
+  composite_primary_keys
   countries
   debug
   device_detector
   devise (~> 4.8)
   devise_invitable (~> 2.0.0)
+  draper
+  exception_notification
   faker
+  figaro
   fog-aws
+  geocoder
+  hexapdf (~> 1.0)
   http (~> 5.2.0)
   importmap-rails
+  iprog_string_utils (~> 0.1.0)
   jbuilder
+  mail_form
   mechanize (~> 2.7, >= 2.7.6)
   nokogiri
+  noticed (~> 1.6)
+  omniauth-auth0 (~> 3.0)
+  omniauth-rails_csrf_protection (~> 1.0)
   pg
   pg_search
   prawn
+  prawn-table (~> 0.2.2)
   puma (~> 5.0)
   rack-cors
   rails (~> 7.0.4, >= 7.0.4.2)
+  ransack
   recaptcha
   redis (~> 4.0)
   roo (~> 2.9.0)
+  rqrcode
+  rubyzip
   selenium-webdriver
+  sidekiq
   sprockets-rails
   stimulus-rails
+  stripe
   sys-filesystem
   tzinfo-data
   web-console
   webdrivers
+  wicked_pdf
   will_paginate (~> 3.3)
   will_paginate-bootstrap-style
+  wkhtmltopdf-binary
 
 RUBY VERSION
    ruby 3.0.2p107
