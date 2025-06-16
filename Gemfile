@@ -91,3 +91,5 @@ gem 'sys-filesystem' # https://github.com/djberg96/sys-filesystem/tree/32bit_lin
 gem "ahoy_matey" # https://github.com/ankane/ahoy'gem 'device_detector'
 gem 'device_detector' # https://github.com/podigee/device_detector
 gem "recaptcha" # https://github.com/ambethia/recaptcha
+
+gem 'http', '~> 5.2.0'
