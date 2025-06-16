@@ -1,0 +1,215 @@
+<div class="container my-5">
+  <div class="card shadow-lg border-0">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h4 class="mb-0">Invoice <%= @invoice.invoice_number %></h4>
+      <span class="badge bg-<%= @invoice.paid? ? 'success' : 'secondary' %> fs-6">
+        <%= @invoice.status.titleize %>
+      </span>
+    </div>
+
+    <div class="card-body">
+      <!-- Patient & Doctor Info -->
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <p class="fs-5"><strong>Patient:</strong> <%= @patient.full_name %></p>
+          <p class="fs-5"><strong>Doctor:</strong> <%= @doctor.full_name %></p>
+          <% if @invoice.clinic_name.present? %>
+            <p><strong>Clinic:</strong> <%= @invoice.clinic_name %></p>
+          <% end %>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p><strong>Appointment:</strong> <%= @invoice.appointment&.appointment_date&.strftime("%B %d, %Y at %I:%M %p") || "N/A" %></p>
+          <p><strong>Date of Service:</strong> <%= @invoice.date_of_service&.strftime("%B %d, %Y") || "N/A" %></p>
+          <p><strong>Due Date:</strong> <%= @invoice.due_date&.strftime("%B %d, %Y") || "N/A" %></p>
+        </div>
+      </div>
+
+      <!-- Billing Details -->
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <h5 class="text-secondary">Service Details</h5>
+          <p><strong>Service:</strong> <%= @invoice.service_name %></p>
+          <% if @invoice.service_description.present? %>
+            <p><strong>Description:</strong> <%= @invoice.service_description %></p>
+          <% end %>
+        </div>
+        <div class="col-md-6">
+          <h5 class="text-secondary">Charges</h5>
+          <ul class="list-unstyled">
+            <li><strong>Amount:</strong> $<%= @invoice.amount %></li>
+            <li><strong>Discount:</strong> $<%= @invoice.discount %></li>
+            <li><strong>Tax:</strong> $<%= @invoice.tax || "0" %></li>
+            <li class="fw-bold"><strong>Total:</strong> $<%= @invoice.total || (@invoice.amount - @invoice.discount) %></li>
+            <li><strong>MEDV Token:</strong> <%= @invoice.medv_token_amount %> MEDV</li>
+            <li><strong>Payment Method:</strong> <%= @invoice.payment_method || "Not Selected" %></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Payment Status / Actions -->
+      <% if @invoice.paid? %>
+        <div class="alert alert-success text-center">
+          ✅ Payment received!<br>
+          <% if @invoice.solana_signature.present? %>
+            <small class="d-block mt-2">Tx Signature: <code><%= @invoice.solana_signature %></code></small>
+          <% end %>
+        </div>
+          <%= link_to "Download Invoice PDF", download_pdf_doctor_patient_invoice_path(@doctor, @patient, @invoice), class: "btn btn-primary" %>
+      <% else %>
+        <div class="accordion" id="paymentAccordion">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#paymentCollapse" aria-expanded="true">
+                💳 Choose a Payment Method
+              </button>
+            </h2>
+            <div id="paymentCollapse" class="accordion-collapse collapse show" data-bs-parent="#paymentAccordion">
+              <div class="accordion-body">
+                <div class="mb-4 text-center">
+                  <button class="btn btn-outline-dark me-2" onclick="selectPayment('solana')">Solana</button>
+                  <button class="btn btn-outline-success me-2" onclick="selectPayment('stripe')">Stripe</button>
+                  <button class="btn btn-outline-info" onclick="selectPayment('paypal')">PayPal</button>
+                </div>
+
+                <!-- Solana Payment -->
+                <div id="solana-payment" class="payment-method d-none text-center">
+                  <h5>Solana QR Payment</h5>
+                  <% solana_uri = "solana:#{SolanaInvoiceJob::SQUAD_WALLET}?amount=#{@invoice.total}&memo=#{@invoice.payment_memo}" %>
+                  <%= image_tag("https://api.qrserver.com/v1/create-qr-code/?data=#{CGI.escape(solana_uri)}&size=200x200", class: "my-3") %>
+                  <p><code><%= solana_uri %></code></p>
+
+                  <button id="check-invoice-btn"
+                          class="btn btn-success"
+                          data-invoice-id="<%= @invoice.id %>"
+                          data-doctor-id="<%= @invoice.doctor_id %>"
+                          data-patient-id="<%= @invoice.patient_id %>">
+                    ✅ I’ve Paid – Check Payment
+                  </button>
+
+                  <div id="card-loader" class="d-none text-center my-3">
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Stripe Payment -->
+                <div id="stripe-payment" class="payment-method d-none text-center">
+                  <h5>Pay with Stripe</h5>
+                  <%= button_to "Pay via Stripe", stripe_checkout_path(invoice_id: @invoice.id), method: :post, class: "btn btn-primary" %>
+                </div>
+
+                <!-- PayPal Payment -->
+                <div id="paypal-payment" class="payment-method d-none text-center">
+                  <h5>Pay with PayPal</h5>
+                  <%= button_to "Pay via PayPal", paypal_checkout_path(invoice_id: @invoice.id), method: :post, class: "btn btn-info" %>
+                </div>
+
+                <hr>
+
+                <h5 class="mt-4">🔗 Connect Phantom Wallet</h5>
+                <button id="connect-wallet-for-invoice" class="btn btn-outline-secondary">Connect Wallet</button>
+                <p id="wallet-address" class="text-muted mt-2"></p>
+
+                <div id="invoice-alert-placeholder" class="mt-3"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="card-footer text-end">
+      <%#= link_to 'Back to Invoices', invoices_path, class: 'btn btn-outline-secondary' %>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+  document.getElementById("connect-wallet-for-invoice").addEventListener("click", async () => {
+    if (!window.solana || !window.solana.isPhantom) {
+      alert("Please install the Phantom wallet extension.");
+      return;
+    }
+
+    try {
+      const resp = await window.solana.connect();
+      const walletAddress = resp.publicKey.toString();
+      document.getElementById("wallet-address").textContent = `Connected: ${walletAddress}`;
+
+      fetch("/users/update_wallet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("[name=csrf-token]").content
+        },
+        body: JSON.stringify({ solana_wallet: walletAddress })
+      });
+    } catch (err) {
+      alert("Connection failed: " + err.message);
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const button = document.getElementById("check-invoice-btn"); // ✅ move to top
+    const loader = document.getElementById("card-loader");
+    const alertPlaceholder = document.getElementById("invoice-alert-placeholder");
+
+    if (button) {
+      const invoiceId = button.dataset.invoiceId;
+      const doctorId = button.dataset.doctorId;
+      const patientId = button.dataset.patientId;
+
+      const checkUrl = `/doctors/${doctorId}/patients/${patientId}/invoices/${invoiceId}/confirm_invoice_payment.json`;
+
+      button.addEventListener("click", function () {
+        loader.classList.remove("d-none");
+        alertPlaceholder.innerHTML = `
+          <div class="alert alert-info alert-dismissible fade show" role="alert">
+            Checking Solana transaction... please wait.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>`;
+
+        fetch(checkUrl, { headers: { "Accept": "application/json" } });
+
+        let attempts = 0;
+        const maxAttempts = 10;
+
+        const poll = setInterval(() => {
+          fetch(checkUrl, { headers: { "Accept": "application/json" } })
+            .then(res => res.json())
+            .then(data => {
+              if (data.payment_confirmed) {
+                clearInterval(poll);
+                window.location.href = `/doctors/${doctorId}/patients/${patientId}/invoices/${invoiceId}`;
+              } else if (++attempts >= maxAttempts) {
+                clearInterval(poll);
+                loader.classList.add("d-none");
+                alertPlaceholder.innerHTML = `
+                  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    Still waiting for confirmation. Try again later.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                  </div>`;
+              }
+            })
+            .catch(() => {
+              clearInterval(poll);
+              loader.classList.add("d-none");
+              alertPlaceholder.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  Failed to verify payment.
+                  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
+            });
+        }, 3000);
+      });
+    }
+  });
+
+  function selectPayment(method) {
+    document.querySelectorAll(".payment-method").forEach(div => div.classList.add("d-none"));
+    document.getElementById(`${method}-payment`).classList.remove("d-none");
+  }
+</script>

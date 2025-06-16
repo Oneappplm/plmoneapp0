@@ -1,0 +1,100 @@
+<div class="container mt-5">
+  <div class="card shadow rounded-4">
+    <div class="card-header bg-light rounded-top-4">
+      <h3 class="mb-0">Patient Profile</h3>
+    </div>
+
+    <div class="card-body">
+      <h4 class="card-title mb-4">
+        <i class="bi bi-person-circle me-2 fs-3"></i> <%= @patient.first_name %> <%= @patient.last_name %>
+      </h4>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <strong>Date of Birth:</strong>
+          <p><%= @patient.dob.strftime('%B %d, %Y') %></p>
+        </div>
+        <% if @patient.status.present? %>
+          <div class="col-md-6">
+            <strong>Status:</strong>
+            <p>
+              <span class="badge bg-<%= @patient.active? ? 'success' : 'secondary' %>">
+                <%= @patient.status.to_s.titleize %>
+              </span>
+            </p>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <strong>Gender:</strong>
+          <p><%= @patient.gender %></p>
+        </div>
+        <div class="col-md-6">
+          <strong>Phone Number:</strong>
+          <p><i class="bi bi-telephone-fill me-1"></i> <%= @patient.phone_number %></p>
+        </div>
+      </div>
+
+      <% if @patient.email_address.present? %>
+        <div class="mb-3">
+          <strong>Email Address:</strong>
+          <p><i class="bi bi-envelope-fill me-1"></i> <%= @patient.email_address %></p>
+        </div>
+      <% end %>
+
+      <div class="mb-3">
+        <strong>Address:</strong>
+        <p><i class="bi bi-geo-alt-fill me-1"></i> <%= @patient.address %></p>
+      </div>
+
+      <div class="mb-3">
+        <strong>Emergency Contact:</strong>
+        <p><i class="bi bi-person-lines-fill me-1"></i> <%= @patient.emergency_contact %></p>
+      </div>
+
+      <div class="mb-3">
+        <strong>Insurance Information:</strong>
+        <p><%= @patient.insurance_information.presence || "Not provided." %></p>
+      </div>
+
+      <div class="mb-3">
+        <strong>Medical History:</strong>
+        <p><%= @patient.medical_history.presence || "No history provided." %></p>
+      </div>
+
+      <div class="mb-3">
+        <strong>Current Medications:</strong>
+        <p><%= @patient.current_medications.presence || "None listed." %></p>
+      </div>
+
+      <div class="mb-3">
+        <strong>Allergies:</strong>
+        <p><%= @patient.allergies.presence || "None reported." %></p>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <strong>Next Appointment:</strong>
+          <p><%= @patient.next_appointment&.strftime('%B %d, %Y') || "Not scheduled." %></p>
+        </div>
+        <div class="col-md-6">
+          <strong>Last Visit Date:</strong>
+          <p><%= @patient.last_visit_date&.strftime('%B %d, %Y') || "Not recorded." %></p>
+        </div>
+      </div>
+
+      <%= link_to "← Back to Patients", doctor_patients_path(@doctor), class: "btn btn-outline-primary mt-3" %>
+
+      <%# if @invoices.present? %>
+      <% unless @patient.invoices.where(status: "paid").exists? %>
+        <%= link_to new_doctor_patient_invoice_path(@doctor, @patient), class: "btn btn-success mt-3" do %>
+          <i class="bi bi-file-earmark-plus-fill me-1"></i> Generate Invoice
+        <% end %>
+      <% else %>
+        <p class="text-danger fw-bold mt-3"><i class="bi bi-file-earmark-check-fill me-1"></i> Invoice already generated.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

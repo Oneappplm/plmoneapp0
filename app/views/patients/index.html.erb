@@ -1,0 +1,31 @@
+<div class="container mt-3">
+	<h2>Patients</h2>
+
+	<table class="table table-striped table-bordered">
+	  <thead>
+	    <tr>
+	      <th class="text-white">Name</th>
+	      <th class="text-white">DOB</th>
+	      <th class="text-white">Status</th>
+	      <th class="text-white">Actions</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	    <% @patients.each do |patient| %>
+	      <tr>
+	        <td><%= patient.full_name %></td>
+	        <td><%= patient.dob %></td>
+	        <td><%= patient.status.titleize rescue 'N/A' %></td>
+	        <td>
+	        	<%= link_to doctor_patient_path(@doctor, patient), 
+	        			class: "btn btn-sm btn-primary" do %>
+        				<i class="bi bi-eye"></i> View
+						<% end %>
+	        </td>
+	      </tr>
+	    <% end %>
+	  </tbody>
+	</table>
+
+	<%= link_to "Add New Patient", new_doctor_patient_path, class: "btn btn-primary" %>
+</div>

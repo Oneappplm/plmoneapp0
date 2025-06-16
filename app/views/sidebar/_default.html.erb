@@ -164,7 +164,36 @@
 																		</a>
 																	</div>
 																<% end %>
-														<% end %>
+
+																<% if current_user.doctor.present? %>
+																	<% if current_user.can_access?('Patients') %>
+																		<div class="nav-item mb-1">
+																			<a class="nav-link <%= active_menu('patients') %>" href="<%= doctor_patients_path(current_user.doctor) %>" data-placement="left">
+																				<i class="bi bi-folder nav-icon"></i>
+																				<span class="nav-link-title">My Patients</span>
+																			</a>
+																		</div>
+																	<% end %>
+
+																	<% if current_user.can_access?('Appointments') %>
+																		<div class="nav-item mb-1">
+																			<a class="nav-link <%= active_menu('appointments') %>" href="<%= doctor_appointments_path(current_user.doctor) %>" data-placement="left">
+																				<i class="bi bi-folder nav-icon"></i>
+																				<span class="nav-link-title">My Appointments</span>
+																			</a>
+																		</div>
+																	<% end %>
+
+																	<% if current_user.can_access?('Invoices') %>
+																		<div class="nav-item mb-1">
+																			<a class="nav-link <%= active_menu('invoices') %>" href="<%= doctor_invoices_path(current_user.doctor) %>" data-placement="left">
+																				<i class="bi bi-folder nav-icon"></i>
+																				<span class="nav-link-title">My Invoices</span>
+																			</a>
+																		</div>
+																	<% end %>
+																<% end %>
+															<% end %>
 
 														<% if current_user.can_access?('Verification Products') %>
 														 <div class="nav-item mb-1">

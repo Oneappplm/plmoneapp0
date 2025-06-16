@@ -1,0 +1,87 @@
+<div class="container mt-3">
+	<h2>Invoice created for <%= @patient.full_name %></h2>
+
+
+	<%= form_with model: [@doctor, @patient, @invoice], local: true do |f| %>
+		
+		<% if @invoice.errors.any? %>
+	    <div class="alert alert-danger">
+	      <h5><%= pluralize(@invoice.errors.count, "error") %> prohibited this invoice from being saved:</h5>
+	      <ul>
+	        <% @invoice.errors.full_messages.each do |message| %>
+	          <li><%= message %></li>
+	        <% end %>
+	      </ul>
+	    </div>
+	  <% end %>
+	  
+		<div class="form-group">
+			<%= f.label :clinic_name %>
+  		<%= f.text_field :clinic_name, class: "form-control mt-2 mb-2 border-dark", autocomplete: "off" %>
+		</div>
+
+		<div class="form-group">
+		  <%= f.label :date_of_service %>
+		  <%= f.date_select :date_of_service, 
+		        { default: Date.today, 
+		          order: [:day, :month, :year] 
+		        },
+		        { class: "form-select d-inline w-auto me-2 mt-2 mb-2 border-dark" } %>
+		</div>
+
+		<div class="form-group">
+			<%= f.label :service_name %>
+    	<%= f.text_field :service_name, class: "form-control mt-2 mb-2 border-dark", autocomplete: "off" %>
+		</div>
+
+		<div class="form-group">
+			<%= f.label :service_description %>
+		  <%= f.text_area :service_description, rows: 4, class: "form-control mt-2 mb-2 border-dark", autocomplete: "off" %>
+		</div>
+
+		<div class="form-group">
+			<%= f.label :amount %>
+			<%#= f.number_field :amount, step: 0.01, class: "form-control mt-2 mb-2 border-dark", autocomplete: "off" %>
+			<%= f.number_field :amount, step: 'any', class: "form-control mt-2 mb-2 border-dark", autocomplete: "off" %>
+		</div>
+
+		<div class="form-group">
+			<%= f.label :discount %>
+			<%= f.number_field :discount, step: 0.01, class: "form-control mt-2 mb-2 border-dark", autocomplete: "off" %>
+		</div>
+
+		<div class="form-group">
+			<%= f.label :tax, "Tax (USD)" %>
+  		<%= f.number_field :tax, step: "0.01", class: "form-control mt-2 mb-2 border-dark", autocomplete: "off" %>
+		</div>
+
+		<div class="form-group">
+			<%= f.label :due_date %>
+  		<%= f.date_select :due_date, 
+  			{ default: Date.today, 
+          order: [:day, :month, :year] 
+        },
+        { class: "form-select d-inline w-auto me-2 mt-2 mb-2 border-dark" }%>
+		</div>
+
+		<div class="form-group">
+			<%= f.label :payment_method %>
+			<%= f.select :payment_method, ["MEDV", "USDT", "USDC", "Bitcoin", "Card"], { prompt: "Please select payment method" }, { class: "form-select mt-2 mb-2 border-dark" } %>
+		</div>
+
+		<div class="form-group">
+		  <%= f.label :appointment_id %>
+		  <%= f.collection_select :appointment_id, @appointments, :id, 
+        ->(a) { "#{a.appointment_date.strftime('%B %d, %Y')} - #{a.reason}" },
+        { prompt: "Select Appointment" },
+        { class: "form-select mt-2 mb-2 border-dark" } %>
+		</div>
+
+		<%# <div class="form-group"> %>
+			<%#= f.label :status, "Invoice payment status" %>
+			<%#= f.select :status, ["Paid", "Unpaid"], { prompt: true }, { class: "form-select mt-2 mb-2" } %>
+		<%# </div> %>
+
+		<%= f.submit  class: 'btn btn-primary mt-2' %>
+	<% end %>
+</div>

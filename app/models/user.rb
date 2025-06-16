@@ -64,6 +64,9 @@ class User < ApplicationRecord
 
   has_many :provider_npdb_comments, dependent: :destroy
 
+  has_one :doctor
+  has_many :appointments, foreign_key: :patient_id
+
   accepts_nested_attributes_for :users_enrollment_groups, allow_destroy: true, reject_if: :all_blank
 
   attr_accessor :email_cc, :email_subject, :email_message
