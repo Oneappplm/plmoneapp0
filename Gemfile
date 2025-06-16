@@ -20,7 +20,7 @@ gem "puma", "~> 5.0"
 gem "importmap-rails"
 
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-gem "turbo-rails"
+# gem "turbo-rails"
 
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
 gem "stimulus-rails"
@@ -35,7 +35,7 @@ gem "redis", "~> 4.0"
 # gem "kredis"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-gem "bcrypt", "~> 3.1.7"
+# gem "bcrypt", "~> 3.1.7"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
@@ -53,7 +53,6 @@ gem 'countries', require: 'countries/global' #https://github.com/countries/count
 # gem "image_processing", "~> 1.2"
 
 group :development, :test do
-  gem 'pry', '~> 0.14.2'
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
 end
@@ -66,9 +65,6 @@ group :development do
 
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
-
-  gem 'letter_opener_web' # https://github.com/fgrehm/letter_opener_web
-  gem 'rspec-rails'
 end
 
 group :test do
@@ -89,30 +85,11 @@ gem 'mechanize', '~> 2.7', '>= 2.7.6'
 gem 'active_model_serializers'
 gem 'devise_invitable', '~> 2.0.0' # https://github.com/scambra/devise_invitable
 gem "selenium-webdriver"
-# gem "webdrivers"
+gem "webdrivers"
 gem 'prawn'
 gem 'sys-filesystem' # https://github.com/djberg96/sys-filesystem/tree/32bit_linux
 gem "ahoy_matey" # https://github.com/ankane/ahoy'gem 'device_detector'
 gem 'device_detector' # https://github.com/podigee/device_detector
-gem "noticed", "~> 1.6"
-gem 'draper' # https://github.com/drapergem/draper
-gem "figaro" # https://github.com/laserlemon/figaro
-gem 'exception_notification' # https://github.com/smartinez87/exception_notification
-gem "geocoder" # https://github.com/alexreisner/geocoder
-gem "audited" # https://github.com/collectiveidea/audited
-gem 'chunky_png', '~> 1.3', '>= 1.3.5'
-gem 'combine_pdf'
-gem "hexapdf", "~> 1.0" # https://github.com/gettalong/hexapdf
-gem "iprog_string_utils", "~> 0.1.0" # https://github.com/iprog21/iprog_string_utils
-gem 'composite_primary_keys'
-gem 'omniauth-auth0', '~> 3.0'
-gem 'omniauth-rails_csrf_protection', '~> 1.0' # prevents forged authentication requests
-gem "rubyzip"
-gem 'wicked_pdf'    # For rendering HTML to PDF
-gem 'wkhtmltopdf-binary' # Required dependency for wicked_pdf
-gem 'ransack'
-gem 'mail_form'
-gem 'sidekiq'
+gem "recaptcha" # https://github.com/ambethia/recaptcha
 
-gem 'stripe'
-gem 'prawn-table', '~> 0.2.2'
+gem 'http', '~> 5.2.0'
