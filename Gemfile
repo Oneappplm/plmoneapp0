@@ -93,3 +93,26 @@ gem 'device_detector' # https://github.com/podigee/device_detector
 gem "recaptcha" # https://github.com/ambethia/recaptcha
 
 gem 'http', '~> 5.2.0'
+gem "noticed", "~> 1.6"
+gem 'draper' # https://github.com/drapergem/draper
+gem "figaro" # https://github.com/laserlemon/figaro
+gem 'exception_notification' # https://github.com/smartinez87/exception_notification
+gem "geocoder" # https://github.com/alexreisner/geocoder
+gem "audited" # https://github.com/collectiveidea/audited
+gem 'chunky_png', '~> 1.3', '>= 1.3.5'
+gem 'combine_pdf'
+gem "hexapdf", "~> 1.0" # https://github.com/gettalong/hexapdf
+gem "iprog_string_utils", "~> 0.1.0" # https://github.com/iprog21/iprog_string_utils
+gem 'composite_primary_keys'
+gem 'omniauth-auth0', '~> 3.0'
+gem 'omniauth-rails_csrf_protection', '~> 1.0' # prevents forged authentication requests
+gem "rubyzip"
+gem 'wicked_pdf'    # For rendering HTML to PDF
+gem 'wkhtmltopdf-binary' # Required dependency for wicked_pdf
+gem 'ransack'
+gem 'mail_form'
+gem 'sidekiq'
+
+gem 'stripe'
+gem 'prawn-table', '~> 0.2.2'
+gem 'rqrcode'
