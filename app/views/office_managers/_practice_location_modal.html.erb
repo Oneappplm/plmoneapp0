@@ -83,6 +83,7 @@
               </div>
             </div>
             <div class="tab-navigation">
+              <button type="button" id="back-tab" class="btn btn-secondary mt-3">Back</button>
               <button type="button" id="save-tab" class="btn btn-primary mt-3">Save</button>
               <button type="button" id="next-tab" class="btn btn-primary mt-3">Save & Next</button>
               <a href="javascript:void(0);" class="btn btn-warning mt-3" data-bs-dismiss="modal" id="cancel-btn">Cancel</a>
@@ -120,8 +121,22 @@
     }
   }
 
+  $(document).on('click', '#cancel-btn', function () {
+    location.reload(); // Page refresh
+  });
+
+  // Handle the "Back" button click (Go to previous tab)
+  document.getElementById('back-tab').addEventListener('click', function(event) {
+    event.preventDefault();
+
+    if (currentTab > 0) {
+      currentTab--;
+      showTab(currentTab);
+    }
+  });
   // Function to validate fields in the current tab
   function validateCurrentTab() {
+    const tabTitles = document.querySelectorAll('.nav-tabs .tab');
     const currentTabContent = document.querySelectorAll('.tab-pane')[currentTab];
     
     // Select all required fields that are marked with the 'required' attribute
@@ -163,6 +178,9 @@
       errorMessage.classList.add('alert', 'alert-danger');
       errorMessage.textContent = "Please fill out all required fields marked with *.";
       currentTabContent.insertBefore(errorMessage, currentTabContent.firstChild);
+     // Show popup alert with tab name
+      const tabName = tabTitles[currentTab]?.textContent?.trim() || `Tab ${currentTab + 1}`;
+      alert(`Missing required fields in "${tabName}" tab.`);
     }
 
     return valid;
@@ -172,8 +190,10 @@
   function updateButtons(tabIndex) {
     const saveButton = document.getElementById('save-tab');
     const saveNextButton = document.getElementById('next-tab');
+      const backButton = document.getElementById('back-tab');
     const cancelButton = document.querySelector('.btn-cancel');
-
+    
+      const totalTabs = document.querySelectorAll('.tab-pane').length;
     // Show "Save & Next" for all tabs except the last one
     if (tabIndex === 0) {
       saveNextButton.style.display = "inline-block"; // Show Save & Next
@@ -181,6 +201,12 @@
       saveNextButton.style.display = "none"; // Hide Save & Next on the last tab
     } else {
       saveNextButton.style.display = "inline-block"; // Show Save & Next for all other tabs
+    }
+      // Show/Hide Save & Next
+    if (tabIndex === totalTabs - 1) {
+      saveNextButton.style.display = "none"; // Hide on last tab
+    } else {
+      saveNextButton.style.display = "inline-block";
     }
   }
 
@@ -244,11 +270,50 @@
         // Handle successful response
         if (buttonType === 'saveAndNext') {
           // If 'Save and Next' is clicked, move to next tab
-          if (document.getElementById('next-tab').style.display !== "none") {
-            currentTab++;
-            showTab(currentTab);
-          }
+          const tabs = document.querySelectorAll('#myTab .tab');
+            const activeTab = document.querySelector('#myTab .tab.active');
+            const currentIndex = Array.from(tabs).indexOf(activeTab);
+
+            if (currentIndex < tabs.length - 1) {
+              const nextTab = tabs[currentIndex + 1];
+              currentTab = currentIndex + 1; // ✅ Update currentTab
+              nextTab.click(); // ✅ Trigger Bootstrap to change tab
+
+              // Wait a moment to allow tab to activate before next action
+              setTimeout(() => {
+                showTab(currentTab); // ✅ Now you can safely update content or validation
+              }, 100); // small delay like 100ms
+            }
         } else if (buttonType === "save") {
+          // Only show the success message if we are on the last tab
+          if (currentTab === totalTabs - 1) {
+            const successMessage = document.createElement('h2');
+            successMessage.classList.add('mt-5', 'mb-5');
+            successMessage.textContent = 'Success! New Location added';
+
+            // Optionally, you can use a Bootstrap alert or a SweetAlert instead of <h2>
+            document.body.appendChild(successMessage); // OR append where you want
+          }
+
+          // Update form method for next time
+          const form = document.getElementById('practice_location_form');
+          if (formDataStorage.id) {
+            form.method = 'patch';
+            form.action = '/practice_locations/' + formDataStorage.id;
+          }
+
+          // Close the modal after save
+          const modalElement = document.getElementById('addLocationModal');
+          const bootstrapModal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+          bootstrapModal.hide();
+
+          // Optional: show popup message after modal hides
+          setTimeout(() => {
+            alert('Success! New Location added.');
+            location.reload(); // ✅ Refreshes the page to show updated data
+          }, 300); // Delay to wait for modal to close
+        }
+        else if (buttonType === "save") {
           // Only show the success message if we are on the last tab
           if (currentTab === totalTabs - 1) {
             document.getElementById('save-tab').style.display = 'none';
