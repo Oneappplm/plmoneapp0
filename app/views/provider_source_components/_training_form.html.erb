@@ -25,10 +25,12 @@
 	<div class="col-lg-6">
 		<label class="text-dark-grey">City <span class="text-danger">*</span></label>
 		<input type="text" class="form-control border-dark" name="tf-city">
+		<div class="text-danger validation-error-msg d-none"></div>
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Zip Code <span class="text-danger">*</span></label>
 		<input type="text" class="form-control border-dark" name="tf-zipcode">
+		<div class="text-danger validation-error-msg d-none"></div>
 	</div>
 </div>
 
@@ -38,16 +40,19 @@
 			<div class="col-lg-8">
 				<label class="text-dark-grey">Telephone Number</label>
 				<input type="text" class="form-control border-dark" name="tf-telephone-number">
+				<div class="text-danger validation-error-msg d-none"></div>
 			</div>
 			<div class="col-lg-4">
 				<label class="text-dark-grey">Ext</label>
 				<input type="text" class="form-control border-dark" name="tf-ext">
+				<div class="text-danger validation-error-msg d-none"></div>
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Fax Number</label>
 		<input type="text" class="form-control border-dark" name="tf-fax-number">
+		<div class="text-danger validation-error-msg d-none"></div>
 	</div>
 </div>
 <div class="row mb-3">
@@ -74,16 +79,19 @@
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Program Director First Name</label>
 		<input type="text" class="form-control border-dark" name="tf-pd-first-name">
+		<div class="text-danger validation-error-msg d-none"></div>
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Program Director Last Name</label>
 		<input type="text" class="form-control border-dark" name="tf-pd-last-name">
+		<div class="text-danger validation-error-msg d-none"></div>
 	</div>
 </div>
 <div class="row mb-3">
 	<div class="col-lg-12">
 		<label class="text-dark-grey">Program Director Degree</label>
 		<input type="text" name="tf-pf-degree" class="form-control border-dark">
+		<div class="text-danger validation-error-msg d-none"></div>
 	</div>
 </div>
 <div class="row mb-3">
@@ -120,6 +128,7 @@
 	<div class="col-lg-6">
 		<label class="text-dark-grey">University Affiliated Program</label>
 		<input type="text" class="form-control border-dark" name="tfu-affiliated-program">
+		<div class="text-danger validation-error-msg d-none"></div>
 	</div>
 	<div class="col-lg-6 my-1">
 		<%= HtmlUtils::dropdown name: 'tfu_affiliated_location', label: 'University Affiliated Program Location' %>
@@ -140,10 +149,12 @@
 	<div class="col-lg-6">
 		<label class="text-dark-grey">City</label>
 		<input type="text" class="form-control border-dark" name="tfu-city">
+		<div class="text-danger validation-error-msg d-none"></div>
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Zip Code</label>
 		<input type="text" class="form-control border-dark" name="tfu-zipcode">
+		<div class="text-danger validation-error-msg d-none"></div>
 	</div>
 </div>
 
@@ -153,16 +164,19 @@
 			<div class="col-lg-8">
 				<label class="text-dark-grey">Telephone Number</label>
 				<input type="text" class="form-control border-dark" name="tfu-telephone-number">
+					<div class="text-danger validation-error-msg d-none"></div>
 			</div>
 			<div class="col-lg-4">
 				<label class="text-dark-grey">Ext</label>
 				<input type="text" class="form-control border-dark" name="tfu-ext">
+					<div class="text-danger validation-error-msg d-none"></div>
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Fax Number</label>
 		<input type="text" class="form-control border-dark" name="tfu-fax-number">
+			<div class="text-danger validation-error-msg d-none"></div>
 	</div>
 </div>
 <script>
@@ -216,4 +230,75 @@
   });
 });
 
+$(document).ready(function () {
+  function showError($input, message) {
+    $input.addClass('is-invalid');
+    const $errorDiv = $input.siblings('.validation-error-msg');
+    if ($errorDiv.length) {
+      $errorDiv.text(message).removeClass('d-none');
+    }
+  }
+
+  function clearError($input) {
+    $input.removeClass('is-invalid');
+    const $errorDiv = $input.siblings('.validation-error-msg');
+    if ($errorDiv.length) {
+      $errorDiv.addClass('d-none');
+    }
+  }
+
+  const validators = [
+    {
+      selector: 'input[name="tf-city"], input[name="tfu-city"], input[name="tf-pd-last-name"], input[name="tf-psn"], input[name="tf-pd-first-name"]',
+      regex: /^[a-zA-Z\s]*$/,
+      message: 'Only alphabets and spaces allowed.'
+    },
+    {
+      selector: 'input[name="tf-zipcode"], input[name="tfu-zipcode"]',
+      regex: /^\d{5,6}$/,
+      message: 'Zip code must be 5 or 6 digits.'
+    },
+    {
+      selector: 'input[name="tf-email"], input[name="tf-pd-email-address"]',
+      regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      message: 'Enter a valid email address.'
+    },
+    {
+      selector: 'input[name*="telephone-number"], input[name*="fax-number"], input[name*="ext"]',
+      regex: /^[0-9+\-\s]*$/,
+      message: 'Only numbers, +, and - are allowed.'
+    },
+    {
+      selector: 'input[name="tfu-affiliated-program"]',
+      regex: /^[a-zA-Z0-9\s.,\-()&]*$/,
+      message: 'Invalid characters in program name.'
+    },
+    {
+      selector: 'input[name="tf-pf-degree"]',
+      regex: /^[a-zA-Z.\s]*$/,
+      message: 'Only alphabets, spaces, and periods allowed.'
+    }
+  ];
+
+  validators.forEach(({ selector, regex, message }) => {
+    $(document).on('input', selector, function () {
+      const $this = $(this);
+      if (!regex.test($this.val())) {
+        showError($this, message);
+      } else {
+        clearError($this);
+      }
+    });
+  });
+});
+
 </script>
+<style>
+  .is-invalid {
+	  border-color: red !important;
+	}
+	.validation-error-msg {
+	  font-size: 0.875rem;
+	}
+
+</style>

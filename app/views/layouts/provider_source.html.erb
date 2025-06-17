@@ -645,41 +645,54 @@ function saveInputMultiRecord(input) {
 }
 
 function saveInput(input) {
-    var url = '/provider_sources/autosave'; // Replace with the URL for your autosave endpoint
-      var fieldName = input.attr('name');
-      var value = input.val();
-      var fieldType = input.attr('type');
+  var url = '/provider_sources/autosave';
+  var fieldName = input.attr('name');
+  var value = input.val();
+  var fieldType = input.attr('type');
 
-      if(fieldType == 'checkbox'){
-        value = input.is(':checked') ? 'yes' : 'no';
+  // Checkbox handling
+  if (fieldType === 'checkbox') {
+    value = input.is(':checked') ? 'yes' : 'no';
+  }
+
+  // Other name checkbox specific logic
+  if (input.hasClass('other_name_still_use')) {
+    if (input.is(':checked')) {
+      $('#stopped_date_other_name').val('');
+      $('#stopped_date_other_name').attr('readonly', true).css('background', '#eee');
+    } else {
+      $('#stopped_date_other_name').removeAttr('readonly').css('background', '#fff');
+    }
+  }
+
+  // 🛑 Validation check: if this field is currently invalid, skip autosave
+  if (input.hasClass('is-invalid')) {
+    console.log(`Skipping autosave for ${fieldName}: input is invalid.`);
+    return;
+  }
+
+  // 🛡️ Global JavaScript error guard (optional but recommended)
+  try {
+    $.ajax({
+      url: url,
+      method: 'POST',
+      dataType: 'json',
+      data: {
+        authenticity_token: csrfToken,
+        field_name: fieldName,
+        value: value
+      },
+      success: function (data) {
+        console.log('Autosaved successfully!');
+        getProgress();
+      },
+      error: function () {
+        console.log('Autosave failed!');
       }
-
-      if(input.hasClass('other_name_still_use')) {
-        if(input.is(':checked')){
-          $('#stopped_date_other_name').val('');
-          $("#stopped_date_other_name").attr("readonly", true);
-          $("#stopped_date_other_name").css("background", '#eee');
-
-        }
-        else {
-          $("#stopped_date_other_name").css("background", '#fff');
-          $("#stopped_date_other_name").removeAttr("readonly");
-        }
-      }
-
-      $.ajax({
-          url: url,
-          method: 'POST',
-          dataType: 'json',
-          data: { authenticity_token: csrfToken, field_name: fieldName, value: value },
-          success: function(data) {
-              console.log('Autosaved successfully!');
-              getProgress();
-          },
-          error: function() {
-              console.log('Autosave failed!');
-          }
-      });
+    });
+  } catch (e) {
+    console.error('JavaScript error during autosave:', e);
+  }
 }
 
 

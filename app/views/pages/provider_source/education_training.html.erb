@@ -219,10 +219,16 @@
     clearTimeout(debounceTimeout);
 
     debounceTimeout = setTimeout(function () {
+      // ❌ Prevent if field has validation error
+      if ($field.hasClass('is-invalid')) {
+        console.log(`Skipping autosave for invalid field: ${fieldName}`);
+        return;
+      }
       // Prevent duplicate autosave if already pending for this field
       if (pendingRequests[fieldName]) {
         return;
       }
+
 
       pendingRequests[fieldName] = true;
       $.ajax({
@@ -326,6 +332,11 @@
     clearTimeout(debounceTimeout);
 
     debounceTimeout = setTimeout(function () {
+      // ❌ Prevent if field has validation error
+        if ($field.hasClass('is-invalid')) {
+          console.log(`Skipping autosave for invalid field: ${fieldName}`);
+          return;
+        }
       // Prevent duplicate autosave if already pending for this field
       if (pendingRequests[fieldName]) {
         return;

@@ -34,11 +34,19 @@
 <div class="row mb-3">
 	<div class="col-lg-6">
 		<label class="text-dark-grey">City<span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" required name="provider_source_undergrad_schools[<%= index %>][city]" placeholder="City" value="<%= school&.city %>">
+		<input type="text" class="form-control border-dark city-input" required name="provider_source_undergrad_schools[<%= index %>][city]" placeholder="City" value="<%= school&.city %>"
+			             data-index="<%= index %>">
+		<div class="text-danger city-error-msg" data-index="<%= index %>" data-type="normal" style="display: none;">
+	    Only alphabets allowed in city.
+	  </div>
+
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Zip Code<span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" required name="provider_source_undergrad_schools[<%= index %>][zipcode]" placeholder="Zip Code" value="<%= school&.zipcode %>">
+		<input type="text" class="form-control border-dark zipcode-input" required name="provider_source_undergrad_schools[<%= index %>][zipcode]" placeholder="Zip Code" value="<%= school&.zipcode %>" data-index="<%= index %>">
+		<div class="text-danger zipcode-error-msg" data-index="<%= index %>"style="display: none;">
+	    Only digits allowed in zipcode.
+	  </div>
 	</div>
 </div>
 
@@ -47,71 +55,188 @@
 		<div class="row">
 			<div class="col-lg-8">
 				<label class="text-dark-grey">Telephone Number</label>
-				<input type="text" class="form-control border-dark" name="provider_source_undergrad_schools[<%= index %>][telephone_number]" placeholder="Telephone Number" value="<%= school&.telephone_number %>">
+				<input type="text" class="form-control border-dark telephone-input" name="provider_source_undergrad_schools[<%= index %>][telephone_number]" placeholder="Telephone Number" value="<%= school&.telephone_number %>" data-index="<%= index %>"  data-field="telephone">
+				<div class="text-danger telephone-error-msg"
+			       data-index="<%= index %>"
+			       style="display: none;">
+			    Only digits allowed.
+			  </div>
 			</div>
 			<div class="col-lg-4">
 				<label class="text-dark-grey">Ext</label>
-				<input type="text" class="form-control border-dark" name="provider_source_undergrad_schools[<%= index %>][ext]" placeholder="Ext" value="<%= school&.ext %>">
+				<input type="text" class="form-control border-dark ext-input" name="provider_source_undergrad_schools[<%= index %>][ext]" placeholder="Ext" value="<%= school&.ext %>" data-index="<%= index %>" data-field="ext">
+				<div class="text-danger ext-error-msg"
+			       data-index="<%= index %>"
+			       style="display: none;">
+			    Only digits allowed.
+			  </div>
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Fax Number</label>
-		<input type="text" class="form-control border-dark" name="provider_source_undergrad_schools[<%= index %>][fax_number]" placeholder="Fax Number" value="<%= school&.fax_number %>">
+		<input type="text" class="form-control border-dark fax_number-input" name="provider_source_undergrad_schools[<%= index %>][fax_number]" placeholder="Fax Number" value="<%= school&.fax_number %>" data-index="<%= index %>" data-field="fax_number">
+			<div class="text-danger fax_number-error-msg"
+	       data-index="<%= index %>"
+	       style="display: none;">
+	    Only digits allowed.
+	  </div>
 	</div>
 </div>
 <div class="row mb-3">
 	<div class="col-lg-5">
-		<label class="text-dark-grey">Email</label>
+		<label class="text-dark-grey">Undergraduate Major</label>
 		<input type="email" class="form-control border-dark" name="provider_source_undergrad_schools[<%= index %>][email]" placeholder="Email" value="<%= school&.email %>">
 	</div>
 </div>
 <div class="row mb-3">
 	<div class="col-lg-12">
 		<label class="text-dark-grey">Degree Awarded<span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" required name="provider_source_undergrad_schools[<%= index %>][degree_awarded]" placeholder="Degree Awarded" value="<%= school&.degree_awarded %>">
+		<input type="text" class="form-control border-dark degree-awarded-input" required name="provider_source_undergrad_schools[<%= index %>][degree_awarded]" placeholder="Degree Awarded" value="<%= school&.degree_awarded %>" data-index="<%= index %>">
 	</div>
+	<div class="text-danger degree-awarded-error-msg" data-index="<%= index %>" data-type="normal" style="display: none;">
+    Only alphabets allowed in city.
+  </div>
+</div>
+<div class="d-flex justify-content-between align-items-center mt-3">
+  <label class="text-dark-grey mb-0">Did you complete your undergraduate education at this school? <span class="text-danger">*</span></label>
+  <div class="d-flex gap-3">
+    <label>
+      <input type="radio"
+             name="provider_source_undergrad_schools[<%= index %>][incomplete]"
+             data-form='undergrad_school_reason_<%= index %>'
+             value="false"
+             <%= 'checked' if school.incomplete == false %>>
+      Yes
+    </label>
+    <label>
+      <input type="radio"
+             name="provider_source_undergrad_schools[<%= index %>][incomplete]"
+             data-form='undergrad_school_reason_<%= index %>'
+             value="true"
+             <%= 'checked' if school.incomplete == true %>>
+      No
+    </label>
+  </div>
 </div>
 
-<div class="row mb-3">
+<div class="row mb-3 mt-3">
 	<div class="col-lg-6">
-		<label class="text-dark-grey">Start Date</label>
+		<label class="text-dark-grey">Start Date (MM/DD/YYYY)</label>
 		<input type="date" class="form-control border-dark" name="provider_source_undergrad_schools[<%= index %>][date_start]" value="<%= school&.date_start %>">
 	</div>
 	<div class="col-lg-6">
-		<label class="text-dark-grey">End(Graduation) Date<span class="text-danger">*</span></label>
+		<label class="text-dark-grey">End(Graduation) Date (MM/DD/YYYY)<span class="text-danger">*</span></label>
 		<input type="date" class="form-control border-dark" name="provider_source_undergrad_schools[<%= index %>][date_graduation]" value="<%= school&.date_graduation %>">
 	</div>
 </div>
-
-
-  <!-- Address, contact, degree, dates, etc... -->
-  <!-- Copy the rest of your static fields here, updating name attributes with [#{index}] pattern -->
-
-  <div class="d-flex justify-content-between align-items-center mt-3">
-    <label class="text-dark-grey mb-0">Did you complete your undergraduate education at this school? <span class="text-danger">*</span></label>
-    <div class="d-flex gap-3">
-      <label>
-        <input type="radio" name="provider_source_undergrad_schools[<%= index %>][incomplete]" data-form='undergrad_school_reason' value="false" <%= 'checked' if school.incomplete == false %>>
-        Yes
-      </label>
-      <label>
-        <input type="radio" name="provider_source_undergrad_schools[<%= index %>][incomplete]" data-form='undergrad_school_reason' value="true" <%= 'checked' if school.incomplete == true %>>
-        No
-      </label>
-    </div>
+<div id="undergrad_school_reason_<%= index %>" class="<%= school.incomplete ? '' : 'd-none' %>">
+  <div class="form-group">
+    <label>Please explain why you did not complete your undergraduate education at this school.</label>
+    <textarea class="form-control border-dark"
+              name="provider_source_undergrad_schools[<%= index %>][reason]"
+              rows="5"><%= school.reason %></textarea>
   </div>
-  <div class="<%= toggle_hide_current_provider_source('incomplete_undergrad', @provider) %>" id="undergrad_school_reason">
-	  <div class="form-group">
-	  <label>Reason for not completing <span class="text-danger">*</span></label>
-	  <input type="text" class="form-control border-dark"
-	         name="provider_source_undergrad_schools[<%= index %>][reason]"
-	         value="<%= school.reason %>">
-	  </div>
-  </div>
-
+</div>
 
   <button type="button" class="btn btn-link text-danger position-absolute end-0 top-0 remove_undergraduate_school">
     <i class="bi bi-x-circle"></i> Remove
   </button>
 </div>
+<script>
+$(document).on('input', '.city-input', function () {
+  var $this = $(this);
+  var value = $this.val();
+  var index = $this.data('index');
+
+  var errorMsg = $('.city-error-msg[data-index="' + index + '"]');
+
+  if (!/^[a-zA-Z\s]*$/.test(value)) {
+    errorMsg.show();
+    $this.addClass('is-invalid');
+  } else {
+    errorMsg.hide();
+    $this.removeClass('is-invalid');
+  }
+});
+$(document).on('input', '.degree-awarded-input', '', function () {
+  var $this = $(this);
+  var value = $this.val();
+  var index = $this.data('index');
+
+  var errorMsg = $('.degree-awarded-error-msg[data-index="' + index + '"]');
+
+  if (!/^[a-zA-Z\s]*$/.test(value)) {
+    errorMsg.show();
+    $this.addClass('is-invalid');
+  } else {
+    errorMsg.hide();
+    $this.removeClass('is-invalid');
+  }
+});
+
+
+$(document).on('input', '.zipcode-input', function () {
+  var $this = $(this);
+  var value = $this.val();
+  var index = $this.data('index');
+
+  var errorMsg = $('.zipcode-error-msg[data-index="' + index + '"]');
+
+  if (/\D/.test(value)) {
+    errorMsg.show();
+    $this.addClass('is-invalid');
+
+    setTimeout(function () {
+      $this.val(value.replace(/\D/g, ''));
+    }, 0);
+
+    setTimeout(function () {
+      errorMsg.fadeOut();
+      $this.removeClass('is-invalid');
+    }, 2000);
+  } else {
+    errorMsg.hide();
+    $this.removeClass('is-invalid');
+  }
+});
+$(document).on('input', '.telephone-input,  .ext-input , .fax_number-input', function () {
+  var $this = $(this);
+  var value = $this.val();
+  var index = $this.data('index');
+  var field = $this.data('field'); // 'telephone', 'ext', or 'fax_number'
+
+  var errorClass = '.' + field + '-error-msg[data-index="' + index + '"]';
+  var errorMsg = $(errorClass);
+
+  if (/\D/.test(value)) {
+    errorMsg.show();
+    $this.addClass('is-invalid');
+
+    setTimeout(function () {
+      $this.val(value.replace(/\D/g, ''));
+    }, 0);
+
+    setTimeout(function () {
+      errorMsg.fadeOut();
+      $this.removeClass('is-invalid');
+    }, 2000);
+  } else {
+    errorMsg.hide();
+    $this.removeClass('is-invalid');
+  }
+});
+$(document).on('change', 'input[type="radio"][name*="[incomplete]"]', function () {
+  var $this = $(this);
+  var targetId = $this.data('form'); // example: undergrad_school_reason_0
+  var value = $this.val();
+
+  // Show the reason field only when value is "true" (i.e., incomplete = true = "No")
+  if (value === "true") {
+    $('#' + targetId).removeClass('d-none');
+  } else {
+    $('#' + targetId).addClass('d-none');
+  }
+});
+
+</script>
