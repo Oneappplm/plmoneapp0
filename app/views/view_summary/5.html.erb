@@ -2,21 +2,21 @@
 	<div class="col-lg-12 text-black border border-dark px-0 pb-0">
 		<%= HtmlUtils.table_section_header title: '6.3 Education and Training - Teaching Appointments' %>
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = [['Program Director First Name:', :'taf-pd-first-name'], ['Program Director Last Name:', :'taf-pd-last-name']]%>
+			<% titles = [['Program Director First Name:', :'taf_pd_first_name'], ['Program Director Last Name:', :'taf_pd_last_name']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = [['Program Director Degree:', :'taf-pd-degree'], ['Academic Rank or Title:', :'taf-ar-degree']]%>
+			<% titles = [['Program Director Degree:', :'taf_pd_degree'], ['Academic Rank or Title:', :'taf_ar_degree']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = [['Start Date:', :'taf-start-date'], ['End Date:', :'taf-end-date']]%>
+			<% titles = [['Start Date:', :'taf_start_date'], ['End Date:', :'taf_end_date']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
 				<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
@@ -101,33 +101,33 @@
 			<% end %>
 		</div>
 
-		<%= HtmlUtils.single_column title: 'Please explain your lack of Professional Liability Coverage:', value: @current_provider_source.fetch(:'lf-lack-of-liability-coverage'), height: 'h-75px'%>
+		<%= HtmlUtils.single_column title: 'Please explain your lack of Professional Liability Coverage:', value: @current_provider_source.fetch(:'lf_lack_of_liability_coverage'), height: 'h-75px'%>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = [['Are you self-insured:', :is_self_insured], ['Self Insured Policy Name:', :'lf-self-insured-policy-name'], ['Policy Number:', :'lf-self-insured-policy-number']]%>
+			<% titles = [['Are you self-insured:', :is_self_insured], ['Self Insured Policy Name:', :'lf_self_insured_policy_name'], ['Policy Number:', :'lf_self_insured_policy_number']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
 		</div>
 		<div class="row g-0 border-bottom border-dark">
-			<%= HtmlUtils.table_column title: 'Carrier Name:', value: @current_provider_source.fetch(:'lf-self-insured-carrier-name')&.titleize, height: 'h-50px', last: false, size: '6' %>
-			<%= HtmlUtils.table_column title: 'Email Address:', value: @current_provider_source.fetch(:'lf-self-insured-email-address'), height: 'h-50px', last: true, size: '6' %>
+			<%= HtmlUtils.table_column title: 'Carrier Name:', value: @current_provider_source.fetch(:'lf_self_insured_carrier_name')&.titleize, height: 'h-50px', last: false, size: '6' %>
+			<%= HtmlUtils.table_column title: 'Email Address:', value: @current_provider_source.fetch(:'lf_self_insured_email_address'), height: 'h-50px', last: true, size: '6' %>
 		</div>
 
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = [['Telephone Number:', :'lf-self-insured-phone-number'], ['Ext:', :'lf-self-insured-ext'], ['Fax Number:', :'lf-self-insured-fax-number']]%>
+			<% titles = [['Telephone Number:', :'lf_self_insured_phone_number'], ['Ext:', :'lf_self_insured_ext'], ['Fax Number:', :'lf_self_insured_fax_number']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
 		</div>
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = [['Amount of Coverage per Occurrence:', :'lf-self-insured-coverage-amount'], ['Amount of Aggregate Coverage:', :'lf-self-insured-email-aggregate-coverage']]%>
+			<% titles = [['Amount of Coverage per Occurrence:', :'lf_self_insured_coverage_amount'], ['Amount of Aggregate Coverage:', :'lf_self_insured_email_aggregate_coverage']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 		<div class="row g-0">
-			<% titles = [['Original Effective (Retroactive):', :'lf-self-insured-original-effective-date'], ['Effective Date:', :'lf-self-insured-effective-date'], ['Expiration Date:', :'lf-self-insured-original-expiration-date']]%>
+			<% titles = [['Original Effective (Retroactive):', :'lf_self_insured_original_effective_date'], ['Effective Date:', :'lf_self_insured_effective_date'], ['Expiration Date:', :'lf_self_insured_original_expiration_date']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
 				<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>

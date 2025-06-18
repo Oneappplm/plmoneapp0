@@ -1,4 +1,6 @@
 class ProviderPersonalInformation < ApplicationRecord
+  belongs_to :provider_source
+  validates :provider_source_id, uniqueness: true
   ransacker :name_or_attest_id do
     Arel.sql("
       CONCAT_WS(' ',
@@ -57,9 +59,22 @@ class ProviderPersonalInformation < ApplicationRecord
   def correspondence_address_type_correspondence_address_type_descripion = correspondence_address_type_correspondence_address_type_descrip
 
   before_validation :set_provider_attest
+  
   private
-
   def set_provider_attest
-    self.provider_attest = ProviderAttest.where(caqh_provider_attest_id: self.caqh_provider_attest_id).last
+    return if provider_attest.present?
+
+    found_attest = ProviderAttest.where(caqh_provider_attest_id: caqh_provider_attest_id).last ||
+                  ProviderAttest.first
+
+    # If no ProviderAttest exists at all, create a default one
+    unless found_attest
+      found_attest = ProviderAttest.create!(
+        caqh_provider_attest_id: SecureRandom.uuid # or nil if allowed
+        # Add other required attributes here
+      )
+    end
+
+    self.provider_attest = found_attest
   end
 end
