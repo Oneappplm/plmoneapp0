@@ -49,32 +49,32 @@ class PagesController < ApplicationController
 
   def update_review_committee_dates
     if params[:vrc_directors].present?
-      vrc_director_ids = params[:vrc_directors].map(&:to_i)
+      director_ids = params[:vrc_directors].map(&:to_i) || []
     end
     
-    selected_ids = params[:selected_ids][0].split(',').map(&:to_i)
+    # selected_ids = params[:selected_ids][0].split(',').map(&:to_i) || []
+    selected_ids = params[:selected_ids]&.map(&:to_i) || []
 
     review_date = params[:review_date]
     committee_date = params[:committee_date]
 
-    if (vrc_director_ids.present? && selected_ids.present?) && (review_date.present? && committee_date.present?)
-      vrc_director_ids.each do |director_id|
-        selected_ids.each do |virtual_review_committee_id|
-          DirectorProvider.create(user_id: director_id, virtual_review_committee_id: virtual_review_committee_id )
+    if (director_ids.present? && selected_ids.present?) && (review_date.present? && committee_date.present?)
+      director_ids.each do |director_id|
+        selected_ids.each do |ppi_id|
+          DirectorProvider.find_or_create_by(user_id: director_id, provider_personal_information_id: ppi_id )
         end
       end
 
-      VirtualReviewCommittee.where(id: selected_ids).update_all(assigned_params.to_h) 
+      ProviderPersonalInformation.where(id: selected_ids).update_all(assigned_params.to_h) 
       redirect_to virtual_review_committee_path, notice: "Records are Assigned to Directors And Review and Committee dates updated successfully."
 
-    elsif selected_ids.present? && (review_date.present? && committee_date.present?)
-      VirtualReviewCommittee.where(id: selected_ids).update_all(assigned_params.to_h)
+    elsif selected_ids.present? && review_date.present? && committee_date.present?
+      ProviderPersonalInformation.where(id: selected_ids).update_all(assigned_params.to_h)
       redirect_to virtual_review_committee_path, notice: "Review and Committee dates updated successfully."
     else
       flash[:error] = 'Invalid parameters.'
       redirect_to virtual_review_committee_path, notice: 'There is an error.'
     end
-
   end
 
   def unassigned_records
@@ -105,34 +105,35 @@ class PagesController < ApplicationController
 	end
 
 	def virtual_review_committee
-    @provider_personal_informations = ProviderPersonalInformation.all
-    @q = VirtualReviewCommittee.ransack(params[:q])
+    # @provider_personal_informations = ProviderPersonalInformation.all
+    @q = ProviderPersonalInformation.ransack(params[:q])
     @vrc_documents = VrcDocument.all
     @vrc_directors = User.directors
+    @psv_pdf = SavedProfile.last
 
     # Apply search and filters via Ransack
-    @vrcs = @q.result
+    @provider_personal_informations = @q.result
 
     # Date range filtering
     if params[:review_date_from].present? && params[:review_date_to].present?
-      @vrcs = @vrcs.where(review_date: Date.parse(params[:review_date_from])..Date.parse(params[:review_date_to]))
+      @provider_personal_informations = @provider_personal_informations.where(review_date: Date.parse(params[:review_date_from])..Date.parse(params[:review_date_to]))
     end
 
     if params[:committee_date_from].present? && params[:committee_date_to].present?
-      @vrcs = @vrcs.where(committee_date: Date.parse(params[:committee_date_from])..Date.parse(params[:committee_date_to]))
+      @provider_personal_informations = @provider_personal_informations.where(committee_date: Date.parse(params[:committee_date_from])..Date.parse(params[:committee_date_to]))
     end
 
     if params[:PSV_date_from].present? && params[:PSV_date_to].present?
-      @vrcs = @vrcs.where(psv_completed_date: Date.parse(params[:PSV_date_from])..Date.parse(params[:PSV_date_to]))
+      @provider_personal_informations = @provider_personal_informations.where(psv_completed_date: Date.parse(params[:PSV_date_from])..Date.parse(params[:PSV_date_to]))
     end
 
     # Progress status filter
     if params[:'vrc-progress-status'].present? && params[:'vrc-progress-status'] != 'all'
-      @vrcs = @vrcs.send(params[:'vrc-progress-status'])
+      @provider_personal_informations = @provider_personal_informations.send(params[:'vrc-progress-status'])
     end
 
     # Pagination
-    @vrcs = @vrcs.paginate(page: params[:page], per_page: 50)
+    @provider_personal_informations = @provider_personal_informations.paginate(page: params[:page], per_page: 50)
 
     # Conditional rendering based on `vrc` parameter
     case params[:vrc]
@@ -145,7 +146,7 @@ class PagesController < ApplicationController
     when 'issue'
       render 'issue'
     when 'minutes'
-      @completed_records = VirtualReviewCommittee.where(progress_status: "completed")
+      @completed_records = ProviderPersonalInformation.where(progress_status: "completed")
       render 'minutes'
     end
   end
@@ -153,21 +154,24 @@ class PagesController < ApplicationController
 
   def records
     @vrc_directors = User.directors
+    @provider_personal_informations = []
     
     if @params_present = params_present?
 
     elsif params[:selected_date].present?
       @selected_date = params[:selected_date]
-      @selected_committee_dates = VirtualReviewCommittee.where(committee_date: @selected_date )
+      @provider_personal_informations = ProviderPersonalInformation.where(committee_date: @selected_date )
     elsif params[:selected_director].present?
       if params[:selected_director] == "All"
-       
+       @provider_personal_informations = ProviderPersonalInformation.all
       else 
          selected_director_id = params[:selected_director]
          @director = User.find(selected_director_id)     
+         @provider_personal_informations = @director.provider_personal_informations
       end
     else
       @director = true
+      @provider_personal_informations = ProviderPersonalInformation.all
     end
 
     render 'work_tickler'
@@ -183,7 +187,7 @@ class PagesController < ApplicationController
     if params_present?.present?
       @params_present = params_present?
     else
-      @completed_records = VirtualReviewCommittee.where(progress_status: "completed")
+      @completed_records = ProviderPersonalInformation.where(progress_status: "completed")
     end
   end 
 
@@ -272,76 +276,114 @@ class PagesController < ApplicationController
   def download_clients
     selected_ids = params[:selected_ids]&.split(',')
 
-    @virtual_review_committees = if selected_ids.present?
-                                   VirtualReviewCommittee.where(id: selected_ids)
+    @provider_personal_informations = if selected_ids.present?
+                                   ProviderPersonalInformation.where(id: selected_ids)
                                  else
-                                   VirtualReviewCommittee.all
+                                   ProviderPersonalInformation.all
                                  end
 
     csv_data = CSV.generate(headers: true) do |csv|
       csv << [
-        'Assigned','Provider Name', 'Provider Type', 'Cred Cycle', 'PSV Completed Date',
+        'Encompass ID','Assigned','Provider Name', 'Provider Type', 'Cred Cycle', 'PSV Completed Date',
         'Review Level', 'Recred Due Date', 'Review Date', 'Committee Date',
         'Status'
       ]
 
-      @virtual_review_committees.each do |vrc|
+      @provider_personal_informations.each do |ppi|
         csv << [
-          vrc.progress_status,
-          vrc.provider_name,
-          vrc.provider_type,
-          vrc.cred_cycle,
-          vrc.psv_completed_date&.strftime('%Y-%m-%d'),
-          vrc.review_level,
-          vrc.recred_due_date&.strftime('%Y-%m-%d'),
-          vrc.review_date&.strftime('%Y-%m-%d'),
-          vrc.committee_date&.strftime('%Y-%m-%d'),
-          vrc.status
+          ppi.caqh_provider_attest_id || ppi.provider_attest_id,
+          ppi.progress_status,
+          ppi.fullname,
+          ppi.provider_type_provider_type_abbreviation,
+          ppi.cred_cycle,
+          ppi.attest_date&.strftime('%Y-%m-%d'),
+          ppi.review_level,
+          ppi.recred_due_date&.strftime('%Y-%m-%d'),
+          ppi.review_date&.strftime('%Y-%m-%d'),
+          ppi.committee_date&.strftime('%Y-%m-%d'),
+          ppi.progress_status
         ]
       end
     end
 
     respond_to do |format|
-      filename = selected_ids.present? ? "selected_vrcs_#{Date.today}.csv" : "all_vrcs_#{Date.today}.csv"
+      filename = selected_ids.present? ? "selected_providers_#{Date.today}.csv" : "all_providers_#{Date.today}.csv"
       format.csv { send_data csv_data, filename: filename }
     end
   end
 
 
   def show_virtual_review_committee
-    @provider_personal_informations = ProviderPersonalInformation.all
-  	if params[:client_id].present?
-  		@vrc = VirtualReviewCommittee.find(params[:client_id])
-    elsif params[:id].present?
-      @vrc = VirtualReviewCommittee.find(params[:id])
-  	else
-  		@vrc = VirtualReviewCommittee.first
-  	end
+    if params[:id].present?
+      @provider = ProviderPersonalInformation.find(params[:id])
+      @provider_personal_informations = [@provider]
+      @review_level_changes = @provider.review_level_changes.order(created_at: :desc)
+      @psv_pdf = SavedProfile.last
+    else
+      @provider_personal_informations = ProviderPersonalInformation.all
+      @provider = @provider_personal_informations.first
+    end
   end
 
-  def record_approval
-    @record = DirectorProvider.where(virtual_review_committee_id: params[:id])
+  # def record_approval
+  #   @record = DirectorProvider.where(virtual_review_committee_id: params[:id])
 
-    if @record
-      if params[:status].present? && params[:status] != "Pending"
-        @vrc = VirtualReviewCommittee.find(params[:id])
-        if params[:other_checkbox] == "OTHER"
-          desc = 'OTHER'
+  #   if @record
+  #     if params[:status].present? && params[:status] != "Pending"
+  #       @vrc = VirtualReviewCommittee.find(params[:id])
+  #       if params[:other_checkbox] == "OTHER"
+  #         desc = 'OTHER'
+  #       else
+  #         desc = params[:description]
+  #       end
+  #       @vrc.update(
+  #         progress_status: "completed",
+  #         review_details: desc,
+  #         review_level: params[:status]
+  #       )
+  #     end
+  #     redirect_to show_virtual_review_committee_path(params[:id]), notice: "Records updated successfully."
+  #   else
+  #     flash[:alert] = "There was an error updating the records."
+  #     render :show_virtual_review_committee
+  #   end
+  # end
+
+   def record_approval
+    provider_params = params.require(:provider_personal_information).permit(:id, :status, :description)
+
+    @provider = ProviderPersonalInformation.find_by(id: provider_params[:id])
+
+    if @provider
+      if provider_params[:status].present? && provider_params[:status] != "Pending"
+        desc = (params[:other_checkbox].present? && provider_params[:description].present?) ? "OTHER" : provider_params[:description]
+
+        old_level = @provider.review_level
+
+        if @provider.update(progress_status: "completed", review_level: provider_params[:status], review_details: desc)
+          
+          @provider.review_level_changes.create!(
+            changed_by: current_user.email, # or current_user.full_name
+            from_level: old_level,
+            to_level: provider_params[:status],
+            reason: desc
+          )
+
+          redirect_to show_virtual_review_committee_path(@provider.id), notice: "Records updated successfully."
         else
-          desc = params[:description]
+          flash[:alert] = "Update failed: #{@provider.errors.full_messages.join(', ')}"
+          render :show_virtual_review_committee
         end
-        @vrc.update(
-          progress_status: "completed",
-          review_details: desc,
-          review_level: params[:status]
-        )
+      else
+        redirect_to show_virtual_review_committee_path(@provider.id), notice: "No status change applied."
       end
-      redirect_to show_virtual_review_committee_path(params[:id]), notice: "Records updated successfully."
     else
-      flash[:alert] = "There was an error updating the records."
+      flash[:alert] = "Provider not found."
       render :show_virtual_review_committee
     end
   end
+
+
 
 
   def providers;end

@@ -25,108 +25,28 @@
 					</button>
 				</div>
 				<div class="col-lg-2">
-					<div style="float: right">
-						<button type="button" class="btn btn-primary d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#exampleModal">
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 16px; margin-right: 0.5rem;">
-							<path d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625z" />
-							<path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
-						</svg>
-						  Verified Profile
-						</button>
+					<div style="float: right" class="btn btn-primary">
+						<% case @provider.cred_status %>
+              <% when "psv" %>
+                <% if @psv_pdf.present? %>
+                  <%= link_to @psv_pdf.file_path.url, target: "_blank", class: "text-white fs-5" do %>
+                    <i class="fas fa-file-pdf fa-xl"></i>
+                    <span class="text-white fw-bold">Verified Profile</span>
+                  <% end %>
+                <% else %>
+                  <span class="text-warning">PDF not available</span>
+                <% end %>
 
-						<!-- Modal -->
-						<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-						  <div class="modal-dialog modal-xl" >
-						    <div class="modal-content">
-						      <div class="modal-header">
-						        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-						      </div>
-						      <div class="modal-body">
-						        <%= render 'mhc/manage_clients/verified_profile' %>
-						      </div>
-						    </div>
-						  </div>
-						</div>
+              <% when "attested", "completed", "no-application", "incomplete", "pending", "in-process", "returned" %>
+                <span class="status-indicator rounded"></span>
+            <% end %>
 					</div>
 				</div>
 			</div>
 
 			<div class="row">
 				<div class="col-lg-12">
-					<table id="show-vrc-table" class="mt-4 table border">
-						<thead style="background-color: #377dff; color: #fff;">
-							<tr>
-								<th width="20%" style="text-align: center;">Provider Name</th>
-								<th width="15%" style="text-align: left;">Phone/Email</th>
-								<th width="10%">Date of Birth</th>
-								<th width="10%">SSN</th>
-								<th width="10%">NPI</th>
-								<th width="8%">TIN</th>
-								<th width="15%">Medicare #</th>
-								<th width="15%" style="text-align: left;">Group Name</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td><h5><%= @vrc.provider_name %></h5></td>
-								<td>
-									+2 839 332 <br>
-									medversant@link.em
-								</td>
-								<td>01/01/1990</td>
-								<td>99999673223</td>
-								<td>1823525342</td>
-								<td>123-233-221</td>
-								<td>123-233-221</td>
-								<td>Medversant</td>
-							</tr>
-						</tbody>
-					</table>
-					<hr style="margin: 0;">
-					<table class="table border">
-						<tbody>
-							<tr>
-								<td>
-									<strong for="">Received Date:</strong> <br>
-									2/10/2016
-								</td>
-								<td>
-									<strong for="">Completed Date:</strong> <br>
-									2/10/2016
-								</td>
-								<td>
-									<strong for="">PSV Date:</strong> <br>
-									<%= @vrc.psv_completed_date&.strftime("%m/%d/%Y") %>
-								</td>
-								<td>
-									<strong for="">Cred Cycle Cred:</strong> <br>
-									<%= @vrc.cred_cycle %>
-								</td>
-								<td>
-									<strong for="">Recred Due Date:</strong> <br>
-								</td>
-								<td></td>
-								<td></td>
-								<td></td>
-							</tr>
-							<tr>
-								<td>
-									<strong for="">Level of Review:</strong> <br>
-									<span id="review-level"><%= @vrc.review_level %></span>
-								</td>
-								<td>
-									<strong for="">Review Details:</strong> <br>
-									<%= @vrc.review_details %>
-								</td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-							</tr>
-						</tbody>
-					</table>
+					
 					<table id="show-vrc-table" class="mt-4 table border">
 						<thead style="background-color: #377dff; color: #fff;">
 							<tr>
@@ -146,15 +66,15 @@
 									<tr>
 										<td><h5><%= provider.fullname %></h5></td>
 										<td style="word-break: break-word; max-width: 200px; white-space: normal;">
-											<%= provider.cell_phone_number %><br>
+											<%= provider.cell_phone_number %> / <br>
 											<%= provider.email_address%>
 										</td>
-										<td><%= provider.date_of_birth %></td>
+										<td><%= provider.birth_date.strftime("%Y-%m-%d") %></td>
 										<td><%= provider.ssn %></td>
 										<td><%= provider.npi %></td>
-										<td> TIN </td>
+										<td> NA </td>
 										<td><%= provider.medicare_provider_flag %></td>
-										<td>group_name</td>
+										<td>NA</td>
 									</tr>
 								<% end %>
 							<% else %>
@@ -164,59 +84,109 @@
 							<% end %>
 						</tbody>
 					</table>
+					<hr style="margin: 0;">
+					<table class="table border">
+						<tbody>
+							<tr>
+								<td>
+									<strong for="">Received Date:</strong> <br>
+									2/10/2016
+								</td>
+								<td>
+									<strong for="">Completed Date:</strong> <br>
+									2/10/2016
+								</td>
+								<td>
+									<strong for="">PSV Date:</strong> <br>
+									<%= @provider&.attest_date&.strftime("%m/%d/%Y") %>
+								</td>
+								<td>
+									<strong for="">Cred Cycle Cred:</strong> <br>
+									<%= @provider&.cred_cycle %>
+								</td>
+								<td>
+									<strong for="">Recred Due Date:</strong> <br>
+								</td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>
+									<strong for="">Level of Review:</strong> <br>
+									<span id="review-level"><%= @provider&.review_level %></span>
+								</td>
+								<td>
+									<strong for="">Review Details:</strong> <br>
+									<%= @provider.review_details %>
+								</td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
-				<% if @vrc.progress_status == "completed" %>
-					<div class="content-box">
-			      <div class="content-box-header">
-			        <h3>Licensure and Registration</h3>
-			      </div>
-			      <div class="content-box-content">
-			        <table class="fullwidth table">
-			          <thead>
-			            <tr>
-			              <th class="text-white">Number</th>
-			              <th class="text-white">Type</th>
-			              <th class="text-white">State</th>
-			              <th style="text-align:center;" class="text-white">From Date</th>
-			              <th style="text-align:center;" class="text-white">To Date</th>
-			              <th style="text-align:center;" class="text-white">Source</th>
-			              <th style="text-align:center;" class="text-white">Status</th>
-			              <th style="text-align:center;" class="text-white">Verify Date</th>
-			            </tr>
-			          </thead>
-			          <tbody>
-			            <tr class="alt-row">
-			              <td>098007252RN</td>
-			              <td>RN</td>
-			              <td>OR</td>
-			              <td style="text-align:center;">1998-11-16</td>
-			              <td style="text-align:center;">2017-02-15</td>
-			              <td style="text-align:center;">State Board </td>
-			              <td style="text-align:center;">ACTIVE</td>
-			              <td style="text-align:center;">2016-04-06</td>
-			            </tr>
-			            <tr>
-			              <td>200250117NP</td>
-			              <td>NP</td>
-			              <td>OR</td>
-			              <td style="text-align:center;">2002-08-15</td>
-			              <td style="text-align:center;">2017-02-15</td>
-			              <td style="text-align:center;">State Board </td>
-			              <td style="text-align:center;">ACTIVE</td>
-			              <td style="text-align:center;">2016-05-23</td>
-			            </tr>
-			          </tbody>
-			        </table>
-			        <span class="clear">
-			        </span>
-			      </div>
-			    </div>
-			    <div class="content-box">
+				<% if @provider&.progress_status == "completed" %>
+					<div class="content-box mt-2">
+					  <div class="content-box-header">
+					    <h3>Licensure and Registration</h3>
+					  </div>
+					  <div class="content-box-content">
+					    <table class="fullwidth table table-bordered">
+					      <thead>
+					        <tr>
+					          <th class="text-white">Number</th>
+					          <th class="text-white">Type</th>
+					          <th class="text-white">State</th>
+					          <th style="text-align:center;" class="text-white">From Date</th>
+					          <th style="text-align:center;" class="text-white">To Date</th>
+					          <%# <th style="text-align:center;" class="text-white">Source</th>
+					          <th style="text-align:center;" class="text-white">Status</th> %>
+					          <th style="text-align:center;" class="text-white">Verify Date</th>
+					        </tr>
+					      </thead>
+					      <tbody>
+					        <% @provider.provider_licensures.each do |lic| %>
+					          <tr class="alt-row">
+					            <td><%= lic.license_number %></td>
+					            <td>Licensure - <%= lic.license_type %></td>
+					            <td><%= State.find_by(id: lic.state_id)&.alpha_code || "N/A" %></td>
+					            <td style="text-align:center;"><%= lic.license_issue_date&.strftime('%Y-%m-%d') %></td>
+					            <td style="text-align:center;"><%= lic.license_expiration_date&.strftime('%Y-%m-%d') %></td>
+					           <%#  <td style="text-align:center;">State Board</td>
+					            <td style="text-align:center;">ACTIVE</td> %>
+					            <td style="text-align:center;"><%= lic.updated_at&.strftime('%Y-%m-%d') %></td>
+					          </tr>
+					        <% end %>
+
+					        <% @provider.provider_deas.each do |dea| %>
+					          <tr>
+					            <td><%= dea.dea_number %></td>
+					            <td>Registration - DEA</td>
+					            <td><%= dea.state %></td>
+					            <td style="text-align:center;">-</td>
+					            <td style="text-align:center;"><%= dea.expiration_date&.strftime('%Y-%m-%d') %></td>
+					            <%# <td style="text-align:center;">DEA</td>
+					            <td style="text-align:center;">ACTIVE</td> %>
+					            <td style="text-align:center;"><%= dea.updated_at&.strftime('%Y-%m-%d') %></td>
+					          </tr>
+					        <% end %>
+					      </tbody>
+					    </table>
+					    <span class="clear"></span>
+					  </div>
+					</div>
+
+			    <div class="content-box mt-2">
 			      <div class="content-box-header">
 			        <h3>Reviews</h3>
 			      </div>
 			      <div class="content-box-content">
-			        <table class="fullwidth table">
+			        <table class="fullwidth table table-bordered">
 			          <thead>
 			            <tr class="TableHeaderStyle2">
 			              <th class="text-white">Voted Date</th>
@@ -228,11 +198,11 @@
 			          </thead>
 			          <tbody>
 			            <tr class="alt-row">
-			              <td class="text-white">2022-03-23</td>
-			              <td class="text-white">DemoDirector Test</td>
-			              <td class="text-white">VRC Director</td>
-			              <td class="text-white"></td>
-			              <td class="text-white">Approved</td>
+			              <td>2022-03-23</td>
+			              <td>DemoDirector Test</td>
+			              <td>VRC Director</td>
+			              <td></td>
+			              <td>Approved</td>
 			            </tr>
 			            <tr>
 			              <td>2022-03-23</td>
@@ -247,16 +217,16 @@
 			        </span>
 			      </div>
 			    </div>
-			    <div class="content-box">
+			    <div class="content-box mt-2">
 			      <div class="content-box-header">
 			        <h3>Minutes</h3>
 			      </div>
 			      <div class="content-box-content">
-			        <table class="fullwidth table">
+			        <table class="fullwidth table table-bordered">
 			          <thead>
 			            <tr class="TableHeaderStyle2">
 			              <th style="width:80px" class="text-white">Medv Id</th>
-			              <th style="width:80px" class="text-white">ProviderId</th>
+			              <th style="width:80px" class="text-white">Provider Id</th>
 			              <th style="width:80px" class="text-white">Review Level</th>
 			              <th class="text-white">Issues</th>
 			              <th class="text-white">Result</th>
@@ -264,9 +234,9 @@
 			          </thead>
 			          <tbody>
 			            <tr class="alt-row">
-			              <td clas>154459</td>
-			              <td clas>538699</td>
-			              <td clas>Expedited</td>
+			              <td clas><%= @provider&.caqh_provider_attest_id || @provider&.provider_attest_id %></td>
+			              <td clas><%= @provider&.id %></td>
+			              <td clas><%= @provider&.review_level %></td>
 			              <td clas></td>
 			              <td clas></td>
 			            </tr>
@@ -276,12 +246,12 @@
 			        </span>
 			      </div>
 			    </div>
-			    <div class="content-box">
+			    <div class="content-box mt-2">
 			      <div class="content-box-header">
 			        <h3>Verification Log</h3>
 			      </div>
 			      <div class="content-box-content">
-			        <table class="fullwidth table">
+			        <table class="fullwidth table table-bordered">
 			          <thead>
 			            <tr class="TableHeaderStyle2">
 			              <th class="text-white">Verification Date</th>
@@ -295,36 +265,45 @@
 			        </span>
 			      </div>
 			    </div>
-			    <div class="content-box">
-			      <div class="content-box-header">
-			        <h3>Review Level Changes</h3>
-			      </div>
-			      <div class="content-box-content">
-			        <table class="fullwidth table">
-			          <thead>
-			            <tr class="TableHeaderStyle2">
-			              <th class="text-white">Change Date</th>
-			              <th class="text-white">From</th>
-			              <th class="text-white">To</th>
-			              <th class="text-white">By</th>
-			              <th class="text-white">Reason</th>
-			            </tr>
-			          </thead>
-			          <tbody>
-			          </tbody>
-			        </table>
-			        <span class="clear">
-			        </span>
-			      </div>
-			    </div>
+			    <div class="content-box mt-2">
+					  <div class="content-box-header">
+					    <h3>Review Level Changes</h3>
+					  </div>
+					  <div class="content-box-content">
+					    <table class="fullwidth table table-bordered">
+					      <thead>
+					        <tr class="TableHeaderStyle2">
+					          <th class="text-white">Change Date</th>
+					          <th class="text-white">From</th>
+					          <th class="text-white">To</th>
+					          <th class="text-white">By</th>
+					          <th class="text-white">Reason</th>
+					        </tr>
+					      </thead>
+					      <tbody>
+					        <% @review_level_changes.each do |change| %>
+					          <tr>
+					            <td><%= change.created_at.strftime("%Y/%m/%d") %></td>
+					            <td><%= change.from_level %></td>
+					            <td><%= change.to_level %></td>
+					            <td><%= change.changed_by.truncate(30) %></td>
+					            <td><%= change.reason %></td>
+					          </tr>
+					        <% end %>
+					      </tbody>
+					    </table>
+					    <span class="clear"></span>
+					  </div>
+					</div>
+
 			  <% end %>  
 
 				<div id="change-review-level-container" class="col-lg-12 mt-2" style="display: none">
 					<h3 class="mt-2 p-3" style="background-color: #E9E9E9;">Review Level Change</h3>
-					<%= form_with model: @record, url: record_approval_path, method: :patch do |form| %>
+					<%= form_with model: @provider, url: record_approval_path, method: :patch do |form| %>
 						<div class="form-group mb-3">
 							<label for="record_status">Review Level:</label>
-							<%= form.hidden_field :id, value: @vrc.id %>
+							<%= form.hidden_field :id, value: @provider.id %>
 							<%= form.select :status, options_for_select([['All', ''], 'Expedited', 'Non-Expedited']), {}, { id: 'record_status', class: 'form-control' } %>
 						</div>
 						
