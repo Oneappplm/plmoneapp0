@@ -1,4 +1,4 @@
-<% director.virtual_review_committees.each do |assigned_record| %>
+<% director.provider_personal_informations.each do |assigned_record| %>
   <% if assigned_record.progress_status == "assigned" %>  
     <tr class="text-center">
       <td>
@@ -14,11 +14,11 @@
           <% if current_user.full_name == director.full_name %>
             <%= link_to assigned_record.provider_name, show_virtual_review_committee_path(assigned_record.id), id:"target-name" %>
           <% else %>
-            <%= assigned_record.provider_name %>
+            <%= assigned_record.fullname %>
           <% end %>
         <% end %>  
       </td>
-      <td id="target-name"><%= assigned_record.provider_type %></td>
+      <td id="target-name"><%= assigned_record.provider_type_provider_type_abbreviation %></td>
       <td>Director</td>
        <td><%= assigned_record.cred_cycle %></td>
       <td><%= assigned_record.review_level %></td>
@@ -26,7 +26,14 @@
       <td><%= assigned_record.committee_date.to_date %></td>
       <td>
         <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
-        <%= assigned_record.status %>
+        <%#= assigned_record.status %>
+        <% case assigned_record.progress_status %>
+          <% when "completed" %>
+            <span style="font-size: 10px;">Approved</span>
+          <% when "assigned", "to_be_assigned" %>
+            <span style="font-size: 10px;"><%#= vrc.progress_status.titleize %> Unapproved</span>
+        <% else %>
+        <% end %>
       </td>
     </tr>
   <% end %>

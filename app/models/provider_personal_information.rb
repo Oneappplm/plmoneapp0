@@ -10,9 +10,20 @@ class ProviderPersonalInformation < ApplicationRecord
     ")
   end
 
+   enum progress_status: {
+    completed: 'completed',
+    assigned: 'assigned',
+    to_be_assigned: 'to_be_assigned'
+  }
+
+
   PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID','ProviderID']
 
   belongs_to :provider_attest
+
+  has_many :director_providers
+  has_many :users, through: :director_providers
+  has_many :review_level_changes, dependent: :destroy
 
   has_many :practice_informations, through: :provider_attest
   has_many :practice_information_educations, through: :provider_attest
