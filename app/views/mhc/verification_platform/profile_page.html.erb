@@ -431,16 +431,29 @@
                       <td>.HTML</td>
                     </tr>
                     <% @provider_personal_information.provider_personal_uploaded_docs.each do |doc| %>
-                      <% content_type = doc&.file_upload.file.content_type %>
-                      <% file_type =  content_type.split('/').last if content_type.present? %>
+                      <% if doc&.file_upload&.file.present? %>
+                        <% content_type = doc.file_upload.file.content_type %>
+                        <% file_type = content_type.split('/').last if content_type.present? %>
+                      <% else %>
+                        <% file_type = 'unknown' %>
+                      <% end %>
                       <tr>
-                        <td><input type="checkbox" id="<%= doc&.id %>" value="<%= doc&.sub_section %>" data-url="<%= doc&.file_upload.url %>" data-type="<%= doc&.sub_section %>" data-provider-id="<%= @provider_personal_information.id %>" class="link-checkbox"></td>
+                        <td>
+                          <input type="checkbox"
+                                 id="<%= doc&.id %>"
+                                 value="<%= doc&.sub_section %>"
+                                 data-url="<%= doc&.file_upload&.url %>"
+                                 data-type="<%= doc&.sub_section %>"
+                                 data-provider-id="<%= @provider_personal_information.id %>"
+                                 class="link-checkbox">
+                        </td>
                         <td><%= doc&.sub_section %></td>
-                        <td><a href="<%= doc&.file_upload.url %>"><%= doc&.file_upload.url %></a></td>
-                        <td><%= doc&.created_at.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
+                        <td><a href="<%= doc&.file_upload&.url %>"><%= doc&.file_upload&.url %></a></td>
+                        <td><%= doc&.created_at&.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
                         <td><%= file_type %></td>
                       </tr>
                     <% end %>
+
                     <tr>
                   </tbody>
                 </table>
