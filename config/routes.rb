@@ -219,7 +219,6 @@ Rails.application.routes.draw do
       end
     end
 
-
     resources :manage_practitioners, only: [:index], path: 'manage-practitioners'
     resources :manage_clients, only: [:index], path: 'manage-clients' do
       collection do
@@ -299,6 +298,8 @@ Rails.application.routes.draw do
   resources :providers do
     put :update_from_notifications, path: 'update-from-notifications'
 
+  resources :patients, only: [:new, :create, :show, :index]
+    
     collection do
       get "overview"
       get :document_deleted_logs
@@ -479,6 +480,47 @@ Rails.application.routes.draw do
       # add more here
     end
   end
+
+  # resources :patients, only: [:new, :create, :show, :index] do
+  #   resources :appointments, only: [:new, :create]
+  #   resources :invoices do
+  #     get :confirm_invoice_payment
+  #   end
+  # end
+
+  # resources :appointments, only: [:index]
+  # resources :invoices, only: [:index]
+  # resources :patients
+
+  # resources :doctors
+  # resources :patients
+  # resources :appointments
+  # resources :invoices do
+  #   get :confirm_invoice_payment
+  # end
+
+  resources :doctors, only: [:new, :create, :show] do
+    resources :appointments, only: [:index, :show]  # Doctor’s view of appointments
+
+    resources :patients, only: [:index, :new, :create, :show] do
+      resources :appointments, only: [:new, :create, :show] # Patient scheduling appointment
+      resources :invoices, only: [:index, :new, :create, :show] do
+        get :confirm_invoice_payment
+        member do
+          get :download_pdf
+        end
+      end
+      resources :appointments, only: [:new, :create, :show]
+    end
+
+    resources :invoices, only: [:index, :show]
+  end
+
+  post "/stripe_checkout", to: "payments#stripe", as: :stripe_checkout
+  post "/paypal_checkout", to: "payments#paypal", as: :paypal_checkout
+  get  "/payments/stripe_success", to: "payments#stripe_success"
+  get  "/payments/paypal_success", to: "payments#paypal_success"
+  get  "/payments/paypal_cancel", to: "payments#paypal_cancel"
 
   resources :enrollment_payers do
     collection do
