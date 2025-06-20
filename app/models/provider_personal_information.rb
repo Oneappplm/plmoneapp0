@@ -57,6 +57,7 @@ class ProviderPersonalInformation < ApplicationRecord
 
   has_one :provider_personal_information_credentialing_contact
   has_one :provider_personal_information_confidential_contact
+  has_one :provider_source, dependent: :destroy
 
   validates :provider_attest_id, presence: true
 

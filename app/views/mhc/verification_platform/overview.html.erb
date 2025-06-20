@@ -58,30 +58,32 @@
         </div>
     </div>
     <% if @provider_personal_information.present? %>
+        <% provider_source = @provider_personal_information.provider_source %>
+        <% source_data = provider_source&.data&.index_by(&:data_key) || {} %>
         <div class="container">
             <div class="p-2">
                 <h2>Section II - Practitioner Information</h2>
                 <div class="bg-light form-row row p-2">
-                    <div class="col-xl-6">Practitioner Name: <%= @provider_personal_information&.fullname %></div>
-                    <div class="col-xl-6">Social Security No.: <%= @provider_personal_information&.ssn %></div>
+                    <div class="col-xl-6">Practitioner Name: <%= source_data['first_name']&.data_value %> <%= source_data['middle_name']&.data_value %> <%= source_data['last_name']&.data_value %></div>
+                    <div class="col-xl-6">Social Security No.: <%= source_data['ssn']&.data_value %></div>
                     <div class="col-xl-6">Specialty 1:</div>
-                    <div class="col-xl-6">Practitioner Type: <%= @provider_personal_information&.provider_type_provider_type_abbreviation %></div>
-                    <div class="col-xl-6">Date of Birth: <%= @provider_personal_information&.birth_date&.strftime('%B %d, %Y') %></div>
+                    <div class="col-xl-6">Practitioner Type: <%= source_data['suffix']&.data_value %></div>
+                    <div class="col-xl-6">Date of Birth: <%=source_data['date_of_birth']&.data_value&.strftime('%B %d, %Y') %></div>
                 </div>
             </div>
             <div class="p-2">
                 <h2>Section III - Practice Information</h2>
-                <% @provider_personal_information&.practice_informations.each do |practice_information| %>
+                <%# @provider_personal_information&.practice_informations.each do |practice_information| %>
                     <div class="bg-light form-row row p-2 border-bottom border-dark">
-                        <div class="col-xl-6">Practice/Facility Name: <%= practice_information&.practice_name %></div>
-                        <div class="col-xl-6">Office Address: <%= practice_information&.complete_address %></div>
-                        <div class="col-xl-6">Office Phone: <%= practice_information&.phone_number %></div>
-                        <div class="col-xl-6">Office Fax: <%= practice_information&.fax_number %></div>
+                        <div class="col-xl-6">Practice/Facility Name: <%= source_data['cc-first-name']&.data_value %></div>
+                        <div class="col-xl-6">Office Address: <%= source_data['cc-address-line1']&.data_value %></div>
+                        <div class="col-xl-6">Office Phone: <%= source_data['cc-telephone-number']&.data_value %></div>
+                        <div class="col-xl-6">Office Fax: <%= source_data['cc-fax-number']&.data_value %></div>
                     </div>
                     <div class="bg-light form-row row border-bottom border-dark">
                         <h4>Patient Acceptance Addendum</h4>
                     </div>
-                <% end %>
+                <%# end %>
             </div>
             <div class="p-2">
                 <h2>Section IV - Education

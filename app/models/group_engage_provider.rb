@@ -20,7 +20,7 @@ class GroupEngageProvider < ApplicationRecord
 	def full_name = [first_name, middle_name, last_name].compact.join(' ')
 
 	def create_provider_source
-		GroupEngageProvider::CreateProviderSourceService.call(self)
+	  GroupEngageProvider::CreateProviderSourceService.call(self)
 	end
 
 	def create_user

@@ -8,7 +8,7 @@
                     <div class="col-xl-3">
                         <%= render "encompass_sidebar"%>
                     </div>
-                    <div class="col-xl-9">
+                    <div class="col-xl-9  table-responsive">
                         <%# <div class="row">
                             <div class="col-xl-6"> %>
                                 <%# form_with url: request.url, method: :get, html: { class: 'form_search_with_icon'} do |form| %>
@@ -65,30 +65,70 @@
                           </thead>
                             <tbody>
                               <% if @provider_personal_informations.present? %>
-                                <% @provider_personal_informations.each do |provider_personal_information| %>
-                                  <tr>
-                                    <td>
-                                        <% if provider_personal_information.provider_attest_id.present? %>
-                                        <%= link_to mhc_verification_platform_path(id: provider_personal_information.provider_attest_id) do %>
-                                            <%= "#{provider_personal_information&.fullname}, #{provider_personal_information.provider_type_provider_type_abbreviation}" %>
-                                        <% end %>
+                                <% @provider_personal_informations.each do |ppi| %>
+                                  <% if ppi.created_by != 'group-engage' %>
+                                    <!-- ✅ CASE 1: CAQH ID IS PRESENT — Original logic -->
+                                    <tr>
+                                      <td>
+                                        <% if ppi.provider_attest_id.present? %>
+                                          <%= link_to mhc_verification_platform_path(id: ppi.provider_attest_id) do %>
+                                            <%= "#{ppi.fullname}, #{ppi.provider_type_provider_type_abbreviation}" %>
+                                          <% end %>
                                         <% else %>
-                                        <%= "#{provider_personal_information&.fullname}, #{provider_personal_information.provider_type_provider_type_abbreviation}" %>
+                                          <%= "#{ppi.fullname}, #{ppi.provider_type_provider_type_abbreviation}" %>
                                         <% end %>
-                                    </td>
-                                    <td>
-                                      <%= provider_personal_information&.caqh_provider_attest_id || provider_personal_information&.provider_attest_id %>
-                                    </td>
-                                    <td><%= provider_personal_information&.verification_status ? provider_personal_information&.verification_status : 'Pending' %></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                  </tr>
+                                      </td>
+                                      <td><%= ppi.caqh_provider_attest_id || ppi.provider_attest_id %></td>
+                                      <td><%= ppi.verification_status || 'Pending' %></td>
+                                      <td></td>
+                                      <td></td>
+                                      <td></td>
+                                      <td></td>
+                                      <td></td>
+                                      <td></td>
+                                    </tr>
+                                  <% else %>
+                                    <!-- ✅ CASE 2: CAQH ID IS NOT PRESENT — Show ProviderSourceData info -->
+                                    <% provider_source = ppi.provider_source %>
+                                    <% source_data = provider_source&.data&.index_by(&:data_key) || {} %>
+                                    <% source_ppi = provider_source&.provider_personal_information %>
+
+                                    <tr>
+                                      <td>
+                                        <% if source_ppi %>
+                                          <%= link_to mhc_verification_platform_path(id: ppi.provider_attest_id) do %>
+                                            <%= "#{source_data['first_name']&.data_value} #{source_data['middle_name']&.data_value} #{source_data['last_name']&.data_value}" %>
+                                          <% end %>  
+                                        <% else %>
+                                          Unknown
+                                        <% end %>
+                                      </td>
+                                      <td><%= source_ppi&.caqh_provider_attest_id || source_ppi&.provider_attest_id || "-" %></td>
+                                      <td><%= source_ppi&.verification_status || 'Pending' %></td>
+                                      <td><%= source_data["ready-for-download"]&.data_value || "-" %></td>
+                                      <td><%= source_data["in-process"]&.data_value || "-" %></td>
+                                      <td><%= source_data["submitted"]&.data_value || "-" %></td>
+                                      <td><%= source_data["incomplete-application"]&.data_value || "-" %></td>
+                                      <td><%= source_data["application-not-received"]&.data_value || "-" %></td>
+                                      <td><% if @provider&.disclosure_progress_v2 == 100 &&
+                                              @provider.practice_information_completed? &&
+                                              @provider.work_history_completed? &&
+                                              @provider.professional_liability_completed? &&
+                                              @provider.affiliation_info_completed? &&
+                                              @provider.education_and_training_completed? &&
+                                              @provider.speacialties_completed? &&
+                                              @provider.health_plans_completed? &&
+                                              @provider.professional_ids_completed? &&
+                                              @provider.general_info_completed? %>
+                                          completed
+                                        <% else %>
+                                          In progress
+                                        <% end %></td>
+                                    </tr>
+                                  <% end %>
                                 <% end %>
                               <% end %>
+
                             </tbody>
                         </table>
 
