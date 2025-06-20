@@ -107,3 +107,4 @@ gem "grape", "~> 2.3.0" # https://github.com/ruby-grape/grape
 gem "grape-entity", "~> 1.0.1" # https://github.com/ruby-grape/grape-entity
 gem 'grape-swagger'
 gem 'grape-swagger-entity'
+gem 'ffi', '~> 1.17.0'
