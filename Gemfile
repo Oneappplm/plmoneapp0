@@ -102,9 +102,9 @@ gem "audited" # https://github.com/collectiveidea/audited
 gem 'chunky_png', '~> 1.3', '>= 1.3.5'
 gem 'combine_pdf'
 gem "hexapdf", "~> 1.0" # https://github.com/gettalong/hexapdf
-gem "rubyzip"
 gem "grape", "~> 2.3.0" # https://github.com/ruby-grape/grape
 gem "grape-entity", "~> 1.0.1" # https://github.com/ruby-grape/grape-entity
 gem 'grape-swagger'
 gem 'grape-swagger-entity'
 gem 'ffi', '~> 1.17.0'
+gem 'rubyzip', '~> 2.3'
