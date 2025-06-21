@@ -10,9 +10,9 @@ class ProviderSource::BaseService < BaseService
 	def filtered_data_key column
 		case column
 		when 'date_of_birth'
-			'ps-dob'
+			'ps_dob'
 		when 'ssn'
-			'social-security-number'
+			'social_security_number'
 		else
 			column
 		end

@@ -138,7 +138,7 @@
 			<%= HtmlUtils.table_column title: 'State(s) of Practice:', value: State.where(alpha_code: @current_provider_source.fetch(:state_of_practice)).first&.name, height: 'h-50px', last: true, size: '6' %>
 		</div>
 
-		<%= HtmlUtils.single_column title: 'Primary Practitioner Type:', value: @current_provider_source.fetch(:'primary-practioner-type'), height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Primary Practitioner Type:', value: @current_provider_source.fetch(:'primary_practioner_type'), height: 'h-50px'%>
 
 		<div class="row-block">
 			<% titles = [['County:', @current_provider_source.fetch(:'county')], ['Home Mailing Address:', @current_provider_source.fetch(:email_address)]] %>
@@ -148,7 +148,7 @@
 		</div>
 
 		<!-- some partials were added late but some of them are repeating -->
-		<%= render partial: "view_summary/components/city_state_zipcode", locals: { city_key: :city, zipcode_key: :zipcode, state_key: :'ps-state'} %>
+		<%= render partial: "view_summary/components/city_state_zipcode", locals: { city_key: :city, zipcode_key: :zipcode, state_key: :'ps_state'} %>
 
 		<div class="row-block">
 			<% titles = [['Home Telephone Number:', @current_provider_source.fetch(:telephone)], ['Mobile Phone Number:', @current_provider_source.fetch(:mobile_number)], ['Fax Number:', @current_provider_source.fetch(:fax_number)]]%>
@@ -168,21 +168,21 @@
 		<%= HtmlUtils.table_section_header title: '2.2 General Information - Personal Information' %>
 
 		<div class="row-block">
-			<%= HtmlUtils.table_column title: 'Gender:', value: @current_provider_source.fetch(:'ps-gender')&.titleize, height: 'h-50px', last: false, size: '3' %>
-			<% date = Date.parse(@current_provider_source.fetch(:'ps-dob'))&.strftime('%B %d, %Y') rescue nil%>
+			<%= HtmlUtils.table_column title: 'Gender:', value: @current_provider_source.fetch(:'gender')&.titleize, height: 'h-50px', last: false, size: '3' %>
+			<% date = Date.parse(@current_provider_source.fetch(:'ps_dob'))&.strftime('%B %d, %Y') rescue nil%>
 			<%= HtmlUtils.table_column title: 'Date of Birth:', value: date, height: 'h-50px', last: false, size: '3' %>
-			<%= HtmlUtils.table_column title: 'Country of Birth:', value: @current_provider_source.fetch(:'ps-cob')&.titleize, height: 'h-50px', last: true, size: '3' %>
+			<%= HtmlUtils.table_column title: 'Country of Birth:', value: @current_provider_source.fetch(:'ps_cob')&.titleize, height: 'h-50px', last: true, size: '3' %>
 		</div>
 
 		<div class="row-block">
-			<% titles = [['Social Security Number:', @current_provider_source.fetch(:'social-security-number')], ['Ethnicity:', @current_provider_source.fetch(:'ethnicity')], ['Marital Status:', @current_provider_source.fetch(:'marital-status')]] %>
+			<% titles = [['Social Security Number:', @current_provider_source.fetch(:'social_security_number')], ['Ethnicity:', @current_provider_source.fetch(:'ethnicity')], ['Marital Status:', @current_provider_source.fetch(:'marital_status')]] %>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: title[1], height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
 		</div>
 
 		<div class="row-block">
-			<% titles = [['Languages that you speak:', @current_provider_source.fetch(:'languages-you-speak')], ['Languages that you write:', @current_provider_source.fetch(:'languages-you-write')]] %>
+			<% titles = [['Languages that you speak:', @current_provider_source.fetch(:'languages_you_speak')], ['Languages that you write:', @current_provider_source.fetch(:'languages_you_write')]] %>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: title[1], height: 'h-75px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
@@ -191,9 +191,9 @@
 
 		<%= HtmlUtils.table_sub_section_header title: 'Emergency Contact Person' %>
 
-		<%= render partial: "view_summary/components/firstname_lastname_middlename", locals: { first_name_key: :'emergency-first-name', last_name_key: :'emergency-last-name', middle_name_key: :'emergency-middle-name' } %>
+		<%= render partial: "view_summary/components/firstname_lastname_middlename", locals: { first_name_key: :'emergency_first_name', last_name_key: :'emergency_last_name', middle_name_key: :'emergency_middle_name' } %>
 
-		<%= HtmlUtils.single_column title: 'Mobile Number:', is_last_field: true, value: @current_provider_source.fetch(:'emergency-contact-phone-number'), height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Mobile Number:', is_last_field: true, value: @current_provider_source.fetch(:'emergency_contact_phone_number'), height: 'h-50px'%>
 	</div>
 
 	<div class="information-wrapper">
@@ -325,7 +325,7 @@
 		</div>
 
 		<div class="row-block">
-			<% titles = [['TRICARE Provider Number:', :'tricare-provider-name'], ['USLME Number:', :'usmle-number'], ['Worker’s Compensation Number:', :'workers-compensastion-number']]%>
+			<% titles = [['TRICARE Provider Number:', :'tricare_provider_name'], ['USLME Number:', :'usmle_number'], ['Worker’s Compensation Number:', :'workers_compensastion_number']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
@@ -444,7 +444,7 @@
 
 		<%= HtmlUtils.single_column title: 'Reason for Failure:', value: @current_provider_source.fetch(:failed_board_reason), height: 'h-50px'%>
 
-		<%= HtmlUtils.single_column title: 'Other areas of professional practice interest, activities, procedures, diagnoses or populations:', value: @current_provider_source.fetch(:'populations-served')&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Other areas of professional practice interest, activities, procedures, diagnoses or populations:', value: @current_provider_source.fetch(:'populations_served_other')&.titleize, height: 'h-50px'%>
 
 		<%= HtmlUtils.table_section_header title: '6.1 Education and Training - Education' %>
 
@@ -598,13 +598,13 @@
 		</div>
 		<%= HtmlUtils.table_section_header title: '6.3 Education and Training - Teaching Appointments' %>
 		<div class="row-block">
-			<% titles = [['Are/Were you an instructor or faculty for a teaching program?', :an_instructor], ['Teaching Program Location:', :'taf-location'], ['Teaching Program Name:', :'taf-psn']]%>
+			<% titles = [['Are/Were you an instructor or faculty for a teaching program?', :an_instructor], ['Teaching Program Location:', :'taf_location'], ['Teaching Program Name:', :'taf_psn']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
 		</div>
 		<div class="row-block">
-			<% titles = [['Address Line 1:', :'taf-address-line1'], ['City:', :'taf-city'], ['Zip Code:', :'taf-zipcode']]%>
+			<% titles = [['Address Line 1:', :'taf_address_line1'], ['City:', :'taf_city'], ['Zip Code:', :'taf_zipcode']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
@@ -612,7 +612,7 @@
 
 		<div class="row g-0">
 			<!-- in this case had to make two level array title[0] for title and title[1] for colum size-->
-			<% titles = [['Telephone Number:', '4', :'taf-telephone-number'], ['Ext:', '1', :'taf-ext'], ['Fax Number:', '3', :'taf-fax-number'], ['Email Address:', '4', :'taf-email']]%>
+			<% titles = [['Telephone Number:', '4', :'taf_telephone_number'], ['Ext:', '1', :'taf_ext'], ['Fax Number:', '3', :'taf_fax_number'], ['Email Address:', '4', :'taf_email']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2]), height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
 			<% end %>
@@ -621,21 +621,21 @@
 	<div class="information-wrapper">
 		<%= HtmlUtils.table_section_header title: '6.3 Education and Training - Teaching Appointments' %>
 		<div class="row-block">
-			<% titles = [['Program Director First Name:', :'taf-pd-first-name'], ['Program Director Last Name:', :'taf-pd-last-name']]%>
+			<% titles = [['Program Director First Name:', :'taf_pd_first_name'], ['Program Director Last Name:', :'taf_pd_last_name']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 
 		<div class="row-block">
-			<% titles = [['Program Director Degree:', :'taf-pd-degree'], ['Academic Rank or Title:', :'taf-ar-degree']]%>
+			<% titles = [['Program Director Degree:', :'taf_pd_degree'], ['Academic Rank or Title:', :'taf_ar_degree']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 
 		<div class="row-block">
-			<% titles = [['Start Date:', :'taf-start-date'], ['End Date:', :'taf-end-date']]%>
+			<% titles = [['Start Date:', :'taf_start_date'], ['End Date:', :'taf_end_date']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
 				<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
@@ -720,33 +720,33 @@
 			<% end %>
 		</div>
 
-		<%= HtmlUtils.single_column title: 'Please explain your lack of Professional Liability Coverage:', value: @current_provider_source.fetch(:'lf-lack-of-liability-coverage'), height: 'h-75px'%>
+		<%= HtmlUtils.single_column title: 'Please explain your lack of Professional Liability Coverage:', value: @current_provider_source.fetch(:'lf_lack_of_liability_coverage'), height: 'h-75px'%>
 
 		<div class="row-block">
-			<% titles = [['Are you self-insured:', :is_self_insured], ['Self Insured Policy Name:', :'lf-self-insured-policy-name'], ['Policy Number:', :'lf-self-insured-policy-number']]%>
+			<% titles = [['Are you self-insured:', :is_self_insured], ['Self Insured Policy Name:', :'lf_self_insured_policy_name'], ['Policy Number:', :'lf_self_insured_policy_number']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
 		</div>
 		<div class="row-block">
-			<%= HtmlUtils.table_column title: 'Carrier Name:', value: @current_provider_source.fetch(:'lf-self-insured-carrier-name')&.titleize, height: 'h-50px', last: false, size: '6' %>
-			<%= HtmlUtils.table_column title: 'Email Address:', value: @current_provider_source.fetch(:'lf-self-insured-email-address'), height: 'h-50px', last: true, size: '6' %>
+			<%= HtmlUtils.table_column title: 'Carrier Name:', value: @current_provider_source.fetch(:'lf_self_insured_carrier_name')&.titleize, height: 'h-50px', last: false, size: '6' %>
+			<%= HtmlUtils.table_column title: 'Email Address:', value: @current_provider_source.fetch(:'lf_self_insured_email_address'), height: 'h-50px', last: true, size: '6' %>
 		</div>
 
 		<div class="row-block">
-			<% titles = [['Telephone Number:', :'lf-self-insured-phone-number'], ['Ext:', :'lf-self-insured-ext'], ['Fax Number:', :'lf-self-insured-fax-number']]%>
+			<% titles = [['Telephone Number:', :'lf_self_insured_phone_number'], ['Ext:', :'lf_self_insured_ext'], ['Fax Number:', :'lf_self_insured_fax_number']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
 		</div>
 		<div class="row-block">
-			<% titles = [['Amount of Coverage per Occurrence:', :'lf-self-insured-coverage-amount'], ['Amount of Aggregate Coverage:', :'lf-self-insured-email-aggregate-coverage']]%>
+			<% titles = [['Amount of Coverage per Occurrence:', :'lf_self_insured_coverage_amount'], ['Amount of Aggregate Coverage:', :'lf_self_insured_email_aggregate_coverage']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 		<div class="row g-0">
-			<% titles = [['Original Effective (Retroactive):', :'lf-self-insured-original-effective-date'], ['Effective Date:', :'lf-self-insured-effective-date'], ['Expiration Date:', :'lf-self-insured-original-expiration-date']]%>
+			<% titles = [['Original Effective (Retroactive):', :'lf_self_insured_original_effective_date'], ['Effective Date:', :'lf_self_insured_effective_date'], ['Expiration Date:', :'lf_self_insured_original_expiration_date']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
 				<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
@@ -871,11 +871,11 @@
 		<%= HtmlUtils.table_section_header title: '8. Professional Liability - Affiliation Information' %>
 		<%= HtmlUtils.table_sub_section_header title: 'If not self-insured' %>
 		<div class="row-block">
-			<%= HtmlUtils.table_column title: 'Carrier Location:', value: State.where(alpha_code: @current_provider_source.fetch(:'lf-carrier-location')).first&.name, height: 'h-50px', last: false, size: '6' %>
-			<%= HtmlUtils.table_column title: 'Carrier Name:', value: @current_provider_source.fetch(:'lf-carrier-name')&.titleize, height: 'h-50px', last: true, size: '6' %>
+			<%= HtmlUtils.table_column title: 'Carrier Location:', value: State.where(alpha_code: @current_provider_source.fetch(:'lf_carrier_location')).first&.name, height: 'h-50px', last: false, size: '6' %>
+			<%= HtmlUtils.table_column title: 'Carrier Name:', value: @current_provider_source.fetch(:'lf_carrier_name')&.titleize, height: 'h-50px', last: true, size: '6' %>
 		</div>
 		<div class="row-block">
-			<% titles = [['Address Line 1:', :'lf-address-line1'], ['City:', :'lf-city'], ['Zip Code:', :'lf-zipcode']]%>
+			<% titles = [['Address Line 1:', :'lf_address_line1'], ['City:', :'lf_city'], ['Zip Code:', :'lf_zipcode']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
@@ -883,19 +883,19 @@
 
 		<div class="row-block">
 			<!-- in this case had to make two level array title[0] for title and title[1] for colum size-->
-			<% titles = [['Telephone Number:', '4', :'lf-telephone-number'], ['Ext:', '1', :'lf-ext'], ['Fax Number:', '3', :'lf-fax-number'], ['Email Address:', '4', :'lf-email-address']]%>
+			<% titles = [['Telephone Number:', '4', :'lf_telephone_number'], ['Ext:', '1', :'lf_ext'], ['Fax Number:', '3', :'lf-fax-number'], ['Email Address:', '4', :'lf_email_address']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2]), height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
 			<% end %>
 		</div>
 		<div class="row-block">
-			<% titles = [['Type of Policy:', :'lf-policy-type'], ['Type of Coverage:', :'lf-coverage-type']]%>
+			<% titles = [['Type of Policy:', :'lf_policy_type'], ['Type of Coverage:', :'lf_coverage_type']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 		<div class="row-block">
-			<% titles = [['Policy Holder Name:', :'lf-policy-holder-name'], ['Policy Number:', :'lf-policy-number']]%>
+			<% titles = [['Policy Holder Name:', :'lf_policy_holder_name'], ['Policy Number:', :'lf_policy_number']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>

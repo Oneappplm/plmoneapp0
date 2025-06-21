@@ -166,8 +166,10 @@ class ProviderSourcesController < ApplicationController
 	  else
 	    # === Handle flat fields (non-nested, fallback to provider_source.data) ===
 	    field_key = field_name.parameterize(separator: "_")
-	    data_record = current_provider_source.data.find_or_initialize_by(data_key: field_key)
-	    data_record.data_value = value.is_a?(Array) ? value.join(",") : value
+	    # data_record = current_provider_source.data.find_or_initialize_by(data_key: field_key)
+			data_record = current_provider_personal_information
+      data_record.assign_attributes(field_key => value)
+	    # data_record.data_value = value.is_a?(Array) ? value.join(",") : value
 
 	    if data_record.save
 	      return render json: { success: true, data_key: field_key, data_value: value }
@@ -228,29 +230,49 @@ class ProviderSourcesController < ApplicationController
     record.update_attribute(field,content)
   end
 
+	# def fetch
+	#   return unless params[:field_name].present?
+
+	#   field_name = params[:field_name].parameterize(separator: '_')
+
+	#   # 🚫 Skip fetching if it's part of the specialty section
+	#   return if field_name.include?("provider_source_specialities")
+
+	#   data = current_provider_source.data.find_or_create_by(data_key: field_name)
+
+
+	#   respond_to do |format|
+	#     format.json do
+	#       render json: {
+	#         value: filtered_value(data&.data_value, field_name),
+	#       }
+	#     end
+	#   end
+	# end
 	def fetch
-	  return unless params[:field_name].present?
+		return unless params[:field_name].present?
 
-	  field_name = params[:field_name].parameterize(separator: '_')
+		field_name = params[:field_name].underscore
 
-	  # 🚫 Skip fetching if it's part of the specialty section
-	  return if field_name.include?("provider_source_specialities")
+		# ✅ Fetch the personal information record
+		personal_info = ProviderPersonalInformation.find_by(provider_source_id: current_provider_source.id)
 
-	  data = current_provider_source.data.find_or_create_by(data_key: field_name)
+		return unless personal_info.respond_to?(field_name)
 
+		value = personal_info.public_send(field_name)
 
-	  respond_to do |format|
-	    format.json do
-	      render json: {
-	        value: filtered_value(data&.data_value, field_name),
-	      }
-	    end
-	  end
+		respond_to do |format|
+			format.json do
+				render json: {
+					value: value
+				}
+			end
+		end
 	end
 
 	def filtered_value field_value, field_name
 		case field_name
-		when 'ps-dob'
+		when 'ps_dob'
 			field_value.present? ? Date.parse(field_value).strftime('%Y-%m-%d') : ''
 		else
 			field_value
@@ -307,6 +329,10 @@ class ProviderSourcesController < ApplicationController
 
 
 	private
+
+	def current_provider_personal_information
+    @current_provider_personal_information ||= ProviderPersonalInformation.find_or_create_by(provider_source_id: current_user.id)
+  end
 
 	def create_provider_source_and_redirect_to_edit_page
 		current_provider_source.update(current_provider_source: false)
