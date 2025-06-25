@@ -102,6 +102,16 @@ class ProviderSource < ApplicationRecord
    "#{fetch('first_name')} #{fetch('last_name')}"
   end
 
+  def full_address
+    [
+      fetch("cc-address-line1"),
+      fetch("cc-address_line2"),
+      fetch("cc-city"),
+      fetch("cc-state"),
+      fetch("cc-zip")
+    ].compact.join(", ")
+  end
+
   def states
     eval(fetch('state_or_practice'))
   rescue

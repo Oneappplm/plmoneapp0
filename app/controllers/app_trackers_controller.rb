@@ -13,12 +13,21 @@ class AppTrackersController < ProvidersController
 	  @client_organizations = ClientOrganization.paginate(per_page: 10, page: params[:page] || 1)
 
 	  # Filtering for @app_trackers
-	  if params[:user_search].present?
+	 if params[:user_search].present?
 		  search_term = "%#{params[:user_search]}%"
-		  @provider_personal_information = @provider_personal_information.where(
-		    "first_name ILIKE ? OR middle_name ILIKE ? OR last_name ILIKE ? OR caqh_provider_attest_id::text ILIKE ?",
-		    search_term, search_term, search_term, search_term
-		  )
+
+		  @provider_personal_information = @provider_personal_information
+		    .left_joins(provider_source: :data) # LEFT JOIN both provider_source and data
+		    .where(
+		      "provider_personal_informations.first_name ILIKE :term OR
+		       provider_personal_informations.middle_name ILIKE :term OR
+		       provider_personal_informations.last_name ILIKE :term OR
+		       CAST(provider_personal_informations.caqh_provider_attest_id AS TEXT) ILIKE :term OR
+		       (provider_source_data.data_key IN ('first_name', 'middle_name', 'last_name') AND
+		        provider_source_data.data_value ILIKE :term)",
+		      term: search_term
+		    )
+		    .distinct
 		end
 
 	  if params[:app_reviewed].present?
