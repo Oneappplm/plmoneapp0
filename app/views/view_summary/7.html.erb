@@ -3,11 +3,11 @@
 		<%= HtmlUtils.table_section_header title: '8. Professional Liability - Affiliation Information' %>
 		<%= HtmlUtils.table_sub_section_header title: 'If not self-insured' %>
 		<div class="row g-0 border-bottom border-dark">
-			<%= HtmlUtils.table_column title: 'Carrier Location:', value: State.where(alpha_code: @current_provider_source.fetch(:'lf-carrier-location')).first&.name, height: 'h-50px', last: false, size: '6' %>
-			<%= HtmlUtils.table_column title: 'Carrier Name:', value: @current_provider_source.fetch(:'lf-carrier-name')&.titleize, height: 'h-50px', last: true, size: '6' %>
+			<%= HtmlUtils.table_column title: 'Carrier Location:', value: State.where(alpha_code: @current_provider_source.fetch(:'lf_carrier_location')).first&.name, height: 'h-50px', last: false, size: '6' %>
+			<%= HtmlUtils.table_column title: 'Carrier Name:', value: @current_provider_source.fetch(:'lf_carrier_name')&.titleize, height: 'h-50px', last: true, size: '6' %>
 		</div>
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = [['Address Line 1:', :'lf-address-line1'], ['City:', :'lf-city'], ['Zip Code:', :'lf-zipcode']]%>
+			<% titles = [['Address Line 1:', :'lf_address_line1'], ['City:', :'lf_city'], ['Zip Code:', :'lf_zipcode']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
 			<% end %>
@@ -15,19 +15,19 @@
 
 		<div class="row g-0 border-bottom border-dark">
 			<!-- in this case had to make two level array title[0] for title and title[1] for colum size-->
-			<% titles = [['Telephone Number:', '4', :'lf-telephone-number'], ['Ext:', '1', :'lf-ext'], ['Fax Number:', '3', :'lf-fax-number'], ['Email Address:', '4', :'lf-email-address']]%>
+			<% titles = [['Telephone Number:', '4', :'lf_telephone_number'], ['Ext:', '1', :'lf_ext'], ['Fax Number:', '3', :'lf-fax-number'], ['Email Address:', '4', :'lf_email_address']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2]), height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
 			<% end %>
 		</div>
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = [['Type of Policy:', :'lf-policy-type'], ['Type of Coverage:', :'lf-coverage-type']]%>
+			<% titles = [['Type of Policy:', :'lf_policy_type'], ['Type of Coverage:', :'lf_coverage_type']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>
 		</div>
 		<div class="row g-0 border-bottom border-dark">
-			<% titles = [['Policy Holder Name:', :'lf-policy-holder-name'], ['Policy Number:', :'lf-policy-number']]%>
+			<% titles = [['Policy Holder Name:', :'lf_policy_holder_name'], ['Policy Number:', :'lf_policy_number']]%>
 			<% titles.each_with_index do |title,idx|%>
 				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
 			<% end %>

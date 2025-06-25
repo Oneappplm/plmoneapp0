@@ -1,4 +1,8 @@
 class ProviderSource < ApplicationRecord
+
+  has_one :provider_personal_information
+  accepts_nested_attributes_for :provider_personal_information, allow_destroy: true
+
   has_many :data, class_name: 'ProviderSourceData', inverse_of: :provider_source, dependent: :destroy
   has_many  :documents, class_name: 'ProviderSourceDocument', inverse_of: :provider_source, dependent: :destroy
   has_many :deas, class_name: 'ProviderSourcesDea', inverse_of: :provider_source, dependent: :destroy
@@ -159,8 +163,8 @@ class ProviderSource < ApplicationRecord
     # Base fields
     fields_no_prerequisites = [
       'first_name', 'last_name', 'degree_titles',
-      'state_of_practice', 'primary-practioner-type',
-      'gi-country', 'address_line_1', 'city', 'ps-state',
+      'state_of_practice', 'primary_practioner_type',
+      'country', 'address_line_1', 'city', 'ps_state',
       'telephone', 'email_address', 'zipcode'
     ]
 
@@ -192,9 +196,9 @@ class ProviderSource < ApplicationRecord
   def personal_info_progress
     percentage = 0
     fields_no_prerequisites = [
-      'ps-gender', 'ps-dob', 'ps-citizenship', 'reside-on-us', 'work-on-us',
-      'permanent-work-permit', 'languages-you-speak', 'languages-you-write',
-      'ethnicity', 'social-security-number'
+      'gender', 'ps_dob', 'ps_citizenship', 'reside_on_us', 'work_on_us',
+      'permanent_work_permit', 'languages_you_speak', 'languages_you_write',
+      'ethnicity', 'social_security_number'
     ]
     filled_up_fields = fetch_many(fields_no_prerequisites)&.pluck(:data_value).compact.reject(&:empty?).count
 
@@ -571,8 +575,8 @@ class ProviderSource < ApplicationRecord
 
   def teaching_appointments_an_instructor_fields
     [
-      'taf-location', 'taf-psn', 'taf-address-line1', 'taf-city',
-      'taf-zipcode', 'taf-end-date'
+      'taf_location', 'taf_psn', 'taf_address_line1', 'taf_city',
+      'taf_zipcode', 'taf_end_date'
     ]
   end
 
@@ -715,17 +719,17 @@ class ProviderSource < ApplicationRecord
 
   def self_insured_yes_fields
     [
-      'lf-self-insured-policy-name', 'lf-self-insured-policy-number', 'lf-self-insured-carrier-name',
-      'lf-self-insured-coverage-amount', 'lf-self-insured-email-aggregate-coverage', 'lf-self-insured-original-effective-date',
-      'lf-self-insured-original-expiration-date'
+      'lf_self_insured_policy_name', 'lf_self_insured_policy_number', 'lf_self_insured_carrier_name',
+      'lf_self_insured_coverage_amount', 'lf_self_insured_email_aggregate_coverage', 'lf_self_insured_original_effective_date',
+      'lf_self_insured_original_expiration_date'
     ]
   end
 
   def self_insured_no_fields
     [
-      'lf-carrier-location', 'lf-carrier-name', 'lf-address-line1', 'lf-city', 'lf-zipcode', 'lf-policy-number',
-      'lf-not-insured-coverage-amount', 'lf-not-insured-email-aggregate-coverage', 'lf-not-insured-original-effective-date',
-      'lf-not-insured-original-expiration-date'
+      'lf_carrier_location', 'lf_carrier_name', 'lf_address_line1', 'lf_city', 'lf_zipcode', 'lf_policy_number',
+      'lf_not_insured_coverage_amount', 'lf_not_insured_email_aggregate_coverage', 'lf_not_insured_original_effective_date',
+      'lf_not_insured_original_expiration-date'
     ]
   end
 
@@ -1034,9 +1038,9 @@ class ProviderSource < ApplicationRecord
   def filtered_data_key column
     case column
     when 'data_of_birth'
-      'ps-dob'
+      'ps_dob'
     when 'ssn'
-      'social-security-number'
+      'social_security_number'
     else
       column
     end
