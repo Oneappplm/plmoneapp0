@@ -53,6 +53,8 @@
       <tbody>
         <% if @provider_personal_informations.present? %>
           <% @provider_personal_informations.each do |provider_personal_information| %>
+            <% provider_source = provider_personal_information.provider_source %>
+            <% source_data = provider_source&.data&.index_by(&:data_key) || {} %>
             <tr>
               <td class="option form-check-input">
                 <%= check_box_tag "selected_ids[]", provider_personal_information.id, nil, id: "selected_#{provider_personal_information.id}" %>
@@ -63,16 +65,23 @@
               <td><%= provider_personal_information.verification_status %>
               </td>
               <td>
-                <%= link_to(
-                  "#{provider_personal_information.fullname}, #{provider_personal_information.provider_type_provider_type_abbreviation}",
-                  show_virtual_review_committee_path(provider_personal_information.id)
-                ) %>
+                <% if provider_personal_information.created_by != 'group-engage' %>
+                  <%= link_to(
+                    "#{provider_personal_information.fullname}, #{provider_personal_information.provider_type_provider_type_abbreviation}",
+                    show_virtual_review_committee_path(provider_personal_information.id)
+                  ) %>
+                <% else %>
+                  <%= link_to(
+                    "#{provider_source.full_name}, #{provider_personal_information.provider_type_provider_type_abbreviation}",
+                    show_virtual_review_committee_path(provider_personal_information.id)
+                  ) %>
+                <% end %>
               </td>
               <td><%= provider_personal_information.provider_type_provider_type_abbreviation %></td>
               <td>
                 <%= provider_personal_information.cred_cycle %>
               </td>
-              <td><%= provider_personal_information.attest_date.strftime('%Y-%m-%d') %></td>
+              <td><%= provider_personal_information.attest_date&.strftime('%Y-%m-%d') %></td>
               <td><%= provider_personal_information.review_level %></td>
               <td><%= provider_personal_information.recred_due_date || "NA" %></td>
               <td><%= provider_personal_information.review_date || "NA" %></td>

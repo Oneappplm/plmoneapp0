@@ -98,7 +98,9 @@
 
 					<tbody class="">
 						<% @provider_personal_informations.each do |provider_personal_information| %>
-							<% practice_information = provider_personal_information.provider_attest.practice_informations.first %>
+							<% practice_information = provider_personal_information&.provider_attest&.practice_informations&.first %>
+							<% provider_source = provider_personal_information.provider_source %>
+						  <% source_data = provider_source&.data&.index_by(&:data_key) || {} %>
 							<%# <tr class="p-3 <%= (provider_personal_information.present? && provider_personal_information.id == client.id) ? '' : 'bg-alt-grey'%>
 								<td>
 								  <div class="form-check">
@@ -133,16 +135,24 @@
 										<span> %><%#= provider_personal_information&.npi %><%# </span>
 									</div>
 								</td> %>
-
+                
 								<td style="text-wrap: wrap">
 									<div class="py-1">
-										<span><%= provider_personal_information&.fullname %></span>
+										<% if provider_personal_information.created_by != 'group-engage' %>
+										  <span><%= provider_personal_information&.fullname %></span>
+										<% else %>
+										  <span><%= provider_source.full_name %></span>
+										<% end %>
 									</div>
 								</td>
 
 								<td style="text-wrap: wrap">
 									<div class="py-1">
-										<span><%= practice_information&.complete_address %></span>
+										<% if provider_personal_information.created_by != 'group-engage' %>
+										  <span><%= practice_information&.complete_address %></span>
+										<% else %>
+										  <span><%= provider_source.full_address %></span>
+										<% end %>
 									</div>
 								</td>
 
