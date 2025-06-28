@@ -47,6 +47,8 @@ class ProviderPersonalInformation < ApplicationRecord
   has_many :provider_personal_uploaded_docs, class_name: 'ProviderPersonalUploadedDoc'
   has_one :provider_personal_docs_receive
   has_many :provider_licensures, through: :provider_attest
+  has_many :provider_other_names, through: :provider_attest
+  has_many :provider_source_specialities, through: :provider_source
 
   has_many :provider_personal_information_sam_records
   has_many :provider_personal_information_reinstatements
@@ -74,4 +76,52 @@ class ProviderPersonalInformation < ApplicationRecord
   def set_provider_attest
     self.provider_attest = ProviderAttest.where(caqh_provider_attest_id: self.caqh_provider_attest_id).last
   end
+
+  FIELD_MAP = {
+    "first_name" => :first_name,
+    "last_name" => :last_name,
+    "middle_name" => :middle_name,
+    "suffix" => :suffix,
+    "state_of_practice" => :primary_practice_state,
+    "primary-practioner-type" => :practitioner_type,
+    "other_name" => :other_name_flag,
+    "degree_titles" => :degree_titles,
+    "email_address" => :email_address,
+    "ps-gender" => :gender,
+    "ps-dob" => :date_of_birth,
+    "ps-citizenship" => :citizenship_status,
+    "social-security-number" => :ssn,
+    "reside-on-us" => :us_eligible_flag,
+    "permanent-work-permit" => :work_permit_status,
+    "visa-number" => :visa_number,
+    "gi-visa-types" => :visa_type,
+    "visa-status" => :visa_status,
+    "visa-issue-date" => :visa_issue_date,
+    "visa-expire-date" => :visa_expiration_date,
+    "ethnicity" => :ethnicity_description,
+    "marital-status" => :marital_status_marital_status_description,
+    "emergency-first-name" => :emergency_contact_first_name,
+    "emergency-middle-name" => :emergency_contact_middle_name,
+    "emergency-last-name" => :emergency_contact_last_name,
+    "emergency-contact-phone-number" => :emergency_contact_phone,
+    "ps-cob" => :birth_country_country_name,
+    "npi_number" => :npi,
+    "has_dea_registration_number" => :dea_flag,
+    "gi-country" => :country,
+    "address_line_1" => :address_line_1,
+    "address_line_2" => :address_line_2,
+    "city" => :birth_city,
+    "county" => :county,
+    "ps-state" => :birth_state,
+    "zipcode" => :zipcode,
+    "telephone" => :telephone_number,
+    "page_number" => :pager_beeper_number,
+    "mobile_number" => :cell_phone_number,
+    "fax_number" => :fax_number,
+    "caqh_provider_id" => :caqh_number,
+    "has_cds_registration_number" => :cds_flag,
+    "signature_date" => :attest_date,
+    "medicare_field" => :medicare_provider_flag,
+    "medicaid_field" => :medicaid_provider_flag
+  }.freeze
 end

@@ -1,4 +1,4 @@
-class ProviderSource::TransferToGroupEngageProvidersService < ProviderSource::BaseService
+class ProviderSources::TransferToGroupEngageProvidersService < ProviderSource::BaseService
 	attr_reader :group_engage_provider
 
 	def initialize(provider_source)

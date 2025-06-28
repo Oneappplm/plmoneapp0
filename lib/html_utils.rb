@@ -61,16 +61,21 @@ module HtmlUtils
     options[:value_off] ||= 'no'
     options[:to_show] ||= ''
     options[:required] ||= false
+    options[:data] ||= {}
+
+    # Build data attributes string
+    data_attrs = options[:data].map { |k, v| %(data-#{k.to_s.dasherize}="#{v}") }.join(' ')
+
 
     option = <<-HTML
       <label class="#{ options[:label_class] }"> #{ options[:label] } </label>
       <div class="#{ options[:container_class] }">
           <span>
-          <input type="radio" value="#{ options[:value_on] }" name="#{ options[:name] }" #{ options[:required] ? 'required' : '' } >
+          <input type="radio" value="#{ options[:value_on] }" name="#{ options[:name] }" #{ options[:required] ? 'required' : '' } #{data_attrs}>
           <span>#{ options[:value_on].upcase }</span>
           </span>
           <span>
-          <input type="radio" value="#{ options[:value_off] }" name="#{ options[:name] }" #{ options[:required] ? 'required' : '' } >
+          <input type="radio" value="#{ options[:value_off] }" name="#{ options[:name] }" #{ options[:required] ? 'required' : '' } #{data_attrs}>
           <span>#{ options[:value_off].upcase }</span>
           </span>
         </div>
@@ -105,6 +110,7 @@ module HtmlUtils
     options[:name] ||= ''
 
     value = options[:value]
+    data_attrs = options[:data] || {}
 
 
     dropdown_class = ['form-select']
@@ -116,9 +122,11 @@ module HtmlUtils
       dropdown_class << 'border-dark'
     end
 
+    data_attributes = data_attrs.map { |k, v| %(data-#{k}="#{v}") }.join(' ')
+
     option = <<-HTML
       <label class="text-dark-grey">#{options[:label]}</label>
-      <div class="#{options[:multiple] ? 'multi' : 'single'}-select multi-select-#{options[:name]} #{dropdown_class.join(' ')}" name="#{options[:name]}" id="#{options[:name]}" placeholder="#{options[:label]}"></div>
+      <div class="#{options[:multiple] ? 'multi' : 'single'}-select multi-select-#{options[:name]} #{dropdown_class.join(' ')}" name="#{options[:name]}" id="#{options[:name]}" placeholder="#{options[:label]}" #{data_attributes}></div>
     HTML
 
     option.html_safe

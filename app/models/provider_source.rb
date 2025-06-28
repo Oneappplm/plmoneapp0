@@ -1080,6 +1080,21 @@ class ProviderSource < ApplicationRecord
     ProviderSourceCme.create(provider_source_id: self.id)
   end
 
+  def all_sections_completed?
+    general_info_completed? &&
+      professional_ids_completed? &&
+      health_plans_completed? &&
+      speacialties_completed? &&
+      education_and_training_completed? &&
+      affiliation_info_completed? &&
+      professional_liability_completed? &&
+      work_history_completed? &&
+      medical_education_progress == 100
+      disclosure_progress_v2 == 100 &&
+      practice_information_completed? &&
+      self.documents.present?
+  end
+
   private
 
   # will set provider source disclosure answer to no as default is needed to calculate percentage of progress

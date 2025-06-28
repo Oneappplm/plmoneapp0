@@ -99,8 +99,7 @@
 					<tbody class="">
 						<% @provider_personal_informations.each do |provider_personal_information| %>
 							<% practice_information = provider_personal_information&.provider_attest&.practice_informations&.first %>
-							<% provider_source = provider_personal_information.provider_source %>
-						  <% source_data = provider_source&.data&.index_by(&:data_key) || {} %>
+							<% saved_profile = @latest_saved_profiles[provider_personal_information.id] %>
 							<%# <tr class="p-3 <%= (provider_personal_information.present? && provider_personal_information.id == client.id) ? '' : 'bg-alt-grey'%>
 								<td>
 								  <div class="form-check">
@@ -115,15 +114,13 @@
 								    <div class="py-1">
 										  <% case provider_personal_information.cred_status %>
 										    <% when "psv" %>
-										      <% if @psv_pdf.present? %>
-										        <%= link_to @psv_pdf.file_path.url, target: "_blank", class: "text-danger fs-5" do %>
+										      <% if saved_profile.present? %>
+										        <%= link_to saved_profile.file_path.url, target: "_blank", class: "text-danger fs-5" do %>
 										          <i class="fas fa-file-pdf fa-xl"></i>
 										        <% end %>
 										      <% else %>
 										        <span class="text-warning">PDF not available</span>
 										      <% end %>
-
-										    <% when "attested", "no-application", "incomplete", "pending", "in-process", "returned" %>
 										      <span class="status-indicator rounded"></span>
 										  <% end %>
 										</div>
@@ -138,21 +135,13 @@
                 
 								<td style="text-wrap: wrap">
 									<div class="py-1">
-										<% if provider_personal_information.created_by != 'group-engage' %>
 										  <span><%= provider_personal_information&.fullname %></span>
-										<% else %>
-										  <span><%= provider_source.full_name %></span>
-										<% end %>
 									</div>
 								</td>
 
 								<td style="text-wrap: wrap">
 									<div class="py-1">
-										<% if provider_personal_information.created_by != 'group-engage' %>
-										  <span><%= practice_information&.complete_address %></span>
-										<% else %>
-										  <span><%= provider_source.full_address %></span>
-										<% end %>
+                    <span><%= practice_information&.complete_address %></span>
 									</div>
 								</td>
 

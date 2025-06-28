@@ -104,442 +104,415 @@
 					</thead>
 					<tbody>
 						<% @provider_personal_information.each do |provider| %>
-							<% if provider.created_by == 'group-engage' %>
-						    <% provider_source = provider.provider_source %>
-						    <% source_data = provider_source&.data&.index_by(&:data_key) || {} %>
+					    <% provider_source = provider.provider_source %>
+					    <% row_class = provider_source.all_sections_completed? ? 'table-success' : 'table-danger' %>
+              <tr class="<%= row_class %>">
+								<td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.caqh_provider_id %> data-remote="true"><%= provider.caqh_provider_attest_id %></a></td>
+								<td>
+									<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%#= provider.id %> data-remote="true">
+										<p>
+											 <% if @client_organizations.present? %>
+					              <%= @client_organizations.first.organization_name %>
+					            <% end %>
+										</p>	
+									</a>
+								</td>
+								<td>
+									<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true">
+										<p><%= provider.first_name %></p>	
+									</a>
+								</td>
+								<td>
+									<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true">
+										<p><%= provider.middle_name %></p>	
+									</a>
+								</td>
+								<td>
+									<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true">
+										<p><%= provider.last_name %></p>	
+									</a>
+								</td>
 
-						    <tr>
-						      <td>
-						        <%= provider.caqh_provider_attest_id %>
-						      </td>
-						      <td></td>
-						      <td>
-										<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true">
-											<p><%= source_data['first_name']&.data_value %></p>	
-										</a>
-									</td>
-									<td>
-										<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true">
-											<p><%= source_data['middle_name']&.data_value %></p>	
-										</a>
-									</td>
-									<td>
-										<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true">
-											<p><%= source_data['last_name']&.data_value %></p>	
-										</a>
-									</td>
-						      <td colspan="2">
-									</td>
-						    </tr>
-						  <% else %>  
-								<tr>
-									<td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.caqh_provider_id %> data-remote="true"><%= provider.caqh_provider_attest_id %></a></td>
-									<td>
-										<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%#= provider.id %> data-remote="true">
-											<p>
-												 <% if @client_organizations.present? %>
-						              <%= @client_organizations.first.organization_name %>
-						            <% end %>
-											</p>	
-										</a>
-									</td>
-									<td>
-										<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true">
-											<p><%= provider.first_name %></p>	
-										</a>
-									</td>
-									<td>
-										<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true">
-											<p><%= provider.middle_name %></p>	
-										</a>
-									</td>
-									<td>
-										<a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.id %> data-remote="true">
-											<p><%= provider.last_name %></p>	
-										</a>
-									</td>
+								<td colspan="2">
+									<%= form_with model: @practice_information, url: save_provider_practice_informations_path, local: true do |form| %>
+									  <%= form.hidden_field :provider_attest_id, value: provider.provider_attest_id %>
+									  <%= form.hidden_field :id, value: provider.practice_informations.first&.id %>
+									  <%#= hidden_field_tag :doc_recived_id, provider.practice_informations.first.present? ? provider.practice_informations.first.id : nil %>
 
-									<td colspan="2">
-										<%= form_with model: @practice_information, url: save_provider_practice_informations_path, local: true do |form| %>
-										  <%= form.hidden_field :provider_attest_id, value: provider.provider_attest_id %>
-										  <%= form.hidden_field :id, value: provider.practice_informations.first&.id %>
-										  <%#= hidden_field_tag :doc_recived_id, provider.practice_informations.first.present? ? provider.practice_informations.first.id : nil %>
-
-											 <div class="form-group">
-												<%= form.label :address %>
-												<%= form.text_field :address, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.address %>
-												<%= form.text_field :address2, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.address2 %>
-												<%= form.text_field :city, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.city %>
-												<label class="text-dark-grey">State <span class="text-red">*</span></label>
-												<%#= form.collection_select :state, State.all, :alpha_code, :name, { prompt: 'Select State' }, class: 'form-control mt-1 mb-1 border-dark' %>
-												<%= form.select :state,
-					                options_from_collection_for_select(State.all, :alpha_code, :name, provider.practice_informations.first&.state),
-					                { prompt: 'Select State' },
-					                class: 'form-select border-dark' %>
-											</div>
-
-											<div>
-												<div class="form-group">
-													<%= form.label :fax %>
-													<%= form.text_field :fax_number, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.fax_number %>
-												</div>
-
-												<div class="form-group mt-1 mb-1">
-													<%= form.label :phone %>
-													<%= form.text_field :phone_number, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.phone_number  %>
-												</div>
-
-												<div class="form-group mt-1 mb-1">
-													<%= form.label :email_address %>
-													<%= form.text_field :email_address, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.email_address  %>
-												</div>
-
-												<div class="form-group mt-1 mb-1">
-													<%= form.label :provider_type %>
-													<%= form.text_field :provider_type, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.provider_type %>
-												</div>
-
-												<div class="form-group mt-1 mb-1">
-													<%= form.label :cred_cycle %>
-													<%= form.text_field :cred_cycle, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.cred_cycle %>
-												</div>
-
-												<div class="form-group mt-1 mb-1">
-													<%= form.label :npi %>
-													<%= form.text_field :npi, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.npi %>
-												</div>
-
-												<div class="form-group mt-1 mb-1">
-													<%= form.label :ssn %>
-													<%= form.text_field :ssn, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.ssn %>
-												</div>
-
-												<div class="form-group mt-1 mb-1">
-													<%= form.label :caqhid %>
-													<%= form.text_field :caqh_provider_practice_id, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.caqh_provider_practice_id %>
-												</div>
-
-												<div class="form-group mt-1 mb-1">
-													<%= form.label :encompass_id %>
-													<%= form.text_field :caqh_provider_attest_id, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.caqh_provider_attest_id %>
-												</div>
-
-												<div class="form-group mt-1 mb-1">
-													<%= form.label :birth_date %>
-													<%= form.date_field :birth_date, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.birth_date  %>
-												</div>
-
-												<div class="form-group">
-													<%= form.label :provider_status %>
-													<%= form.select :provider_status, options_for_select(['Change of Ownership', 'Credential Once', 'Deceased', 'Delegated', 'Incomplete App', 'No Application Received', 'No Longer in Private Sector', 'No Longer Practices Medicine', 'Non-Participant', 'Non-Responder', 'On Leave', 'Out of Network', 'Paper App', 'Relocated Out of State', 'Retired', 'Terminated', 'Undeliverable' ], provider.practice_informations.first&.provider_status), { prompt: true },  {class: "form-select border-dark"} %>
-												</div>
-
-												<div class="form-group mt-1 mb-1">
-													<%= form.label :attestation_date %>
-													<%= form.date_field :attestation_date, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.attestation_date %>
-												</div>
-
-												<div class="form-group mt-1 mb-1">
-													<%= form.label :file_due_date %>
-													<%= form.date_field :file_due_date, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.file_due_date %>
-												</div>
-
-												<div class="form-group mt-1 mb-1">
-													<%= form.label :app_complete_date %>
-													<%= form.date_field :app_complete_date, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.app_complete_date %>
-												</div>
-
-												<div class="form-group mt-2 mb-2">
-												  <%= form.label :app_reviewed %>
-												  <%= form.check_box :app_reviewed, class: "form-input-check mt-1 mb-1", checked: provider.practice_informations.first&.app_reviewed || false %>
-												</div>
-
-
-												<div class="form-group mt-1 mb-1">
-													<%= form.label :batch_description %>
-													<%= form.text_area :batch_description, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.batch_description %>
-												</div>
-
-												<div class="form-group mt-1 mb-1">
-													<%= form.label :comment %>
-													<%= form.text_area :comment, rows: 4, cols: 50, class: 'form-control mt-1 mb-1 border-dark', value: provider.practice_informations.first&.comment %>
-												</div>
-											</div>
-
-										  <div>
-												<%= form.submit "Save", class: 'btn btn-primary mt-2 mb-2' %>
-											</div>
-										<% end %>
-									</td>
-
-									<td colspan="8">
-										<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-										  <li class="nav-item" role="presentation">
-										    <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Attempt Details</button>
-										  </li>
-										  <li class="nav-item" role="presentation">
-										    <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Docs Upload</button>
-										  </li>
-										  <li class="nav-item" role="presentation">
-										    <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Docs Received</button>
-										  </li>
-										</ul>
-										<div class="tab-content" id="pills-tabContent">
-										  <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-										  	
-										  	<table class="table table-striped table-bordered">
-										  		<thead>
-										  			<tr>
-										  				<th scope="col" class="bg-primary text-white">Provider</th>
-										  				<th scope="col" class="bg-primary text-white">Contact Method</th>
-										  				<th scope="col" class="bg-primary text-white">Attempt Status</th>
-										  				<th scope="col" class="bg-primary text-white">Contact Date</th>
-										  				<th scope="col" class="bg-primary text-white">Comments</th>
-										  			</tr>
-										  		</thead>
-										  			<%= form_with model: @provider_personal_attempt, url: save_attempt_details_path, local: true do |form| %>
-										  			  <%= form.hidden_field :caqh_provider_id, value: provider.caqh_provider_id %>
-															<%= form.hidden_field :provider_attest_id, value: provider.provider_attest_id %>
-															<%= form.hidden_field :caqh_provider_attest_id, value: provider.caqh_provider_attest_id %>
-
-										  				<tbody>
-																<tr>
-																	<td><%= provider.caqh_provider_attest_id %></td>
-																	<td>
-																		<%= form.select :contact_method, options_for_select(ProviderPersonalAttempt::CONTACT_METHOD, form.object.contact_method), { prompt: true }, { class: 'form-select mt-1 mb-1 border-dark' } %>
-																	</td>
-																	<td>
-																		<%= form.select :attempt_status, options_for_select(ProviderPersonalAttempt::ATTEMPT_STATUS, form.object.attempt_status), { prompt: true }, { class: 'form-select mt-1 mb-1 border-dark' } %>
-																	</td>
-																	<td>
-																		<%= form.date_field :contact_date, class: 'form-control border-dark' %>
-																	</td>
-																	<td>
-																		<%= form.text_area :comments, rows: 4, cols: 50, class: 'form-control border-dark' %>
-																	</td>
-																</tr>
-																<%= form.submit 'Add Attempt', class: 'btn btn-primary mt-2 mb-2' %>
-															</tbody>
-										  			<% end %>
-										  	</table>
-
-										  	<table class="table table-striped table-bordered">
-										  		<thead>
-										  			<tr>
-										  				<th scope="col" class="bg-primary text-white">Provider</th>
-										  				<th scope="col" class="bg-primary text-white">Contact Method</th>
-										  				<th scope="col" class="bg-primary text-white">Attempt Status</th>
-										  				<th scope="col" class="bg-primary text-white">Contact Date</th>
-										  				<th scope="col" class="bg-primary text-white">Comments</th>
-										  			</tr>
-										  		</thead>
-										  		<tbody>
-										  			<% provider.provider_personal_attempts.each do |attempt| %>
-											  			<tr>
-																<td><%= attempt.caqh_provider_attest_id %></td>
-																<td><%= attempt.contact_method %></td>
-												        <td><%= attempt.attempt_status %></td>
-												        <td><%= attempt.contact_date %></td>
-												        <td style="word-break: break-word; white-space: pre-wrap;"><%= attempt.comments %></td>
-															</tr>
-														<% end %>
-										  		</tbody>
-										  	</table>
-										  </div>
-
-										  <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-										  	<%= form_with model: @document, url: provider_personal_docs_uploaded_documents_path, html: { multipart: true }, method: :post do |form| %>
-												  <div class="form-group">
-												  	<%= form.hidden_field "provider_personal_docs_upload[provider_personal_information_id]", value: provider.id %>
-														<%= form.hidden_field "provider_personal_docs_upload[provider_attest_id]", value: provider.provider_attest_id %>
-														<%= form.hidden_field "provider_personal_docs_upload[caqh_provider_attest_id]", value: provider.caqh_provider_attest_id %>
-														<%= form.hidden_field "provider_personal_docs_upload[caqh_provider_id]", value: provider.caqh_provider_id %>
-
-												    <%= form.label "provider_personal_docs_upload[file_upload]", 'Upload Document' %>
-												    <%= form.file_field "provider_personal_docs_upload[file_upload]", class: 'form-control border-dark' %>
-												  </div>
-												  <%= form.submit 'Upload Document', class: 'btn btn-primary mt-3 mb-3' %>
-												<% end %>
-
-											  <table class="table table-striped table-bordered">
-											  	<thead>
-											  		<tr>
-											  			<th scope="col" class="bg-primary text-white">
-											  				<input type="checkbox" name="checkbox" id="select-all" class="form-check-input border-dark" >
-											  			</th>
-											  			<th scope="col" class="bg-primary text-white">Document Name</th>
-											  			<th scope="col" class="bg-primary text-white">Upload Date</th>
-											  			<th scope="col" class="bg-primary text-white">Upload By</th>
-											  		</tr>
-											  	</thead>
-											  	<tbody>
-											  		<% if provider.provider_personal_docs_uploaded_documents.present? %>
-															<% provider.provider_personal_docs_uploaded_documents.each do |doc| %>
-															  <% if doc.caqh_provider_attest_id == provider.caqh_provider_attest_id %>
-														  		<tr>
-														  			<td>
-														  				<div class="form-check">
-																				<div class="align-items-center">
-																					<input class="form-check-input user-cbs border-dark" type="checkbox" value="<%= doc.file_upload.url %>"  >
-																				</div>
-																		</div>
-														  			</td>
-														  			<td><%= link_to doc.file_upload.identifier, doc.file_upload.url, target: '_blank' %></td>
-														  			<td><%= doc.created_at.strftime("%Y-%m-%d") %></td>
-														  			<td><%= current_user.full_name %></td>
-														  		</tr>
-														  	<% end %>	
-															<% end %>
-														<% end %>
-											  	</tbody>
-											  </table>
-										  	<%= link_to 'Download', 'javascript:void(0)', class: 'btn btn-primary mt-2 mb-2', id: 'download-selected' %>
-										  </div>
-
-										  <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
-										  	<table class="table table-striped table-bordered">
-											    <thead>
-											      <tr>
-											        <th scope="col" class="bg-primary text-white">Completion Item</th>
-											        <th scope="col" class="bg-primary text-white">Received Date</th>
-											        <th scope="col" class="bg-primary text-white">
-											          <input type="checkbox" name="checkbox" class="form-check-input">
-											          Received Flag
-											        </th>
-											        <th scope="col" class="bg-primary text-white">Received Incomplete Flag</th>
-											        <th scope="col" class="bg-primary text-white">Comments</th>
-											      </tr>
-											    </thead>
-											    <tbody>
-											    	<%= form_with model: @provider_personal_docs_receive, url: save_provider_personal_docs_receives_path(anchor: 'pills-contact'), local: true do |form| %>
-
-											    		<%#= provider.provider_personal_docs_receive.inspect %>
-	 														
-	 														<%= form.hidden_field :provider_attest_id, value: provider.provider_attest_id %>
-					 	 									<%= form.hidden_field :caqh_provider_attest_id, value: provider.caqh_provider_attest_id %>
-					 	 									<%= form.hidden_field :caqh_provider_id, value: provider.caqh_provider_id %>
-					 	 									<%= form.hidden_field :provider_personal_information_id, value: provider.id %>
-
-	 														<%#= hidden_field_tag :doc_recived_id, provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.id : nil %>
-												      <tr>
-															  <td>Application</td>
-															  <td><%= form.date_field :application_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.application_received_date : '' %></td>
-															  <td><%= form.check_box :application_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.application_received_flag == true ? true : false %></td>
-															  <td><%= form.check_box :application_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.application_received_incomplete_flag == true ? true : false %></td>
-															  <td><%= form.text_area :application_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.application_comments : '' %></td>
-															</tr>
-
-															<tr>
-															  <td>Release</td>
-															  <td><%= form.date_field :release_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.release_received_date : '' %></td>
-															  <td><%= form.check_box :release_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.release_received_flag == true ? true : false %></td>
-															  <td><%= form.check_box :release_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.release_received_incomplete_flag == true ? true : false %></td>
-															  <td><%= form.text_area :release_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.release_comments : '' %></td>
-															</tr>
-
-															<tr>
-															  <td>Disclosure Questions Explanation</td>
-															  <td><%= form.date_field :disclosure_questions_explanation_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.disclosure_questions_explanation_received_date : '' %></td>
-															  <td><%= form.check_box :disclosure_questions_explanation_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.disclosure_questions_explanation_received_flag == true ? true : false %></td>
-															  <td><%= form.check_box :disclosure_questions_explanation_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.disclosure_questions_explanation_received_incomplete_flag == true ? true : false %></td>
-															  <td><%= form.text_area :disclosure_questions_explanation_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.disclosure_questions_explanation_comments : '' %></td>
-															</tr>
-
-															<tr>
-															  <td>Face Sheet</td>
-															  <td><%= form.date_field :face_sheet_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.face_sheet_received_date : '' %></td>
-															  <td><%= form.check_box :face_sheet_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.face_sheet_received_flag == true ? true : false %></td>
-															  <td><%= form.check_box :face_sheet_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.face_sheet_received_incomplete_flag == true ? true : false %></td>
-															  <td><%= form.text_area :face_sheet_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.face_sheet_comments : '' %></td>
-															</tr>
-
-															<tr>
-															  <td>Employment Gap</td>
-															  <td><%= form.date_field :employment_gap_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.employment_gap_received_date : '' %></td>
-															  <td><%= form.check_box :employment_gap_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.employment_gap_received_flag == true ? true : false %></td>
-															  <td><%= form.check_box :employment_gap_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.employment_gap_received_incomplete_flag == true ? true : false %></td>
-															  <td><%= form.text_area :employment_gap_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.employment_gap_comments : '' %></td>
-															</tr>
-
-															<tr>
-															  <td>Practice Information</td>
-															  <td><%= form.date_field :practice_information_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.practice_information_received_date : '' %></td>
-															  <td><%= form.check_box :practice_information_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.practice_information_received_flag == true ? true : false %></td>
-															  <td><%= form.check_box :practice_information_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.practice_information_received_incomplete_flag == true ? true : false %></td>
-															  <td><%= form.text_area :practice_information_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.practice_information_comments : '' %></td>
-															</tr>
-
-															<tr>
-															  <td>NPDB Findings Explanation</td>
-															  <td><%= form.date_field :npdb_findings_explanation_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.npdb_findings_explanation_received_date : '' %></td>
-															  <td><%= form.check_box :npdb_findings_explanation_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.npdb_findings_explanation_received_flag == true ? true : false %></td>
-															  <td><%= form.check_box :npdb_findings_explanation_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.npdb_findings_explanation_received_incomplete_flag == true ? true : false %></td>
-															  <td><%= form.text_area :npdb_findings_explanation_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.npdb_findings_explanation_comments : '' %></td>
-															</tr>
-
-															<tr>
-															  <td>Training</td>
-															  <td><%= form.date_field :training_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.training_received_date : '' %></td>
-															  <td><%= form.check_box :training_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.training_received_flag == true ? true : false %></td>
-															  <td><%= form.check_box :training_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.training_received_incomplete_flag == true ? true : false %></td>
-															  <td><%= form.text_area :training_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.training_comments : '' %></td>
-															</tr>
-
-															<tr>
-															 <td>Education</td>
-															  <td><%= form.date_field :education_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.education_received_date : '' %></td>
-															  <td><%= form.check_box :education_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.education_received_flag == true ? true : false %></td>
-															  <td><%= form.check_box :education_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.education_received_incomplete_flag == true ? true : false %></td>
-															  <td><%= form.text_area :education_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.education_comments : '' %></td>
-															</tr>
-
-															<tr>
-															 <td>Professional Resource Network</td>
-															  <td><%= form.date_field :professional_resource_network_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.professional_resource_network_received_date : '' %></td>
-															  <td><%= form.check_box :professional_resource_network_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.professional_resource_network_received_flag == true ? true : false %></td>
-															  <td><%= form.check_box :professional_resource_network_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.professional_resource_network_received_incomplete_flag == true ? true : false %></td>
-															  <td><%= form.text_area :professional_resource_network_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.professional_resource_network_comments : '' %></td>
-															</tr>
-
-															<tr>
-															 <td>DEA</td>
-															  <td><%= form.date_field :dea_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive&.dea_received_date&.strftime('%Y-%m-%d') %>
-															  </td>
-															  <td><%= form.check_box :dea_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.dea_received_flag == true ? true : false %>
-															  </td>
-															  <td><%= form.check_box :dea_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.dea_received_incomplete_flag == true ? true : false %>
-															  </td>
-															  <td>
-															  	<%= form.text_area :dea_comments, rows: 4, cols: 50, class: "form-control border-dark" %>
-															  </td>
-															</tr>
-
-															<tr>
-																<td>PA Sponsor Request Form</td>
-																<td><%= form.date_field :pa_sponsor_request_form_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.pa_sponsor_request_form_received_date : '' %></td>
-																<td><%= form.check_box :pa_sponsor_request_form_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.pa_sponsor_request_form_received_flag == true ? true : false %></td>
-																<td><%= form.check_box :pa_sponsor_request_form_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.pa_sponsor_request_form_received_incomplete_flag == true ? true : false %></td>
-																<td><%= form.text_area :pa_sponsor_request_form_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.pa_sponsor_request_form_comments : '' %></td>
-															</tr>
-
-															<tr>
-																<td>Collaborative Agreement</td>
-																<td><%= form.date_field :collaborative_agreement_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.collaborative_agreement_received_date : '' %></td>
-																<td><%= form.check_box :collaborative_agreement_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.collaborative_agreement_received_flag == true ? true : false %></td>
-																<td><%= form.check_box :collaborative_agreement_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.collaborative_agreement_received_incomplete_flag == true ? true : false %></td>
-																<td><%= form.text_area :collaborative_agreement_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.collaborative_agreement_comments : '' %></td>
-															</tr>
-
-												      <%= form.submit "Save", class: 'btn btn-primary mt-2 mb-2' %>
-											      <% end %>
-											    </tbody>
-											  </table>
-										  </div>
+										 <div class="form-group">
+											<%= form.label :address %>
+											<%= form.text_field :address, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.address %>
+											<%= form.text_field :address2, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.address2 %>
+											<%= form.text_field :city, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.city %>
+											<label class="text-dark-grey">State <span class="text-red">*</span></label>
+											<%#= form.collection_select :state, State.all, :alpha_code, :name, { prompt: 'Select State' }, class: 'form-control mt-1 mb-1 border-dark' %>
+											<%= form.select :state,
+				                options_from_collection_for_select(State.all, :alpha_code, :name, provider.practice_informations.first&.state),
+				                { prompt: 'Select State' },
+				                class: 'form-select border-dark' %>
 										</div>
-									</td>
-									
-								</tr>
-							<% end %>	
+
+										<div>
+											<div class="form-group">
+												<%= form.label :fax %>
+												<%= form.text_field :fax_number, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.fax_number %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :phone %>
+												<%= form.text_field :phone_number, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.phone_number  %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :email_address %>
+												<%= form.text_field :email_address, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.email_address  %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :provider_type %>
+												<%= form.text_field :provider_type, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.provider_type %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :cred_cycle %>
+												<%= form.text_field :cred_cycle, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.cred_cycle %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :npi %>
+												<%= form.text_field :npi, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.npi %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :ssn %>
+												<%= form.text_field :ssn, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.ssn %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :caqhid %>
+												<%= form.text_field :caqh_provider_practice_id, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.caqh_provider_practice_id %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :encompass_id %>
+												<%= form.text_field :caqh_provider_attest_id, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.caqh_provider_attest_id %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :birth_date %>
+												<%= form.date_field :birth_date, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.birth_date  %>
+											</div>
+
+											<div class="form-group">
+												<%= form.label :provider_status %>
+												<%= form.select :provider_status, options_for_select(['Change of Ownership', 'Credential Once', 'Deceased', 'Delegated', 'Incomplete App', 'No Application Received', 'No Longer in Private Sector', 'No Longer Practices Medicine', 'Non-Participant', 'Non-Responder', 'On Leave', 'Out of Network', 'Paper App', 'Relocated Out of State', 'Retired', 'Terminated', 'Undeliverable' ], provider.practice_informations.first&.provider_status), { prompt: true },  {class: "form-select border-dark"} %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :attestation_date %>
+												<%= form.date_field :attestation_date, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.attestation_date %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :file_due_date %>
+												<%= form.date_field :file_due_date, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.file_due_date %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :app_complete_date %>
+												<%= form.date_field :app_complete_date, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.app_complete_date %>
+											</div>
+
+											<div class="form-group mt-2 mb-2">
+											  <%= form.label :app_reviewed %>
+											  <%= form.check_box :app_reviewed, class: "form-input-check mt-1 mb-1", checked: provider.practice_informations.first&.app_reviewed || false %>
+											</div>
+
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :batch_description %>
+												<%= form.text_area :batch_description, class: "form-control mt-1 mb-1 border-dark", value: provider.practice_informations.first&.batch_description %>
+											</div>
+
+											<div class="form-group mt-1 mb-1">
+												<%= form.label :comment %>
+												<%= form.text_area :comment, rows: 4, cols: 50, class: 'form-control mt-1 mb-1 border-dark', value: provider.practice_informations.first&.comment %>
+											</div>
+										</div>
+
+									  <div>
+											<%= form.submit "Save", class: 'btn btn-primary mt-2 mb-2' %>
+										</div>
+									<% end %>
+								</td>
+
+								<td colspan="8">
+									<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+									  <li class="nav-item" role="presentation">
+									    <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Attempt Details</button>
+									  </li>
+									  <li class="nav-item" role="presentation">
+									    <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Docs Upload</button>
+									  </li>
+									  <li class="nav-item" role="presentation">
+									    <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Docs Received</button>
+									  </li>
+									</ul>
+									<div class="tab-content" id="pills-tabContent">
+									  <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+									  	
+									  	<table class="table table-striped table-bordered">
+									  		<thead>
+									  			<tr>
+									  				<th scope="col" class="bg-primary text-white">Provider</th>
+									  				<th scope="col" class="bg-primary text-white">Contact Method</th>
+									  				<th scope="col" class="bg-primary text-white">Attempt Status</th>
+									  				<th scope="col" class="bg-primary text-white">Contact Date</th>
+									  				<th scope="col" class="bg-primary text-white">Comments</th>
+									  			</tr>
+									  		</thead>
+									  			<%= form_with model: @provider_personal_attempt, url: save_attempt_details_path, local: true do |form| %>
+									  			  <%= form.hidden_field :caqh_provider_id, value: provider.caqh_provider_id %>
+														<%= form.hidden_field :provider_attest_id, value: provider.provider_attest_id %>
+														<%= form.hidden_field :caqh_provider_attest_id, value: provider.caqh_provider_attest_id %>
+
+									  				<tbody>
+															<tr>
+																<td><%= provider.caqh_provider_attest_id %></td>
+																<td>
+																	<%= form.select :contact_method, options_for_select(ProviderPersonalAttempt::CONTACT_METHOD, form.object.contact_method), { prompt: true }, { class: 'form-select mt-1 mb-1 border-dark' } %>
+																</td>
+																<td>
+																	<%= form.select :attempt_status, options_for_select(ProviderPersonalAttempt::ATTEMPT_STATUS, form.object.attempt_status), { prompt: true }, { class: 'form-select mt-1 mb-1 border-dark' } %>
+																</td>
+																<td>
+																	<%= form.date_field :contact_date, class: 'form-control border-dark' %>
+																</td>
+																<td>
+																	<%= form.text_area :comments, rows: 4, cols: 50, class: 'form-control border-dark' %>
+																</td>
+															</tr>
+															<%= form.submit 'Add Attempt', class: 'btn btn-primary mt-2 mb-2' %>
+														</tbody>
+									  			<% end %>
+									  	</table>
+
+									  	<table class="table table-striped table-bordered">
+									  		<thead>
+									  			<tr>
+									  				<th scope="col" class="bg-primary text-white">Provider</th>
+									  				<th scope="col" class="bg-primary text-white">Contact Method</th>
+									  				<th scope="col" class="bg-primary text-white">Attempt Status</th>
+									  				<th scope="col" class="bg-primary text-white">Contact Date</th>
+									  				<th scope="col" class="bg-primary text-white">Comments</th>
+									  			</tr>
+									  		</thead>
+									  		<tbody>
+									  			<% provider.provider_personal_attempts.each do |attempt| %>
+										  			<tr>
+															<td><%= attempt.caqh_provider_attest_id %></td>
+															<td><%= attempt.contact_method %></td>
+											        <td><%= attempt.attempt_status %></td>
+											        <td><%= attempt.contact_date %></td>
+											        <td style="word-break: break-word; white-space: pre-wrap;"><%= attempt.comments %></td>
+														</tr>
+													<% end %>
+									  		</tbody>
+									  	</table>
+									  </div>
+
+									  <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+									  	<%= form_with model: @document, url: provider_personal_docs_uploaded_documents_path, html: { multipart: true }, method: :post do |form| %>
+											  <div class="form-group">
+											  	<%= form.hidden_field "provider_personal_docs_upload[provider_personal_information_id]", value: provider.id %>
+													<%= form.hidden_field "provider_personal_docs_upload[provider_attest_id]", value: provider.provider_attest_id %>
+													<%= form.hidden_field "provider_personal_docs_upload[caqh_provider_attest_id]", value: provider.caqh_provider_attest_id %>
+													<%= form.hidden_field "provider_personal_docs_upload[caqh_provider_id]", value: provider.caqh_provider_id %>
+
+											    <%= form.label "provider_personal_docs_upload[file_upload]", 'Upload Document' %>
+											    <%= form.file_field "provider_personal_docs_upload[file_upload]", class: 'form-control border-dark' %>
+											  </div>
+											  <%= form.submit 'Upload Document', class: 'btn btn-primary mt-3 mb-3' %>
+											<% end %>
+
+										  <table class="table table-striped table-bordered">
+										  	<thead>
+										  		<tr>
+										  			<th scope="col" class="bg-primary text-white">
+										  				<input type="checkbox" name="checkbox" id="select-all" class="form-check-input border-dark" >
+										  			</th>
+										  			<th scope="col" class="bg-primary text-white">Document Name</th>
+										  			<th scope="col" class="bg-primary text-white">Upload Date</th>
+										  			<th scope="col" class="bg-primary text-white">Upload By</th>
+										  		</tr>
+										  	</thead>
+										  	<tbody>
+										  		<% if provider.provider_personal_docs_uploaded_documents.present? %>
+														<% provider.provider_personal_docs_uploaded_documents.each do |doc| %>
+														  <% if doc.caqh_provider_attest_id == provider.caqh_provider_attest_id %>
+													  		<tr>
+													  			<td>
+													  				<div class="form-check">
+																			<div class="align-items-center">
+																				<input class="form-check-input user-cbs border-dark" type="checkbox" value="<%= doc.file_upload.url %>"  >
+																			</div>
+																	</div>
+													  			</td>
+													  			<td><%= link_to doc.file_upload.identifier, doc.file_upload.url, target: '_blank' %></td>
+													  			<td><%= doc.created_at.strftime("%Y-%m-%d") %></td>
+													  			<td><%= current_user.full_name %></td>
+													  		</tr>
+													  	<% end %>	
+														<% end %>
+													<% end %>
+										  	</tbody>
+										  </table>
+									  	<%= link_to 'Download', 'javascript:void(0)', class: 'btn btn-primary mt-2 mb-2', id: 'download-selected' %>
+									  </div>
+
+									  <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+									  	<table class="table table-striped table-bordered">
+										    <thead>
+										      <tr>
+										        <th scope="col" class="bg-primary text-white">Completion Item</th>
+										        <th scope="col" class="bg-primary text-white">Received Date</th>
+										        <th scope="col" class="bg-primary text-white">
+										          <input type="checkbox" name="checkbox" class="form-check-input">
+										          Received Flag
+										        </th>
+										        <th scope="col" class="bg-primary text-white">Received Incomplete Flag</th>
+										        <th scope="col" class="bg-primary text-white">Comments</th>
+										      </tr>
+										    </thead>
+										    <tbody>
+										    	<%= form_with model: @provider_personal_docs_receive, url: save_provider_personal_docs_receives_path(anchor: 'pills-contact'), local: true do |form| %>
+
+										    		<%#= provider.provider_personal_docs_receive.inspect %>
+ 														
+ 														<%= form.hidden_field :provider_attest_id, value: provider.provider_attest_id %>
+				 	 									<%= form.hidden_field :caqh_provider_attest_id, value: provider.caqh_provider_attest_id %>
+				 	 									<%= form.hidden_field :caqh_provider_id, value: provider.caqh_provider_id %>
+				 	 									<%= form.hidden_field :provider_personal_information_id, value: provider.id %>
+
+ 														<%#= hidden_field_tag :doc_recived_id, provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.id : nil %>
+											      <tr>
+														  <td>Application</td>
+														  <td><%= form.date_field :application_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.application_received_date : '' %></td>
+														  <td><%= form.check_box :application_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.application_received_flag == true ? true : false %></td>
+														  <td><%= form.check_box :application_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.application_received_incomplete_flag == true ? true : false %></td>
+														  <td><%= form.text_area :application_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.application_comments : '' %></td>
+														</tr>
+
+														<tr>
+														  <td>Release</td>
+														  <td><%= form.date_field :release_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.release_received_date : '' %></td>
+														  <td><%= form.check_box :release_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.release_received_flag == true ? true : false %></td>
+														  <td><%= form.check_box :release_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.release_received_incomplete_flag == true ? true : false %></td>
+														  <td><%= form.text_area :release_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.release_comments : '' %></td>
+														</tr>
+
+														<tr>
+														  <td>Disclosure Questions Explanation</td>
+														  <td><%= form.date_field :disclosure_questions_explanation_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.disclosure_questions_explanation_received_date : '' %></td>
+														  <td><%= form.check_box :disclosure_questions_explanation_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.disclosure_questions_explanation_received_flag == true ? true : false %></td>
+														  <td><%= form.check_box :disclosure_questions_explanation_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.disclosure_questions_explanation_received_incomplete_flag == true ? true : false %></td>
+														  <td><%= form.text_area :disclosure_questions_explanation_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.disclosure_questions_explanation_comments : '' %></td>
+														</tr>
+
+														<tr>
+														  <td>Face Sheet</td>
+														  <td><%= form.date_field :face_sheet_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.face_sheet_received_date : '' %></td>
+														  <td><%= form.check_box :face_sheet_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.face_sheet_received_flag == true ? true : false %></td>
+														  <td><%= form.check_box :face_sheet_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.face_sheet_received_incomplete_flag == true ? true : false %></td>
+														  <td><%= form.text_area :face_sheet_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.face_sheet_comments : '' %></td>
+														</tr>
+
+														<tr>
+														  <td>Employment Gap</td>
+														  <td><%= form.date_field :employment_gap_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.employment_gap_received_date : '' %></td>
+														  <td><%= form.check_box :employment_gap_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.employment_gap_received_flag == true ? true : false %></td>
+														  <td><%= form.check_box :employment_gap_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.employment_gap_received_incomplete_flag == true ? true : false %></td>
+														  <td><%= form.text_area :employment_gap_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.employment_gap_comments : '' %></td>
+														</tr>
+
+														<tr>
+														  <td>Practice Information</td>
+														  <td><%= form.date_field :practice_information_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.practice_information_received_date : '' %></td>
+														  <td><%= form.check_box :practice_information_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.practice_information_received_flag == true ? true : false %></td>
+														  <td><%= form.check_box :practice_information_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.practice_information_received_incomplete_flag == true ? true : false %></td>
+														  <td><%= form.text_area :practice_information_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.practice_information_comments : '' %></td>
+														</tr>
+
+														<tr>
+														  <td>NPDB Findings Explanation</td>
+														  <td><%= form.date_field :npdb_findings_explanation_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.npdb_findings_explanation_received_date : '' %></td>
+														  <td><%= form.check_box :npdb_findings_explanation_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.npdb_findings_explanation_received_flag == true ? true : false %></td>
+														  <td><%= form.check_box :npdb_findings_explanation_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.npdb_findings_explanation_received_incomplete_flag == true ? true : false %></td>
+														  <td><%= form.text_area :npdb_findings_explanation_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.npdb_findings_explanation_comments : '' %></td>
+														</tr>
+
+														<tr>
+														  <td>Training</td>
+														  <td><%= form.date_field :training_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.training_received_date : '' %></td>
+														  <td><%= form.check_box :training_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.training_received_flag == true ? true : false %></td>
+														  <td><%= form.check_box :training_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.training_received_incomplete_flag == true ? true : false %></td>
+														  <td><%= form.text_area :training_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.training_comments : '' %></td>
+														</tr>
+
+														<tr>
+														 <td>Education</td>
+														  <td><%= form.date_field :education_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.education_received_date : '' %></td>
+														  <td><%= form.check_box :education_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.education_received_flag == true ? true : false %></td>
+														  <td><%= form.check_box :education_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.education_received_incomplete_flag == true ? true : false %></td>
+														  <td><%= form.text_area :education_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.education_comments : '' %></td>
+														</tr>
+
+														<tr>
+														 <td>Professional Resource Network</td>
+														  <td><%= form.date_field :professional_resource_network_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.professional_resource_network_received_date : '' %></td>
+														  <td><%= form.check_box :professional_resource_network_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.professional_resource_network_received_flag == true ? true : false %></td>
+														  <td><%= form.check_box :professional_resource_network_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.professional_resource_network_received_incomplete_flag == true ? true : false %></td>
+														  <td><%= form.text_area :professional_resource_network_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.professional_resource_network_comments : '' %></td>
+														</tr>
+
+														<tr>
+														 <td>DEA</td>
+														  <td><%= form.date_field :dea_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive&.dea_received_date&.strftime('%Y-%m-%d') %>
+														  </td>
+														  <td><%= form.check_box :dea_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.dea_received_flag == true ? true : false %>
+														  </td>
+														  <td><%= form.check_box :dea_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.dea_received_incomplete_flag == true ? true : false %>
+														  </td>
+														  <td>
+														  	<%= form.text_area :dea_comments, rows: 4, cols: 50, class: "form-control border-dark" %>
+														  </td>
+														</tr>
+
+														<tr>
+															<td>PA Sponsor Request Form</td>
+															<td><%= form.date_field :pa_sponsor_request_form_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.pa_sponsor_request_form_received_date : '' %></td>
+															<td><%= form.check_box :pa_sponsor_request_form_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.pa_sponsor_request_form_received_flag == true ? true : false %></td>
+															<td><%= form.check_box :pa_sponsor_request_form_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.pa_sponsor_request_form_received_incomplete_flag == true ? true : false %></td>
+															<td><%= form.text_area :pa_sponsor_request_form_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.pa_sponsor_request_form_comments : '' %></td>
+														</tr>
+
+														<tr>
+															<td>Collaborative Agreement</td>
+															<td><%= form.date_field :collaborative_agreement_received_date, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.collaborative_agreement_received_date : '' %></td>
+															<td><%= form.check_box :collaborative_agreement_received_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.collaborative_agreement_received_flag == true ? true : false %></td>
+															<td><%= form.check_box :collaborative_agreement_received_incomplete_flag, class: "form-check-input border-dark", checked: provider.provider_personal_docs_receive.present? && provider.provider_personal_docs_receive.collaborative_agreement_received_incomplete_flag == true ? true : false %></td>
+															<td><%= form.text_area :collaborative_agreement_comments, rows: 4, cols: 50, class: "form-control border-dark", value: provider.provider_personal_docs_receive.present? ? provider.provider_personal_docs_receive.collaborative_agreement_comments : '' %></td>
+														</tr>
+
+											      <%= form.submit "Save", class: 'btn btn-primary mt-2 mb-2' %>
+										      <% end %>
+										    </tbody>
+										  </table>
+									  </div>
+									</div>
+								</td>
+								
+							</tr>
 						<% end %>
 					</tbody>
 			</table>

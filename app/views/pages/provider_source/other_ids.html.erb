@@ -22,10 +22,10 @@
 					 	<div class="row mb-3 mt-3">
 						   <div class="col-lg-12">
 								<div class="d-flex justify-content-between">
-									<%= HtmlUtils.radio_options name: 'other_id_voluntarily_medicare', label: 'Have you ever voluntarily opted out for Medicare?' %>
+									<%= HtmlUtils.radio_options name: 'other_id_voluntarily_medicare', label: 'Have you ever voluntarily opted out for Medicare?', data: { model: 'medicare' } %>
 								</div>
 							</div>
-								<!--<%= HtmlUtils.radio_toggle name: 'other_id_voluntarily_medicare',
+								<!--<%#= HtmlUtils.radio_toggle name: 'other_id_voluntarily_medicare',
 								label: 'Have you ever voluntarily opted out for Medicare?',
 								hidden_field: true
 								%> -->
@@ -41,7 +41,7 @@
 										  <span>YES</span>
 										</div>  
 										<div  class="gap-2">
-											<input type="radio" name="medicare_field" class="medicare-radio"  value="no" >
+											<input type="radio" name="medicare_field" class="medicare-radio"  value="no">
 											<span>NO</span>
 										</div>
 									</div>
@@ -57,10 +57,16 @@
 									</p>	
 									<div class="col-lg-6">
 										<label class="text-dark-grey">Medicare Number <span class="text-danger">*</span></label>
-										<input type="text" name="participating_medicare_number" required class="form-control border-dark" placeholder="Medicare Number">
+										<input type="text" name="participating_medicare_number" required class="form-control border-dark" placeholder="Medicare Number" data-model="medicare">
 									</div>
 									<div class="col-lg-6">
-										<%= HtmlUtils::dropdown name: 'participating_medicare_state', label: 'Medicare State <span class="text-danger"> *</span>' %>
+										<%#= HtmlUtils::dropdown name: 'participating_medicare_state', label: 'Medicare State <span class="text-danger"> *</span>', data: { model: 'medicare'}  %>
+										<%= HtmlUtils::dropdown(
+										  label: 'Select State',
+										  name: 'participating_medicare_state',
+										  data: { model: 'medicare' }
+										) %>
+
 									</div>
 								</div>
 					<!-- <div class="d-flex align-items-center my-3">
