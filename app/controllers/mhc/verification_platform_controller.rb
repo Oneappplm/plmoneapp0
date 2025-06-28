@@ -338,22 +338,23 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'registration'
-      @provider_personal_information = ProviderPersonalInformation.find_by(id: params[:provider_personal_information_id] || params[:id])
-      @provider_deas = @provider_personal_information&.provider_deas.order(:id)
-      @provider_cd = ProviderCd.new(caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id)
+      @personal_information = ProviderPersonalInformation.new
+      @provider_personal_information = ProviderPersonalInformation.find_by(provider_attest_id: params[:provider_personal_information_id] || params[:id])
+      @provider_deas = @provider_personal_information&.provider_deas&.order(:id)
+      @provider_cd = ProviderCd.new(caqh_provider_attest_id: @provider_personal_information&.caqh_provider_attest_id)
       @states = State.all
-      @provider_cds = @provider_personal_information.provider_cds.order(:id)
-      @new_provider_cd = ProviderCd.new(caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id, provider_attest_id: @provider_personal_information.provider_attest_id) 
-      @provider_medicares = @provider_personal_information.provider_medicares.order(:id)
+      @provider_cds = @provider_personal_information&.provider_cds&.order(:id)
+      @new_provider_cd = ProviderCd.new(caqh_provider_attest_id: @provider_personal_information&.caqh_provider_attest_id, provider_attest_id: @provider_personal_information&.provider_attest_id) 
+      @provider_medicares = @provider_personal_information&.provider_medicares&.order(:id)
       @provider_medicare = ProviderMedicare.all 
-      @new_provider_medicare = ProviderMedicare.new(provider_attest_id: @provider_personal_information.provider_attest_id)
-      @provider_medicaids = @provider_personal_information.provider_medicaids.order(:id)
+      @new_provider_medicare = ProviderMedicare.new(provider_attest_id: @provider_personal_information&.provider_attest_id)
+      @provider_medicaids = @provider_personal_information&.provider_medicaids&.order(:id)
       @new_provider_medicaid = ProviderMedicaid.new(
-        provider_attest_id: @provider_personal_information.provider_attest_id
+        provider_attest_id: @provider_personal_information&.provider_attest_id
       )
-      @provider_militaries = @provider_personal_information.provider_militaries.order(:id)
+      @provider_militaries = @provider_personal_information&.provider_militaries&.order(:id)
       @new_provider_military = ProviderMilitary.new(
-        provider_attest_id: @provider_personal_information.provider_attest_id
+        provider_attest_id: @provider_personal_information&.provider_attest_id
       )
       @rva_information = RvaInformation.new
     end

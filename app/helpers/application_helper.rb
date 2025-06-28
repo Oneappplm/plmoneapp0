@@ -38,7 +38,8 @@ module ApplicationHelper
 	end
 
 	def all_information_completed?(provider)
-		@provider&.disclosure_progress_v2 == 100 && @provider.practice_information_completed? && @provider&.work_history_completed? && @provider&.professional_liability_completed? && @provider&.affiliation_info_completed? && @provider&.education_and_training_completed? && @provider&.speacialties_completed? && @provider&.health_plans_completed? && @provider&.professional_ids_completed? && @provider&.general_info_completed?
+		# provider&.disclosure_progress_v2 == 100 && provider.practice_information_completed? && provider&.work_history_completed? && provider&.professional_liability_completed? && provider&.affiliation_info_completed? && provider&.education_and_training_completed? && provider&.speacialties_completed? && provider&.health_plans_completed? && provider&.professional_ids_completed? &&
+		provider&.general_info_completed?
 	end
 
 	def current_provider_source

@@ -9,16 +9,28 @@ class Mhc::ClientPortalController < ApplicationController
     @page = params[:page] || 1
     @per_page = params[:per_page] || 100
     @q = ProviderPersonalInformation.ransack(params[:q]&.except(:advanced_search))
-    @provider_personal_informations = @q.result(distinct: true).paginate(per_page: @per_page, page: @page)
+    
+    @provider_personal_informations = @q.result(distinct: true)
+                                       .includes(pdf_generation_queues: :saved_profile)
+                                       .paginate(per_page: @per_page, page: @page)
+
     @provider_personal_informations = @provider_personal_informations.order(first_name: params[:sort] == 'desc' ? :desc : :asc) if params[:sort].present?
-    @psv_pdf = SavedProfile.last
+
+    # Last saved profile for each provider
+    @latest_saved_profiles = @provider_personal_informations.map do |provider|
+      latest_queue = provider.pdf_generation_queues
+                             .includes(:saved_profile)
+                             .where.not(saved_profile: { id: nil })
+                             .order(created_at: :desc)
+                             .find(&:saved_profile)
+      [provider.id, latest_queue.saved_profile] if latest_queue
+    end.compact.to_h
   end
 
   def upload_csv
     @csv_data = session[:csv_data] || []
     @csv_headers = @csv_data.first  # Store headers separately
     @csv_data = @csv_data.drop(1)   # Remove the first row from the data
-
   end
 
   def process_csv

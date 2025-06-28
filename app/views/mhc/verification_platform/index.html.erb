@@ -48,104 +48,64 @@
                             </div>
                           <% end %>
                         </div>
-                        
-                        <table class="table practice-table mt-3">
-                          <thead>
-                            <tr>
-                              <th class="text-white" scope="col">Practitioner Name</th>
-                              <th class="text-white" scope="col">Encompass ID</th>
-                              <th class="text-white" scope="col">Verification Status</th>
-                              <th class="text-white">Ready for download</th>
-                              <th class="text-white">In Process</th>
-                              <th class="text-white">Submitted</th>
-                              <th class="text-white">Incomplete Application</th>
-                              <th class="text-white">Application Not Received</th>
-                              <th class="text-white">Status</th>
-                            </tr>
-                          </thead>
+                        <div class="table-responsive">
+                          <table class="table practice-table mt-3">
+                            <thead>
+                              <tr>
+                                <th class="text-white" scope="col">Practitioner Name</th>
+                                <th class="text-white" scope="col">Encompass ID</th>
+                                <th class="text-white" scope="col">Verification Status</th>
+                                <th class="text-white">Ready for download</th>
+                                <th class="text-white">In Process</th>
+                                <th class="text-white">Submitted</th>
+                                <th class="text-white">Incomplete Application</th>
+                                <th class="text-white">Application Not Received</th>
+                                <th class="text-white">Status</th>
+                              </tr>
+                            </thead>
                             <tbody>
                               <% if @provider_personal_informations.present? %>
                                 <% @provider_personal_informations.each do |ppi| %>
-                                  <% if ppi.created_by != 'group-engage' %>
-                                    <!-- ✅ CASE 1: CAQH ID IS PRESENT — Original logic -->
-                                    <tr>
-                                      <td>
-                                        <% if ppi.provider_attest_id.present? %>
-                                          <%= link_to mhc_verification_platform_path(id: ppi.provider_attest_id) do %>
-                                            <%= "#{ppi.fullname}, #{ppi.provider_type_provider_type_abbreviation}" %>
-                                          <% end %>
-                                        <% else %>
+                                  <% provider_source = ppi.provider_source %>
+                                  <tr>
+                                    <td>
+                                      <% if ppi.provider_attest_id.present? %>
+                                        <%= link_to mhc_verification_platform_path(id: ppi.provider_attest_id) do %>
                                           <%= "#{ppi.fullname}, #{ppi.provider_type_provider_type_abbreviation}" %>
                                         <% end %>
-                                      </td>
-                                      <td><%= ppi.caqh_provider_attest_id || ppi.provider_attest_id %></td>
-                                      <td><%= ppi.verification_status || 'Pending' %></td>
-                                      <td></td>
-                                      <td></td>
-                                      <td></td>
-                                      <td></td>
-                                      <td></td>
-                                      <td></td>
-                                    </tr>
-                                  <% else %>
-                                    <!-- ✅ CASE 2: CAQH ID IS NOT PRESENT — Show ProviderSourceData info -->
-                                    <% provider_source = ppi.provider_source %>
-                                    <% source_data = provider_source&.data&.index_by(&:data_key) || {} %>
-                                    <% source_ppi = provider_source&.provider_personal_information %>
-
-                                    <tr>
-                                      <td>
-                                        <% if source_ppi %>
-                                          <%= link_to mhc_verification_platform_path(id: ppi.provider_attest_id) do %>
-                                            <%= "#{source_data['first_name']&.data_value} #{source_data['middle_name']&.data_value} #{source_data['last_name']&.data_value}" %>
-                                          <% end %>  
-                                        <% else %>
-                                          Unknown
-                                        <% end %>
-                                      </td>
-                                      <td><%= source_ppi&.caqh_provider_attest_id || source_ppi&.provider_attest_id || "-" %></td>
-                                      <td><%= source_ppi&.verification_status || 'Pending' %></td>
-                                      <td><%= source_data["ready-for-download"]&.data_value || "-" %></td>
-                                      <td><%= source_data["in-process"]&.data_value || "-" %></td>
-                                      <td><%= source_data["submitted"]&.data_value || "-" %></td>
-                                      <td><%= source_data["incomplete-application"]&.data_value || "-" %></td>
-                                      <td><%= source_data["application-not-received"]&.data_value || "-" %></td>
-                                      <td><% if @provider&.disclosure_progress_v2 == 100 &&
-                                              @provider.practice_information_completed? &&
-                                              @provider.work_history_completed? &&
-                                              @provider.professional_liability_completed? &&
-                                              @provider.affiliation_info_completed? &&
-                                              @provider.education_and_training_completed? &&
-                                              @provider.speacialties_completed? &&
-                                              @provider.health_plans_completed? &&
-                                              @provider.professional_ids_completed? &&
-                                              @provider.general_info_completed? %>
-                                          completed
-                                        <% else %>
-                                          In progress
-                                        <% end %></td>
-                                    </tr>
-                                  <% end %>
-                                <% end %>
+                                      <% else %>
+                                        <%= "#{ppi.fullname}, #{ppi.provider_type_provider_type_abbreviation}" %>
+                                      <% end %>
+                                    </td>
+                                    <td><%= ppi.caqh_provider_attest_id || ppi.provider_attest_id %></td>
+                                    <td><%= ppi.verification_status || 'Pending' %></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><%= provider_source.all_sections_completed? ? 'Completed' : 'In Progress' %></td>
+                                  </tr>
+                                <% end %>    
                               <% end %>
+                              </tbody>
+                          </table>
 
-                            </tbody>
-                        </table>
-
-                        <% if @provider_personal_informations %>
-                            <div class="col-lg-12">
-                                <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-2">
-                                <div class="page_info ms-3 text-black">
-                                    <%= page_entries_info @provider_personal_informations %>
-                                </div>
-                                <% if params[:per_page ].present? %>
-                                <%= will_paginate @provider_personal_informations, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                                <% else %>
-                                <%= will_paginate @provider_personal_informations, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                                <% end %>
-                                </div>
-                            </div>
-                        <% end %>
+                          <% if @provider_personal_informations %>
+                              <div class="col-lg-12">
+                                  <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-2">
+                                  <div class="page_info ms-3 text-black">
+                                      <%= page_entries_info @provider_personal_informations %>
+                                  </div>
+                                  <% if params[:per_page ].present? %>
+                                  <%= will_paginate @provider_personal_informations, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                                  <% else %>
+                                  <%= will_paginate @provider_personal_informations, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                                  <% end %>
+                                  </div>
+                              </div>
+                          <% end %>
+                        </div>
                     </div>
                 </div>
             </div>
