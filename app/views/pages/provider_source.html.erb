@@ -127,7 +127,7 @@
 										Yes
 									</label>
 									<label class="text-dark-grey">
-										<input type="radio" name="other_name" value="no" class="other_name_rbtn" checked>
+										<input type="radio" name="other_name" value="no" class="other_name_rbtn">
 										No
 									</label>
 								</div>
@@ -146,13 +146,13 @@
 					          <div id="other_names_template" class="other-names-entry d-none">
 					            <%= render partial: 'pages/provider_source/other_name_form', locals: { index: 'REPLACE_INDEX', other_name: OtherName.new } %>
 					          </div>
-					          <%# if @provider.other_names.any?(&:persisted?) %>
-					            <%# <div>
+					          <% if @provider.other_names.any?(&:persisted?) %>
+					            <div>
 					              <button type="button" class="btn btn-outline-primary mt-2" id="add_other_name">
 					                <i class="bi bi-plus-circle me-1"></i> Add New
 					              </button>
-					            </div> %>
-					          <%# end %>  
+					            </div>
+					          <% end %>
 								  </div>
 								</div>
 							</div>
@@ -650,27 +650,25 @@
 	}
 
 
-  document.addEventListener("DOMContentLoaded", function () {
-    const radioButtons = document.querySelectorAll(".other_name_rbtn");
-    const otherNameSection = document.getElementById("other_name_section");
+  $(document).ready(function () {
+	  const $radioButtons = $(".other_name_rbtn");
+	  const $otherNameSection = $("#other_name_section");
 
-    function toggleOtherNameSection() {
-      const selected = document.querySelector('input[name="other_name"]:checked');
-      if (selected && selected.value === "yes") {
-        otherNameSection.style.display = "block";
-      } else {
-        otherNameSection.style.display = "none";
-      }
-    }
+	  function toggleOtherNameSection() {
+	    const selected = $('input[name="other_name"]:checked').val();
+	    if (selected === "yes") {
+	      $otherNameSection.show();
+	    } else {
+	      $otherNameSection.hide();
+	    }
+	  }
 
-    // Initial toggle on page load
-    toggleOtherNameSection();
+	  // Initial toggle on page load
+	  toggleOtherNameSection();
 
-    // Toggle on radio change
-    radioButtons.forEach(radio => {
-      radio.addEventListener("change", toggleOtherNameSection);
-    });
-  });
+	  // Toggle on radio change
+	  $radioButtons.on("change", toggleOtherNameSection);
+	});
 </script>
 <style>
 	.custom-dropdown-wrapper {

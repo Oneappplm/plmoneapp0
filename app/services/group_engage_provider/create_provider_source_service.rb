@@ -18,8 +18,15 @@ class GroupEngageProvider::CreateProviderSourceService < GroupEngageProvider::Ba
 		  caqh_provider_attest_id: rand(10**8).to_s.rjust(8, '5'), 
 		  created_by: 'group-engage'
 	  )
+
 	  provider_personal_info.save(validate: false)
-		@provider_source = ProviderSource.new(group_engage_provider_id:	group_engage_provider.id, provider_personal_information_id: provider_personal_info.id)
+
+	  # also need to create provider attest
+	  provider_attest = ProviderAttest.create!(id: provider_personal_info.caqh_provider_attest_id, caqh_provider_attest_id: provider_personal_info.caqh_provider_attest_id)
+	  
+	  provider_personal_info.update(provider_attest_id: provider_attest.id)
+
+	  @provider_source = ProviderSource.new(group_engage_provider_id: group_engage_provider.id, provider_personal_information_id: provider_personal_info.id)
 	end
 
 	def call

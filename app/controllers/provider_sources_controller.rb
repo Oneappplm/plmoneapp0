@@ -95,11 +95,23 @@ class ProviderSourcesController < ApplicationController
 	  graduate_id   = params[:graduate_school_id]
 	  privilege_id   = params[:privilege_id]
 	  admitting_id   = params[:admitting_id]
+	  model = params[:model]
 	  nested_form  = ActiveModel::Type::Boolean.new.cast(params[:nested_form])
 
 	  unless field_name.present?
 	    return render json: { error: "Missing field name" }, status: :bad_request
 	  end
+
+	  # populate data handle
+    if model == 'licensure'
+		  ProviderSources::AutosaveService.new(
+		    source: current_provider_source,
+		    field_name: field_name,
+		    value: value,
+		    model_id: nil,
+		    model: model
+		  ).perform
+		end
 
 	  # === Handle nested fields ===
 	  match = field_name.match(/\[(\d+)\]\[(\w+)\]$/)
@@ -112,6 +124,7 @@ class ProviderSourcesController < ApplicationController
 	        other_name_id.present? ?
 	          current_provider_source.other_names.find_or_initialize_by(id: other_name_id) :
 	          current_provider_source.other_names.new
+	          handle_other_name_autosave and return
 	      elsif field_name.include?("provider_source_specialities") && params[:nested_form] == "true"
 	        specialty_id.present? ?
 	          current_provider_source.provider_source_specialities.find_or_initialize_by(id: specialty_id) :
@@ -162,8 +175,28 @@ class ProviderSourcesController < ApplicationController
 	    else
 	      return render json: { success: true, data_key: field_name, data_value: value }
 	    end
-
 	  else
+      # call autosave service
+	  	# Step 1: Save to ProviderPersonalInformation if mapped
+		  mapped_attribute = ProviderPersonalInformation::FIELD_MAP[field_name]
+		  if mapped_attribute.present?
+			  personal_info = current_provider_source.provider_personal_information || current_provider_source.build_provider_personal_information
+
+			  if personal_info.respond_to?(mapped_attribute)
+			    value_to_store =
+			      if value.is_a?(String) && %w[yes no].include?(value.downcase)
+			        value.downcase == "yes"
+			      elsif value.is_a?(Array)
+			        value.join(",")
+			      else
+			        value
+			      end
+
+			    personal_info[mapped_attribute] = value_to_store
+			    personal_info.save(validate: false) # Skip validations if needed
+			  end
+			end
+
 	    # === Handle flat fields (non-nested, fallback to provider_source.data) ===
 	    field_key = field_name.parameterize(separator: "_")
 	    data_record = current_provider_source.data.find_or_initialize_by(data_key: field_key)
@@ -177,7 +210,7 @@ class ProviderSourcesController < ApplicationController
 	  end
 	end
 
-  # upload provider source documents
+  # upload provider sourcefalements
 	def upload_document
 	  provider_source_id = params[:provider_source_id]
 	  uploaded_file = params[:file]
@@ -214,6 +247,16 @@ class ProviderSourcesController < ApplicationController
     id = params[:id]
     content = params[:content]
     field = params[:field]
+
+    if model == 'dea' || model == 'cds'
+		  ProviderSources::AutosaveService.new(
+		    source: current_provider_source,
+		    field_name: field,
+		    value: content,
+		    model_id: id,
+		    model: model
+		  ).perform
+		end
 
     record = if model == 'dea'
       ProviderSourcesDea.find(id)
@@ -307,6 +350,35 @@ class ProviderSourcesController < ApplicationController
 
 
 	private
+
+	def handle_other_name_autosave
+	  result = ::ProviderSources::OtherNameAutosaveService.new(
+		  source: current_provider_source,
+		  field_name: params[:field_name],
+		  value: params[:value],
+		  other_name_id: params[:other_name_id],
+		).perform
+
+	  if result[:error]
+	    render json: { error: result[:error] }, status: :unprocessable_entity
+	  else
+	    render json: result
+	  end
+	end
+
+	def handle_dea_autosave
+	  result = ::ProviderSources::AutosaveService.new(
+		  source: current_provider_source,
+		  field_name: params[:field_name],
+		  value: params[:value],
+		).perform
+
+	  if result[:error]
+	    render json: { error: result[:error] }, status: :unprocessable_entity
+	  else
+	    render json: result
+	  end
+	end
 
 	def create_provider_source_and_redirect_to_edit_page
 		current_provider_source.update(current_provider_source: false)
