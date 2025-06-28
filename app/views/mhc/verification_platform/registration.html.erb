@@ -34,7 +34,7 @@
               <div class="card-body">
                 <h1>DEA Number</h1>
                 <div id="dea-forms-container" class="row">
-                  <% @provider_deas.each_with_index do |provider_dea, index| %>
+                  <% @provider_deas&.each_with_index do |provider_dea, index| %>
                     <div class="col-md-9">
                       <%= render partial: 'dea_form', locals: { provider_dea: provider_dea, index: index } %>
                     </div>
@@ -79,7 +79,7 @@
                     </div>
                     <hr class="mb-3 mt-3">
                     <% end %>
-                  </div>
+                </div>
                 </div>
 
                 <!-- Hidden Form Template -->
@@ -96,7 +96,7 @@
             </div>
           </div>
         </div>
-        <% @provider_cds.each do |provider_cd| %>
+        <% @provider_cds&.each do |provider_cd| %>
           <%= form_with model: provider_cd, url: mhc_provider_cd_path(provider_cd), method: :put, local: true do |f| %>
             <%= f.hidden_field :caqh_provider_attest_id %>
             <%= f.hidden_field :provider_attest_id %>
@@ -248,7 +248,7 @@
 
         <div class="form-row row page-applicable mt-3">
             <div class="col-xl-12">
-                <%= form_for(@provider_personal_information, url: mhc_provider_personal_information_path(page_tab: 'registration')) do |f| %>
+                <%= form_for(@personal_information, url: mhc_provider_personal_information_path(page_tab: 'registration')) do |f| %>
                     <%= f.hidden_field :caqh_provider_attest_id %>
                     <%= f.hidden_field :provider_attest_id %>
                     <div class="card other-name-card">
@@ -436,7 +436,7 @@
               form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
             });
           </script>
-        <% if @provider_medicaids.any? %>
+        <% if @provider_medicaids&.any? %>
           <% @provider_medicaids.each do |provider_medicaid| %>
           <div class="form-row row page-applicable mt-3">
             <div class="col-xl-12">
@@ -543,7 +543,7 @@
               </div>
             </div>
         <% end %>
-        <% if @provider_militaries.any? %>
+        <% if @provider_militaries&.any? %>
           <% @provider_militaries.each do |provider_military| %>
             <div class="form-row row page-applicable mt-3">
               <div class="col-xl-12">

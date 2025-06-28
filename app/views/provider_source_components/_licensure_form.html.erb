@@ -1,13 +1,20 @@
 <div class="licensure-field" id="fields">
 <div class="row mb-3">
    <div class="col-lg-12">
-      <%= HtmlUtils::dropdown name: 'licensure_state', label: 'Licensure State <span class="text-danger">*</span>' %>
+      <%#= HtmlUtils::dropdown name: 'licensure_state', label: 'Licensure State <span class="text-danger">*</span>', model: 'licensure' %>
+      <label class="text-dark-grey">licensure_state <span class="text-danger">*</span></label>
+      <select name="licensure_state" class="form-select border-dark" data-model="licensure">
+        <option value="">Select State</option>
+        <% State.all.each do |state| %>
+          <option value="<%= state.alpha_code %>"><%= state.name %></option>
+        <% end %>
+      </select>
    </div>
 </div>
 <div class="row mb-3">
    <div class="col-lg-12">
     <label class="text-dark-grey">License Type <span class="text-danger">*</span></label>
-    <select name="license_type" required class="form-select border-dark">
+    <select name="license_type" required class="form-select border-dark" data-model="licensure">
       <option value="" disabled selected>Select License Type</option>
       <option value="licensed_medical_esthetician">Licensed Medical Esthetician</option>
       <option value="medical_assistant">Medical Assistant</option>
@@ -27,6 +34,7 @@
         class="form-control border-dark" 
         placeholder="License Number"
         oninput="validateLicenseNumber()"
+        data-model="licensure"
       >
       <small id="license-number-error" class="text-danger d-none">Only numbers are allowed.</small>
     </div>
@@ -39,6 +47,7 @@
         required 
         class="form-control border-dark"
         oninput="validateLicenseStatus()"
+        data-model="licensure"
       >
       <small id="license-status-error" class="text-danger d-none">Numbers are not allowed.</small>
     </div>
@@ -46,15 +55,15 @@
 <div class="row mb-3">
   <div class="col-lg-6">
     <label class="text-dark-grey">Issue Date <span class="text-danger">*</span></label>
-    <input type="date" name="licensure_issue_date" id="issue-date" required class="form-control border-dark">
+    <input type="date" name="licensure_issue_date" id="issue-date" required class="form-control border-dark" data-model="licensure">
   </div>
 
   <div class="col-lg-6">
     <label class="text-dark-grey">Expiration Date <span class="text-danger">*</span></label>
-    <input type="date" name="licensure_expiration_date" id="expire-date" required class="form-control border-dark licensure-expire" disabled>
+    <input type="date" name="licensure_expiration_date" id="expire-date" required class="form-control border-dark licensure-expire" disabled data-model="licensure">
 
     <span class="d-flex gap-2 mt-1">
-      <input type="checkbox" name="licensure_not_expire" id="licensure-not-expire">
+      <input type="checkbox" name="licensure_not_expire" id="licensure-not-expire" data-model="licensure">
       <small>Does not expire</small>
     </span>
   </div>
@@ -65,11 +74,11 @@
          <label class="form-label">Are you currently practicing in this state? <span class="text-danger">*</span></label>
          <div class="d-flex me-4 gap-2">
             <span>
-            <input type="radio" value="yes" name="licensure_practice_state" required>
+            <input type="radio" value="yes" name="licensure_practice_state" data-model="licensure" required>
             <span>YES</span>
             </span>
             <span>
-            <input type="radio" value="no" name="licensure_practice_state" required>
+            <input type="radio" value="no" name="licensure_practice_state" data-model="licensure" required>
             <span>NO</span>
             </span>
          </div>
@@ -82,11 +91,11 @@
          <label class="form-label">Is this your primary license? <span class="text-danger">*</span></label>
          <div class="d-flex me-4 gap-2">
             <span>
-            <input type="radio" value="yes" name="licensure_primary_license" required>
+            <input type="radio" value="yes" name="licensure_primary_license" data-model="licensure" required>
             <span>YES</span>
             </span>
             <span>
-            <input type="radio" value="no" name="licensure_primary_license" required>
+            <input type="radio" value="no" name="licensure_primary_license" data-model="licensure" required>
             <span>NO</span>
             </span>
          </div>
@@ -99,11 +108,11 @@
          <label class="form-label">Does this license require supervision? <span class="text-danger">*</span></label>
          <div class="d-flex me-4 gap-2">
             <span>
-            <input type="radio" value="yes" name="licensure_require_supervision" required>
+            <input type="radio" value="yes" name="licensure_require_supervision" data-model="licensure" required>
             <span>YES</span>
             </span>
             <span>
-            <input type="radio" value="no" name="licensure_require_supervision" required>
+            <input type="radio" value="no" name="licensure_require_supervision" data-model="licensure" required>
             <span>NO</span>
             </span>
          </div>
@@ -116,28 +125,28 @@
    </div>
    <div class="col-lg-4">
       <label class="text-dark-grey">First Name</label>
-      <input type="text" name="licensure_sponsor_fname" class="form-control border-dark" oninput="validateAlphaOnly(this, 'first-name-error')" id="first-name-input">
+      <input type="text" name="licensure_sponsor_fname" class="form-control border-dark" oninput="validateAlphaOnly(this, 'first-name-error')" id="first-name-input" data-model="licensure">
       <small id="first-name-error" class="text-danger d-none">
         Only alphabetical characters and spaces are allowed.
       </small>
    </div>
    <div class="col-lg-2">
       <label class="text-dark-grey">Middle Name</label>
-      <input type="text" name="licensure_sponsor_mname" class="form-control border-dark" oninput="validateAlphaOnly(this, 'first-name-error')" id="middle-name-input">
+      <input type="text" name="licensure_sponsor_mname" class="form-control border-dark" oninput="validateAlphaOnly(this, 'first-name-error')" id="middle-name-input" data-model="licensure">
       <small id="middle-name-error" class="text-danger d-none">
         Only alphabetical characters and spaces are allowed.
       </small>
    </div>
    <div class="col-lg-4">
       <label class="text-dark-grey">Last Name</label>
-      <input type="text" name="licensure_sponsor_lname" class="form-control border-dark" oninput="validateAlphaOnly(this, 'last-name-error')" id="last-name-input">
+      <input type="text" name="licensure_sponsor_lname" class="form-control border-dark" oninput="validateAlphaOnly(this, 'last-name-error')" id="last-name-input" data-model="licensure">
       <small id="last-name-error" class="text-danger d-none">
         Only alphabetical characters and spaces are allowed.
       </small>
    </div>
    <div class="col-lg-2">
       <label class="text-dark-grey">Suffix</label>
-      <select class="form-select border-dark" placeholder="Suffix" name="licensure_sponsor_suffix">
+      <select class="form-select border-dark" placeholder="Suffix" name="licensure_sponsor_suffix" data-model="licensure">
          <option>Suffix</option>
          <option>Jr.</option>
          <option>Sr.</option>
@@ -153,6 +162,7 @@
         id="degree-input"
         class="form-control border-dark" 
         oninput="validateDegreeInput()"
+        data-model="licensure"
       >
       <small id="degree-error" class="text-danger d-none">Numbers are not allowed.</small>
     </div>
