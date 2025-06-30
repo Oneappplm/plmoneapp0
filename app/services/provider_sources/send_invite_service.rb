@@ -1,4 +1,4 @@
-class ProviderSources::SendInviteService < ProviderSource::BaseService
+class ProviderSources::SendInviteService < ProviderSources::BaseService
 	attr_reader :user, :params, :group_engage_provider
 
 	def initialize(provider_source, params)
