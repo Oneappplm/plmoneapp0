@@ -4,6 +4,7 @@ Rails.application.routes.draw do
 
   # Mount the Grape API
   mount Api::Base => '/'
+  get '/api-docs', to: 'api_docs#swagger_ui'
 
   # Defines the root path route ("/")
   root 'dashboard#dashboard' # Overview	page
