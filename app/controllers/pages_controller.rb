@@ -106,7 +106,7 @@ class PagesController < ApplicationController
 
 	def virtual_review_committee
     # @provider_personal_informations = ProviderPersonalInformation.all
-    @q = ProviderPersonalInformation.ransack(params[:q])
+    @q = ProviderPersonalInformation.where(cred_status: 'psv').ransack(params[:q])
     @vrc_documents = VrcDocument.all
     @vrc_directors = User.directors
     @psv_pdf = SavedProfile.last
@@ -585,7 +585,7 @@ class PagesController < ApplicationController
 
   private
   	def assigned_params
-  	  params.permit(:review_date, :committee_date, :progress_status)
+  	  params.permit(:review_date, :committee_date, :progress_status, :vrc_progress_status)
   	end
 
     def unassigned_params

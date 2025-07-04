@@ -105,6 +105,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       params[:rva_information][:verification_comments] = 'None'
       @rva_information.other_details = 'None'
       @rva_information.adverse_action_comments = 'None'
+      @rva_information.provider_personal_information_id = params[:personal_info_id]
       @rva_information.adverse_action_status = 'close'
     end
     if params[:section] == 'audit'
@@ -136,9 +137,23 @@ class Mhc::VerificationPlatformController < ApplicationController
         ProviderInsuranceCoverage.find(params[:practice_claim_history_id]).update(claims_history_audit: 'Quality Audited')
       end 
     end
-    if params[:personal_info_id].present?
-      ProviderPersonalInformation.find(params[:personal_info_id]).update(verification_status: 'completed')
+    tabs = %w[
+      Licensure Registration OIG Certification Employment NPDB Liability BOARDCERT EDUCATION Training
+    ]
+
+    personal_info = ProviderPersonalInformation.find(params[:personal_info_id])
+
+    all_verified = tabs.all? do |tab|
+      RvaInformation.where(provider_personal_information_id: personal_info.id, tab: tab)
+                    .order(id: :desc)
+                    .first&.verification_status == "Verified"
     end
+
+
+    if all_verified
+      personal_info.update(verification_status: 'completed')
+    end
+
     if @rva_information.update(rva_information_params)
       render json: { message: 'Verification completed successfully', rva_information: @rva_information}, status: :ok
     else
@@ -265,8 +280,8 @@ class Mhc::VerificationPlatformController < ApplicationController
 
     if params[:page_tab] == 'certifications'
       @certifications = Certification.all
-      @q = @provider_personal_information.provider_attest.certifications.ransack(params[:q]&.except(:page_tab))
-      @certifications = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
+      @q = @provider_personal_information&.provider_attest&.certifications&.ransack(params[:q]&.except(:page_tab))
+      @certifications = @q&.result(distinct: true)&.paginate(per_page: 10, page: params[:page] || 1)
     end  
      
     if params[:page_tab] == 'add_new_certification'

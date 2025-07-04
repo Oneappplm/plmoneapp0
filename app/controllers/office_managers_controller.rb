@@ -133,7 +133,7 @@ class OfficeManagersController < ApplicationController
   end
 
   def send_email_to_provider(provider_id)
-    api_service = ProviderSource::SendInviteService.call(
+    api_service = ProviderSources::SendInviteService.call(
       ProviderSource.find_by(id: provider_id),
       params
       )

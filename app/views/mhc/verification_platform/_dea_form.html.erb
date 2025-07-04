@@ -2,7 +2,10 @@
       <%= f.hidden_field :provider_attest_id, value: params[:id] %>
       <div class="form-row">
         <label for="">DEA Registration Number:</label>
-        <%= f.text_field :dea_number, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+        <%= f.text_field :dea_number, placeholder: 'Type here...', class: 'form-control border border-dark dea-registration-input' %>
+        <small class="dea-validation-message text-danger" style="display: none;">
+          DEA must be 2 uppercase letters followed by 7 digits (e.g., CS1234567)
+        </small>
       </div>
       <div class="form-row">
         <label for="">Issue Date:</label>
@@ -98,6 +101,20 @@
         checkbox.removeAttribute("checked"); // Removes the value if "No" is selected
       });
     });
+  });
+  $(document).on('keyup', '.dea-registration-input', function () {
+    const $input = $(this);
+    const value = $input.val().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 9);
+    $input.val(value);
+
+    const isValidDEA = /^[A-Z]{2}[0-9]{7}$/.test(value);
+    const $message = $input.siblings('.dea-validation-message');
+
+    if (value.length === 9 && !isValidDEA) {
+      $message.show();
+    } else {
+      $message.hide();
+    }
   });
 
 </script>

@@ -65,6 +65,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
     dea_number = params[:dea_number]
     last_name = params[:last_name]
     first_name = params[:first_name]
+    provider_personal_info = ProviderPersonalInformation.find(params[:info_id])
 
     provider_dea = ProviderDea.find(params[:provider_dea_id])
   
@@ -78,6 +79,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
       required_fee_amount: 0,
       check_generated: false,
       received_status: true,
+      provider_personal_information_id: provider_personal_info.id,
       comments: 'Webcrawler',
       received_by: 'SYSTEM',
       provider_dea_id: provider_dea.id,
@@ -125,6 +127,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
   def run_licensure_webcrawler
     license_number = params[:license_number]  # License number added
     provider_licensure = ProviderLicensure.find(params[:provider_licensure_id])
+    provider_personal_info = ProviderPersonalInformation.find(params[:info_id])
 
     # Create RVA information for Licensure when running webcrawler
     rva_information = RvaInformation.create!(
@@ -139,6 +142,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
       comments: 'Webcrawler',
       received_by: 'SYSTEM',
       provider_licensure_id: provider_licensure.id,
+      provider_personal_information_id: provider_personal_info.id,
       received_date: Date.today
     )
 
@@ -165,7 +169,6 @@ class Webscrapers::QualityAuditsController < ApplicationController
     )
     webscraper_log.filepath = File.open(tmp_file_path) # Attach the file using CarrierWave
     webscraper_log.save!
-
 
     # Remove the temporary file after saving
     File.delete(tmp_file_path) if File.exist?(tmp_file_path)

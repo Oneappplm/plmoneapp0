@@ -127,6 +127,7 @@ class ProviderSourcesController < ApplicationController
 	          current_provider_source.other_names.new
 	          handle_other_name_autosave and return
 	      elsif field_name.include?("provider_source_specialities") && params[:nested_form] == "true"
+	      	
 	        specialty_id.present? ?
 	          current_provider_source.provider_source_specialities.find_or_initialize_by(id: specialty_id) :
 	          current_provider_source.provider_source_specialities.new
@@ -197,7 +198,7 @@ class ProviderSourcesController < ApplicationController
 
 			    # 👇 Additional logic to set cred_status
 			    if mapped_attribute.to_s == "attest_date"
-			      personal_info.cred_status = "attested"
+			      personal_info.cred_status = "completed"
 			    end
 
 			    personal_info.save(validate: false) # Save without validations
@@ -359,16 +360,16 @@ class ProviderSourcesController < ApplicationController
 	private
 
 	def update_cred_status!
-	  personal_info = current_provider_source.provider_personal_information || current_provider_source.build_provider_personal_information
-
-	  personal_info.cred_status =
-	    if all_information_completed?(current_provider_source)
-	      "in-process"
-	    elsif current_provider_source&.all_sections_completed?
+	  personal_info = current_provider_source.provider_personal_information
+	  personal_info.cred_status = if personal_info.roster == 'true'
+	      'no-application'
+	    elsif personal_info.verification_status == 'completed' && personal_info.cred_status == 'psv' 
+	      "psv"  
+	    elsif  personal_info.verification_status == 'Processing' || personal_info.verification_status == nil
+	    	'in-process'
+	    elsif current_provider_source.general_info_completed? && current_provider_source.professional_ids_completed? && current_provider_source.health_plans_completed? &&current_provider_source.speacialties_completed? && !all_information_completed?(current_provider_source)
 	      "pending"
-	    elsif !current_provider_source&.documents.present?
-	      "no-application"
-	    elsif all_information_completed?(current_provider_source) && current_provider_source&.all_sections_completed?
+	    elsif all_information_completed?(current_provider_source) && current_provider_source&.all_sections_completed? && personal_info.attest_date.present?
 	    	'complete-application'
 	    else
 	      "incomplete"

@@ -353,11 +353,14 @@ class ProviderSource < ApplicationRecord
     total_specialty_fields = 0
     answered_specialty_fields = 0
 
+    # Helper to treat both true and false as answered
+    answered = ->(val) { val.present? || val == false }
+
     specialties.each do |spec|
       # Always-required fields
       always_required_fields.each do |field|
         total_specialty_fields += 1
-        answered_specialty_fields += 1 unless spec.send(field).nil?
+        answered_specialty_fields += 1 if answered.call(spec.send(field))
       end
 
       certified = spec.board_certified
@@ -374,11 +377,8 @@ class ProviderSource < ApplicationRecord
         end
       elsif certified == false
         if eligible == true
-          # Eligible == yes
-          unless spec.board_exam_results_pending.nil?
-            total_specialty_fields += 1
-            answered_specialty_fields += 1
-          end
+          total_specialty_fields += 1
+          answered_specialty_fields += 1 if answered.call(pending)
 
           if pending == true
             %w[pending_address_line_1 pending_city pending_zipcode pending_state].each do |field|
@@ -386,26 +386,20 @@ class ProviderSource < ApplicationRecord
               answered_specialty_fields += 1 if spec.send(field).present?
             end
           elsif pending == false
-            unless spec.applied_for_certification_exam.nil?
-              total_specialty_fields += 1
-              answered_specialty_fields += 1
-            end
+            total_specialty_fields += 1
+            answered_specialty_fields += 1 if answered.call(applied)
 
             if applied == true
-              unless spec.accepted_for_certification_exam.nil?
-                total_specialty_fields += 1
-                answered_specialty_fields += 1
-              end
+              total_specialty_fields += 1
+              answered_specialty_fields += 1 if answered.call(accepted)
 
               if accepted == true
                 total_specialty_fields += 1
                 answered_specialty_fields += 1 if spec.board_exam_date.present?
               end
             elsif applied == false
-              unless spec.intend_applied_for_certification_exam.nil?
-                total_specialty_fields += 1
-                answered_specialty_fields += 1
-              end
+              total_specialty_fields += 1
+              answered_specialty_fields += 1 if answered.call(intend)
 
               if intend == true
                 total_specialty_fields += 1
@@ -423,8 +417,7 @@ class ProviderSource < ApplicationRecord
     if total_specialty_fields.positive?
       percentage = ((answered_specialty_fields.to_f / total_specialty_fields) * 100).round
     end
-
-    percentage
+    percentage.to_i
   end
 
   def specialties_board_exam_fields

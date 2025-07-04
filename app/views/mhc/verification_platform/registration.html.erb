@@ -59,7 +59,7 @@
                                     </button>
                                 </div>
                                 <div class="col-12 m-2">
-                                      <button class="btn btn-primary dea-audit-btn btn-sm" data-information-id="<%= @last_rva_information&.id %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-provider-dea-id="<%= provider_dea&.id %>" data-dea-number="<%= provider_dea.dea_number %>" id="quality_audit_button-<%= provider_dea.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" onclick="populateAuditDeatils(this)"> 
+                                      <button class="btn btn-primary dea-audit-btn btn-sm" data-information-id="<%= @last_rva_information&.id %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-provider-dea-id="<%= provider_dea&.id %>" data-dea-number="<%= provider_dea.dea_number %>" id="quality_audit_button-<%= provider_dea.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" onclick="populateAuditDeatils(this)" data-personal-information-id="<%= @provider_personal_information&.id %>"> 
                                         Quality Audit
                                     </button>
                                 </div>
@@ -1134,7 +1134,7 @@
 
               <%= hidden_field_tag :id, @last_rva_information&.id %>
               <%= hidden_field_tag :provider_dea_id %>
-
+              <%= hidden_field_tag :personal_info_id %>
               <%= hidden_field_tag :first_name %>
               <%= hidden_field_tag :last_name %>
               <div class="form-row row mt-3">
@@ -1694,6 +1694,7 @@
         var deaNumber = this.dataset.deaNumber;
         var firstName = $('#firstname').html().trim();
         var lastName = $('#lastname').html().trim();
+        var personalInfoId = $('input[name="personal_info_id"]').val();
         var providerDeaId = $('input[name="provider_dea_id"]').val();
 
         if (!firstName || !lastName) {
@@ -1713,6 +1714,7 @@
             dea_number: deaNumber,
             first_name: firstName, 
             last_name: lastName,
+            info_id: personalInfoId,
             provider_dea_id: providerDeaId,
           },
           success: function (response) {
@@ -1770,7 +1772,7 @@
 
         // Serialize the form data from #audit-form
         const auditFormData = $('#audit-form').serialize();
-        const additionalParams = 'section=audit'; 
+        const additionalParams = 'section=audit';
 
 
         // Combine the form data and additional data into a single object
@@ -1868,6 +1870,7 @@
       const FirstName = button.getAttribute('data-first-name');
       const deaNumber = button.getAttribute('data-dea-number');
       const LastName = button.getAttribute('data-last-name');
+      const personalInfoId = button.getAttribute('data-personal-information-id');
       const InformationId = button.getAttribute('data-information-id');
       const providerDeaId = button.getAttribute('data-provider-dea-id');
 
@@ -1875,6 +1878,7 @@
       document.querySelector('#run-webcrawler-btn').setAttribute('data-dea-number', deaNumber);
       document.querySelector('[name="first_name"]').value = FirstName;
       document.querySelector('[name="last_name"]').value = LastName;
+      document.querySelector('[name="personal_info_id"]').value = personalInfoId;
       document.querySelector('[name="id"]').value = InformationId;
       document.querySelector('[name="provider_dea_id"]').value = providerDeaId;
     });

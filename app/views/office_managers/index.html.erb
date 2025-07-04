@@ -98,7 +98,9 @@
                           <h6>Last Invite Sent:</h6>
                       </div>
                       <div class="col-xl-6">
-                          <p><%= provider&.global_invitation_sent_at&.strftime("%Y-%m-%d") %></p>
+                          <p>
+                            <%= provider.roster == true ? provider&.invitation_sent_at&.strftime("%Y-%m-%d") : provider&.global_invitation_sent_at&.strftime("%Y-%m-%d")  %>
+                          </p>
                       </div>
                   </div>
                   <div class="row">
@@ -106,7 +108,7 @@
                           <h6>Sent invite count:</h6>
                       </div>
                       <div class="col-xl-6">
-                          <p><%= provider.global_invitation_count  %></p>
+                          <p><%= provider.roster == true ? provider.invitation_count : provider.global_invitation_count  %></p>
                       </div>
                   </div>
                   <div class="row mt-4">
@@ -240,7 +242,7 @@
                               <div class="form-row row mt-2">
                                   <div class="col-xl-4">
                                       <label for="">SSN <span class="text-red">*</span></label>
-                                      <input type="text" class="form-control form-field" placeholder="" name="ssn">
+                                      <input type="text" class="form-control form-field" placeholder="" name="ssn" maxlength="10">
                                   </div>
                                   <div class="col-xl-4">
                                       <label for="">Date of Birth <span class="text-red">*</span></label>

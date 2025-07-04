@@ -16,7 +16,8 @@ class GroupEngageProvider::CreateProviderSourceService < GroupEngageProvider::Ba
 		  caqh_provider_id: rand(10**8).to_s.rjust(8, '5'),
 		  provider_attest_id: rand(10**8).to_s.rjust(8, '5'),
 		  caqh_provider_attest_id: rand(10**8).to_s.rjust(8, '5'), 
-		  created_by: 'group-engage'
+		  created_by: 'group-engage',
+		  cred_status: 'incomplete'
 	  )
 
 	  provider_personal_info.save(validate: false)
