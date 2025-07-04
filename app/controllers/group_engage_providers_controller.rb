@@ -24,18 +24,26 @@ class GroupEngageProvidersController < ApplicationController
 	end
 
 	def add_to_roster
-		practice_location_id = params[:practice_location_id]
+			practice_location_id = params[:practice_location_id]
 
-		if ProviderSource.exists?(practice_location_id: practice_location_id, group_engage_provider_id: @group_engage_provider.id)
-			render json: 'Already	added to roster.',	status: :unprocessable_entity
-		else
-			provider_source = ProviderSource.find_or_create_by(practice_location_id: practice_location_id, group_engage_provider_id: @group_engage_provider.id)
-			provider_source.add_to_roster(@group_engage_provider)
+			if ProviderSource.exists?(practice_location_id: practice_location_id, group_engage_provider_id: @group_engage_provider.id)
+				render json: 'Already	added to roster.',	status: :unprocessable_entity
+			else
+				 provider_source = ProviderSource.new(
+	      practice_location_id: practice_location_id,
+	      group_engage_provider_id: @group_engage_provider.id
+	    )
 
-			render json: {
-				practice_location_id: @group_engage_provider.practice_location_id,
-				message: "Selected Provider used to be there in your roster, his/her record has just been activated. Invite email has not been sent."
-			},	status: :ok
+	    if provider_source.save(validate: false)
+	      provider_source.add_to_roster(@group_engage_provider)
+
+	      render json: {
+	        practice_location_id: @group_engage_provider.practice_location_id,
+	        message: "Selected Provider used to be there in your roster, his/her record has just been activated. Invite email has not been sent."
+	      }, status: :ok
+	    else
+	      render json: { error: "Provider source could not be saved", details: provider_source.errors.full_messages }, status: :unprocessable_entity
+	    end
 		end
 	end
 

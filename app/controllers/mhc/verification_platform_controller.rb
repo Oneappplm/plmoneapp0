@@ -136,8 +136,9 @@ class Mhc::VerificationPlatformController < ApplicationController
         ProviderInsuranceCoverage.find(params[:practice_claim_history_id]).update(claims_history_audit: 'Quality Audited')
       end 
     end
+    debugger
     if params[:personal_info_id].present?
-      ProviderPersonalInformation.find(params[:personal_info_id]).update(verification_status: 'completed')
+      # personal_info = ProviderPersonalInformation.find(params[:personal_info_id]).update(verification_status: 'completed')
     end
     if @rva_information.update(rva_information_params)
       render json: { message: 'Verification completed successfully', rva_information: @rva_information}, status: :ok

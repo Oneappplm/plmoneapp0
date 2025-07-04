@@ -362,13 +362,13 @@ class ProviderSourcesController < ApplicationController
 	  personal_info = current_provider_source.provider_personal_information || current_provider_source.build_provider_personal_information
 
 	  personal_info.cred_status =
-	    if all_information_completed?(current_provider_source)
+	    if personal_info.verification_status == 'Processing' || personal_info.verification_status == nil
 	      "in-process"
 	    elsif current_provider_source&.all_sections_completed?
 	      "pending"
 	    elsif !current_provider_source&.documents.present?
 	      "no-application"
-	    elsif all_information_completed?(current_provider_source) && current_provider_source&.all_sections_completed?
+	    elsif all_information_completed?(current_provider_source) && current_provider_source&.all_sections_completed? && personal_info.attest_date.present?
 	    	'complete-application'
 	    else
 	      "incomplete"

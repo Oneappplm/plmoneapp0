@@ -166,7 +166,6 @@ class Webscrapers::QualityAuditsController < ApplicationController
     webscraper_log.filepath = File.open(tmp_file_path) # Attach the file using CarrierWave
     webscraper_log.save!
 
-
     # Remove the temporary file after saving
     File.delete(tmp_file_path) if File.exist?(tmp_file_path)
     render json: { message: 'Licensure webcrawler completed successfully', rva_information: rva_information, webscraper_log: webscraper_log }, status: :ok
