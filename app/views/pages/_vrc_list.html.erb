@@ -53,8 +53,6 @@
       <tbody>
         <% if @provider_personal_informations.present? %>
           <% @provider_personal_informations.each do |provider_personal_information| %>
-            <% provider_source = provider_personal_information.provider_source %>
-            <% source_data = provider_source&.data&.index_by(&:data_key) || {} %>
             <tr>
               <td class="option form-check-input">
                 <%= check_box_tag "selected_ids[]", provider_personal_information.id, nil, id: "selected_#{provider_personal_information.id}" %>
@@ -62,26 +60,19 @@
               <td>
                 <%= provider_personal_information&.caqh_provider_attest_id || provider_personal_information&.provider_attest_id %>
               </td>
-              <td><%= provider_personal_information.verification_status %>
+              <td><%= provider_personal_information.progress_status.to_s.tr('_', ' ').titleize %>
               </td>
               <td>
-                <% if provider_personal_information.created_by != 'group-engage' %>
-                  <%= link_to(
-                    "#{provider_personal_information.fullname}, #{provider_personal_information.provider_type_provider_type_abbreviation}",
-                    show_virtual_review_committee_path(provider_personal_information.id)
-                  ) %>
-                <% else %>
-                  <%= link_to(
-                    "#{provider_source.full_name}, #{provider_personal_information.provider_type_provider_type_abbreviation}",
-                    show_virtual_review_committee_path(provider_personal_information.id)
-                  ) %>
-                <% end %>
+                <%= link_to(
+                  "#{provider_personal_information.fullname}, #{provider_personal_information.provider_type_provider_type_abbreviation}",
+                  show_virtual_review_committee_path(provider_personal_information.id)
+                ) %>
               </td>
               <td><%= provider_personal_information.provider_type_provider_type_abbreviation %></td>
               <td>
                 <%= provider_personal_information.cred_cycle %>
               </td>
-              <td><%= provider_personal_information.attest_date&.strftime('%Y-%m-%d') %></td>
+              <td><%= provider_personal_information.psv_completed_date&.strftime('%Y-%m-%d') %></td>
               <td><%= provider_personal_information.review_level %></td>
               <td><%= provider_personal_information.recred_due_date || "NA" %></td>
               <td><%= provider_personal_information.review_date || "NA" %></td>

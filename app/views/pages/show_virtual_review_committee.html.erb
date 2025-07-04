@@ -63,20 +63,14 @@
 						<tbody>
 							<% if @provider_personal_informations.present? %>
 								<% @provider_personal_informations.each do |provider| %>
-								  <% provider_source = provider.provider_source %>
-                  <% source_data = provider_source&.data&.index_by(&:data_key) || {} %>
 									<tr>
 										<td>
 											<h5>
-												<% if provider.created_by != 'group-engage' %>
-												  <%= provider.fullname %>
-												<% else %>
-											    <%= provider_source.full_name %>
-												<% end %>
+												<%= provider.fullname %>
 											</h5>
 										</td>
 										<td style="word-break: break-word; max-width: 200px; white-space: normal;">
-											<%= provider.cell_phone_number %> / <br>
+											<%= provider.cell_phone_number %> <br>
 											<%= provider.email_address%>
 										</td>
 										<td><%= provider.birth_date.strftime("%Y-%m-%d") %></td>
@@ -314,7 +308,7 @@
 						<div class="form-group mb-3">
 							<label for="record_status">Review Level:</label>
 							<%= form.hidden_field :id, value: @provider.id %>
-							<%= form.select :status, options_for_select([['All', ''], 'Expedited', 'Non-Expedited']), {}, { id: 'record_status', class: 'form-control' } %>
+							<%= form.select :status, options_for_select([['All', ''], 'Expedited', 'Non-Expedited', 'Clean', 'unclean']), {}, { id: 'record_status', class: 'form-control' } %>
 						</div>
 						
 					  <div class="form-group mb-3" style="position: relative;">

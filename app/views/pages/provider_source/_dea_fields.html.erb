@@ -11,7 +11,10 @@
         title="9 alphanumeric characters, e.g. AB1234567 or A12345678">
         <i class="bi bi-info-circle text-primary fs-5"></i>
       </span>
-    <input type="text" name="registration_number" class="form-control border-dark multi-field" placeholder="DEA Registration Number" value="<%= dea.registration_number%>" data-model="dea" data-id="<%= dea.id %>">
+    <input type="text" name="registration_number" class="form-control border-dark multi-field dea-registration-input" placeholder="DEA Registration Number" value="<%= dea.registration_number%>" data-model="dea" data-id="<%= dea.id %>">
+    <small class="dea-validation-message text-danger" style="display: none;">
+      DEA must be 2 uppercase letters followed by 7 digits (e.g., CS1234567)
+    </small>
   </div>
   <div class="col-lg-6">
     <label class="text-dark-grey"><span class="text-danger">*</span>DEA Registration State</label>
@@ -75,3 +78,19 @@
   </div> 
 </div>
 </div>
+<script>
+  $(document).on('keyup', '.dea-registration-input', function () {
+    const $input = $(this);
+    const value = $input.val().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 9);
+    $input.val(value);
+
+    const isValidDEA = /^[A-Z]{2}[0-9]{7}$/.test(value);
+    const $message = $input.siblings('.dea-validation-message');
+
+    if (value.length === 9 && !isValidDEA) {
+      $message.show();
+    } else {
+      $message.hide();
+    }
+  });
+</script>

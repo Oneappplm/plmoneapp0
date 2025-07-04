@@ -123,7 +123,7 @@ class PdfGenerationJob < ApplicationJob
       file_path: merged_pdf_path.to_s,
       file_type: 'pdf'
     )
-    provider.update(cred_status: 'psv')
+    provider.update(cred_status: 'psv', psv_completed_date: Date.today, progress_status: 'to_be_assigned')
     saved_profile.update!(file_path: File.open(merged_pdf_path))
 
     merged_pdf_path.to_s
