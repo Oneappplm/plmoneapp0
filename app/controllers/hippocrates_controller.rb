@@ -12,10 +12,10 @@ class HippocratesController < ApplicationController
   end
 
   def expired_licenses
-    if params[:prompt] == "Show me expired licenses"
+    if params[:prompt].to_s.strip.casecmp("show me expired licenses") == 0
       @results = ProviderLicense
         .joins(:provider)
-        .where("provider_licenses.license_expiration_date < ?", Date.today)
+        .where("provider_licenses.license_expiration_date <= ?", Date.today)
         .where(providers: { api_token: nil })
     end
 
