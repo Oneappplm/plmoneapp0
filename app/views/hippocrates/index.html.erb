@@ -13,45 +13,128 @@
 
 <script>
   $(document).ready(function () {
-    // CSRF setup
+    setupCSRFToken();
+    bindPromptSubmit();
+    bindLicenseDownload();
+    bindSelectAllCheckbox();
+  });
+
+  // Set up CSRF token for all AJAX requests
+  function setupCSRFToken() {
     const csrfToken = $('meta[name="csrf-token"]').attr('content');
     $.ajaxSetup({
       headers: {
         'X-CSRF-Token': csrfToken
       }
     });
+  }
 
-    // Submit button
+  // Handle prompt submission (e.g., "show me expired licenses")
+  function bindPromptSubmit() {
     $("#hippocrates-submit").on("click", function () {
-      const promptValue = $("#hippocrates-input").val();
+      const promptValue = $("#hippocrates-input").val().trim();
+
+      if (!promptValue) {
+        alert("Please enter a prompt.");
+        return;
+      }
 
       $.ajax({
         url: "/hippocrates/expired_licenses",
         type: "POST",
         data: { prompt: promptValue },
-        dataType: "script", // JS response (use .js.erb template)
+        dataType: "script",
         error: function (xhr) {
           alert("Something went wrong.");
           console.error(xhr.responseText);
         }
       });
     });
+  }
 
-    // ✅ When user selects a format in the dropdown
-    $(document).on("change", ".format-select", function () {
-      const selectedFormat = $(this).val(); // fix: was 'format' before
-      const licenseNumber = $(this).data("license");
+  // Handle form submission for license download (single or multiple)
+  function bindLicenseDownload() {
+    $(document).on("submit", "#license-download-form", function (e) {
+      e.preventDefault();
 
-      if (selectedFormat === "pdf" || selectedFormat === "csv") {
-        // Trigger download
-        window.location.href = `/hippocrates/download_expired_license?license=${licenseNumber}&format=${selectedFormat}`;
-
-        // Reset dropdown back to placeholder after download
-        $(this).val("");
+      const format = $("#bulk-download-format").val();
+      if (!format) {
+        alert("Please select a format.");
+        return;
       }
+
+      const selectedLicenses = $(".license-checkbox:checked").map(function () {
+        return $(this).val();
+      }).get();
+
+      if (selectedLicenses.length === 0) {
+        alert("Please select at least one license.");
+        return;
+      }
+
+      if (selectedLicenses.length === 1) {
+        // Single license → GET download
+        const license = selectedLicenses[0];
+        window.location.href = `/hippocrates/download_expired_license?license=${license}&format=${format}`;
+      } else {
+        // Multiple licenses → POST bulk download
+        postBulkDownload(selectedLicenses, format);
+      }
+
+      resetDownloadForm();
     });
-  });
+  }
+
+  // Helper to build and submit hidden bulk download form
+  function postBulkDownload(licenses, format) {
+    const form = $("<form>", {
+      method: "POST",
+      action: "/hippocrates/bulk_download_expired_licenses",
+      style: "display: none;"
+    });
+
+    const csrfToken = $('meta[name="csrf-token"]').attr('content');
+    form.append($("<input>", {
+      type: "hidden",
+      name: "authenticity_token",
+      value: csrfToken
+    }));
+
+    licenses.forEach(function (license) {
+      form.append($("<input>", {
+        type: "hidden",
+        name: "licenses[]",
+        value: license
+      }));
+    });
+
+    form.append($("<input>", {
+      type: "hidden",
+      name: "format",
+      value: format
+    }));
+
+    $("body").append(form);
+    form.submit();
+  }
+
+  // Handle "Select All" checkbox toggle
+  function bindSelectAllCheckbox() {
+    $(document).on("change", "#select-all-checkbox", function () {
+      const isChecked = $(this).is(":checked");
+      $(".license-checkbox").prop("checked", isChecked);
+    });
+  }
+
+  // Reset form UI after download
+  function resetDownloadForm() {
+    $("#bulk-download-format").val("");
+    $(".license-checkbox").prop("checked", false);
+    $("#select-all-checkbox").prop("checked", false);
+  }
 </script>
+
+
 
 
 

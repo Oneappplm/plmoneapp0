@@ -546,6 +546,8 @@ Rails.application.routes.draw do
   post "hippocrates/expired_licenses", to: "hippocrates#expired_licenses"
   get "hippocrates/download_expired_license", to: "hippocrates#download_expired_license"
   get "hippocrates/download_pdf", to: "hippocrates#download_pdf"
+  post 'hippocrates/bulk_download_expired_licenses', to: 'hippocrates#bulk_download_expired_licenses'
+
 
   #------for solana routes start here------
   resources :orders do
