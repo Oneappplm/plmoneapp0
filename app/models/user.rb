@@ -73,17 +73,22 @@ class User < ApplicationRecord
     def from_omniauth(auth)
       return nil unless auth && auth['info']['email'].present?
       
-      info = auth['extra']['raw_info']
+      info = auth['info']
 
-      user = User.find_or_create_by(email: auth['info']['email']) do |user|
+      user = User.find_or_create_by(email: info['email']) do |user|
         user.provider = auth['provider']
         user.uid = auth['uid']
-        user.first_name = info['given_name']
-        user.last_name = info['family_name']
+        user.first_name = info['first_name'] || info['name']&.split&.first
+        user.last_name  = info['last_name'] || info['name']&.split&.last
+        user.password = SecureRandom.hex(8) # Required for Devise
       end
 
-      if user.persisted? && user.confirmed_at.nil?
-        user.confirmed_at = Time.current
+      # if user.persisted? && user.confirmed_at.nil?
+      #   user.confirmed_at = Time.current
+      #   user.save(validate: false)
+      # end
+
+      if user.persisted?
         user.save(validate: false)
       end
 
