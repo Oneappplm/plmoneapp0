@@ -48,7 +48,7 @@ class Provider < ApplicationRecord
   # validates_format_of :telephone_number, with: /\A\d{3}-\d{4}\z/, message: "should be in the format xxx-xxxx"
   # validates_format_of :ext, with: /\A\d{2}\z/, message: "should be in the format xx"
 
-  belongs_to :client
+  belongs_to :client, optional: true
 
   belongs_to :group, class_name: 'EnrollmentGroup', foreign_key: 'enrollment_group_id', optional: true
   # relationhsip to be removed - update: provider can have many group_dcos

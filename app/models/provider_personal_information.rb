@@ -48,7 +48,6 @@ class ProviderPersonalInformation < ApplicationRecord
   has_one :provider_personal_docs_receive
   has_many :provider_licensures, through: :provider_attest
   has_many :provider_other_names, through: :provider_attest
-  has_many :provider_source_specialities, through: :provider_source
 
   has_many :provider_personal_information_sam_records
   has_many :provider_personal_information_reinstatements
@@ -122,6 +121,9 @@ class ProviderPersonalInformation < ApplicationRecord
     "has_cds_registration_number" => :cds_flag,
     "signature_date" => :attest_date,
     "medicare_field" => :medicare_provider_flag,
-    "medicaid_field" => :medicaid_provider_flag
+    "medicaid_field" => :medicaid_provider_flag,
+    "hp_health_plans" => :hp_health_plans,
+    "hp_hospitals" => :hp_hospitals,
+    "hp_directories" => :hp_directories
   }.freeze
 end
