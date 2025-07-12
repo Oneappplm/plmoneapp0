@@ -1586,6 +1586,21 @@
 </div>
 <script type="text/javascript">
   document.addEventListener('DOMContentLoaded', () => {
+    // DEA registration input validation
+    $(document).on('keyup', '.dea-registration-input', function () {
+      const $input = $(this);
+      const value = $input.val().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 9);
+      $input.val(value);
+
+      const isValidDEA = /^[A-Z]{2}[0-9]{7}$/.test(value);
+      const $message = $input.siblings('.dea-validation-message');
+
+      if (value.length === 9 && isValidDEA) {
+        $message.hide();
+      } else {
+        $message.show();
+      }
+    });
     const deaFormsContainer = document.getElementById('dea-forms-container');
     const deaFormTemplate = document.getElementById('dea-form-template').innerHTML;
 

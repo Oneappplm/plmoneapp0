@@ -3,7 +3,7 @@ class Mhc::VerificationPlatformController < ApplicationController
   before_action :redirect_to_auto_verify, only: [:index]
 
   def index
-    @q = ProviderPersonalInformation.ransack(params[:q])
+    @q = ProviderPersonalInformation.where.not(cred_status: 'no-application').ransack(params[:q])
     @provider_personal_informations = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
     @client_organizations = ClientOrganization.all
   end
@@ -151,7 +151,9 @@ class Mhc::VerificationPlatformController < ApplicationController
 
 
     if all_verified
-      personal_info.update(verification_status: 'completed')
+      personal_info.update(verification_status: 'completed', cred_status: 'complete-application')
+    else
+      personal_info.update(verification_status: 'Processing')
     end
 
     if @rva_information.update(rva_information_params)
@@ -274,7 +276,13 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'education'
-      @q = @provider_personal_information.provider_attest.practice_information_educations.ransack(params[:q]&.except(:page_tab))
+      if @provider_personal_information.provider_attest
+        educations = @provider_personal_information.provider_attest.practice_information_educations
+      else
+        educations = PracticeInformationEducation.none # or similar empty relation
+      end
+
+      @q = educations.ransack(params[:q]&.except(:page_tab))
       @practice_information_educations = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
     end
 

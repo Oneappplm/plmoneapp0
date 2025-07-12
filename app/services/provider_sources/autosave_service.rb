@@ -37,8 +37,21 @@ module ProviderSources
 
     MEDICARE_FIELD_MAP = {
     	"participating_medicare_number" => :medicare_number,
-    	"participating_medicaid_state" => :state,
+    	"participating_medicare_state" => :state,
     	"other_id_voluntarily_medicare" => :medicare_opt_out
+    }
+    MEDICADE_FIELD_MAP = {
+      "participating_medicaid_number" => :medicaid_number,
+      "participating_medicaid_state" => :state,
+    }
+    OTHER_CERTIFICATION_FIELD_MAP = {
+      "other_cert_field" => :certification_flag,
+      "other_certification_type" => :certification_type,
+      "other_certification_number" => :certification_number,
+      "other_certification_state" => :state,
+      "other-certification-issue-date" => :obtained_date,
+      "other_certification_expiration_date" => :expiration_date,
+      "other_certification_not_expire" => :certification_status
     }
 
     def initialize(source:, field_name:, value:, model_id:, model:)
@@ -51,7 +64,6 @@ module ProviderSources
 
     def perform
       attest = @source.provider_personal_information.provider_attest
-
       case @model
       when 'dea'
         map_and_save(DEA_FIELD_MAP, ProviderDea, :caqh_provider_deaid, attest)
@@ -60,7 +72,11 @@ module ProviderSources
       when 'licensure'
         save_licensure(attest)
       when 'medicare'
-        map_and_save(MEDICARE_FIELD_MAP, ProviderMedicare, :caqh_provider_medicare_id, attest)  
+        map_and_save(MEDICARE_FIELD_MAP, ProviderMedicare, :caqh_provider_medicare_id, attest) 
+      when 'medicaid'
+        map_and_save(MEDICAID_FIELD_MAP, ProviderMedicaid, :caqh_provider_medicaid_id, attest)
+      when 'other_cert'
+        map_and_save(OTHER_CERTIFICATION_FIELD_MAP, ProviderCertification, :caqh_provider_certification_id, attest)
       else
         { error: "Invalid model type: #{@model}" }
       end

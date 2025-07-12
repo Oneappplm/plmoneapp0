@@ -81,40 +81,32 @@
     <% end %>                              
     <%= button_to "Remove", mhc_provider_dea_path(page_tab: 'register', provider_dea_id: provider_dea.id, provider_attest_id: provider_dea.provider_attest_id), { :method => :delete, class: "btn btn-danger", form_class: ""}%>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const fullScheduleYes = document.getElementById("full-sched-radio-yes");
-    const fullScheduleNo = document.getElementById("full-sched-radio-no");
-    const checkboxes = document.querySelectorAll(".multi-field");
 
+// Full schedule radio button behavior
+document.addEventListener("DOMContentLoaded", function () {
+  const fullScheduleYes = document.getElementById("full-sched-radio-yes");
+  const fullScheduleNo = document.getElementById("full-sched-radio-no");
+  const checkboxes = document.querySelectorAll(".multi-field");
+
+  if (fullScheduleYes && fullScheduleNo) {
     fullScheduleYes.addEventListener("change", function () {
       if (this.checked) {
         checkboxes.forEach((checkbox) => {
-          checkbox.setAttribute("checked", "true"); // Sets the value for form submission
-          checkbox.checked = false; // Ensures they remain visually unchecked
+          checkbox.checked = true; // visually and form-wise checked
+          checkbox.setAttribute("checked", "true");
         });
-
       }
     });
 
     fullScheduleNo.addEventListener("change", function () {
-      checkboxes.forEach((checkbox) => {
-        checkbox.removeAttribute("checked"); // Removes the value if "No" is selected
-      });
+      if (this.checked) {
+        checkboxes.forEach((checkbox) => {
+          checkbox.checked = false; // visually and form-wise unchecked
+          checkbox.removeAttribute("checked");
+        });
+      }
     });
-  });
-  $(document).on('keyup', '.dea-registration-input', function () {
-    const $input = $(this);
-    const value = $input.val().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 9);
-    $input.val(value);
-
-    const isValidDEA = /^[A-Z]{2}[0-9]{7}$/.test(value);
-    const $message = $input.siblings('.dea-validation-message');
-
-    if (value.length === 9 && !isValidDEA) {
-      $message.show();
-    } else {
-      $message.hide();
-    }
-  });
+  }
+});
 
 </script>
