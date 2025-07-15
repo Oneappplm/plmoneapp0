@@ -103,15 +103,24 @@ class ProviderSourcesController < ApplicationController
 	  end
 
 	  # populate data handle
-    if model == 'licensure' || model == 'medicare' || model == 'medicaid' || model == 'other_cert'
+	  model_training = if field_name.include?("tf-") || field_name.include?("tr_") || field_name.include?("tfu-")
+                   'training'
+                 else
+                   nil
+                 end
+
+		model_to_use = model.presence || model_training
+
+		if %w[licensure medicare medicaid other_cert training liability malpractice].include?(model_to_use)
 		  ProviderSources::AutosaveService.new(
 		    source: current_provider_source,
 		    field_name: field_name,
 		    value: value,
 		    model_id: nil,
-		    model: model
+		    model: model_to_use
 		  ).perform
 		end
+
 	  update_cred_status!
 
 	  # === Handle nested fields ===
@@ -137,23 +146,26 @@ class ProviderSourcesController < ApplicationController
 	          current_provider_source.provider_source_undergrad_schools.new
 	          handle_education_autosave and return
 	      elsif field_name.include?("graduate_details") && params[:nested_form] == "true"
-				  # Prefer `graduate_school_id`, but fallback to extracting ID from `field_name`
-				  graduate_id = params[:graduate_school_id].presence ||
-				                field_name.match(/graduate_details\[(\d+)\]/)&.captures&.first
+				  # graduate_id = params[:graduate_school_id].presence ||
+				  #               field_name.match(/graduate_details\[(\d+)\]/)&.captures&.first
 
-				  graduate_detail =
-				    if graduate_id.present?
-				      detail = GraduateDetail.find_by(id: graduate_id)
-				      detail if detail&.provider_source_id == current_provider_source.id
-				    end
+				  # graduate_detail =
+				  #   if graduate_id.present?
+				  #     detail = GraduateDetail.find_by(id: graduate_id)
+				  #     detail if detail&.provider_source_id == current_provider_source.id
+				  #   end
 
-				  graduate_detail ||= current_provider_source.graduate_details.new
+				  # graduate_detail ||= current_provider_source.graduate_details.new
+				  graduate_id.present? ?
+	          current_provider_source.graduate_details.find_or_initialize_by(id: graduate_id) :
+	          current_provider_source.graduate_details.new
 
           handle_education_autosave and return
 	      elsif field_name.include?("hospital_privileges") && params[:nested_form] == "true"
 	        privilege_id.present? ?
 	          current_provider_source.hospital_privileges.find_or_initialize_by(id: privilege_id) :
-	          current_provider_source.hospital_privileges.new    
+	          current_provider_source.hospital_privileges.new  
+	          handle_hospital_privilege_autosave and return  
 	      elsif field_name.include?("admitting_arrangements") && params[:nested_form] == "true"
 	        admitting_id.present? ?
 	          current_provider_source.admitting_arrangements.find_or_initialize_by(id: admitting_id) :
@@ -421,12 +433,27 @@ class ProviderSourcesController < ApplicationController
 	  end
 	end
 
+	def handle_hospital_privilege_autosave
+		result = ::ProviderSources::HospitalPrivilegeAutosaveService.new(
+		  source: current_provider_source,
+		  field_name: params[:field_name],
+		  value: params[:value],
+		  privilege_id: params[:privilege_id] || params[:privilege_id],
+		).perform
+
+	  if result[:error]
+	    render json: { error: result[:error] }, status: :unprocessable_entity
+	  else
+	    render json: result
+	  end
+	end
+
 	def handle_education_autosave
 		result = ::ProviderSources::ProviderEducationAutosaveService.new(
 		  source: current_provider_source,
 		  field_name: params[:field_name],
 		  value: params[:value],
-		  education_id: params[:undergraduate_school_id].presence || params[:graduate_detail_id]
+		  education_id: params[:undergraduate_school_id].presence || params[:graduate_school_id]
 		).perform
 
 		if result[:error]

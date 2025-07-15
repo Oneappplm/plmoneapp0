@@ -201,7 +201,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_personal_information_comment = ProviderPersonalInformationComment.new
       @provider_personal_information_comments = ProviderPersonalInformationComment.all
       @q = School.ransack(params[:q])
-      @practice_information_education = PracticeInformationEducation.find_or_initialize_by(id: params[:practice_information_education_id], provider_attest_id: @provider_personal_information.provider_attest_id, caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id)
+      @practice_information_education = PracticeInformationEducation.find_or_initialize_by(id: params[:practice_information_education_id])
       @rva_information = RvaInformation.new
       @last_rva_information = @practice_information_education.rva_informations.last
       @education_rva_information_completed = @practice_information_education.rva_informations.where.not(source_date: nil).where.not(audit_status: false)

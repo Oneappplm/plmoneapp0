@@ -27,16 +27,16 @@ module ProviderSources
       "telephone_number" => "phone_number",
       "fax_number" => "fax_number",
       "email" => "email_address",
-      "specialization" => "specialty_specialty_name",
+      "specialization" => nil,  # Column does not exist in the table
       "degree_awarded" => "degree_degree_abbreviation",
       "start_date" => "start_date",
       "graduation_date" => "end_date",
       "education_completed" => "program_completed_flag",
       "incomplete_education_reason" => "incomplete_explanation",
-      "graduate_type" => "program_type",
-      "faculty_director_first_name" => "associate_first_name",
-      "faculty_director_last_name" => "associate_last_name",
-      "director_degree" => "program_director_degree"
+      "graduate_type" => nil,  # Column `program_type` does not exist in this table
+      "faculty_director_first_name" => nil,  # No associate fields in this table
+      "faculty_director_last_name" => nil,
+      "director_degree" => nil
     }.freeze
 
     def initialize(source:, field_name:, value:, education_id:)
@@ -126,21 +126,21 @@ module ProviderSources
     end
 
     def sync_to_provider_education(source_education, attribute, value)
-      attest = @source.provider_personal_information.provider_attest
+      attest = @source.provider_personal_information&.provider_attest
       return unless attest
 
       edu = if @education_id.present?
-              attest.provider_educations.find_by(caqh_provider_education_id: source_education.id) ||
-                attest.provider_educations.build(caqh_provider_education_id: source_education.id)
+              attest.practice_information_educations.find_by(caqh_practice_information_education_id: source_education.id) ||
+                attest.practice_information_educations.build(caqh_practice_information_education_id: source_education.id)
             else
-              attest.provider_educations.build(caqh_provider_education_id: source_education.id)
+              attest.practice_information_educations.build(caqh_practice_information_education_id: source_education.id)
             end
 
       db_field = field_map[attribute]
       return unless db_field.present? && edu.respond_to?("#{db_field}=")
 
       edu.send("#{db_field}=", normalize_value(attribute, value))
-      edu.education_type_name = @education_type_name
+      edu.education_type_name = @education_type_name if edu.respond_to?(:education_type_name=)
       edu.save(validate: false)
 
       if @type == "graduate" && ["faculty_director_first_name", "faculty_director_last_name"].include?(attribute)

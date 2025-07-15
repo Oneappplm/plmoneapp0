@@ -124,6 +124,11 @@ class ProviderPersonalInformation < ApplicationRecord
     "medicaid_field" => :medicaid_provider_flag,
     "hp_health_plans" => :hp_health_plans,
     "hp_hospitals" => :hp_hospitals,
-    "hp_directories" => :hp_directories
+    "hp_directories" => :hp_directories,
+    "undergraduate_school" => :other_graduate_education_flag,
+    "has_training_program" =>  :fellowship_training_flag,
+    "has_hospital_privilege" => :hospital_privilege_flag,
+    "has_admitting_arrangement" => :hospital_admitting_arrangements,
+    "has_malpractice_claim" => :no_malpractice_claims_flag
   }.freeze
 end
