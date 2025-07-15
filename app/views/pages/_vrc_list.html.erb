@@ -8,7 +8,14 @@
     <div>
       <%= form_with url: request.url, method: :get, html: { id: 'vrc-progress-status-form' } do |form| %>
         <div style="float: right;">
-          <%= form.select :'vrc-progress-status', [["All", "all"], ["Completed", "completed"], ["Assigned", "assigned"], ["To Be Assigned", "to_be_assigned"]], { selected: params[:'vrc-progress-status'] }, { style: "padding:8px; background-color: #ddd; border: 0px; border-radius: 5px; margin-left: 4px;", onchange: 'this.form.submit();' } %>
+          <%= form.select :'vrc-progress-status',
+            [["All", "all"], ["Completed", "completed"], ["Assigned", "assigned"], ["To Be Assigned", "to_be_assigned"]],
+            { selected: params[:'vrc-progress-status'].presence || "to_be_assigned" },
+            {
+              style: "padding:8px; background-color: #ddd; border: 0px; border-radius: 5px; margin-left: 4px;",
+              onchange: 'this.form.submit();'
+            } %>
+
         </div>
       <% end %>
     </div>
@@ -28,70 +35,78 @@
 	   No provider selection is made. Please select provider(s).
   </div>
 </div>
-
-  <table class="table table-bordered practice-table mt-3">
-    <thead>
-      <tr>
-        <th class="text-white">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="selectAllCheckbox">
-          </div>
-        </th>
-        <th class="text-white" scope="col">Encompass ID</th>
-        <th class="text-white" scope="col">ASSIGNED</th>
-        <th class="text-white" scope="col">PROVIDER NAME</th>
-        <th class="text-white">PROVIDER TYPE</th>
-        <th class="text-white">CRED CYCLE</th>
-        <th class="text-white">PSV COMPLETED DATE</th>
-        <th class="text-white">REVIEW LEVEL</th>
-        <th class="text-white">RECRED DUE DATE</th>
-        <th class="text-white">REVIEW DATE</th>
-        <th class="text-white">COMMITTEE DATE</th>
-        <th class="text-white">STATUS</th>
-      </tr>
-    </thead>
-      <tbody>
-        <% if @provider_personal_informations.present? %>
-          <% @provider_personal_informations.each do |provider_personal_information| %>
-            <tr>
-              <td class="option form-check-input">
-                <%= check_box_tag "selected_ids[]", provider_personal_information.id, nil, id: "selected_#{provider_personal_information.id}" %>
-              </td>
-              <td>
-                <%= provider_personal_information&.caqh_provider_attest_id || provider_personal_information&.provider_attest_id %>
-              </td>
-              <td><%= provider_personal_information.progress_status.to_s.tr('_', ' ').titleize %>
-              </td>
-              <td>
-                <%= link_to(
-                  "#{provider_personal_information.fullname}, #{provider_personal_information.provider_type_provider_type_abbreviation}",
-                  show_virtual_review_committee_path(provider_personal_information.id)
-                ) %>
-              </td>
-              <td><%= provider_personal_information.provider_type_provider_type_abbreviation %></td>
-              <td>
-                <%= provider_personal_information.cred_cycle %>
-              </td>
-              <td><%= provider_personal_information.psv_completed_date&.strftime('%Y-%m-%d') %></td>
-              <td><%= provider_personal_information.review_level %></td>
-              <td><%= provider_personal_information.recred_due_date || "NA" %></td>
-              <td><%= provider_personal_information.review_date || "NA" %></td>
-              <td><%= provider_personal_information.committee_date || "NA" %></td>
-              <td>
-                <%#= vrc&.status %>
-                 <% case provider_personal_information.progress_status %>
-                  <% when "completed" %>
-                    <span style="font-size: 10px;">Approved</span>
-                  <% when "assigned", "to_be_assigned" %>
-                    <span style="font-size: 10px;"><%#= vrc.progress_status.titleize %> Unapproved</span>
-                <% else %>
+  <div class="table-responsive">
+    <table class="table table-bordered practice-table mt-3">
+      <thead>
+        <tr>
+          <th class="text-white">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="selectAllCheckbox">
+            </div>
+          </th>
+          <%# <th class="text-white" scope="col">Encompass ID</th> %>
+          <th class="text-white" scope="col">ASSIGNED</th>
+          <th class="text-white" scope="col">PROVIDER NAME</th>
+          <th class="text-white">PROVIDER TYPE</th>
+          <th class="text-white">CRED CYCLE</th>
+          <th class="text-white">PSV COMPLETED DATE</th>
+          <th class="text-white">REVIEW LEVEL</th>
+          <th class="text-white">RECRED DUE DATE</th>
+          <th class="text-white">REVIEW DATE</th>
+          <th class="text-white">COMMITTEE DATE</th>
+          <th class="text-white">VOTED DATE</th>
+          <th class="text-white">STATUS</th>
+          <th class="text-white">NPI</th>
+        </tr>
+      </thead>
+        <tbody>
+          <% if @provider_personal_informations.present? %>
+            <% @provider_personal_informations.each do |provider_personal_information| %>
+              <tr>
+                <td class="option form-check-input">
+                  <%= check_box_tag "selected_ids[]", provider_personal_information.id, nil, id: "selected_#{provider_personal_information.id}" %></td>
+                <td>
+                  <% if provider_personal_information.progress_status == "to_be_assigned" %>
+                    ❌ Unassigned
+                  <% else %>
+                    <%= provider_personal_information.progress_status.to_s.tr('_', ' ').titleize %>
+                  <% end %>
+                </td>
+                <td>
+                  <%= link_to(
+                    "#{provider_personal_information.fullname}, #{provider_personal_information.provider_type_provider_type_abbreviation}",
+                    show_virtual_review_committee_path(provider_personal_information.id)
+                  ) %>
+                </td>
+                <td><%= provider_personal_information.provider_type_provider_type_abbreviation %></td>
+                <td>
+                  <%= provider_personal_information.cred_cycle %>
+                </td>
+                <td><%= provider_personal_information.psv_completed_date&.strftime('%Y-%m-%d') %></td>
+                <td><%= provider_personal_information.review_level %></td>
+                <td><%= provider_personal_information.recred_due_date&.strftime('%Y-%m-%d') %></td>
+                <td><%= provider_personal_information.review_date&.strftime('%Y-%m-%d') %></td>
+                <td><%= provider_personal_information.committee_date&.strftime('%Y-%m-%d') %></td>
+                <% if provider_personal_information.progress_status == "completed" %>
+                  <td><%= provider_personal_information.vote_date&.strftime('%Y-%m-%d') %></td>
                 <% end %>
-              </td>
-            </tr>
+                <td>
+                  <%#= vrc&.status %>
+                  <% if provider_personal_information.progress_status == "completed" %>
+                    <span style="font-size: 10px;">Approved</span>
+                  <% end %>
+                </td>
+                <td><%= provider_personal_information.npi %></td>
+              </tr>
+            <% end %>
+          <% else %>
+            <th colspan="13">
+              <p>No records found</p>
+            </th>
           <% end %>
-        <% end %>
-      </tbody>
-  </table>
+        </tbody>
+    </table>
+  </div>  
   <!-- Below the table -->
 	<%= form_with url: '/virtual_review_committee/update_review_committee_dates', method: :put, html: { id: 'review-committee-form-1' } do |form| %>
 	    <%= hidden_field_tag 'selected_ids[]', '', id: 'selected-ids-input-form1' %>

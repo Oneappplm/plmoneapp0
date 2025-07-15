@@ -8,23 +8,24 @@ class PracticeInformation < ApplicationRecord
   end
 
   belongs_to :provider_attest
-  has_many   :practice_accessibilities
-  has_many   :practice_associates
-  has_many   :practice_associate_other_questions
-  has_many   :practice_associate_specialties
-  has_many   :practice_business_arrangements
-  has_many   :practice_certifications
-  has_many   :practice_hours
-  has_many   :practice_languages
-  has_many   :practice_limitations
-  has_many   :practice_other_addresses
-  has_many   :practice_other_questions
-  has_many   :practice_other_tax_ids
-  has_many   :practice_patient_types
-  has_many   :practice_phone_coverages
-  has_many   :practice_services
-  has_many   :practice_specialties
-  has_many   :practice_tax_ids
+  has_many   :practice_accessibilities, dependent: :destroy
+  has_many   :practice_associates, dependent: :destroy
+  has_many   :practice_associate_other_questions, dependent: :destroy
+  has_many   :practice_associate_specialties, dependent: :destroy
+  has_many   :practice_business_arrangements, dependent: :destroy
+  has_many   :practice_certifications, dependent: :destroy
+  has_many   :practice_hours, dependent: :destroy
+  has_many   :practice_locations, dependent: :destroy
+  has_many   :practice_languages, dependent: :destroy
+  has_many   :practice_limitations, dependent: :destroy
+  has_many   :practice_other_addresses, dependent: :destroy
+  has_many   :practice_other_questions, dependent: :destroy
+  has_many   :practice_other_tax_ids, dependent: :destroy
+  has_many   :practice_patient_types, dependent: :destroy
+  has_many   :practice_phone_coverages, dependent: :destroy
+  has_many   :practice_services, dependent: :destroy
+  has_many   :practice_specialties, dependent: :destroy
+  has_many   :practice_tax_ids, dependent: :destroy
 
   has_many :allied_health_practitioners, dependent: :destroy, class_name: "AlliedHealthPractitioner"
   has_many :personally_employed_practitioners, dependent: :destroy, class_name: "PersonallyEmployedPractitioner"

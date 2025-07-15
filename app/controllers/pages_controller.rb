@@ -128,13 +128,22 @@ class PagesController < ApplicationController
     end
 
     # Progress status filter
-    if params[:'vrc-progress-status'].present? && params[:'vrc-progress-status'] != 'all'
-      @provider_personal_informations = @provider_personal_informations.send(params[:'vrc-progress-status'])
+    progress_status = params[:'vrc-progress-status'].presence || 'to_be_assigned'
+
+    if progress_status != 'all'
+      @provider_personal_informations = @provider_personal_informations.send(progress_status)
     end
 
-    # Pagination
-    @provider_personal_informations = @provider_personal_informations.paginate(page: params[:page], per_page: 50)
 
+    # Additional filter for 'work-tickler'
+    if params[:vrc] == 'work-tickler'
+      @provider_personal_informations = @provider_personal_informations
+        .where(vote_date: nil)
+        .where.not(progress_status: 'completed')
+    end
+
+    # Pagination after all filters
+    @provider_personal_informations = @provider_personal_informations.paginate(page: params[:page], per_page: 50)
     # Conditional rendering based on `vrc` parameter
     case params[:vrc]
     when 'work-tickler'
@@ -349,42 +358,63 @@ class PagesController < ApplicationController
   #   end
   # end
 
-   def record_approval
-    provider_params = params.require(:provider_personal_information).permit(:id, :status, :description)
+  def record_approval
+    provider_params = params.permit(:status, :description, :send_confirmation, provider_ids: [])
+    provider_ids = provider_params[:provider_ids].presence || [params[:provider_personal_information][:id]]
 
-    @provider = ProviderPersonalInformation.find_by(id: provider_params[:id])
+    # Handle description override if OTHER checkbox used
+    desc = (params[:other_checkbox].present? && provider_params[:description].present?) ? "OTHER" : provider_params[:description]
 
-    if @provider
+    updated = []
+    failed = []
+
+    provider_ids.each do |pid|
+      provider = ProviderPersonalInformation.find_by(id: pid)
+      next unless provider
+
+      old_level = provider.review_level
+
       if provider_params[:status].present? && provider_params[:status] != "Pending"
-        desc = (params[:other_checkbox].present? && provider_params[:description].present?) ? "OTHER" : provider_params[:description]
+        success = provider.update(
+          progress_status: "completed",
+          review_level: provider_params[:status],
+          review_details: desc,
+          vote_date: Time.current,
+          vote_by: current_user.full_name
+        )
 
-        old_level = @provider.review_level
-
-        if @provider.update(progress_status: "completed", review_level: provider_params[:status], review_details: desc)
-          
-          @provider.review_level_changes.create!(
-            changed_by: current_user.email, # or current_user.full_name
+        if success
+          provider.review_level_changes.create!(
+            changed_by: current_user.email,
             from_level: old_level,
             to_level: provider_params[:status],
             reason: desc
           )
-
-          redirect_to show_virtual_review_committee_path(@provider.id), notice: "Records updated successfully."
+          updated << provider
         else
-          flash[:alert] = "Update failed: #{@provider.errors.full_messages.join(', ')}"
-          render :show_virtual_review_committee
+          failed << provider
         end
-      else
-        redirect_to show_virtual_review_committee_path(@provider.id), notice: "No status change applied."
       end
-    else
-      flash[:alert] = "Provider not found."
-      render :show_virtual_review_committee
     end
+
+    # Example: handle the static checkbox logic
+    if provider_params[:send_confirmation] == "1"
+      updated.each do |p|
+        # Trigger your confirmation mailer/service here
+        ProviderMailer.confirmation_email(p).deliver_later if defined?(ProviderMailer)
+      end
+    end
+
+    if updated.any?
+      flash[:notice] = "Updated #{updated.size} provider(s) successfully."
+    elsif failed.any?
+      flash[:alert] = "Some records failed: #{failed.map(&:id).join(', ')}"
+    else
+      flash[:alert] = "No status change applied."
+    end
+
+    redirect_to show_virtual_review_committee_path(provider_ids.first)
   end
-
-
-
 
   def providers;end
 
