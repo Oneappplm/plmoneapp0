@@ -32,7 +32,7 @@
 							   <tbody>
                   <tr>
 							      <td width="10%" class="text-center">
-										<select class="form-select disclosure-select-option" aria-label="select option">
+										<select class="form-select disclosure-select-option" aria-label="select option" data-model='disclosure'>
 											<% if @provider.no_answer?(question.slug) %>
 												<option value="" <%= @provider.no_answer?(question.slug) ? 'selected' : '' %>>Select option</option>
 											<% end %>
@@ -42,7 +42,7 @@
 											<button type="button" class="d-none disclosure-toggle-button btn btn-xs disclosure-btn-toggle has-to-show to-change-value <%= @provider.is_answer_yes?(question.slug) ? 'active' : ''%> " data-tochange="<%= question.slug %>" data-toshow="<%= question.slug %>_explain_field" data-toggle="button" aria-pressed="false" autocomplete="off">
 												<div class="handle"></div>
 											</button>
-											<input type="text" name="<%= question.slug %>" value="no" class='invisible-input no-auto-save'>
+											<input type="text" name="<%= question.slug %>" value="no" class='invisible-input no-auto-save' data-model='disclosure'>
 							      </td>
 							      <td width="90%" style="padding-left: 10px;">
 							         <p class="text-black">
@@ -58,7 +58,7 @@
                       <td style="padding-left: 10px;">
                         <div id="<%= question.slug %>_explain_field" class="<%= @provider.is_answer_yes?(question.slug) ? '' : 'd-none'%>">
                         <label class="text-black">Please provide an explanation below <span class="text-danger">*</span></label>
-                          <textarea class="form-control no-auto-save" rows="3" name="<%= question.slug%>_explanation">
+                          <textarea class="form-control no-auto-save" rows="3" name="<%= question.slug%>_explanation" data-model='disclosure'>
                             <%= @provider.disclosure_explanation(question.slug) %>
                           </textarea>
                        </div>

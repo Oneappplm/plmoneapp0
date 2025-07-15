@@ -18,38 +18,49 @@ module HtmlUtils
   def current_provider_source
     @@current_provider_source
   end
-
-	def radio_toggle **options
+  
+  def radio_toggle(**options)
     options[:active] ||= ''
-		options[:container_class] ||= "d-flex align-items-center"
-		options[:button_class] ||= "btn btn-xs btn-toggle has-to-show to-change-value has-to-hide #{options[:active]}"
-		options[:name] ||= ''
-		options[:label] ||= ''
-		options[:toshow] ||= ''
+    options[:container_class] ||= "d-flex align-items-center"
+    options[:button_class] ||= "btn btn-xs btn-toggle has-to-show to-change-value has-to-hide #{options[:active]}"
+    options[:name] ||= ''
+    options[:label] ||= ''
+    options[:toshow] ||= ''
     options[:tohide] ||= ''
     options[:hidden_field] ||= false
-    options[:data] ||= current_provider_source.finder(options[:name]) rescue nil
-    options[:data_value] ||= 'no'
     options[:isbooleantype] ||= false
 
-		toggle = <<-HTML
-			<div class="#{ options[:container_class] }">
-        <button type="button" class="#{ options[:button_class] } #{ options[:data]&.active_class }" data-tochange="#{ options[:name] }" data-toshow="#{ options[:toshow] }" data-toggle="button" aria-pressed="false" autocomplete="off" data-tohide="#{options[:tohide]}" data-isbooleantype="#{options[:isbooleantype]}">
+    # Fetch data model (only if not already provided)
+    options[:data] ||= current_provider_source.finder(options[:name]) rescue nil
+    data_value = options[:data].respond_to?(:data_value) ? options[:data].data_value : options[:data_value] || 'no'
+    active_class = options[:data].respond_to?(:active_class) ? options[:data].active_class : ''
+
+    toggle = <<-HTML
+      <div class="#{ options[:container_class] }">
+        <button type="button" class="#{ options[:button_class] } #{ active_class }"
+                data-tochange="#{ options[:name] }"
+                data-toshow="#{ options[:toshow] }"
+                data-toggle="button"
+                aria-pressed="false"
+                autocomplete="off"
+                data-tohide="#{ options[:tohide] }"
+                data-isbooleantype="#{ options[:isbooleantype] }"
+                data-model="#{ options[:model] }">
+                >
           <div class="handle"></div>
         </button>
         <small class="ms-2 fw-semibold text-dark-grey">#{ options[:label] }</small>
-			</div>
-		HTML
+      </div>
+    HTML
 
     if options[:hidden_field]
       toggle += <<-HTML
-        <input type="hidden" id="#{ options[:name] }" name="#{ options[:name] }" value="#{ options[:data]&.data_value || options[:data_value] }">
+        <input type="hidden" id="#{ options[:name] }" name="#{ options[:name] }" value="#{ data_value }" data-model="#{ options[:model] }">
       HTML
     end
 
-		toggle.html_safe
-	end
-
+    toggle.html_safe
+  end
 
   def radio_options **options
 

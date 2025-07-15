@@ -73,11 +73,11 @@
          <% if @director.present?%>
             <%= render 'director_selection', director: @director %>
          <% elsif @provider_personal_informations.present? %>
-            <% @provider_personal_informations.each do |selected_committee_date|%>
+            <% @provider_personal_informations.where.not(progress_status: 'completed').each do |selected_committee_date|%>
                <tr class="text-center">
                   <td>
                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                        <input class="form-check-input row-checkbox" type="checkbox" value="<%= selected_committee_date.id %>" id="flexCheckDefault">
                      </div>
                   </td>
                   <td class="text-start">
@@ -93,13 +93,9 @@
                   <td>
                      <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
                      <%#= selected_committee_date.status %>
-                     <% case selected_committee_date.progress_status %>
-                        <% when "completed" %>
-                          <span style="font-size: 10px;">Approved</span>
-                        <% when "assigned", "to_be_assigned" %>
-                          <span style="font-size: 10px;"><%#= vrc.progress_status.titleize %> Unapproved</span>
-                      <% else %>
-                      <% end %>
+                     <% if selected_committee_date.progress_status == "completed" %>
+                        <span style="font-size: 10px;">Approved</span>
+                     <% end %>
                   </td>
                </tr>
             <% end %>
@@ -134,7 +130,7 @@
          <% else %>
             <% User.directors.each do |director|%>
                <% director.provider_personal_informations.each do |assigned_records| %>
-                   <% if assigned_records.progress_status == "assigned" %>
+                   <% if assigned_records.progress_status != "completed" %>
                      <tr class="text-center">
                         <td>
                            <div class="form-check">
@@ -154,12 +150,8 @@
                         <td>
                            <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
                            <%#= assigned_records.status %>
-                           <% case assigned_records.progress_status %>
-                              <% when "completed" %>
-                                <span style="font-size: 10px;">Approved</span>
-                              <% when "assigned", "to_be_assigned" %>
-                                <span style="font-size: 10px;"><%#= vrc.progress_status.titleize %> Unapproved</span>
-                            <% else %>
+                            <% if assigned_records.progress_status == "completed" %>
+                              <span style="font-size: 10px;">Approved</span>
                             <% end %>
                         </td>
                      </tr>
@@ -169,7 +161,59 @@
          <% end %>
       </tbody>
    </table>
+   <div class="text-end">
+     <%= button_tag "Submit", class: "btn btn-primary mt-2", id: "open-review-modal-btn" %>
+  </div>
 </div>
+
+<!-- Modal -->
+<!-- Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Review Committee Recommendation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <%= form_with model: @provider, url: record_approval_path, method: :patch do |form| %>
+          <!-- Selected IDs go here -->
+          <div id="selected-ids-container"></div>
+
+          <div class="form-group mb-3">
+            <label for="record_status">Final decision:</label>
+            <%= form.hidden_field :id, value: '' %>
+            <%= form.select :status, options_for_select([
+                  ['--'],
+                  'Add Notes',
+                  'Final Approval',
+                  'Deny',
+                  'Pending',
+                  'Recommend Termination',
+                  'Tabled'
+                ]), {}, { id: 'record_status', class: 'form-control' } %>
+          </div>
+
+          <div class="form-group mb-3" style="position: relative;">
+            <label for="">Review comments:</label>
+            <%= form.text_area :description, class:"form-control", style:"border: 1px solid #000;", cols:25 , rows:10, required: true %>
+          </div>
+          <div class="mb-3">
+            <label>Use exsiting signature image:</label>
+            <input class="form-check-input" type="checkbox" name="send_confirmation" id="send_confirmation" value="1" checked>
+          </div>
+          <%= form.submit "Submit", class: "btn btn-primary" %>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 
 <% content_for :js do %>
    <script>
@@ -217,7 +261,47 @@
         setSelectedValue();
       }
     });
-  </script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const submitBtn = document.getElementById("open-review-modal-btn");
+
+      submitBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        const selectedCheckboxes = document.querySelectorAll(".row-checkbox:checked");
+        const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+        if (selectedIds.length === 0) {
+          alert("Please select at least one provider.");
+          return;
+        }
+
+        // Inject hidden fields into the form
+        const container = document.getElementById("selected-ids-container");
+        container.innerHTML = ""; // clear previous
+        selectedIds.forEach(id => {
+          const hiddenInput = document.createElement("input");
+          hiddenInput.type = "hidden";
+          hiddenInput.name = "provider_ids[]";
+          hiddenInput.value = id;
+          container.appendChild(hiddenInput);
+        });
+
+        // Show the modal
+        const modal = new bootstrap.Modal(document.getElementById('reviewModal'));
+        modal.show();
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const selectAllCheckbox = document.getElementById("select-all-checkbox");
+      selectAllCheckbox.addEventListener("change", function () {
+        const rowCheckboxes = document.querySelectorAll(".row-checkbox");
+        rowCheckboxes.forEach(cb => cb.checked = this.checked);
+      });
+    });
+
+</script>
+
 <% end %>
 
 
