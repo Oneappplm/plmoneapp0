@@ -129,6 +129,8 @@ class ProviderPersonalInformation < ApplicationRecord
     "has_training_program" =>  :fellowship_training_flag,
     "has_hospital_privilege" => :hospital_privilege_flag,
     "has_admitting_arrangement" => :hospital_admitting_arrangements,
-    "has_malpractice_claim" => :no_malpractice_claims_flag
+    "has_malpractice_claim" => :no_malpractice_claims_flag,
+    "served_in_military" => :active_military_flag,
+    "has_employment_gap" => :work_history_gap_flag
   }.freeze
 end

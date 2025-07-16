@@ -131,6 +131,94 @@ module ProviderSources
       "has_npdb_case" => :npdb_case_flag
     }.freeze
 
+    MILITARY_FIELD_MAP = {
+      "military_enlist_base_of_service" => :branch,
+      "mi-mrtd" => :discharge_rank,
+      "military_enlist_data" => :start_date, 
+      "military_discharge_data" => :end_date,
+      "military_primary_base" => :last_location,
+      "military_division" => :active_duty,
+      "military_primary_base_location" => :branch_of_military, 
+      "military_status" => :type_of_discharge, 
+      "military_appointed_date" => :reserve_separation_month, 
+      "honorably_discharge" => :honorable_discharge_flag, 
+      "military_discharge_reason" => :discharge_explanation,
+      "military_court_martialed" => :court_martial_flag,
+      "court_martialed_reason" => :court_martial_explanation,
+      "military_reserve" => :reserve_guard_flag,
+      "served_in_military" => :us_military_service
+    }.freeze
+
+    EMPLOYMENT_FIELD_MAP = {
+      "edc-employment-location" => :country,
+      "edc-practice-employer-name" => :employer_name,
+      "no_longer_in_business" => :comments,
+      "edc-first-name" => :contact_first_name,
+      "edc-last-name" => :contact_last_name,
+      "edc-address-line1" => :address,
+      "edc-address-line2" => :additional_address,
+      "edc-city" => :city,
+      "edc-zipcode" => :zip,
+      "edc-telephone-number" => :phone_number,
+      "edc-ext" => :mail_stop,
+      "edc-email" => :email,
+      "edc-mcde" => :comments, 
+      "edc-contact-method" => :contact_method,
+      "edc-position-held" => :position,
+      "edc-start-date" => :from_date,
+      "edc-end-date" => :to_date,
+      "until_present" => :show_on_tickler, 
+      "edc_collab" => :comments,  
+      "co-first-name" => :comments,
+      "co-middle-name" => :comments,
+      "co-last-name" => :comments,
+      "co-suffix" => :comments,
+      "co-degree" => :comments,
+      "state_abbr" => :comments,
+      "co-physician-pln" => :comments,
+      "co-medicare-number" => :comments,
+      "co-npi-number" => :comments
+    }.freeze
+
+    TIME_GAP_FIELD_MAP = {
+      "gap_start_date"       => :start_date,
+      "gap_end_date"         => :end_date,
+      "gap_reason"           => :gap_description,
+      "gap_explanation"      => :gap_explanation
+    }.freeze
+
+    REFERENCE_FIELD_MAP = {
+      "rf-first-name"                  => :first_name,
+      "rf-middle-name"                => :middle_name,
+      "rf-last-name"                  => :last_name,
+      "rf-suffix"                     => :title,
+      "rf-degree"                     => :degree_degree_abbreviation,
+      "rf-specialty"                  => :specialty_specialty_name,
+      "rf-contact-method"             => :reference_type_provider_type_abbreviation,
+      "rf-address-line1"              => :address,
+      "rf-address-line2"              => :address2,
+      "rf-city"                       => :city,
+      "rf-state"                      => :state,
+      "rf-zipcode"                    => :postal_code,
+      "rf-telephone-number"          => :phone_number,
+      "rf-ext"                        => :phone_extension,
+      "rf-fax"                        => :fax_number,
+      "rf-does-not-have"             => :fax_number,
+      "rf-mobile-number"             => :cell_phone_number,
+      "rf-email-address"             => :email_address,
+      "rf-association-start-date"    => :start_date,
+      "rf-association-end-date"      => :end_date,
+      "rf-association-until-present" => :end_date,
+      "rf-relationship"              => :relationship
+    }.freeze
+
+    PROF_ORGANIZATION_MAPPING = {
+      "prof_organization_name" => :prof_organization_name,
+      "prof_org_effected_date" => :prof_org_effected_date,
+      "prof_org_termination_date" => :prof_org_termination_date,
+      "prof_org_until_current" => :prof_org_until_current
+    }
+
     def initialize(source:, field_name:, value:, model_id:, model:)
       @source = source
       @field_name = field_name
@@ -161,7 +249,17 @@ module ProviderSources
       when 'liability'
         map_and_save(LIABILITY_FIELD_MAP, ProviderInsuranceCoverage, :caqh_provider_insurance_id, attest)
       when 'malpractice'
-        map_and_save(MALPRACTICE_FIELD_MAP, ProviderMalpracticeHistory, :caqh_provider_malpractice_id, attest)  
+        map_and_save(MALPRACTICE_FIELD_MAP, ProviderMalpracticeHistory, :caqh_provider_malpractice_id, attest)
+      when 'military'
+        map_and_save(MILITARY_FIELD_MAP, ProviderMilitary, :caqh_provider_military_id, attest)
+      when 'employment'
+        map_and_save(EMPLOYMENT_FIELD_MAP, ProviderEmployment, :caqh_provider_employment_id, attest)
+      when 'employment_gap'
+        map_and_save(TIME_GAP_FIELD_MAP, ProviderTimeGap, :caqh_provider_time_gap_id, attest)  
+      when 'prof_references'
+        map_and_save(REFERENCE_FIELD_MAP, ProviderReference, :caqh_provider_reference_id, attest)
+      when 'prof_organization'
+        map_and_save(PROF_ORGANIZATION_MAPPING, ProfessionalOrganization, :caqh_provider_professional_organization_id, attest)   
       else
         { error: "Invalid model type: #{@model}" }
       end
@@ -175,6 +273,10 @@ module ProviderSources
 
       record = model_class.find_or_initialize_by(foreign_key => @model_id) do |r|
         r.provider_attest_id = attest.id
+
+        # Set required defaults on initialization (creation only)
+        r.prof_org_effected_date ||= Date.today if model_class.name == "ProfessionalOrganization"
+        r.prof_org_termination_date ||= Date.today if model_class.name == "ProfessionalOrganization"
       end
 
       record.assign_attributes(attribute => @value)

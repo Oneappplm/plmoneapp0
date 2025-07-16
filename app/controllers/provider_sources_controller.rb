@@ -111,7 +111,7 @@ class ProviderSourcesController < ApplicationController
 
 		model_to_use = model.presence || model_training
 
-		if %w[licensure medicare medicaid other_cert training liability malpractice].include?(model_to_use)
+		if %w[licensure medicare medicaid other_cert training liability malpractice military employment employment_gap prof_references prof_organization].include?(model_to_use)
 		  ProviderSources::AutosaveService.new(
 		    source: current_provider_source,
 		    field_name: field_name,
