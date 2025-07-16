@@ -1,0 +1,47 @@
+<div class="py-4">
+  <div class="text-center mb-4">
+    <h2>Welcome, <%= current_user.full_name %> 👋</h2>
+    <h4 class="text-muted">
+      <i class="fas fa-robot me-2"></i>
+      Ask with AI Agent
+    </h4>
+
+  </div>
+
+  <div class=" border-0 mb-3">
+    <div class=" p-4" style="height: 700px;">
+      <%= turbo_frame_tag "ai-result-frame" do %>
+        <% if @input.present? %>
+          <div class="d-flex flex-column gap-3">
+            <!-- <div class="p-3 rounded">
+              <strong>You:</strong> <%#= @input %>
+            </div> -->
+
+            <div class="p-3 rounded">
+              <!-- <strong>Gemini:</strong> -->
+              <%= turbo_frame_tag "ai-result-frame" do %>
+                <%= render 'ai_queries/ai_result' if @input.present? %>
+              <% end %>
+            </div>
+          </div>
+        <% else %>
+          <p class="text-muted fs-5 fw-bold">Start a conversation...</p>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="p-3 border-0 mb-3">
+    <%= form_with url: ai_queries_path, method: :post, id: "ai-query-form", data: { turbo_frame: "ai-result-frame" }, class: "d-flex gap-2" do %>
+      <%= text_field_tag :query, @input, class: 'form-control py-3', placeholder: 'Type your question here...', autocomplete: 'off' %>
+      
+      <button type="submit" class="btn btn-primary shadow-sm">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+
+      <%= link_to ai_queries_path, class: 'btn btn-outline-danger shadow-sm', data: { turbo_frame: "_top" } do %>
+        <i class="fas fa-trash mt-2"></i>
+      <% end %>
+    <% end %>
+  </div>
+</div>
