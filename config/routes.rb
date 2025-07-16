@@ -101,6 +101,8 @@ Rails.application.routes.draw do
   get '/auth/failure', to: redirect('/')
   get '/logout', to: 'auth0#logout'
 
+  # for the AI agent
+  resources :ai_queries, only: [:create, :index]
 
   post '/upload_vrc_document', to: 'pages#upload_vrc_document', as: :upload_document
   post '/update_vrc_document', to: 'pages#update_vrc_document', as: :update_vrc_document

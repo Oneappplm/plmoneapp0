@@ -95,6 +95,10 @@ class User < ApplicationRecord
       user
     end
 
+    def displayable_attributes
+      %i[id first_name middle_name last_name email user_role created_at]
+    end
+
     def set_user_sidebar_preferences
       User.all.each do |user|
         sidebar_cards = ['enrollment_details', 'licenses', 'documents','group', 'practice_location', 'enrollments', 'enrollment_payer', 'dco_outreach' ,'schedules']

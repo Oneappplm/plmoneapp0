@@ -118,3 +118,6 @@ gem 'stripe'
 gem 'prawn-table', '~> 0.2.2'
 gem 'rqrcode'
 gem 'turbo-rails'
+
+gem 'ruby-openai'
+gem 'chronic'

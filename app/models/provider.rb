@@ -120,6 +120,11 @@ class Provider < ApplicationRecord
 
   after_save :send_welcome_letter
 
+  def self.displayable_attributes
+    %i[id first_name middle_name last_name birth_date practitioner_type ssn caqhid
+    ]
+  end
+
   # this is for all required fields including uploads
   def self.with_missing_required_attributes
     joins("LEFT JOIN provider_licenses ON providers.id = provider_licenses.provider_id")
