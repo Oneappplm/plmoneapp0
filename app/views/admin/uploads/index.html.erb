@@ -1,0 +1,34 @@
+<div class="container mt-3">
+	<h2>Upload a File (.bak or .txt)</h2>
+
+	<%= form_with url: admin_uploads_path, method: :post, html: { multipart: true } do %>
+	  <div class="mb-3">
+	    <%= file_field_tag :file, accept: ".bak,.txt", class: "form-control" %>
+	  </div>
+	  <%= submit_tag "Upload File", class: "btn btn-primary" %>
+	<% end %>
+
+	<% if notice %>
+	  <p class="text-success"><%= notice %></p>
+	<% elsif alert %>
+	  <p class="text-danger"><%= alert %></p>
+	<% end %>
+
+	<hr>
+
+	<h2>Uploaded Files</h2>
+
+	<% if @files.any? %>
+	  <ul>
+	    <% @files.each do |file| %>
+	      <li>
+	        <%= file %> -
+	        <%= link_to "Download", download_admin_upload_path(filename: file) %>
+	      </li>
+	    <% end %>
+	  </ul>
+	<% else %>
+	  <p>No uploaded files found.</p>
+	<% end %>
+
+</div>
