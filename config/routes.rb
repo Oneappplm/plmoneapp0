@@ -579,6 +579,7 @@ Rails.application.routes.draw do
   resources :verification_products
 
   namespace :admin do
+    resources :uploads
     resources :orders, only: [:index, :show]
     resources :verification_products, only: [:new, :create]
     resources :transaction_logs
