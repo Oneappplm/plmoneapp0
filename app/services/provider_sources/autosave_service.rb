@@ -46,13 +46,11 @@ module ProviderSources
     }.freeze
 
     OTHER_CERTIFICATION_FIELD_MAP = {
-      "other_cert_field" => :certification_flag,
       "other_certification_type" => :certification_type,
       "other_certification_number" => :certification_number,
-      "other_certification_state" => :state,
-      "other-certification-issue-date" => :obtained_date,
-      "other_certification_expiration_date" => :expiration_date,
-      "other_certification_not_expire" => :certification_status
+      "other-certification-issue-date" => :initial_certification_date,
+      "other_certification_expiration_date" => :certification_expiration_date,
+      "other_certification_not_expire" => :does_not_expire
     }.freeze
 
     TRAINING_FIELD_MAP = {
@@ -378,7 +376,7 @@ module ProviderSources
       when 'medicaid'
         map_and_save(MEDICAID_FIELD_MAP, ProviderMedicaid, :caqh_provider_medicaid_id, attest)
       when 'other_cert'
-        map_and_save(OTHER_CERTIFICATION_FIELD_MAP, ProviderCertification, :caqh_provider_certification_id, attest)
+        map_and_save(OTHER_CERTIFICATION_FIELD_MAP, Certification, :caqh_provider_certification_id, attest)
       when 'training'
         map_and_save(TRAINING_FIELD_MAP, ProviderEducation, :caqh_provider_education_id, attest)
       when 'liability'
