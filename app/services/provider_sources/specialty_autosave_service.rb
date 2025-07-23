@@ -4,7 +4,7 @@ module ProviderSources
     FIELD_MAP = {
       "speciality" => "specialty_specialty_name",
       "speciality_ranking" => "specialty_percent",
-      "board_certified" => "board_certified_flag",
+      "board_certified" => "board_certified",
       "certifying_board" => "specialty_board_name",
       "address_line_1" => "specialty_board_address",
       "address_line_2" => "specialty_board_address2",

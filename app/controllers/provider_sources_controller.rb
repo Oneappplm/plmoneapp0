@@ -145,10 +145,12 @@ class ProviderSourcesController < ApplicationController
 	          current_provider_source.other_names.new
 	          handle_other_name_autosave and return
 	      elsif field_name.include?("provider_source_specialities") && params[:nested_form] == "true"
-	        specialty_id.present? ?
-	          current_provider_source.provider_source_specialities.find_or_initialize_by(id: specialty_id) :
-	          current_provider_source.provider_source_specialities.new
-	          handle_speciality_autosave and return
+				  specialty_id.present? ?
+				    current_provider_source.provider_source_specialities.find_or_initialize_by(id: specialty_id) :
+				    current_provider_source.provider_source_specialities.new
+
+				  # Pass these to the service call
+				  handle_speciality_autosave and return
 	      elsif field_name.include?("provider_source_undergrad_schools") && params[:nested_form] == "true"
 	        undergrad_id.present? ?
 	          current_provider_source.provider_source_undergrad_schools.find_or_initialize_by(id: undergrad_id) :
@@ -428,17 +430,17 @@ class ProviderSourcesController < ApplicationController
 	end
 
 	def handle_speciality_autosave
-	  result = ::ProviderSources::SpecialtyAutosaveService.new(
-		  source: current_provider_source,
-		  field_name: params[:field_name],
-		  value: params[:value],
-		  specialty_id: params[:speciality_id] || params[:specialty_id],
-		).perform
+	  result = ProviderSources::SpecialtyAutosaveService.new(
+	    source: current_provider_source,
+	    field_name: params[:field_name],
+	    value: params[:value],
+	    specialty_id: params[:speciality_id] || params[:specialty_id]
+	  ).perform
 
 	  if result[:error]
 	    render json: { error: result[:error] }, status: :unprocessable_entity
 	  else
-	    render json: result
+	    render json: { message: "Saved successfully!", id: result[:id] }, status: :ok
 	  end
 	end
 

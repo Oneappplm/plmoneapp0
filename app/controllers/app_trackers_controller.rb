@@ -5,7 +5,7 @@ class AppTrackersController < ProvidersController
 	before_action :set_provider, only: [:upload_documents, :delete_uploaded_document, :view_uploaded_documents]
 
 	def index
-	  @provider_personal_information = ProviderPersonalInformation.paginate(per_page: 10, page: params[:page] || 1)
+	  @provider_personal_information = ProviderPersonalInformation.where.not(cred_status: 'no-application').paginate(per_page: 10, page: params[:page] || 1)
 	  @provider_personal_attempt = ProviderPersonalAttempt.new
 	  @provider_personal_docs_receive = ProviderPersonalDocsReceive.new
 	  @practice_information = PracticeInformation.new

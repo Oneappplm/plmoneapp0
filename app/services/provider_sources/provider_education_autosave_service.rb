@@ -27,7 +27,7 @@ module ProviderSources
       "telephone_number" => "phone_number",
       "fax_number" => "fax_number",
       "email" => "email_address",
-      "specialization" => nil,  # Column does not exist in the table
+      "specialization" => "specialty_specialty_name",  # Column does not exist in the table
       "degree_awarded" => "degree_degree_abbreviation",
       "start_date" => "start_date",
       "graduation_date" => "end_date",
@@ -129,30 +129,58 @@ module ProviderSources
       attest = @source.provider_personal_information&.provider_attest
       return unless attest
 
-      edu = if @education_id.present?
-              attest.practice_information_educations.find_by(caqh_practice_information_education_id: source_education.id) ||
-                attest.practice_information_educations.build(caqh_practice_information_education_id: source_education.id)
-            else
-              attest.practice_information_educations.build(caqh_practice_information_education_id: source_education.id)
-            end
-
       db_field = field_map[attribute]
-      return unless db_field.present? && edu.respond_to?("#{db_field}=")
+      return unless db_field.present?
 
-      edu.send("#{db_field}=", normalize_value(attribute, value))
-      edu.education_type_name = @education_type_name if edu.respond_to?(:education_type_name=)
-      edu.save(validate: false)
+      # ========================
+      # ✅ Save to ProviderEducation
+      # ========================
+      edu = ProviderEducation.find_or_initialize_by(
+        caqh_provider_education_id: source_education.id,
+        provider_attest_id: attest.id
+      )
 
-      if @type == "graduate" && ["faculty_director_first_name", "faculty_director_last_name"].include?(attribute)
-        associate = edu.provider_education_associates.find_or_initialize_by(
-          associate_type_associate_type_description: "Faculty Director",
-          provider_attest_id: attest.id
-        )
+      if edu.respond_to?("#{db_field}=")
+        edu.send("#{db_field}=", normalize_value(attribute, value))
+        edu.education_type_name = @education_type_name if edu.respond_to?(:education_type_name=)
+        edu.save(validate: false)
+      end
+
+      # ================================
+      # ✅ Save to practice_information_educations (legacy)
+      # ================================
+      legacy_edu = attest.practice_information_educations.find_or_initialize_by(
+        caqh_practice_information_education_id: source_education.id
+      )
+
+      if legacy_edu.respond_to?("#{db_field}=")
+        legacy_edu.send("#{db_field}=", normalize_value(attribute, value))
+        legacy_edu.education_type_name = @education_type_name if legacy_edu.respond_to?(:education_type_name=)
+        legacy_edu.save(validate: false)
+      end
+
+      # ================================
+      # ✅ Sync faculty director if applicable
+      # ================================
+      if @type == "graduate" && ["faculty_director_first_name", "faculty_director_last_name", "director_degree"].include?(attribute)
         assoc_field = GRADUATE_MAP[attribute]
-        associate.send("#{assoc_field}=", value)
-        associate.save(validate: false)
+
+        [edu, legacy_edu].each do |education_record|
+          next unless education_record.persisted? && assoc_field.present?
+
+          associate = education_record.provider_education_associates.find_or_initialize_by(
+            associate_type_associate_type_description: "Faculty Director",
+            provider_attest_id: attest.id
+          )
+
+          if associate.respond_to?("#{assoc_field}=")
+            associate.send("#{assoc_field}=", value)
+            associate.save(validate: false)
+          end
+        end
       end
     end
+
 
     def field_map
       @type == "undergrad" ? UNDERGRAD_MAP : GRADUATE_MAP

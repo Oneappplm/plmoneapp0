@@ -106,7 +106,7 @@ class PagesController < ApplicationController
 
 	def virtual_review_committee
     # @provider_personal_informations = ProviderPersonalInformation.all
-    @q = ProviderPersonalInformation.where(cred_status: 'psv').ransack(params[:q])
+    @q = ProviderPersonalInformation.where(cred_status: ['psv', 'returned']).ransack(params[:q])
     @vrc_documents = VrcDocument.all
     @vrc_directors = User.directors
     @psv_pdf = SavedProfile.last
@@ -130,7 +130,7 @@ class PagesController < ApplicationController
     # Progress status filter
     progress_status = params[:'vrc-progress-status'].presence || 'to_be_assigned'
 
-    if progress_status != 'all'
+    if progress_status != 'all' && params[:vrc] != 'work-tickler'
       @provider_personal_informations = @provider_personal_informations.send(progress_status)
     end
 
@@ -139,7 +139,8 @@ class PagesController < ApplicationController
     if params[:vrc] == 'work-tickler'
       @provider_personal_informations = @provider_personal_informations
         .where(vote_date: nil)
-        .where.not(progress_status: 'completed')
+        .where.not(committee_date: nil)
+        .where.not(review_date: nil)
     end
 
     # Pagination after all filters
@@ -380,7 +381,8 @@ class PagesController < ApplicationController
           review_level: provider_params[:status],
           review_details: desc,
           vote_date: Time.current,
-          vote_by: current_user.full_name
+          vote_by: current_user.full_name,
+          cred_status: 'returned'
         )
 
         if success
@@ -413,7 +415,7 @@ class PagesController < ApplicationController
       flash[:alert] = "No status change applied."
     end
 
-    redirect_to show_virtual_review_committee_path(provider_ids.first)
+    redirect_to virtual_review_committee_path
   end
 
   def providers;end
