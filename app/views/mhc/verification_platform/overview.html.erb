@@ -110,7 +110,7 @@
                 <% @provider_personal_information&.provider_educations.where.not(specialty_specialty_name: nil).each do |provider_education| %>
                     <div class="bg-light form-row row p-2 border-bottom border-dark">
                         <div class="col-xl-6">Institution Name: <%= provider_education&.institution_name %></div>
-                        <div class="col-xl-6">Training Type: <%= provider_education&.education_type_name %></div>
+                        <div class="col-xl-6">Training Type: <%= provider_education&.program_type %></div>
                         <div class="col-xl-12">Dates Attended: <%= "#{provider_education&.start_date&.strftime('%B %d, %Y')} - #{provider_education.end_date&.strftime('%B %d, %Y')}" %></div>
                         <div class="col-xl-12">Specialty: <%= provider_education&.specialty_specialty_name %></div>
                     </div>
@@ -207,7 +207,7 @@
                   <% end %> 
                 </h2>
 
-                <% @provider_attest&.provider_employments&.each do |employment| %>
+                <% @provider_personal_information&.provider_employments&.each do |employment| %>
                   <div class="bg-light form-row row p-2 border-bottom border-dark">
                     <div class="col-xl-6">
                       Facility: <%= "#{employment.employer_name} - #{employment.country}" %>
