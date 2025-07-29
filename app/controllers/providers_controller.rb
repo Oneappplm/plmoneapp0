@@ -321,7 +321,7 @@ class ProvidersController < ApplicationController
 	@provider.board_certifications.build if @provider.board_certifications.blank?
 	payer_login = @provider.payer_logins.build if @provider.payer_logins.blank?
 	payer_login.questions.build if payer_login
-	@provider.work_history_providers.build if @provider.work_history_providers.blank?
+	# @provider.work_history_providers.build if @provider.work_history_providers.blank?
 end
 
 
