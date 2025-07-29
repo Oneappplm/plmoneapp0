@@ -67,11 +67,16 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def logout_url
+    domain = ENV['AUTH0_DOMAIN'] || Rails.application.credentials.dig(:auth0, :domain)
+    client_id = ENV['AUTH0_CLIENT_ID'] || Rails.application.credentials.dig(:auth0, :client_id)
+
+    raise "Missing Auth0 config" unless domain.present? && client_id.present?
+
     request_params = {
       returnTo: root_url,
-      client_id: Figaro.env.auth0_client_id
+      client_id: client_id
     }
 
-    URI::HTTPS.build(host: Figaro.env.auth0_domain, path: '/v2/logout', query: request_params.to_query).to_s
+    URI::HTTPS.build(host: domain, path: '/v2/logout', query: request_params.to_query).to_s
   end
 end
