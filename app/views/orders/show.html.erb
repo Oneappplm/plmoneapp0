@@ -1,0 +1,65 @@
+<div class="container py-5">
+  <!-- Order Summary -->
+  <div class="card shadow mb-5">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">Order #<%= @order.id %></h2>
+        <span class="badge rounded-pill <%= @order.status == 'paid' ? 'bg-success' : 'bg-warning text-dark' %> fs-6">
+          <%= @order.status.capitalize %>
+        </span>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col-md-6">
+          <p><strong>Total Providers:</strong> <%= @order.provider_profiles.count %></p>
+          <p><strong>Total Products:</strong> <%= @order.order_items.count %></p>
+          <p><strong>Total Paid:</strong> <span class="text-success fw-bold">$<%= @order.total_amount %></span></p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>Memo:</strong> <code><%= @order.payment_memo %></code></p>
+          <% if @order.payment&.solana_signature %>
+            <p><strong>Tx:</strong> <code><%= @order.payment.solana_signature %></code></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Providers -->
+  <h3 class="mb-3">Providers</h3>
+  <div class="row">
+    <% @order.provider_profiles.each do |provider| %>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow">
+          <div class="card-body">
+            <h5 class="card-title mb-1"><%= provider.first_name %> <%= provider.last_name %></h5>
+            <p class="text-muted mb-0">NPI: <strong><%= provider.npi_number %></strong></p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Order Items -->
+  <h3 class="mt-5 mb-3">Order Items</h3>
+  <div class="table-responsive">
+    <table class="table table-hover table-striped align-middle">
+      <thead>
+        <tr>
+          <th class="text-white">Product</th>
+          <th class="text-white">Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @order.order_items.each do |item| %>
+          <tr>
+            <td><%= item.verification_product.name %></td>
+            <td>$<%= item.verification_product.price %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,55 @@
+
+    <div class="enc-content">
+        <div class="container">
+            <%= render "top_nav_buttons"%>
+            <div class="row mt-4">
+                <div class="col-xl-6 d-flex align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <a href="<%= mhc_verification_platform_path(page_tab: 'sam')%>" class="link-back">
+                            <i class='bx bx-left-arrow-alt'></i>
+                        </a>
+                        <h4 class="page-heading">Add New SAM Record</h4>
+                    </div>
+                </div>
+            </div>
+            <%= form_for(@provider_personal_information_sam_record, url: mhc_provider_personal_information_sam_records_path(page_tab: 'sam')) do |f| %>
+                <%= f.hidden_field :provider_personal_information_id %>
+                <div class="form-row row">
+                    <div class="col-xl-4">
+                        <label for="">First Name:</label>
+                        <%= f.text_field :first_name,  placeholder: 'Type here...', class: 'form-control border border-dark' , required: true %>
+                    </div>
+                    <div class="col-xl-2">
+                        <label for="">Middle Name:</label>
+                        <%= f.text_field :middle_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+
+                    </div>
+                    <div class="col-xl-4">
+                        <label for="">Last Name:</label>
+                        <%= f.text_field :last_name,  placeholder: 'Type here...', class: 'form-control border border-dark' , required: true %>
+                    </div>
+                    <div class="col-xl-2">
+                        <label for="suffix">Suffix:</label>
+                        <%= f.text_field :suffix,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                    </div>
+                </div>
+                <div class="form-row mt-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <label for="">Primary?</label>
+                        <%= f.check_box :is_primary %>
+                    </div>
+                </div>
+                <div class="form-row row">
+                    <div class="col-xl-4">
+                        <label for="">SSN:</label>
+                        <%= f.text_field :ssn,   placeholder: '123-45-6789', class: 'form-control border border-dark' , required: true %>
+                    </div>
+                </div>
+                <div class="form-row mt-3 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary py-1">
+                        Save
+                    </button>
+                </div>
+            <% end %>
+        </div>
+    </div>

@@ -1,0 +1,44 @@
+  <div class="mb-4">
+    <%= form_with(url: help_codes_path, method: :get, class: "d-flex", local: true) do |form| %>
+      <%= hidden_field_tag :view, params[:view] %>
+      <%= form.text_field :search, value: params[:search], placeholder: "Search Help Codes", class: "form-control me-2" %>
+      <%= form.submit "Search", class: "btn btn-primary" %>
+    <% end %>
+  </div>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th class="text-white">Category</th>
+        <th class="text-white">Code</th>
+        <th class="text-white">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @help_codes.each do |help_code| %>
+        <tr>
+          <td><%= help_code.category %></td>
+          <td><%= help_code.code %></td>
+          <td>
+            <div class="d-flex gap-2">
+              <%= link_to "Edit", edit_help_code_path(help_code), class: "btn btn-warning btn-sm" %>
+              <%= button_to "Delete", help_code, method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-danger btn-sm" %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <div class="col-lg-12">
+    <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+    <div class="page_info ms-3 text-black">
+        <%= page_entries_info @help_codes %>
+    </div>
+    <% if params[:per_page ].present? %>
+      <%= will_paginate @help_codes, :params =>  {per_page: params[:per_page] || 15 }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+    <% else %>
+      <%= will_paginate @help_codes, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+    <% end %>
+    </div>
+  </div>
+  

@@ -2,64 +2,83 @@
   <%= render "verification_platform/encompass_nav"%>
 </div>   
 <div class="enc-content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-xl-3">
-                   <%= render partial: "verification_platform/encompass_sidebar"%>
-                </div>
-                <div class="col-xl-9">
-                    <%= render "query_report_top_nav"%>
-                    <form action="">
-                        <div class="form-row row mt-3">
-                            <h6 class="form-heading">Search by Date Range</h6>
-                            <div class="col-xl-6 mt-2">
-                                <label for="date-from">Date From:</label>
-                                <input type="date" name="date-from" id="date-from" class="form-control form-control-lg py-3">
-                            </div>
-                            <div class="col-xl-6">
-                                <label for="date-to">Date To:</label>
-                                <input type="date" name="date-to" id="date-to" class="form-control form-control-lg py-3">
-                            </div>
-                        </div>
-                        <div class="form-row row mt-3">
-                            <div class="col-xl-6 d-flex align-items-end">
-                                <div class=" form-check d-flex align-items-center gap-2">
-                                    <input class="form-check-input" type="checkbox" id="include-guest-check"
-                                        value="Include Guest">
-                                    <label class="form-check-label" for="include-guest-check">Include Guest</label>
-                                </div>
-                            </div>
-                            <div class="col-xl-6 d-flex align-items-end justify-content-end">
-                                <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-primary py-1">
-                                        Filter
-                                    </button>
-                                    <button type="button" class="btn btn-primary py-1">
-                                        Show All
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <div class="table-responsive">  
-                        <table class="table practice-table table-bordered mt-3">
-                            <thead>
-                                <tr>
-                                    <th class="text-white" scope="col">ID #</th>
-                                    <th class="text-white">Practitioner Name</th>
-                                    <th class="text-white">Select Practitioner to Print</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Lorem ipsum</td>
-                                    <td>Lorem ipsum</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-xl-3">
+         <%= render partial: "verification_platform/encompass_sidebar"%>
+      </div>
+      <div class="col-xl-9">
+        <%= render "query_report_top_nav"%>
+          <%= form_with url: cme_practitioner_report_path(format: :csv), method: :get, class: "form-inline", local: true, id: 'download-query-report-form' do %>
+            <%= hidden_field_tag :provider_attest_id, @provider_personal_informations.first.provider_attest_id %>
+            <div class="form-row row mt-3">
+              <h6 class="form-heading">Search by Date Range</h6>
+              <div class="form-group mr-2">
+                <label for="date_range" class="mr-2 text-white">Select Date Range</label>
+                <%= text_field_tag :date_range, params[:date_range], class: "form-control", placeholder: "Select date range" %>
+              </div>
             </div>
-        </div>
+            
+            <div class="form-row row mt-3">
+              <div class="col-xl-6 d-flex align-items-end">
+                <div class="form-check d-flex align-items-center gap-2">
+                  <%= check_box_tag :include_guest, 'Include Guest', params[:include_guest], class: "form-check-input" %>
+                  <%= label_tag :include_guest, "Include Guest", class: "form-check-label" %>
+                </div>
+              </div>
+              
+              <div class="col-xl-6 d-flex align-items-end justify-content-end">
+                <div class="d-flex gap-2">
+                  <%= submit_tag 'Filter', class: "btn btn-primary py-1" %>
+                  <%= link_to 'Show All', 'javascript:void(0)' , class: "btn btn-primary py-1" %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <div class="table-responsive">  
+            <table class="table practice-table table-bordered mt-3">
+              <thead>
+                <tr>
+                  <th class="text-white" scope="col">ID #</th>
+                  <th class="text-white">Practitioner Name</th>
+                  <th class="text-white">Select Practitioner to Print</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @provider_personal_informations.each do |provider_personal_information| %>
+                  <tr>
+                    <td>1</td>
+                    <td>
+                      <%= link_to mhc_verification_platform_path(id: provider_personal_information.provider_attest_id) do %>
+                        <%= "#{provider_personal_information&.fullname}, #{provider_personal_information.provider_type_provider_type_abbreviation}" %>
+                      <% end %>
+                    </td>
+                    <td>Lorem ipsum</td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+      </div>
     </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('input[name="date_range"]').daterangepicker({
+      opens: 'left',
+      locale: {
+        format: 'YYYY-MM-DD'
+      }
+    });
+  });
+  $('#download-query-report-form').on('submit', function(event) {
+    setTimeout(function() {
+      $('.loading-overlay').css('display', 'none'); // Hide overlay after timeout
+        window.location.href = '/query-reports/cme-practitioner-profile'; // Redirect after CSV download
+    }, 1000); // Adjust timeout as needed
+  });
+
+</script>

@@ -19,29 +19,48 @@
             <%= render partial: "provider_source_components/form_wizard", locals: {steps: steps}%>
         </div>
         <div class="col-lg-12 card py-3 my-3">
-          <h4 class="fw-semibold text-secondary">NPI ID</h4>
+          <h4 class="fw-semibold text-secondary">
+            NPI ID
+            <span class="ms-2" data-bs-toggle="tooltip" data-bs-placement="right" 
+              title="National Practitioner Identification Number (10 digits, e.g. 1234567890; Individual NPI only).">
+              <i class="bi bi-info-circle text-primary fs-5"></i>
+            </span>
+          </h4>
+
           <div class="form-group">
-            <label class="text-dark-grey">National Practitioner Identification (NPI) Number (e.g. 10 digits, 1234567890, Individual NPI only)</label>
-            <input type="text" name="npi_number" class="form-control border-dark">
+            <label class="text-dark-grey">
+              National Practitioner Identification (NPI) Number (e.g. 10 digits, 1234567890, Individual NPI only)
+            </label>
+            <input 
+              type="text" 
+              name="npi_number" 
+              class="form-control border-dark" 
+              maxlength="10"
+              id="npi-input"
+              placeholder="Enter 10-digit NPI Number"
+            />
+            <small id="npi-error" class="text-danger d-none">NPI must be exactly 10 digits</small>
           </div>
         </div>
         <div class="col-lg-12 card py-3 mb-3">
-          <h4 class="fw-semibold text-secondary">DEA</h4>
-          <div class="d-flex gap-2 align-items-center my-3">
-                  <%#= HtmlUtils.radio_toggle name: 'has_dea_registration_number',
-                    label: 'Do/Did you have a DEA Registration Number <span class="text-danger"> *</span>',
-                    toshow: 'dea_form',
-                    hidden_field: true
-                %>
-                <div class="d-flex gap-2">
-                  <input type="radio" name="has_dea_registration_number" class="radio-with-form has-textarea textarea-no" data-textarea="no_dea_explanation" data-form='dea_form' value="no" >
-                  <span>NO</span>
-                </div>  
-
-                <div class="d-flex gap-2">
-                  <input type="radio" name="has_dea_registration_number" class="radio-with-form  has-textarea textarea-no" data-form='dea_form' data-textarea="no_dea_explanation" value="yes" checked='checked'>
-                  <span>YES</span>
-                </div>
+          <h4 class="fw-semibold text-secondary">DEA
+            <span class="ms-2" data-bs-toggle="tooltip" data-bs-placement="right" 
+              title="Drug Enforcement Administration Registration number, applicable to MD, DO, DDS, DMD, DVM, DPM only.">
+              <i class="bi bi-info-circle text-primary fs-5"></i>
+            </span>
+          </h4>
+          <div class="d-flex justify-content-between align-items-center my-3">
+            <p class="mb-0"><span class="text-danger">*</span>Do/Did you have a DEA Registration Number?</p>
+            <div class="d-flex gap-3">
+              <div class="d-flex gap-2">
+                <input type="radio" name="has_dea_registration_number" class="radio-with-form has-textarea textarea-no" data-form='dea_form' data-textarea="no_dea_explanation" value="yes" checked='checked'>
+                <span>YES</span>
+              </div>
+              <div class="d-flex gap-2">
+                <input type="radio" name="has_dea_registration_number" class="radio-with-form has-textarea textarea-no" data-textarea="no_dea_explanation" data-form='dea_form' value="no">
+                <span>NO</span>
+              </div>  
+            </div>
           </div>
           <!-- <div class="<%#= toggle_hide_current_provider_source('has_dea_registration_number', @provider) %>" id="dea_form">
             <%#= render partial: 'provider_source_components/dea_form'%>
@@ -69,24 +88,25 @@
         </div>
 
         <div class="col-lg-12 card py-3 mb-3">
-          <h4 class="fw-semibold text-secondary mb-3">CDS</h4>
-          <div class="d-flex align-items-center my-3 gap-2">
-              <%#= HtmlUtils.radio_toggle name: 'has_cds_registration_number',
-                label: 'Do/Did you have a CDS Registration Number? <span class="text-danger"> *</span>',
-                toshow: 'cds_form',
-                hidden_field: true
-              %>
-                <div class="d-flex gap-2">
-                  <input type="radio" name="has_cds_registration_number" class="radio-with-form has-textarea textarea-no" data-textarea="ps-cds-registration-number"  data-form='cds_form' value="no">
-                  <span>NO</span>
-                </div>
-
-                <div  class="d-flex gap-2">
-                  <input type="radio" name="has_cds_registration_number" class="radio-with-form has-textarea textarea-no" data-textarea="ps-cds-registration-number" data-form='cds_form' value="yes">
-                  <span>YES</span>
-                </div>
+          <h4 class="fw-semibold text-secondary mb-3">CDS
+            <span class="ms-2" data-bs-toggle="tooltip" data-bs-placement="right" 
+              title="Controlled Dangerous Substances Registration Number issued by certain states. Applicable to MD, DO, DDS, DMD, DVM, DPM only.">
+              <i class="bi bi-info-circle text-primary fs-5"></i>
+            </span>
+          </h4>
+          <div class="d-flex justify-content-between align-items-center my-3">
+            <p class="mb-0"><span class="text-danger">*</span>Do/Did you have a CDS Registration Number?</p>
+            <div class="d-flex gap-3">
+              <div class="d-flex gap-2">
+                <input type="radio" name="has_cds_registration_number" class="radio-with-form has-textarea textarea-no" data-textarea="ps-cds-registration-number" data-form='cds_form' value="yes">
+                <span>YES</span>
+              </div>
+              <div class="d-flex gap-2">
+                <input type="radio" name="has_cds_registration_number" class="radio-with-form has-textarea textarea-no" data-textarea="ps-cds-registration-number" data-form='cds_form' value="no">
+                <span>NO</span>
+              </div>
+            </div>
           </div>
-
 
         <div class="<%= toggle_hide_current_provider_source('has_cds_registration_number',@provider)%>" id="cds_form">
          <% if !@provider.cds.blank? %>
@@ -152,26 +172,21 @@
 
         <div class="col-lg-12 card py-3 mb-3 ">
           <h4 class="fw-semibold text-secondary">Registration</h4>
-          <div class="d-flex align-items-center my-3 gap-2" >
-              <%#= HtmlUtils.radio_toggle name: 'registration_id_form',
-                label: 'Do/Did you have a registration number related to your practicing specialty? <span class="text-danger"> *</span>',
-                toshow: 'registration_ids_form',
-                hidden_field: true
-              %>
-                <div class="d-flex gap-2">
-                  <input type="radio" name="registration_id_form" class="radio-with-form" data-form='registration_ids_form' value="no">
-                  <span>NO</span>
-                </div>
+          <div class="d-flex justify-content-between align-items-center my-3">
+            <p class="mb-0"><span class="text-danger">*</span>Do/Did you have a registration number related to your practicing specialty?</p>
+            <div class="d-flex gap-3">
 
-                <div  class="d-flex gap-2">
-                  <input type="radio" name="registration_id_form" class="radio-with-form" data-form='registration_ids_form' value="yes">
-                  <span>YES</span>
-                </div>
+              <div class="d-flex gap-2">
+                <input type="radio" name="registration_id_form" class="radio-with-form" data-form='registration_ids_form' value="yes">
+                <span>YES</span>
+              </div>
+              <div class="d-flex gap-2">
+                <input type="radio" name="registration_id_form" class="radio-with-form" data-form='registration_ids_form' value="no">
+                <span>NO</span>
+              </div>
+            </div>
           </div>
-
-
-
-          <div class="<%#= toggle_hide_current_provider_source('registration_id_form', @provider) %>" id="registration_ids_form">
+          <div class="<%= toggle_hide_current_provider_source('registration_id_form', @provider)%>" id="registration_ids_form">
              <% if !@provider.registrations.blank? %>
             <% @provider&.registrations&.reload&.each do |registration|%>
               <%= render partial: "pages/provider_source/registration_fields", locals: {registration: registration}%>
@@ -213,4 +228,25 @@
         $(this).val() == 'no' ? $('#'+id).removeClass('d-none') : $('#'+id).addClass('d-none');
     })
   })
+  function validateNPI() {
+    const input = document.getElementById("npi-input");
+    const error = document.getElementById("npi-error");
+
+    // Remove non-digit characters
+    input.value = input.value.replace(/\D/g, '');
+
+    if (input.value.length > 0 && input.value.length !== 10) {
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+
+  // Optional: attach explicitly after DOM load
+  document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("npi-input");
+    if (input) {
+      input.addEventListener("input", validateNPI);
+    }
+  });
 </script>

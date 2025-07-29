@@ -29,11 +29,27 @@
 								<div class="row">
 									<div class="col-lg-7">
                     <label class="text-dark-grey">First Name <span class="text-danger">*</span></label>
-										<input type="text" required name="first_name" placeholder="First Name *" class="form-control border-dark">
+										<input type="text" 
+													 id="first-name-input"
+													 required name="first_name" 
+													 placeholder="First Name *" 
+													 class="form-control border-dark"
+													 oninput="validateAlphaOnly(this, 'first-name-error')">
+										<small id="first-name-error" class="text-danger d-none">
+									    Only alphabetical characters and spaces are allowed.
+									  </small>
 									</div>
 									<div class="col-lg-5">
                     <label class="text-dark-grey">Middle Name</label>
-										 <input type="text" name="middle_name" placeholder="Middle Name" class="form-control border-dark" >
+										 <input type="text" 
+										 				id="middle-name-input"
+										 				required name="middle_name" 
+										 				placeholder="Middle Name" 
+										 				class="form-control border-dark" 
+										 				oninput="validateAlphaOnly(this, 'middle-name-error')">
+										<small id="middle-name-error" class="text-danger d-none">
+									    Only alphabetical characters and spaces are allowed.
+									  </small>
 									</div>
 								</div>
 							</div>
@@ -41,7 +57,15 @@
 								<div class="row">
 									<div class="col-lg-7">
                     <label class="text-dark-grey">Last Name <span class="text-danger">*</span></label>
-										<input type="text" required name="last_name" placeholder="Last Name *" class="form-control border-dark">
+										<input type="text" 
+													 id="last-name-input"
+													 required name="last_name" 
+													 placeholder="Last Name *" 
+													 class="form-control border-dark"
+													 oninput="validateAlphaOnly(this, 'last-name-error')">
+										<small id="last-name-error" class="text-danger d-none">
+									    Only alphabetical characters and spaces are allowed.
+									  </small>
 									</div>
 									<div class="col-lg-5">
                     <label class="text-dark-grey">Suffix</label>
@@ -59,28 +83,45 @@
 
 						<div class="row my-3">
 							<div class="col-lg-12">
-                <label class="text-dark-grey">Degree Titles <span class="text-danger">*</span> (please enter professional degrees earned in the order you like them to appear before your last name)</label>
-								<input type="text" name="degree_titles" placeholder="Degree Titles *" class="form-control border-dark">
+                <label class="text-dark-grey">Degree Titles <span class="text-danger">*</span> </label>
+								<span class="ms-2" data-bs-toggle="tooltip" data-bs-placement="right" 
+										title="Please enter professional degrees earned in the order you like them to appear after last name">
+										<i class="bi bi-info-circle text-primary fs-5"></i>
+								</span>
+								  <input 
+										type="text" 
+										name="degree_titles" 
+										placeholder="Degree Titles *" 
+										class="form-control border-dark"
+										id="degree-input"
+										oninput="validateDegreeTitles()"
+									>
+									<small id="degree-error" class="text-danger d-none">Only letters, commas, periods, and spaces are allowed</small>
 							</div>
 							<div class="col-lg-6"></div>
 						</div>
 
 						<div class="row my-3">
 							<div class="col-lg-12">
-								<%= HtmlUtils::dropdown name: 'state_of_practice', label: 'State(s) of Practice <span class="text-danger">*</span>', multiple: true %>
+								<div class="custom-dropdown-wrapper position-relative">
+									<%= HtmlUtils::dropdown name: 'state_of_practice', label: 'State(s) of Practice <span class="text-danger">*</span>', multiple: true, class: 'custom-dropdown form-select pe-5' %>
+									<i class="fa fa-chevron-down dropdown-icon"></i>
+								</div>
 							</div>
 						</div>
 
 						<div class="row my-3">
-							<div class="col-lg-12">
-								<%= HtmlUtils::dropdown name: 'primary-practioner-type', label: 'Primary Practitioner Type <span class="text-danger">*</span>', multiple: true %>
+							<div class="custom-dropdown-wrapper position-relative">
+								<%= HtmlUtils::dropdown name: 'primary-practioner-type', label: 'Primary Practitioner Type <span class="text-danger">*</span>', multiple: true, class: 'custom-dropdown form-select pe-5' %>
+								<i class="fa fa-chevron-down dropdown-icon"></i>
 							</div>
 						</div>
 
 						<div class="row my-3">
 							<div class="col-lg-12">
 								<div class="d-flex align-items-center gap-2 my-3">
-									<p class="my-0 text-dark-grey fw-semibold">Have you ever used another name?</p>
+									<p class="my-0 text-dark-grey fw-semibold">
+										<span class="text-danger">*</span> Have you ever used another name?</p>
 									<label class="text-dark-grey">
 										<input type="radio" name="other_name" value="yes" class="other_name_rbtn">
 										Yes
@@ -90,61 +131,29 @@
 										No
 									</label>
 								</div>
-								<div id="other_name_field" class="d-none">
-									<div class="row">
-                    <div class="col-lg-12 card py-3 mb-3">
-                        <h3>Other Names</h3>
-                        <div class="row my-3">
-                          <div class="col-lg-6">
-                              <label class="text-dark-grey">Name type</label>
-                              <input type="text" name="other_names" class="form-control border-dark" placeholder="Other Names" >
-                          </div>
-                        </div>
-                        <div class="row mb-3">
-                          <div class="col-lg-3">
-                              <label class="text-dark-grey">Other First Name <span class="text-danger">*</span></label>
-                              <input type="text" name="other_first_name" class="form-control border-dark" placeholder="Other First Name" >
-                          </div>
-                          <div class="col-lg-3">
-                              <label class="text-dark-grey">Other Middle Name</label>
-                              <input type="text" name="other_middle_name" class="form-control border-dark" placeholder="Other Middle Name" >
-                          </div>
-                          <div class="col-lg-3">
-                              <label class="text-dark-grey">Other Last Name <span class="text-danger">*</span></label>
-                              <input type="text" name="other_last_name" class="form-control border-dark" placeholder="Other Last Name" >
-                          </div>
-                          <div class="col-lg-3">
-                              <label class="text-dark-grey">Other Suffix</label>
-                              <select class="form-select border-dark">
-                                <option value="Jr.">Jr.</option>
-                                <option value="Sr.">Sr.</option>
-                                <option value="II">II</option>
-                                <option value="II">III</option>
-                                <option value="IV">IV</option>
-                                <option value="V">V</option>
-                              </select>
-                          </div>
-                        </div>
-                        <div class="row mb-3">
-                          <div class="col-lg-6">
-                              <label class="text-dark-grey">Date Started Using Other Name</label>
-                              <input type="date" name="other_name_date_started" class="form-control border-dark" placeholder="Date Started Using Other Name" >
-                          </div>
-                          <div class="col-lg-6">
-                              <label class="text-dark-grey">Date Stopped Using Other Name</label>
-                              <% if  @provider.fetch("other_name_in_use") == 'yes'%>
-                                <input type="date" name="other_name_date_stopped" class="form-control border-dark" placeholder="Date Started Using Other Name" id="stopped_date_other_name" readonly>
-                              <% else %>
-                                <input type="date" name="other_name_date_stopped" class="form-control border-dark" placeholder="Date Started Using Other Name" id="stopped_date_other_name">
-                              <% end %>
-                              <span class="d-flex mt-2">
-                                <input type="checkbox" name="other_name_in_use" class="me-2 other_name_still_use" <%= @provider.fetch("other_name_in_use") == 'yes' ? 'checked: checked' : '' %>>
-                                <label>Name is still in use</label>
-                              </span>
-                          </div>
-                        </div>
-                    </div>
-                  </div>
+								<div id="other_name_section" class="<%= toggle_hide_current_provider_source('other_name', @provider) %>">
+								  <div id="other_names_container">
+								  	<% if @provider.other_names.empty? %>
+				              <!-- Render initial blank entry (index 0) if none exist -->
+				              <%= render partial: 'pages/provider_source/other_name_form', locals: { index: 0, other_name: OtherName.new } %>
+				            <% else %>
+									    <% current_provider_source.other_names.each_with_index do |other_name, index| %>
+									      <%= render partial: 'pages/provider_source/other_name_form', locals: { index: index, other_name: other_name } %>
+									    <% end %>
+									  <% end %>
+
+									  <!-- Hidden template to clone -->
+					          <div id="other_names_template" class="other-names-entry d-none">
+					            <%= render partial: 'pages/provider_source/other_name_form', locals: { index: 'REPLACE_INDEX', other_name: OtherName.new } %>
+					          </div>
+					          <% if @provider.other_names.any?(&:persisted?) %>
+					            <div>
+					              <button type="button" class="btn btn-outline-primary mt-2" id="add_other_name">
+					                <i class="bi bi-plus-circle me-1"></i> Add New
+					              </button>
+					            </div>
+					          <% end %>
+								  </div>
 								</div>
 							</div>
 						</div>
@@ -155,7 +164,11 @@
 								<div class="d-flex align-items-center divider gap-3 ">
 									<span class="line flex-grow-1 bg-medium-grey"></span>
 									<div class="bg-medium-grey rounded px-3 py-2">
-										<h6 class="my-0 text-secondary">PRIMARY RESIDENCE</h6>
+										<h6 class="my-0 text-secondary">PRIMARY RESIDENCE
+										 <span class="ms-2" data-bs-toggle="tooltip" data-bs-placement="right" 
+												title="Please enter your primary residence address here and not your Practice Location.">
+												<i class="bi bi-info-circle text-primary fs-5"></i>
+										</span></h6>
 									</div>
 									<span class="line flex-grow-1 bg-medium-grey"></span>
 								</div>
@@ -209,34 +222,78 @@
 
 						<div class="row my-3">
 							<div class="col-lg-6">
-                <label class="text-dark-grey">City <span class="text-danger">*</span></label>
-								<input type="text" required class="form-control border-dark" name="city" placeholder="City *">
+								<label class="text-dark-grey">City <span class="text-danger">*</span></label>
+								<input 
+									type="text" 
+									class="form-control border-dark" 
+									name="city" 
+									id="city-input"
+									placeholder="City *"
+									oninput="validateCity()"
+									required
+								>
+								<small id="city-error" class="text-danger d-none">Only alphabetic characters are allowed</small>
 							</div>
 							<div class="col-lg-6">
-                <label class="text-dark-grey">Country</label>
-								<input type="text" class="form-control border-dark" name="county" placeholder="County">
+								<label class="text-dark-grey">County</label>
+								<input 
+									type="text" 
+									class="form-control border-dark" 
+									name="county" 
+									id="county-input"
+									placeholder="County"
+									oninput="validateCounty()"
+								>
+								<small id="county-error" class="text-danger d-none">Only alphabetic characters are allowed</small>
 							</div>
 						</div>
 
 						<div class="row my-3">
 							<div class="col-lg-6">
-								<%= HtmlUtils::dropdown name: 'ps-state', label: 'State <span class="text-danger">*</span>' %>
+								<div class="custom-dropdown-wrapper position-relative">
+									<%= HtmlUtils::dropdown name: 'ps-state', label: 'State <span class="text-danger">*</span>', class: 'custom-dropdown form-select pe-5' %>
+									<i class="fa fa-chevron-down dropdown-icon"></i>
+								</div>
 							</div>
 							<div class="col-lg-6">
-							 <label class="text-dark-grey">Zip Code <span class="text-danger">*</span></label>
-								<input type="text" class="form-control border-dark" name="zipcode" placeholder="Zip Code">
+								<label class="text-dark-grey">Zip Code <span class="text-danger">*</span></label>
+								<input 
+									type="text" 
+									name="zipcode" 
+									id="zipcode-input"
+									class="form-control border-dark" 
+									placeholder="Zip Code"
+									oninput="validateZipCode()"
+								>
+								<small id="zipcode-error" class="text-danger d-none">Zip Code must be exactly 5 digits</small>
 							</div>
 						</div>
 
 
 						<div class="row my-3">
 							<div class="col-lg-6">
-                <label class="text-dark-grey">Telephone <span class="text-danger">*</span></label>
-								<input type="text" class="form-control border-dark" name="telephone" placeholder="Telephone *">
+								<label class="text-dark-grey">Telephone <span class="text-danger">*</span></label>
+								<input 
+									type="text" 
+									name="telephone" 
+									id="telephone-input"
+									class="form-control border-dark" 
+									placeholder="Telephone *"
+									oninput="validateTelephone()"
+								>
+								<small id="telephone-error" class="text-danger d-none">Telephone must contain numbers only</small>
 							</div>
 							<div class="col-lg-6">
-                <label class="text-dark-grey">Fax Number</label>
-								<input type="text" class="form-control border-dark" name="fax_number" placeholder="Fax Number">
+								<label class="text-dark-grey">Fax Number</label>
+								<input 
+									type="text" 
+									name="fax_number" 
+									id="fax-number-input"
+									class="form-control border-dark" 
+									placeholder="Fax Number"
+									oninput="validateFaxNumber()"
+								>
+								<small id="fax-number-error" class="text-danger d-none">Fax Number must contain numbers only</small>
 							</div>
 						</div>
 
@@ -253,27 +310,66 @@
 
 						<div class="row my-3">
 							<div class="col-lg-6">
-                <label class="text-dark-grey">Mobile Number</label>
-								<input type="text" class="form-control border-dark" name="mobile_number" placeholder="Mobile Number">
+								<label class="text-dark-grey">Mobile Number</label>
+								<input 
+									type="text" 
+									name="mobile_number" 
+									id="mobile-number-input"
+									class="form-control border-dark" 
+									placeholder="Mobile Number"
+									oninput="validateMobileNumber()"
+								>
+								<small id="mobile-number-error" class="text-danger d-none">Mobile Number must contain numbers only</small>
 							</div>
 							<div class="col-lg-6">
 								<div class="row">
 									<div class="col-lg-6">
-                    <label class="text-dark-grey">Page Number</label>
-										<input type="text" name="page_number" class="form-control border-dark" placeholder="Page Number">
+										<label class="text-dark-grey">Pager Number</label>
+										<input 
+											type="text" 
+											name="page_number" 
+											id="page-number-input"
+											class="form-control border-dark" 
+											placeholder="Page Number"
+											oninput="validatePageNumber()"
+										>
+										<small id="page-number-error" class="text-danger d-none">Page Number must contain numbers only</small>
 									</div>
 									<div class="col-lg-6">
-                    <label class="text-dark-grey">Ext</label>
-										<input type="text" name="ext" class="form-control border-dark" placeholder="Ext">
+										<label class="text-dark-grey">Ext</label>
+										<input 
+											type="text" 
+											name="ext" 
+											id="ext-input"
+											class="form-control border-dark" 
+											placeholder="Ext"
+											oninput="validateExt()"
+										>
+										<small id="ext-error" class="text-danger d-none">Extension must contain numbers only</small>
 									</div>
 								</div>
 							</div>
 						</div>
 
 						<div class="row my-3">
-							<div class="col-lg-12">
-                <label class="text-dark-grey">Email Address <span class="text-danger">*</span></label>
-								<input type="email" name="email_address" class="form-control border-dark" placeholder="Email Address *">
+							<div class="col-lg-12 card py-3 my-3">
+								<h4 class="fw-semibold text-secondary">Email Address</h4>
+								
+								<div class="form-group">
+									<label class="text-dark-grey">
+										Email Address <span class="text-danger">*</span>
+									</label>
+									<input 
+										type="email" 
+										name="email_address" 
+										id="email-input"
+										class="form-control border-dark" 
+										placeholder="Email Address *"
+										oninput="validateEmail()"
+										required
+									>
+									<small id="email-error" class="text-danger d-none">Please enter a valid email address (e.g. name@example.com)</small>
+								</div>
 							</div>
 						</div>
 
@@ -295,10 +391,304 @@
 
 	$('.select-search').select2();
 
-	$('.other_name_rbtn').on('change',function(){
-		// console.log($(this).val());
-		($(this).val() == 'yes') ?	$('#other_name_field').removeClass('d-none') : $('#other_name_field').addClass('d-none');
-	})
+	$(document).ready(function () {
+	  let index = $("#other_names_container .other_names-entry").length;
+	  const pendingRequests = {}; // Track pending AJAX by input name
+
+	  $("#add_other_name").on("click", function () {
+	    let newEntry = $("#other_names_template").clone();
+	    newEntry.removeClass("d-none").css("display", "block").removeAttr("id");
+
+	    // Clear all inputs and assign names with new index
+	    newEntry.find("input, select, textarea").each(function () {
+	      let oldName = $(this).attr("name");
+	      if (oldName) {
+	        let newName = oldName.replace(/\[REPLACE_INDEX\]/, `[${index}]`);
+	        $(this).attr("name", newName);
+	      }
+
+	      // Reset values
+	      if ($(this).is("select")) {
+	        $(this).val("");
+	      } else if ($(this).attr("type") === "checkbox" || $(this).attr("type") === "radio") {
+	        $(this).prop("checked", false);
+	      } else {
+	        $(this).val("");
+	      }
+	    });
+
+	    newEntry.attr("data-id", ""); // Reset ID
+	    newEntry.attr("data-saving", "false"); // Custom flag to avoid race conditions
+
+	    newEntry.find(".remove_other_name").show();
+	    newEntry.find("[id]").each(function () {
+	      let oldId = $(this).attr("id");
+	      if (oldId && oldId.includes("REPLACE_INDEX")) {
+	        let newId = oldId.replace(/REPLACE_INDEX/g, index);
+	        $(this).attr("id", newId);
+	      }
+	    });
+
+	    index++;
+	    $("#other_names_container").append(newEntry);
+
+	  });
+
+	  $(document).on("click", ".remove_other_name", function () {
+	    let entry = $(this).closest(".other_names-entry");
+	    let other_name_id = entry.data("id");
+
+	    entry.remove();
+
+	    if (other_name_id) {
+	      $.ajax({
+	        url: `/provider_sources/autosave`,
+	        type: "POST",
+	        dataType: "json",
+	        data: { delete_other_name_id: other_name_id },
+	        headers: {
+	          "X-CSRF-Token": $("meta[name='csrf-token']").attr("content")
+	        },
+	        success: function () {
+	          console.log("Undergraduate School entry deleted.");
+	        },
+	        error: function (xhr, status, error) {
+	          console.error("Delete failed:", error);
+	        }
+	      });
+	    }
+	  });
+
+	  // Debounce logic
+	  let debounceTimeout;
+	  $(document).on("change", "#other_names_container input, #other_names_container select, #other_names_container textarea", function () {
+	    const $field = $(this);
+	    const fieldName = $field.attr("name");
+	    const value = $field.val();
+	    const $entry = $field.closest(".other-names-entry");
+	    const $container = $("#other_names_container");
+	    clearTimeout(debounceTimeout);
+	    debounceTimeout = setTimeout(function () {
+	      // Prevent duplicate autosave if already pending for this field
+	      if (pendingRequests[fieldName]) {
+	        return;
+	      }
+	      pendingRequests[fieldName] = true;
+	      $.ajax({
+	        url: "/provider_sources/autosave",
+	        type: "POST",
+	        dataType: "json",
+	        data: {
+	          field_name: fieldName,
+	          value: value,
+	          other_name_id: $entry[0].dataset.id,
+	          nested_form: true
+	        },
+	        headers: {
+	          "X-CSRF-Token": $("meta[name='csrf-token']").attr("content")
+	        },
+	        success: function (response) {
+	          if (response.id) {
+	            $entry.attr("data-id", response.id);
+	          }
+	        },
+	        complete: function () {
+	          pendingRequests[fieldName] = false;
+	        },
+	        error: function (xhr, status, error) {
+	          console.error("Autosave failed:", error);
+	        }
+	      });
+	    }, 300); // Debounce delay (ms)
+	  });
+
+	  function toggleOtherNameSection() {
+	    const selected = $('input[name="other_name"]:checked').val();
+	    const $otherNameSection = $('#other_name_section'); // fixed ID
+
+	    if (!$otherNameSection.length) return;
+
+	    if (selected === "yes") {
+	      $otherNameSection.show();
+	      $otherNameSection.removeClass('d-none');
+	    } else {
+	      $otherNameSection.hide();
+	      $otherNameSection.addClass('d-none');
+	    }
+	  }
+
+	  // Run once on page load
+	  toggleOtherNameSection();
+
+	  // Use event delegation in case radio buttons render later
+	  $(document).on("change", 'input[name="other_name"]', toggleOtherNameSection);
+
+	});
+	function validateEmail() {
+    const emailInput = document.getElementById("email-input");
+    const emailError = document.getElementById("email-error");
+
+    // Simple email pattern
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (emailInput.value && !pattern.test(emailInput.value)) {
+      emailError.classList.remove("d-none");
+    } else {
+      emailError.classList.add("d-none");
+    }
+  }
+  function validateExt() {
+    const extInput = document.getElementById("ext-input");
+    const extError = document.getElementById("ext-error");
+
+    // Remove non-digit characters immediately
+    const cleaned = extInput.value.replace(/\D/g, '');
+    if (extInput.value !== cleaned) {
+      extInput.value = cleaned;
+      extError.classList.remove("d-none");
+    } else {
+      extError.classList.add("d-none");
+    }
+  }
+	function validatePageNumber() {
+    const input = document.getElementById("page-number-input");
+    const error = document.getElementById("page-number-error");
+
+    const cleaned = input.value.replace(/\D/g, '');
+    if (input.value !== cleaned) {
+      input.value = cleaned;
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+	function validateMobileNumber() {
+    const input = document.getElementById("mobile-number-input");
+    const error = document.getElementById("mobile-number-error");
+
+    const cleaned = input.value.replace(/\D/g, '');
+    if (input.value !== cleaned) {
+      input.value = cleaned;
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+	function validateFaxNumber() {
+    const input = document.getElementById("fax-number-input");
+    const error = document.getElementById("fax-number-error");
+
+    const cleaned = input.value.replace(/\D/g, '');
+    if (input.value !== cleaned) {
+      input.value = cleaned;
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+	function validateTelephone() {
+    const input = document.getElementById("telephone-input");
+    const error = document.getElementById("telephone-error");
+
+    const cleaned = input.value.replace(/\D/g, '');
+    if (input.value !== cleaned) {
+      input.value = cleaned;
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+
+	function validateZipCode() {
+	  const input = document.getElementById("zipcode-input");
+	  const error = document.getElementById("zipcode-error");
+
+	  // Keep only digits and limit to 5 characters
+	  let cleaned = input.value.replace(/\D/g, '').slice(0, 5);
+	  input.value = cleaned;
+
+	  // Show error if not exactly 5 digits
+	  if (cleaned.length !== 5) {
+	    error.classList.remove("d-none");
+	  } else {
+	    error.classList.add("d-none");
+	  }
+	}
+
+
+	function validateCity() {
+    const input = document.getElementById("city-input");
+    const error = document.getElementById("city-error");
+
+    // Remove all non-alphabet characters (except space)
+    const cleanedValue = input.value.replace(/[^a-zA-Z\s]/g, '');
+
+    if (input.value !== cleanedValue) {
+      input.value = cleanedValue;
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+	function validateCounty() {
+    const input = document.getElementById("county-input");
+    const error = document.getElementById("county-error");
+
+    // Remove all non-alphabet characters (except space)
+    const cleanedValue = input.value.replace(/[^a-zA-Z\s]/g, '');
+
+    if (input.value !== cleanedValue) {
+      input.value = cleanedValue;
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+	function validateDegreeTitles() {
+    const input = document.getElementById("degree-input");
+    const error = document.getElementById("degree-error");
+
+    // Allow only alphabets, spaces, commas, and dots
+    const cleaned = input.value.replace(/[^a-zA-Z.,\s]/g, '');
+
+    if (input.value !== cleaned) {
+      input.value = cleaned;
+      error.classList.remove("d-none");
+    } else {
+      error.classList.add("d-none");
+    }
+  }
+
+  // for first_name, middle_name, last_name
+  function validateAlphaOnly(inputElement, errorElementId) {
+	  const cleaned = inputElement.value.replace(/[^a-zA-Z\s]/g, '');
+
+	  if (inputElement.value !== cleaned) {
+	    inputElement.value = cleaned;
+	    document.getElementById(errorElementId).classList.remove("d-none");
+	  } else {
+	    document.getElementById(errorElementId).classList.add("d-none");
+	  }
+	}
+
 </script>
+<style>
+	.custom-dropdown-wrapper {
+		position: relative;
+		width: 100%;
+	}
 
+	.custom-dropdown {
+		width: 100%;
+		padding-right: 2.5rem; /* Ensure space for icon */
+	}
 
+	.dropdown-icon {
+		position: absolute;
+		top: 50%;
+		right: 1rem;
+		transform: translateY(-50%);
+		pointer-events: none;
+		color: #888;
+	}
+</style>

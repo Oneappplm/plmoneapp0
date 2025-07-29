@@ -29,6 +29,8 @@ class AjaxController < ApplicationController
       GroupDcoNote.delete(id)
     elsif model == 'provider_notes'
       ProviderNote.delete(id)
+    elsif model == 'practice_informations_allied_health_practitioner'
+      AlliedHealthPractitioner.delete(id)
     elsif model == 'comment'
       EnrollmentComment.delete(id)
     elsif model == 'payer_questions'
@@ -330,6 +332,15 @@ class AjaxController < ApplicationController
     }
   end
 
+  def get_schools
+    @q = School.ransack(params[:q])
+    @schools = @q.result(distinct: true).map { |school| { label: school.name, value: school.id } }
+
+    render json: {
+      'schools' => @schools
+    }
+  end
+
   def get_states
     states = State.all.map{|m| { label: "#{m.name} - #{m.alpha_code}", value: m.name} }
     render json: {
@@ -369,7 +380,7 @@ class AjaxController < ApplicationController
     render json: {
       'group_roles' => group_roles
     }
-  end   
+  end
 
   def update_timeline
     timeline_id = params[:timeline_id]

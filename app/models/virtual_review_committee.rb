@@ -18,4 +18,12 @@ class VirtualReviewCommittee < ApplicationRecord
 	def social
 		"@#{self.provider_name.parameterize}"
 	end
+
+	def vrc_full_name
+		"#{self.provider_name&.split(',')&.first || ''} #{self.provider_name&.split(',')&.last || ''}"
+	end
+
+	# def vrc_last_name
+	# 	"#{self.provider_name&.split(',')&.last || ''}"
+	# end
 end

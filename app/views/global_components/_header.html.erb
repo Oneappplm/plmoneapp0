@@ -21,14 +21,37 @@
       <div class="navbar-nav-wrap-content-end">
         <!-- Navbar -->
         <ul class="navbar-nav">
-          <% if current_user.user_type != 'provider' && current_user.can_access?('Notification-bell')  %>
-            <li class="nav-item d-none d-sm-inline-block">
-              <!-- Notification -->
-              <div class="dropdown">
-                <button type="button" class="btn btn-ghost-secondary btn-icon rounded-circle" id="navbarNotificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside" data-bs-dropdown-animation>
-                  <i class="bi-bell"></i>
-                  <% if current_user.present? && current_user&.notifications&.unread&.count > 0%>
-                  <span class="btn-status btn-sm-status btn-status-danger"></span>
+          <li class="nav-item d-none d-sm-inline-block">
+            <!-- Notification -->
+            <div class="dropdown">
+              <button type="button" class="btn btn-ghost-secondary btn-icon rounded-circle" id="navbarNotificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside" data-bs-dropdown-animation>
+                <i class="bi-bell"></i>
+                <% if current_user.present? && current_user&.notifications&.unread&.count > 0%>
+                <span class="btn-status btn-sm-status btn-status-danger"></span>
+                <% end %>
+              </button>
+              <div class="bg-white position-absolute border dropdown-menu dropdown-menu-end notifications-dropdown-menu" style="width: 16rem;">
+
+                <% if current_user.present? %>
+                  <% current_user.notifications&.unread&.limit(5)&.reverse.each do |notif|%>
+                    <div class="dropdown-item-text">
+                      <div class="d-flex align-items-center">
+                        <div class="avatar avatar-sm avatar-circle">
+                          <% if notif.unread? %>
+                          <a href="javascript:void(0);" data-notification="<%= notif.id %>" class="text-danger mark-notif-read" >
+                            <i class="bi bi-envelope-exclamation-fill avatar-img text-danger" style="font-size: 1.2rem;"></i>
+                          </a>
+                          <% else %>
+                            <i class="bi bi-envelope-open avatar-img text-primary" style="font-size: 1.2rem;"></i>
+                          <% end %>
+                        </div>
+                        <div class="flex-grow-1">
+                          <p class="card-text text-body d-flex ms-2">
+                            <%= link_to notif.to_notification.message, notif.to_notification.url %></p>
+                        </div>
+                      </div>
+                      <div class="dropdown-divider"></div>
+                    </div>
                   <% end %>
                 </button>
                 <div class="bg-white position-absolute border dropdown-menu dropdown-menu-end" style="width: 16rem;">
@@ -74,10 +97,11 @@
            </span>
          </li>
 
+
           <li class="nav-item">
             <!-- Account -->
             <div class="dropdown">
-              <a class="navbar-dropdown-account-wrapper" href="javascript:;" id="accountNavbarDropdown" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside" data-bs-dropdown-animation>
+              <a class="navbar-dropdown-account-wrapper" type="button" href="javascript:;" id="accountNavbarDropdown" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside" data-bs-dropdown-animation>
                 <div class="avatar avatar-sm avatar-circle">
                   <!-- <img class="avatar-img" src="./dist/assets/img/160x160/img6.jpg" alt="Image Description"> -->
                   <i class="bi bi-person-circle avatar-img text-secondary" style="font-size: 1.8rem;"></i>
@@ -94,15 +118,20 @@
                       <!-- <img class="avatar-img" src="./dist/assets/img/160x160/img6.jpg" alt="Image Description"> -->
                     </div>
                     <div class="flex-grow-1 ms-3">
-                      <h5 class="mb-0"><%= current_user&.full_name %></h5>
-                      <p class="card-text text-body" style="word-break: break-word;"><%= current_user&.email %></p>
+
+                      <div class="email-container">
+                        <h5 class="mb-0"><%= current_user&.full_name %></h5>
+                        <p class="card-text text-body email"><%= current_user&.email %></p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Profile &amp; account</a>
-                <a class="dropdown-item" href="#">Settings</a>
+                <%= link_to 'Profile & Account', edit_user_path(current_user), class: 'dropdown-item' %>
+                <% if current_user.super_administrator? %>
+                  <a class="dropdown-item" href="/settings">Settings</a>
+                <% end %>
                 <div class="dropdown-divider"></div>
                 <%= button_to(
                   "Log Out",
@@ -121,20 +150,21 @@
   </div>
 </header>
 <!-- Will move this on next update -->
-  <script>
-    $(document).ready(function() {
-      var csrfToken = $('meta[name="csrf-token"]').attr('content');
-      $('.mark-notif-read').on('click',function(){
-        var notif_id = $(this).data('notification')
-        var btn = $(this);
-        $.ajax({
-          url: '<%= mark_notification_read_path %>',
-          method: 'POST',
-          data: { authenticity_token: csrfToken, id: id, notification_id: notif_id },
-          success: function(data) {
-            btn.html('<i class="bi bi-envelope-open avatar-img text-primary" style="font-size: 1.2rem;"></i>')
-          }
-        })
+<script>
+  $(document).ready(function() {
+    var csrfToken = $('meta[name="csrf-token"]').attr('content');
+    $('.mark-notif-read').on('click',function(){
+      var notif_id = $(this).data('notification')
+      var btn = $(this);
+      $.ajax({
+        url: '<%= mark_notification_read_path %>',
+        method: 'POST',
+        data: { authenticity_token: csrfToken, id: id, notification_id: notif_id },
+        success: function(data) {
+          btn.html('<i class="bi bi-envelope-open avatar-img text-primary" style="font-size: 1.2rem;"></i>')
+        }
       })
     })
-  </script>
+  })
+</script>
+

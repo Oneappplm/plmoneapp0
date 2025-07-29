@@ -1,0 +1,181 @@
+ <style>
+       /* First Row: JSON Viewer */
+        .json-row {
+            flex: 1;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-bottom: 2px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .json-viewer {
+            width: 100%;
+            height: 500px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            box-sizing: border-box;
+        }
+
+        .json-row button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .json-row button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Second Row: PDF Links */
+        .pdf-row {
+            flex: 1;
+            padding: 20px;
+            background-color: #f4f4f4;
+            overflow-y: auto;
+        }
+
+        .pdf-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pdf-item {
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+
+        .pdf-item a {
+            text-decoration: none;
+            color: #007BFF;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .pdf-item a:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+
+    <!-- First Row: JSON Viewer -->
+    <div class="json-row">
+        <h2>JSON Data Viewer</h2>
+        <%= form_tag populate_data_pdf_populators_path do %>
+    
+        <textarea id="json-data"  name="json-data" class="json-viewer"  >
+{
+  provider_name: {
+    first_name: "Jarrod",
+    middle_initial: "M",
+    last_name: "Lee"
+  },
+  dob: "11/11/1994",
+  npi: "1679209381",
+  license_number: "DS0000012013",
+  graduation_date: "06/2022",
+  dental_school: "Meharry Medical College",
+  specialty: "General Dentist",
+  date_started: "04/01/2024",
+  office_name: "Hintz and Oakley Family Dentistry",
+  address: "120 West Jackson Street",
+  office_city: "Cookeville",
+  state: "TN",
+  zip: "38501",
+  tax_id: "47-1611765",
+  phone_number: "931-526-5460",
+  fax_number: "931-526-5459",
+  ada_compliance: "Yes",
+  accepting_new_patients: "Yes",
+  office_hours: {
+    monday: "8:00 AM - 5:00 PM",
+    tuesday: "7:30 AM - 5:00 PM",
+    wednesday: "7:30 AM - 5:00 PM",
+    thursday: "7:30 AM - 5:00 PM",
+    friday: "8:00 AM - 5:00 PM"
+  },
+  board_certified: "Yes",
+  hospital_privileges: "No",
+  sedation_privileges: "Nitrous Oxide",
+  w9_included: true,
+  malpractice_insurance: true,
+  dea_certificate: false,
+  liability_coverage: {
+    amount: "$1,000,000 per occurrence",
+    expiration_date: "12/31/2024"
+  },
+  work_history: [
+    {
+      practice_name: "Hintz and Oakley Family Dentistry",
+      address: "120 West Jackson Street, Cookeville, TN, 38501",
+      start_date: "04/2024",
+      end_date: nil
+    },
+    {
+      practice_name: "Open Door Dental",
+      address: "112 E 1st St, Crossville, TN, 38555",
+      start_date: "01/2024",
+      end_date: "03/2024"
+    },
+    {
+      practice_name: "Dr. Darryl G. Smith, DDS",
+      address: "805 Webb Ave, Crossville, TN, 38555",
+      start_date: "08/2022",
+      end_date: "11/2023"
+    }
+  ],
+  attestation_questions: {
+    liability_insurance_issues: "No",
+    malpractice_claims: "No",
+    health_impairments: "No",
+    substance_abuse: "No",
+    criminal_convictions: "No",
+    licensing_issues: "No"
+  }
+}
+
+        </textarea>
+
+        <button type="submit" name="auto_populate_data" value="1">Auto Populate Data</button>
+       <% end %>
+    </div>
+
+    <!-- Second Row: PDF Links -->
+    <div class="pdf-row">
+        <h2>Template PDF</h2>
+        <div class="pdf-list">
+            <!-- PDF Link 1 -->
+            <div class="pdf-item">
+                <a href="/templates/Careington Template.pdf" target="_blank">View PDF 1</a>
+            </div>
+        </div>
+        <hr>
+       <h2>Auto Populated Data</h2>
+      <div class="pdf-list">
+        <% @pdf_files.each do |file| %>
+          <div class="pdf-item">
+            <!-- Extract the file name and create a link -->
+            <a href="<%= "/autopopulate_providers_output/#{File.basename(file)}" %>" target="_blank">
+              View <%= File.basename(file) %>
+            </a>
+          </div>
+        <% end %>
+      </div>
+
+    </div>

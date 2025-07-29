@@ -1,0 +1,255 @@
+    <div class="enc-content">
+        <div class="container">
+            <%= render "top_nav_buttons"%>
+            <div class="page-applicable mt-4" id="NewCertificate">
+                <div class="row">
+                    <div class="col-xl-6 d-flex align-items-center">
+                        <div class="d-flex align-items-center gap-3">
+                            <a href="<%= mhc_verification_platform_path(page_tab: 'board_cert')%>" class="link-back">
+                                <i class='bx bx-left-arrow-alt'></i>
+                            </a>
+                            <h4 class="page-heading">Add New Board Certificate</h4>
+                        </div>
+                    </div>
+                </div>
+                <%= form_for(@provider_specialty, url: mhc_provider_specialties_path(page_tab: 'specialties')) do |f| %>
+                  <%= f.hidden_field :provider_attest_id, value: params[:id] %>
+                  <%= f.hidden_field :caqh_provider_attest_id, value: params[:id] %>
+
+                  <!-- Specialty and Board Certification Details -->
+                  <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                      <h5>Specialty and Board Certification Details</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="row mb-3">
+                        <div class="col-md-6">
+                          <%= f.label :specialty_specialty_name, "Specialty" %>
+                          <%= f.text_field :specialty_specialty_name, class: "form-control", placeholder: "Enter Specialty" %>
+                        </div>
+                        <div class="col-md-6">
+                          <%= f.label :board_certified_flag, "Board Certification Status" %>
+                          <%= f.text_field :board_certified_flag, class: "form-control", placeholder: "Enter Status" %>
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <div class="col-md-6">
+                          <%= f.label :specialty_board_name, "Issuing Board" %>
+                          <%= f.text_field :specialty_board_name, class: "form-control", placeholder: "Enter Issuing Board" %>
+                        </div>
+                        <div class="col-md-3">
+                          <%= f.label :initial_certification_date, "Initial Certification Date" %>
+                          <%= f.date_field :initial_certification_date, class: "form-control" %>
+                        </div>
+                        <div class="col-md-3">
+                          <%= f.label :expiration_date, "Certification Expiration Date" %>
+                          <%= f.date_field :expiration_date, class: "form-control" %>
+                          <div class="form-check mt-2">
+                            <%= f.check_box :board_certification_expires_flag, class: "form-check-input" %>
+                            <%= f.label :board_certification_expires_flag, "Does Not Expire", class: "form-check-label" %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                    <!-- New Question -->
+                  <div class="row mb-3">
+                    <div class="col-12">
+                      <%= f.label :planning_to_take_board_exam_flag, "Are you planning to take Board Certification exam?" %>
+                      <div class="form-check form-check-inline">
+                        <%= f.radio_button :planning_to_take_board_exam_flag, true, class: "form-check-input" %>
+                        <%= f.label :planning_to_take_board_exam_flag, "Yes", class: "form-check-label" %>
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <%= f.radio_button :planning_to_take_board_exam_flag, false, class: "form-check-input" %>
+                        <%= f.label :planning_to_take_board_exam_flag, "No", class: "form-check-label" %>
+                      </div>
+                      <%= f.text_field :board_exam_explanation, placeholder: "If No, please explain", class: "form-control mt-2" %>
+                    </div>
+                  </div>
+
+                  <!-- Examination Details -->
+                  <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                      <h5>Examination Details</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="row mb-3">
+                        <div class="col-12">
+                          <%= f.label :failed_board_exam_flag, "Have you ever been examined by this Board but failed to pass the examination?" %>
+                          <div class="form-check form-check-inline">
+                            <%= f.radio_button :failed_board_exam_flag, true, class: "form-check-input" %>
+                            <%= f.label :failed_board_exam_flag, "Yes", class: "form-check-label" %>
+                          </div>
+                          <div class="form-check form-check-inline">
+                            <%= f.radio_button :failed_board_exam_flag, false, class: "form-check-input" %>
+                            <%= f.label :failed_board_exam_flag, "No", class: "form-check-label" %>
+                          </div>
+                          <%= f.text_field :failed_board_exam_explanation, placeholder: "If Yes, explain", class: "form-control mt-2" %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Directory Listing Preferences -->
+                  <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                      <h5>Directory Listing Preferences</h5>
+                    </div>
+                    <div class="card-body">
+                      <label>Do you wish to be listed in the directory under this specialty?</label>
+                      <div class="row">
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <%= f.radio_button :hmo_flag, true, class: "form-check-input" %>
+                            <%= f.label :hmo_flag, "HMO: Yes", class: "form-check-label" %>
+                          </div>
+                          <div class="form-check">
+                            <%= f.radio_button :hmo_flag, false, class: "form-check-input" %>
+                            <%= f.label :hmo_flag, "HMO: No", class: "form-check-label" %>
+                          </div>
+                        </div>
+                         <div class="col-md-4">
+                          <div class="form-check">
+                            <%= f.radio_button :ppo_flag, 'yesppo', class: "form-check-input" %>
+                            <%= f.label :ppo_flag, "PPO: Yes", class: "form-check-label" %>
+                          </div>
+                          <div class="form-check">
+                            <%= f.radio_button :ppo_flag, 'noppo', class: "form-check-input" %>
+                            <%= f.label :ppo_flag, "PPO: No", class: "form-check-label" %>
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <%= f.radio_button :pos_flag, 'yesPOS', class: "form-check-input" %>
+                            <%= f.label :pos_flag, "POS: Yes", class: "form-check-label" %>
+                          </div>
+                          <div class="form-check">
+                            <%= f.radio_button :pos_flag, 'noPOS', class: "form-check-input" %>
+                            <%= f.label :pos_flag, "POS: No", class: "form-check-label" %>
+                          </div>
+                        </div>
+                        <!-- Similar structure for PPO and POS -->
+                      </div>
+                    </div>
+                  </div>
+                   <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                      <h5>Additional Details</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="row mb-3">
+                        <div class="col-12">
+                          <%= f.label :applied_board_certificate, "Have you applied for board certification other than indicated above?" %>
+                          <div class="form-check form-check-inline">
+                            <%= f.radio_button :applied_board_certificate, 'yesAppliedboardCertificate', class: "form-check-input" %>
+                            <%= f.label :applied_board_certificate, "Yes", class: "form-check-label" %>
+                          </div>
+                          <div class="form-check form-check-inline">
+                            <%= f.radio_button :applied_board_certificate, 'noAppliedboardCertificate', class: "form-check-input" %>
+                            <%= f.label :applied_board_certificate, "No", class: "form-check-label" %>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <%= f.label :certification_name, "If Yes, Certification Name:" %>
+                          <%= f.text_field :certification_name, class: "form-control" %>
+                        </div>
+                        <div class="col-md-6">
+                          <%= f.label :date_applied, "Date Applied:" %>
+                          <%= f.date_field :date_applied, class: "form-control" %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label>Show on Tickler?</label>
+                    <div class="form-check-inline">
+                      <%= f.radio_button :tickler, 'yesTickler', id: 'tickler_yes', class: "form-check-input" %>
+                      <%= f.label :tickler, "Yes", for: 'tickler_yes', class: "form-check-label me-3" %>
+                      <%= f.radio_button :tickler, 'noTickler', id: 'tickler_no', checked: true, class: "form-check-input" %>
+                      <%= f.label :tickler, "No", for: 'tickler_no', class: "form-check-label" %>
+                    </div>
+                  </div>
+
+                  <!-- Comments Section -->
+                  <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                      <h5>Comments</h5>
+                    </div>
+                    <div class="card-body">
+                      <%= f.label :comments, "Additional Comments" %>
+                      <%= f.text_area :comments, class: "form-control", placeholder: "Enter comments here" %>
+                    </div>
+                  </div>
+
+                  <!-- Submit Button -->
+                  <div class="text-center">
+                    <%= f.submit "Save", class: "btn btn-success px-5" %>
+                  </div>
+                <% end %>
+            </div>
+
+            <!-- Add Comment Modal -->
+            <div class="modal fade" id="addCommentModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="content">
+                                <div class="modal-title">
+                                    <h6 class="">Add Comment</h6>
+                                    <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+                                <form action="">
+                                    <div class="form-row mt-3">
+                                        <label for="">Subject:</label>
+                                        <input type="text" class="form-control">
+                                    </div>
+                                    <div class="form-row">
+                                        <label for="">Message:</label>
+                                        <textarea name="" id="" cols="30" rows="5" class="form-control"></textarea>
+                                    </div>
+                                </form>
+                                <div class="form-row mt-3 d-flex justify-content-center">
+                                    <button class="btn btn-invite">Post Comment</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delete Comment Modal -->
+            <div class="modal fade" id="deleteCommentModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="content">
+                                <div class="modal-title">
+                                    <h6 class="">Comment</h6>
+                                    <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+                                <form action="">
+                                    <div class="form-row mt-3">
+                                        <label for="">Subject:</label>
+                                        <input type="text" class="form-control">
+                                    </div>
+                                    <div class="form-row">
+                                        <label for="">Message:</label>
+                                        <textarea name="" id="" cols="30" rows="5" class="form-control"></textarea>
+                                    </div>
+                                </form>
+                                <div class="form-row mt-3 d-flex justify-content-center">
+                                    <button class="btn btn-red">Delete Comment</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

@@ -1,13 +1,28 @@
 class CustomAudit < Audited::Audit
 	def dislay_changes
+		if action.in?(%w[login logout])
+			user_name = user&.full_name || "Unknown User"
+			timestamp = created_at.in_time_zone('America/Los_Angeles').strftime('%d/%m/%Y %I:%M %p')
+
+
+			if action == 'login'
+				["<strong>#{user_name}</strong> logged in at <strong style='color: green'>#{timestamp} PT</strong>"]
+			elsif action == 'logout'
+				["<strong>#{user_name}</strong> logged out at <strong style='color: green'>#{timestamp} PT</strong>"]
+			end
+		else
 			audited_changes.map do |attribute, changes|
 				next if changes.present? && changes[0].nil? && changes[1].nil? || changes[0] == changes[1] || excluded_atts.include?(attribute)
 
-				"<strong>#{attribute}</strong> changed from <strong style='color: red'>#{changes[0]}</strong> to <strong style='color: green'>#{changes[1]}</strong>".gsub(/<\/?[^>]*>/, "")
+				"<strong>#{attribute}</strong> changed from 
+				<strong style='color: red'>#{changes[0]}</strong> to 
+				<strong style='color: green'>#{changes[1]}</strong>"
 			end.compact
+		end
 	rescue
 		[]
 	end
+
 
 	def display_source
 		if auditable_type == 'Provider'
