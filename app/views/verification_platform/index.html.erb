@@ -19,20 +19,6 @@
                                 <% end %>
                             </div>
                         </div>
-                        <% if @hvhs_data %>
-                        <div class="col-lg-12 mt-2">
-                            <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center ">
-                            <div class="page_info ms-3 text-black">
-                                <%= page_entries_info @hvhs_data %>
-                            </div>
-                            <% if params[:per_page ].present? %>
-                            <%= will_paginate @hvhs_data, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                            <% else %>
-                            <%= will_paginate @hvhs_data, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-                            <% end %>
-                            </div>
-                        </div>
-                        <% end %>
 
                         <div class="d-flex">
                             <div class="legend-wrp mt-3">
@@ -63,11 +49,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            <% @hvhs_data.each do |hvhs_datum| %>
+                            <% @provider_personal_information.each do |hvhs_datum| %>
                                 <tr>
                                     <td>
                                     <%= link_to verification_platform_path(hvhs_datum) do %>
-                                    <%= hvhs_datum&.fullname %>
+                                    <%= hvhs_datum&.FirstName %> <%= hvhs_datum&.MiddleName %> <%= hvhs_datum&.LastName %>
                                     <% end %>
                                     </td>
                                     <td></td>
@@ -81,16 +67,16 @@
                             </tbody>
                         </table>
 
-                        <% if @hvhs_data %>
+                        <% if @provider_personal_information %>
                         <div class="col-lg-12">
                             <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center">
                             <div class="page_info ms-3 text-black">
-                                <%= page_entries_info @hvhs_data %>
+                                <%= page_entries_info @provider_personal_information %>
                             </div>
                             <% if params[:per_page ].present? %>
-                            <%= will_paginate @hvhs_data, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                            <%= will_paginate @provider_personal_information, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
                             <% else %>
-                            <%= will_paginate @hvhs_data, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                            <%= will_paginate @provider_personal_information, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
                             <% end %>
                             </div>
                         </div>
