@@ -1,7 +1,14 @@
 class ManageClientsController < ApplicationController
 
 	def index
-    @practitioner = Practitioner.paginate(page: params[:page])
+    @q = ProviderPersonalInformation.ransack(params[:q])
+
+    @provider_personal_information = if params[:search].present?
+      ProviderPersonalInformation.search(params[:search]).paginate(per_page: 10, page: params[:page] || 1)
+    else
+      @q.result.paginate(per_page: 10, page: params[:page] || 1)
+    end
+    # @provider_personal_information = ProviderPersonalInformation.paginate(page: params[:page])
   end
 
   def new 

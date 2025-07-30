@@ -1,15 +1,16 @@
 class VerificationPlatformController < ApplicationController
-  before_action :set_hvhs_datum, only: [:show, :edit, :update, :destroy]
-		before_action :redirect_to_auto_verify, only: [:index]
+  before_action :set_provider_personal_information, only: [:show, :edit, :update, :destroy]
 
   def index
+    @q = ProviderPersonalInformation.ransack(params[:q])
+    
     if params[:page]
       render params[:page]
     else
-      @hvhs_data = if params[:search].present?
-        HvhsDatum.search(params[:search]).paginate(per_page: 10, page: params[:page] || 1)
+      @provider_personal_information = if params[:search].present?
+        ProviderPersonalInformation.search(params[:search]).paginate(per_page: 10, page: params[:page] || 1)
       else
-        HvhsDatum.paginate(per_page: 10, page: params[:page] || 1)
+        @q.result.paginate(per_page: 10, page: params[:page] || 1)
       end
     end
   end
@@ -19,8 +20,8 @@ class VerificationPlatformController < ApplicationController
   end
 
   protected
-  def set_hvhs_datum
-    @hvhs_datum = HvhsDatum.find(params[:id])
+  def set_provider_personal_information
+    @provider_personal_information = ProviderPersonalInformation.find(params[:id])
   end
 
 		def redirect_to_auto_verify
