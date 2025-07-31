@@ -1,16 +1,23 @@
 Rails.application.routes.draw do
+  get 'orders/index'
   resources :hvhs_data
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
   root 'dashboard#dashboard' # Overview	page
+  resources :provider_sources_licensures
+  resources :specialty_details
+  resources :references
+  resources :professional_organizations
   get 'client-portal', to: 'pages#client_portal' # Data Access page
   get 'virtual-review-committee', to: 'pages#virtual_review_committee' # Decision Point page
   get 'provider-engage', to: 'provider_app#provider_source', as: :custom_provider_source # Provider Engage page
   get 'show-virtual-review-committee/:id', to: 'pages#show_virtual_review_committee', as: "show_virtual_review_committee"
 
-		get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
-		get 'app-tracker', to: 'pages#app_tracker'
+	get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
+  post 'caqh/upload', to: 'caqh#upload'
+  get 'caqh/upload', to: 'caqh#show'
+		# get 'app-tracker', to: 'pages#app_tracker'
   get 'encompass', to: 'pages#encompass'
   get 'microsite', to: 'pages#microsite'
   get 'ps-office-manager', to: 'pages#ps_office_manager'
@@ -49,6 +56,7 @@ Rails.application.routes.draw do
   get 'get-group-locations', to: 'ajax#get_enrollment_group_locations'
   get 'get-provider-notification-services', to: 'ajax#get_provider_notification_services'
   get 'get-group-notification-services', to: 'ajax#get_group_notification_services'
+  post 'get-schools', to: 'ajax#get_schools'
   post 'get-selected-provider-types', to: 'ajax#get_selected_provider_types'
   post 'get-selected-practitioner-types', to: 'ajax#get_selected_practitioner_types'
   get 'get-ps-provider-types', to: 'ajax#get_ps_provider_types'
@@ -88,11 +96,21 @@ Rails.application.routes.draw do
   post 'logout-on-close', to: 'ajax#logout_on_close'
   patch '/record_approval', to: 'pages#record_approval', as: 'record_approval'
   get '/virtual_review_committee/minutes', to: 'pages#minutes', as: 'minutes'
+  
+  get '/auth/auth0/callback', to: 'auth0#callback'
+  get '/auth/failure', to: redirect('/')
+  get '/logout', to: 'auth0#logout'
 
-  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
+  # for the AI agent
+  resources :ai_queries, only: [:create, :index]
 
-  resources :manage_clients
+  post '/upload_vrc_document', to: 'pages#upload_vrc_document', as: :upload_document
+  post '/update_vrc_document', to: 'pages#update_vrc_document', as: :update_vrc_document
+  post '/delete_vrc_documents/:id', to: 'pages#delete_vrc_documents', as: :delete_vrc_document
 
+  get 'view_summary/download_pdf', to: 'view_summary#download_pdf', as: :download_application_pdf
+
+  resources :manage_client
 
   resources :provider_sources do
     collection do
@@ -100,8 +118,14 @@ Rails.application.routes.draw do
       get :fetch
       post :get_progress
       post :autosave_multi_record
+      post :upload_document
+      post :update_document
+      post :download_documents
+      post :edit_document
+      post :delete_document
     end
   end
+  post '/delete_documents/:id', to: 'provider_sources#delete_documents'
 
   resources :alt_enrollment_groups, path: 'alt-enrollment-groups' do
     get :documents
@@ -114,6 +138,124 @@ Rails.application.routes.draw do
 
   resources :missing_field_submissions
 
+  namespace :mhc do
+    get 'verify_npi/:number', to: 'provider_personal_informations#verify_npi'
+    resources :provider_employments
+    resources :provider_medicares
+    resources :pdf_generation_queues, only: [:create, :destroy] do
+      member do
+        get :queue_items
+        post :pause
+        post :requeue
+      end
+    end
+    get "/delete_saved_profiles", to: "pdf_generation_queues#delete_saved_profile", as: "delete_saved_profile"
+    post "/extra_queue_items", to: "pdf_generation_queues#extra_queue_items"
+
+    resources :billing_companies
+    resources :provider_medicaids
+    resources :provider_militaries
+    resources :provider_cds
+    resources :client_portal
+
+    resources :client_organizations do
+      collection do
+        get 'edit_client_organization'
+        post 'load_client_organization'
+      end
+      member do
+        patch 'update_status'
+      end
+    end
+    
+    resources :manage_clients, path: 'manage-clients' do
+      collection do
+        get 'edit_provider_personal_information'
+        post 'load_provider_personal_information'
+        get :append_remove_practitioner
+        get :get_provider_uploaded_docs
+      end
+      member do
+        get 'edit'
+        patch 'update'
+      end
+    end
+    
+    resources :provider_insurance_coverages
+    resources :provider_npdbs
+    resources :provider_npdb_comments
+    resources :provider_personal_information_comments
+    resources :provider_personal_information_app_trackings
+    resources :provider_licensures
+    resources :practice_informations, path: 'practice-information'
+    resources :provider_educations, only: [:index, :create, :update, :destroy], path: 'provider-education'
+    resources :certifications, only: [:index, :create, :update, :destroy], path: 'certifications'
+    resources :practice_information_educations, only: [:index, :create, :update, :destroy], path: 'practice-information-education'
+    resources :provider_specialties, only: [:index, :new, :create, :edit, :destroy, :update], path: 'provider-specialties'
+    resources :provider_personal_informations, only: [:update], path: 'provider-personal-information'
+    resources :provider_personal_information_sam_records, only: [:create, :show, :destroy], path: 'provider-personal-information-sam-record' do
+      collection do
+        get :auto_create, path: 'auto-create'
+      end
+    end
+    resources :provider_personal_information_reinstatements, only: [:create, :edit, :update, :destroy], path: 'provider-personal-information-reinstatements'
+    resources :provider_personal_information_sam_rva_records, only: [:create, :update], path: 'provider-personal-information-sam-rva-record' do
+      member do
+        get :auto_create, path: 'auto-create'
+      end
+    end
+    resources :provider_deas, only: [:create, :update, :destroy], path: 'provider-dea' do
+      member do
+        get :quality_audit_details
+      end
+    end
+    resources :verification_platform, only: [:index, :show], path: 'verification-platform'
+
+    resources :client_portal, only: [:index, :show], path: 'client-portal' do
+      collection do
+        get :upload_csv
+        post :process_csv
+        get :clear_csv
+        get :download_csv
+      end
+    end
+
+    resources :client_portal do
+      collection do
+        get 'history', to: 'client_portal#history'
+      end
+    end
+
+
+    resources :manage_practitioners, only: [:index], path: 'manage-practitioners'
+    resources :manage_clients, only: [:index], path: 'manage-clients' do
+      collection do
+        post :provider_personal_uploaded_docs, path: 'provider-personal-uploaded-docs'
+        delete :delete_provider_personal_docs, path: 'delete_provider_personal_docs'
+      end
+    end
+    resources :schools
+    get 'california_participating_physician_reapplication', to: 'verification_platform#california_participating_physician_reapplication'
+    get 'california_participating_physician_addendum_b', to: 'verification_platform#california_participating_physician_addendum_b'
+  
+    get 'california_participating_physician_ipa_addendum_c', to: 'verification_platform#california_participating_physician_ipa_addendum_c'
+  
+    get 'confidential_report_of_physical_and_mental_disabilities', to: 'verification_platform#confidential_report_of_physical_and_mental_disabilities'
+    get 'minnesota_uniform_credentialing_application', to: 'verification_platform#minnesota_uniform_credentialing_application'
+    get 'minnesota_uniform_credentialing_reappointment_application', to: 'verification_platform#minnesota_uniform_credentialing_reappointment_application'
+    get 'alliance_application', to: 'verification_platform#alliance_application'
+    get 'alliance_reapplication', to: 'verification_platform#alliance_reapplication'
+    get 'alliance_professional_liability_addendum_a', to: 'verification_platform#alliance_professional_liability_addendum_a'
+    get 'michigan_application', to: 'verification_platform#michigan_application'
+    get 'arms_credential_application', to: 'verification_platform#arms_credential_application'
+    get 'memorialcare_initial_application', to: 'verification_platform#memorialcare_initial_application'
+    get 'texas_standardized_credentialing_application', to: 'verification_platform#texas_standardized_credentialing_application'
+    get 'california_participating_physician_application/addendum_a', to: 'verification_platform#california_participating_physician_application_addendum_a'
+    resources :verification_platform, only: [] do
+      get 'california_participating_physician_application', on: :collection
+    end
+    get 'verification_platform/california_participating_physician_application', to: 'verification_platform#california_participating_physician_application', as: :california_participating_physician_application
+  end
   # added these two resources just to make it different to pages_controller for now it doesn't have any model
   resources :verification_platform, path: 'verification-platform'
   resources :office_managers, path: 'group-engage' do
@@ -121,7 +263,7 @@ Rails.application.routes.draw do
       post :send_invitation
       post :bulk_remove_providers
       post :send_invite
-						get :manage_practice_locations
+			get :manage_practice_locations
     end
     member do
       get :manage_applications
@@ -287,10 +429,33 @@ Rails.application.routes.draw do
   get 'organization-users', to: 'users#organization_users'
   get 'client-portal-search', to: 'pages#client_search'
   get 'download-clients', to: 'pages#download_clients'
+  get 'download-clients-data', to: 'pages#download_clients_data'
   get 'virtual-review-committee/records', to: 'pages#records', as: 'records'
 
   namespace :webscrapers do
     root to: 'logs#index'
+    post '/run_oig_webcrawler', to: 'quality_audits#run_oig_webcrawler'
+    post '/run_registration_webcrawler', to: 'quality_audits#run_registration_webcrawler'
+    post '/send_oig_request', to: 'quality_audits#send_oig_request'
+    post '/run_licensure_webcrawler', to: 'quality_audits#run_licensure_webcrawler'
+    post '/send_npdb_request', to: 'quality_audits#send_npdb_request'
+    post '/send_registration_request', to: 'quality_audits#send_registration_request' 
+    post '/send_liability_request', to: 'quality_audits#send_liability_request'
+    post '/send_education_request', to: 'quality_audits#send_education_request' 
+    post '/send_training_request', to: 'quality_audits#send_training_request' 
+    post '/send_board_cert_request', to: 'quality_audits#send_board_cert_request' 
+    post '/send_licensure_request', to: 'quality_audits#send_licensure_request'
+    post '/send_certification_request', to: 'quality_audits#send_certification_request'
+    post '/send_employment_request', to: 'quality_audits#send_employment_request'
+    post '/send_education_skip_rva', to: 'quality_audits#send_education_skip_rva'
+    post '/send_dea_skip_rva', to: 'quality_audits#send_dea_skip_rva'
+    post '/send_employment_skip_rva', to: 'quality_audits#send_employment_skip_rva'
+    post '/send_npdb_skip_rva', to: 'quality_audits#send_npdb_skip_rva'
+    post '/send_board_cert_skip_rva', to: 'quality_audits#send_board_cert_skip_rva'
+    post '/send_liability_skip_rva', to: 'quality_audits#send_liability_skip_rva'
+    post '/send_training_skip_rva', to: 'quality_audits#send_training_skip_rva'
+    delete 'delete_npdb_request', to: 'quality_audits#delete_npdb_request'
+    delete 'delete_education_request', to: 'quality_audits#delete_education_request'
     resources :alaska_states, only: [:index], path: 'state-alaska' do
       collection do
         get :crawl
@@ -350,7 +515,97 @@ Rails.application.routes.draw do
     end
   end
 
-		resources :audit_trails, only: [:index, :show], path: 'audit-trail'
+  resources :audit_trails, only: [:index, :show], path: 'audit-trail'
+  resources :app_trackers, path: 'app-tracker' do
+    member do
+      get :upload_documents
+      post :upload_documents
+      delete :delete_uploaded_document
+      get :view_uploaded_documents
+    end
+  end
+  resources :help_codes, path: 'help-codes'
+  resources :pdf_populators, only: [:index], path: 'pdf-populator' do
+    collection do
+      post :populate_data
+      get  :search_providers
+    end
+  end
+
+  post 'app_trackers/zip_download', to: 'app_trackers#zip_download', as: 'zip_download_documents'
+
+  post '/save_attempt_details', to: 'app_trackers#save_attempt_details'
+  post '/provider_personal_docs_uploaded_documents', to: 'app_trackers#provider_personal_docs_uploaded_documents'
+  post '/save_provider_personal_docs_receives', to: 'app_trackers#save_provider_personal_docs_receives'
+  post '/save_provider_practice_informations', to: 'app_trackers#save_provider_practice_informations'
+
+
+  # for generating the report on client home
+  get '/generate_report', to: 'mhc/verification_platform#generate_report', defaults: { format: :csv }
+  get 'download_existing_file', to: 'mhc/verification_platform#download_existing_file', as: 'download_existing_file'
+
+
+  # for generating the cme_practitioner_profile_report on query_report tab in verification platform
+  get '/cme_practitioner_report', to: 'query_reports#cme_practitioner_report', defaults: { format: :csv }
+
+  # for verification-work-tickler
+  get '/work_tickler_page', to: 'mhc/verification_platform#work_tickler_page'
+  get '/privileges_work_tickler_page', to: 'mhc/verification_platform#privileges_work_tickler_page'
+  get '/enrollment_work_tickler_page', to: 'mhc/verification_platform#enrollment_work_tickler_page'
+
+  # for profile & application button on practitioner show page
+  get '/profile_page', to: 'mhc/verification_platform#profile_page'
+  get '/application_page', to: 'mhc/verification_platform#application_page'
+  get '/enrollment_report_page', to: 'mhc/verification_platform#enrollment_report_page'
+
+  post "/update_provider_associations", to: "office_managers#update_provider_associations"
+  get 'provider-engage', to: 'provider_app#provider_engage', as: 'provider_engage'
+  post 'mhc/verification-platform/send-contact', to: 'mhc/verification_platform#send_contact'
+  post 'mhc/verification-platform/generate_rva_information', to: 'mhc/verification_platform#generate_rva_information'
+  post 'mhc/verification-platform/generate_npdb_information', to: 'mhc/verification_platform#generate_npdb_information'
+  get '/hippocrates', to: 'hippocrates#index'
+  post "hippocrates/expired_licenses", to: "hippocrates#expired_licenses"
+  get "hippocrates/download_expired_license", to: "hippocrates#download_expired_license"
+  get "hippocrates/download_pdf", to: "hippocrates#download_pdf"
+  post 'hippocrates/bulk_download_expired_licenses', to: 'hippocrates#bulk_download_expired_licenses'
+
+
+  #------for solana routes start here------
+  resources :orders do
+    member do
+      get :upload_providers
+      post :submit_providers
+      get :checkout
+      get :payment_success
+      get :cancel_order
+      get :pay
+      post :confirm_payment
+      get :confirm_crypto_payment  # <-- Add this
+      get :status                  # <-- Add this
+    end
+
+    collection do
+      get :new
+      post :create
+    end
+  end
+
+  resources :verification_products
+
+  namespace :admin do
+    resources :orders, only: [:index, :show]
+    resources :verification_products, only: [:new, :create]
+    resources :transaction_logs
+    
+    resources :provider_profiles, only: [] do
+      member do
+        post :mark_verified
+        post :mark_failed
+      end
+    end
+  end
+  #------for solana routes end here------
+
 
   namespace :api do
     namespace :v1 do

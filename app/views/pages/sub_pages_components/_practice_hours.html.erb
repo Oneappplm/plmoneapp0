@@ -18,9 +18,10 @@
                </div>
                <div class="col-lg-3 p-0 <%= day.downcase %>_hour_from_and_to_container">
                   <div class="d-flex align-items-center gap">
-                     <input type="time" name="<%= day.downcase %>_practice_hours_from" class="<%= day.downcase %>_practice_hours_from form-control">
+
+                     <input type="time" name="<%= day.downcase %>_practice_hours_from" class="form-control" data-model='prac_location_info'>
                      <label class="mx-2">to</label>
-                     <input type="time" name="<%= day.downcase %>_practice_hours_to" class="<%= day.downcase %>_practice_hours_to form-control">
+                     <input type="time" name="<%= day.downcase %>_practice_hours_to" class="form-control" data-model='prac_location_info'>
                   </div>
                </div>
                <div class="col-lg-1 <%="#{day.downcase}_copy_dropdown_container"%>" style="max-width: 50px;">
@@ -74,13 +75,16 @@
                </div>
                <div class="col-lg-1 p-0 <%="#{day.downcase}_practice_hours_split_day_container"%>">
                   <label class="text-dark-grey">
-                  <input type="checkbox" name="practice_hours_split_day_<%= day %>" class="<%= day.downcase %>_practice_hours_split_day" id="practice_hours_split_day_<%= day.downcase %>">
-                     Split Day
+
+                  <input type="checkbox" name="practice_hours_split_day_<%= day %>" data-model='prac_location_info'>
+                  Split Day
+
                   </label>
                </div>
                <div class="col-lg-1">
                   <label class="text-dark-grey">
-                  <input type="checkbox" class="<%= day.downcase %>_practice_hours_closed" name="practice_hours_closed_<%= day %>" id="practice_hours_closed_<%= day.downcase %>">
+
+                  <input type="checkbox" name="practice_hours_closed_<%= day %>" data-model='prac_location_info'>
                   Closed
                   </label>
                </div>
@@ -91,7 +95,7 @@
       <div class="row mb-3">
          <div class="col-lg-12">
             <label class="text-dark-grey">Comments</label>
-            <textarea name="practice_comments" class="form-control border-dark" rows="8"></textarea>
+            <textarea name="practice_comments" class="form-control border-dark" rows="8" data-model='prac_location_info'></textarea>
          </div>
       </div>
       <div class="row mb-3">
@@ -100,20 +104,21 @@
          </div>
          <div class="col-lg-4">
             <label class="text-dark-grey">Phone</label>
-            <input type="text" name="practice_patient_phone" class="form-control">
+            <input type="text" name="practice_patient_phone" class="form-control" data-model='prac_location_info'>
          </div>
          <div class="col-lg-2">
             <label class="text-dark-grey">Ext</label>
-            <input type="text" name="practice_patient_phone_ext" class="form-control">
+            <input type="text" name="practice_patient_phone_ext" class="form-control" data-model='prac_location_info'>
          </div>
       </div>
       <div class="row mb-3">
          <div class="col-lg-12 mb-3">
             <div class="d-flex align-items-center my-3">
             <%= HtmlUtils.radio_toggle name: 'phone_coverage_field',
-                  label: 'Does this location have 24 hours/7 days per week telephone coverage? *',
+                  label: 'Does this location have 24 hours/7 days per week telephone coverage?  <span style="color: red;">*</span>',
                   toshow: 'phone_coverage_fields',
-                  hidden_field: true
+                  hidden_field: true,
+                  model: 'prac_location_info'
                %>
             </div>
          </div>
@@ -122,7 +127,7 @@
       <div class="row mb-3 d-none <%= toggle_hide('phone_coverage_field')%> " id="phone_coverage_fields">
         <div class="col-lg-6">
           <label class="text-dark-grey">Telephone Coverage Type</label>
-          <select class="form-select border-dark" name="practice_phone_coverage_type">
+          <select class="form-select border-dark" name="practice_phone_coverage_type" data-model='prac_location_info'>
               <option selected="selected" value=""></option>
               <option value="Answering Service">Answering Service</option>
               <option value="Voice Mail to Answering Service">Voice Mail to Answering Service</option>
@@ -131,16 +136,16 @@
         </div>
         <div class="col-lg-4">
           <label class="text-dark-grey">After Hours Telephone Number</label>
-          <input type="text" name="practice_after_hour_phone_number" class="form-control">
+          <input type="text" name="practice_after_hour_phone_number" class="form-control" data-model='prac_location_info'>
         </div>
         <div class="col-lg-2">
           <label class="text-dark-grey">Ext</label>
-          <input type="text" name="practice_after_hour_phone_number_ext" class="form-control">
+          <input type="text" name="practice_after_hour_phone_number_ext" class="form-control" data-model='prac_location_info'>
         </div>
       </div>
       <div class="row">
          <div class="col-lg-12 d-flex justify-content-end">
-            <button class="btn btn-primary btn-md">Save & Next</button>
+            <%= link_to "Save & Next", provider_engage_path(component: 'patient_acceptance', page: 'practice_location'), class: "btn btn-primary btn-md" %>
          </div>
       </div>
    </div>
