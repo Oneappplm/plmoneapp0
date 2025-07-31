@@ -1,4 +1,8 @@
 class ProviderPersonalInformation < ApplicationRecord
+
+  # self.table_name = "tbl_ii"
+  # self.primary_key = "id"
+
   ransacker :name_or_attest_id do
     Arel.sql("
       CONCAT_WS(' ',
