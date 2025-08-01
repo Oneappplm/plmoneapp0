@@ -477,6 +477,9 @@ Rails.application.routes.draw do
       get :download_as_pdf
     end
   end
+
+  get 'multi_select_data/countries', to: 'multi_select_data#countries'
+  get 'multi_select_data/states', to: 'multi_select_data#states'
   resources :multi_select_data, only: [], path: 'multi-select-data' do
     collection do
       get :states
