@@ -3,7 +3,7 @@ class Mhc::VerificationPlatformController < ApplicationController
   before_action :redirect_to_auto_verify, only: [:index]
 
   def index
-    @q = ProviderPersonalInformation.where.not(cred_status: 'no-application').ransack(params[:q])
+    @q = ProviderPersonalInformation.ransack(params[:q])
     @provider_personal_informations = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
     @client_organizations = ClientOrganization.all
   end

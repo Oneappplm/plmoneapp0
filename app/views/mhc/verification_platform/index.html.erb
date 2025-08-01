@@ -66,16 +66,13 @@
                             <tbody>
                               <% if @provider_personal_informations.present? %>
                                 <% @provider_personal_informations.each do |ppi| %>
-                                  <% provider_source = ppi.provider_source %>
+                                  <%# provider_source = ppi.provider_source %>
                                   <tr>
                                     <td>
-                                      <% if ppi.provider_attest_id.present? %>
-                                        <%= link_to mhc_verification_platform_path(id: ppi.provider_attest_id) do %>
+                                      <%# if ppi.provider_attest_id.present? %>
+                                        <%= link_to mhc_verification_platform_path(id: ppi&.provider_attest_id) do %>
                                           <%= "#{ppi.fullname}, #{ppi.provider_type_provider_type_abbreviation}" %>
                                         <% end %>
-                                      <% else %>
-                                        <%= "#{ppi.fullname}, #{ppi.provider_type_provider_type_abbreviation}" %>
-                                      <% end %>
                                     </td>
                                     <td><%= ppi.caqh_provider_attest_id || ppi.provider_attest_id %></td>
                                     <td><%= ppi.verification_status || 'Pending' %></td>
@@ -84,7 +81,6 @@
                                     <td></td>
                                     <td></td>
                                     <td></td>
-                                    <td><%= provider_source&.all_sections_completed? ? 'Completed' : 'In Progress' %></td>
                                   </tr>
                                 <% end %>    
                               <% end %>
