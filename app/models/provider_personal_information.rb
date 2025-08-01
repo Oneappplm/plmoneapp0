@@ -6,10 +6,9 @@ class ProviderPersonalInformation < ApplicationRecord
   ransacker :name_or_attest_id do
     Arel.sql("
       CONCAT_WS(' ',
-        COALESCE(first_name, ''),
-        COALESCE(last_name, ''),
-        COALESCE(caqh_provider_attest_id::text, ''),
-        COALESCE(provider_attest_id::text, '')
+        COALESCE(\"FirstName\", ''),
+        COALESCE(\"LastName\", ''),
+        COALESCE(id::text, '')
       )
     ")
   end
