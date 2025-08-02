@@ -394,8 +394,10 @@ class AutomationTool::PdfPopulatorService < ApplicationService
 
     max_len = field[:MaxLen] || 999
     value = value[0, max_len] if value.length > max_len
+
     field.field_value = value
   end
+
 
   def valid_date_format!(date)
     return if date.blank?
@@ -433,24 +435,26 @@ def normalize_date(date)
   return if date.blank?
 
   parts = date.split("/")
+  return date if parts.length < 2
 
-  case parts.length
-  when 2
-    mm, yy = parts
-    yy = normalize_year(yy)
-    return "#{mm}/#{yy}"
-  when 3
-    mm, dd, yy = parts
-    yy = normalize_year(yy)
-    return "#{mm}/#{dd}/#{yy}"
+  parts[0] = parts[0].rjust(2, "0") # Ensure MM is two digits
+
+  if parts.length == 2 # MM/YYYY or MM/YY
+    parts[1] = normalize_year(parts[1])
+    return "#{parts[0]}/#{parts[1]}"
+  elsif parts.length == 3 # MM/DD/YYYY or MM/DD/YY
+    parts[2] = normalize_year(parts[2])
+    return "#{parts[0]}/#{parts[1]}/#{parts[2]}"
   else
     raise ArgumentError, "Unrecognized date format: #{date}"
   end
 end
 
 def normalize_year(year)
+  return year if year.length == 4
   year.length == 2 ? "20#{year}" : year
 end
+
 
 
 # Usage
