@@ -388,34 +388,27 @@ class AutomationTool::PdfPopulatorService < ApplicationService
             end
 
     return if value.blank?
-    
+
+    value = normalize_date(value)
     valid_date_format!(value)
 
-    max_len = field[:MaxLen] || 999 # If no max length is provided, assume no limit
-    value = data[field.field_name.to_sym] || ''
-    
-    # Ensure value doesn't exceed max length
-    if value.length > max_len
-      value = value[0, max_len]  # Truncate the value to fit the max length
-    end
-    
+    max_len = field[:MaxLen] || 999
+    value = value[0, max_len] if value.length > max_len
     field.field_value = value
-    
   end
 
   def valid_date_format!(date)
     return if date.blank?
 
     valid_formats = [
-      /\A(0[1-9]|1[0-2])\/([0-2][0-9]|3[01])\/(\d{2}|\d{4})\z/, # MM/DD/YY or MM/DD/YYYY
-      /\A(0[1-9]|1[0-2])\/(\d{2}|\d{4})\z/                      # MM/YY or MM/YYYY
+      /\A(0[1-9]|1[0-2])\/([0-2][0-9]|3[01])\/\d{4}\z/, # MM/DD/YYYY
+      /\A(0[1-9]|1[0-2])\/\d{4}\z/                      # MM/YYYY
     ]
 
     unless valid_formats.any? { |format| date =~ format }
-      raise ArgumentError, "Invalid date format. Expected MM/DD/YYYY, MM/DD/YY, MM/YYYY, or MM/YY."
+      raise ArgumentError, "Invalid date format. Expected MM/DD/YYYY or MM/YYYY."
     end
   end
-
 
   def validate_data(data)
 
@@ -435,6 +428,30 @@ class AutomationTool::PdfPopulatorService < ApplicationService
     data
   end
 end
+
+def normalize_date(date)
+  return if date.blank?
+
+  parts = date.split("/")
+
+  case parts.length
+  when 2
+    mm, yy = parts
+    yy = normalize_year(yy)
+    return "#{mm}/#{yy}"
+  when 3
+    mm, dd, yy = parts
+    yy = normalize_year(yy)
+    return "#{mm}/#{dd}/#{yy}"
+  else
+    raise ArgumentError, "Unrecognized date format: #{date}"
+  end
+end
+
+def normalize_year(year)
+  year.length == 2 ? "20#{year}" : year
+end
+
 
 # Usage
 # json_data = Rails.root.join('lib', 'data', 'json', 'provider.json’)
