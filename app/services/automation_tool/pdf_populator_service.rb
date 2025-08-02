@@ -405,7 +405,13 @@ class AutomationTool::PdfPopulatorService < ApplicationService
 
   def valid_date_format!(date)
     return if date.blank?
-    unless date =~ /\A(0[1-9]|1[0-2])\/(\d{2}|\d{4})\z/
+
+    valid_formats = [
+      /\A(0[1-9]|1[0-2])\/([0-2][0-9]|3[01])\/\d{4}\z/, # MM/DD/YYYY
+      /\A(0[1-9]|1[0-2])\/\d{4}\z/                      # MM/YYYY
+    ]
+
+    unless valid_formats.any? { |format| date =~ format }
       raise ArgumentError, "Invalid date format. Expected MM/DD/YYYY or MM/YYYY."
     end
   end
