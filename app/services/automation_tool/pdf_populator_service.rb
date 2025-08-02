@@ -387,6 +387,8 @@ class AutomationTool::PdfPopulatorService < ApplicationService
               data[field_path]
             end
 
+    return if value.blank?
+    
     valid_date_format!(value)
 
     max_len = field[:MaxLen] || 999 # If no max length is provided, assume no limit
@@ -402,9 +404,10 @@ class AutomationTool::PdfPopulatorService < ApplicationService
   end
 
   def valid_date_format!(date)
-    return if date.nil?
-
-    raise ArgumentError, "Invalid date format. Expected MM/DD/YYYY or MM/YYYY." unless date =~ /(0[1-9]|1[0-2])\/(\d{2}|\d{4})/
+    return if date.blank?
+    unless date =~ /\A(0[1-9]|1[0-2])\/(\d{2}|\d{4})\z/
+      raise ArgumentError, "Invalid date format. Expected MM/DD/YYYY or MM/YYYY."
+    end
   end
 
   def validate_data(data)
