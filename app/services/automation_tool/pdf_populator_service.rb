@@ -11,8 +11,6 @@ class AutomationTool::PdfPopulatorService < ApplicationService
   def call
     doc = HexaPDF::Document.open(template_path)
 
-    puts "DEBUG: template_path = #{template_path.inspect} (#{template_path.class})"
-
     if doc.acro_form
       doc.acro_form.each_field do |field|
 
@@ -346,14 +344,11 @@ class AutomationTool::PdfPopulatorService < ApplicationService
   private
 
   def time_value(time_data, position)
-    # Convert to string if not already
-    str = time_data.is_a?(String) ? time_data : time_data.to_s
-    str.split(' - ')[position]
+    time_data.split(' - ')[position]
   end
 
   def address_value(address_data, position)
-    str = address_data.is_a?(String) ? address_data : address_data.to_s
-    str.split(',')[position]
+    address_data.split(',')[position]
   end
 
   def coverage_valid_through_end_of_month?(data)
@@ -387,30 +382,43 @@ class AutomationTool::PdfPopulatorService < ApplicationService
 
   def set_date_field(field, field_path, data)
     value = if field_path.is_a?(Array)
-              field_path.reduce(data) { |memo, key| memo[key] }
+              field_path.reduce(data) { |memo, key| memo[key] rescue nil }
             else
               data[field_path]
             end
 
-    valid_date_format!(value)
+    return if value.blank?
 
-    max_len = field[:MaxLen] || 999 # If no max length is provided, assume no limit
-    value = data[field.field_name.to_sym] || ''
-    
-    # Ensure value doesn't exceed max length
-    if value.length > max_len
-      value = value[0, max_len]  # Truncate the value to fit the max length
+    begin
+      value = normalize_date(value)
+      valid_date_format!(value)
+    rescue ArgumentError => e
+      # Log and set value to empty instead of raising
+      Rails.logger.warn("Date validation failed: #{e.message} for field #{field.field_name}")
+      value = ''
     end
-    
+
+    max_len = field[:MaxLen] || 999
+    value = value[0, max_len] if value.length > max_len
+
     field.field_value = value
-    
   end
+
+
 
   def valid_date_format!(date)
-    return if date.nil?
+    return if date.blank?  # skip validation on nil or empty
 
-    raise ArgumentError, "Invalid date format. Expected MM/DD/YYYY or MM/YYYY." unless date =~ /(0[1-9]|1[0-2])\/(\d{2}|\d{4})/
+    valid_formats = [
+      /\A(0[1-9]|1[0-2])\/([0-2][0-9]|3[01])\/\d{4}\z/, # MM/DD/YYYY
+      /\A(0[1-9]|1[0-2])\/\d{4}\z/                      # MM/YYYY
+    ]
+
+    unless valid_formats.any? { |format| date =~ format }
+      raise ArgumentError, "Invalid date format. Expected MM/DD/YYYY or MM/YYYY."
+    end
   end
+
 
   def validate_data(data)
 
@@ -431,9 +439,29 @@ class AutomationTool::PdfPopulatorService < ApplicationService
   end
 end
 
-# Usage
-# json_data = Rails.root.join('lib', 'data', 'json', 'provider.json’)
-# template_path = Rails.root.join('public', 'templates', 'Careington Template.pdf')
+def normalize_date(date)
+  return '' if date.blank?
 
-# service = AutomationTool::PdfPopulatorService.new(template_path, json_data)
-# service.call
+  if date.respond_to?(:strftime)
+    return date.strftime("%m/%d/%Y")
+  end
+
+  # Try parsing date with Date.parse for strings not already in expected format
+  if date.is_a?(String)
+    begin
+      parsed_date = Date.parse(date)
+      return parsed_date.strftime("%m/%d/%Y")
+    rescue ArgumentError
+      # If parsing fails, return original string to catch with validation
+      return date
+    end
+  end
+
+  raise ArgumentError, "Unrecognized date format: #{date.inspect}"
+end
+
+
+def normalize_year(year)
+  return year if year.length == 4
+  year.length == 2 ? "20#{year}" : year
+end
