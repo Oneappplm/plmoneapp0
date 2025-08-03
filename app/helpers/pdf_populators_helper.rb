@@ -3,7 +3,7 @@ module PdfPopulatorsHelper
   if pdf_form == "emblemhealth"
    Rails.root.join('public', 'templates', 'dental-provider-application-template.pdf')
   elsif pdf_form == "paper"
-   Rails.root.join('public', 'templates', 'Paper Provider Application Template.pdf')
+   Rails.root.join('public', 'templates', 'Paper_Provider_Application_Template.pdf')
   elsif pdf_form == "guardian"
    Rails.root.join('public', 'templates', 'Guardian-PPO-New.pdf')
   elsif pdf_form == "credentialing"

@@ -128,7 +128,17 @@ class AutomationTool::PdfPopulatorService < ApplicationService
           end
 
         when 'National Provider Identifier Individual NPI', '232791941', 'National Provider Identifier #', 'National Provider Identification Number NPI', 'NPID formerly UPIN', 'undefined_2'
-          field.field_value = data[:npi]
+          field_type = field.field_type
+
+          if field_type == :Btn && field.check_box?
+            # Only set checkbox value if it's valid
+            if data[:npi].present? && %w[Yes On 1 true].include?(data[:npi].to_s)
+              field.field_value = 'Yes' # Or use `field.export_value`
+            end
+          else
+            field.field_value = data[:npi].to_s
+          end
+
         when 'Social Security Number', 'SSN', 'Text94'
           field.field_value = data[:ssn]
         when 'dochub_cb_d65213f80dcc44fc', 'Primary specialty', 'Specialty I', 'Specialty' # General Dentist Checkbox
@@ -146,7 +156,13 @@ class AutomationTool::PdfPopulatorService < ApplicationService
         when 'Place of birth', 'City', 'State', 'Birth place', 'Place of Birth'
           field.field_value = "#{data[:birth_city]} #{data[:birth_state]}"
         when 'checkbox', 'Gender'
-          field.field_value = "#{data[:gender]}"
+          value = data[:gender].to_s.strip
+          if value.present?
+            field.field_value = value
+          else
+            Rails.logger.warn("Gender value is missing for provider")
+          end
+
         when 'State_4a'
           field.field_value = "#{data[:license_state_id]}"
         when 'Exp Date4'
