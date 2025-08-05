@@ -312,6 +312,7 @@ class ProvidersController < ApplicationController
 	# @provider.ins_policies.build if @provider.ins_policies.blank?
 	# @provider.np_licenses.build if @provider.np_licenses.blank?
 	@provider.dea_licenses.build if @provider.dea_licenses.blank?
+	@provider.provider_enrollment_groups.build if @provider.provider_enrollment_groups.blank?
 	@provider.licenses.build if @provider.licenses.blank?
 	@provider.rn_licenses.build if @provider.rn_licenses.blank?
 	@provider.service_locations.build if @provider.service_locations.blank?
@@ -336,7 +337,7 @@ end
   end
 
 	def provider_params
-			params.require(:provider).permit(
+		permitted = params.require(:provider).permit(
 					:admin_id,
 					:first_name,
 					:middle_name,
@@ -501,7 +502,20 @@ end
 					cnp_licenses_attributes: [:id, :cnp_license_number, :state_id, :effective_date, :expiration_date, :cnp_license_renewal_effective_date, :no_cnp_license, :_destroy],
 					board_certifications_attributes: [:id, :bc_certification_number, :bc_board_name, :bc_effective_date, :bc_expiration_date, :bc_recertification_date, :bc_specialty_type, :_destroy],
 					ins_policies_attributes: [:id, :ins_policy_number, :effective_date, :expiration_date, :_destroy],
+					 provider_enrollment_groups_attributes: [
+				      :id, :group_id, :_destroy,
+				      { primary_location: [], additional_locations: [] }
+				    ],
 					payer_logins_attributes: [:id, :enrollment_payer, :username, :password, :state_id, :notes, :cred_current_reattest_date, :cred_reattest_date, :_destroy, questions_attributes: [:id, :question, :answer]]
 			)
+    # Reject blank values from primary and additional locations
+	  if permitted[:provider_enrollment_groups_attributes]
+	    permitted[:provider_enrollment_groups_attributes].each do |_, group_attrs|
+	      group_attrs[:primary_location]&.reject!(&:blank?)
+	      group_attrs[:additional_locations]&.reject!(&:blank?)
+	    end
+	  end
+
+	  permitted
 	end
 end

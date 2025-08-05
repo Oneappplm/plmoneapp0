@@ -494,6 +494,7 @@ Rails.application.routes.draw do
       get :enrollment_payers
       get :provider_states, path: 'provider-states'
       get :board_names
+      get :provider_enroll_groups
       get :group_states, path: 'group-states'
       get :serviced_populations
       get :method_resolutions
