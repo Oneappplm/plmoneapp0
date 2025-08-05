@@ -213,7 +213,20 @@ class AjaxController < ApplicationController
   def get_provider
     @provider = Provider.find(params[:id] || params[:provider_id])
     @comment = @provider.comments.build(user: current_user)
-    render json: { html: render_to_string(partial: 'providers/show', locals: { provider: @provider }).html_safe }
+
+    group_ids = @provider.provider_enrollment_groups.pluck(:group_id)
+    @practice_groups = EnrollmentGroup.where(id: group_ids).index_by(&:id)
+
+    all_location_ids = @provider.provider_enrollment_groups.flat_map do |group|
+      group.primary_location + group.additional_locations.first.to_s.split(',')
+    end.compact.map(&:to_i).uniq
+
+
+    @dco_locations = GroupDco.where(id: all_location_ids).index_by(&:id)
+
+    render json: {
+      html: render_to_string(partial: 'providers/show', locals: { provider: @provider }).html_safe
+    }
   end
 
   def get_client_provider_enrollment
