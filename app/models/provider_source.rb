@@ -278,24 +278,45 @@ class ProviderSource < ApplicationRecord
   end
 
   def other_ids_certifications_progress
-    percentage = 0
-    prerequisites = ['medicare_field', 'medicaid_field', 'caqh_fields', 'other_cert_field' ]
-    with_prerequisites = ['other_ids_certifications_progress_medicare_fields', 'other_ids_certifications_progress_medicaid_fields', 'other_ids_certifications_progress_other_fields', 'other_ids_certifications_progress_caqh_fields' ]
-    values = fetch_many(prerequisites)&.pluck(:data_value)
+    prerequisites = ['medicare_field', 'medicaid_field', 'caqh_field', 'other_cert_field']
+    with_prerequisites = [
+      :other_ids_certifications_progress_medicare_fields,
+      :other_ids_certifications_progress_medicaid_fields,
+      :other_ids_certifications_progress_caqh_fields,
+      :other_ids_certifications_progress_other_fields
+    ]
 
-    percentage = if values.include?('yes')
-      prerequisites_with_yes = values.map.with_index{|v,idx| idx if (v != 'no' && v != nil)}.compact
-      fields_to_fill_up = prerequisites_with_yes.map{|y| send(with_prerequisites[y])}
+    # Fetch prerequisite yes/no values
+    prereq_values = Hash[
+      fetch_many(prerequisites)&.pluck(:data_key, :data_value) || []
+    ]
 
-      prerequisites_with_yes.reverse_each do |idx|
-        prerequisites.delete_at(idx)
+    fields_to_answer = []
+    prerequisites.each_with_index do |field, idx|
+      # Always require the prerequisite yes/no question itself
+      fields_to_answer << field
+
+      # Only require extra fields if answer is YES
+      if prereq_values[field].to_s.strip.downcase == 'yes'
+        fields_to_answer.concat(send(with_prerequisites[idx]))
       end
-      fields_to_answer = fields_to_fill_up.flatten + prerequisites
-      answered = fetch_many(fields_to_answer)&.pluck(:data_value).compact.reject(&:empty?).count
-      (answered.to_f/(fields_to_answer.count).to_f) * 100
-    else
-      100
     end
+
+    # Get actual values for all required fields
+    fetched_values = Hash[
+      fetch_many(fields_to_answer)&.pluck(:data_key, :data_value) || []
+    ]
+
+    # Missing fields list
+    missing_fields = fields_to_answer.select do |field|
+      value = fetched_values[field]
+      value.blank? || value.to_s.strip == ''
+    end
+
+    answered_count = fields_to_answer.size - missing_fields.size
+    percentage = (answered_count.to_f / fields_to_answer.size) * 100
+
+    { percentage: percentage.to_i, missing_fields: missing_fields }
     percentage.to_i
   end
 
@@ -429,20 +450,19 @@ class ProviderSource < ApplicationRecord
   rescue
     false
   end
-
+ 
   def education_progress_v2
-    percentage = 0
-
     prerequisites = ['undergraduate_school', 'professional_school']
-    values = fetch_many(prerequisites)&.pluck(:data_value)
+    values = fetch_many(prerequisites)&.pluck(:data_value) || []
 
     # If both toggles are 'no' or nil, return 100%
     return 100 unless values.include?('yes')
 
-    prerequisites_with_yes = values.map.with_index { |v, idx| idx if v != 'no' && !v.nil? }.compact
-    prerequisites_with_yes.reverse_each { |idx| prerequisites.delete_at(idx) }
-
-    answered = fetch_many(prerequisites)&.pluck(:data_value).compact.reject(&:empty?).count
+    answered_prereqs = fetch_many(prerequisites)
+                          &.pluck(:data_value)
+                          .compact
+                          .reject(&:empty?)
+                          .count
 
     undergrad_model_fields = %w[
       school_location undergraduate_school_name address_line1 city zipcode degree_awarded incomplete date_graduation
@@ -455,8 +475,9 @@ class ProviderSource < ApplicationRecord
     total_nested_fields = 0
     answered_nested_fields = 0
 
+    # Undergraduate school section
     if values[0] == 'yes'
-      if provider_source_undergrad_schools.any?
+      if provider_source_undergrad_schools.any? { |s| s.id.present? }
         provider_source_undergrad_schools.each do |school|
           undergrad_model_fields.each do |field|
             total_nested_fields += 1
@@ -465,12 +486,14 @@ class ProviderSource < ApplicationRecord
           end
         end
       else
+        # No record, but still count fields as required
         total_nested_fields += undergrad_model_fields.size
       end
     end
 
+    # Graduate school section
     if values[1] == 'yes'
-      if graduate_details.any?
+      if graduate_details.any? { |g| g.id.present? }
         graduate_details.each do |grad|
           graduate_model_fields.each do |field|
             total_nested_fields += 1
@@ -479,20 +502,19 @@ class ProviderSource < ApplicationRecord
           end
         end
       else
+        # No record, but still count fields as required
         total_nested_fields += graduate_model_fields.size
       end
     end
 
     total_fields = prerequisites.count + total_nested_fields
-    total_answered = answered + answered_nested_fields
+    total_answered = answered_prereqs + answered_nested_fields
 
-    percentage = if total_fields.positive?
+    if total_fields.positive?
       ((total_answered.to_f / total_fields) * 100).round
     else
       100
     end
-
-    percentage
   end
 
   # def education_undergrad_fields
@@ -511,25 +533,24 @@ class ProviderSource < ApplicationRecord
   # end
 
   def training_progress_v2
-    percentage = 0
     prerequisites = ['has_training_program']
     with_prerequisites = ['training_has_training_program_fields']
-    values = fetch_many(prerequisites)&.pluck(:data_value)
+    values = fetch_many(prerequisites)&.pluck(:data_value) || []
 
     percentage = if values.include?('yes')
-      prerequisites_with_yes = values.map.with_index{|v,idx| idx if (v != 'no' && v != nil)}.compact
-      fields_to_fill_up = prerequisites_with_yes.map{|y| send(with_prerequisites[y])}
+      prerequisites_with_yes = values.map.with_index { |v, idx| idx if v == 'yes' }.compact
+      fields_to_fill_up = prerequisites_with_yes.map { |y| send(with_prerequisites[y]) }
 
-      prerequisites_with_yes.reverse_each do |idx|
-        prerequisites.delete_at(idx)
-      end
-      fields_to_answer = fields_to_fill_up.flatten + prerequisites
+      # Do NOT delete prerequisites from count — keep them in total
+      fields_to_answer = prerequisites + fields_to_fill_up.flatten
       answered = fetch_many(fields_to_answer)&.pluck(:data_value).compact.reject(&:empty?).count
-      (answered.to_f/(fields_to_answer.count).to_f) * 100
+
+      ((answered.to_f / fields_to_answer.count) * 100)
     else
       100
     end
-    percentage.to_i
+
+    percentage.round
   end
 
   def training_has_training_program_fields
@@ -539,6 +560,7 @@ class ProviderSource < ApplicationRecord
       'tf-start-date', 'tf-end-date', 'incomplete_training'
     ]
   end
+
 
   def teaching_appointments_progress_v2
     percentage = 0
@@ -576,108 +598,100 @@ class ProviderSource < ApplicationRecord
   end
 
   def medical_education_progress
-    percentage = 0
-    total_cme_fields_with_answer = []
-    total_cme_fields = self&.cmes.pluck(:training,:month_attended,:year_attended,:hours).flatten
-    total_cme_fields_with_answer << self.fetch('cme_requested_credentials')
-    total_cme_fields_with_answer = total_cme_fields&.compact&.reject(&:empty?)
-    if self.fetch("cme_credit") == 'yes'
-       percentage = (total_cme_fields_with_answer.count.to_f/total_cme_fields.count.to_f) * 100
-      # percentage = 50
-    else
-      if !self.fetch('cme_requested_credentials').blank?
-        percentage = 100
-      end
+    # normalize fetch safely so missing keys don't blow up
+    cme_credit = begin self.fetch('cme_credit') rescue nil end
+    normalized = cme_credit.to_s.strip.downcase
+
+    # if user explicitly answered "no" (or variants) => 100% immediately
+    return 100 if %w[no false 0].include?(normalized)
+
+    # collect all CME field values (may be empty array)
+    total_cme_values = begin
+      (self.cmes.pluck(:training, :month_attended, :year_attended, :hours) || []).flatten
+    rescue
+      []
     end
-    percentage.to_i
+
+    # count total fields and answered fields
+    total_fields = total_cme_values.count
+    answered = total_cme_values.reject { |v| v.nil? || v.to_s.strip == '' }.count
+
+    # include credentials field if present (optional)
+    credentials = begin self.fetch('cme_requested_credentials') rescue nil end
+    if credentials.present?
+      total_fields += 1
+      answered += 1
+    end
+
+    # if user answered "yes", compute percentage (0 if there are no required fields)
+    if normalized == 'yes'
+      return 0 if total_fields.zero?
+      return ((answered.to_f / total_fields.to_f) * 100).to_i
+    end
+
+    # fallback: if credentials supplied treat as complete, otherwise 0
+    credentials.present? ? 100 : 0
   rescue
     0
   end
 
   def affiliation_info_progress
-    # percentage = 0
-    # prerequisites = [ 'has_admitting_arrangement', 'has_hospital_privilege']
-    # with_prerequisites = ['affiliation_info_progress_has_admitting_arrangement_fields', 'affiliation_info_progress_has_hospital_privilege_fields']
-    # values = fetch_many(prerequisites)&.pluck(:data_value)
-
-    # percentage = if values.include?('yes')
-    #   prerequisites_with_yes = values.map.with_index{|v,idx| idx if (v != 'no' && v != nil)}.compact
-
-    #   fields_to_fill_up = prerequisites_with_yes.map{|y| send(with_prerequisites[y])}
-
-    #   prerequisites_with_yes.reverse_each do |idx|
-    #     prerequisites.delete_at(idx)
-    #   end
-    #   fields_to_answer = fields_to_fill_up.flatten + prerequisites
-    #   answered = fetch_many(fields_to_answer)&.pluck(:data_value).compact.reject(&:empty?).count
-    #   (answered.to_f/(fields_to_answer.count).to_f) * 100
-    # else
-    #   100
-    # end
-    # percentage.to_i
-    percentage = 0
-
     prerequisites = ['has_admitting_arrangement', 'has_hospital_privilege']
-    values = fetch_many(prerequisites)&.pluck(:data_value)
+    values = fetch_many(prerequisites)&.pluck(:data_value).map { |v| v.to_s.strip.downcase }
 
-    # If both toggles are 'no' or nil, return 100%
-    return 100 unless values.include?('yes')
+    # If both toggles are 'no' or blank → 100%
+    return 100 if values.all? { |v| v.blank? || v == 'no' }
 
-    prerequisites_with_yes = values.map.with_index { |v, idx| idx if v != 'no' && !v.nil? }.compact
-    prerequisites_with_yes.reverse_each { |idx| prerequisites.delete_at(idx) }
+    # Count answered prerequisite toggles
+    answered_prerequisites = fetch_many(prerequisites)&.pluck(:data_value).compact.reject(&:empty?).count
 
-    answered = fetch_many(prerequisites)&.pluck(:data_value).compact.reject(&:empty?).count
-
-    hospital_priviege_model_fields = %w[
-      state_abbr hp_facility_name hp_mso_address_line1 hp_city hp_zipcode hp_mso_telephone_number hp_mso_fax_number hp_department_name
+    # Fields for each nested model
+    hospital_fields = %w[
+      state_abbr hp_facility_name hp_mso_address_line1 hp_city hp_zipcode
+      hp_mso_telephone_number hp_mso_fax_number hp_department_name
     ]
-
-    arrangement_model_fields = %w[
+    arrangement_fields = %w[
       admit_state facility_name facility_address_line1 facility_zipcode
     ]
 
     total_nested_fields = 0
     answered_nested_fields = 0
 
-    if values[0] == 'yes'
-      if hospital_privileges.any?
-        hospital_privileges.each do |school|
-          hospital_priviege_model_fields.each do |field|
-            total_nested_fields += 1
-            value = school.send(field)
-            answered_nested_fields += 1 unless value.nil? || value.to_s.strip == ''
-          end
-        end
-      else
-        total_nested_fields += hospital_priviege_model_fields.size
-      end
-    end
-
+    # Hospital privilege section
     if values[1] == 'yes'
-      if admitting_arrangements.any?
-        admitting_arrangements.each do |grad|
-          arrangement_model_fields.each do |field|
+      if hospital_privileges.any?
+        hospital_privileges.each do |hp|
+          hospital_fields.each do |field|
             total_nested_fields += 1
-            value = grad.send(field)
-            answered_nested_fields += 1 unless value.nil? || value.to_s.strip == ''
+            answered_nested_fields += 1 if hp.send(field).present?
           end
         end
       else
-        total_nested_fields += arrangement_model_fields.size
+        total_nested_fields += hospital_fields.size
       end
     end
 
-    total_fields = prerequisites.count + total_nested_fields
-    total_answered = answered + answered_nested_fields
-
-    percentage = if total_fields.positive?
-      ((total_answered.to_f / total_fields) * 100).round
-    else
-      100
+    # Admitting arrangement section
+    if values[0] == 'yes'
+      if admitting_arrangements.any?
+        admitting_arrangements.each do |aa|
+          arrangement_fields.each do |field|
+            total_nested_fields += 1
+            answered_nested_fields += 1 if aa.send(field).present?
+          end
+        end
+      else
+        total_nested_fields += arrangement_fields.size
+      end
     end
 
-    percentage
+    total_fields = prerequisites.size + total_nested_fields
+    total_answered = answered_prerequisites + answered_nested_fields
+
+    return ((total_answered.to_f / total_fields) * 100).round if total_fields.positive?
+    100
   end
+
 
   def affiliation_info_completed?
     ![affiliation_info_progress].any?{|e| e != 100}
@@ -686,25 +700,32 @@ class ProviderSource < ApplicationRecord
   end
 
   def professional_liability_progress_v2
-    percentage = 0
-    prerequisites = []
-    fields_no_prerequisites = ['has_sovereign_immunity']
-    values = fetch_many(prerequisites)&.pluck(:data_value)
+    # The prerequisite question
+    prerequisites = ['has_sovereign_immunity']
+    values = fetch_many(prerequisites)&.pluck(:data_value).map { |v| v.to_s.strip.downcase }
 
-    percentage = if values.include?('yes')
-      insured = fetch('is_self_insured')
-      fields_to_fill_up = if insured == 'yes'
-        self_insured_yes_fields
-      else
-        self_insured_no_fields
-      end
-      fields_to_answer = fields_to_fill_up + prerequisites
-      answered = fetch_many(fields_to_answer)&.pluck(:data_value).compact.reject(&:empty?).count
-     (answered.to_f/(fields_to_answer.count).to_f) * 100
-    else
-      100
-    end
+    # If 'has_sovereign_immunity' is 'no' or blank → 100% progress
+    return 100 if values.blank? || values.first == 'no'
+
+    # Otherwise, check if self-insured or not
+    insured = fetch('is_self_insured').to_s.strip.downcase
+    fields_to_fill_up = insured == 'yes' ? self_insured_yes_fields : self_insured_no_fields
+
+    # Add the prerequisite toggle itself to the list of fields to answer
+    fields_to_answer = prerequisites + fields_to_fill_up
+
+    answered_count = fetch_many(fields_to_answer)
+      &.pluck(:data_value)
+      .compact
+      .reject(&:empty?)
+      .count
+
+    total_fields = fields_to_answer.count
+    return ((answered_count.to_f / total_fields) * 100).round if total_fields.positive?
+
+    100
   end
+
 
   def self_insured_yes_fields
     [
@@ -756,27 +777,21 @@ class ProviderSource < ApplicationRecord
   end
 
   def work_history_employment_progress
-    percentage = 0
     prerequisites = ['has_work_history']
+    values = fetch_many(prerequisites)&.pluck(:data_value).map { |v| v.to_s.strip.downcase } rescue []
 
-    with_prerequisites = ['work_history_employment_fields']    # Get the answer for toggle switchese that is prerequisite of additional fields
+    return 100 if values.blank? || values.first == 'no'
 
-    values = fetch_many(prerequisites)&.pluck(:data_value)
+    fields = work_history_employment_fields
+    fetched = fetch_many(fields)&.pluck(:data_value) || []
 
-    percentage = if values.include?('yes')
-      prerequisites_with_yes = values.map.with_index{|v,idx| idx if (v != 'no' && v != nil)}.compact
+    # Only count fields that actually exist in fetched results
+    total_fields = fetched.size
+    answered_count = fetched.reject { |v| v.nil? || v.to_s.strip.empty? }.count
 
-      fields_to_fill_up = prerequisites_with_yes.map{|y| send(with_prerequisites[y])}
-      prerequisites_with_yes.reverse_each do |idx|
-        prerequisites.delete_at(idx)
-      end
-      fields_to_answer = fields_to_fill_up.flatten + prerequisites
-      answered = fetch_many(fields_to_answer)&.pluck(:data_value).compact.reject(&:empty?).count
-      (answered.to_f/(fields_to_answer.count).to_f) * 100
-    else
-      100
-    end
-    percentage.to_i
+    return 100 if total_fields.zero?
+
+    ((answered_count.to_f / total_fields) * 100).round
   end
 
   def work_history_employment_fields
