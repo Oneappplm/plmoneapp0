@@ -454,7 +454,39 @@ class Mhc::VerificationPlatformController < ApplicationController
         @provider_employment = ProviderEmployment.new(provider_attest_id: @provider_attest_id)
       end
     end
-    
+
+    if params[:page_tab] == 'medicare_part'
+      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+
+      @medicare_participation = MedicareParticipation.find_by(provider_attest_id: @provider_attest_id) ||
+                                MedicareParticipation.new(provider_attest_id: @provider_attest_id)
+    end
+
+    if params[:page_tab] == 'medicare_cert'
+      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+
+      @medicare_certificate = MedicareCertificate.find_by(provider_attest_id: @provider_attest_id) ||
+                              MedicareCertificate.new(provider_attest_id: @provider_attest_id)
+    end
+
+    if params[:page_tab] == 'add_new_accreditation'
+      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+
+      if params[:accreditation_id].present?
+        @accreditation = Accreditation.find(params[:accreditation_id])
+      else
+        @accreditation = Accreditation.new(provider_attest_id: @provider_attest_id)
+      end
+
+      @accreditations = Accreditation.where(provider_attest_id: @provider_attest_id)
+    end
+
+    if params[:page_tab] == 'accreditation'
+      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+
+      @accreditations = Accreditation.where(provider_attest_id: @provider_attest_id)
+    end
+        
     if params[:page_tab] == 'employment'
       @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
       @provider_employments = ProviderEmployment.all
