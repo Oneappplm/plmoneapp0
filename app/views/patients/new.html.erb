@@ -1,0 +1,115 @@
+<div class="container mt-3">
+  <h2>Add Patient</h2>
+
+  <%= form_with model: [@doctor, @patient], local: true do |f| %>
+
+   <% if @patient.errors.any? %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <h5>Errors:</h5>
+      <ul>
+        <% @patient.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% end %>
+
+    <%#= f.hidden_field :user, value: current_user %>
+
+    <div class="row">
+      <div class="form-group col-lg-6">
+        <%= f.label :first_name %>
+        <%= f.text_field :first_name, class: "form-control mt-2 mb-2 border-dark" %>
+      </div>
+
+      <div class="form-group col-lg-6">
+        <%= f.label :last_name %>
+        <%= f.text_field :last_name, class: "form-control mt-2 mb-2 border-dark" %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-lg-6">
+        <%= f.label :dob, "Date of Birth" %>
+        <%= f.date_field :dob, class: "form-control mt-2 mb-2 border-dark" %>
+      </div>
+
+      <div class="form-group col-lg-6">
+        <%= f.label :gender, "Gender" %>
+        <%= f.select :gender, ["Male", "Female", "Other"], { prompt: true }, { class: "form-select mt-2 mb-2 border-dark" } %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-lg-6">
+        <%= f.label :email_address %>
+        <%= f.text_field :email_address, class: "form-control mt-2 mb-2 border-dark" %>
+      </div>
+
+      <div class="form-group col-lg-6">
+        <%= f.label :phone_number %>
+        <%= f.text_field :phone_number, class: "form-control mt-2 mb-2 border-dark" %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-lg-6">
+        <%= f.label :emergency_contact %>
+        <%= f.text_field :emergency_contact, class: "form-control mt-2 mb-2 border-dark" %>
+      </div>
+
+      <div class="form-group col-lg-6">
+        <%= f.label :insurance_information %>
+        <%= f.text_field :insurance_information, class: "form-control mt-2 mb-2 border-dark" %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-lg-6">
+        <%= f.label :address %>
+        <%= f.text_field :address, class: "form-control mt-2 mb-2 border-dark" %>
+      </div>
+
+      <div class="form-group col-lg-6">
+        <%= f.label :next_appointment %>
+        <%= f.date_field :next_appointment, class: "form-control mt-2 mb-2 border-dark", min: Date.tomorrow %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-lg-6">
+        <%= f.label :last_visit_date %>
+        <%= f.date_field :last_visit_date, class: "form-control mt-2 mb-2 border-dark" %>
+      </div>
+
+      <div class="form-group col-lg-6">
+        <%= f.label :active, "Is Active?" %>
+        <%= f.select :active, [["Yes", true], ["No", false]], { prompt: true }, { class: "form-select mt-2 mb-2 border-dark" } %>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :current_medications %>
+      <%= f.text_area :current_medications, class: "form-control mt-2 mb-2 border-dark" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :medical_history %>
+      <%= f.text_area :medical_history, class: "form-control mt-2 mb-2 border-dark" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :allergies %>
+      <%= f.text_area :allergies, class: "form-control mt-2 mb-2 border-dark" %>
+    </div>
+
+    <div class="form-group">
+      <%#= f.label :status, "Patient Status" %>
+      <%#= f.select :status, ["new", "follow-up", "discharged", "referred"], { prompt: "Select status" }, class: "form-select mt-2 mb-2 border-dark" %>
+    </div>
+
+    <%= f.submit "Save Patient", class: "btn btn-primary mt-3" %>
+    <%= link_to "← Back to Patients", doctor_patients_path, class: "btn btn-outline-primary mt-3" %>
+  <% end %>
+</div>

@@ -1,0 +1,36 @@
+<div class="container mt-3">
+	<h2>Appointments List</h2>
+
+	<% if @appointments.present? %>
+		<table class="table table-bordered">
+		  <thead>
+		    <tr>
+		      <th class="text-white">Patient</th>
+		      <th class="text-white">Date</th>
+		      <th class="text-white">Reason</th>
+		      <th class="text-white">Status</th>
+		      <th class="text-white">Action</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <% @appointments.each do |appt| %>
+		      <tr>
+		        <td><%= appt.patient.full_name %></td>
+		        <td><%= appt.appointment_date.strftime("%b %d, %Y %I:%M %p") %></td>
+		        <td><%= appt.reason %></td>
+		        <td><%= appt.status || "Scheduled" %></td>
+		        <td>
+		        	<%= link_to doctor_appointment_path(@doctor, appt),
+		            class: "btn btn-sm btn-primary" do %>
+							  <i class="bi bi-eye"></i> View
+							<% end %>
+
+		        </td>
+		      </tr>
+		    <% end %>
+		  </tbody>
+		</table>
+	<% else %>
+		<p class="fs-4 text-center bg-warning p-2 fw-bold text-dark">No appointment has been scheduled.</p>
+	<% end %>
+</div>

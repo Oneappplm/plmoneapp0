@@ -1,0 +1,28 @@
+<div class="container mt-3">
+	<h2>Hello <%= @patient.full_name %></h2>
+	<p>You have received a new invoice from Dr. <%= @doctor.full_name %></p>
+	<p>Invoice Number: <%= @invoice.invoice_number %></p>
+
+	<p><strong>Service Name:</strong><%= @invoice.service_name %></p>
+
+	<% if @invoice.clinic_name.present? %>
+    <p><strong>Clinic:</strong> <%= @invoice.clinic_name %></p>
+  <% end %>
+
+	<p><strong>Amount:</strong><%= @invoice.amount %></p>
+
+	<% if @invoice.discount.present? %>
+		<p><strong>Discount:</strong> $<%= @invoice.discount %></p>
+	<% end %>
+
+	<p><strong>Total:</strong> $<%= @invoice.total || (@invoice.amount - @invoice.discount) %></p>
+
+	<p><strong>Status:</strong> <%= @invoice.status.capitalize %></p>
+
+	<p>
+	  You can view and pay your invoice here:  
+	  <%= link_to 'View & Pay Invoice', doctor_patient_invoice_url(@doctor, @patient, @invoice) %>
+	</p>
+
+	<p>Thank you,<br>OneApp Team</p>
+</div>

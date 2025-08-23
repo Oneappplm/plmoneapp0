@@ -1,0 +1,49 @@
+<div class="container mt-3">
+  <h3 class="mb-4">
+	  <%#= params[:patient_id] ? "Invoices for #{@patient.full_name}" : "All Invoices for #{@doctor.full_name}" %>
+	  Generated Invoice List
+	</h3>
+
+  <% if @invoices.present? %>
+  	<div class="table-responsive">
+	    <table class="table table-bordered table-hover shadow-sm">
+	      <thead>
+	        <tr>
+	          <th class="text-white">Invoice ID</th>
+	          <th class="text-white">Patient</th>
+	          <th class="text-white">Provider</th>
+	          <th class="text-white">Appointment</th>
+	          <th class="text-white">Service</th>
+	          <th class="text-white">Payment</th>
+	          <th class="text-white">Status</th>
+	          <th class="text-white">Actions</th>
+	        </tr>
+	      </thead>
+	      <tbody>
+	        <% @invoices.each do |invoice| %>
+	          <tr>
+	            <td>#<%= invoice.id %></td>
+	            <td><%= invoice.patient.full_name rescue "N/A" %></td>
+	            <td><%= invoice.doctor.full_name  %></td>
+	            <td><%= invoice.appointment.appointment_date.strftime("%d %b %Y, %I:%M %p") rescue "N/A" %></td>
+	            <td><%= invoice.service_name %></td>
+	            <td><%= invoice.payment_method.titleize if invoice.payment_method.present? %></td>
+	            <td>
+	              <span class="badge bg-<%= invoice.status == "paid" ? "success" : "warning" %>">
+	                <%= invoice.status.titleize if invoice.status.present? %>
+	              </span>
+	            </td>
+	            <td>
+	            	<%= link_to doctor_patient_invoice_path(invoice.doctor, invoice.patient, invoice), class: "btn btn-sm btn-outline-primary" do %>
+					        <i class="bi bi-eye"></i> View
+					      <% end %>
+	            </td>
+	          </tr>
+	        <% end %>
+	      </tbody>
+	    </table>
+	  </div>
+  <% else %>
+    <p>No invoices found.</p>
+  <% end %>
+</div>
