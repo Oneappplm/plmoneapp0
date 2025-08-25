@@ -126,3 +126,4 @@ gem 'turbo-rails'
 
 gem 'ruby-openai'
 gem 'chronic'
+gem "bundler", "~> 2.4"
