@@ -223,21 +223,26 @@
 														</div>
 													<% end %>
 
-													<% if (current_user&.super_administrator? || current_user&.administrator?) %>
-														<div class="nav-item mb-1">
-															<a class="nav-link <%= active_menu('settings') %> <%= active_menu('index') %>" href="<%= settings_path %>" data-placement="left">
-																<i class="bi bi-gear nav-icon"></i>
-																<span class="nav-link-title">Settings</span>
-															</a>
-														</div>
+													<% if current_user.can_access?('Settings') %>
+														<% if (current_user&.super_administrator? || current_user&.administrator?) %>
+															<div class="nav-item mb-1">
+																<a class="nav-link <%= active_menu('settings') %> <%= active_menu('index') %>" href="<%= settings_path %>" data-placement="left">
+																	<i class="bi bi-gear nav-icon"></i>
+																	<span class="nav-link-title">Settings</span>
+																</a>
+															</div>
+														<% end %>
 													<% end %>
-													<% if current_user&.super_administrator? || current_user&.administrator? || current_user&.agent? %>
-														<div class="nav-item mb-1">
-															<a class="nav-link <%= active_menu('audit_trails') %> <%= active_menu('index') %>" href="<%= audit_trails_path %>" data-placement="left">
-																<i class="bi bi-gear nav-icon"></i>
-																<span class="nav-link-title">Activity Logs</span>
-															</a>
-														</div>
+
+													<% if current_user.can_access?('Activity Logs') %>
+														<% if current_user&.super_administrator? || current_user&.administrator? || current_user&.agent? %>
+															<div class="nav-item mb-1">
+																<a class="nav-link <%= active_menu('audit_trails') %> <%= active_menu('index') %>" href="<%= audit_trails_path %>" data-placement="left">
+																	<i class="bi bi-gear nav-icon"></i>
+																	<span class="nav-link-title">Activity Logs</span>
+																</a>
+															</div>
+														<% end %>
 													<% end %>
 
 													<% if current_user.can_access?('plm_sales_tool') %>
