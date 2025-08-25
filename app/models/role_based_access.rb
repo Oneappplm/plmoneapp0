@@ -111,7 +111,8 @@ class RoleBasedAccess < ApplicationRecord
     "Help Codes",
     "Pdf Populator",
     "Hippocrates",
-    "Verification Products"
+    "Verification Products",
+    "Activity Logs"
 	]
 
 	default_scope { order(:id) }
