@@ -900,36 +900,46 @@ class ProviderSource < ApplicationRecord
   end
 
   def practice_location_progress_v2
-    percentage = 0
     fields_to_fill_up = ['all_practice_location']
 
-    if practice_location_general_info_started?
-      fields_to_fill_up = fields_to_fill_up + practice_location_general_information_fields
+    fields_to_fill_up += practice_location_general_information_fields if practice_location_general_info_started?
+    fields_to_fill_up += practice_location_contacts_fields if practice_location_contacts_started?
+    fields_to_fill_up += practice_location_midlevel_practitioner_fields if practice_location_midlevel_practitioner_started?
+    fields_to_fill_up += practice_location_partners_fields if practice_location_partners_started?
+
+    # Fetch existing values into a hash
+    existing = fetch_many(fields_to_fill_up)&.pluck(:data_key, :data_value).to_h
+
+    # Normalize each field
+    normalized = fields_to_fill_up.index_with do |key|
+      val = existing[key]
+
+      # Ensure we trim whitespace
+      val = val.strip if val.is_a?(String)
+
+      # Count only non-blank, non-nil values as answered
+      val.present? ? val : nil
     end
 
-    if practice_location_contacts_started?
-      fields_to_fill_up = fields_to_fill_up + practice_location_contacts_fields
+    answered_count = normalized.values.count { |v| v.present? }
+    total_fields   = fields_to_fill_up.size
+
+    percentage = if total_fields.zero?
+      100
+    else
+      (answered_count.to_f / total_fields) * 100
     end
 
-    if practice_location_midlevel_practitioner_started?
-      fields_to_fill_up = fields_to_fill_up + practice_location_midlevel_practitioner_fields
-    end
-
-    if practice_location_partners_started?
-      fields_to_fill_up = fields_to_fill_up + practice_location_partners_fields
-    end
-
-    answered = fetch_many(fields_to_fill_up)&.pluck(:data_value).compact.reject(&:empty?).count
-    percentage = (answered.to_f/(fields_to_fill_up.count).to_f) * 100
-    percentage.to_i
+    percentage.round
   end
+
+
 
   def practice_location_general_information_fields
     [
       'practice_name', 'practice_address_line_1', 'practice_city',
       'dco_state', 'practice_zip_code', 'practice_telephone_number',
-      'practice_type', 'practice_type_tax_id', 'group_npi_field',
-      'practice_practitioner_profiles_5'
+      'practice_type', 'practice_type_tax_id', 'group_npi_field'
     ]
   end
 
@@ -938,7 +948,7 @@ class ProviderSource < ApplicationRecord
       'contact_office_first_name', 'contact_office_last_name', 'contact_office_address_line_1',
       'contact_office_city', 'contact_office_state', 'contact_office_zip_code', 'contact_office_telephone_number',
       'contact_billing_address_line_1','contact_billing_city', 'contact_billing_state', 'contact_billing_zip_code',
-      'contact_billing_telephone_number', 'contact_remittance_city', 'contact_remittance_state'
+      'contact_billing_telephone_number'
     ]
   end
 
@@ -948,8 +958,7 @@ class ProviderSource < ApplicationRecord
 
   def practice_location_partners_fields
     [
-      'practice_partners_first_name', 'practice_partners_last_name', 'practice_partners_degree', 'practice_partners_specialty',
-      'practice_partners_state'
+      'practice_partners_first_name', 'practice_partners_last_name', 'practice_partners_degree', 'practice_partners_specialty'
     ]
   end
 
