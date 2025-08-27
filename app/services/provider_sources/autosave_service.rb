@@ -419,8 +419,8 @@ module ProviderSources
 
         if record.has_attribute?(:provider_attest_id)
           record.provider_attest_id ||= attest.id
-        else
-          record.provider_personal_information_id = attest
+        elsif record.has_attribute?(:provider_personal_information_id)
+          record.provider_personal_information_id ||= attest.provider_personal_information_id
         end
 
         if model_class.name == "ProfessionalOrganization"
