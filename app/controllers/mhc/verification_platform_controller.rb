@@ -492,7 +492,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     
     case params[:page_tab]
     when "licensure"
-      @q = ProviderLicensure.ransack(params[:q])
+      @q = @provider_personal_information.provider_licensures.ransack(params[:q])
       @provider_licensures = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
       @limit = 10
       @total_pages = (@provider_insurance_coverages_count.to_f / @limit.to_f).ceil

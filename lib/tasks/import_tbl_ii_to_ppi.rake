@@ -27,7 +27,6 @@ namespace :data do
       puts "⚠️ Provider state not found: #{row['CredentialState']}" unless state_id
 
       ppi = ProviderPersonalInformation.new(
-        cred_status: 'no-application',
         practitioner_guid: row['PractitionerGUID'],
         caqh_provider_id: row['id'],
         provider_attest_id: attest.id, # real FK
