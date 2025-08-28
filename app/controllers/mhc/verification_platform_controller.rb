@@ -247,11 +247,11 @@ class Mhc::VerificationPlatformController < ApplicationController
 
     if ['add_practice_info', 'edit_practice_info', 'practice_info_record'].include?(params[:page_tab])
       # Determine if it's a new or existing practice information
-      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+      @provider_attest_id = @provider_personal_information&.provider_attest_id if @provider_personal_information
       @practice_information = if params[:page_tab] == 'add_practice_info'
                                 PracticeInformation.new(
-                                  provider_attest_id: @provider_personal_information.provider_attest_id,
-                                  caqh_provider_attest_id: @provider_personal_information.caqh_provider_attest_id
+                                  provider_attest_id: @provider_personal_information&.provider_attest_id,
+                                  caqh_provider_attest_id: @provider_personal_information&.caqh_provider_attest_id
                                 )
                               else
                                 PracticeInformation.find_or_initialize_by(
@@ -309,13 +309,13 @@ class Mhc::VerificationPlatformController < ApplicationController
     end       
 
     if params[:page_tab] == 'training'
-      @q = @provider_personal_information.provider_attest.provider_educations.ransack(params[:q]&.except(:page_tab))
+      @q = @provider_personal_information&.provider_attest.provider_educations.ransack(params[:q]&.except(:page_tab))
       @provider_educations = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
     end
 
     if params[:page_tab] == 'training_record'
       @q = School.ransack(params[:q])
-      @provider_education = ProviderEducation.find_or_initialize_by(id: params[:provider_education_id], provider_attest_id: @provider_personal_information.provider_attest_id)
+      @provider_education = ProviderEducation.find_or_initialize_by(id: params[:provider_education_id], provider_attest_id: @provider_personal_information&.provider_attest_id)
       if @provider_education.persisted?
         @provider_personal_information_comment = ProviderPersonalInformationComment.new
         @provider_personal_information_comments = ProviderPersonalInformationComment.all
