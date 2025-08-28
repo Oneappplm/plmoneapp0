@@ -1,6 +1,6 @@
 <div class="row mt-3 mb-3">
    <div class="col-lg-6">
-      <h5>Search Result: 113 records</h5>
+      <h5>Search Result: <%= @provider_personal_informations.size %> records</h5>
    </div>
    <div class="col-lg-6" style="padding: 0;">
       <div style="float: right;" class="d-flex gap-4">
@@ -20,7 +20,7 @@
          <label for="">Page 3 of 32 </label>
          <input type="text" value="1" style="width: 35px; text-align: center; font-size: 12px;" class="">
          <form id="directorForm" action="/virtual-review-committee/records" method="get">
-            <select name="director" id="directors" class="custom-select">
+            <select name="director" id="directors" class="custom-select form-select border-dark">
                <option value="All">All</option>
                <% @vrc_directors.each do |vrc_director| %>
                   <option value="<%= vrc_director.id %>">
@@ -37,7 +37,7 @@
 
 <div class="d-flex gap-3 overflow-scroll py-2">
   <% @vrc_directors.each do |director| %>
-    <% director.virtual_review_committees.where('committee_date >= ?', Date.today).pluck(:committee_date).uniq.each do |completed_record| %>
+    <% director.provider_personal_informations.where('committee_date >= ?', Date.today).pluck(:committee_date).uniq.each do |completed_record| %>
       <div class="border border-dark p-2 text-dark date-box" data-date="<%= completed_record.to_date %>">
         <%= completed_record.to_date %>
         <%= form_with url: '/virtual-review-committee/records', method: :get, html: { class: 'date-form', style: 'display:none;' } do |form| %>
@@ -56,7 +56,7 @@
          <tr class="text-center">
             <th>
                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                  <input class="form-check-input" type="checkbox" value="" id="select-all-checkbox">
                </div>
             </th>
             <th>Provider Name</th>
@@ -70,92 +70,156 @@
          </tr>
       </thead>
       <tbody class="bg-light">
-         <% if @director.present?%>
-            <%= render 'director_selection', director: @director %>
-         <% elsif @selected_committee_dates.present? %>
-            <% @selected_committee_dates.each do |selected_committee_date|%>
-               <tr class="text-center">
-                  <td>
-                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                     </div>
-                  </td>
-                  <td class="text-start">
-                     <i class="bi bi-file-earmark-check-fill" style="font-size: 1rem; color: #1CC775;"></i>
-                  <%= selected_committee_date.provider_name %>
-                </td>
-                  <td><%= selected_committee_date.provider_type %></td>
-                  <td>Director</td>
-                  <td><%= selected_committee_date.cred_cycle %></td>
-                  <td><%= selected_committee_date.review_level %></td>
-                  <td><%= selected_committee_date.review_date.to_date %></td>
-                  <td><%= selected_committee_date.committee_date.to_date %></td>
-                  <td>
-                     <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
-                     <%= selected_committee_date.status %>
-                  </td>
-               </tr>
-            <% end %>
-         <% elsif @params_present.present? %>
-            <% User.directors.each do |director|%>
-               <% director.virtual_review_committees.where(build_filter_conditions).each do |assigned_records| %>
-                   <% if assigned_records.progress_status == "assigned" %>
-                     <tr class="text-center">
-                        <td>
-                           <div class="form-check">
-                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                           </div>
-                        </td>
-                        <td class="text-start">
-                           <i class="bi bi-file-earmark-check-fill" style="font-size: 1rem; color: #1CC775;"></i>
-                        <%= assigned_records.provider_name %>
-                      </td>
-                        <td><%= assigned_records.provider_type %></td>
-                        <td>Director</td>
-                        <td><%= assigned_records.cred_cycle %></td>
-                        <td><%= assigned_records.review_level %></td>
-                        <td><%= assigned_records.review_date.to_date %></td>
-                        <td><%= assigned_records.committee_date.to_date %></td>
-                        <td>
-                           <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
-                           <%= assigned_records.status %>
-                        </td>
-                     </tr>
+         <% if @provider_personal_informations.present? %>
+            <% if @director.present?%>
+               <%= render 'director_selection', director: @director %>
+            <% elsif @provider_personal_informations.present? %>
+               <% @provider_personal_informations.where.not(progress_status: 'completed').each do |selected_committee_date|%>
+                  <tr class="text-center">
+                     <td>
+                        <div class="form-check">
+                           <input class="form-check-input row-checkbox" type="checkbox" value="<%= selected_committee_date.id %>" id="flexCheckDefault">
+                        </div>
+                     </td>
+                     <td class="text-start">
+                        <i class="bi bi-file-earmark-check-fill" style="font-size: 1rem; color: #1CC775;"></i>
+                     <%= selected_committee_date.fullname %>
+                   </td>
+                     <td><%= selected_committee_date.provider_type_provider_type_abbreviation %></td>
+                     <td>Director</td>
+                     <td><%= selected_committee_date&.cred_cycle %></td>
+                     <td><%= selected_committee_date&.review_level %></td>
+                     <td><%= selected_committee_date.review_date&.to_date %></td>
+                     <td><%= selected_committee_date.committee_date&.to_date %></td>
+                     <td>
+                        <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
+                        <%#= selected_committee_date.status %>
+                        <% if selected_committee_date.progress_status == "completed" %>
+                           <span style="font-size: 10px;">Approved</span>
+                        <% end %>
+                     </td>
+                  </tr>
+               <% end %>
+            <% elsif @params_present.present? %>
+               <% User.directors.each do |director|%>
+                  <% director.provider_personal_informations.where(build_filter_conditions).each do |assigned_records| %>
+                      <% if assigned_records.progress_status == "assigned" %>
+                        <tr class="text-center">
+                           <td>
+                              <div class="form-check">
+                                 <input class="form-check-input row-checkbox" type="checkbox" value="<%= assigned_records.id %>">
+                              </div>
+                           </td>
+                           <td class="text-start">
+                              <i class="bi bi-file-earmark-check-fill" style="font-size: 1rem; color: #1CC775;"></i>
+                           <%= assigned_records.provider_name %>
+                         </td>
+                           <td><%= assigned_records.provider_type %></td>
+                           <td>Director</td>
+                           <td><%= assigned_records.cred_cycle %></td>
+                           <td><%= assigned_records.review_level %></td>
+                           <td><%= assigned_records.review_date.to_date %></td>
+                           <td><%= assigned_records.committee_date.to_date %></td>
+                           <td>
+                              <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
+                              <%= assigned_records.status %>
+                           </td>
+                        </tr>
+                     <% end %>
+                  <% end %>
+               <% end %>
+            <% else %>
+               <% User.directors.each do |director|%>
+                  <% director.provider_personal_informations.each do |assigned_records| %>
+                      <% if assigned_records.progress_status != "completed" %>
+                        <tr class="text-center">
+                           <td>
+                              <div class="form-check">
+                                 <input class="form-check-input row-checkbox" type="checkbox" value="<%= assigned_records.id %>">
+                              </div>
+                           </td>
+                           <td class="text-start">
+                              <i class="bi bi-file-earmark-check-fill" style="font-size: 1rem; color: #1CC775;"></i>
+                           <%= assigned_records.fullname %>
+                         </td>
+                           <td><%= assigned_records.provider_type_provider_type_abbreviation %></td>
+                           <td>Director</td>
+                           <td><%= assigned_records.cred_cycle %></td>
+                           <td><%= assigned_records.review_level %></td>
+                           <td><%= assigned_records.review_date.to_date %></td>
+                           <td><%= assigned_records.committee_date.to_date %></td>
+                           <td>
+                              <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
+                              <%#= assigned_records.status %>
+                               <% if assigned_records.progress_status == "completed" %>
+                                 <span style="font-size: 10px;">Approved</span>
+                               <% end %>
+                           </td>
+                        </tr>
+                     <% end %>
                   <% end %>
                <% end %>
             <% end %>
          <% else %>
-            <% User.directors.each do |director|%>
-               <% director.virtual_review_committees.each do |assigned_records| %>
-                   <% if assigned_records.progress_status == "assigned" %>
-                     <tr class="text-center">
-                        <td>
-                           <div class="form-check">
-                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                           </div>
-                        </td>
-                        <td class="text-start">
-                           <i class="bi bi-file-earmark-check-fill" style="font-size: 1rem; color: #1CC775;"></i>
-                        <%= assigned_records.provider_name %>
-                      </td>
-                        <td><%= assigned_records.provider_type %></td>
-                        <td>Director</td>
-                        <td><%= assigned_records.cred_cycle %></td>
-                        <td><%= assigned_records.review_level %></td>
-                        <td><%= assigned_records.review_date.to_date %></td>
-                        <td><%= assigned_records.committee_date.to_date %></td>
-                        <td>
-                           <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
-                           <%= assigned_records.status %>
-                        </td>
-                     </tr>
-                  <% end %>
-               <% end %>
-            <% end %>
-         <% end %>
+           <th colspan="13">
+              <p>No records found</p>
+            </th>
+         <% end %>  
       </tbody>
    </table>
+   <div class="text-end">
+     <%= button_tag "Submit", class: "btn btn-primary mt-2", id: "open-review-modal-btn" %>
+  </div>
 </div>
+
+<!-- Modal -->
+<!-- Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Review Committee Recommendation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <%= form_with model: @provider, url: record_approval_path, method: :patch do |form| %>
+          <!-- Selected IDs go here -->
+          <div id="selected-ids-container"></div>
+
+          <div class="form-group mb-3">
+            <label for="record_status">Final decision:</label>
+            <%= form.hidden_field :id, value: '' %>
+            <%= form.select :status, options_for_select([
+                  ['--'],
+                  'Add Notes',
+                  'Final Approval',
+                  'Deny',
+                  'Pending',
+                  'Recommend Termination',
+                  'Tabled'
+                ]), {}, { id: 'record_status', class: 'form-control' } %>
+          </div>
+
+          <div class="form-group mb-3" style="position: relative;">
+            <label for="">Review comments:</label>
+            <%= form.text_area :description, class:"form-control", style:"border: 1px solid #000;", cols:25 , rows:10, required: true %>
+          </div>
+          <div class="mb-3">
+            <label>Use exsiting signature image:</label>
+            <input class="form-check-input" type="checkbox" name="send_confirmation" id="send_confirmation" value="1" checked>
+          </div>
+          <%= form.submit "Submit", class: "btn btn-primary" %>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 
 <% content_for :js do %>
    <script>
@@ -203,7 +267,47 @@
         setSelectedValue();
       }
     });
-  </script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const submitBtn = document.getElementById("open-review-modal-btn");
+
+      submitBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        const selectedCheckboxes = document.querySelectorAll(".row-checkbox:checked");
+        const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+        if (selectedIds.length === 0) {
+          alert("Please select at least one provider.");
+          return;
+        }
+
+        // Inject hidden fields into the form
+        const container = document.getElementById("selected-ids-container");
+        container.innerHTML = ""; // clear previous
+        selectedIds.forEach(id => {
+          const hiddenInput = document.createElement("input");
+          hiddenInput.type = "hidden";
+          hiddenInput.name = "provider_ids[]";
+          hiddenInput.value = id;
+          container.appendChild(hiddenInput);
+        });
+
+        // Show the modal
+        const modal = new bootstrap.Modal(document.getElementById('reviewModal'));
+        modal.show();
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const selectAllCheckbox = document.getElementById("select-all-checkbox");
+      selectAllCheckbox.addEventListener("change", function () {
+        const rowCheckboxes = document.querySelectorAll(".row-checkbox");
+        rowCheckboxes.forEach(cb => cb.checked = this.checked);
+      });
+    });
+
+</script>
+
 <% end %>
 
 
@@ -228,6 +332,10 @@
 
       // Submit the form
       form.submit();
+    });
+    $('#select-all-checkbox').on('change', function() {
+      const checked = $(this).is(':checked');
+      $('.row-checkbox').prop('checked', checked);
     });
   });
 </script>

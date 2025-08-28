@@ -1,191 +1,416 @@
 <div class="content container-fluid ps-0">
-   <%= render "provider_source_components/top_buttons"%>
-   <div  class="row">
-      <div class="col-lg-3">
-         <%= render "provider_source_components/sub_navbar"%>
-      </div>
-      <div class="col-lg-9">
-         <div class="row border border-4 p-3">
-            <div class="col-lg-12">
-               <%= render partial: "provider_source_components/header_title", locals: {title: "Specialties", icon: 'bi-person-bounding-box'}%>
-               <%#= render partial: "provider_source_components/progress_bar", locals: {percent: (@provider.specialties_progress)}%>
-            
-        <% steps = [['Specialties', 'active', 'javascript:void(0);', 'specialties_progress_v2']]%>
-        <%= render partial: "provider_source_components/progress_bar", locals: { steps: steps }%>
-            </div>
-            <div class="col-lg-12 px-0">
-               <div class="alert alert-info alert-light-blue d-flex align-items-center">
-                  <i class="bi bi-info-circle" style="font-size: 20px;"></i>
-                  <small class="ms-2 fw-semibold text-dark-grey">Please add all specialty types you with to be credentialed in.</small>
-               </div>
-            </div>
-            <div class="col-lg-12 card py-3 mb-3">
-               <h4 class="fw-semibold text-secondary mb-3">Specialties</h4>
-               <div class="alert alert-info alert-light-blue d-flex align-items-center">
-                  <i class="bi bi-info-circle" style="font-size: 20px;"></i>
-                  <small class="ms-2 fw-semibold text-dark-grey">Please enter all practicing specialty information.</small>
-               </div>
-               <div class="d-flex align-items-center divider gap-3 my-3">
-                  <span class="line flex-grow-1 bg-medium-grey"></span>
-                  <div class="bg-medium-grey rounded px-3 py-2">
-                     <h6 class="my-0 text-secondary">SPECIALTY</h6>
-                  </div>
-                  <span class="line flex-grow-1 bg-medium-grey"></span>
-               </div>
-               <div class="row mb-3">
-                  <div class="col-lg-6">
-                     <div class="form-group">
-                        <!-- <input type="" name="ranking" class="form-control border-dark" placeholder="Ranking*"> -->
-                        <label class="text-dark-grey">Ranking <span class="text-danger">*</span></label>
-                        <select name="special_ranking" class="form-select border-dark">
-                           <option value="">Ranking*</option>
-                           <option value="Primary">Primary</option>
-                           <option value="Secondary">Secondary</option>
-                        </select>
-                     </div>
-                  </div>
-                  <div class="col-lg-6">
-                     <div class="form-group">
-                       <%= HtmlUtils::dropdown name: 'specialty', label: 'Specialty <span class="text-danger"> *</span>' %>
-                     </div>
-                  </div>
-               </div>
-               <div class="row mb-3">
-                  <!-- <div class="col-lg-6"> -->
-                  <div class="col-lg-6">
-                     <div class="d-flex align-items-center my-3">
-                        <%= HtmlUtils.radio_toggle name: 'specialties_ppo_directory',
-                        label: 'Do you wish to be listed in the PPO Directory under <br>
-                         this specialty? <span class="text-danger"> *</span>',
-                        hidden_field: true
-                        %>
-                     </div>
-                  </div>
-                  <div class="col-lg-6">
-                     <div class="d-flex align-items-center my-3">
-                        <%= HtmlUtils.radio_toggle name: 'specialties_pos_directory',
-                        label: 'Do you wish to be listed in the POS Directory under <br>
-                         this specialty? <span class="text-danger"> *</span>',
-                        hidden_field: true
-                        %>
-                     </div>
-                  </div>
-               </div>
-               <div class="row mb-2">
-                  <div class="col-lg-6">
-                     <div class="d-flex align-items-center my-3">
-                        <%= HtmlUtils.radio_toggle name: 'specialties_provider_directory',
-                        label: 'Do you wish to be listed in the Provider Directory under <br>
-                        this specialty?',
-                        hidden_field: true
-                        %>
-                     </div>
-                  </div>
-                  <div class="col-lg-6">
-                     <div class="d-flex align-items-center my-3">
-                        <%= HtmlUtils.radio_toggle name: 'specialties_hmo_directory',
-                        label: 'Do you wish to be listed in the HMO Directory under <br>
-                         this specialty?',
-                        hidden_field: true
-                        %>
-                     </div>
-                  </div>
-               </div>
-               <div class="row mb-2">
-                  <div class="col-lg-6">
-                     <div class="d-flex align-items-center my-3">
-                        <%= HtmlUtils.radio_toggle name: 'specialties_board',
-                        label: 'Are/Were you certified by any board in this specialty?',
-                        hidden_field: true
-                        %>
-                     </div>
-                  </div>
-                  <div class="col-lg-6">
-                     <div class="d-flex align-items-center my-3">
-                        <%= HtmlUtils.radio_toggle name: 'specialties_certified',
-                        label: 'Are you eligible to be certified in this specialty?',
-                        hidden_field: true
-                        %>
-                     </div>
-                  </div>
-               </div>
-            </div>
-            <div class="col-lg-12 card py-3 mb-3">
-               <div class="row mb-3">
-   							<div class="col-lg-12">
-								<div class="d-flex justify-content-between">
-										<label class="text-dark-grey">Have you ever failed to pass a specialty board examination? <span class="text-danger"> *</span></label>
-									<div class="d-flex me-4 gap-2">
-										<div class="gap-2">
-											<input type="radio" name="specialties_board_exam" class="radio-with-form" data-form='failed_exam_board' value="yes" checked='checked'>
-											<span>YES</span>
-										</div>	
-										<div class="gap-2">
-											<input type="radio" name="specialties_board_exam" class="radio-with-form" data-form='failed_exam_board' value="no" >
-											<span>NO</span>
-										</div>
-									</div>
-								</div>	
-						    </div>	
-						</div>	
-							<div class="<%= toggle_hide_current_provider_source('specialties_board_exam', @provider) %>" id="failed_exam_board">
-								<%= render partial: 'provider_source_components/failed_exam_form'%>
-							</div>
-               <!-- <h4 class="fw-semibold text-secondary mb-3">Failed Exams</h4>
-               <div class="d-flex align-items-center my-3">
-                  <%= HtmlUtils.radio_toggle name: 'specialties_board_exam',
-                     label: 'Have you ever failed to pass a specialty board examination? <span class="text-danger"> *</span>',
-                     toshow: 'failed_exam_board',
-                     hidden_field: true
-                  %>
-               </div>
-                <div class="<%=toggle_hide('specialties_board_exam')%>" id="failed_exam_board">
-               <%= render "provider_source_components/failed_exam_form"%>
-               </div> -->
-            </div>
-            <div class="col-lg-12 card py-3 mb-3">
-               <h4 class="fw-semibold text-secondary mb-3">Population Served</h4>
-               <div class="row mb-3">
-                  <div class="col-lg-6">
-                     <label class="text-dark-grey">Requesting priviliges for the target populations (can be multiple)</label>
-                     <select class="form-select border-dark" placeholder="Suffix" name="target_population_privileges">
-                        <option value="">Select Option</option>
-                     </select>
-                  </div>
-                  <div class="col-lg-6">
-                     <label class="text-dark-grey">Employment Type (can be multiple)</label>
-                     <select class="form-select border-dark" placeholder="Suffix" name="populations_employment_type">
-                         <option value="">Select Option</option>
-                     </select>
-                  </div>
-               </div>
-               <div class="row mb-3">
-                  <div class="col-lg-6">
-                  <label class="text-dark-grey">Population being served (can be multiple)</label>
-                  <%= HtmlUtils::dropdown name: 'populations_served', multiple: true %>
-                  </div>
-               </div>
-               <div class="col-lg-12">
-								<div class="d-flex justify-content-between">
-									<%= HtmlUtils.radio_options name: 'specialty_student_intern', label: 'Are you student intern?' %>
-								</div>
-					</div>
-               <div class="form-group mb-3">
-               	<label class="text-dark-grey">Other informations</label>
-               	<textarea name="populations-infos" class="form-control border-dark" rows="8">
-               	</textarea>
-               	<label class="text-dark-grey">2500 max characters</label>
-               </div>
-               <div class="form-group">
-               	<label class="text-dark-grey">Other areas of professional practice interest, activieties, procedures, diagnoses or populations:</label>
-               	<textarea name="populations-served" class="form-control border-dark" rows="8">
+  <%=render "provider_source_components/top_buttons"%>
+  <div class="row">
+    <div class="col-lg-3">
+      <%= render "provider_source_components/sub_navbar"%>
+    </div>
+    <div class="col-lg-9">
+      <div class="row border border-4 p-3">
+        <div class="col-lg-12">
+          <%=render partial: "provider_source_components/header_title", locals:
+          {title: "Specialties", icon: 'bi-person-bounding-box'}%>
+            <%#=render partial: "provider_source_components/progress_bar", locals:
+            {percent: (@provider.specialties_progress)}%>
+              <% steps=[ [ 'Specialties', 'active', 'javascript:void(0);',
+              'specialties_progress_v2']]%>
+                <%=render partial: "provider_source_components/progress_bar", locals:
+                { steps: steps }%>
+        </div>
+        <div class="col-lg-12 px-0">
+          <div class="alert alert-info alert-light-blue d-flex align-items-center">
+            <i class="bi bi-info-circle" style="font-size: 20px;">
+            </i>
+            <small class="ms-2 fw-semibold text-dark-grey">
+              Please add all specialty types you with to be credentialed in.
+            </small>
+          </div>
+        </div>
+        <!-- START: Specialty Form Section -->
+        <div class="col-lg-12 card py-3 mb-3" id="specialtie-section">
+          <h4 class="fw-semibold text-secondary mb-3">Specialties</h4>
 
-               	</textarea>
-               	<label class="text-dark-grey">2500 max characters</label>
-               </div>
+          <div class="alert alert-info alert-light-blue d-flex align-items-center">
+            <i class="bi bi-info-circle" style="font-size: 20px;"></i>
+            <small class="ms-2 fw-semibold text-dark-grey">Please enter all practicing specialty information.</small>
+          </div>
+          <div id="specialities_container">
+            <% if @provider.provider_source_specialities.empty? %>
+              <!-- Render initial blank entry (index 0) if none exist -->
+              <%= render partial: 'pages/provider_source/speciality_form', locals: { index: 0, specialty: ProviderSourceSpeciality.new } %>
+            <% else %>
+              <% @provider.provider_source_specialities.each_with_index do |specialty, index| %>
+                <%= render partial: 'pages/provider_source/speciality_form', locals: { index: index, specialty: specialty } %>
+              <% end %>
+            <% end %>
+          </div>
 
+          <!-- Hidden template to clone -->
+          <div id="specialities_template" class="specialities-entry d-none">
+            <%= render partial: 'pages/provider_source/speciality_form', locals: { index: 'REPLACE_INDEX', specialty: ProviderSourceSpeciality.new } %>
+          </div>
+          <% if @provider.provider_source_specialities.any?(&:persisted?) %>
+            <div>
+              <button type="button" class="btn btn-outline-primary mt-2" id="add_specialty">
+                <i class="bi bi-plus-circle me-1"></i> Add New
+              </button>
             </div>
-         </div>
+          <% end %>  
+        </div>
+
+        <div class="col-lg-12 card py-3 mb-3">
+          <h4 class="fw-semibold text-secondary mb-3">
+            Population Served
+          </h4>
+          <div class="row mb-3">
+            <div class="col-lg-6">
+              <label class="text-dark-grey">
+                Requesting privileges for the target populations (can be multiple)
+              </label>
+              <select class="form-select border-dark" placeholder="Suffix" name="target_population_privileges">
+                <option value="">
+                  Select Option
+                </option>
+                <option value="children">
+                  Children
+                </option>
+                <option value="adults">
+                  Adults
+                </option>
+                <option value="none">
+                  None
+                </option>
+              </select>
+            </div>
+            <div class="col-lg-6">
+              <label class="text-dark-grey">
+                Employment Type (can be multiple)
+              </label>
+              <select class="form-select border-dark" name="populations_employment_type">
+                <option value="">
+                  Select Option
+                </option>
+                <option value="children_0_8">
+                  Children (0-8 years)
+                </option>
+                <option value="children_idd_dd_7_17">
+                  Children with IDD/DD (7-17 years)
+                </option>
+                <option value="children_sed_7_17">
+                  Children with SED (7-17 years)
+                </option>
+                <option value="autism_benefit_screening">
+                  Autism Benefit Screening
+                </option>
+                <option value="infant_mental_health">
+                  Infant Mental Health
+                </option>
+                <option value="aba_services">
+                  ABA Services
+                </option>
+                <option value="adults_mental_illness">
+                  Adults with Mental Illness
+                </option>
+                <option value="adults_idd_dd">
+                  Adults with IDD/DD
+                </option>
+                <option value="adults_sud">
+                  Adults with SUD
+                </option>
+                <option value="children_sud">
+                  Children with SUD
+                </option>
+                <option value="co_occurring">
+                  Co-Occurring
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-lg-6">
+              <label class="text-dark-grey">
+                Population being served (can be multiple)
+              </label>
+              <%=HtmlUtils::dropdown name: 'populations_served', multiple: true %>
+            </div>
+          </div>
+          <div class="col-lg-12">
+            <div class="d-flex justify-content-between">
+              <%=HtmlUtils.radio_options name: 'specialty_student_intern', label:
+              'Are you student intern?' %>
+            </div>
+          </div>
+          <div class="form-group mb-3">
+            <label class="text-dark-grey">
+              Other informations
+            </label>
+            <textarea name="populations-infos" class="form-control border-dark" rows="8">
+            </textarea>
+            <label class="text-dark-grey">
+              2500 max characters
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="text-dark-grey">
+              Other areas of professional practice interest, activieties, procedures,
+              diagnoses or populations:
+            </label>
+            <textarea name="populations-served" class="form-control border-dark" rows="8">
+            </textarea>
+            <label class="text-dark-grey">
+              2500 max characters
+            </label>
+          </div>
+        </div>
       </div>
-   </div>
+    </div>
+  </div>
 </div>
+<script>
+$(document).ready(function () {
+  let index = $("#specialities_container .specialities-entry").length;
+  const pendingRequests = {}; // Track pending AJAX by input name
+
+  $("#add_specialty").on("click", function () {
+    let newEntry = $("#specialities_template").clone();
+    newEntry.removeClass("d-none").css("display", "block").removeAttr("id");
+
+    // Clear all inputs and assign names with new index
+    newEntry.find("input, select, textarea").each(function () {
+      let oldName = $(this).attr("name");
+      if (oldName) {
+        let newName = oldName.replace(/\[REPLACE_INDEX\]/, `[${index}]`);
+        $(this).attr("name", newName);
+      }
+
+      // Reset values
+      if ($(this).is("select")) {
+        $(this).val("");
+      } else if ($(this).attr("type") === "checkbox" || $(this).attr("type") === "radio") {
+        $(this).prop("checked", false);
+      } else {
+        $(this).val("");
+      }
+    });
+
+    newEntry.attr("data-id", ""); // Reset ID
+    newEntry.attr("data-saving", "false"); // Custom flag to avoid race conditions
+    newEntry.attr("data-index", index); // Add index for bindConditionalDisplay
+
+    newEntry.find(".remove_speciality").show();
+    newEntry.find("[id]").each(function () {
+      let oldId = $(this).attr("id");
+      if (oldId && oldId.includes("REPLACE_INDEX")) {
+        let newId = oldId.replace(/REPLACE_INDEX/g, index);
+        $(this).attr("id", newId);
+      }
+    });
+
+    index++;
+    $("#specialities_container").append(newEntry);
+    bindConditionalDisplay(newEntry); // <--- Important!
+
+  });
+
+  if ($("#specialities_container .specialities-entry").length === 1) {
+    $("#specialities_container .specialities-entry").first().find(".remove_speciality").hide();
+    bindConditionalDisplay($("#specialities_container .specialities-entry").first());
+  }
+
+  $(document).on("click", ".remove_speciality", function () {
+    let entry = $(this).closest(".specialities-entry");
+    let specilaity_id = entry.data("id");
+
+    entry.remove();
+
+    if (specilaity_id) {
+      $.ajax({
+        url: `/provider_sources/autosave`,
+        type: "POST",
+        dataType: "json",
+        data: { delete_speciality_id: specilaity_id },
+        headers: {
+          "X-CSRF-Token": $("meta[name='csrf-token']").attr("content")
+        },
+        success: function () {
+          console.log("Undergraduate School entry deleted.");
+        },
+        error: function (xhr, status, error) {
+          console.error("Delete failed:", error);
+        }
+      });
+    }
+  });
+
+  // Debounce logic
+  let debounceTimeout;
+  $(document).on("change", "#specialities_container input, #specialities_container select, #specialities_container textarea", function () {
+    const $field = $(this);
+    const fieldName = $field.attr("name");
+    const value = $field.val();
+    const $entry = $field.closest(".specialities-entry");
+    const $container = $("#specialities_container");
+
+    clearTimeout(debounceTimeout);
+
+    debounceTimeout = setTimeout(function () {
+      // Prevent duplicate autosave if already pending for this field
+      if (pendingRequests[fieldName]) {
+        return;
+      }
+
+      pendingRequests[fieldName] = true;
+      $.ajax({
+        url: "/provider_sources/autosave",
+        type: "POST",
+        dataType: "json",
+        data: {
+          field_name: fieldName,
+          value: value,
+          speciality_id: $entry[0].dataset.id,
+          nested_form: true
+        },
+        headers: {
+          "X-CSRF-Token": $("meta[name='csrf-token']").attr("content")
+        },
+        success: function (response) {
+          if (response.id) {
+            $entry.attr("data-id", response.id);
+          }
+        },
+        complete: function () {
+          pendingRequests[fieldName] = false;
+        },
+        error: function (xhr, status, error) {
+          console.error("Autosave failed:", error);
+        }
+      });
+    }, 300); // Debounce delay (ms)
+  });
+
+  $("#specialities_container .specialities-entry").each(function () {
+    bindConditionalDisplay($(this));
+  });
+
+  function bindConditionalDisplay(entry) {
+    const get = (id) => entry.find(`[id$="${id}"]`);
+    const nestedIndex = entry[0].dataset.index;
+    const section = {
+      certified: entry.find(`#certification_fields_${nestedIndex}`),
+      eligibility: entry.find(`#eligibility_section_${nestedIndex}`),
+      admissibility: entry.find(`#admissibility_expiration_${nestedIndex}`),
+      board: entry.find(`#board-cert-section_${nestedIndex}`),
+      pending: entry.find(`#pending_certification_fields_${nestedIndex}`),
+      applied: entry.find(`#applied_certification_field_${nestedIndex}`),
+      accepted: entry.find(`#accepted_certification_field_${nestedIndex}`),
+      intend: entry.find(`#intend_accepted_certification_field_${nestedIndex}`),
+      intendDate: entry.find(`#intend-date-apply_${nestedIndex}`),
+      boardExamDate: entry.find(`#board-exm-date_${nestedIndex}`),
+      noExamReason: entry.find(`#no_board_exam_reason_field_${nestedIndex}`),
+    };
+
+
+    function updateVisibility() {
+      const certifiedName = entry.find(`#certified_yes_${nestedIndex}`).attr('name');
+      let certified = entry.find(`input[name="${certifiedName}"]:checked`).val();
+
+      const eligibleName = entry.find(`#eligible_yes_${nestedIndex}`).attr('name');
+      let eligible = entry.find(`input[name="${eligibleName}"]:checked`).val();
+
+      const pendingName = entry.find(`#exam_pending_yes_${nestedIndex}`).attr('name');
+      let pending = entry.find(`input[name="${pendingName}"]:checked`).val();
+
+      const intendName = entry.find(`#intend_accepted_yes_${nestedIndex}`).attr('name');
+      let intend = entry.find(`input[name="${intendName}"]:checked`).val();
+
+      const appliedName = entry.find(`#applied_yes_${nestedIndex}`).attr('name');
+      let applied = entry.find(`input[name="${appliedName}"]:checked`).val();
+
+      const acceptedName = entry.find(`#accepted_yes_${nestedIndex}`).attr('name');
+      let accepted = entry.find(`input[name="${acceptedName}"]:checked`).val();
+
+
+
+      // Certified
+      if (certified === "yes") {
+        section.certified.show();
+        section.eligibility.hide();
+      } else if (certified === "no") {
+        section.certified.hide();
+        section.eligibility.show();
+      } else {
+        section.certified.hide();
+        section.eligibility.hide();
+      }
+
+      // Eligible
+      if (eligible === "yes") {
+        section.admissibility.show();
+        section.board.show();
+      } else {
+        section.admissibility.hide();
+        section.board.hide();
+        section.pending.hide();
+      }
+
+      // Exam Pending
+      if (pending === "yes") {
+        section.pending.show();
+        section.applied.hide();
+        section.accepted.hide();
+        section.intend.hide();
+        section.noExamReason.hide();
+      } else if (pending === "no") {
+        section.pending.hide();
+        section.applied.show();
+        section.accepted.show();
+        section.intend.show();
+        section.noExamReason.show();
+      } else {
+        section.pending.hide();
+        section.applied.hide();
+        section.accepted.hide();
+        section.intend.hide();
+        section.noExamReason.hide();
+      }
+
+      // Intend
+      if (intend === "yes") {
+        section.intendDate.show();
+        section.noExamReason.hide();
+      } else if (intend === "no") {
+        section.intendDate.hide();
+        section.noExamReason.show();
+      } else {
+        section.intendDate.hide();
+        section.noExamReason.hide();
+      }
+
+      // Applied
+      if (applied === "yes") {
+        section.accepted.show();
+        section.intend.hide();
+      } else if (applied === "no") {
+        section.accepted.hide();
+        section.intend.show();
+      } else {
+        section.accepted.hide();
+        section.intend.hide();
+      }
+
+      // Accepted
+      if (accepted === "yes") {
+        section.boardExamDate.show();
+      } else {
+        section.boardExamDate.hide();
+      }
+    }
+
+    // Attach listeners
+    entry.find('input[type="radio"]').on("change", updateVisibility);
+
+    // Trigger on load
+    updateVisibility();
+  }
+});
+</script>
+

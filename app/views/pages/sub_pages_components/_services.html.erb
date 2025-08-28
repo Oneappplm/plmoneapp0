@@ -3,7 +3,8 @@
    <div class="col-lg-12">
       <%= HtmlUtils.radio_toggle name: 'practice_laboratory_services',
          label: 'Do you provide laboratory services at this location? *',
-         hidden_field: true
+         hidden_field: true,
+         model: 'prac_general_info'
       %>
    </div>
 </div>
@@ -11,7 +12,8 @@
    <div class="col-lg-12">
       <%= HtmlUtils.radio_toggle name: 'practice_clia_waiver',
          label: 'Does this location have a CLIA Waiver?',
-         hidden_field: true
+         hidden_field: true,
+         model: 'prac_general_info'
       %>
    </div>
 </div>
@@ -19,7 +21,8 @@
    <div class="col-lg-12">
       <%= HtmlUtils.radio_toggle name: 'practice_clia_certificate',
          label: 'Does this location have a CLIA Certificate?',
-         hidden_field: true
+         hidden_field: true,
+         model: 'prac_general_info'
       %>
    </div>
 </div>
@@ -27,7 +30,8 @@
    <div class="col-lg-12 mb-3">
       <%= HtmlUtils.radio_toggle name: 'practice_clia_radiology',
          label: 'Do you provide radiology services at this location?',
-         hidden_field: true
+         hidden_field: true,
+         model: 'prac_general_info'
       %>
    </div>
 </div>
@@ -36,7 +40,7 @@
 <div class="row mb-3">
    <div class="col-lg-12 mb-3">
     <label class="text-dark-grey">FDA/Radiology (Mammography) Certification Number for this location: </label>
-    <input type="text" name="practice_fda_radiology" class="form-control">
+    <input type="text" name="practice_fda_radiology" class="form-control" data-model="prac_location_info">
     </div>
 </div>
 
@@ -47,19 +51,26 @@
   <% @services.each do |service|%>
     <div class="col-lg-4 p-1">
       <label class="text-dark-grey">
-        <input type="checkbox" name="service_<%= service.id %>" value="<%= service.id %>">
+        <input type="checkbox" name="radiology_services" value="<%= service.id %>">
         <%= service.name %>
       </label>
     </div>
   <% end %>
 </div>
+  <!-- Anesthesia Question -->
+  <div>
+    <p>Is anesthesia administered at this location?</p>
+    <label><input type="radio" name="practice_yes" value="yes"> Yes</label>
+    <label><input type="radio" name="practice_no" value="no"> No</label>
+  </div>
 
 <div class="row mb-3">
    <div class="col-lg-12 mb-3">
       <%= HtmlUtils.radio_toggle name: 'practice_administered_anesthesia',
          label: 'Is anesthesia administered at this location?',
          hidden_field: true,
-         toshow: 'anesthesia_fields'
+         toshow: 'anesthesia_fields',
+         model: 'prac_location_info'
       %>
    </div>
 </div>
@@ -74,7 +85,7 @@
    </div>
    <div class="col-lg-12 mb-3">
       <div class="d-flex gap-2">
-         <input type="text" name="practice_staff_foreign_laguages" id="add_practice_anesthesia_class" class="form-control" readonly>
+         <input type="text" name="is_class_a" id="add_practice_anesthesia_class" class="form-control" readonly>
          <a href="javascript:void(0);" class="btn btn-md btn-danger remove-text-from-readonly" style="width: 200px;" id="remove_last_foreign_language_interprets" data-removefrom="add_practice_anesthesia_class">Remove</a>
       </div>
    </div>
@@ -106,8 +117,8 @@
 </div>
 
 <div class="row mb-3">
-     <!-- <div class="col-lg-12 d-flex justify-content-end">
-      <button class="btn btn-primary btn-md">Save & Next</button>
-   </div> -->
+    <div class="col-lg-12 d-flex justify-content-end">
+      <%= link_to "Save & Next", provider_engage_path(component: 'midlevel_practitioners', page: 'practice_location'), class: "btn btn-primary btn-md" %>
+    </div>
 </div>
 </form>

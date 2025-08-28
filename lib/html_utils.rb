@@ -18,38 +18,49 @@ module HtmlUtils
   def current_provider_source
     @@current_provider_source
   end
-
-	def radio_toggle **options
+  
+  def radio_toggle(**options)
     options[:active] ||= ''
-		options[:container_class] ||= "d-flex align-items-center"
-		options[:button_class] ||= "btn btn-xs btn-toggle has-to-show to-change-value has-to-hide #{options[:active]}"
-		options[:name] ||= ''
-		options[:label] ||= ''
-		options[:toshow] ||= ''
+    options[:container_class] ||= "d-flex align-items-center"
+    options[:button_class] ||= "btn btn-xs btn-toggle has-to-show to-change-value has-to-hide #{options[:active]}"
+    options[:name] ||= ''
+    options[:label] ||= ''
+    options[:toshow] ||= ''
     options[:tohide] ||= ''
     options[:hidden_field] ||= false
-    options[:data] ||= current_provider_source.finder(options[:name]) rescue nil
-    options[:data_value] ||= 'no'
     options[:isbooleantype] ||= false
 
-		toggle = <<-HTML
-			<div class="#{ options[:container_class] }">
-        <button type="button" class="#{ options[:button_class] } #{ options[:data]&.active_class }" data-tochange="#{ options[:name] }" data-toshow="#{ options[:toshow] }" data-toggle="button" aria-pressed="false" autocomplete="off" data-tohide="#{options[:tohide]}" data-isbooleantype="#{options[:isbooleantype]}">
+    # Fetch data model (only if not already provided)
+    options[:data] ||= current_provider_source.finder(options[:name]) rescue nil
+    data_value = options[:data].respond_to?(:data_value) ? options[:data].data_value : options[:data_value] || 'no'
+    active_class = options[:data].respond_to?(:active_class) ? options[:data].active_class : ''
+
+    toggle = <<-HTML
+      <div class="#{ options[:container_class] }">
+        <button type="button" class="#{ options[:button_class] } #{ active_class }"
+                data-tochange="#{ options[:name] }"
+                data-toshow="#{ options[:toshow] }"
+                data-toggle="button"
+                aria-pressed="false"
+                autocomplete="off"
+                data-tohide="#{ options[:tohide] }"
+                data-isbooleantype="#{ options[:isbooleantype] }"
+                data-model="#{ options[:model] }">
+                >
           <div class="handle"></div>
         </button>
         <small class="ms-2 fw-semibold text-dark-grey">#{ options[:label] }</small>
-			</div>
-		HTML
+      </div>
+    HTML
 
     if options[:hidden_field]
       toggle += <<-HTML
-        <input type="hidden" id="#{ options[:name] }" name="#{ options[:name] }" value="#{ options[:data]&.data_value || options[:data_value] }">
+        <input type="hidden" id="#{ options[:name] }" name="#{ options[:name] }" value="#{ data_value }" data-model="#{ options[:model] }">
       HTML
     end
 
-		toggle.html_safe
-	end
-
+    toggle.html_safe
+  end
 
   def radio_options **options
 
@@ -61,16 +72,21 @@ module HtmlUtils
     options[:value_off] ||= 'no'
     options[:to_show] ||= ''
     options[:required] ||= false
+    options[:data] ||= {}
+
+    # Build data attributes string
+    data_attrs = options[:data].map { |k, v| %(data-#{k.to_s.dasherize}="#{v}") }.join(' ')
+
 
     option = <<-HTML
       <label class="#{ options[:label_class] }"> #{ options[:label] } </label>
       <div class="#{ options[:container_class] }">
           <span>
-          <input type="radio" value="#{ options[:value_on] }" name="#{ options[:name] }" #{ options[:required] ? 'required' : '' } >
+          <input type="radio" value="#{ options[:value_on] }" name="#{ options[:name] }" #{ options[:required] ? 'required' : '' } #{data_attrs}>
           <span>#{ options[:value_on].upcase }</span>
           </span>
           <span>
-          <input type="radio" value="#{ options[:value_off] }" name="#{ options[:name] }" #{ options[:required] ? 'required' : '' } >
+          <input type="radio" value="#{ options[:value_off] }" name="#{ options[:name] }" #{ options[:required] ? 'required' : '' } #{data_attrs}>
           <span>#{ options[:value_off].upcase }</span>
           </span>
         </div>
@@ -105,6 +121,7 @@ module HtmlUtils
     options[:name] ||= ''
 
     value = options[:value]
+    data_attrs = options[:data] || {}
 
 
     dropdown_class = ['form-select']
@@ -116,9 +133,11 @@ module HtmlUtils
       dropdown_class << 'border-dark'
     end
 
+    data_attributes = data_attrs.map { |k, v| %(data-#{k}="#{v}") }.join(' ')
+
     option = <<-HTML
       <label class="text-dark-grey">#{options[:label]}</label>
-      <div class="#{options[:multiple] ? 'multi' : 'single'}-select multi-select-#{options[:name]} #{dropdown_class.join(' ')}" name="#{options[:name]}" id="#{options[:name]}" placeholder="#{options[:label]}"></div>
+      <div class="#{options[:multiple] ? 'multi' : 'single'}-select multi-select-#{options[:name]} #{dropdown_class.join(' ')}" name="#{options[:name]}" id="#{options[:name]}" placeholder="#{options[:label]}" #{data_attributes}></div>
     HTML
 
     option.html_safe

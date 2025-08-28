@@ -1,0 +1,146 @@
+<div class="card shadow-lg col-lg-8 mx-auto my-5 p-4" id="order_id" data-order-id="<%= @order.id %>">
+  <div class="card-body">
+    <% if @order.pending? %>
+      <h2 class="mb-3">Pay with MEDV TOKEN for Order #<%= @order.id %></h2>
+    <% else %>
+      <h2>Amount is paid againt the order #<%= @order.id %></h2>
+    <% end %>
+
+
+    <ul class="list-group mb-4">
+      <li class="list-group-item d-flex justify-content-between">
+        <strong>Total Providers</strong> <span><%= @order.provider_profiles.count %></span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between">
+        <strong>Products</strong> <span><%= @order.order_items.count %></span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between">
+        <strong>Total Amount</strong> <span>$<%= @order.total_amount %> SOL</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between">
+        <strong>Memo</strong> <code><%= @order.payment_memo %></code>
+      </li>
+      <% if @order.pending? %>
+        <li class="list-group-item d-flex justify-content-between">
+            <strong>Send to Wallet</strong> <code><%= SolanaPaymentVerifierJob::SQUAD_WALLET %></code>
+        </li>
+      <% end %>
+    </ul>
+
+    <% if @order.paid? %>
+      <div class="text-center">
+        <h4> ✅ Payment received!</h4>
+        <p class="mt-2 mb-0 fs-5"><strong>Status:</strong> <span class="badge bg-success">Paid</span></p>
+        <% if @order.payment&.solana_signature %>
+          <p class="mt-2 mb-0"><strong>Tx:</strong> <code><%= @order.payment.solana_signature %></code></p>
+        <% end %>
+      </div>
+    <% else %>
+      <h4 class="mt-4 text-center">Scan to Pay via Solana</h4>
+      <% solana_uri = "solana:#{SolanaPaymentVerifierJob::SQUAD_WALLET}?amount=#{@order.total_amount}&memo=#{@order.payment_memo}" %>
+
+      <div class="text-center my-3">
+        <%= image_tag("https://api.qrserver.com/v1/create-qr-code/?data=#{CGI.escape(solana_uri)}&size=200x200", alt: "Solana QR Code", class: "img-fluid") %>
+        <p class="mt-2 fw-bold"><code><%= solana_uri %></code></p>
+      </div>
+
+      <div class="d-grid gap-2">
+        <button id="check-payment-btn" data-order-id="<%= @order.id %>" class="btn btn-success">
+          <span class="btn-text">✅ I've Paid – Check Payment</span>
+          <span class="btn-loader d-none">⏳ Checking...</span>
+        </button>
+      </div>
+
+      <hr class="my-4">
+
+      <h4>Connect Phantom Wallet</h4>
+      <button id="connect-wallet" class="btn btn-outline-secondary">🔗 Connect Phantom</button>
+      <p id="wallet-address" class="text-muted mt-2"></p>
+
+      <div id="card-loader" class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75 d-none">
+        <div class="spinner-border text-success" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    <% end %>
+
+    <div id="payment-alert-placeholder" class="mt-3"></div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("connect-wallet").addEventListener("click", async () => {
+    if (!window.solana || !window.solana.isPhantom) {
+      alert("Please install the Phantom wallet extension.");
+      return;
+    }
+
+    try {
+      const resp = await window.solana.connect();
+      const walletAddress = resp.publicKey.toString();
+      document.getElementById("wallet-address").textContent = `Connected: ${walletAddress}`;
+
+      fetch("/users/update_wallet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("[name=csrf-token]").content
+        },
+        body: JSON.stringify({ solana_wallet: walletAddress })
+      });
+    } catch (err) {
+      alert("Connection failed: " + err.message);
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const button = document.getElementById("check-payment-btn");
+    const loader = document.getElementById("card-loader");
+    const alertPlaceholder = document.getElementById("payment-alert-placeholder");
+
+    if (button) {
+      button.addEventListener("click", function () {
+        const orderId = button.dataset.orderId;
+        loader.classList.remove("d-none");
+        alertPlaceholder.innerHTML = `
+          <div class="alert alert-info alert-dismissible fade show" role="alert">
+            Checking Solana transaction... please wait.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>`;
+
+        fetch(`/orders/${orderId}/confirm_crypto_payment`, { headers: { "Accept": "application/json" } });
+
+        let attempts = 0;
+        const maxAttempts = 10;
+
+        const poll = setInterval(() => {
+          fetch(`/orders/${orderId}/confirm_crypto_payment`, { headers: { "Accept": "application/json" } })
+            .then(res => res.json())
+            .then(data => {
+              if (data.payment_confirmed) {
+                clearInterval(poll);
+                window.location.href = `/orders/${orderId}/checkout`; // redirect to `checkout` page
+              } else if (++attempts >= maxAttempts) {
+                clearInterval(poll);
+                loader.classList.add("d-none");
+                alertPlaceholder.innerHTML = `
+                  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    Still waiting for confirmation. Try again later.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                  </div>`;
+              }
+            })
+            .catch(() => {
+              clearInterval(poll);
+              loader.classList.add("d-none");
+              alertPlaceholder.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  Failed to verify payment.
+                  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
+            });
+        }, 3000);
+      });
+    }
+  });
+</script>

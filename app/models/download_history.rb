@@ -1,0 +1,2 @@
+class DownloadHistory < ApplicationRecord
+end

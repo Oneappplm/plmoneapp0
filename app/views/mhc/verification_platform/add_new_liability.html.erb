@@ -1,0 +1,279 @@
+<div class="enc-content">
+	<div class="container">
+	   <%= render "top_nav_buttons"%>
+
+		<div class="row mt-4">
+			<div class="col-xl-6 d-flex align-items-center">
+				<div class="d-flex align-items-center gap-3">
+					<a href="<%= mhc_verification_platform_path(page_tab: 'liability')%>" class="link-back">
+						<i class='bx bx-left-arrow-alt'></i>
+					</a>
+					<% if params[:page_action] == 'new' %>
+						<h4 class="page-heading">Add New Liability</h4>
+			    <% elsif params[:page_action] == 'edit'%>
+			    	<h4 class="page-heading">Edit Liability</h4>
+			    <% end %>  
+				</div>
+			</div>
+		</div>
+    <% if params[:page_action] == 'new' %>
+      <% url = mhc_provider_insurance_coverages_path(id: @provider_insurance_coverage.id, page_tab: 'liability') %>
+    <% elsif params[:page_action] == 'edit'%>
+      <% url = mhc_provider_insurance_coverage_path(@provider_insurance_coverage.id) %>
+    <% end %>  
+
+		<%= form_with(model: @provider_insurance_coverage, url: url) do |f| %>
+			
+			<%= f.hidden_field :caqh_provider_attest_id %>
+      <%= f.hidden_field :provider_attest_id %>
+			
+			<div class="form-row row mt-3">
+				<div class="col-xl-4">
+					<%= f.label :self_insured_flag, "Self Insured" %>
+					<%= f.select :self_insured_flag, [["Yes", true], ["No", false]], { include_blank: "Select Option" }, class: "form-select form-select-lg" %>
+				</div>
+				<div class="col-xl-4">
+					<%= f.label :insurance_coverage_type_insurance_coverage_type_description, "Type of Coverage" %>
+					<%= f.select :insurance_coverage_type_insurance_coverage_type_description, [["Individual", "individual"], ["Shared", "shared"]], { include_blank: "Select Coverage Type" }, class: "form-select form-select-lg" %>
+				</div>
+				<div class="col-xl-4">
+					<%= f.label :type_of_policy, "Type of Policy" %>
+					<%= f.select :type_of_policy, [["Occurrence", "occurrence"], ["Claims Made", "claims made"]], { include_blank: "Select Policy Type" }, class: "form-select form-select-lg" %>
+				</div>
+			</div>
+
+			<div class="page-applicable">
+				<div class="card mt-3">
+					<div class="form-row row p-2">
+						<span class="page-note">
+							<i class='bx bx-error-circle font-lightblue'></i> <span>To search for a School name,
+								please
+								click the search button.</span>
+						</span>
+						<div class="form-row row">
+							<div class="col-xl-6 ">
+								<%= f.label :insurance_carrier_name, "Carrier Name" %>
+								<div class="input-group gap-1">
+									<%= f.text_field :insurance_carrier_name, class: "form-control form-control-lg" %>
+									<button class="btn btn-primary" type="button">Search</button>
+								</div>
+							</div>
+							<div class="col-xl-6">
+								<%= f.label :address, "Address" %>
+								<%= f.text_field :address, class: "form-control form-control-lg", placeholder: "Type here.." %>
+							</div>
+						</div>
+						<div class="form-row row">
+							<div class="col-xl-6">
+								<%= f.label :address2, "Suite/Dept/Mail Stop:" %>
+								<%= f.text_field :address2, class: "form-control form-control-lg", placeholder: "Type here.." %>
+							</div>
+							<div class="col-xl-6">
+								<%= f.label :additional_address, "Additional Address:" %>
+								<%= f.text_field :additional_address, class: "form-control form-control-lg", placeholder: "Type here.." %>
+							</div>
+						</div>
+						<div class="form-row row">
+							<div class="col-xl-6">
+								<%= f.label :city, "City" %>
+								<%= f.text_field :city, class: "form-control form-control-lg", placeholder: "Type here.." %>
+							</div>
+							<div class="col-xl-6">
+								<%= f.label :country_country_name, "Country" %>
+								<%= f.text_field :country_country_name, class: "form-control form-control-lg", placeholder: "Type here.." %>
+							</div>
+						</div>
+						<div class="form-row row">
+							<div class="col-xl-4">
+								<%= f.label :state, "State:" %>
+								<%= f.collection_select :state, State.all, :id, :name, { include_blank: "Select State" }, class: "form-select form-select-lg" %>
+							</div>
+							<div class="col-xl-4">
+								<%= f.label :postal_code, "Zip/Postal Code:" %>
+								<%= f.text_field :postal_code, class: "form-control form-control-lg", placeholder: "Type here.." %>
+							</div>
+							<div class="col-xl-4">
+								<%# <label for="Country" class="text-dark-grey">Country:</label>
+								<select name="country" id="country" class="form-select ">
+									<option value="">Select option</option>
+								</select> %>
+							</div>
+						</div>
+						<div class="form-row row">
+							<div class="col-xl-4">
+								<%= f.label :phone_number, "Carrier Phone Number:" %>
+								<%= f.text_field :phone_number, class: "form-control form-control-lg", placeholder: "xxx-xxx-xxxx" %>
+							</div>
+							<div class="col-xl-4">
+								<%= f.label :fax_number, "Carrier Fax Number:" %>
+								<%= f.text_field :fax_number, class: "form-control form-control-lg", placeholder: "xxx-xxx-xxxx" %>
+							</div>
+							<div class="col-xl-4">
+								<%= f.label :email_address, "Carrier Email Address:" %>
+								<%= f.text_field :email_address, class: "form-control form-control-lg", placeholder: "Type here.." %>
+							</div>
+						</div>
+						<div class="form-row row">
+							<div class="col-xl-6">
+							  <%= f.label :effective_date, "Original Effective Date:", class: "" %>
+							  <%= f.text_field :effective_date, 
+							                   class: "form-control form-control-lg", 
+							                   placeholder: "MM/DD/YYYY", 
+							                   onfocus: "this.type='date'", 
+							                   onblur: "this.type='text'" %>
+							</div>
+
+							<div class="col-xl-6">
+							  <%= f.label :end_date, "Expiration Date:", class: "" %>
+							  <div class="input-group gap-3 d-flex align-items-center">
+							    <%= f.text_field :end_date, 
+							                     class: "form-control form-control-lg", 
+							                     placeholder: "MM/DD/YYYY", 
+							                     onfocus: "this.type='date'", 
+							                     onblur: "this.type='text'",
+							                     id: "expiredate" %>
+							    <div class="form-check">
+							      <%= check_box_tag :prof_liability_does_not_expire, "1", false, 
+							                        class: "form-check-input", 
+							                        id: "present-switch" %>
+							      <%= label_tag :prof_liability_does_not_expire, "Does Not Expire", class: "form-check-label" %>
+							    </div>
+							  </div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-row row mb-2">
+					<div class="col-xl-4">
+						<%= f.label :claim_amount, "Per Claim Amount:" %>
+						<%= f.text_field :claim_amount, class: "form-control form-control-lg", placeholder: "Type here.." %>
+					</div>
+					<div class="col-xl-4">
+						<%= f.label :coverage_amount_aggregate, "Aggregate Amount:" %>
+						<%= f.text_field :coverage_amount_aggregate, class: "form-control form-control-lg", placeholder: "Type here.." %>
+					</div>
+					<div class="col-xl-4">
+						<%= f.label :umbrella_coverage_amount, "Umbrella Coverage (amount):" %>
+						<%= f.text_field :umbrella_coverage_amount, class: "form-control form-control-lg", placeholder: "Type here.." %>
+					</div>
+				</div>
+
+				<div class="form-row row mb-2">
+					<div class="col-xl-6">
+						<label>Do you have tail coverage (extended reporting endorsement)?</label>
+				    <%= f.radio_button :tail_coverage, true, checked: @provider_insurance_coverage.tail_coverage.nil? ? true : @provider_insurance_coverage.tail_coverage %>
+				    <%= f.label :tail_coverage, "Yes", value: true %>
+				    <%= f.radio_button :tail_coverage, false, checked: @provider_insurance_coverage.tail_coverage == false %>
+				    <%= f.label :tail_coverage, "No", value: false %>
+					</div>
+				</div>
+
+				<div class="form-row row mb-2">
+					<div class="col-xl-8">
+					  <div class="input-group d-flex align-items-center gap-2">
+					    <%= f.label :current_carrier_excluded, 
+					                "Has your current carrier excluded any specific area of practice or procedures from your coverage?", 
+					                class: "text-dark-grey" %>
+					    
+					    <div class="form-check">
+					      <%= f.radio_button :current_carrier_excluded, "yesExcludedAreaOfPractice", 
+					                         class: "form-check-input", 
+					                         id: "yesExcludedAreaOfPractice", 
+					                         checked: true %>
+					      <%= f.label :current_carrier_excluded_yes, "Yes", 
+					                  class: "form-check-label", 
+					                  for: "yesExcludedAreaOfPractice" %>
+					    </div>
+
+					    <div class="form-check">
+					      <%= f.radio_button :current_carrier_excluded, "noExcludedAreaOfPractice", 
+					                         class: "form-check-input", 
+					                         id: "noExcludedAreaOfPractice" %>
+					      <%= f.label :prof_liability_current_carrier_excluded_no, "No", 
+					                  class: "form-check-label", 
+					                  for: "noExcludedAreaOfPractice" %>
+					    </div>
+					  </div>
+					</div>
+				</div>
+
+				<div class="form-row row ListOfExclusions" id="exclusions-container" style="display: none;">
+				  <%= f.label :current_carrier_excluded_explanation, 
+				              "If Yes, please list the exclusions with explanation:", 
+				              class: "text-dark-grey" %>
+				  <div class="col-xl-12">
+				    <%= f.text_field :current_carrier_excluded_explanation, 
+				                     class: "form-control form-control-lg", 
+				                     id: "ListOfExclusions", 
+				                     placeholder: "Type here.." %>
+				  </div>
+				</div>
+
+				<div class="form-row row mt-2 mb-2">
+				  <div class="col-xl-4">
+				    <div class="input-group gap-2">
+				      <%= f.label :show_on_tickler, "Show on Tickler?", class: "align-self-center" %>
+				      <div class="form-check">
+				        <%= f.radio_button :show_on_tickler, 'yesTickler', class: "form-check-input", id: "yesTickler" %>
+				        <%= f.label :show_on_tickler_yesTickler, "Yes", class: "form-check-label" %>
+				      </div>
+				      <div class="form-check">
+				        <%= f.radio_button :show_on_tickler, 'noTickler', class: "form-check-input", id: "noTickler", checked: true %>
+				        <%= f.label :prof_liability_show_on_tickler_noTickler, "No", class: "form-check-label" %>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+
+				<div class="form-row row mb-3">
+					<%= f.label :comment, "Please list any comments:" %>
+					<div class="col-xl-12">
+						<%= f.text_area :comment, class: "form-control form-control-lg", placeholder: "Type here.." %>
+					</div>
+				</div>
+
+				<div class="form-row row justify-content-end">
+					<div class="col-xl-3">
+						<%= f.submit class: "btn btn-primary form-control mt-2" %>
+					</div>
+				</div>
+			</div>
+		<% end %>
+	</div>
+</div>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+	  const checkbox = document.getElementById("present-switch");
+	  const endDateField = document.getElementById("expiredate");
+
+	  checkbox.addEventListener("change", () => {
+	    if (checkbox.checked) {
+	      endDateField.value = "";
+	      endDateField.disabled = true;
+	    } else {
+	      endDateField.disabled = false;
+	    }
+	  });
+
+	  // for hidden the current_carrier_excluded_explanation section
+	  const yesRadio = document.getElementById("yesExcludedAreaOfPractice");
+	  const noRadio = document.getElementById("noExcludedAreaOfPractice");
+	  const exclusionsContainer = document.getElementById("exclusions-container");
+
+	  const toggleExclusions = () => {
+	    if (yesRadio.checked) {
+	      exclusionsContainer.style.display = "block";
+	    } else {
+	      exclusionsContainer.style.display = "none";
+	    }
+	  };
+
+	  // Add event listeners to radio buttons
+	  yesRadio.addEventListener("change", toggleExclusions);
+	  noRadio.addEventListener("change", toggleExclusions);
+
+	  // Initial state check
+	  toggleExclusions();
+	});
+	</script>

@@ -1,41 +1,44 @@
-<div class="row mb-3">
-	<div class="col-lg-6">
-		<div id= "undergrad-location">
-		<div class="form-group">
-			<label class="text-dark-grey">Undergraduate School Location <span class="text-danger"> *</span></label>
-			<%= HtmlUtils::dropdown name: 'usd_school_location'%>
-		</div>
-		</div>
-	</div>
-</div>
+<div class="undergrad-school-entry border rounded p-3 my-3 position-relative" data-id="<%= school&.id %>">
+  <input type="hidden" name="provider_source_undergrad_schools[<%= index %>][id]" value="<%= school&.id %>">
 
-<div class="row mb-3">
-	<div class="col-lg-12">
-		<label class="text-dark-grey">Undergraduate School Name <span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" name="usd_undergraduate_school_name" placeholder="Undergrad School Name">
+  <div class="row mb-3">
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Undergraduate School Location <span class="text-danger">*</span></label>
+      <select name="provider_source_undergrad_schools[<%= index %>][school_location]" class="form-select border-dark">
+			  <option value="">Select State</option>
+			  <% State.all.each do |state| %>
+			    <option value="<%= state.alpha_code %>" <%= 'selected' if school&.school_location == state.alpha_code %>><%= state.name %></option>
+			  <% end %>
+			</select>
+    </div>
+  </div>
 
-	</div>
-</div>
+  <div class="row mb-3">
+    <div class="col-lg-12">
+      <label class="text-dark-grey">Undergraduate School Name <span class="text-danger">*</span></label>
+      <input type="text" class="form-control border-dark" name="provider_source_undergrad_schools[<%= index %>][undergraduate_school_name]" value="<%= school&.undergraduate_school_name %>">
+    </div>
+  </div>
 
-<div class="row mb-3">
+  <div class="row mb-3">
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Address Line 1<span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" required name="usd_address_line1" placeholder="Addess Line 1">
+		<input type="text" class="form-control border-dark" required name="provider_source_undergrad_schools[<%= index %>][address_line1]" placeholder="Address Line 1" value="<%= school&.address_line1 %>">
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Address Line 2</label>
-		<input type="text" class="form-control border-dark" name="usd_address_line2" placeholder="Address Line 2">
+		<input type="text" class="form-control border-dark" name="provider_source_undergrad_schools[<%= index %>][address_line2]" placeholder="Address Line 2" value="<%= school&.address_line2 %>">
 	</div>
 </div>
 
 <div class="row mb-3">
 	<div class="col-lg-6">
 		<label class="text-dark-grey">City<span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" required name="usd_city" placeholder="City">
+		<input type="text" class="form-control border-dark" required name="provider_source_undergrad_schools[<%= index %>][city]" placeholder="City" value="<%= school&.city %>">
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Zip Code<span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" required name="usd_zipcode" placeholder="Zip Code">
+		<input type="text" class="form-control border-dark" required name="provider_source_undergrad_schools[<%= index %>][zipcode]" placeholder="Zip Code" value="<%= school&.zipcode %>">
 	</div>
 </div>
 
@@ -44,62 +47,71 @@
 		<div class="row">
 			<div class="col-lg-8">
 				<label class="text-dark-grey">Telephone Number</label>
-				<input type="text" class="form-control border-dark" name="usd_telephone_number" placeholder="Telephone Number">
+				<input type="text" class="form-control border-dark" name="provider_source_undergrad_schools[<%= index %>][telephone_number]" placeholder="Telephone Number" value="<%= school&.telephone_number %>">
 			</div>
 			<div class="col-lg-4">
 				<label class="text-dark-grey">Ext</label>
-				<input type="text" class="form-control border-dark" name="usd_ext" placeholder="Ext">
+				<input type="text" class="form-control border-dark" name="provider_source_undergrad_schools[<%= index %>][ext]" placeholder="Ext" value="<%= school&.ext %>">
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Fax Number</label>
-		<input type="text" class="form-control border-dark" name="usd_fax_number" placeholder="Fax Number">
+		<input type="text" class="form-control border-dark" name="provider_source_undergrad_schools[<%= index %>][fax_number]" placeholder="Fax Number" value="<%= school&.fax_number %>">
 	</div>
 </div>
 <div class="row mb-3">
 	<div class="col-lg-5">
 		<label class="text-dark-grey">Email</label>
-		<input type="email"  class="form-control border-dark" name="usd_email" placeholder="Email">
+		<input type="email" class="form-control border-dark" name="provider_source_undergrad_schools[<%= index %>][email]" placeholder="Email" value="<%= school&.email %>">
 	</div>
 </div>
 <div class="row mb-3">
 	<div class="col-lg-12">
 		<label class="text-dark-grey">Degree Awarded<span class="text-danger">*</span></label>
-		<input type="text" class="form-control border-dark" required name="usd_degree_awarded" placeholder="Degree Awarded">
+		<input type="text" class="form-control border-dark" required name="provider_source_undergrad_schools[<%= index %>][degree_awarded]" placeholder="Degree Awarded" value="<%= school&.degree_awarded %>">
 	</div>
 </div>
 
 <div class="row mb-3">
 	<div class="col-lg-6">
 		<label class="text-dark-grey">Start Date</label>
-		<input type="date" class="form-control border-dark" name="usd_date_start" >
+		<input type="date" class="form-control border-dark" name="provider_source_undergrad_schools[<%= index %>][date_start]" value="<%= school&.date_start %>">
 	</div>
 	<div class="col-lg-6">
 		<label class="text-dark-grey">End(Graduation) Date<span class="text-danger">*</span></label>
-		<input type="date" class="form-control border-dark" name="usd_date_graduation">
+		<input type="date" class="form-control border-dark" name="provider_source_undergrad_schools[<%= index %>][date_graduation]" value="<%= school&.date_graduation %>">
 	</div>
 </div>
 
-<div class="row mb-3">
-   		<div class="col-lg-12">
-			<div class="d-flex justify-content-between">
-				<label class="text-dark-grey">Did you complete your undergraduate education at this school? <span class="text-danger"> *</span></label>
-					<div class="d-flex me-4 gap-2">
-						<div class="gap-2">
-							<input type="radio" name="incomplete_undergrad" class="radio-with-form" data-form='undergrad_school_reason' value="no" checked='checked' >
-							<span>YES</span>
-						</div>	
-						<div class="gap-2">
-							<input type="radio" name="incomplete_undergrad" class="radio-with-form" data-form='undergrad_school_reason' value="yes" >
-							<span>NO</span>
-						</div>
-					</div>
-			</div>	
-		</div>	
-		
-		<div class="<%= toggle_hide_current_provider_source('incomplete_undergrad', @provider) %>" id="undergrad_school_reason">
-			<%= render partial: 'provider_source_components/undergrad_school_reason'%>
-		</div>
-</div>
 
+  <!-- Address, contact, degree, dates, etc... -->
+  <!-- Copy the rest of your static fields here, updating name attributes with [#{index}] pattern -->
+
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <label class="text-dark-grey mb-0">Did you complete your undergraduate education at this school? <span class="text-danger">*</span></label>
+    <div class="d-flex gap-3">
+      <label>
+        <input type="radio" name="provider_source_undergrad_schools[<%= index %>][incomplete]" data-form='undergrad_school_reason' value="false" <%= 'checked' if school.incomplete == false %>>
+        Yes
+      </label>
+      <label>
+        <input type="radio" name="provider_source_undergrad_schools[<%= index %>][incomplete]" data-form='undergrad_school_reason' value="true" <%= 'checked' if school.incomplete == true %>>
+        No
+      </label>
+    </div>
+  </div>
+  <div class="<%= toggle_hide_current_provider_source('incomplete_undergrad', @provider) %>" id="undergrad_school_reason">
+	  <div class="form-group">
+	  <label>Reason for not completing <span class="text-danger">*</span></label>
+	  <input type="text" class="form-control border-dark"
+	         name="provider_source_undergrad_schools[<%= index %>][reason]"
+	         value="<%= school.reason %>">
+	  </div>
+  </div>
+
+
+  <button type="button" class="btn btn-link text-danger position-absolute end-0 top-0 remove_undergraduate_school">
+    <i class="bi bi-x-circle"></i> Remove
+  </button>
+</div>

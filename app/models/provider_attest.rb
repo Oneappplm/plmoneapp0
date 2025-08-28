@@ -1,0 +1,67 @@
+class ProviderAttest < ApplicationRecord
+  has_many :practice_accessibilities, dependent: :destroy
+  has_many :practice_associates, dependent: :destroy
+  has_many :practice_associate_other_questions, dependent: :destroy
+  has_many :practice_associate_specialties, dependent: :destroy
+  has_many :practice_business_arrangements, dependent: :destroy
+  has_many :practice_certifications, dependent: :destroy
+  has_many :practice_hours, dependent: :destroy
+  has_many  :practice_informations, dependent: :destroy
+  has_many :practice_languages, dependent: :destroy
+  has_many :practice_limitations, dependent: :destroy
+  has_many :practice_other_addresses, dependent: :destroy
+  has_many :practice_other_questions, dependent: :destroy
+  has_many :practice_other_tax_ids, dependent: :destroy
+  has_many :practice_patient_types, dependent: :destroy
+  has_many :practice_phone_coverages, dependent: :destroy
+  has_many :practice_services, dependent: :destroy
+  has_many :practice_specialties, dependent: :destroy
+  has_many :practice_tax_ids, dependent: :destroy
+  has_many :provider_adverse_actions, dependent: :destroy
+  has_many :provider_associates, dependent: :destroy
+  has_many :provider_cds, dependent: :destroy
+  has_many :provider_certifications, dependent: :destroy
+  has_many :provider_criminal_actions, dependent: :destroy
+  has_many :provider_deas, dependent: :destroy
+  has_many :provider_employments
+  has_many :provider_degrees, dependent: :destroy
+  has_many :provider_disclosures, dependent: :destroy
+  has_many :provider_educations, dependent: :destroy
+  has_many :provider_education_associates, dependent: :destroy
+  has_many :provider_hospital_associates, dependent: :destroy
+  has_many :provider_hospital_privileges, dependent: :destroy
+  has_many :provider_identification_numbers, dependent: :destroy
+  has_many :provider_insurance_coverages, dependent: :destroy
+  has_many :provider_languages, dependent: :destroy
+  has_many :provider_liability_actions, dependent: :destroy
+  has_many :provider_malpractice_case_statuses, dependent: :destroy
+  has_many :provider_malpractice_histories, dependent: :destroy
+  has_many :provider_medicaids, dependent: :destroy
+  has_many :provider_medical_associations, dependent: :destroy
+  has_many :provider_medical_conditions, dependent: :destroy
+  has_many :provider_medical_condition_providers, dependent: :destroy
+  has_many :provider_medical_licenses, dependent: :destroy
+  has_many :provider_medicares, dependent: :destroy
+  has_many :provider_militaries, dependent: :destroy
+  has_many :provider_non_practice_addresses, dependent: :destroy
+  has_many :provider_other_business_interests, dependent: :destroy
+  has_many :provider_other_interests, dependent: :destroy
+  has_many :provider_other_names, dependent: :destroy
+  has_many :provider_other_questions, dependent: :destroy
+  has_many :provider_personal_informations, dependent: :destroy
+  has_many :provider_race_ethnicities, dependent: :destroy
+  has_many :provider_references, dependent: :destroy
+  has_many :provider_specialties, dependent: :destroy
+  has_many :provider_substance_abuses,class_name: 'ProviderSubstanceAbuse', dependent: :destroy
+  has_many :provider_time_gaps, dependent: :destroy
+  has_many :provider_work_histories, dependent: :destroy
+  has_many :provider_personal_attempts, dependent: :destroy
+  has_many :provider_personal_docs_uploaded_documents, class_name: 'ProviderPersonalDocsUpload', dependent: :destroy
+  has_one :provider_personal_docs_receive, dependent: :destroy
+  has_many :provider_personal_uploaded_docs, dependent: :destroy
+  has_many :provider_npdbs, dependent: :destroy
+  has_many :practice_information_educations, dependent: :destroy
+  has_many :provider_licensures, dependent: :destroy
+  has_many :certifications, dependent: :destroy
+  has_many :professional_organizations, dependent: :destroy
+end
