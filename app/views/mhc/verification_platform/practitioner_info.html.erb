@@ -375,15 +375,18 @@
                         <div class="row mb-3">
                             <div class="col-lg-4">
                                 <label class="text-dark-grey">Contact Method:</label>
-                                <% form_object = provider_personal_information_credentialing_contact_form&.object %>
+                                <% if provider_personal_information_credentialing_contact_form.respond_to?(:object) %>
+                                  <% form_object = provider_personal_information_credentialing_contact_form.object %>
 
-                                <%= provider_personal_information_credentialing_contact_form&.select :contact_method,
-                                      options_for_select([['Email', 'email'], ['Fax', 'fax'], ['Letter', 'letter']],
-                                                         form_object.respond_to?(:contact_method) ? form_object.contact_method : nil),
-                                      { prompt: '' },
-                                      class: 'form-select border border-dark single-select',
-                                      data: { value: form_object.respond_to?(:contact_method) ? form_object.contact_method : nil }
-                                %>
+                                  <%= provider_personal_information_credentialing_contact_form.select :contact_method,
+                                        options_for_select([['Email', 'email'], ['Fax', 'fax'], ['Letter', 'letter']],
+                                                           form_object.try(:contact_method)),
+                                        { prompt: true },
+                                        class: 'form-select border border-dark single-select',
+                                        data: { value: form_object.try(:contact_method) }
+                                  %>
+                                <% end %>
+
                         </div>
                     </div>
                     <div class="col-lg-12">
@@ -474,7 +477,7 @@
                         <div class="row mb-3">
                             <div class="col-lg-4">
                                 <label class="text-dark-grey">Contact Method:</label>
-                                <%= provider_personal_information_confidential_contact_form.select :contact_method, options_for_select([['Email', 'email'], ['Fax', 'fax'], ['Letter', 'letter']]), { prompt: '' }, {:class => 'form-select border border-dark single-select'}  %>
+                                <%= provider_personal_information_confidential_contact_form.select :contact_method, options_for_select([['Email', 'email'], ['Fax', 'fax'], ['Letter', 'letter']]), { prompt: true }, {:class => 'form-select border border-dark single-select'}  %>
                             </div>
                         </div>
                     </div>
