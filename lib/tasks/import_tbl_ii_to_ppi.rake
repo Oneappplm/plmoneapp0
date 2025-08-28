@@ -17,7 +17,6 @@ namespace :data do
       attest.save! if attest.new_record?
 
       # Map birth_state via states table
-      debugger
       birth_state_record = State.find_by(alpha_code: row["BirthState"])
       birth_state_id = birth_state_record&.id
       puts "⚠️ Birth state not found: #{row['BirthState']}" unless birth_state_id
@@ -28,6 +27,7 @@ namespace :data do
       puts "⚠️ Provider state not found: #{row['CredentialState']}" unless state_id
 
       ppi = ProviderPersonalInformation.new(
+        cred_status: 'no-application',
         practitioner_guid: row['PractitionerGUID'],
         caqh_provider_id: row['id'],
         provider_attest_id: attest.id, # real FK
