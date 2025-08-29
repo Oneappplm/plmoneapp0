@@ -4,16 +4,25 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
   def update
     @provider_personal_information.assign_attributes(provider_personal_information_params)
 
-    if params[:page_tab].present?
-      page_tab = params[:page_tab]
-    else
-      page_tab = 'practitioner_info'
-    end
+    # decide which tab to return to
+    page_tab = if params[:provider_personal_information][:signature_date].present?
+                 'agreement' # or whatever tab name you use for signature
+               elsif params[:page_tab].present?
+                 params[:page_tab]
+               else
+                 'practitioner_info'
+               end
 
     if @provider_personal_information.save
-      redirect_to mhc_verification_platform_path(page_tab: page_tab,id: params[:provider_personal_information][:provider_attest_id]), notice: 'Practice information saved successfully.'
+      redirect_to mhc_verification_platform_path(
+                    page_tab: page_tab,
+                    id: params[:provider_personal_information][:provider_attest_id]
+                  ), notice: 'Practice information saved successfully.'
     else
-      redirect_to mhc_verification_platform_path(page_tab: page_tab,id: params[:provider_personal_information][:provider_attest_id]), alert: 'Failed to save practice information.'
+      redirect_to mhc_verification_platform_path(
+                    page_tab: page_tab,
+                    id: params[:provider_personal_information][:provider_attest_id]
+                  ), alert: 'Failed to save practice information.'
     end
   end
 
@@ -42,7 +51,7 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
   def provider_personal_information_params
     params.require(:provider_personal_information).permit(
       :id, :caqh_provider_id, :provider_attest_id, :caqh_provider_attest_id, :last_name, :first_name,
-      :middle_name, :suffix, :primary_practice_state, :other_name_flag, :birth_date, :us_eligible_flag,
+      :middle_name, :suffix, :primary_practice_state, :other_name_flag, :birth_date, :us_eligible_flag, :signature_date,
       :ssn, :nid, :dea_flag, :cds_flag, :upin, :upin_flag, :npi_flag, :npi, :medicare_provider_flag,
       :medicaid_provider_flag, :other_graduate_education_flag, :fellowship_training_flag, :teaching_appointment_flag,
       :secondary_specialty_flag, :other_specialty_flag, :hospital_privilege_flag, :hospital_admitting_arrangements,
