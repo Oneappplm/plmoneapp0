@@ -90,10 +90,10 @@
                 <%= provider.insurance_carrier_name %>
               <% end %>
             </td>
-            <td><%= provider.policy_number %></td>
-            <td><%= provider.end_date %></td>
-            <td><%= provider.claim_amount %></td>
-            <td><%= provider.coverage_amount_aggregate %></td>
+            <td><%= provider.policy_number.present? || "NA" %></td>
+            <td><%= provider.end_date.present? ? provider.end_date.strftime("%d-%m-%Y") : "NA" %></td>
+            <td><%= number_with_delimiter(provider.claim_amount, delimiter: ",") %></td>
+            <td><%= number_with_delimiter(provider.coverage_amount_aggregate, delimiter: ",") %></td>
             <td><%= provider.audit_status.presence || "Not Requested" %></td>
             <td><%= provider.claims_history_audit.presence || "Not Requested" %></td>
           </tr>

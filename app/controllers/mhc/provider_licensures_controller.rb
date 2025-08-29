@@ -6,6 +6,7 @@ class Mhc::ProviderLicensuresController < ApplicationController
 		if @provider_licensure.save
 			redirect_to mhc_verification_platform_path(page_tab: 'licensure',id: params[:provider_licensure][:provider_attest_id]), notice: 'Provider licensure detail saved successfully.'
 		else
+			Rails.logger.error @provider_licensure.errors.full_messages.join(", ")
 			redirect_to mhc_verification_platform_path(page_tab: 'licensure',id: params[:provider_licensure][:provider_attest_id]), alert: 'Failed to save provider licensure detail.'
 		end
 	end
@@ -14,6 +15,7 @@ class Mhc::ProviderLicensuresController < ApplicationController
 		if @provider_licensure.update(provider_licensure_params)
 			redirect_to mhc_verification_platform_path(page_tab: 'licensure',id: params[:provider_licensure][:provider_attest_id]), notice: 'Provider licensure detail updated successfully.'
 		else
+			Rails.logger.error @provider_licensure.errors.full_messages.join(", ")
 			redirect_to mhc_verification_platform_path(page_tab: 'licensure',id: params[:provider_licensure][:provider_attest_id]), alert: 'Failed to save provider licensure detail.'
 		end
 	end
