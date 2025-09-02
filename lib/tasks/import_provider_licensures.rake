@@ -9,7 +9,7 @@ namespace :data do
       %w[1 yes true y].include?(normalized)
     end
 
-    file_path = Rails.root.join("public", "tbl_XI_202508021611.csv")
+    file_path = Rails.root.join("public", "hvhs_csvs/tbl_XI_202508021611.csv")
 
     unless File.exist?(file_path)
       puts "CSV file not found at #{file_path}"

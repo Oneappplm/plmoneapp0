@@ -3,7 +3,7 @@ require 'csv'
 namespace :data do
   desc "Import provider_personal_informations from tbl_ii CSV"
   task import_tbl_ii_csv: :environment do
-    file_path = Rails.root.join("public", "tbl_II_202508021611.csv")
+    file_path = Rails.root.join("public", "hvhs_csvs/tbl_II_202508021611.csv")
     puts "📂 Importing from #{file_path}..."
 
     imported = 0

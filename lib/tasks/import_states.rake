@@ -4,7 +4,7 @@ require 'csv'
 namespace :data do
   desc "Import states from Comm_tbl_State_202508021611.csv into states table"
   task import_states: :environment do
-    file_path = Rails.root.join("public", "Comm_tbl_State_202508021611.csv")
+    file_path = Rails.root.join("public", "hvhs_csvs/Comm_tbl_State_202508021611.csv")
 
     unless File.exist?(file_path)
       puts "CSV file not found at #{file_path}"
