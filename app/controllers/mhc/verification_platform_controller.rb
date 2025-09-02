@@ -216,7 +216,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'board_cert'
-      @provider_specialties = ProviderSpecialty.where(provider_attest_id: @provider_personal_information.provider_attest_id)
+      @provider_specialties = @provider_personal_information.provider_specialties
       @q = @provider_personal_information.provider_attest.provider_specialties.ransack(params[:q]&.except(:page_tab))
       @provider_specialties = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
     end
