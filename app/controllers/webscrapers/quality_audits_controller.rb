@@ -58,6 +58,8 @@ class Webscrapers::QualityAuditsController < ApplicationController
 
     render json: { message: 'Webcrawler completed successfully', rva_information: rva_information, webscraper_log: webscraper_log }, status: :ok
   rescue => e
+    Rails.logger.error "OIG Webcrawler failed: #{e.class} - #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
@@ -275,7 +277,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
     rva_infos = RvaInformation.where(practice_information_education_id: params[:education_id])
   
     if rva_infos.any?
-      rva_infos.destroy_all
+      rva_infos.update(restart_audit: true)
       render json: { message: 'All related RVA information deleted successfully' }, status: :ok
     else
       render json: { error: 'No RVA information found for the given education ID' }, status: :not_found
