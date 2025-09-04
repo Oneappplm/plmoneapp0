@@ -448,7 +448,12 @@
                                  class="link-checkbox">
                         </td>
                         <td><%= doc&.sub_section %></td>
-                        <td><a href="<%= doc&.file_upload&.url %>"><%= doc&.file_upload&.url %></a></td>
+                        <td>
+                         <a href="<%= doc&.file_upload&.url %>" target="_blank">
+                            <%= File.basename(URI.parse(doc&.file_upload&.url).path) %>
+                          </a>
+
+                        </td>
                         <td><%= doc&.created_at&.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
                         <td><%= file_type %></td>
                       </tr>

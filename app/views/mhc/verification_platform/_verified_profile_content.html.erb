@@ -56,7 +56,7 @@
 				</tr>
 				<tr>
 					<td class="fw-bold text-dark">Signature Date:</td>
-					<td>05/30/2022</td>
+					<td><%= @provider_personal_information.signature_date %></td>
 					<td class="fw-bold text-dark">Verifications Complete Date:</td>
 					<td>Not Available</td>
 				</tr>
@@ -70,7 +70,7 @@
 					<td class="fw-bold text-dark">Social Security No.:</td>
 					<td><%= provider_personal_information&.ssn %></td>
 					<td class="fw-bold text-dark">Date of Birth:</td>
-					<td><%= provider_personal_information&.birth_date %></td>
+					<td><%= provider_personal_information&.birth_date.strftime("%Y-%m-%d") %></td>
 				</tr>
 				<tr>
 					<td class="fw-bold text-dark">NPI:</td>
@@ -119,7 +119,7 @@
 					<td>
 						<strong class="text-dark">Practice Phone:</strong><%= provider_personal_information.practice_informations.map(&:phone_number).join(", ") %> <br>
 						<strong class="text-dark">Practice Fax:</strong><%= provider_personal_information.practice_informations.map(&:fax_number).join(", ") %><br>
-						<strong class="text-dark">TIN Number:</strong><%= provider_personal_information.practice_informations.map(&:practice_name).join(", ") %>
+						<strong class="text-dark">TIN Number:</strong><%= provider_personal_information.practice_informations.map(&:tin_number).join(", ") %>
 					</td>
 				</tr>
 				<tr>
@@ -143,22 +143,22 @@
 				<% details = licensure.rva_informations.where(audit_status: 'Quality Audited').order('source_date DESC').first %>
 				
 				<% if details.present? %>
-					<div class="row">
+					<div class="row mt-3">
 						<div class="col-6">
 							<p><strong>License Number:</strong> <%= licensure.license_number %></p>
-							<p><strong>Issue Date:</strong> <%= licensure.license_issue_date&.strftime('%b %d, %Y') %></p>
+							<p><strong>Issue Date:</strong> <%= licensure.license_issue_date&.strftime('%m/%d/%Y') %></p>
 							<p><strong>Status:</strong> <%= details.status.presence || 'N/A' %></p>
 							<p><strong>Source:</strong> <%= details.source_name.presence || 'N/A' %></p>
-							<p><strong>Source Date:</strong> <%= details.source_date&.strftime('%b %d, %Y') %></p>
-							<p><strong>Review Criteria:</strong> <%= details.adverse_action.presence || 'None' %></p>
+							<p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
+							<p><strong>Review Criteria:</strong> <%= details.adverse_action? ? 'Yes' : 'No'  %></p>
 						</div>
 						<div class="col-6">
 							<p><strong>License Type:</strong> <%= licensure.license_type %></p>
 							<p><strong>State:</strong> <%= licensure.state.name %></p>
-							<p><strong>Expiration Date:</strong> <%= licensure.license_expiration_date&.strftime('%b %d, %Y') %></p>
-							<p><strong>Adverse Action:</strong> <%= details.adverse_action.presence || 'None' %></p>
+							<p><strong>Expiration Date:</strong> <%= licensure.license_expiration_date&.strftime('%m/%d/%Y') %></p>
+							<!-- <p><strong>Adverse Action:</strong> <%#= details.adverse_action.presence || 'None' %></p> -->
 							<p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
-							<p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%b %d, %Y') %></p>
+							<p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
 						</div>
 					</div>
 					<div class="row comments">
@@ -189,7 +189,7 @@
 		        <p><strong>Status:</strong> <%= dea_details[0]&.status %></p>
 		        <p><strong>State:</strong> <%= dea.state %></p>
 		        <p><strong>Verifier:</strong> <%= dea_details[0]&.verifier %></p>
-		        <p><strong>Expiration Date:</strong> <%= dea.expiration_date&.strftime('%B %d, %Y') %></p>
+		        <p><strong>Expiration Date:</strong> <%= dea.expiration_date&.strftime('%m/%d/%Y') %></p>
 		        <p><strong>Verification Date:</strong> <%= dea_details[0]&.verification_date %></p>
 		      </div>
 		      <div class="col-12">
@@ -208,7 +208,7 @@
 							<div class="col-6">
 									<p><strong>Source:</strong> <%= npdb_details[0]&.source_name %></p>
 									<p><strong>Source Date:</strong> <%= npdb_details[0]&.source_date %></p>
-									<p><strong>Review Criteria:</strong> <%= npdb_details[0]&.adverse_action %></p>
+									<p><strong>Review Criteria:</strong> <%= npdb_details[0]&.adverse_action? ? 'Yes' : 'No' %></p>
 							</div>
 							<div class="col-6">
 									<p><strong>Verifier:</strong> <%= npdb_details[0]&.verifier %></p>
@@ -229,7 +229,13 @@
 				<div class="section-content">
 						<div class="row">
 								<div class="col-6">
-										<strong>First Name:</strong> <%= provider_personal_information.provider_personal_information_sam_records.pluck(:first_name).join(", ") %>
+										<p>
+											<strong>Full Name:</strong> 
+											<%= provider_personal_information
+										      .provider_personal_information_sam_records
+										      .map { |r| [r.first_name, r.middle_name, r.last_name].compact_blank.join(" ") }
+										      .join(", ") %>
+										</p>
 										<p><strong>Search Results:</strong> No Match</p>
 										<p><strong>Finding:</strong> None</p>
 										<p><strong>Verified By:</strong> SAM</p>
@@ -319,16 +325,16 @@
 							<div class="col-6">
 								<p><strong>Specialty:</strong> <%= certification.specialty_specialty_name %></p>
 								<p><strong>Issuing Board:</strong> <%= certification.specialty_board_name %></p>
-								<p><strong>Initial Certification Date:</strong> <%= certification.initial_certification_date&.strftime('%b %d, %Y') %></p>
+								<p><strong>Initial Certification Date:</strong> <%= certification.initial_certification_date&.strftime('%m/%d/%Y') %></p>
 								<p><strong>Source:</strong> <%= details.source_name.presence || 'N/A' %></p>
-								<p><strong>Source Date:</strong> <%= details.source_date&.strftime('%b %d, %Y') %></p>
-								<p><strong>Review Criteria:</strong> <%= details.adverse_action.presence || 'None' %></p>
+								<p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
+								<p><strong>Review Criteria:</strong> <%= details.adverse_action? ? 'Yes' : 'No' %></p>
 							</div>
 							<div class="col-6">
 								<p><strong>Board Status:</strong> <%= certification.board_certified_flag %></p>
-								<p><strong>Expiration Date:</strong> <%= certification.expiration_date&.strftime('%b %d, %Y') %></p>
+								<p><strong>Expiration Date:</strong> <%= certification.expiration_date&.strftime('%m/%d/%Y') %></p>
 								<p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
-								<p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%b %d, %Y') %></p>
+								<p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
 							</div>
 						</div>
 					</div>
@@ -353,16 +359,16 @@
 							<div class="col-6">
 								<p><strong>Institution:</strong> <%= training.institution_name %></p>
 								<p><strong>Type of Training:</strong> <%= training.training_area %></p>
-								<p><strong>Dates Attended:</strong> <%= training.start_date&.strftime('%b %d, %Y') %> - <%= training.end_date&.strftime('%b %d, %Y') %></p>
+								<p><strong>Dates Attended:</strong> <%= training.start_date&.strftime('%m/%d/%Y') %> - <%= training.end_date&.strftime('%m/%d/%Y') %></p>
 								<p><strong>Source:</strong> <%= details.source_name.presence || 'N/A' %></p>
-								<p><strong>Source Date:</strong> <%= details.source_date&.strftime('%b %d, %Y') %></p>
-								<p><strong>Review Criteria:</strong> <%= details.adverse_action.presence || 'None' %></p>
+								<p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
+								<p><strong>Review Criteria:</strong> <%= details.adverse_action? ? 'Yes' : 'No' %></p>
 							</div>
 							<div class="col-6">
 								<p><strong>Specialty:</strong> <%= training.specialty_specialty_name %></p>
 								<p><strong>Completed?:</strong> <%= training.program_completed_flag ? 'Yes' : 'No' %></p>
 								<p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
-								<p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%b %d, %Y') %></p>
+								<p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
 							</div>
 						</div>
 					</div>
@@ -388,17 +394,17 @@
 			      <div class="row">
 			        <div class="col-6">
 			          <p><strong>School/Program:</strong> <%= education.institution_name %></p>
-			          <p><strong>Date Attended From:</strong> <%= education.start_date&.strftime('%b %d, %Y') %></p>
-			          <p><strong>Date Attended To:</strong> <%= education.end_date&.strftime('%b %d, %Y') %></p>
+			          <p><strong>Date Attended From:</strong> <%= education.start_date&.strftime('%m/%d/%Y') %></p>
+			          <p><strong>Date Attended To:</strong> <%= education.end_date&.strftime('%m/%d/%Y') %></p>
 			          <p><strong>Source:</strong> <%= details.source_name.presence || 'N/A' %></p>
-			          <p><strong>Source Date:</strong> <%= details.source_date&.strftime('%b %d, %Y') %></p>
-			          <p><strong>Review Criteria:</strong> <%= details.adverse_action.presence || 'None' %></p>
+			          <p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
+			          <p><strong>Review Criteria:</strong> <%= details.adverse_action? ? 'Yes' : 'No' %></p>
 			        </div>
 			        <div class="col-6">
 			          <p><strong>Degree/Certificate:</strong> <%= education.degree_degree_abbreviation %></p>
 			          <p><strong>Completed?:</strong> <%= education.program_completed_flag ? 'Yes' : 'No' %></p>
 			          <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
-			          <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%b %d, %Y') %></p>
+			          <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
 			        </div>
 			      </div>
 			    </div>
@@ -427,17 +433,17 @@
 									 <%= employment.mail_stop %>
 									</p>
 									<p><strong>Source:</strong> <%= details.source_name.presence || 'N/A' %></p>
-									<p><strong>Source Date:</strong> <%= details.source_date&.strftime('%b %d, %Y') %></p>
-									<p><strong>Review Criteria:</strong> <%= details.adverse_action.presence || 'None' %></p>
+									<p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
+									<p><strong>Review Criteria:</strong> <%= details.adverse_action? ? 'Yes' : 'No' %></p>
 									<p><strong>Comments:</strong> <%= details.verification_comments.presence || 'N/A' %></p>
 							</div>
 							<div class="col-6">
 								<p><strong>Dates:</strong>
-									<%= employment.from_date&.strftime('%b %d, %Y') %> -
-									<%= employment.to_date.present? ? employment.to_date.strftime('%b %d, %Y') : 'Present' %>
+									<%= employment.from_date&.strftime('%m/%d/%Y') %> -
+									<%= employment.to_date.present? ? employment.to_date.strftime('%m/%d/%Y') : 'Present' %>
 								</p>
 								<p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
-								<p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%b %d, %Y') %></p>
+								<p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
 							</div>
 						</div>
 				</div>
@@ -459,16 +465,16 @@
 					<div class="row">
 							<div class="col-6">
 									<p><strong>Carrier:</strong> <%= provider.insurance_carrier_name %></p>
-									<p><strong>Original Effective Date:</strong> <%= provider.effective_date&.strftime('%b %d, %Y') %></p>
+									<p><strong>Original Effective Date:</strong> <%= provider.effective_date&.strftime('%m/%d/%Y') %></p>
 									<p><strong>Source:</strong> <%= details.source_name.presence || 'N/A' %></p>
-									<p><strong>Source Date:</strong> <%= details.source_date&.strftime('%b %d, %Y') %></p>
-									<p><strong>Review Criteria:</strong> <%= details.adverse_action.presence || 'None' %></p>
+									<p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
+									<p><strong>Review Criteria:</strong> <%= details.adverse_action? ? 'Yes' : 'No' %></p>
 							</div>
 							<div class="col-6">
 									<p><strong>Claims History:</strong> Claims History</p>
-									<p><strong>Expiration Date:</strong> <%= provider.end_date&.strftime('%b %d, %Y') %></p>
+									<p><strong>Expiration Date:</strong> <%= provider.end_date&.strftime('%m/%d/%Y') %></p>
 									<p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
-									<p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%b %d, %Y') %></p>
+									<p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
 									<p><strong>Comments:</strong> <%= details.verification_comments.presence || 'N/A' %></p>
 							</div>
 					</div>
