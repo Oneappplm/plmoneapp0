@@ -11,6 +11,7 @@ class Mhc::PracticeInformationEducationsController < ApplicationController
     if @practice_information_education.save
       redirect_to mhc_verification_platform_path(page_tab: 'education',id: params[:practice_information_education][:provider_attest_id]), notice: 'Education detail saved successfully.'
     else
+      Rails.logger.error @practice_information_education.errors.full_messages.join(", ")
       redirect_to mhc_verification_platform_path(page_tab: 'education_record',id: params[:practice_information_education][:provider_attest_id]), alert: 'Failed to save education detail.'
     end
   end
@@ -21,6 +22,7 @@ class Mhc::PracticeInformationEducationsController < ApplicationController
     if @practice_information_education.save
       redirect_to mhc_verification_platform_path(page_tab: 'education',id: params[:practice_information_education][:provider_attest_id]), notice: 'Education detail saved successfully.'
     else
+      Rails.logger.error @practice_information_education.errors.full_messages.join(", ")
       redirect_to mhc_verification_platform_path(page_tab: 'education_record',id: params[:practice_information_education][:provider_attest_id]), alert: 'Failed to save education detail.'
     end
   end
