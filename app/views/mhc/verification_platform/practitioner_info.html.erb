@@ -51,7 +51,24 @@
                     </div>
                 </div>
             </div>
-            <div class="form-row row">
+
+            <div class="row mt-3 mb-3">
+              <div class="col-xl-6">
+                <label for="">Practitioner Type</label>
+                  <div class="mt-2 mb-2">
+                    <%= select_tag 'provider_personal_information[practitioner_type]',
+                        options_for_select(provider_types.map { |m| [m.fch, m.fch] }, @provider_personal_information.practitioner_type),
+                        class: 'form-select',
+                        prompt: 'Select option' %>
+
+                    <%#= content_for :js do %>
+                       <%#= HtmlUtils::virtual_select id: 'practitioner_type', collection: provider_types.map{|m| {label: m.fch, value: m.fch} }, multiple: true %>
+                    <%# end %>
+                  </div>
+               </div>
+            </div>
+
+            <div class="form-row row mt-3 mb-3">
                 <div class="col-lg-6">
                     <label class="text-dark-grey">Upin:</label>
                     <%= f.text_field :upin, placeholder: 'Type here...', class: 'form-control border border-dark' %>
@@ -401,7 +418,7 @@
                                         <%= provider_personal_information_credentialing_contact_form.text_field :lastname,  placeholder: 'Lastname', class: 'form-control border border-dark' %>
                                     </div>
                                     <div class="col-2">
-                                        <%= provider_personal_information_credentialing_contact_form.select :suffix, options_for_select(suffix), { prompt: 'Suffix' }, {:class => 'form-select border border-dark payer-state single-select',  data: { value: provider_personal_information_credentialing_contact_form.object.suffix } }  %>
+                                        <%= provider_personal_information_credentialing_contact_form.select :suffix, options_for_select(suffix), { prompt: 'Suffix' }, {:class => 'form-f border border-dark payer-state single-select',  data: { value: provider_personal_information_credentialing_contact_form.object.suffix } }  %>
                                     </div>
                                 </div>
                             </div>
