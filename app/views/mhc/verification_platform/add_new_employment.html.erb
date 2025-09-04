@@ -126,13 +126,21 @@
                         </div>
 
                         <div class="form-row row mt-3">
-                          <div class="col-xl-6">
+                          <div class="col-xl-5">
                             <label for="from_date">From:</label>
                             <%= f.date_field :from_date, class: "form-control" %>
                           </div>
-                          <div class="col-xl-6">
+                          <div class="col-xl-5">
                             <label for="to_date">To:</label>
-                            <%= f.date_field :to_date, class: "form-control" %>
+                            <%= f.date_field :to_date, class: "form-control", id: "to_date_field" %>
+                          </div>
+                          <div class="col-xl-2">
+                            <div class="form-check mt-4">
+                              <%= f.check_box :present, { class: "form-check-input border-dark", id: "present_checkbox" } %>
+                              <label class="form-check-label" for="present_checkbox">
+                                Present
+                              </label>
+                            </div>
                           </div>
                         </div>
 
@@ -147,11 +155,11 @@
                           <div class="col-xl-6">
                             <label>Show on Tickler?</label>
                             <div class="form-check">
-                              <%= f.radio_button :show_on_tickler, true, class: "form-check-input" %>
+                              <%= f.radio_button :show_on_tickler, true, class: "form-check-input border-dark" %>
                               <label class="form-check-label">Yes</label>
                             </div>
                             <div class="form-check">
-                              <%= f.radio_button :show_on_tickler, false, class: "form-check-input" %>
+                              <%= f.radio_button :show_on_tickler, false, class: "form-check-input border-dark" %>
                               <label class="form-check-label">No</label>
                             </div>
                           </div>
@@ -160,15 +168,33 @@
                         <div class="form-row row mt-2">
                           <div class="col-xl-12">
                             <label for="comments">Please List any comments</label>
-                            <%= f.text_area :comments, class: "form-control", placeholder: "Type here..." %>
+                            <%= f.text_area :comments, class: "form-control border-dark", placeholder: "Type here..." %>
                           </div>
                         </div>
 
                         <div class="form-row mt-1 d-flex justify-content-end">
-                          <%= f.submit "Save", class: "btn btn-primary" %>
+                          <%= f.submit class: "btn btn-primary mt-2" %>
                         </div>
                       <% end %>
                 </div>
             </div>
         </div>
       </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          const presentCheckbox = document.getElementById("present_checkbox");
+          const toDateField = document.getElementById("to_date_field");
+
+          function toggleToDate() {
+            if (presentCheckbox.checked) {
+              toDateField.disabled = true;
+              toDateField.value = "";
+            } else {
+              toDateField.disabled = false;
+            }
+          }
+
+          presentCheckbox.addEventListener("change", toggleToDate);
+          toggleToDate(); // run on page load
+        });
+      </script>

@@ -203,7 +203,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
   </div>
@@ -250,7 +250,7 @@
                   <td>${doc.image_classification}</td>
                   <td>${doc.sub_section}</td>
                   <td><a href="${doc.file_url}" target="_blank">${doc.file_name}</a></td>
-                  <td>${new Date(doc.created_at).toLocaleString()}</td>
+                  <td>${new Date(doc.created_at).toLocaleDateString()}</td>
                   <td>
                     <form action="/mhc/manage-clients/delete_provider_personal_docs" method="POST" onsubmit="return confirm('Are you sure you want to delete?')">
                       <input type="hidden" name="_method" value="delete">
@@ -272,3 +272,11 @@
     });
   });
 </script>
+
+<style>
+  #viewDocumentModal .table td {
+    white-space: normal !important;
+    word-break: break-word;        
+    max-width: 200px;              
+  }
+</style>
