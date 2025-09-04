@@ -13,8 +13,8 @@
         <div class="row">
             <div class="col-xl-8 row">
                 <%= form_with model: [:mhc, @practice_information_education] do |f| %>
-                    <%= f.hidden_field :caqh_provider_attest_id, value: @practice_information_education.caqh_provider_attest_id %>
-                    <%= f.hidden_field :provider_attest_id, value: @practice_information_education.provider_attest_id %>
+                    <%= f.hidden_field :caqh_provider_attest_id %>
+                    <%= f.hidden_field :provider_attest_id, value: params[:id] %>
                     <div class="form-row row page-applicable mt-3">
                         <span class="page-note">
                             <i class='bx bx-error-circle font-lightblue'></i> <span>To search for a School name,
@@ -1535,7 +1535,7 @@
       })
       .catch(error => console.error('Error:', error));
   });
-   document.getElementById('restart-request-btn')?.addEventListener('click', function (e) {
+  document.getElementById('restart-request-btn')?.addEventListener('click', function (e) {
       e.preventDefault();
 
       const educationId = document.getElementById('education-id')?.value;
@@ -1609,6 +1609,7 @@
       .then(response => response.json())
       .then(data => {
         populateRvaData(data.rva_information);
+        window.location.reload();
         document.getElementById('re-rva').classList.remove('d-none');
       })
       .catch(error => console.error('Error:', error));
