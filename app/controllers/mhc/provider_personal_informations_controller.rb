@@ -42,8 +42,8 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
   def provider_personal_information_params
     params.require(:provider_personal_information).permit(
       :id, :caqh_provider_id, :provider_attest_id, :caqh_provider_attest_id, :last_name, :first_name,
-      :middle_name, :suffix, :primary_practice_state, :other_name_flag, :birth_date, :us_eligible_flag,
-      :ssn, :nid, :dea_flag, :cds_flag, :upin, :upin_flag, :npi_flag, :npi, :medicare_provider_flag,
+      :middle_name, :suffix, :primary_practice_state, :other_name_flag, :birth_date, :us_eligible_flag, :signature_date,
+      :ssn, :nid, :practitioner_type, :dea_flag, :cds_flag, :upin, :upin_flag, :npi_flag, :npi, :medicare_provider_flag,
       :medicaid_provider_flag, :other_graduate_education_flag, :fellowship_training_flag, :teaching_appointment_flag,
       :secondary_specialty_flag, :other_specialty_flag, :hospital_privilege_flag, :hospital_admitting_arrangements,
       :work_history_gap_flag, :active_military_flag, :citizenship_status, :visa_number, :federal_employee_id,
@@ -58,7 +58,7 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
       :gender_gender_description, :birth_country_country_name, :correspondence_address_type_correspondence_address_type_descrip,
       :provider_type_provider_type_abbreviation, :graduate_type_graduate_type_description,
       :nid_country_country_name, :attest_date, :plan_provider_id, :last_recredential_date, :next_recredential_date,
-      :npi_verification_status,
+      :npi_verification_status, :npi_source_date,
       provider_personal_information_credentialing_contact_attributes: [:id, :contact_method,
       :firstname, :middlename, :lastname, :title, :address, :suffix, :phone_number, :fax, :email, :suite, :address2,
       :city, :county, :state, :zip, :country],
