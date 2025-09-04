@@ -105,7 +105,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       @rva_information.verification_status = 'Verified'
       @rva_information.verification_date = Date.today
       @rva_information.verifier = current_user.first_name
-      params[:rva_information][:verification_comments] = 'None'
+      params[:rva_information][:verification_comments] = params[:rva_information][:verification_comments].presence || 'None'
       @rva_information.other_details = 'None'
       @rva_information.adverse_action_comments = 'None'
       @rva_information.provider_personal_information_id = params[:personal_info_id]
@@ -114,7 +114,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     if params[:section] == 'audit'
       params[:rva_information][:auditor]  = current_user.first_name
       params[:rva_information][:audit_date] = Date.today
-      params[:rva_information][:audit_comments] = 'None'
+      params[:rva_information][:audit_comments] = params[:rva_information][:audit_comments].presence || 'None'
       if params[:practice_info_education_id].present?
         PracticeInformationEducation.find(params[:practice_info_education_id]).update(verification_status: 'Quality Audited')
       end
@@ -211,7 +211,9 @@ class Mhc::VerificationPlatformController < ApplicationController
       @q = School.ransack(params[:q])
       @practice_information_education = PracticeInformationEducation.find_or_initialize_by(id: params[:practice_information_education_id])
       @rva_information = RvaInformation.new
-      @last_rva_information = @practice_information_education.rva_informations.last
+      @last_rva_information = @practice_information_education.rva_informations
+                              .where(restart_audit: [false, nil])
+                              .last
       @education_rva_information_completed = @practice_information_education.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
 
