@@ -322,6 +322,12 @@
                                     <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" data-information-id="<%= @last_rva_information&.id %>" data-personal-information-id="<%= @provider_personal_information&.id %>" data-education-id = "<%= @practice_information_education.id %>" id="skip-rva-btn">
                                         Skip RVA
                                     </button>
+
+                                  <div class="col-12 m-2">
+                                    <div class="text-danger <%= @practice_information_education.rva_informations.pluck(:restart_audit).include?(false) ? 'd-none' : '' %>" id="re-rva">
+                                      Need ReRVA
+                                    </div>
+                                  </div>
                                 </div>
                             </div>
                         </div>
@@ -838,7 +844,6 @@
                                   <button class="btn btn-primary py-1" type="button" <%= 'disabled' if @last_rva_information.present? %>>Save Request</button>
                                   <button class="btn btn-primary py-1" type="button" id="restart-request-btn" <%= 'disabled' if !@last_rva_information.present? %>>Restart Request</button>
                                   <%= hidden_field_tag :education_id, @last_rva_information&.practice_information_education_id, id: 'education-id' %>
-
                                 </div>
                               </div>
                             </div>
@@ -1554,6 +1559,7 @@
       .then(response => response.json())
       .then(data => {
         document.querySelector('.loading-overlay').style.display = 'none';
+        document.getElementById('re-rva').classList.remove('d-none');
         window.location.reload();
       })
       .catch(error => {
@@ -1610,7 +1616,6 @@
       .then(data => {
         populateRvaData(data.rva_information);
         window.location.reload();
-        document.getElementById('re-rva').classList.remove('d-none');
       })
       .catch(error => console.error('Error:', error));
   });

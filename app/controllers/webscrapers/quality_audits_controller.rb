@@ -278,6 +278,18 @@ class Webscrapers::QualityAuditsController < ApplicationController
   
     if rva_infos.any?
       rva_infos.update(restart_audit: true)
+      PracticeInformationEducation.find(params[:education_id]).update(verification_status: 'Not Requested')
+      render json: { message: 'All related RVA information deleted successfully' }, status: :ok
+    else
+      render json: { error: 'No RVA information found for the given education ID' }, status: :not_found
+    end
+  end  
+  def delete_training_request
+    rva_infos = RvaInformation.where(provider_education_id: params[:training_id])
+  
+    if rva_infos.any?
+      rva_infos.update(restart_audit: true)
+      ProviderEducation.find(params[:training_id]).update(audit_status: 'Not Requested')
       render json: { message: 'All related RVA information deleted successfully' }, status: :ok
     else
       render json: { error: 'No RVA information found for the given education ID' }, status: :not_found
