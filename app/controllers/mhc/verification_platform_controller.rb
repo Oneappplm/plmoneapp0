@@ -112,6 +112,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       params[:rva_information][:auditor]  = current_user.first_name
       params[:rva_information][:audit_date] = Date.today
       params[:rva_information][:audit_comments] = params[:rva_information][:audit_comments].presence || 'None'
+      @rva_information.restart_audit = false
       if params[:practice_info_education_id].present?
         PracticeInformationEducation.find(params[:practice_info_education_id]).update(verification_status: 'Quality Audited')
       end
@@ -205,7 +206,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       @rva_information = RvaInformation.new
       @last_rva_information = @practice_information_education.rva_informations
                               .where(restart_audit: [false, nil])
-                              .last
+                              .last                        
       @education_rva_information_completed = @practice_information_education.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
 
@@ -323,7 +324,7 @@ class Mhc::VerificationPlatformController < ApplicationController
         @provider_personal_information_comments = ProviderPersonalInformationComment.all
       end
       @rva_information = RvaInformation.new
-      @last_rva_information = @provider_education.rva_informations.last
+      @last_rva_information = @provider_education.rva_informations.where(restart_audit: [false, nil]).last  
       @training_rva_information_completed = @provider_education.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
 
