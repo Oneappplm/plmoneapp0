@@ -52,13 +52,44 @@ class Mhc::ManageClientsController < ApplicationController
 
   def provider_personal_uploaded_docs
     provider_personal_information =  ProviderPersonalInformation.find(params[:provider_personal_uploaded_doc][:provider_personal_information_id])
-    @document = ProviderPersonalUploadedDoc.new(provider_personal_uploaded_docs_params)
-    @document.provider_attest_id = provider_personal_information.provider_attest_id
+    # @document = ProviderPersonalUploadedDoc.new(provider_personal_uploaded_docs_params)
+    # @document.provider_attest_id = provider_personal_information.provider_attest_id
     @document.caqh_provider_attest_id = provider_personal_information.caqh_provider_attest_id
     if @document.save
       redirect_to mhc_manage_clients_path, notice: 'Document uploaded successfully.'
     end
   end
+
+  def ajax_upload
+    provider_personal_information = ProviderPersonalInformation.find(
+      params[:provider_personal_uploaded_doc][:provider_personal_information_id]
+    )
+
+    @document = ProviderPersonalUploadedDoc.new(
+      file_upload: params[:provider_personal_uploaded_doc][:file_upload], # use nested param
+      provider_personal_information_id: provider_personal_information.id,
+      provider_attest_id: provider_personal_information.provider_attest_id
+    )
+
+    if @document.save
+      render json: { 
+        success: true, 
+        file_name: @document.file_upload_identifier,  # just filename
+        file_url:  @document.file_upload.url,         # full CarrierWave URL
+        full_link: ActionController::Base.helpers.link_to(
+          @document.file_upload_identifier,
+          @document.file_upload.url,
+          target: "_blank"
+        )
+      }
+    else
+      render json: { 
+        success: false, 
+        errors: @document.errors.full_messages 
+      }, status: :unprocessable_entity
+    end
+  end
+
 
   def get_provider_uploaded_docs
     personal_information_id = params[:id]
