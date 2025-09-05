@@ -230,6 +230,7 @@ Rails.application.routes.draw do
     resources :manage_practitioners, only: [:index], path: 'manage-practitioners'
     resources :manage_clients, only: [:index], path: 'manage-clients' do
       collection do
+        post :ajax_upload
         post :provider_personal_uploaded_docs, path: 'provider-personal-uploaded-docs'
         delete :delete_provider_personal_docs, path: 'delete_provider_personal_docs'
       end
@@ -442,6 +443,7 @@ Rails.application.routes.draw do
     post '/send_training_skip_rva', to: 'quality_audits#send_training_skip_rva'
     delete 'delete_npdb_request', to: 'quality_audits#delete_npdb_request'
     delete 'delete_education_request', to: 'quality_audits#delete_education_request'
+    delete 'delete_training_request', to: 'quality_audits#delete_training_request'
     resources :alaska_states, only: [:index], path: 'state-alaska' do
       collection do
         get :crawl
