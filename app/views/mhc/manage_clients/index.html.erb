@@ -154,7 +154,12 @@
 
           <div class="form-group my-2">
             <label for="">File Upload:</label>
-            <%= f.file_field :file_upload, class: 'form-control' %>
+            <%= f.file_field :file_upload, class: 'form-control', id: 'fileUploadInput', direct_upload: true %>
+            <div id="uploadLoader" class="d-none mt-2">
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Uploading...
+            </div>
+            <div id="uploadedFilePreview" class="mt-2"></div>
           </div>
 
            <div class="form-group my-2">
@@ -261,6 +266,57 @@
         });
     });
   });
+  document.addEventListener("DOMContentLoaded", function () {
+    const fileInput = document.getElementById("fileUploadInput");
+    const previewDiv = document.getElementById("uploadedFilePreview");
+    const loader = $("#uploadLoader");
+    const providerInfoId = document.getElementById("provider_personal_uploaded_doc_provider_personal_information_id");
+
+    if (fileInput) {
+      fileInput.addEventListener("change", function () {
+        if (fileInput.files.length === 0) return;
+
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append("provider_personal_uploaded_doc[file_upload]", file);
+        formData.append("provider_personal_uploaded_doc[provider_personal_information_id]", providerInfoId.value); // pass actual ID
+
+        // Show loader
+        loader.removeClass("d-none");
+
+
+
+        fetch("/mhc/manage-clients/ajax_upload", {
+          method: "POST",
+          headers: {
+            "X-CSRF-Token": document.querySelector("meta[name=csrf-token]").content
+          },
+          body: formData
+        })
+          .then(response => response.json())
+          .then(data => {
+            // Hide loader
+            loader.addClass("d-none");
+            previewDiv.innerHTML = ""; // clear
+
+            if (data.success) {
+              const link = document.createElement("a");
+              link.href = data.file_url;
+              link.target = "_blank";
+              link.textContent = data.file_url;
+
+              previewDiv.appendChild(link);
+            } else {
+              previewDiv.textContent = "Upload failed: " + data.errors.join(", ");
+            }
+          })
+          .catch(err => {
+            console.error("Upload error", err);
+            previewDiv.textContent = "Upload failed.";
+          });
+      });
+    }
+  });
 </script>
 
 <style>
@@ -268,5 +324,8 @@
     white-space: normal !important;
     word-break: break-word;        
     max-width: 200px;              
+  }
+  #uploadedFilePreview {
+    word-wrap: break-word;
   }
 </style>
