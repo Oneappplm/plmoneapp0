@@ -579,6 +579,13 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :mhc do
+    resources :organizationfacility, only: [:index]
+    resources :medicare_participations, only: [:index, :create, :update, :destroy]
+    resources :medicare_certificates, only: [:index, :create, :update, :destroy]
+    resources :accreditations
+  end
+
   resources :verification_products
 
   namespace :admin do

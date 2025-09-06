@@ -20,51 +20,58 @@
                     </div>
                 </div>
             </div>
-            <form action="">
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label for="" class=" ">Medicare Number</label>
-                        <input type="text" id="MedicareNumber" name="MedicareNumber" class="form-control form-control-lg" placeholder="Type here.." value="<%= @provider_personal_information.provider_medicares&.last&.medicare_number %>">
-                    </div>
-                    <div class="col-xl-6">
-                        <label for="" class=" ">Status</label>
-                        <select name="Status" id="Status" class="form-select ">
-                            <option value="">Select Option</option>
-                        </select>
-                    </div>
+            <%= form_with model: @medicare_certificate,
+              url: @medicare_certificate.persisted? ? mhc_medicare_certificate_path(@medicare_certificate) : mhc_medicare_certificates_path,
+              method: @medicare_certificate.persisted? ? :patch : :post,
+              local: true do |f| %>
+
+              <%= f.hidden_field :provider_attest_id, value: params[:id] %>
+
+              <div class="form-row row">
+                <div class="col-xl-6">
+                  <%= f.label :medicare_number, "Medicare Number" %>
+                  <%= f.text_field :medicare_number, class: "form-control form-control-lg", placeholder: "Type here.." %>
                 </div>
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label for="" class=" ">Source</label>
-                        <select name="Source" id="Source" class="form-select ">
-                            <option value="">Select Option</option>
-                        </select>
-                    </div>
-                    <div class="col-xl-6">
-                        <label class=" " for="SourceDate">Source Date:</label>
-                        <input type="text" id="SourceDate" name="SourceDate" class="form-control form-control-lg"
-                            placeholder="MM/DD/YYYY" onfocus="(this.type='date')" onblur="(this.type='text')">
-                    </div>
+                <div class="col-xl-6">
+                  <%= f.label :status, "Status" %>
+                  <%= f.select :status, [["Active", "active"], ["Inactive", "inactive"]], { prompt: "Select Option" }, class: "form-select" %>
                 </div>
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label for="" class=" ">Verified by:</label>
-                        <select name="VerifiedBy" id="VerifiedBy" class="form-select ">
-                            <option value="">Select option</option>
-                        </select>
-                    </div>
-                    <div class="col-xl-6">
-                        <label class=" " for="VerifiedDate">Verified Date:</label>
-                        <input type="text" id="VerifiedDate" name="VerifiedDate" class="form-control form-control-lg"
-                        placeholder="MM/DD/YYYY" onfocus="(this.type='date')" onblur="(this.type='text')">
-                    </div>
+              </div>
+
+              <div class="form-row row">
+                <div class="col-xl-6">
+                  <%= f.label :source, "Source" %>
+                  <%= f.select :source, [["CMS", "cms"], ["Other", "other"]], { prompt: "Select Option" }, class: "form-select" %>
                 </div>
-                <div class="form-row row mb-4">
-                    <div class="col-xl-12">
-                        <label for="">Review Criteria:</label>
-                        <textarea name="ReviewCriteria" id="ReviewCriteria" class="form-control form-control-lg" cols="40" rows="5"></textarea>
-                        <!-- <input type="text" name="ReviewCriteria" id="ReviewCriteria" class="form-control form-control-lg" placeholder="Type here.."> -->
-                    </div>
+                <div class="col-xl-6">
+                  <%= f.label :source_date, "Source Date" %>
+                  <%= f.date_field :source_date, class: "form-control form-control-lg" %>
                 </div>
-            </form>
+              </div>
+
+              <div class="form-row row">
+                <div class="col-xl-6">
+                  <%= f.label :verified_by, "Verified by" %>
+                  <%= f.text_field :verified_by, class: "form-control form-control-lg", placeholder: "Type here.." %>
+                </div>
+                <div class="col-xl-6">
+                  <%= f.label :verified_date, "Verified Date" %>
+                  <%= f.date_field :verified_date, class: "form-control form-control-lg" %>
+                </div>
+              </div>
+
+              <div class="form-row row mb-4">
+                <div class="col-xl-12">
+                  <%= f.label :review_criteria, "Review Criteria" %>
+                  <%= f.text_area :review_criteria, class: "form-control form-control-lg", rows: 5, placeholder: "Type here.." %>
+                </div>
+              </div>
+
+              <div class="form-row row">
+                <div class="col-xl-12 text-end">
+                  <%= f.submit "Save", class: "btn btn-primary" %>
+                </div>
+              </div>
+
+            <% end %>
     </div>

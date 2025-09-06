@@ -12,131 +12,119 @@
                     </div>
                 </div>
             </div>
-            <form action="">
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label for="" class="">Accrediting Body:</label>
-                        <select name="AccreditingBody" id="AccreditingBody" class="form-select ">
-                            <option value="">Select option</option>
-                        </select>
-                    </div>
+            <%= form_with model: @accreditation, url: @accreditation.new_record? ? mhc_accreditations_path : mhc_accreditation_path(@accreditation), local: true do |f| %>
+              <%= f.hidden_field :provider_attest_id, value: params[:id] %>
+              <div class="form-row row">
+                <div class="col-xl-6">
+                  <%= f.label :accrediting_body, "Accrediting Body:" %>
+                  <%= f.select :accrediting_body, [["Select option", ""], ["Yes", "Yes"], ["No", "No"]], {}, class: "form-select" %>
                 </div>
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label for="" class="">Initial Review Date:</label>
-                        <input type="text" id="InitialReviewDate" name="InitialReviewDate"
-                            class="form-control form-control-lg" placeholder="MM/DD/YYYY" onfocus="(this.type='date')"
-                            onblur="(this.type='text')">
-                    </div>
-                    <div class="col-xl-6">
-                        <label class=" " for="LastReviewDate">Last Review Date:</label>
-                        <input type="text" id="LastReviewDate" name="LastReviewDate"
-                            class="form-control form-control-lg" placeholder="MM/DD/YYYY" onfocus="(this.type='date')"
-                            onblur="(this.type='text')">
-                    </div>
+              </div>
+
+              <div class="form-row row">
+                <div class="col-xl-6">
+                  <%= f.label :initial_review_date, "Initial Review Date:" %>
+                  <%= f.date_field :initial_review_date, class: "form-control form-control-lg" %>
                 </div>
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label for="" class="">CertificationNumber:</label>
-                        <input type="text" id="CertificationNumber" name="CertificationNumber"
-                            class="form-control form-control-lg" placeholder="Type here..">
-                    </div>
-                    <div class="col-xl-4">
-                        <label class=" " for="ExpirationDate">Expiration Date:</label>
-                        <input type="text" id="ExpirationDate" name="ExpirationDate"
-                            class="form-control form-control-lg" placeholder="MM/DD/YYYY" onfocus="(this.type='date')"
-                            onblur="(this.type='text')">
-                    </div>
-                    <div class="col-xl-2 align-self-end">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="present-switch">
-                            <label class=" " class="form-check-label" for="present-switch">Does
-                                Not Expire</label>
-                        </div>
-                    </div>
+                <div class="col-xl-6">
+                  <%= f.label :last_review_date, "Last Review Date:" %>
+                  <%= f.date_field :last_review_date, class: "form-control form-control-lg" %>
                 </div>
-                <div class="form-row row mt-2">
-                    <div class="col-xl-6">
-                        <div class="d-flex align-items-center gap-3">
-                            <label for="" class="">Is this the primary accrediting body?</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="AccreditingBody-input"
-                                    id="AccreditingBody-yes" value="Yes">
-                                <label class="form-check-label" for="AccreditingBody-yes">
-                                    Yes
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="AccreditingBody-input"
-                                    id="AccreditingBody-no" value="No">
-                                <label class="form-check-label" for="AccreditingBody-no">
-                                    No
-                                </label>
-                            </div>
-                        </div>
+              </div>
+
+              <div class="form-row row">
+                <div class="col-xl-6">
+                  <%= f.label :certification_number, "Certification Number:" %>
+                  <%= f.text_field :certification_number, class: "form-control form-control-lg", placeholder: "Type here.." %>
+                </div>
+                <div class="col-xl-4">
+                  <%= f.label :expiration_date, "Expiration Date:" %>
+                  <%= f.date_field :expiration_date, class: "form-control form-control-lg" %>
+                </div>
+                <div class="col-xl-2 align-self-end">
+                  <div class="form-check">
+                    <%= f.check_box :does_not_expire, class: "form-check-input" %>
+                    <%= f.label :does_not_expire, "Does Not Expire", class: "form-check-label" %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row row mt-2">
+                <div class="col-xl-6">
+                  <div class="d-flex align-items-center gap-3">
+                    <%= f.label :primary_accrediting_body, "Is this the primary accrediting body?" %>
+                    <div class="form-check">
+                      <%= f.radio_button :primary_accrediting_body, true, class: "form-check-input" %>
+                      <%= f.label :primary_accrediting_body, "Yes", value: true, class: "form-check-label" %>
                     </div>
-                </div>
-                <div class="form-row row mt-2">
-                    <div class="col-xl-6">
-                        <div class="d-flex align-items-center gap-3">
-                            <label for="" class="">Corrective Action Plan?</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="CorrectiveActionPlan-input"
-                                    id="CorrectiveActionPlan-yes" value="Yes">
-                                <label class="form-check-label" for="CorrectiveActionPlan-yes">
-                                    Yes
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="CorrectiveActionPlan-input"
-                                    id="CorrectiveActionPlan-no" value="No">
-                                <label class="form-check-label" for="CorrectiveActionPlan-no">
-                                    No
-                                </label>
-                            </div>
-                        </div>
+                    <div class="form-check">
+                      <%= f.radio_button :primary_accrediting_body, false, class: "form-check-input" %>
+                      <%= f.label :primary_accrediting_body, "No", value: false, class: "form-check-label" %>
                     </div>
+                  </div>
                 </div>
-                <div class="form-row row">
-                    <div class="col-xl-6">
-                        <label for="" class="">Date Initiated:</label>
-                        <input type="text" id="Date Initiated" name="Date Initiated"
-                            class="form-control form-control-lg" placeholder="MM/DD/YYYY" onfocus="(this.type='date')"
-                            onblur="(this.type='text')">
+              </div>
+
+              <div class="form-row row mt-2">
+                <div class="col-xl-6">
+                  <div class="d-flex align-items-center gap-3">
+                    <%= f.label :corrective_action_plan, "Corrective Action Plan?" %>
+                    <div class="form-check">
+                      <%= f.radio_button :corrective_action_plan, true, class: "form-check-input" %>
+                      <%= f.label :corrective_action_plan, "Yes", value: true, class: "form-check-label" %>
                     </div>
-                    <div class="col-xl-6">
-                        <label class=" " for="LastReviewDate">Date Completed:</label>
-                        <input type="text" id="DateCompleted" name="DateCompleted"
-                            class="form-control form-control-lg" placeholder="MM/DD/YYYY" onfocus="(this.type='date')"
-                            onblur="(this.type='text')">
+                    <div class="form-check">
+                      <%= f.radio_button :corrective_action_plan, false, class: "form-check-input" %>
+                      <%= f.label :corrective_action_plan, "No", value: false, class: "form-check-label" %>
                     </div>
+                  </div>
                 </div>
-                <div class="form-row mt-2">
-                    <label for="">Please list any comments  :<span class="font-red">*</span></label>
-                    <textarea name="not-applicable-explain" id="" cols="30" rows="5" class="form-control"
-                        required></textarea>
+              </div>
+
+              <div class="form-row row">
+                <div class="col-xl-6">
+                  <%= f.label :date_initiated, "Date Initiated:" %>
+                  <%= f.date_field :date_initiated, class: "form-control form-control-lg" %>
                 </div>
-                <div class="form-row row mt-2">
-                    <div class="col-xl-4">
-                        <div class="input-group gap-2">
-                            <label class="align-self-center" for="">Show on Tickler?</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="tickler" value="yesTickler">
-                                <label class="form-check-label" for="yesTickler">Yes</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="tickler" value="yesTickler"
-                                    checked>
-                                <label class="form-check-label" for="noTickler">No</label>
-                            </div>
-                        </div>
+                <div class="col-xl-6">
+                  <%= f.label :date_completed, "Date Completed:" %>
+                  <%= f.date_field :date_completed, class: "form-control form-control-lg" %>
+                </div>
+              </div>
+
+              <div class="form-row mt-2">
+                <%= f.label :comments, "Please list any comments:" %>
+                <%= f.text_area :comments, cols: 30, rows: 5, class: "form-control" %>
+              </div>
+
+              <div class="form-row row mt-2">
+                <div class="col-xl-4">
+                  <div class="input-group gap-2">
+                    <%= f.label :show_on_tickler, "Show on Tickler?" %>
+                    <div class="form-check">
+                      <%= f.radio_button :show_on_tickler, true, class: "form-check-input" %>
+                      <%= f.label :show_on_tickler, "Yes", value: true, class: "form-check-label" %>
                     </div>
+                    <div class="form-check">
+                      <%= f.radio_button :show_on_tickler, false, checked: true, class: "form-check-input" %>
+                      <%= f.label :show_on_tickler, "No", value: false, class: "form-check-label" %>
+                    </div>
+                  </div>
                 </div>
-                <div class="form-row mt-1 d-flex justify-content-end">
-                    <button class="btn btn-training-save btn-primary" type="submit">
-                        Save
-                    </button>
-                </div>
-            </form>
+              </div>
+
+              <div class="form-row mt-1 d-flex justify-content-end">
+                <%= f.submit @accreditation.new_record? ? "Save" : "Update", class: "btn btn-training-save btn-primary" %>
+              </div>
+            <% end %>
+            <% unless @accreditation.new_record? %>
+              <div class="form-row mt-1 d-flex justify-content-start">
+                <%= button_to "Delete",
+                              mhc_accreditation_path(@accreditation),
+                              method: :delete,
+                              data: { confirm: "Are you sure you want to delete this record?" },
+                              class: "btn btn-danger" %>
+              </div>
+            <% end %>
         </div>
     </div>

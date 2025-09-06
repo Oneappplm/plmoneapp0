@@ -9,9 +9,14 @@
                         <label class="form-check-label" for="practice-info-switch">Not Applicable</label>
                     </div>
                 </div>
-                <a href="<%= mhc_verification_platform_index_path(page_tab: 'add_new_accreditation')%>" class="btn btn-primary py-1">
-                    <i class='bx bx-plus'></i>
-                    Add New Accreditation
+                <a href="<%= mhc_verification_platform_path(
+                            id: @provider_personal_information.provider_attest_id,
+                            from_ppi_link: true,
+                            page_tab: 'add_new_accreditation'
+                          ) %>" 
+                  class="btn btn-primary py-1">
+                  <i class='bx bx-plus'></i>
+                  Add New Accreditation
                 </a>
             </div>
             <div class="mt-2 page-applicable">
@@ -23,26 +28,44 @@
                     <i class='bx bx-error-circle font-red'></i> <span>Please check the Not Applicable box if accreditation status does not apply to your practitioner type.</span>
                 </span>
             </div>
-            <table class="table table-bordered practice-table mt-3 page-applicable ">
-                <thead>
-                    <tr>
-                        <th class="text-white" scope="col">Accrediting Body</th>
-                        <th class="text-white">Primary Body</th>
-                        <th class="text-white">Expiration Date</th>
-                        <th class="text-white">Certificate Number</th>
-                        <th class="text-white">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><a href="<%= mhc_verification_platform_index_path(page: 'accreditation_info')%>">Lorem</a></td>
-                        <td>Lorem ipsum</td>
-                        <td>11/11/2011</td>
-                        <td>123131</td>
-                        <td>Lorem</td>
-                    </tr>
-
-                </tbody>
+            <table class="table table-bordered practice-table mt-3 page-applicable">
+              <thead>
+                <tr>
+                  <th class="text-white" scope="col">Accrediting Body</th>
+                  <th class="text-white">Primary Body</th>
+                  <th class="text-white">Expiration Date</th>
+                  <th class="text-white">Certificate Number</th>
+                  <th class="text-white">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @accreditations.each do |accreditation| %>
+                  <tr>
+                    <td>
+                      <a href="<%= mhc_verification_platform_path(
+                                  id: @provider_personal_information.provider_attest_id,
+                                  from_ppi_link: true,
+                                  page_tab: 'add_new_accreditation',
+                                  accreditation_id: accreditation.id
+                                ) %>">
+                        <%= accreditation.accrediting_body %>
+                      </a>
+                    </td>
+                    <td><%= accreditation.primary_accrediting_body? ? 'Yes' : 'No' %></td>
+                    <td>
+                      <%= accreditation.expiration_date.present? ? accreditation.expiration_date.strftime("%m/%d/%Y") : '-' %>
+                    </td>
+                    <td><%= accreditation.certification_number %></td>
+                    <td>
+                      <% if accreditation.expiration_date.present? && accreditation.expiration_date < Date.today %>
+                        Expired
+                      <% else %>
+                        Active
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
             </table>
             <form action="" class="page-not-applicable">
                 <div class="form-row mt-4">

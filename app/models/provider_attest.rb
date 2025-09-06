@@ -64,4 +64,7 @@ class ProviderAttest < ApplicationRecord
   has_many :provider_licensures, dependent: :destroy
   has_many :certifications, dependent: :destroy
   has_many :professional_organizations, dependent: :destroy
+  has_many :medicare_participations, dependent: :destroy
+  has_many :medicare_certificates, dependent: :destroy
+  has_many :accreditation, dependent: :destroy
 end
