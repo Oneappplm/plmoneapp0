@@ -64,4 +64,5 @@ class ProviderAttest < ApplicationRecord
   has_many :provider_licensures, dependent: :destroy
   has_many :certifications, dependent: :destroy
   has_many :professional_organizations, dependent: :destroy
+  has_many :provider_personal_information_peer_refs, dependent: :destroy
 end
