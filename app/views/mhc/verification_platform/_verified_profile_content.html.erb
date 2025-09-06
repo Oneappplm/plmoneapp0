@@ -488,13 +488,13 @@
 		<div class="section mt-4">
 			<div class="section-title">Liability Coverage</div>
 				<% provider_personal_information.provider_insurance_coverages
-					.where(claims_history_audit: 'Quality Audited')
-					.joins(:rva_informations)
-					.where.not(rva_informations: { source_date: nil })
-					.distinct
+					# .where(claims_history_audit: 'Quality Audited')
+					# .joins(:rva_informations)
+					# .where.not(rva_informations: { source_date: nil })
+					# .distinct
 					.each do |provider| %>
 
-					<% details = provider.rva_informations.where(audit_status: 'Quality Audited').order('source_date DESC').first %>
+					<% details = provider_personal_information.rva_informations.where(audit_status: 'Quality Audited').order('source_date DESC').first %>
 
 					<% if details.present? %>
 					<div class="section-content">
@@ -515,7 +515,6 @@
 							</div>
 						</div>
 					</div>
-					<hr>
 					<% end %>
 				<% end %>
 			</div>
