@@ -431,7 +431,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       @liability_rva_information_completed = @provider_insurance_coverages&.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
 
-    if params[:page_tab] == 'npdb'
+    if params[:page_tab] == 'npdb' || params[:page_tab] == 'npdb_record'
       @provider_personal_information_reinstatements = ProviderPersonalInformationReinstatement.where(provider_personal_information_id: @provider_personal_information.id)
       @provider_personal_information_comment = ProviderPersonalInformationComment.new
       @provider_personal_information_comments = ProviderPersonalInformationComment.all
