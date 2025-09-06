@@ -485,6 +485,27 @@ class Mhc::VerificationPlatformController < ApplicationController
       @employment_rva_information_completed = @provider_employment.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
 
+    if params[:page_tab] == 'peer_ref'
+      @peer_ref = ProviderPersonalInformationPeerRef.all
+    end
+
+    if params[:page_tab] == 'add_new_peer_ref' 
+      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+      if params[:peer_ref_id].present?
+        @peer_ref = ProviderPersonalInformationPeerRef.find(params[:peer_ref_id])
+      else
+        @peer_ref = ProviderPersonalInformationPeerRef.new
+      end
+    end
+
+    if params[:page_tab] == 'peer_ref_record'
+      @peer_ref = ProviderPersonalInformationPeerRef.find(params[:peer_ref_id])
+    end
+
+    if params[:page_tab] == 'edit_peer_ref'
+      @peer_ref = ProviderPersonalInformationPeerRef.find(params[:peer_ref_id])
+    end
+
     # code for licensure tab
     if %w[edit_licensure license_record].include?(params[:page_tab])
       @provider_licensure = ProviderLicensure.find(params[:licensure_id])
