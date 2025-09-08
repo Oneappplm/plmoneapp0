@@ -1,0 +1,449 @@
+<div class="modal-body">
+  <div id="qaModalMessage" class="alert alert-info d-none"></div>
+  <div class="content">
+    <div class="modal-title">
+      <h6 class="">Quality Audit</h6>
+      <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
+    </div>
+    <%= form_with model: @rva_information, url: mhc_verification_platform_generate_rva_information_path, method: :post, id: 'audit-form' do |f| %>
+    <%= hidden_field_tag :id, @last_liability_rva&.id %>
+    <%= hidden_field_tag :personal_info_id %>
+    <%= hidden_field_tag :practice_liability_id %>
+    <%= hidden_field_tag :section %>
+    <div class="form-row row mt-3">
+      <div class="col-xl-12">
+        <div class="card other-name-card">
+          <div class="card-header bg-secondary rounded-0">
+            <h6 class="form-heading text-white">Request</h6>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-end gap-2">
+              <button class="btn btn-primary py-1" type="button">View Request History</button>
+              <button class="btn btn-primary py-1" type="button">View Webcrawler Image Archive</button>
+            </div>
+            <hr class="form-hr">
+            <div class="row pt-3 pb-3">
+              <div class="col-md-6">
+                <button class="btn btn-sm btn-light <%= @last_liability_rva.present? ? '' : 'btn-disabled' %>" 
+                  id="send-request-btn" 
+                  <%= 'disabled' if @last_liability_rva.present? %>>
+                Send Request
+                </button>
+              </div>
+              <div class="col-md-6">
+                <span class="font-bold sent-request" style="line-height: 38px;"><%= @last_liability_rva&.send_request %></span>
+              </div>
+            </div>
+            <hr class="form-hr">
+            <div class="row">
+              <div class="col-md-6">
+                <label for="">Requested By:</label>
+              </div>
+              <div class="col-md-6">
+                <span class="font-bold requested-by"><%= @last_liability_rva&.requested_by %></span>
+              </div>
+            </div>
+            <hr class="form-hr">
+            <div class="row">
+              <div class="col-md-6">
+                <label for="">Requested Date:</label>
+              </div>
+              <div class="col-md-6">
+                <span class="font-bold requested-date"><%= @last_liability_rva&.requested_date %></span>
+              </div>
+            </div>
+            <hr class="form-hr">
+            <div class="form-row d-flex align-items-center gap-3">
+              <label for="">Requested Method:</label>
+              <%= f.radio_button :requested_method, 'AutoFax', id: 'method-autofax', checked: (@last_liability_rva.present? && @last_liability_rva.requested_method == "AutoFax") %>
+              <label class="form-check-label" for="method-autofax">AutoFax</label>
+              <%= f.radio_button :requested_method, 'E-Mail', id: 'method-email', checked: (@last_liability_rva.present? && @last_liability_rva.requested_method == "E-Mail") %>
+              <label class="form-check-label" for="method-email">E-Mail</label>
+              <%= f.radio_button :requested_method, 'Letter', id: 'method-letter', checked: (@last_liability_rva.present? && @last_liability_rva.requested_method == "Letter") %>
+              <label class="form-check-label" for="method-letter">Letter</label>
+              <%= f.radio_button :requested_method, 'Phone', id: 'method-phone', checked: (@last_liability_rva.present? && @last_liability_rva.requested_method == "Phone") %>
+              <label class="form-check-label" for="method-phone">Phone</label>
+              <%= f.radio_button :requested_method, 'Website', id: 'method-website', checked: (@last_liability_rva.present? && @last_liability_rva.requested_method == "Website") %>
+              <label class="form-check-label" for="method-website">Website</label>
+            </div>
+            <span>The default contact method is letter.</span>
+            <hr class="form-hr">
+            <div class="form-row row">
+              <div class="col-xl-6">
+                <%= f.label :required_fee_amount, "Required Fee Amount:" %>
+                <%= f.text_field :required_fee_amount, 
+                  class: 'form-control req-fee-amount', 
+                  	placeholder: "Type here...", 
+                  	value: @last_liability_rva&.required_fee_amount, 
+                  	disabled: false %>
+              </div>
+              <div class="col-xl-6">
+                <%= f.label :check_payable_to, "Check Payable To:" %>
+                <%= f.text_field :check_payable_to, 
+                  class: 'form-control', 
+                  	placeholder: "Type here...", 
+                  	value: @last_liability_rva&.check_payable_to, 
+                  	disabled: false %>
+              </div>
+            </div>
+            <hr class="form-hr">
+            <div class="form-row mt-2">
+              <%= f.check_box :include_delineation, 
+                id: 'inc-delineation-check', 
+                value: "Include Delineation of Privileges", 
+                checked: @last_liability_rva&.include_delineation == true %>
+              <%= f.label :include_delineation, "Include Delineation of Privileges", for: 'inc-delineation-check' %>
+            </div>
+            <hr class="form-hr">
+            <div class="form-row d-flex align-items-center gap-3">
+              <label for="">Check has generated?</label>
+              <%= f.radio_button :check_generated, 'true', 
+                id: 'check-generate-yes', 
+                disabled: true, 
+                checked: @last_liability_rva&.check_generated == true %>
+              <label for="check-generate-yes">Yes</label>
+              <%= f.radio_button :check_generated, 'false', 
+                id: 'check-generate-no', 
+                disabled: true, 
+                checked: @last_liability_rva&.check_generated == false %>
+              <label for="check-generate-no">No</label>
+            </div>
+            <hr class="form-hr">
+            <div class="form-row d-flex align-items-center gap-3">
+              <label for="">Received Status:</label>
+              <%= f.radio_button :received_status, 'Yes', 
+                id: 'received-status-yes', 
+                disabled: true, 
+                checked: @last_liability_rva&.received_status == 'Yes' %>
+              <label for="received-status-yes">Yes</label>
+              <%= f.radio_button :received_status, 'No', 
+                id: 'received-status-no', 
+                disabled: true, 
+                checked: @last_liability_rva&.received_status == 'No' %>
+              <label for="received-status-no">No</label>
+            </div>
+            <hr class="form-hr">
+            <div class="row">
+              <div class="col-md-6">
+                <label for="">Received by:</label>
+              </div>
+              <div class="col-md-6">
+                <span class="font-bold received-by">
+                <%= @last_liability_rva&.received_by.presence || ' ' %>
+                </span>
+              </div>
+            </div>
+            <hr class="form-hr">
+            <div class="row">
+              <div class="col-md-6">
+                <label for="">Received date:</label>
+              </div>
+              <div class="col-md-6">
+                <span class="font-bold received-date">
+                <%= @last_liability_rva&.received_date.presence || ' ' %>
+                </span>
+              </div>
+            </div>
+            <hr class="form-hr">
+            <div class="form-row">
+              <%= f.label :comments, "Comments:" %>
+              <%= f.text_area :comments, rows: 3, class: 'form-control request-comment', value: @last_liability_rva&.comments%>
+            </div>
+            <div class="form-row d-flex justify-content-end gap-2 mt-3">
+              <button class="btn btn-primary py-1" type="button">View Received Images</button>
+              <button class="btn btn-primary py-1" type="button" <%= 'disabled' if @last_liability_rva.present? %>>Save Request</button>
+              <button class="btn btn-primary py-1" type="button" id="restart-request-btn" <%= 'disabled' if !@last_liability_rva.present? %>>Restart Request</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-row row mt-3">
+      <div class="col-xl-12">
+        <div class="card other-name-card">
+          <div class="card-header bg-secondary rounded-0">
+            <h6 class="form-heading text-white">Verification</h6>
+          </div>
+          <div class="card-body">
+            <div class="form-row row">
+              <div class="col-md-6">
+                <%= f.label :source_name, 'Source Name:' %>
+              </div>
+              <div class="col-md-6">  
+                <%= f.select :source_name, options_for_select([['Application', 'Application'] , ['Application Supplement', 'Application Supplement'], ['Attestation', 'Attestation'], ['Carrier', 'Carrier'] , ['Letter of Credit / Sovereign Immunity Statement', 'Letter of Credit / Sovereign Immunity Statement'], ['Malpractice Face Sheet', 'Malpractice Face Sheet'], ['NOT VERIFIED', 'NOT VERIFIED'], ['Provider Face Sheet', 'Provider Face Sheet'], ['Unable to Verify', 'Unable to Verify']], selected: @last_liability_rva&.source_name.present? ? @last_liability_rva&.source_name : ''), { include_blank: 'Select option' }, class: 'form-select' %>
+              </div>
+            </div>
+            <hr>
+            <div class="form-row row">
+              <div class="col-md-6">
+                <%= f.label :source_date, 'Source Date:' %>
+              </div>
+              <div class="col-md-6">  
+                <%= f.date_field :source_date, required: true, class: "form-control", value: @last_liability_rva&.source_date %>
+              </div>
+            </div>
+            <hr>
+            <div class="form-row row">
+              <div class="col-md-6">
+                <%= f.label :status, 'Status:' %>
+              </div>
+              <div class="col-md-6">
+                <%= f.select :status, options_for_select([['Current', 'Current'], ['Expired', 'Expired'], ['Future Coverage', 'Future Coverage'], ['Self-insured', 'Self-insured'] , ['Unable to Verify', 'Unable to Verify'] , ['Uninsured', 'Uninsured'] , ['Verified', 'Verified'] ,['x', 'x'] , ['xx', 'xx'] ,  ['xxx', 'xxx']], @last_liability_rva&.status), { include_blank: 'Select option' }, class: 'form-select' %>
+              </div>
+            </div>
+            <hr>
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="form-heading">Adverse Action</h6>
+                </div>
+                <div class="form-row d-flex align-items-center gap-3 mt-1">
+                  <%= f.select :adverse_action, options_for_select([
+                    ['None', 'None'],
+                    ['Cancelled', 'Cancelled'],
+                    ['Disclosure Response Discrepancy', 'Disclosure Response Discrepancy'],
+                    ['Expired', 'Expired'],
+                    ['Expiring prior to committee', 'Expiring prior to committee'],
+                    ['Gap in coverage', 'Gap in coverage'],
+                    ['Inadequate attestation response', 'Inadequate attestation response'],
+                    ['Inadequate exclusions explanation', 'Inadequate exclusions explanation'],
+                    ['Incorrect attestation response', 'Incorrect attestation response'],
+                    ['Incorrect coverage amounts', 'Incorrect coverage amounts'],
+                    ['Insufficient Coverage', 'Insufficient Coverage'],
+                    ['Name not on face sheet', 'Name not on face sheet'],
+                    ['No record found', 'No record found'],
+                    ['Not Covered for Privileges Requested', 'Not Covered for Privileges Requested'],
+                    ['Not Renewed', 'Not Renewed'],
+                    ['Other', 'Other'],
+                    ['Reduced Limits', 'Reduced Limits'],
+                    ['Restricted', 'Restricted'],
+                    ['Special Rated', 'Special Rated'],
+                    ['Surcharged', 'Surcharged'],
+                    ['Suspended', 'Suspended'],
+                    ['Terminated', 'Terminated'],
+                    ['Unable to verify', 'Unable to verify'],
+                    ['Voluntary termination', 'Voluntary termination']
+                    ], @last_liability_rva&.adverse_action), { include_blank: 'Select option' }, class: 'form-select' %>
+                </div>
+                <div class="form-row row">
+                  <div class="col-xl-6">
+                    <%= f.label :other_details, 'Other:' %>
+                    <%= f.text_area :other_details, rows: 5, class: 'form-control', value: @last_liability_rva&.other_details  %>
+                  </div>
+                  <div class="col-xl-6">
+                    <%= f.label :adverse_action_comments, 'Comments:' %>
+                    <%= f.text_area :adverse_action_comments, rows: 5, class: 'form-control', value: @last_liability_rva&.adverse_action_comments  %>
+                  </div>
+                </div>
+                <div class="form-row d-flex align-items-center gap-2 mt-1">
+                  <%= f.radio_button :adverse_action_status, 'Open', 
+                    id: 'verif-open', 
+                    checked: @last_liability_rva&.adverse_action_status == 'Open' %>
+                  <%= f.label :adverse_action_status, 'Open', for: 'verif-open' %>
+                  <%= f.radio_button :adverse_action_status, 'Close', 
+                    id: 'verif-close', 
+                    checked: @last_liability_rva&.adverse_action_status == 'Close' %>
+                  <%= f.label :adverse_action_status, 'Close', for: 'verif-close' %>
+                </div>
+                <div class="form-row d-flex align-items-center gap-2">
+                  <%= f.label :in_good_standing, 'In Good Standing?' %>
+                  <%= f.radio_button :in_good_standing, 'Yes', 
+                    id: 'good-standing-yes', 
+                    checked: @last_liability_rva&.in_good_standing == true %>
+                  <%= f.label :in_good_standing, 'Yes', 
+                    for: 'good-standing-yes', 
+                    	class: 'form-check-label' %>
+                  <%= f.radio_button :in_good_standing, 'No', 
+                    id: 'good-standing-no', 
+                    checked: @last_liability_rva&.in_good_standing == false %>
+                  <%= f.label :in_good_standing, 'No', 
+                    for: 'good-standing-no', 
+                    	class: 'form-check-label' %>
+                </div>
+              </div>
+            </div>
+            <!-- Verification Errors Section -->
+            <div class="form-row row mt-3">
+              <div class="col-xl-12">
+                <div class="card other-name-card">
+                  <div class="card-body">
+                    <h6 class="form-heading">Verification Errors</h6>
+                    <div class="form-row row">
+                      <div class="col-xl-6">
+                        <%= f.label :error_type, 'Error:' %>
+                        <%= f.select :error_type, options_for_select([['None', 'None'] , ['Aggregate Amount', 'Aggregate Amount'], ['Carrier email address', 'Carrier email address'], ['Carrier fax number', 'Carrier fax number'], ['Carrier Name', 'Carrier Name'], ['Carrier phone number', 'Carrier phone number'], ['Coverage for Privileges Requested', 'Coverage for Privileges Requested'], ['Expiration Date', 'Expiration Date'], ['Occurrence Amount', 'Occurrence Amount'], ['Original Effective Date', 'Original Effective Date'], ['Other', 'Other'], ['Per Claim Amount', 'Per Claim Amount'], ['Policy Holder', 'Policy Holder'], ['Policy Number', 'Policy Number'], ['Self insured', 'Self insured'], ['Tail Coverage', 'Tail Coverage'], ['Type of coverage', 'Type of coverage'], ['Umbrella Coverage', 'Umbrella Coverage']] , @last_liability_rva&.error_type || 'None'), { include_blank: 'Select option' }, class: 'form-select' %>
+                      </div>
+                      <div class="col-xl-6">
+                        <%= f.label :error_comments, 'Comments:' %>
+                        <%= f.text_area :error_comments, rows: 3, class: 'form-control', value: @last_liability_rva&.error_comments %>
+                      </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mt-3">
+                      <button type="button" class="btn btn-primary py-1">Add Another Error</button>
+                      <button type="button" class="btn btn-danger">Remove</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Correct Information Section -->
+            <div class="form-row row mt-3">
+              <div class="col-xl-12">
+                <div class="card other-name-card">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h6 class="form-heading">Correct Information</h6>
+                      <div class="d-flex gap-2">
+                        <button class="btn btn-primary py-1">Verified</button>
+                        <button class="btn btn-primary py-1">Verify and Update with Correct Information</button>
+                      </div>
+                    </div>
+                    <div class="form-row row mt-3">
+                      <div class="col-xl-6">
+                        <%= f.label :correct_info_selected, 'Select Correct Info:' %>
+                        <%= f.select :correct_info_selected, options_for_select([['Aggregate Amount', 'Aggregate Amount'] , ['Carrier email address', 'Carrier email address'], ['Carrier fax number', 'Carrier fax number'], ['Carrier Name', 'Carrier Name'], ['Carrier phone number', 'Carrier phone number'], ['Coverage for Privileges Requested', 'Coverage for Privileges Requested'], ['Expiration Date', 'Expiration Date'], ['Occurrence Amount', 'Occurrence Amount'], ['Original Effective Date', 'Original Effective Date'], ['Per Claim Amount', 'Per Claim Amount'], ['Policy Holder', 'Policy Holder'], ['Policy Number', 'Policy Number'], ['Self insured', 'Self insured'], ['Tail Coverage', 'Tail Coverage'], ['Type of coverage', 'Type of coverage'],['Umbrella Coverage', 'Umbrella Coverage']],  @last_liability_rva&.correct_info_selected), { include_blank: 'Select option' }, class: 'form-select' %>
+                      </div>
+                      <div class="col-xl-6">
+                        <%= f.label :correct_info_text, 'Enter Details:' %>
+                        <%= f.text_field :correct_info_text, class: 'form-control', value: @last_liability_rva&.correct_info_text %>
+                      </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mt-3">
+                      <button type="button" class="btn btn-primary py-1">Add</button>
+                      <button type="button" class="btn btn-danger">Remove</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <hr class="form-hr">
+            <div class="row mt-5">
+              <div class="col-md-6">
+                <label for="">Verification Status:</label>
+              </div>
+              <div class="col-md-6">
+                <span class="font-bold verification-status"><%= @last_liability_rva&.verification_status.presence || '' %></span>
+              </div>
+            </div>
+            <hr class="form-hr">
+            <div class="row">
+              <div class="col-md-6">
+                <label for="">Notification Status:</label>
+              </div>
+              <div class="col-md-6">
+                <span class="font-bold notification-status"><%= @last_liability_rva&.notification_status.presence || '' %></span>
+              </div>
+            </div>
+            <hr class="form-hr">
+            <div class="row">
+              <div class="col-md-6">
+                <label for="">Verification Date:</label>
+              </div>
+              <div class="col-md-6">
+                <span class="font-bold verification-date"><%= @last_liability_rva&.verification_date.presence || '' %></span>
+              </div>
+            </div>
+            <hr class="form-hr">
+            <div class="row">
+              <div class="col-md-6">
+                <label for="">Verifier:</label>
+              </div>
+              <div class="col-md-6">
+                <span class="font-bold verifier"><%= @last_liability_rva&.verifier.presence || '' %></span>
+              </div>
+            </div>
+            <hr class="form-hr">
+            <!-- Comments and Save Button -->
+            <div class="form-row row mt-3">
+              <div class="col-xl-12">
+                <%= f.label :verification_comments, 'Comments:' %>
+                <%= f.text_area :verification_comments, rows: 3, class: 'form-control', value: @last_liability_rva&.verification_comments %>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end gap-2 mt-3">
+              <%= f.button 'Save Verification', class: 'btn btn-primary py-1', id: 'verification-btn' %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-row row mt-3">
+      <div class="card other-name-card">
+        <div class="card-body">
+          <h6 class="form-heading">Audit</h6>
+          <div class="form-row row mt-3">
+            <div class="col-xl-12">
+              <div class="card other-name-card">
+                <div class="card-body">
+                  <h6 class="form-heading">Reasons</h6>
+                  <div class="form-row row">
+                    <div class="col-xl-6">
+                      <%= f.label :audit_reason, 'Reason:' %>
+                      <%= f.select :audit_reason, options_for_select([ ['None', 'None'] , ['Adverse Action Not Recorded', 'Adverse Action Not Recorded'] , ['DEA Registration Number Incorrect', 'DEA Registration Number Incorrect'] , ['Expiration Date Incorrect', 'Expiration Date Incorrect'] , ['Expires Before 30 Days', 'Expires Before 30 Days'] ,['Issue Date Incorrect', 'Issue Date Incorrect'], ['Limited or Restricted Status Incorrect', 'Limited or Restricted Status Incorrect'], ['Schedule Incorrect', 'Schedule Incorrect'], ['Show on Tickler Status Incorrect', 'Show on Tickler Status Incorrect'], ['Source Date Greater Than 90 Days', 'Source Date Greater Than 90 Days'], ['Source Date Incorrect', 'Source Date Incorrect'], ['Source Name Incorrect', 'Source Name Incorrect'], ['Theorem: Incorrect Information Entered', 'Theorem: Incorrect Information Entered'], ['Theorem: Necessary Information Not Entered', 'Theorem: Necessary Information Not Entered'], ['Theorem: Unnecessary Information Entered', 'Theorem: Unnecessary Information Entered'], ['Verification Not Uploaded', 'Verification Not Uploaded'], ['Verification Status Incorrect', 'Verification Status Incorrect']], @last_liability_rva&.audit_reason), { include_blank: 'Select option' }, class: 'form-select' %>   
+                    </div>
+                    <div class="col-xl-6">
+                      <%= f.label :audit_reason_comments, 'Comments:' %>
+                      <%= f.text_field :audit_reason_comments, class: 'form-control', value: @last_liability_rva&.audit_reason_comments %>
+                    </div>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-between mt-3">
+                    <%= button_tag 'Add Another Reason', class: 'btn btn-primary py-1', type: 'button' %>
+                    <%= button_tag 'Remove', class: 'btn btn-danger', type: 'button' %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row d-flex align-items-center gap-3">
+            <%= f.label :audit_status, 'Audit Status:' %>
+            <%= f.radio_button :audit_status, 'Pass', 
+              id: 'audit-status-pass', 
+              class: 'form-check-input', 
+              	required: true, 
+              	checked: @last_liability_rva&.audit_status == true %>
+            <%= f.label :audit_status, 'Pass', 
+              for: 'audit-status-pass', 
+              	class: 'form-check-label' %>
+            <%= f.radio_button :audit_status, 'Fail', 
+              id: 'audit-status-fail', 
+              class: 'form-check-input', 
+              	required: true, 
+              	checked: @last_liability_rva&.audit_status == false %>
+            <%= f.label :audit_status, 'Fail', 
+              for: 'audit-status-fail', 
+              	class: 'form-check-label' %>
+          </div>
+          <hr class="form-hr">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="">Audit Date:</label>
+            </div>
+            <div class="col-md-6">
+              <span class="font-bold" id="rva_information_audit_date"><%= @last_liability_rva&.audit_date.presence || '' %></span>
+            </div>
+          </div>
+          <hr class="form-hr">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="">Auditor:</label>
+            </div>
+            <div class="col-md-6">
+              <span class="font-bold" id="rva_information_auditor"><%= @last_liability_rva&.auditor.presence || '' %></span>
+            </div>
+          </div>
+          <hr class="form-hr">
+          <div class="form-row row">
+            <div class="col-xl-12">
+              <%= f.label :audit_comments, 'Comments:' %>
+              <%= f.text_area :audit_comments, rows: 3, class: 'form-control', value: @last_liability_rva&.audit_comments %>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end gap-2 mt-3">
+            <%= f.button 'Save Audit', class: 'btn btn-primary py-1', id: 'audit-btn' %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% end %>  
+  </div>
+</div>

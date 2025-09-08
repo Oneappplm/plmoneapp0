@@ -283,7 +283,8 @@ class Webscrapers::QualityAuditsController < ApplicationController
     else
       render json: { error: 'No RVA information found for the given education ID' }, status: :not_found
     end
-  end  
+  end
+
   def delete_training_request
     rva_infos = RvaInformation.where(provider_education_id: params[:training_id])
   
@@ -294,8 +295,40 @@ class Webscrapers::QualityAuditsController < ApplicationController
     else
       render json: { error: 'No RVA information found for the given education ID' }, status: :not_found
     end
-  end  
-  
+  end
+
+  def delete_liability_request
+    liability_id = params[:liability_id]
+    section = params[:liability_section].to_s # "liability_coverage" or "professional_liability"
+
+    # Find RVA records for this liability and section
+    rva_infos =
+    case section
+    when "liability_coverage"
+      RvaInformation.where(provider_insurance_coverage_id: liability_id, liability_coverage: true)
+    when "professional_liability"
+      RvaInformation.where(provider_insurance_coverage_id: liability_id, professional_liability: true)
+    else
+      RvaInformation.none
+    end
+
+    if rva_infos.any?
+      # Only restart if audited
+      rva_infos.where(audit_status: true, restart_audit: [nil, false]).update_all(restart_audit: true)
+        # update provider_insurance_coverages table based on section
+      insurance = ProviderInsuranceCoverage.find_by(id: liability_id)
+      if insurance
+        if section == "liability_coverage"
+          insurance.update(audit_status: "Not Requested")
+        elsif section == "professional_liability"
+          insurance.update(claims_history_audit: "Not Requested")
+        end
+      end
+      render json: { message: 'All related RVA information deleted successfully' }, status: :ok
+    else
+      render json: { error: "No RVA information found for #{section.humanize}" }, status: :not_found
+    end
+  end
 
   def send_education_skip_rva
     education_id = params[:education_id]
@@ -360,6 +393,8 @@ class Webscrapers::QualityAuditsController < ApplicationController
       provider_specialty_id: board_id,
       provider_education_id: training_id,
       certification_id: certification_id,
+      liability_coverage: params[:liability_section].eql?('liability_coverage'),
+      professional_liability: params[:liability_section].eql?('professional_liability')
     }
 
     if skip_rva
@@ -377,7 +412,6 @@ class Webscrapers::QualityAuditsController < ApplicationController
         audit_comments: 'SkipRVA'
       )
     end
-
     rva_information = RvaInformation.create!(rva_params)
     render json: {
       message: "#{tab} request sent successfully",
