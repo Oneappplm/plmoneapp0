@@ -419,7 +419,13 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
       @provider_insurance_coverages = ProviderInsuranceCoverage.find(params[:coverage_id])
       @rva_information = RvaInformation.new
-      @last_rva_information = @provider_insurance_coverages&.rva_informations&.last
+      @last_liability_rva = @provider_insurance_coverages&.rva_informations.where(liability_coverage: true).where(restart_audit: false).last
+      @last_prof_liability_rva = @provider_insurance_coverages&.rva_informations.where(professional_liability: true).where(restart_audit: false).last
+      @needs_liability_rva = @provider_insurance_coverages.rva_informations
+                    .where(liability_coverage: true).pluck(:restart_audit)
+
+      @needs_prof_liability_rva = @provider_insurance_coverages.rva_informations
+                    .where(professional_liability: true).pluck(:restart_audit)       
       @liability_rva_information_completed = @provider_insurance_coverages&.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
 
