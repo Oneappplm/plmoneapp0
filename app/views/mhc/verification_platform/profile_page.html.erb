@@ -449,10 +449,13 @@
                         </td>
                         <td><%= doc&.sub_section %></td>
                         <td>
-                         <a href="<%= doc&.file_upload&.url %>" target="_blank">
-                            <%= File.basename(URI.parse(doc&.file_upload&.url).path) %>
-                          </a>
-
+                          <% if doc&.file_upload&.url.present? %>
+                            <a href="<%= doc.file_upload.url %>" target="_blank">
+                              <%= File.basename(URI.parse(doc.file_upload.url).path) %>
+                            </a>
+                          <% else %>
+                            No file uploaded
+                          <% end %>
                         </td>
                         <td><%= doc&.created_at&.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
                         <td><%= file_type %></td>
