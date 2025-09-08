@@ -182,7 +182,8 @@ Rails.application.routes.draw do
     end
     
     resources :provider_personal_information_peer_refs
-
+    resources :provider_personal_information_facilities
+    
     resources :provider_insurance_coverages
     resources :provider_npdbs
     resources :provider_npdb_comments
