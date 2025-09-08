@@ -50,6 +50,7 @@ class ProviderPersonalInformation < ApplicationRecord
   has_many :provider_other_names, through: :provider_attest
 
   has_many :provider_personal_information_peer_refs, through: :provider_attest
+  has_many :provider_personal_information_facilities, through: :provider_attest
 
   has_many :provider_personal_information_sam_records
   has_many :provider_personal_information_reinstatements

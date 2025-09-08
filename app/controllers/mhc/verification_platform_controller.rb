@@ -504,12 +504,25 @@ class Mhc::VerificationPlatformController < ApplicationController
       end
     end
 
-    if params[:page_tab] == 'peer_ref_record'
+    if params[:page_tab] == 'peer_ref_record' || params[:page_tab] == 'edit_peer_ref'
       @peer_ref = ProviderPersonalInformationPeerRef.find(params[:peer_ref_id])
     end
 
-    if params[:page_tab] == 'edit_peer_ref'
-      @peer_ref = ProviderPersonalInformationPeerRef.find(params[:peer_ref_id])
+    if params[:page_tab] == 'facilities'
+      @facilities = ProviderPersonalInformationFacility.all
+    end
+
+    if params[:page_tab] == 'add_new_facility' 
+      @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
+      if params[:facility_id].present?
+        @facility = ProviderPersonalInformationFacility.find(params[:facility_id])
+      else
+        @facility = ProviderPersonalInformationFacility.new
+      end
+    end
+
+    if params[:page_tab] == 'facility_record' || params[:page_tab] == 'edit_facility'
+      @facility = ProviderPersonalInformationFacility.find(params[:facility_id])
     end
 
     # code for licensure tab
