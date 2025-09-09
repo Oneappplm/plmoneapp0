@@ -159,7 +159,7 @@
   </div>
 </div>
 <div class="container mt-4">
-  <div class="section mt-4 border rounded p-3 shadow">
+  <div class="section mt-4 shadow">
     <div class="section-title">Primary License:</div>
     <% provider_personal_information.provider_licensures
       .joins(:rva_informations)
@@ -168,32 +168,32 @@
       .distinct
       .each do |licensure| %>
     <% details = licensure.rva_informations.where(audit_status: 'Quality Audited').order('source_date DESC').first %>
-    <% if details.present? %>
-    <div class="row mt-3">
-      <div class="col-6">
-        <p><strong>License Number:</strong> <%= licensure.license_number %></p>
-        <p><strong>Issue Date:</strong> <%= licensure.license_issue_date&.strftime('%m/%d/%Y') %></p>
-        <p><strong>Status:</strong> <%= details.status.presence || 'N/A' %></p>
-        <p><strong>Source:</strong> <%= details.source_name.presence || 'N/A' %></p>
-        <p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
-        <p><strong>Review Criteria:</strong> <%= details.adverse_action? ? 'Yes' : 'No'  %></p>
-      </div>
-      <div class="col-6">
-        <p><strong>License Type:</strong> <%= licensure.license_type %></p>
-        <p><strong>State:</strong> <%= licensure.state.name %></p>
-        <p><strong>Expiration Date:</strong> <%= licensure.license_expiration_date&.strftime('%m/%d/%Y') %></p>
-        <!-- <p><strong>Adverse Action:</strong> <%#= details.adverse_action.presence || 'None' %></p> -->
-        <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
-        <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
-      </div>
-    </div>
-    <div class="row comments">
-      <div class="col-12">
-        <p><strong>Comments:</strong> <%= details.verification_comments.presence || 'N/A' %></p>
-      </div>
-    </div>
-    <hr>
-    <% end %>
+	    <% if details.present? %>
+	    <div class="row mt-3">
+	      <div class="col-6">
+	        <p><strong>License Number:</strong> <%= licensure.license_number %></p>
+	        <p><strong>Issue Date:</strong> <%= licensure.license_issue_date&.strftime('%m/%d/%Y') %></p>
+	        <p><strong>Status:</strong> <%= details.status.presence || 'N/A' %></p>
+	        <p><strong>Source:</strong> <%= details.source_name.presence || 'N/A' %></p>
+	        <p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
+	        <p><strong>Review Criteria:</strong> <%= details.adverse_action? ? 'Yes' : 'No'  %></p>
+	      </div>
+	      <div class="col-6">
+	        <p><strong>License Type:</strong> <%= licensure.license_type %></p>
+	        <p><strong>State:</strong> <%= licensure.state.name %></p>
+	        <p><strong>Expiration Date:</strong> <%= licensure.license_expiration_date&.strftime('%m/%d/%Y') %></p>
+	        <!-- <p><strong>Adverse Action:</strong> <%#= details.adverse_action.presence || 'None' %></p> -->
+	        <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
+	        <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
+	      </div>
+	    </div>
+	    <div class="row comments">
+	      <div class="col-12">
+	        <p><strong>Comments:</strong> <%= details.verification_comments.presence || 'N/A' %></p>
+	      </div>
+	    </div>
+	    <hr>
+	    <% end %>
     <% end %>
   </div>
   <div class="section-title mt-4">Additional License</div>
@@ -254,25 +254,41 @@
     <div class="section-title">SAM Exclusions:</div>
     <div class="section-content">
       <div class="row">
-        <div class="col-6">
-          <p>
-            <strong>Full Name:</strong> 
-            <%= provider_personal_information
-              .provider_personal_information_sam_records
-              .map { |r| [r.first_name, r.middle_name, r.last_name].compact_blank.join(" ") }
-              .join(", ") %>
-          </p>
-          <p><strong>Search Results:</strong> No Match</p>
-          <p><strong>Finding:</strong> None</p>
-          <p><strong>Verified By:</strong> SAM</p>
-          <p><strong>Verifier:</strong> System</p>
-          <p><strong>Comments:</strong> None</p>
-        </div>
-        <div class="col-6">
-          <p><strong>Source Date:</strong> 03/25/2021</p>
-          <p><strong>Verification Date:</strong> 03/25/2021</p>
-        </div>
-      </div>
+			  <% provider_personal_information.provider_personal_information_sam_records.each do |sam_record| %>
+			    <div class="col-6 mb-3">
+			      <p><strong>Full Name:</strong> 
+			        <%= [sam_record.first_name, sam_record.middle_name, sam_record.last_name].compact_blank.join(" ") %>
+			      </p>
+			    </div>
+
+			    <div class="col-6 mb-3">	
+			      <% if sam_record.provider_personal_information_sam_rva_records.any? %>
+			        <% sam_record.provider_personal_information_sam_rva_records.each do |rva| %>
+			          <p><strong>Source Date:</strong> <%= rva.source_date&.strftime('%b %d, %Y') || "None" %></p>
+			          <p><strong>Verification Date:</strong> <%= rva.verification_date&.strftime('%b %d, %Y') || "None" %></p>
+
+			          <p><strong>Search Results:</strong> 
+			            <%= verification_search_results.to_h.key(rva.search_result) || "None" %>
+			          </p>
+			          <p><strong>Finding:</strong> <%= rva.verification_sanctions || "None" %></p>
+			          <p><strong>Verified By:</strong> SAM</p>
+			          <p><strong>Verifier:</strong> <%= current_user.full_name %></p>
+			          <p><strong>Comments:</strong> <%= rva.comments || "None" %></p>
+			          <hr>
+			        <% end %>
+		        <% else %>
+			        <p><strong>Source Date:</strong> None</p>
+			        <p><strong>Verification Date:</strong> None</p>
+			        <p><strong>Search Results:</strong> None</p>
+			        <p><strong>Finding:</strong> None</p>
+			        <p><strong>Verified By:</strong> SAM</p>
+			        <p><strong>Verifier:</strong> <%= current_user.full_name %></p>
+			        <p><strong>Comments:</strong> None</p>
+			      <% end %>
+			    </div>
+			    <hr>
+			  <% end %>
+			</div>
     </div>
   </div>
   <div class="section mt-4">
@@ -283,11 +299,11 @@
           <p><strong>NPI Number:</strong><%= provider_personal_information&.npi %></p>
           <p><strong>Search Results:</strong> <%= provider_personal_information&.npi_verification_status %></p>
           <p><strong>Verified By:</strong> NPI</p>
-          <p><strong>Verifier:</strong> System</p>
+          <p><strong>Verifier:</strong> <%= current_user.full_name %></p>
         </div>
         <div class="col-6">
-          <p><strong>Source Date:</strong> 03/25/2021</p>
-          <p><strong>Verification Date:</strong> 03/25/2021</p>
+          <p><strong>Source Date:</strong> <%#= provider_personal_information&.npi_source_date&.strftime("%m/%d/%Y") %></p>
+					<p><strong>Verification Date:</strong> <%= provider_personal_information&.updated_at&.strftime("%m/%d/%Y") %></p>
         </div>
       </div>
     </div>

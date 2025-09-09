@@ -210,14 +210,15 @@ class Webscrapers::QualityAuditsController < ApplicationController
   end
 
   def delete_npdb_request
-    rvas = RvaInformation.where(tab: 'NPDB', provider_personal_information_id: params[:personal_info_id])
-    if rvas.any?
-      rvas.destroy_all
+    rva_infos = RvaInformation.where(tab: 'NPDB', provider_personal_information_id: params[:personal_info_id])
+  
+    if rva_infos.any?
+      rva_infos.update(restart_audit: true)
       render json: { success: true }
     else
       render json: { success: false, message: "Not found" }, status: :not_found
     end
-  end  
+  end
   
   def send_npdb_skip_rva
     npdb_id = params[:npdb_id]
