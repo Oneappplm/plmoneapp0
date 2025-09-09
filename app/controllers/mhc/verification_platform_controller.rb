@@ -175,7 +175,6 @@ class Mhc::VerificationPlatformController < ApplicationController
     @queues = PdfGenerationQueue.all.order(created_at: :desc)
     @psv_pdfs = SavedProfile.joins(:pdf_generation_queue)
                        .where(pdf_generation_queues: { deleted: true, provider_personal_information_id: @provider_personal_information.id })
-
   end
 
   def application_page
@@ -439,7 +438,7 @@ class Mhc::VerificationPlatformController < ApplicationController
         caqh_provider_attest_id: @provider_personal_information&.caqh_provider_attest_id
       )
       @rva_information = RvaInformation.new
-      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'NPDB').last
+      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'NPDB', restart_audit: false).last
       @npdb_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'NPDB').where.not(source_date: nil).where.not(audit_status: false)
     end
 
