@@ -10,11 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-ActiveRecord::Schema[7.0].define(version: 2024_09_04_075126) do
-=======
-ActiveRecord::Schema[7.0].define(version: 2025_02_09_062734) do
->>>>>>> mhc-demo
+ActiveRecord::Schema[7.0].define(version: 2025_09_09_122051) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -1141,6 +1137,172 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_09_062734) do
     t.text "address_type_address_type_description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "country"
+    t.string "office_manager"
+    t.string "manager_phone_number"
+    t.string "manager_fax_number"
+    t.string "back_office_phone_number"
+    t.string "type_of_practice"
+    t.string "mail_stop"
+    t.string "hospital_based_department_name"
+    t.string "practice_type"
+    t.string "group_name"
+    t.string "group_number_with_tax_id"
+    t.string "name_affiliated_with_tax_id"
+    t.string "federal_tax_id"
+    t.string "number_of_patients_weekly"
+    t.string "total_number_of_patients"
+    t.string "total_medicare_patients"
+    t.string "total_medical_medicaid_patients"
+    t.boolean "is_ccs", default: false
+    t.boolean "is_chdp", default: false
+    t.boolean "any_allied_health_practitioner", default: false
+    t.integer "physician_to_nurse_ratio"
+    t.integer "physician_to_midwife_ratio"
+    t.integer "physician_to_assistant_ratio"
+    t.boolean "is_employing_any_personal_practitioner", default: false
+    t.boolean "is_licensed_member_in_practice", default: false
+    t.boolean "is_staff_speak_any_foreign_language", default: false
+    t.boolean "radiology_services", default: false
+    t.boolean "allergy_injections", default: false
+    t.boolean "age_approriate_immunizations", default: false
+    t.boolean "osteopathic_manipulations", default: false
+    t.boolean "ekg", default: false
+    t.boolean "allergy_skin_tests", default: false
+    t.boolean "flexible_sigmoidoscopy", default: false
+    t.boolean "iv_hydration_treatments", default: false
+    t.boolean "care_of_minor_lacerations", default: false
+    t.boolean "routine_office_gynecology", default: false
+    t.boolean "tympanometry_audiometry_tests", default: false
+    t.boolean "cardiac_stress_tests", default: false
+    t.boolean "pulmonary_function_tests", default: false
+    t.boolean "drawing_blood", default: false
+    t.boolean "asthma_treatmeant", default: false
+    t.boolean "physical_therapies", default: false
+    t.string "other_surgical_services"
+    t.string "clinical_services_performed_not_typically_associated"
+    t.string "clinical_services_not_performed_typically_associated"
+    t.boolean "has_practice_limit_age", default: false
+    t.string "practice_limit_age_from"
+    t.string "practice_limit_age_to"
+    t.boolean "has_limited_gender", default: false
+    t.string "limited_gender"
+    t.string "other_limitations"
+    t.string "computer_office"
+    t.boolean "computer_office_has_other", default: false
+    t.string "computer_office_other"
+    t.string "operating_system"
+    t.boolean "has_os_office_other", default: false
+    t.string "os_office_other"
+    t.boolean "has_computer_has_internet_access", default: false
+    t.boolean "does_participate_edi", default: false
+    t.string "edi_network"
+    t.boolean "has_practice_management_software", default: false
+    t.string "practice_management_software"
+    t.boolean "does_perform_surgery", default: false
+    t.boolean "anesthesia_local", default: false
+    t.boolean "anesthesia_regional", default: false
+    t.boolean "anesthesia_conscious_sedation", default: false
+    t.boolean "anesthesia_general", default: false
+    t.boolean "anesthesia_other", default: false
+    t.string "anesthesia_other_value"
+    t.boolean "anesthesia_none", default: false
+    t.boolean "ambulatory_surgery_facilities", default: false
+    t.boolean "health_surgery_licensure", default: false
+    t.boolean "ambulatory_health_care", default: false
+    t.boolean "medicare_certification", default: false
+    t.boolean "medical_quality_commission", default: false
+    t.boolean "other_certification", default: false
+    t.text "other_certification_explanation"
+    t.boolean "certification_none", default: false
+    t.boolean "is_laboratory_services", default: false
+    t.string "billing_name"
+    t.string "tax_id"
+    t.string "type_of_service"
+    t.boolean "clia_waiver", default: false
+    t.boolean "clia_certificate", default: false
+    t.integer "clia_certificate_number"
+    t.date "clia_certificate_expiration_date"
+    t.string "clia_certification_of_participation"
+    t.string "other_clia"
+    t.string "xray_certification_type"
+    t.boolean "coverage_24_hour", default: false
+    t.boolean "answering_service", default: false
+    t.boolean "voice_mail_with_instruction", default: false
+    t.boolean "voice_mail_with_other_instruction", default: false
+    t.string "answering_service_company"
+    t.string "answering_service_fax_number"
+    t.string "answering_service_mail_address"
+    t.string "answering_service_mail_stop"
+    t.string "answering_service_address2"
+    t.string "answering_service_city"
+    t.string "answering_service_country"
+    t.string "answering_service_state"
+    t.string "answering_service_zipcode"
+    t.boolean "any_cover_practitioner", default: false
+    t.boolean "ada_accessibility", default: false
+    t.boolean "handicapped_building", default: false
+    t.boolean "handicapped_parking", default: false
+    t.boolean "handicapped_restroom", default: false
+    t.boolean "handicapped_other", default: false
+    t.string "handicapped_other_explaination"
+    t.boolean "disabled_telephony", default: false
+    t.boolean "american_sign_language", default: false
+    t.boolean "disabled_impairment_services", default: false
+    t.boolean "disabled_other", default: false
+    t.string "disabled_other_explaination"
+    t.boolean "other_communication_system", default: false
+    t.boolean "public_transportation", default: false
+    t.boolean "public_bus", default: false
+    t.boolean "public_subway", default: false
+    t.boolean "public_regional_train", default: false
+    t.boolean "public_other_transportation", default: false
+    t.string "public_other_transportation_explaination"
+    t.boolean "is_provide_child_care_service", default: false
+    t.boolean "is_tdd", default: false
+    t.boolean "is_epsdt_certified", default: false
+    t.integer "epsdt_certificate_number"
+    t.boolean "is_directory_location_listed", default: false
+    t.boolean "is_minority_business_enterprise", default: false
+    t.integer "group_npi"
+    t.boolean "is_primary_location", default: false
+    t.text "any_comments"
+    t.time "mon_time_from"
+    t.time "mon_time_to"
+    t.boolean "mon_closed", default: false
+    t.time "tue_time_from"
+    t.time "tue_time_to"
+    t.boolean "tue_closed", default: false
+    t.time "wed_time_from"
+    t.time "wed_time_to"
+    t.boolean "wed_closed", default: false
+    t.time "thu_time_from"
+    t.time "thu_time_to"
+    t.boolean "thu_closed", default: false
+    t.time "fri_time_from"
+    t.time "fri_time_to"
+    t.boolean "fri_closed", default: false
+    t.time "sat_time_from"
+    t.time "sat_time_to"
+    t.boolean "sat_closed", default: false
+    t.time "sun_time_from"
+    t.time "sun_time_to"
+    t.boolean "sun_closed", default: false
+    t.time "holiday_time_from"
+    t.time "holiday_time_to"
+    t.boolean "holiday_closed", default: false
+    t.string "provider_type"
+    t.string "cred_cycle"
+    t.date "birth_date"
+    t.string "ssn"
+    t.string "provider_status"
+    t.date "attestation_date"
+    t.date "file_due_date"
+    t.date "app_complete_date"
+    t.boolean "app_reviewed"
+    t.text "batch_description"
+    t.text "comment"
+    t.string "tin_number"
     t.index ["provider_attest_id"], name: "index_practice_informations_on_provider_attest_id"
   end
 
@@ -1781,6 +1943,42 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_09_062734) do
     t.string "county"
     t.boolean "current_program_director_flag"
     t.index ["provider_attest_id"], name: "index_provider_educations_on_provider_attest_id"
+  end
+
+  create_table "provider_employments", force: :cascade do |t|
+    t.bigint "provider_attest_id", null: false
+    t.string "employer_name"
+    t.string "title"
+    t.string "contact_first_name"
+    t.string "contact_middle_name"
+    t.string "contact_last_name"
+    t.string "contact_suffix"
+    t.string "practitioner_type"
+    t.string "address"
+    t.string "mail_stop"
+    t.string "additional_address"
+    t.string "city"
+    t.string "county"
+    t.string "state"
+    t.string "country"
+    t.string "zip"
+    t.string "phone_number"
+    t.string "fax"
+    t.string "email"
+    t.string "work_status"
+    t.string "population_serviced"
+    t.string "contact_method"
+    t.date "from_date"
+    t.date "to_date"
+    t.string "position"
+    t.boolean "show_on_tickler"
+    t.text "comments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "audit_status"
+    t.integer "caqh_provider_employment_id"
+    t.boolean "present"
+    t.index ["provider_attest_id"], name: "index_provider_employments_on_provider_attest_id"
   end
 
   create_table "provider_hospital_associates", force: :cascade do |t|
@@ -2524,6 +2722,36 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_09_062734) do
     t.index ["provider_personal_information_id"], name: "ppicc_ppi_id"
   end
 
+  create_table "provider_personal_information_peer_refs", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
+    t.string "title"
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "last_name"
+    t.string "suffix"
+    t.string "practitioner_type"
+    t.string "specialty"
+    t.boolean "is_board_certified"
+    t.string "contact_method"
+    t.string "address"
+    t.string "suite_dept_mail_stop"
+    t.string "facility_name"
+    t.string "city"
+    t.string "country"
+    t.string "state"
+    t.string "county"
+    t.string "zip_code"
+    t.string "phone_number"
+    t.string "fax_number"
+    t.string "email_address"
+    t.text "comments"
+    t.boolean "show_on_tickler", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "idx_peer_refs_attest_id"
+  end
+
   create_table "provider_personal_information_reinstatements", force: :cascade do |t|
     t.string "state"
     t.string "general"
@@ -2643,6 +2871,48 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_09_062734) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "npi_verification_status"
+    t.boolean "show_on_tickler", default: false
+    t.string "cred_status"
+    t.string "gender"
+    t.date "date_of_birth"
+    t.string "practitioner_type"
+    t.date "credentials_committee_date"
+    t.date "client_batch_date"
+    t.string "availability"
+    t.string "client_batch_name"
+    t.integer "client_batch_id"
+    t.string "market"
+    t.string "status"
+    t.string "application_method"
+    t.string "verification_status"
+    t.string "review_level"
+    t.date "recred_due_date"
+    t.date "review_date"
+    t.string "progress_status"
+    t.datetime "committee_date"
+    t.string "review_details"
+    t.string "cred_cycle"
+    t.string "created_by"
+    t.string "degree_titles"
+    t.string "address_line1"
+    t.string "address_line2"
+    t.string "city"
+    t.string "country"
+    t.string "county"
+    t.string "fax_number"
+    t.string "state"
+    t.string "zipcode"
+    t.string "telephone_number"
+    t.boolean "roster"
+    t.datetime "psv_completed_date"
+    t.string "hp_health_plans", default: [], array: true
+    t.string "hp_hospitals", default: [], array: true
+    t.string "hp_directories", default: [], array: true
+    t.date "vote_date"
+    t.string "vote_by"
+    t.string "practitioner_guid"
+    t.date "signature_date"
+    t.date "npi_source_date"
     t.index ["provider_attest_id"], name: "index_provider_personal_informations_on_provider_attest_id"
   end
 
@@ -3376,6 +3646,77 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_09_062734) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "rva_informations", force: :cascade do |t|
+    t.string "tab"
+    t.string "send_request"
+    t.string "requested_by"
+    t.date "requested_date"
+    t.string "requested_method"
+    t.decimal "required_fee_amount", precision: 10, scale: 2
+    t.string "check_payable_to"
+    t.boolean "include_delineation", default: false
+    t.boolean "check_generated"
+    t.boolean "received_status"
+    t.string "received_by"
+    t.date "received_date"
+    t.text "comments"
+    t.string "source_name"
+    t.date "source_date"
+    t.string "status"
+    t.boolean "adverse_action"
+    t.text "other_details"
+    t.text "adverse_action_comments"
+    t.text "adverse_action_status"
+    t.string "verification_status"
+    t.boolean "in_good_standing", default: false
+    t.string "error_type"
+    t.text "error_comments"
+    t.string "correct_info_selected"
+    t.string "correct_info_text"
+    t.string "notification_status"
+    t.date "verification_date"
+    t.string "verifier"
+    t.text "verification_comments"
+    t.string "audit_reason"
+    t.text "audit_reason_comments"
+    t.boolean "audit_status"
+    t.date "audit_date"
+    t.string "auditor"
+    t.text "audit_comments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "provider_personal_information_id"
+    t.bigint "provider_dea_id"
+    t.bigint "practice_information_education_id"
+    t.bigint "provider_education_id"
+    t.bigint "provider_specialty_id"
+    t.bigint "provider_licensure_id"
+    t.bigint "provider_insurance_coverage_id"
+    t.bigint "provider_employment_id"
+    t.bigint "certification_id"
+    t.boolean "restart_audit"
+    t.boolean "liability_coverage"
+    t.boolean "professional_liability"
+    t.index ["certification_id"], name: "index_rva_informations_on_certification_id"
+    t.index ["practice_information_education_id"], name: "index_rva_informations_on_practice_information_education_id"
+    t.index ["provider_dea_id"], name: "index_rva_informations_on_provider_dea_id"
+    t.index ["provider_education_id"], name: "index_rva_informations_on_provider_education_id"
+    t.index ["provider_employment_id"], name: "index_rva_informations_on_provider_employment_id"
+    t.index ["provider_insurance_coverage_id"], name: "index_rva_informations_on_provider_insurance_coverage_id"
+    t.index ["provider_licensure_id"], name: "index_rva_informations_on_provider_licensure_id"
+    t.index ["provider_personal_information_id"], name: "index_rva_informations_on_provider_personal_information_id"
+    t.index ["provider_specialty_id"], name: "index_rva_informations_on_provider_specialty_id"
+  end
+
+  create_table "saved_profiles", force: :cascade do |t|
+    t.string "file_path"
+    t.string "file_type"
+    t.bigint "pdf_generation_queue_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pdf_generation_queue_id"], name: "index_saved_profiles_on_pdf_generation_queue_id"
+  end
+
   create_table "schools", force: :cascade do |t|
     t.string "name"
     t.string "address"
@@ -3513,8 +3854,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_09_062734) do
 =======
     t.string "security_question"
     t.string "security_answer"
-<<<<<<< HEAD
-=======
     t.boolean "assigned_access_only"
     t.string "confirmation_token"
     t.datetime "confirmation_sent_at"
@@ -3522,8 +3861,11 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_09_062734) do
     t.string "unconfirmed_email"
     t.string "provider"
     t.string "uid"
+<<<<<<< HEAD
 >>>>>>> 533c3e1b (feat(auth): integrate sso okta)
 >>>>>>> mhc-demo
+=======
+>>>>>>> 63aebcf7 (hvhs provider verification and audit issues phase5 on mhc-demo)
     t.index ["api_token"], name: "index_users_on_api_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
