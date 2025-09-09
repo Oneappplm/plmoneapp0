@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_26_181921) do
+ActiveRecord::Schema[7.0].define(version: 2025_09_09_122051) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -1526,6 +1526,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_26_181921) do
     t.boolean "app_reviewed"
     t.text "batch_description"
     t.text "comment"
+    t.string "tin_number"
     t.index ["provider_attest_id"], name: "index_practice_informations_on_provider_attest_id"
   end
 
@@ -2259,6 +2260,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_26_181921) do
     t.datetime "updated_at", null: false
     t.string "audit_status"
     t.integer "caqh_provider_employment_id"
+    t.boolean "present"
     t.index ["provider_attest_id"], name: "index_provider_employments_on_provider_attest_id"
   end
 
@@ -3098,6 +3100,36 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_26_181921) do
     t.index ["provider_personal_information_id"], name: "ppicc_ppi_id"
   end
 
+  create_table "provider_personal_information_peer_refs", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
+    t.string "title"
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "last_name"
+    t.string "suffix"
+    t.string "practitioner_type"
+    t.string "specialty"
+    t.boolean "is_board_certified"
+    t.string "contact_method"
+    t.string "address"
+    t.string "suite_dept_mail_stop"
+    t.string "facility_name"
+    t.string "city"
+    t.string "country"
+    t.string "state"
+    t.string "county"
+    t.string "zip_code"
+    t.string "phone_number"
+    t.string "fax_number"
+    t.string "email_address"
+    t.text "comments"
+    t.boolean "show_on_tickler", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "idx_peer_refs_attest_id"
+  end
+
   create_table "provider_personal_information_reinstatements", force: :cascade do |t|
     t.string "state"
     t.string "general"
@@ -3257,6 +3289,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_26_181921) do
     t.date "vote_date"
     t.string "vote_by"
     t.string "practitioner_guid"
+    t.date "signature_date"
+    t.date "npi_source_date"
     t.index ["provider_attest_id"], name: "index_provider_personal_informations_on_provider_attest_id"
   end
 
@@ -4155,6 +4189,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_26_181921) do
     t.bigint "provider_insurance_coverage_id"
     t.bigint "provider_employment_id"
     t.bigint "certification_id"
+    t.boolean "restart_audit"
+    t.boolean "liability_coverage"
+    t.boolean "professional_liability"
     t.index ["certification_id"], name: "index_rva_informations_on_certification_id"
     t.index ["practice_information_education_id"], name: "index_rva_informations_on_practice_information_education_id"
     t.index ["provider_dea_id"], name: "index_rva_informations_on_provider_dea_id"
