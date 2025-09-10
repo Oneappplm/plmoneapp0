@@ -18,19 +18,33 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
   end
 
   def verify_npi
-    npi = params[:number]
-    uri = URI("https://npiregistry.cms.hhs.gov/api/?number=#{npi}&version=2.1")
-    response = Net::HTTP.get(uri)
-    json = JSON.parse(response)
-  
-    if json["results"] && json["results"].any?
-      render json: { status: "match" }
-    else
-      render json: { status: "no_match" }
+    npi_number = params[:number]
+    provider = ProviderPersonalInformation.find_by(npi: npi_number)
+
+    begin
+      uri = URI("https://npiregistry.cms.hhs.gov/api/?number=#{npi_number}&version=2.1")
+      response = Net::HTTP.get(uri)
+      json = JSON.parse(response)
+
+      if json["results"] && json["results"].any?
+        if provider.present?
+          provider.update(
+            npi_verification_status: "match",
+            npi_source_date: Date.today
+          )
+          render json: { status: "match", source_date: provider.npi_source_date }, serializer: nil
+        else
+          render json: { status: "no_match" }
+        end
+      else
+        render json: { status: "no_match" }
+      end
+
+    rescue => e
+      render json: { status: "error", message: e.message }, status: 500
     end
-  rescue => e
-    render json: { status: "error", message: e.message }, status: 500
   end
+
 
   private
 
