@@ -26,6 +26,9 @@ class ProviderAttest < ApplicationRecord
   has_many :provider_employments
   has_many :provider_degrees, dependent: :destroy
   has_many :provider_disclosures, dependent: :destroy
+  accepts_nested_attributes_for :provider_disclosures, reject_if: proc { |attrs|
+    attrs['disclosure_answer_flag'].blank? && attrs['disclosure_explanation'].blank?
+  }
   has_many :provider_educations, dependent: :destroy
   has_many :provider_education_associates, dependent: :destroy
   has_many :provider_hospital_associates, dependent: :destroy

@@ -142,6 +142,7 @@ Rails.application.routes.draw do
     get 'verify_npi/:number', to: 'provider_personal_informations#verify_npi'
     resources :provider_employments
     resources :provider_medicares
+    resources :provider_disclosures, only: [:create, :update]
     resources :pdf_generation_queues, only: [:create, :destroy] do
       member do
         get :queue_items
