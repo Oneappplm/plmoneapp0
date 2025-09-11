@@ -273,6 +273,18 @@ class Webscrapers::QualityAuditsController < ApplicationController
     education_id = params[:practice_education_id]
     create_rva_information('EDUCATION', 'none', education_id: education_id)
   end
+
+  def delete_provider_specialty
+    rva_infos = RvaInformation.where(provider_specialty_id: params[:board_id])
+
+    if rva_infos.any?
+      rva_infos.update(restart_audit: true)
+      ProviderSpecialty.find(params[:board_id]).update(audit_status: 'Not Requested')
+      render json: { message: 'All related RVA information deleted successfully' }, status: :ok
+    else
+      render json: { error: 'No RVA information found for the given specialty ID' }, status: :not_found
+    end
+  end
   
   def delete_education_request
     rva_infos = RvaInformation.where(practice_information_education_id: params[:education_id])
