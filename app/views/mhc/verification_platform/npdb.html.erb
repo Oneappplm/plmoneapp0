@@ -172,7 +172,7 @@
                                     </button>
                                 </div>
                                 <div class="col-12 m-2">
-                                  <button class="btn text-danger <%= @npdb_rva_information_completed.present? || @last_rva_information.present? ? '' : 'd-none' %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-personal-information-id="<%= @provider_personal_information&.id %>" id="re-rva">
+                                  <button class="btn text-danger <%= @npdb_rva_information_completed.present? || @last_rva_information.present? ? '' : 'd-none' %>" id="re-rva">
                                     Need ReRVA
                                   </button>
                                 </div>
@@ -1125,17 +1125,9 @@ $(document).ready(function() {
         },
         success: function (response) {
           // Clear the NPDB tab fields only
-          $('.sent-request').html('');
-          $('.requested-by').html('');
-          $('.requested-date').html('');
-          $('input[name="check_generated"]').prop('checked', false);
-          $('.req-fee-amount').val('');
-          $('.received-by').html('');
-          $('.received-date').html('');
-          $('input[name="received_status"]').prop('checked', false);
-          $('.request-comment').val('');
           $('.loading-overlay').hide();
           $('#re-rva')[0].classList.remove('d-none');
+          window.location.reload();
         },
         error: function () {
           alert('Failed to delete request data');
