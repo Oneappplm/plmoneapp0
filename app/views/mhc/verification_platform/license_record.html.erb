@@ -1357,11 +1357,13 @@
 						data: `${auditFormData}&section=audit&practice_licensure_id=${practiceInfoEducationId}`, // Combine serialized data
             success: function(response) {
               const data = response.rva_information;
-              $('input[name="rva_information[audit_status]"]').value = data.audit_status;
-              $('#rva_information_audit_date')[0].innerHTML = data.audit_date;
-              $('#rva_information_auditor')[0].innerHTML = data.auditor;
-              $('#rva_information_audit_comments')[0].value = data.audit_comments;
-              $('#re-rva')[0].classList.remove('d-none');
+              $('input[name="rva_information[audit_status]"]').val(data.audit_status);
+              $('#rva_information_audit_date').text(data.audit_date);
+              $('#rva_information_auditor').text(data.auditor);
+              $('#rva_information_audit_comments').val(data.audit_comments);
+				      $('#re-rva').removeClass('d-none');
+
+				      window.location.reload();
             },
             error: function(xhr, status, error) {
               console.error('Error:', error);
