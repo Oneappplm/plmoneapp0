@@ -285,6 +285,42 @@ class Webscrapers::QualityAuditsController < ApplicationController
       render json: { error: 'No RVA information found for the given specialty ID' }, status: :not_found
     end
   end
+
+  def delete_provider_licensure
+    rva_infos = RvaInformation.where(provider_licensure_id: params[:licensure_id])
+
+    if rva_infos.any?
+      rva_infos.update(restart_audit: true)
+      ProviderLicensure.find(params[:licensure_id]).update(audit_status: 'Not Requested')
+      render json: { message: 'All related RVA information deleted successfully' }, status: :ok
+    else
+      render json: { error: 'No RVA information found for the given specialty ID' }, status: :not_found
+    end
+  end
+
+  def delete_oig
+    rva_infos = RvaInformation.where(provider_personal_information_id: params[:provider_personal_information_id])
+
+    if rva_infos.any?
+      rva_infos.update(restart_audit: true)
+      ProviderPersonalInformation.find(params[:provider_personal_information_id]).update(audit_status: 'Not Requested')
+      render json: { message: 'All related RVA information deleted successfully' }, status: :ok
+    else
+      render json: { error: 'No RVA information found for the given specialty ID' }, status: :not_found
+    end
+  end
+
+  def delete_employment
+    rva_infos = RvaInformation.where(provider_employment: params[:employment_id])
+
+    if rva_infos.any?
+      rva_infos.update(restart_audit: true)
+      ProviderEmployment.find(params[:employment_id]).update(audit_status: 'Not Requested')
+      render json: { message: 'All related RVA information deleted successfully' }, status: :ok
+    else
+      render json: { error: 'No RVA information found for the given specialty ID' }, status: :not_found
+    end
+  end
   
   def delete_education_request
     rva_infos = RvaInformation.where(practice_information_education_id: params[:education_id])
