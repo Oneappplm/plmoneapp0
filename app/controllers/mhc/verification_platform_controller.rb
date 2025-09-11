@@ -145,9 +145,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       Licensure Registration OIG Certification Employment NPDB Liability BOARDCERT EDUCATION Training
     ]
 
-    personal_info_id = params[:personal_info_id].presence || @rva_information.provider_personal_information_id
-    personal_info = ProviderPersonalInformation.find(personal_info_id)
-
+    personal_info = ProviderPersonalInformation.find(params[:personal_info_id])
 
     all_verified = tabs.all? do |tab|
       RvaInformation.where(provider_personal_information_id: personal_info.id, tab: tab)
@@ -180,6 +178,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     @queues = PdfGenerationQueue.all.order(created_at: :desc)
     @psv_pdfs = SavedProfile.joins(:pdf_generation_queue)
                        .where(pdf_generation_queues: { deleted: true, provider_personal_information_id: @provider_personal_information.id })
+
   end
 
   def application_page
@@ -356,7 +355,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_personal_information_comments = ProviderPersonalInformationComment.all
       @rva_information = RvaInformation.new
       @oig_webcrawler_logs = OigWebcrawlerLog.order(updated_at: :desc)
-      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'OIG').last
+      @last_rva_information = @provider_personal_information.rva_informations.where(restart_audit: false).last
     end
 
     if params[:page_tab] == 'add_oig_info'
@@ -488,7 +487,7 @@ class Mhc::VerificationPlatformController < ApplicationController
         @provider_employment = ProviderEmployment.new
       end
       @rva_information = RvaInformation.new
-      @last_rva_information = @provider_employment.rva_informations.last
+      @last_rva_information = @provider_employment.rva_informations.where(restart_audit: false).last
       @employment_rva_information_completed = @provider_employment.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
 
@@ -526,11 +525,16 @@ class Mhc::VerificationPlatformController < ApplicationController
       @facility = ProviderPersonalInformationFacility.find(params[:facility_id])
     end
 
+    if params[:page_tab] == 'disclosures'
+      @provider_attest = @provider_personal_information.provider_attest
+    end
+
+
     # code for licensure tab
     if %w[edit_licensure license_record].include?(params[:page_tab])
       @provider_licensure = ProviderLicensure.find(params[:licensure_id])
       @rva_information = RvaInformation.new
-      @last_rva_information = @provider_licensure.rva_informations.last
+      @last_rva_information = @provider_licensure.rva_informations.where(restart_audit: false).last
       @licensure_rva_information_completed = @provider_licensure.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
     
@@ -585,7 +589,6 @@ class Mhc::VerificationPlatformController < ApplicationController
       :source_date,
       :status,
       :adverse_action,
-      :adverse_action_type,
       :other_details,
       :adverse_action_comments,
       :adverse_action_status,

@@ -63,9 +63,12 @@
 										</button>
 									</div>
 									<div class="col-12 m-2">
-										<button class="btn text-danger <%= @licensure_rva_information_completed.present? ? '' : 'd-none' %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" id="re-rva">
+										<!-- <button class="btn text-danger <%#= @licensure_rva_information_completed.present? ? '' : 'd-none' %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%#= @last_rva_information&.id %>" data-first-name="<%#= @provider_personal_information&.first_name %>" data-last-name="<%#= @provider_personal_information&.last_name %>" data-personal-information-id="<%#= @provider_personal_information&.id %>" id="re-rva">
 											Need ReRVA
-										</button>
+										</button> -->
+										<div class="text-danger <%= @provider_licensure.rva_informations.pluck(:restart_audit).include?(false) ? 'd-none' : '' %>" id="re-rva">
+                      Need ReRVA
+                    </div>
 									</div>
 								</div>
 							</div>
@@ -364,17 +367,18 @@
 				</div>
 			</div>
 		</div>
-	</div>
-	<% if @provider_licensure.persisted? %>
-			<div class="col-12 text-left" style="margin-top: 10px;">
-					<%= button_to 'Delete', 
-							mhc_provider_licensure_path(@provider_licensure), 
-							method: :delete, 
-							data: { confirm: 'Are you sure you want to delete this training detail?' }, 
-							class: 'btn btn-danger', 
-							style: 'width: 200px;' %>
+	
+		<% if @provider_licensure.persisted? %>
+			<div class="col-12" style="margin-top: 10px;">
+				<%= button_to 'Delete', 
+						mhc_provider_licensure_path(@provider_licensure), 
+						method: :delete, 
+						data: { confirm: 'Are you sure you want to delete this training detail?' }, 
+						class: 'btn btn-danger mt-3', 
+						style: 'width: 200px;' %>
 			</div>
-	<% end %>
+		<% end %>
+	</div>
 	<!-- Add Comment Modal -->
 	<div class="modal fade" id="addCommentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
@@ -601,7 +605,10 @@
                                 <div class="form-row d-flex justify-content-end gap-2 mt-3">
                                   <button class="btn btn-primary py-1" type="button">View Received Images</button>
 																	<button class="btn btn-primary py-1" type="button" <%= 'disabled' if @last_rva_information.present? %>>Save Request</button>
-                                  <button class="btn btn-primary py-1" type="button" <%= 'disabled' if !@last_rva_information.present? %>>Restart Request</button>
+                                   <button class="btn btn-primary py-1" type="button" id="restart-request-btn" 
+                                          <%= 'disabled' if !@last_rva_information.present? %>>
+                                    Restart Request
+                                  </button>
                                 </div>
                                 <div class="row mt-3">
 																  <div class="col-md-3">
@@ -1217,7 +1224,7 @@
         });
 
 				// Run Licensure Webcrawler
-		$('#run-licensure-webcrawler-btn').click(function (e) {
+		    $('#run-licensure-webcrawler-btn').click(function (e) {
           e.preventDefault();
           var personalInfoId = $('input[name="personal_info_id"]').val();
 		      var licenseNumber = $('#license_number').val().trim();
@@ -1335,6 +1342,7 @@
             }
           });
         });
+
         $('#audit-btn').click(function(e) {
           e.preventDefault(); // Prevent default form submission
 					  // Check if an audit status is selected
@@ -1399,6 +1407,34 @@
             $('.loading-overlay').hide();
         });
     });
+   // restart request for quality audit
+  document.getElementById('restart-request-btn')?.addEventListener('click', function (e) {
+    e.preventDefault();
+    var licensureId = $('input[name="practice_licensure_id"]').val();
+
+    if (!licensureId) return;
+
+    document.querySelector('.loading-overlay').style.display = 'block';
+
+    fetch('/webscrapers/delete_provider_licensure', {
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ licensure_id: licensureId })
+    })
+    .then(response => response.json())
+    .then(data => {
+      document.querySelector('.loading-overlay').style.display = 'none';
+      document.getElementById('re-rva').classList.remove('d-none');
+      window.location.reload();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      document.querySelector('.loading-overlay').style.display = 'none';
+    });
+  });  
   document.addEventListener('DOMContentLoaded', function() {
     const qualityAuditModal = document.getElementById('QAModal');
     qualityAuditModal.addEventListener('show.bs.modal', function (event) {
