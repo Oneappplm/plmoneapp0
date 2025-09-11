@@ -9,9 +9,9 @@
             <input class="form-check-input" type="checkbox" id="disclosure-switch">
             <label class="form-check-label" for="education-switch">Not Applicable</label>
           </div>
-          <a class="btn btn-primary py-1 page-applicable" href="" id="EditDisclosure">
+          <%# <a class="btn btn-primary py-1 page-applicable" href="" id="EditDisclosure">
           Edit
-          </a>
+          </a> %>
         </div>
       </div>
       <div class="mt-2 page-applicable">
@@ -57,32 +57,21 @@
               local: true,
               id: "disclosure-form-1" do |f| %>
 
-        <% grouped_disclosures = {
-          "Licensure" => [
-            "Has your license, registration or certification to practice in your profession ever been voluntarily or involuntarily relinquished, denied, suspended, revoked, restricted, or have you ever been subject to a fine, reprimand, consent order, probation or any conditions or limitations by any state or professional licensing, registration or certification board?",
-            "Has there been any challenge to your licensure, registration or certification?"
-          ],
-          "Hospital Privileges & Affiliations" => [
-            "Have your clinical privileges or medical staff membership at any hospital or healthcare institution, voluntarily or involuntarily, ever been denied, suspended, revoked, restricted, denied renewal or subject to probationary or to other disciplinary conditions (for reasons other than non-completion of medical record when quality of care was not adversely affected) or have proceedings toward any of those ends been instituted or recommended by any hospital or healthcare institution, medical staff or committee, or governing board?",
-            "Have you voluntarily or involuntarily surrendered, limited your privileges or not reapplied for privileges while under investigation?",
-            "Have you ever been terminated for cause or not renewed for cause from participation, or been subject to any disciplinary action, by any managed care organizations (including HMOs, PPOs, or provider organizations such as IPAs, PHOs)?"
-          ],
-          "Training & Board Certifications" => [
-            "Were you ever placed on probation, disciplined, formally reprimanded, suspended or asked to resign during an internship, residency, fellowship, preceptorship or other clinical education program? If you are currently in a training program, have you been placed on probation, disciplined, formally reprimanded, suspended or asked to resign?",
-            "Have you ever, while under investigation or to avoid an investigation, voluntarily withdrawn or prematurely terminated your status as a student or employee in any internship, residency, fellowship, preceptorship, or other clinical education program?",
-            "Have any of your board certifications or eligibility ever been revoked?"
-          ]
-        } %>
+        <% counter = 0 %>
 
-        <% i = 0 %>
-        <% grouped_disclosures.each do |heading, questions| %>
+        <% QUESTIONS_DISCLOSURE.each do |heading, questions| %>
           <div class="form-row row mt-4 page-applicable">
             <div class="col-xl-12">
               <div class="card p-3">
                 <h6 class="fw-bold mb-4"><%= heading %></h6>
 
                 <% questions.each do |q| %>
-                  <% disclosure = @provider_attest.provider_disclosures[i] || @provider_attest.provider_disclosures.build(disclosure_question_disclosure_summary: q) %>
+                  <% counter += 1 %>
+                  <% disclosure = @provider_attest.provider_disclosures
+                                      .find { |d| d.disclosure_question_disclosure_summary == q } ||
+                                  @provider_attest.provider_disclosures.build(
+                                    disclosure_question_disclosure_summary: q
+                                  ) %>
 
                   <%= f.fields_for :provider_disclosures, disclosure do |d| %>
                     <%= d.hidden_field :disclosure_question_disclosure_summary %>
@@ -90,35 +79,39 @@
                     <div class="row mb-3 disclosure-item">
                       <div class="col-md-2">
                         <%= d.select :disclosure_answer_flag,
-                              [["-- Select --", ""], ["Yes", "yes"], ["No", "no"]],
-                              {}, class: "form-select disclosure-select", data: { target: "#explain#{i+1}", selected: d.object.disclosure_answer_flag } %>
+                              [["-- Select --", ""], ["Yes", true], ["No", false]],
+                              {},
+                              {
+                                id:    "disclosure-select-#{counter}",
+                                class: "form-select disclosure-select",
+                                data:  { target: "#explain#{counter}" }
+                              } %>
                       </div>
+
                       <div class="col-md-10">
                         <label>
                           <span class="text-danger">*</span>
-                          <%= "#{i+1}. #{q}" %>
+                          <%= "#{counter}. #{q}" %>
                         </label>
                         <%= d.text_area :disclosure_explanation,
-                              id: "explain#{i+1}", 
-                              class: "form-control mt-2 #{'d-none' if disclosure.disclosure_answer_flag != 'yes'}",
-                              rows: 3, 
+                              id:    "explain#{counter}",
+                              class: "form-control mt-2 #{'d-none' unless d.object.disclosure_answer_flag}",
+                              rows: 3,
                               placeholder: "Please explain..." %>
                       </div>
                     </div>
                   <% end %>
-                  <% i += 1 %>
                 <% end %>
-
               </div>
             </div>
           </div>
         <% end %>
 
-        <!-- Save Button -->
         <div class="form-row mt-4 d-flex justify-content-end page-applicable">
           <%= f.submit "Save", class: "btn btn-primary py-1" %>
         </div>
       <% end %>
+
       <form action="" class="page-applicable">
         <div class="form-row">
           <label for="">If Yes, please explain:</label>
@@ -198,15 +191,25 @@
   </div>
 </div>
 <script>
-  document.querySelectorAll('.disclosure-select').forEach(function(select) {
-    select.addEventListener('change', function() {
-      const target = document.querySelector(this.dataset.target);
-      if (this.value === 'yes') {
-        target.classList.remove('d-none');
-      } else {
-        target.classList.add('d-none');
-        target.value = "";
-      }
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.disclosure-select').forEach(select => {
+      select.addEventListener('change', e => {
+        const id    = select.id;     // e.g. "disclosure-select-3"
+        const value = select.value;  // "true" | "false" | ""
+        console.log(`Changed: ${id} => ${value}`);
+
+        const target = document.querySelector(select.dataset.target);
+        if (!target) return;
+
+        if (value === 'true') {
+          target.classList.remove('d-none');
+        } else {
+          target.classList.add('d-none');
+          target.value = '';
+        }
+      });
     });
   });
+
+
 </script>

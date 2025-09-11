@@ -4,7 +4,6 @@ class ProviderDisclosure < ApplicationRecord
   belongs_to :provider_attest
 
   validates :provider_attest_id, presence: true
-  validates :disclosure_explanation, presence: true, if: -> { disclosure_answer_flag == false }
 
   before_validation :set_provider_attest
 
