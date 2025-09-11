@@ -529,7 +529,6 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_attest = @provider_personal_information.provider_attest
     end
 
-
     # code for licensure tab
     if %w[edit_licensure license_record].include?(params[:page_tab])
       @provider_licensure = ProviderLicensure.find(params[:licensure_id])
