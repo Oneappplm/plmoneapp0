@@ -145,7 +145,9 @@ class Mhc::VerificationPlatformController < ApplicationController
       Licensure Registration OIG Certification Employment NPDB Liability BOARDCERT EDUCATION Training
     ]
 
-    personal_info = ProviderPersonalInformation.find(params[:personal_info_id])
+    personal_info_id = params[:personal_info_id].presence || @rva_information.provider_personal_information_id
+    personal_info = ProviderPersonalInformation.find(personal_info_id)
+
 
     all_verified = tabs.all? do |tab|
       RvaInformation.where(provider_personal_information_id: personal_info.id, tab: tab)
@@ -230,7 +232,7 @@ class Mhc::VerificationPlatformController < ApplicationController
         @provider_personal_information_comments = ProviderPersonalInformationComment.all
       end
       @rva_information = RvaInformation.new
-      @last_rva_information = @provider_specialty.rva_informations.last
+      @last_rva_information = @provider_specialty.rva_informations.where(restart_audit: false).last
       @board_cert_rva_information_completed = @provider_specialty.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
 
@@ -583,6 +585,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       :source_date,
       :status,
       :adverse_action,
+      :adverse_action_type,
       :other_details,
       :adverse_action_comments,
       :adverse_action_status,
