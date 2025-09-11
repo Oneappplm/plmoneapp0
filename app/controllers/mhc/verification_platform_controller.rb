@@ -166,9 +166,22 @@ class Mhc::VerificationPlatformController < ApplicationController
       render json: { error: e.message }, status: :unprocessable_entity
     end
   end
-  
+        
   def profile_page
-    @provider_personal_information = ProviderPersonalInformation.find(params[:provider_personal_info])
+    @provider_personal_information = ProviderPersonalInformation.includes(
+        :provider_disclosures,
+        :provider_personal_information_confidential_contact,
+        :rva_informations,
+        :practice_informations,
+        provider_licensures: [:rva_informations],
+        provider_deas:       :rva_informations,
+        provider_specialties: :rva_informations,
+        provider_educations:  :rva_informations,
+        practice_information_educations: :rva_informations,
+        provider_employments: :rva_informations,
+        provider_insurance_coverages: :rva_informations,
+        provider_personal_uploaded_docs: []
+      ).find(params[:provider_personal_info])
     unless @provider_personal_information
       flash[:error] = "Provider personal information not found."
       redirect_to mhc_verification_platform_index_path and return
@@ -178,7 +191,11 @@ class Mhc::VerificationPlatformController < ApplicationController
     @queues = PdfGenerationQueue.all.order(created_at: :desc)
     @psv_pdfs = SavedProfile.joins(:pdf_generation_queue)
                        .where(pdf_generation_queues: { deleted: true, provider_personal_information_id: @provider_personal_information.id })
+<<<<<<< HEAD
 
+=======
+    @grouped_disclosures = @provider_personal_information.provider_disclosures.where(disclosure_answer_flag: true).where.not(disclosure_explanation: [nil, ""]).group_by { |d| QUESTIONS_DISCLOSURE.find { |_h, qs| qs.include?(d.disclosure_question_disclosure_summary) }&.first }                   
+>>>>>>> 1fc6ee88 (Fixed disclosure tab issue)
   end
 
   def application_page
