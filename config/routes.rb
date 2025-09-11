@@ -462,6 +462,8 @@ Rails.application.routes.draw do
     delete 'delete_education_request', to: 'quality_audits#delete_education_request'
     delete 'delete_training_request', to: 'quality_audits#delete_training_request'
     delete 'delete_liability_request', to: 'quality_audits#delete_liability_request'
+    delete 'delete_provider_specialty', to: 'quality_audits#delete_provider_specialty'
+    
     resources :alaska_states, only: [:index], path: 'state-alaska' do
       collection do
         get :crawl
