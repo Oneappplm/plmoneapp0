@@ -360,7 +360,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_personal_information_comment = ProviderPersonalInformationComment.new
       @provider_personal_information_comments = ProviderPersonalInformationComment.all
       @rva_information = RvaInformation.new
-      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'OIG').where(restart_audit: false).last
+      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'OIG').where(restart_audit: [false, nil]).last
       @oig_webcrawler_logs = @last_rva_information&.oig_webcrawler_logs&.order(updated_at: :desc)
     end
 
@@ -539,7 +539,8 @@ class Mhc::VerificationPlatformController < ApplicationController
     if %w[edit_licensure license_record].include?(params[:page_tab])
       @provider_licensure = ProviderLicensure.find(params[:licensure_id])
       @rva_information = RvaInformation.new
-      @last_rva_information = @provider_licensure.rva_informations.where(restart_audit: false).last
+      @last_rva_information = @provider_licensure.rva_informations.includes(:licensure_webcrawler_logs).where(restart_audit: [false, nil]).last
+      @licensure_webcrawler_logs = @last_rva_information&.licensure_webcrawler_logs&.order(updated_at: :desc)
       @licensure_rva_information_completed = @provider_licensure.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
     
