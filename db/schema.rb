@@ -11,7 +11,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 
-ActiveRecord::Schema[7.0].define(version: 2025_09_09_122051) do
+ActiveRecord::Schema[7.0].define(version: 2025_09_10_183650) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -2723,6 +2723,43 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_09_122051) do
     t.index ["provider_personal_information_id"], name: "ppicc_ppi_id"
   end
 
+  create_table "provider_personal_information_facilities", force: :cascade do |t|
+    t.bigint "provider_attest_id"
+    t.integer "caqh_provider_attest_id"
+    t.string "facility_name"
+    t.string "contact"
+    t.string "address"
+    t.string "addition_address"
+    t.string "city"
+    t.string "county"
+    t.string "state"
+    t.string "zip_code"
+    t.string "country"
+    t.string "facility_office_pnone"
+    t.string "facility_office_fax"
+    t.string "facility_office_email"
+    t.date "appointment_date"
+    t.string "department"
+    t.string "section_name"
+    t.string "facility_chair"
+    t.string "facility_chair_title"
+    t.string "status"
+    t.boolean "is_current"
+    t.boolean "is_primary_admitting_facility"
+    t.date "expiration_date"
+    t.boolean "is_restriction_of_privileges"
+    t.boolean "is_admit_patients_facility"
+    t.string "faciltiy_percentage"
+    t.boolean "is_hospital_based_practitioner"
+    t.boolean "is_admitting_arrangements"
+    t.boolean "is_following_physician"
+    t.boolean "show_on_tickler"
+    t.text "comments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_attest_id"], name: "idx_facilities_attest_id"
+  end
+
   create_table "provider_personal_information_peer_refs", force: :cascade do |t|
     t.bigint "provider_attest_id"
     t.integer "caqh_provider_attest_id"
@@ -3698,6 +3735,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_09_122051) do
     t.boolean "restart_audit"
     t.boolean "liability_coverage"
     t.boolean "professional_liability"
+    t.string "adverse_action_type"
     t.index ["certification_id"], name: "index_rva_informations_on_certification_id"
     t.index ["practice_information_education_id"], name: "index_rva_informations_on_practice_information_education_id"
     t.index ["provider_dea_id"], name: "index_rva_informations_on_provider_dea_id"
