@@ -186,16 +186,13 @@ class Mhc::VerificationPlatformController < ApplicationController
       flash[:error] = "Provider personal information not found."
       redirect_to mhc_verification_platform_index_path and return
     end
+    
     @provider_oig_tab_details = @provider_personal_information.rva_informations.where(tab: 'OIG').where(status: 'completed').where.not(source_date: nil)
     @provider_npdb_tab_details = @provider_personal_information.rva_informations.where(tab: 'NPDB')
     @queues = PdfGenerationQueue.all.order(created_at: :desc)
     @psv_pdfs = SavedProfile.joins(:pdf_generation_queue)
                        .where(pdf_generation_queues: { deleted: true, provider_personal_information_id: @provider_personal_information.id })
-<<<<<<< HEAD
-
-=======
-    @grouped_disclosures = @provider_personal_information.provider_disclosures.where(disclosure_answer_flag: true).where.not(disclosure_explanation: [nil, ""]).group_by { |d| QUESTIONS_DISCLOSURE.find { |_h, qs| qs.include?(d.disclosure_question_disclosure_summary) }&.first }                   
->>>>>>> 1fc6ee88 (Fixed disclosure tab issue)
+    @grouped_disclosures = @provider_personal_information.provider_disclosures.where(disclosure_answer_flag: true).where.not(disclosure_explanation: [nil, ""]).group_by { |d| QUESTIONS_DISCLOSURE.find { |_h, qs| qs.include?(d.disclosure_question_disclosure_summary) }&.first }   
   end
 
   def application_page
