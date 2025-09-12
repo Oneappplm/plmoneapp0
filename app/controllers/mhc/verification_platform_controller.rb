@@ -360,8 +360,8 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_personal_information_comment = ProviderPersonalInformationComment.new
       @provider_personal_information_comments = ProviderPersonalInformationComment.all
       @rva_information = RvaInformation.new
-      @oig_webcrawler_logs = OigWebcrawlerLog.order(updated_at: :desc)
-      @last_rva_information = @provider_personal_information.rva_informations.where(restart_audit: false).last
+      @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'OIG').where(restart_audit: false).last
+      @oig_webcrawler_logs = @last_rva_information&.oig_webcrawler_logs&.order(updated_at: :desc)
     end
 
     if params[:page_tab] == 'add_oig_info'
