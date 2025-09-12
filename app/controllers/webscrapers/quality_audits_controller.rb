@@ -397,6 +397,15 @@ class Webscrapers::QualityAuditsController < ApplicationController
       skip_rva: true
     )
   end
+  def send_licensure_skip_rva
+    licensure_id = params[:licensure_id]
+    create_rva_information(
+      'Licensure', 'SkipRVA',
+      licensure_id: licensure_id,
+      skip_rva: true
+    )
+    ProviderLicensure.find(licensure_id).update(audit_status: 'SkipRVA')
+  end
 
   def send_training_request
     training_id = params[:training_id]
