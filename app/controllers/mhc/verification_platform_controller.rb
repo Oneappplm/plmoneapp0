@@ -108,6 +108,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       params[:rva_information][:verification_comments] = params[:rva_information][:verification_comments].presence || 'None'
       @rva_information.other_details = 'None'
       @rva_information.adverse_action_comments = 'None'
+      @rva_information.adverse_action = params[:rva_information][:adverse_action]
       @rva_information.provider_personal_information_id = params[:personal_info_id]
       @rva_information.adverse_action_status = 'close'
     end
