@@ -3,7 +3,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
     send_oig_request send_licensure_request send_employment_request
     send_npdb_request send_registration_request send_liability_request send_certification_request
     send_board_cert_request send_education_request send_education_skip_rva send_liability_skip_rva send_training_skip_rva
-    send_dea_skip_rva send_training_request send_employment_skip_rva send_npdb_skip_rva send_board_cert_skip_rva
+    send_dea_skip_rva send_training_request send_employment_skip_rva send_npdb_skip_rva send_board_cert_skip_rva send_oig_skip_rva
   ]
   def run_oig_webcrawler
     last_name = params[:last_name]
@@ -286,6 +286,17 @@ class Webscrapers::QualityAuditsController < ApplicationController
     end
   end
 
+  def delete_registration_request
+    rva_infos = RvaInformation.where(provider_dea_id: params[:provider_dea_id])
+
+    if rva_infos.any?
+      rva_infos.update(restart_audit: true)
+      render json: { message: 'All related RVA information deleted successfully' }, status: :ok
+    else
+      render json: { error: 'No RVA information found for the given specialty ID' }, status: :not_found
+    end
+  end
+
   def delete_provider_licensure
     rva_infos = RvaInformation.where(provider_licensure_id: params[:licensure_id])
 
@@ -299,11 +310,10 @@ class Webscrapers::QualityAuditsController < ApplicationController
   end
 
   def delete_oig
-    rva_infos = RvaInformation.where(provider_personal_information_id: params[:provider_personal_information_id])
+    rva_infos = RvaInformation.where(provider_personal_information_id: params[:provider_personal_information_id]).where(tab: 'OIG')
 
     if rva_infos.any?
       rva_infos.update(restart_audit: true)
-      ProviderPersonalInformation.find(params[:provider_personal_information_id]).update(audit_status: 'Not Requested')
       render json: { message: 'All related RVA information deleted successfully' }, status: :ok
     else
       render json: { error: 'No RVA information found for the given specialty ID' }, status: :not_found
@@ -397,6 +407,11 @@ class Webscrapers::QualityAuditsController < ApplicationController
       skip_rva: true
     )
   end
+
+  def send_oig_skip_rva
+    create_rva_information('OIG', 'SkipRVA', skip_rva: true)
+  end
+
   def send_licensure_skip_rva
     licensure_id = params[:licensure_id]
     create_rva_information(
@@ -425,7 +440,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
   private
 
   def set_common_params
-    @info_id = params[:personal_info_id] || params[:personal_information_id]
+    @info_id = params[:personal_info_id] || params[:personal_information_id] || params[:info_id]
     @provider_dea_id = params[:provider_dea_id]
   end
 
@@ -467,14 +482,15 @@ class Webscrapers::QualityAuditsController < ApplicationController
         audit_status: true,
         auditor: current_user.first_name,
         audit_date: Date.today,
-        audit_comments: 'SkipRVA'
+        audit_comments: 'SkipRVA',
+        restart_audit: false
       )
     end
     rva_information = RvaInformation.create!(rva_params)
     render json: {
       message: "#{tab} request sent successfully",
       rva_information: rva_information,
-      success: true
+      success: true,
     }, status: :ok
 
     update_verification_status if @info_id.present?
