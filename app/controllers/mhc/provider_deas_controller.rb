@@ -45,10 +45,8 @@ class Mhc::ProviderDeasController < ApplicationController
                                   .where(tab: 'Registration')
                                   .where.not(source_date: nil)
                                   .where.not(audit_status: false)
-      
     @last_rva_information = provider_dea.rva_informations
-                          .where(tab: 'Registration')
-                          .order(:created_at)
+                          .where(restart_audit: [false, nil])
                           .last
     @registration_webcrawler_logs = @last_rva_information.dea_webcrawler_logs.order(updated_at: :desc) if @last_rva_information.present?
 
