@@ -51,12 +51,28 @@ class Mhc::ManageClientsController < ApplicationController
   end
 
   def provider_personal_uploaded_docs
-    provider_personal_information =  ProviderPersonalInformation.find(params[:provider_personal_uploaded_doc][:provider_personal_information_id])
-    # @document = ProviderPersonalUploadedDoc.new(provider_personal_uploaded_docs_params)
-    # @document.provider_attest_id = provider_personal_information.provider_attest_id
-    @document.caqh_provider_attest_id = provider_personal_information.caqh_provider_attest_id
-    if @document.save
-      redirect_to mhc_manage_clients_path, notice: 'Document uploaded successfully.'
+    provider_personal_information =
+      ProviderPersonalInformation.find(
+        params[:provider_personal_uploaded_doc][:provider_personal_information_id]
+      )
+
+    @document =
+      ProviderPersonalUploadedDoc.find(params[:document_id])
+
+    # Merge the caqh_provider_attest_id into the update
+    update_attrs = provider_personal_uploaded_docs_params.merge(
+      provider_attest_id: provider_personal_information.caqh_provider_attest_id
+    )
+
+    # Assign attributes and save without validations
+    @document.assign_attributes(update_attrs)
+
+    if @document.save(validate: false)
+      redirect_to mhc_manage_clients_path,
+                  notice: "Document uploaded successfully (validations skipped)."
+    else
+      redirect_to mhc_manage_clients_path,
+                  alert:  "Document not saved."
     end
   end
 
@@ -73,7 +89,8 @@ class Mhc::ManageClientsController < ApplicationController
 
     if @document.save
       render json: { 
-        success: true, 
+        success: true,
+        document_id: @document.id, 
         file_name: @document.file_upload_identifier,  # just filename
         file_url:  @document.file_upload.url,         # full CarrierWave URL
         full_link: ActionController::Base.helpers.link_to(
@@ -123,9 +140,6 @@ class Mhc::ManageClientsController < ApplicationController
       :record_item,
       :description,
       :exclude_from_profile,
-      :file_upload,
-      :provider_attest_id,
-      :caqh_provider_attest_id,
       :provider_personal_information_id)
   end
 
