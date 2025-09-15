@@ -127,6 +127,7 @@
       </div>
       <div class="modal-body">
         <%= form_for(@document, url: provider_personal_uploaded_docs_mhc_manage_clients_path, html: { multipart: true }) do |f| %>
+          <%= hidden_field_tag :document_id %>
           <% if @document.errors.any? %>
             <div id="error_explanation" class="row my-2 text-red">
               <div class="col-lg-12">
@@ -276,57 +277,71 @@
         });
     });
   });
-  document.addEventListener("DOMContentLoaded", function () {
+  // Use turbo:load if you have turbo-rails; otherwise DOMContentLoaded works.
+  document.addEventListener("turbo:load", attachFileUploader);
+  document.addEventListener("DOMContentLoaded", attachFileUploader);
+
+  function attachFileUploader() {
     const fileInput = document.getElementById("fileUploadInput");
     const previewDiv = document.getElementById("uploadedFilePreview");
-    const loader = $("#uploadLoader");
-    const providerInfoId = document.getElementById("provider_personal_uploaded_doc_provider_personal_information_id");
+    const loader     = $("#uploadLoader");
+    const providerInfoId = document.getElementById(
+      "provider_personal_uploaded_doc_provider_personal_information_id"
+    );
 
-    if (fileInput) {
-      fileInput.addEventListener("change", function () {
-        if (fileInput.files.length === 0) return;
+    // Guard so we only bind once even if turbo:load or DOMContentLoaded fire again
+    if (!fileInput || fileInput.dataset.bound === "true") return;
+    fileInput.dataset.bound = "true";
 
-        const file = fileInput.files[0];
-        const formData = new FormData();
-        formData.append("provider_personal_uploaded_doc[file_upload]", file);
-        formData.append("provider_personal_uploaded_doc[provider_personal_information_id]", providerInfoId.value); // pass actual ID
+    let uploadInProgress = false;
 
-        // Show loader
-        loader.removeClass("d-none");
+    fileInput.addEventListener("change", function () {
+      if (uploadInProgress || fileInput.files.length === 0) return;
+      uploadInProgress = true;
 
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("provider_personal_uploaded_doc[file_upload]", file);
+      formData.append(
+        "provider_personal_uploaded_doc[provider_personal_information_id]",
+        providerInfoId.value
+      );
 
+      // Show loader
+      loader.removeClass("d-none");
 
-        fetch("/mhc/manage-clients/ajax_upload", {
-          method: "POST",
-          headers: {
-            "X-CSRF-Token": document.querySelector("meta[name=csrf-token]").content
-          },
-          body: formData
-        })
-          .then(response => response.json())
-          .then(data => {
-            // Hide loader
-            loader.addClass("d-none");
-            previewDiv.innerHTML = ""; // clear
+      fetch("/mhc/manage-clients/ajax_upload", {
+        method: "POST",
+        headers: {
+          "X-CSRF-Token": document.querySelector("meta[name=csrf-token]").content
+        },
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        loader.addClass("d-none");
+        previewDiv.innerHTML = ""; // clear previous preview
 
-            if (data.success) {
-              const link = document.createElement("a");
-              link.href = data.file_url;
-              link.target = "_blank";
-              link.textContent = data.file_url;
-
-              previewDiv.appendChild(link);
-            } else {
-              previewDiv.textContent = "Upload failed: " + data.errors.join(", ");
-            }
-          })
-          .catch(err => {
-            console.error("Upload error", err);
-            previewDiv.textContent = "Upload failed.";
-          });
+        if (data.success) {
+          const link = document.createElement("a");
+          link.href = data.file_url;
+          link.target = "_blank";
+          link.textContent = data.file_url;
+          previewDiv.appendChild(link);
+        } else {
+          previewDiv.textContent = "Upload failed: " + data.errors.join(", ");
+        }
+        document.getElementById('document_id').value = data.document_id;
+      })
+      .catch(err => {
+        console.error("Upload error", err);
+        previewDiv.textContent = "Upload failed.";
+      })
+      .finally(() => {
+        uploadInProgress = false;
       });
-    }
-  });
+    });
+  }
 </script>
 
 <style>
