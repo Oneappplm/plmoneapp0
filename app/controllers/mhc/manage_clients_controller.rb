@@ -61,7 +61,7 @@ class Mhc::ManageClientsController < ApplicationController
 
     # Merge the caqh_provider_attest_id into the update
     update_attrs = provider_personal_uploaded_docs_params.merge(
-      provider_attest_id: provider_personal_information.caqh_provider_attest_id
+      caqh_provider_attest_id: provider_personal_information.caqh_provider_attest_id
     )
 
     # Assign attributes and save without validations
@@ -77,35 +77,47 @@ class Mhc::ManageClientsController < ApplicationController
   end
 
   def ajax_upload
-    provider_personal_information = ProviderPersonalInformation.find(
+    provider_info = ProviderPersonalInformation.find(
       params[:provider_personal_uploaded_doc][:provider_personal_information_id]
     )
 
-    @document = ProviderPersonalUploadedDoc.new(
-      file_upload: params[:provider_personal_uploaded_doc][:file_upload], # use nested param
-      provider_personal_information_id: provider_personal_information.id,
-      provider_attest_id: provider_personal_information.provider_attest_id
-    )
-
-    if @document.save
-      render json: { 
-        success: true,
-        document_id: @document.id, 
-        file_name: @document.file_upload_identifier,  # just filename
-        file_url:  @document.file_upload.url,         # full CarrierWave URL
-        full_link: ActionController::Base.helpers.link_to(
-          @document.file_upload_identifier,
-          @document.file_upload.url,
-          target: "_blank"
-        )
-      }
+    doc_params = params.require(:provider_personal_uploaded_doc).permit(:id, :file_upload)
+    debugger
+    if doc_params[:id].present?
+      # ✅ update existing record
+      @document = ProviderPersonalUploadedDoc.find(doc_params[:id])
+      if @document.update(file_upload: doc_params[:file_upload])
+        render json: {
+          success: true,
+          document_id: @document.id,
+          file_name: @document.file_upload_identifier,
+          file_url:  @document.file_upload.url
+        }
+      else
+        render json: { success: false, errors: @document.errors.full_messages },
+               status: :unprocessable_entity
+      end
     else
-      render json: { 
-        success: false, 
-        errors: @document.errors.full_messages 
-      }, status: :unprocessable_entity
+      # ✅ create new record
+      @document = ProviderPersonalUploadedDoc.new(
+        file_upload: doc_params[:file_upload],
+        provider_personal_information_id: provider_info.id,
+        provider_attest_id: provider_info.provider_attest_id
+      )
+      if @document.save
+        render json: {
+          success: true,
+          document_id: @document.id,
+          file_name: @document.file_upload_identifier,
+          file_url:  @document.file_upload.url
+        }
+      else
+        render json: { success: false, errors: @document.errors.full_messages },
+               status: :unprocessable_entity
+      end
     end
   end
+
 
 
   def get_provider_uploaded_docs
@@ -119,7 +131,8 @@ class Mhc::ManageClientsController < ApplicationController
         sub_section: doc.sub_section,
         file_name: doc.file_upload.file.filename.to_s,
         file_url: doc.file_upload.url,
-        created_at: doc.created_at
+        created_at: doc.created_at,
+        personal_information_id: doc.provider_personal_information_id,
       }
     }
   end
@@ -132,10 +145,23 @@ class Mhc::ManageClientsController < ApplicationController
       sub_section: doc.sub_section,
       description: doc.description,
       exclude_from_profile: doc.exclude_from_profile,
-      file_url: url_for(doc.file_upload),
-      file_name: doc.file_upload.filename.to_s
+      file_url: doc.file_upload.url,          # ✅ use CarrierWave url
+      file_name: doc.file_upload_identifier   # ✅ or doc.file_upload.filename if present
     }
   end
+
+  def update_uploaded_doc
+    doc = ProviderPersonalUploadedDoc.find(params[:id])
+    if doc.update(provider_personal_uploaded_docs_params)
+      redirect_to mhc_manage_clients_path,
+                     notice: "Document updated successfully."
+    else
+      render json: { success: false, errors: doc.errors.full_messages },
+             status: :unprocessable_entity
+    end
+  end
+
+
 
   def delete_provider_personal_docs
     doc_id = params.dig(:doc_id)
