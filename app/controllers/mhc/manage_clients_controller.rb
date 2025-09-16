@@ -124,6 +124,19 @@ class Mhc::ManageClientsController < ApplicationController
     }
   end
 
+  def show_uploaded_doc
+    doc = ProviderPersonalUploadedDoc.find(params[:id])
+    render json: {
+      id: doc.id,
+      image_classification: doc.image_classification,
+      sub_section: doc.sub_section,
+      description: doc.description,
+      exclude_from_profile: doc.exclude_from_profile,
+      file_url: url_for(doc.file_upload),
+      file_name: doc.file_upload.filename.to_s
+    }
+  end
+
   def delete_provider_personal_docs
     doc_id = params.dig(:doc_id)
     doc_file = ProviderPersonalUploadedDoc.find_by_id(doc_id)
