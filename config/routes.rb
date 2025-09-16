@@ -169,19 +169,6 @@ Rails.application.routes.draw do
       end
     end
     
-    resources :manage_clients, path: 'manage-clients' do
-      collection do
-        get 'edit_provider_personal_information'
-        post 'load_provider_personal_information'
-        get :append_remove_practitioner
-        get :get_provider_uploaded_docs
-      end
-      member do
-        get 'edit'
-        patch 'update'
-      end
-    end
-    
     resources :provider_personal_information_peer_refs
     resources :provider_personal_information_facilities
     
@@ -232,13 +219,24 @@ Rails.application.routes.draw do
 
 
     resources :manage_practitioners, only: [:index], path: 'manage-practitioners'
-    resources :manage_clients, only: [:index], path: 'manage-clients' do
+    resources :manage_clients, path: 'manage-clients' do
       collection do
+        get 'edit_provider_personal_information'
+        post 'load_provider_personal_information'
+        get :append_remove_practitioner
+        get :get_provider_uploaded_docs
         post :ajax_upload
         post :provider_personal_uploaded_docs, path: 'provider-personal-uploaded-docs'
         delete :delete_provider_personal_docs, path: 'delete_provider_personal_docs'
       end
+      member do
+        get 'edit'
+        patch 'update'
+        get :show_uploaded_doc
+        patch :update_uploaded_doc
+      end
     end
+
     resources :schools
     get 'california_participating_physician_reapplication', to: 'verification_platform#california_participating_physician_reapplication'
     get 'california_participating_physician_addendum_b', to: 'verification_platform#california_participating_physician_addendum_b'

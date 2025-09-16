@@ -451,7 +451,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_attest_id = @provider_personal_information.provider_attest_id if @provider_personal_information
       @provider_npdb = ProviderNpdb.find_or_initialize_by(
         provider_attest_id: @provider_attest_id,
-        caqh_provider_attest_id: @provider_personal_information&.caqh_provider_attest_id
+        # caqh_provider_attest_id: @provider_personal_information&.caqh_provider_attest_id
       )
       @rva_information = RvaInformation.new
       @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'NPDB', restart_audit: false).last
