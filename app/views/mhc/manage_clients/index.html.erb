@@ -116,8 +116,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <%= form_for(@document, url: provider_personal_uploaded_docs_mhc_manage_clients_path, html: { multipart: true }) do |f| %>
-          <%= hidden_field_tag :document_id %>
+        <%= form_for(@document, url: provider_personal_uploaded_docs_mhc_manage_clients_path, html: { multipart: true, id: "editDocumentForm" }) do |f| %>
           <% if @document.errors.any? %>
             <div id="error_explanation" class="row my-2 text-red">
               <div class="col-lg-12">
@@ -207,6 +206,31 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     let imageUploadModal = document.getElementById("imageUploadModal");
+    const formEl  = document.getElementById("editDocumentForm");
+
+    imageUploadModal.addEventListener("show.bs.modal", function (event) {
+      const button = event.relatedTarget;                 // the clicked edit button
+      const docId  = button.getAttribute("data-doc-id");  // our data-doc-id
+
+      // **Change the form action** to PATCH this doc
+      formEl.action = `/mhc/manage-clients/${docId}/update_uploaded_doc`;
+
+      // Fetch details and fill the fields
+      fetch(`/mhc/manage-clients/${docId}/show_uploaded_doc`, {
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+      })
+      .then(resp => resp.json())
+      .then(data => {
+        document.getElementById("doc_image_classification").value = data.image_classification;
+        document.getElementById("provider_personal_uploaded_doc_sub_section").value = data.sub_section;
+        document.getElementById("provider_personal_uploaded_doc_description").value = data.description;
+        document.getElementById("provider_personal_uploaded_doc_exclude_from_profile").checked = data.exclude_from_profile;
+
+        // Show current file link
+        const preview = document.getElementById("uploadedFilePreview");
+        preview.innerHTML = `<a href="${data.file_url}" target="_blank">${data.file_name}</a>`;
+      });
+    });
 
     imageUploadModal.addEventListener("show.bs.modal", function (event) {
       let button = event.relatedTarget; // Button that triggered the modal
@@ -223,6 +247,7 @@
       let personalInformationId = button.getAttribute("data-personal-information-id");
 
       let modalBody = viewDocumentModal.querySelector(".modal-body tbody");
+      const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
       // Clear previous content
       modalBody.innerHTML = `<tr><td colspan="5" class="text-center">Loading...</td></tr>`;
@@ -248,7 +273,16 @@
                   <td><a href="${doc.file_url}" target="_blank">${doc.file_name}</a></td>
                   <td>${new Date(doc.created_at).toLocaleDateString()}</td>
                   <td>
+                    <button type="button"
+                      class="btn btn-primary btn-sm edit-doc-btn"
+                      data-doc-id="${doc.id}"
+                      data-bs-toggle="modal"
+                      data-bs-target="#imageUploadModal">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+
                     <form action="/mhc/manage-clients/delete_provider_personal_docs" method="POST" onsubmit="return confirm('Are you sure you want to delete?')">
+                      <input type="hidden" name="authenticity_token" value="${token}">
                       <input type="hidden" name="_method" value="delete">
                       <input type="hidden" name="doc_id" value="${doc.id}">
                       <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
