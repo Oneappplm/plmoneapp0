@@ -9,7 +9,7 @@ class Mhc::ProviderNpdbsController < ApplicationController
     @provider_npdb = ProviderNpdb.new(provider_npdb_params)
 
     if @provider_npdb.save
-      redirect_to mhc_verification_platform_path(page_tab: 'npdb',id: params[:provider_npdb][:provider_attest_id]), notice: 'Npdb detail saved successfully.'
+      redirect_to mhc_verification_platform_path(page_tab: 'npdb_record',id: params[:provider_npdb][:provider_attest_id]), notice: 'Npdb detail saved successfully.'
     else
       Rails.logger.error @provider_npdb.errors.full_messages.join(", ")
       redirect_to mhc_verification_platform_path(page_tab: 'npdb_record',id: params[:provider_npdb][:provider_attest_id]), alert: 'Failed to save npdb detail.'
