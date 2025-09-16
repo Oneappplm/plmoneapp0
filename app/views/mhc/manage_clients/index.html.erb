@@ -127,6 +127,12 @@
       </div>
       <div class="modal-body">
         <%= form_for(@document, url: provider_personal_uploaded_docs_mhc_manage_clients_path, html: { multipart: true, id: "editDocumentForm" }) do |f| %>
+            <%= hidden_field_tag :_method, '', id: 'hidden_method_field' %>
+            <%= hidden_field_tag :document_id %>
+            <%= hidden_field_tag :authenticity_token,
+            form_authenticity_token,                    # <— actual token value
+            id: 'auth_token_field' %>
+
           <% if @document.errors.any? %>
             <div id="error_explanation" class="row my-2 text-red">
               <div class="col-lg-12">
@@ -217,29 +223,65 @@
   document.addEventListener("DOMContentLoaded", function () {
     let imageUploadModal = document.getElementById("imageUploadModal");
     const formEl  = document.getElementById("editDocumentForm");
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const methodField = document.getElementById("hidden_method_field"); //
 
-    imageUploadModal.addEventListener("show.bs.modal", function (event) {
-      const button = event.relatedTarget;                 // the clicked edit button
-      const docId  = button.getAttribute("data-doc-id");  // our data-doc-id
+    // Helper to turn "client_uploaded_documents" → "Client Uploaded Documents"
+    function humanize(str) {
+      if (!str) return "";
+      return str
+        .split("_")
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
+    }
 
-      // **Change the form action** to PATCH this doc
+
+    // Delegate click handling to the container or body
+    document.body.addEventListener("click", function (e) {
+      const btn = e.target.closest(".edit-doc-btn");
+      let personalInformationId = btn.getAttribute("data-personal-information-id");
+      if (!btn) return; // not an edit button
+
+      // --- run only when an edit button is clicked ---
+      const docId = btn.dataset.docId;
+
+      // Prepare the form for PATCH
       formEl.action = `/mhc/manage-clients/${docId}/update_uploaded_doc`;
+      formEl.method = "post";          // HTML form stays POST
+      methodField.value = "patch";     // Rails will treat as PATCH
+      document.getElementById("provider_personal_uploaded_doc_provider_personal_information_id").value = personalInformationId;
 
-      // Fetch details and fill the fields
+      // Fetch the existing document details
       fetch(`/mhc/manage-clients/${docId}/show_uploaded_doc`, {
+        method: "GET",
         headers: { "X-Requested-With": "XMLHttpRequest" }
       })
-      .then(resp => resp.json())
+      .then(resp => {
+        if (!resp.ok) throw new Error("Network error");
+        return resp.json();
+      })
       .then(data => {
-        document.getElementById("doc_image_classification").value = data.image_classification;
-        document.getElementById("provider_personal_uploaded_doc_sub_section").value = data.sub_section;
-        document.getElementById("provider_personal_uploaded_doc_description").value = data.description;
-        document.getElementById("provider_personal_uploaded_doc_exclude_from_profile").checked = data.exclude_from_profile;
+        // Fill modal fields
+        document.getElementById("provider_personal_uploaded_doc_image_classification")
+          .value = humanize(data.image_classification);
+        document.getElementById("provider_personal_uploaded_doc_sub_section")
+          .value = data.sub_section;
+        document.getElementById("provider_personal_uploaded_doc_description")
+          .value = data.description;
+        document.getElementById("provider_personal_uploaded_doc_exclude_from_profile")
+          .checked = data.exclude_from_profile;
+        document.getElementById("document_id")
+          .value = data.id;
 
-        // Show current file link
-        const preview = document.getElementById("uploadedFilePreview");
-        preview.innerHTML = `<a href="${data.file_url}" target="_blank">${data.file_name}</a>`;
-      });
+        // Show link to current file
+        document.getElementById("uploadedFilePreview").innerHTML =
+          `<a href="${data.file_url}" target="_blank">${data.file_name}</a>`;
+
+        // Finally open the modal (if not using data-bs-toggle on the button)
+        const modal = new bootstrap.Modal(document.getElementById("imageUploadModal"));
+        modal.show();
+      })
+      .catch(err => console.error("Error loading document:", err));
     });
 
     imageUploadModal.addEventListener("show.bs.modal", function (event) {
@@ -257,7 +299,6 @@
       let personalInformationId = button.getAttribute("data-personal-information-id");
 
       let modalBody = viewDocumentModal.querySelector(".modal-body tbody");
-      const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
       // Clear previous content
       modalBody.innerHTML = `<tr><td colspan="5" class="text-center">Loading...</td></tr>`;
@@ -282,12 +323,13 @@
                   <td>${doc.sub_section}</td>
                   <td><a href="${doc.file_url}" target="_blank">${doc.file_name}</a></td>
                   <td>${new Date(doc.created_at).toLocaleDateString()}</td>
-                  <td>
+                  <td style="    display: inline-flex;column-gap: 7px;">
                     <button type="button"
                       class="btn btn-primary btn-sm edit-doc-btn"
                       data-doc-id="${doc.id}"
                       data-bs-toggle="modal"
-                      data-bs-target="#imageUploadModal">
+                      data-bs-target="#imageUploadModal"
+                      data-personal-information-id="${doc.personal_information_id}">
                       <i class="bi bi-pencil"></i>
                     </button>
 
@@ -316,14 +358,14 @@
   document.addEventListener("DOMContentLoaded", attachFileUploader);
 
   function attachFileUploader() {
-    const fileInput = document.getElementById("fileUploadInput");
-    const previewDiv = document.getElementById("uploadedFilePreview");
-    const loader     = $("#uploadLoader");
+    const fileInput      = document.getElementById("fileUploadInput");
+    const previewDiv     = document.getElementById("uploadedFilePreview");
+    const loader         = $("#uploadLoader");
     const providerInfoId = document.getElementById(
       "provider_personal_uploaded_doc_provider_personal_information_id"
     );
+    const documentIdEl   = document.getElementById("document_id");
 
-    // Guard so we only bind once even if turbo:load or DOMContentLoaded fire again
     if (!fileInput || fileInput.dataset.bound === "true") return;
     fileInput.dataset.bound = "true";
 
@@ -341,7 +383,11 @@
         providerInfoId.value
       );
 
-      // Show loader
+      // ✅ if we already have a document id, send it so the controller knows to update
+      if (documentIdEl.value) {
+        formData.append("provider_personal_uploaded_doc[id]", documentIdEl.value);
+      }
+
       loader.removeClass("d-none");
 
       fetch("/mhc/manage-clients/ajax_upload", {
@@ -351,31 +397,33 @@
         },
         body: formData
       })
-      .then(response => response.json())
-      .then(data => {
-        loader.addClass("d-none");
-        previewDiv.innerHTML = ""; // clear previous preview
+        .then(resp => resp.json())
+        .then(data => {
+          loader.addClass("d-none");
+          previewDiv.innerHTML = "";
 
-        if (data.success) {
-          const link = document.createElement("a");
-          link.href = data.file_url;
-          link.target = "_blank";
-          link.textContent = data.file_url;
-          previewDiv.appendChild(link);
-        } else {
-          previewDiv.textContent = "Upload failed: " + data.errors.join(", ");
-        }
-        document.getElementById('document_id').value = data.document_id;
-      })
-      .catch(err => {
-        console.error("Upload error", err);
-        previewDiv.textContent = "Upload failed.";
-      })
-      .finally(() => {
-        uploadInProgress = false;
-      });
+          if (data.success) {
+            const link = document.createElement("a");
+            link.href = data.file_url;
+            link.target = "_blank";
+            link.textContent = data.file_url;
+            previewDiv.appendChild(link);
+            // store the id returned so subsequent uploads update instead of create
+            documentIdEl.value = data.document_id;
+          } else {
+            previewDiv.textContent = "Upload failed: " + data.errors.join(", ");
+          }
+        })
+        .catch(err => {
+          console.error("Upload error", err);
+          previewDiv.textContent = "Upload failed.";
+        })
+        .finally(() => {
+          uploadInProgress = false;
+        });
     });
   }
+
 </script>
 
 <style>
