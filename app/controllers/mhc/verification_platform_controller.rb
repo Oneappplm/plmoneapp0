@@ -596,6 +596,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       :source_date,
       :status,
       :adverse_action,
+      :adverse_action_type,
       :other_details,
       :adverse_action_comments,
       :adverse_action_status,
