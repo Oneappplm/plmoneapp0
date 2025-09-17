@@ -221,47 +221,97 @@
     </table>
   </div>
 </div>
+
 <div class="container mt-4">
+  <!-- Primary License Section -->
   <div class="section mt-4">
     <div class="section-title">Primary License:</div>
-     <div class="section-content">
-      <% provider_personal_information.provider_licensures.where.not(audit_status: ['SkipRVA', nil])
-        .joins(:rva_informations)
-        .where.not(rva_informations: { source_date: nil })
-        .distinct
-        .each do |licensure| %>
-      <% details = licensure.rva_informations.where(audit_status: 'Quality Audited').order('source_date DESC').first %>
-  	    <% if details.present? %>
-  	    <div class="row mt-3">
-  	      <div class="col-6">
-  	        <p><strong>License Number:</strong> <%= licensure.license_number %></p>
-  	        <p><strong>Issue Date:</strong> <%= licensure.license_issue_date&.strftime('%m/%d/%Y') %></p>
-  	        <p><strong>Status:</strong> <%= details.status.presence || 'N/A' %></p>
-  	        <p><strong>Source:</strong> <%= details.source_name.presence || 'N/A' %></p>
-  	        <p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
-  	        <p><strong>Review Criteria:</strong> <%= details.adverse_action  %></p>
-  	      </div>
-  	      <div class="col-6">
-  	        <p><strong>License Type:</strong> <%= licensure.license_type %></p>
-  	        <p><strong>State:</strong> <%= licensure.state.name %></p>
-  	        <p><strong>Expiration Date:</strong> <%= licensure.license_expiration_date&.strftime('%m/%d/%Y') %></p>
-  	        <!-- <p><strong>Adverse Action:</strong> <%#= details.adverse_action.presence || 'None' %></p> -->
-  	        <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
-  	        <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
-  	      </div>
-  	    </div>
-  	    <div class="row comments">
-  	      <div class="col-12">
-  	        <p><strong>Comments:</strong> <%= details.verification_comments.presence || 'N/A' %></p>
-  	      </div>
-  	    </div>
-  	    <hr>
-  	    <% end %>
+    <% provider_personal_information.provider_licensures
+      .where(is_primary_license: true)
+      .where.not(audit_status: ['SkipRVA', nil])
+      .joins(:rva_informations)
+      .where.not(rva_informations: { source_date: nil })
+      .distinct
+      .each do |licensure| %>
+
+      <% details = licensure.rva_informations
+        .where(audit_status: 'Quality Audited')
+        .order('source_date DESC')
+        .first %>
+
+      <% if details.present? %>
+        <div class="section-content">
+          <div class="row mt-1">
+            <div class="col-6">
+              <p><strong>License Number:</strong> <%= licensure.license_number %></p>
+              <p><strong>Issue Date:</strong> <%= licensure.license_issue_date&.strftime('%m/%d/%Y') %></p>
+              <p><strong>Status:</strong> <%= details.status.presence || 'N/A' %></p>
+              <p><strong>Source:</strong> <%= details.source_name.presence || 'N/A' %></p>
+              <p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
+              <p><strong>Review Criteria:</strong> <%= details.adverse_action %></p>
+            </div>
+            <div class="col-6">
+              <p><strong>License Type:</strong> <%= licensure.license_type %></p>
+              <p><strong>State:</strong> <%= licensure.state.name %></p>
+              <p><strong>Expiration Date:</strong> <%= licensure.license_expiration_date&.strftime('%m/%d/%Y') %></p>
+              <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
+              <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
+            </div>
+          </div>
+          <div class="row comments border-top border-dark">
+            <div class="col-12 m-2">
+              <p><strong>Comments:</strong> <%= details.verification_comments.presence || 'N/A' %></p>
+            </div>
+          </div>
+        </div>
       <% end %>
-    </div>
+    <% end %>
   </div>
-  <%# <div class="section-title mt-4">Additional License</div>
-  <br> %>
+
+  <!-- Additional License Section -->
+  <div class="section mt-4">
+    <div class="section-title">Additional License(s):</div>
+    <% provider_personal_information.provider_licensures
+      .where(is_primary_license: false)
+      .where.not(audit_status: ['SkipRVA', nil])
+      .joins(:rva_informations)
+      .where.not(rva_informations: { source_date: nil })
+      .distinct
+      .each do |licensure| %>
+
+      <% details = licensure.rva_informations
+        .where(audit_status: 'Quality Audited')
+        .order('source_date DESC')
+        .first %>
+
+      <% if details.present? %>
+        <div class="section-content">
+          <div class="row mt-1">
+            <div class="col-6">
+              <p><strong>License Number:</strong> <%= licensure.license_number %></p>
+              <p><strong>Issue Date:</strong> <%= licensure.license_issue_date&.strftime('%m/%d/%Y') %></p>
+              <p><strong>Status:</strong> <%= details.status.presence || 'N/A' %></p>
+              <p><strong>Source:</strong> <%= details.source_name.presence || 'N/A' %></p>
+              <p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
+              <p><strong>Review Criteria:</strong> <%= details.adverse_action %></p>
+            </div>
+            <div class="col-6">
+              <p><strong>License Type:</strong> <%= licensure.license_type %></p>
+              <p><strong>State:</strong> <%= licensure.state.name %></p>
+              <p><strong>Expiration Date:</strong> <%= licensure.license_expiration_date&.strftime('%m/%d/%Y') %></p>
+              <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
+              <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
+            </div>
+          </div>
+          <div class="row comments border-top border-dark">
+            <div class="col-12 m-2">
+              <p><strong>Comments:</strong> <%= details.verification_comments.presence || 'N/A' %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
 </div>
 
 <div class="container mt-4">
@@ -281,7 +331,7 @@
                 <p><strong>DEA Number:</strong> <%= dea.dea_number %></p>
                 <p><strong>Schedule:</strong> <%= dea.schedules_held.join(" ") %></p>
                 <p><strong>Source:</strong> DEA</p>
-                <p><strong>Source Date:</strong> <%= dea_details[-1]&.source_date.strftime('%m/%d/%Y') %></p>
+                <p><strong>Source Date:</strong> <%= dea_details[-1]&.source_date&.strftime('%m/%d/%Y') %></p>
                 <p><strong>Review Criteria:</strong> <%= dea_details[-1]&.adverse_action %></p>
               </div>
               <div class="col-6">
@@ -289,7 +339,7 @@
                 <p><strong>State:</strong> <%= dea.state %></p>
                 <p><strong>Verifier:</strong> <%= dea_details[-1]&.verifier %></p>
                 <p><strong>Expiration Date:</strong> <%= dea.expiration_date&.strftime('%m/%d/%Y') %></p>
-                <p><strong>Verification Date:</strong> <%= dea_details[-1]&.verification_date.strftime('%m/%d/%Y') %></p>
+                <p><strong>Verification Date:</strong> <%= dea_details[-1]&.verification_date&.strftime('%m/%d/%Y') %></p>
               </div>
               <div class="col-12">
                 <p><strong>Comments:</strong> <%= dea_details[-1]&.verification_comments %></p>
@@ -308,18 +358,18 @@
      <div class="section-content">
       <div class="row">
         <div class="col-6">
-          <p><strong>Source:</strong> <%= npdb_details[0]&.source_name || "NA" %></p>
-          <p><strong>Source Date:</strong> <%= npdb_details[0]&.source_date || "NA"  %></p>
-          <p><strong>Review Criteria:</strong> <%= npdb_details[0]&.adverse_action  %></p>
+          <p><strong>Source:</strong> <%= npdb_details[-1]&.source_name || "NA" %></p>
+          <p><strong>Source Date:</strong> <%= npdb_details[-1]&.source_date || "NA"  %></p>
+          <p><strong>Review Criteria:</strong> <%= npdb_details[-1]&.adverse_action  %></p>
         </div>
         <div class="col-6">
-          <p><strong>Verifier:</strong> <%= npdb_details[0]&.verifier || "NA"  %></p>
-          <p><strong>Verification Date:</strong> <%= npdb_details[0]&.verification_date || "NA"  %></p>
+          <p><strong>Verifier:</strong> <%= npdb_details[-1]&.verifier || "NA"  %></p>
+          <p><strong>Verification Date:</strong> <%= npdb_details[-1]&.verification_date || "NA"  %></p>
         </div>
       </div>
       <div class="row comments">
         <div class="col-12">
-          <p><strong>Comments:</strong>  <%= npdb_details[0]&.verification_comments %></p>
+          <p><strong>Comments:</strong>  <%= npdb_details[-1]&.verification_comments %></p>
         </div>
       </div>
      </div>
@@ -330,44 +380,41 @@
   <div class="section">
     <div class="section-title">SAM Exclusions:</div>
     <div class="section-content">
-      <div class="row">
-			  <% provider_personal_information.provider_personal_information_sam_records.each do |sam_record| %>
-			    <div class="col-6 mb-3">
-			      <p><strong>Full Name:</strong> 
-			        <%= [sam_record.first_name, sam_record.middle_name, sam_record.last_name].compact_blank.join(" ") %>
-			      </p>
-			    </div>
+			<% provider_personal_information.provider_personal_information_sam_records.each do |sam_record| %>
+        <div class="row">
+  			    <div class="col-6 mb-3">
+  			      <p><strong>Full Name:</strong> 
+  			        <%= [sam_record.first_name, sam_record.middle_name, sam_record.last_name].compact_blank.join(" ") %>
+  			      </p>
+              <% if sam_record.provider_personal_information_sam_rva_records.any? %>
+                <% sam_record.provider_personal_information_sam_rva_records.each do |rva| %>
+                  <p><strong>Search Results:</strong> 
+                    <%= verification_search_results.to_h.key(rva.search_result) || "None" %>
+                  </p>
+                  <p><strong>Finding:</strong> <%= rva.verification_sanctions || "None" %></p>
+                  <p><strong>Verified By:</strong> SAM</p>
+                  <p><strong>Verifier:</strong> <%= current_user.full_name %></p>
+                  <p><strong>Comments:</strong> <%= rva.comments || "None" %></p>
+                  <hr>
+                <% end %>
+              <% end %>
+  			    </div>
 
-			    <div class="col-6 mb-3">	
-			      <% if sam_record.provider_personal_information_sam_rva_records.any? %>
-			        <% sam_record.provider_personal_information_sam_rva_records.each do |rva| %>
-			          <p><strong>Source Date:</strong> <%= rva.source_date&.strftime('%b %d, %Y') || "None" %></p>
-			          <p><strong>Verification Date:</strong> <%= rva.verification_date&.strftime('%b %d, %Y') || "None" %></p>
-
-			          <p><strong>Search Results:</strong> 
-			            <%= verification_search_results.to_h.key(rva.search_result) || "None" %>
-			          </p>
-			          <p><strong>Finding:</strong> <%= rva.verification_sanctions || "None" %></p>
-			          <p><strong>Verified By:</strong> SAM</p>
-			          <p><strong>Verifier:</strong> <%= current_user.full_name %></p>
-			          <p><strong>Comments:</strong> <%= rva.comments || "None" %></p>
-			          <hr>
-			        <% end %>
-		        <% else %>
-			        <p><strong>Source Date:</strong> None</p>
-			        <p><strong>Verification Date:</strong> None</p>
-			        <p><strong>Search Results:</strong> None</p>
-			        <p><strong>Finding:</strong> None</p>
-			        <p><strong>Verified By:</strong> SAM</p>
-			        <p><strong>Verifier:</strong> <%= current_user.full_name %></p>
-			        <p><strong>Comments:</strong> None</p>
-			      <% end %>
-			    </div>
-			    <hr>
-			  <% end %>
-			</div>
+  			    <div class="col-6 mb-3">	
+  			      <% if sam_record.provider_personal_information_sam_rva_records.any? %>
+  			        <% sam_record.provider_personal_information_sam_rva_records.each do |rva| %>
+  			          <div class="mt-5 mb-5">
+                    <p><strong>Source Date:</strong> <%= rva.source_date&.strftime('%b %d, %Y') || "None" %></p>
+                    <p><strong>Verification Date:</strong> <%= rva.verification_date&.strftime('%b %d, %Y') || "None" %></p>
+                  </div>
+  			        <% end %>
+  			      <% end %>
+  			    </div>
+  			</div>
+			 <% end %>
     </div>
   </div>
+
   <div class="section mt-4">
     <div class="section-title">NPI</div>
     <div class="section-content">
@@ -385,6 +432,7 @@
       </div>
     </div>
   </div>
+
   <div class="section mt-4">
     <div class="section-title">Medicare Opt Out</div>
     <div class="section-content">
@@ -404,23 +452,26 @@
       </div>
     </div>
   </div>
+
   <% if oig_details.present? %>
   <div class="section mt-4">
     <div class="section-title">OIG Exclusions</div>
     <div class="section-content">
-      <div class="row">
-        <div class="col-6">
-          <p><strong>Search Result:</strong> <%= oig_details[0]&.status %></p>
-          <p><strong>Finding:</strong> None</p>
-          <p><strong>Verified By:</strong> <%= oig_details[0]&.tab %></p>
-          <p><strong>Verifier:</strong> <%= oig_details[0]&.verifier %></p>
-          <p><strong>Comments:</strong> <%= oig_details[0]&.verification_comments %></p>
+      <% if provider_personal_information.rva_informations.last.tab == "OIG" %>
+        <div class="row">
+          <div class="col-6">
+            <p><strong>Search Result:</strong> <%= provider_personal_information.rva_informations.last&.status %></p>
+            <p><strong>Finding:</strong> None</p>
+            <p><strong>Verified By:</strong> <%= provider_personal_information.rva_informations.last&.tab %></p>
+            <p><strong>Verifier:</strong> <%= provider_personal_information.rva_informations.last&.verifier %></p>
+            <p><strong>Comments:</strong> <%= provider_personal_information.rva_informations.last&.verification_comments %></p>
+          </div>
+          <div class="col-6">
+            <p><strong>Source Date:</strong> <%= provider_personal_information.rva_informations.last&.source_date&.strftime('%m/%d/%Y') %></p>
+            <p><strong>Verification Date:</strong> <%= provider_personal_information.rva_informations.last&.verification_date&.strftime('%m/%d/%Y') %></p>
+          </div>
         </div>
-        <div class="col-6">
-          <p><strong>Source Date:</strong> <%= oig_details[0]&.source_date %></p>
-          <p><strong>Verification Date:</strong> <%= oig_details[0]&.verification_date %></p>
-        </div>
-      </div>
+      <% end %>
     </div>
   </div>
   <% end %>
@@ -486,8 +537,10 @@
             <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
           </div>
         </div>
+        <div class="col-lg-12 border-top border-dark">
+          <p class="mt-2"><strong>Comments:</strong> <%= details.verification_comments %></p>
+        </div>
       </div>
-      <hr>
       <% end %>
     <% end %>
   </div>
@@ -502,28 +555,30 @@
       .where.not(rva_informations: { source_date: nil })
       .distinct
       .each do |education| %>
-    <% details = education.rva_informations.where(audit_status: true).order('source_date DESC').first %>
-    <% if details.present? %>
-    <div class="section-content">
-      <div class="row">
-        <div class="col-6">
-          <p><strong>School/Program:</strong> <%= education.institution_name %></p>
-          <p><strong>Date Attended From:</strong> <%= education.start_date&.strftime('%m/%d/%Y') %></p>
-          <p><strong>Date Attended To:</strong> <%= education.end_date&.strftime('%m/%d/%Y') %></p>
-          <p><strong>Source:</strong> <%= details.source_name.presence || 'N/A' %></p>
-          <p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
-          <p><strong>Review Criteria:</strong> <%= details.adverse_action %></p>
+      <% details = education.rva_informations.where(audit_status: true).order('source_date DESC').first %>
+      <% if details.present? %>
+        <div class="section-content">
+          <div class="row">
+            <div class="col-6">
+              <p><strong>School/Program:</strong> <%= education.institution_name %></p>
+              <p><strong>Date Attended From:</strong> <%= education.start_date&.strftime('%m/%d/%Y') %></p>
+              <p><strong>Date Attended To:</strong> <%= education.end_date&.strftime('%m/%d/%Y') %></p>
+              <p><strong>Source:</strong> <%= details.source_name.presence || 'N/A' %></p>
+              <p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
+              <p><strong>Review Criteria:</strong> <%= details.adverse_action %></p>
+            </div>
+            <div class="col-6">
+              <p><strong>Degree/Certificate:</strong> <%= education.degree_degree_abbreviation %></p>
+              <p><strong>Completed?:</strong> <%= education.program_completed_flag ? 'Yes' : 'No' %></p>
+              <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
+              <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
+            </div>
+          </div>
+          <div class="col-lg-12 border-top border-dark">
+            <p class="mt-2"><strong>Comments:</strong> <%= details.verification_comments %></p>
+          </div>
         </div>
-        <div class="col-6">
-          <p><strong>Degree/Certificate:</strong> <%= education.degree_degree_abbreviation %></p>
-          <p><strong>Completed?:</strong> <%= education.program_completed_flag ? 'Yes' : 'No' %></p>
-          <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
-          <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
-        </div>
-      </div>
-    </div>
-    <hr>
-    <% end %>
+      <% end %>
     <% end %>
   </div>
   
@@ -574,7 +629,12 @@
   
   <div class="section mt-4">
     <div class="section-title">Liability Coverage</div>
-    <% provider_liablities = provider_personal_information.provider_insurance_coverages.where.not(audit_status: ['SkipRVA', nil]).joins(:rva_informations).where(rva_informations: { audit_status: true }).where.not(rva_informations: { source_date: nil }).distinct %>
+    <% provider_liablities = provider_personal_information.provider_insurance_coverages
+                            .where.not(audit_status: ['SkipRVA', nil])
+                            .joins(:rva_informations)
+                            .where(rva_informations: { audit_status: true })
+                            .where.not(rva_informations: { source_date: nil })
+                            .distinct %>
 	  <% provider_liablities.each do |provider_liability| %>
 		  <% provider_liability.rva_informations.each do |liability_details| %>
 		    <div class="section-content">
