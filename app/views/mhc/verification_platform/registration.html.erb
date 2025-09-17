@@ -99,7 +99,7 @@
         <% @provider_cds&.each do |provider_cd| %>
           <%= form_with model: provider_cd, url: mhc_provider_cd_path(provider_cd), method: :put, local: true do |f| %>
             <%= f.hidden_field :caqh_provider_attest_id %>
-            <%= f.hidden_field :provider_attest_id %>
+            <%= f.hidden_field :provider_attest_id, value: params[:id] %>
 
             <div class="container page-applicable mt-3">
               <div class="col-xl-12">
@@ -760,10 +760,10 @@
                       </div>
                       <div class="form-row">
                         <label>If Reserve, anticipated date of separation from reserve duty:</label>
-                        <div class="col-xl-6">
+                        <div class="col-xl-6 mt-2 mb-2">
                           <%= f.text_field :reserve_separation_month, class: "form-control", placeholder: "Month" %>
                         </div>
-                        <div class="col-xl-6">
+                        <div class="col-xl-6 mt-2 mb-2">
                           <%= f.text_field :reserve_separation_year, class: "form-control", placeholder: "Year" %>
                         </div>
                       </div>
@@ -893,7 +893,7 @@
             });
           </script>
         <% else %>
-            <div class="form-row row page-applicable mt-3">
+            <div class="container page-applicable mt-3">
               <div class="col-xl-12">
                 <div class="card other-name-card">
                   <div class="card-body">
@@ -933,15 +933,15 @@
 
                       <div class="form-row">
                         <label>If Reserve, anticipated date of separation from reserve duty:</label>
-                        <div class="col-xl-6">
+                        <div class="col-xl-6 mt-2 mb-2">
                           <%= f.text_field :reserve_separation_month, class: "form-control", placeholder: "Month" %>
                         </div>
-                        <div class="col-xl-6">
+                        <div class="col-xl-6 mt-2 mb-2">
                           <%= f.text_field :reserve_separation_year, class: "form-control", placeholder: "Year" %>
                         </div>
                       </div>
 
-                      <div class="form-group">
+                      <div class="form-group mt-3 mb-3">
                         <%= f.label :currently_active_reserve, "Are You Currently on Active or Reserve Military Duty?" %>
                         <%= f.check_box :currently_active_reserve %>
                       </div>
@@ -1041,7 +1041,7 @@
                             <div class="form-row row mt-3">
                               <div class="col-xl-12">
                                 <%= f.label :comments, "Please list any comments:" %>
-                                <%= f.text_area :comments, class: "form-control" %>
+                                <%= f.text_area :comments, class: "form-control border-dark" %>
                               </div>
                             </div>
                           </div>
