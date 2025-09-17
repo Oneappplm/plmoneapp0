@@ -82,7 +82,6 @@ class Mhc::ManageClientsController < ApplicationController
     )
 
     doc_params = params.require(:provider_personal_uploaded_doc).permit(:id, :file_upload)
-    debugger
     if doc_params[:id].present?
       # ✅ update existing record
       @document = ProviderPersonalUploadedDoc.find(doc_params[:id])
