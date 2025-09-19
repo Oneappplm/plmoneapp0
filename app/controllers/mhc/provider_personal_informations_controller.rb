@@ -28,7 +28,7 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
 
   def verify_npi
     npi_number = params[:number]
-    provider = ProviderPersonalInformation.find_by(npi: npi_number)
+    provider   = ProviderPersonalInformation.find_by(npi: npi_number)
 
     begin
       uri = URI("https://npiregistry.cms.hhs.gov/api/?number=#{npi_number}&version=2.1")
@@ -36,12 +36,22 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
       json = JSON.parse(response)
 
       if json["results"] && json["results"].any?
+        
+        # Run your Webscraper service in addition to API
+        scraper = Webscraper::NpiService.new(npi_number)
+        scraper_result = scraper.call
+
         if provider.present?
           provider.update(
             npi_verification_status: "match",
             npi_source_date: Date.today
-          )
-          render json: { status: "match", source_date: provider.npi_source_date }, serializer: nil
+            )
+
+          render json: {
+            status: "match",
+            source_date: provider.npi_source_date,
+            screenshot_url: scraper_result[:screenshot_url]
+          }, serializer: nil
         else
           render json: { status: "no_match" }
         end
@@ -53,7 +63,6 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
       render json: { status: "error", message: e.message }, status: 500
     end
   end
-
 
   private
 
