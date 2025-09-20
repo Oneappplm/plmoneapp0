@@ -57,164 +57,168 @@
   </div>
 
   <!-- Notification Log Section -->
-  <div class="card mb-4">
-    <div class="card-header">Notification Log</div>
-    <div class="card-body">
-      <button type="button" class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#letterLibraryModal">
-        Letter Library
-      </button>
+  <div class="container">
+    <div class="card mb-4">
+      <div class="card-header">Notification Log</div>
+      <div class="card-body">
+        <button type="button" class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#letterLibraryModal">
+          Letter Library
+        </button>
 
-      <!-- Modal -->
-      <div class="modal fade" id="letterLibraryModal" tabindex="-1" aria-labelledby="letterLibraryModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title" id="exampleModalLabel">Send Notification Item</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <%= form_with url: '#', method: :post, local: true do |f| %>
-                <!-- Current Facility -->
-                <div class="mb-3 row">
-                  <label class="col-sm-3 col-form-label fw-bold">Current Facility:</label>
-                  <div class="col-sm-9">
-                    <%= f.text_field :facility, class: 'form-control', value: 'CHCTest', readonly: true %>
-                  </div>
-                </div>
-                
-                <!-- Current Practitioner Type -->
-                <div class="mb-3 row">
-                  <label class="col-sm-3 col-form-label fw-bold">Current Practitioner Type:</label>
-                  <div class="col-sm-9">
-                    <%= f.text_field :practitioner_type, class: 'form-control', readonly: true %>
-                  </div>
-                </div>
-                
-                <!-- List All Letter Names -->
-                <div class="mb-3 row">
-                  <label class="col-sm-3 col-form-label fw-bold">List All Letter Names:</label>
-                  <div class="col-sm-9">
-                    <%= f.select :letter_name, 
-                      ['---- Select All Letter Here ----', 
-                       'Active Appointment Approval', 
-                       'Alameda Alliance Application Final Request',
-                       'Alameda Alliance Application First Request',
-                       'Alameda Alliance Application Second Request',
-                       'Cigna Outreach July',
-                       'Cigna Outreach June',
-                       'Cigna Recred 1',
-                       'Cigna Recred 2',
-                       'Humana - Collection Outreach Letter 90 Days',
-                       'Humana - Cred Collection Letter',
-                       'Humana - Recred Collection Letter',
-                       'Humana - Termination Letter',
-                       'Humana - Welcome Letter',
-                       'Humana Additionla Information',
-                       'Humana Application Receipt',
-                       'Liability Coverage Expired Notification',
-                       'Liability Coverage Expiring Notification',
-                       'Malpractice Face Sheet Request'
-                      ], 
-                      {}, class: 'form-select' %>
-                  </div>
-                </div>
-                
-                <!-- Send Method -->
-                <fieldset class="mb-3">
-                  <legend class="col-form-label col-sm-3 pt-0 fw-bold">Send Method:</legend>
-                  <div class="col-sm-9">
-                    <div class="form-check">
-                      <%= f.radio_button :send_method, 'Letter', id: 'letter', checked: true, class: 'form-check-input' %>
-                      <label class="form-check-label" for="letter">Letter</label>
-                    </div>
-                    <div class="form-check">
-                      <%= f.radio_button :send_method, 'Email', id: 'email', class: 'form-check-input' %>
-                      <label class="form-check-label" for="email">Email</label>
-                    </div>
-                    <div class="form-check">
-                      <%= f.radio_button :send_method, 'Fax', id: 'fax', class: 'form-check-input' %>
-                      <label class="form-check-label" for="fax">Fax</label>
+        <!-- Modal -->
+        <div class="modal fade" id="letterLibraryModal" tabindex="-1" aria-labelledby="letterLibraryModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title" id="exampleModalLabel">Send Notification Item</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <%= form_with url: '#', method: :post, local: true do |f| %>
+                  <!-- Current Facility -->
+                  <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label fw-bold">Current Facility:</label>
+                    <div class="col-sm-9">
+                      <%= f.text_field :facility, class: 'form-control', value: 'CHCTest', readonly: true %>
                     </div>
                   </div>
-                </fieldset>
-                
-                <!-- From -->
-                <div class="mb-3 row">
-                  <label class="col-sm-3 col-form-label fw-bold">From:</label>
-                  <div class="col-sm-9">
-                    <%= f.text_area :from, rows: 2, class: 'form-control' %>
+                  
+                  <!-- Current Practitioner Type -->
+                  <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label fw-bold">Current Practitioner Type:</label>
+                    <div class="col-sm-9">
+                      <%= f.text_field :practitioner_type, class: 'form-control', readonly: true %>
+                    </div>
                   </div>
-                </div>
-                
-                <!-- To -->
-                <div class="mb-3 row">
-                  <label class="col-sm-3 col-form-label fw-bold">To:</label>
-                  <div class="col-sm-9">
-                    <%= f.text_area :to, rows: 2, class: 'form-control' %>
+                  
+                  <!-- List All Letter Names -->
+                  <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label fw-bold">List All Letter Names:</label>
+                    <div class="col-sm-9">
+                      <%= f.select :letter_name, 
+                        ['---- Select All Letter Here ----', 
+                         'Active Appointment Approval', 
+                         'Alameda Alliance Application Final Request',
+                         'Alameda Alliance Application First Request',
+                         'Alameda Alliance Application Second Request',
+                         'Cigna Outreach July',
+                         'Cigna Outreach June',
+                         'Cigna Recred 1',
+                         'Cigna Recred 2',
+                         'Humana - Collection Outreach Letter 90 Days',
+                         'Humana - Cred Collection Letter',
+                         'Humana - Recred Collection Letter',
+                         'Humana - Termination Letter',
+                         'Humana - Welcome Letter',
+                         'Humana Additionla Information',
+                         'Humana Application Receipt',
+                         'Liability Coverage Expired Notification',
+                         'Liability Coverage Expiring Notification',
+                         'Malpractice Face Sheet Request'
+                        ], 
+                        {}, class: 'form-select' %>
+                    </div>
                   </div>
-                </div>
-                
-                <!-- Include Delineation of Privileges -->
-                <div class="mb-3 form-check">
-                  <%= f.check_box :include_privileges, class: 'form-check-input' %>
-                  <label class="form-check-label" for="includePrivileges">Include Delineation of Privileges</label>
-                </div>
-                
-                <!-- Buttons -->
-                <div class="modal-footer">
-                  <div class="d-flex justify-content-between">
-                    <%= button_tag 'Preview', type: 'button', class: 'btn btn-secondary mx-2' %>
-                    <%= f.submit 'Send/Print', class: 'btn btn-primary' %>
+                  
+                  <!-- Send Method -->
+                  <fieldset class="mb-3">
+                    <legend class="col-form-label col-sm-3 pt-0 fw-bold">Send Method:</legend>
+                    <div class="col-sm-9">
+                      <div class="form-check">
+                        <%= f.radio_button :send_method, 'Letter', id: 'letter', checked: true, class: 'form-check-input' %>
+                        <label class="form-check-label" for="letter">Letter</label>
+                      </div>
+                      <div class="form-check">
+                        <%= f.radio_button :send_method, 'Email', id: 'email', class: 'form-check-input' %>
+                        <label class="form-check-label" for="email">Email</label>
+                      </div>
+                      <div class="form-check">
+                        <%= f.radio_button :send_method, 'Fax', id: 'fax', class: 'form-check-input' %>
+                        <label class="form-check-label" for="fax">Fax</label>
+                      </div>
+                    </div>
+                  </fieldset>
+                  
+                  <!-- From -->
+                  <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label fw-bold">From:</label>
+                    <div class="col-sm-9">
+                      <%= f.text_area :from, rows: 2, class: 'form-control' %>
+                    </div>
                   </div>
-                </div>
-              <% end %>
+                  
+                  <!-- To -->
+                  <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label fw-bold">To:</label>
+                    <div class="col-sm-9">
+                      <%= f.text_area :to, rows: 2, class: 'form-control' %>
+                    </div>
+                  </div>
+                  
+                  <!-- Include Delineation of Privileges -->
+                  <div class="mb-3 form-check">
+                    <%= f.check_box :include_privileges, class: 'form-check-input' %>
+                    <label class="form-check-label" for="includePrivileges">Include Delineation of Privileges</label>
+                  </div>
+                  
+                  <!-- Buttons -->
+                  <div class="modal-footer">
+                    <div class="d-flex justify-content-between">
+                      <%= button_tag 'Preview', type: 'button', class: 'btn btn-secondary mx-2' %>
+                      <%= f.submit 'Send/Print', class: 'btn btn-primary' %>
+                    </div>
+                  </div>
+                <% end %>
 
+              </div>
             </div>
           </div>
         </div>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th class="text-white fw-bold bg-primary">File</th>
+              <th class="text-white fw-bold bg-primary">Type</th>
+              <th class="text-white fw-bold bg-primary">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th class="text-white fw-bold bg-primary">File</th>
-            <th class="text-white fw-bold bg-primary">Type</th>
-            <th class="text-white fw-bold bg-primary">Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </div>
 
   <!-- Image Files Section -->
-  <div class="card mb-4">
-    <div class="card-header">Image Files</div>
-    <div class="card-body">
-      <!-- Button trigger modal -->
-      <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewImageModal">
-        View Images
-      </button>
+  <div class="container">
+    <div class="card mb-4">
+      <div class="card-header">Image Files</div>
+      <div class="card-body">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewImageModal">
+          View Images
+        </button>
 
-      <!-- Modal -->
-      <div class="modal fade" id="viewImageModal" tabindex="-1" aria-labelledby="viewImageModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title" id="viewImageModalLabel">View Images</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              No Image is available.
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
+        <!-- Modal -->
+        <div class="modal fade" id="viewImageModal" tabindex="-1" aria-labelledby="viewImageModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title" id="viewImageModalLabel">View Images</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                No Image is available.
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+              </div>
             </div>
           </div>
         </div>
@@ -223,296 +227,356 @@
   </div>
 
   <!-- Web Crawler Files Section -->
-  <div class="card mb-4">
-    <div class="card-header">Web Crawler Files</div>
-    <div class="card-body">
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="sub-section" class="form-label">Sub Section Name List:</label>
-          <select id="sub-section" class="form-select">
-            <option>Licensure</option>
-            <option>Certification</option>
-            <option>Background County Check</option>
-            <option>NJ Debartment</option>
-            <option>Background Driver License</option>
-            <option>EPLS</option>
-            <option>Background Misdemeanor</option>
-            <option>NPI</option>
-            <option>OGI</option>
-            <option>Ownership</option>
-            <option>Prescreen Delinquency NC</option>
-            <option>Prescreen IRS Tax Liens</option>
-            <option>SAM</option>
-            <option>Background Sexual Offender</option>
-            <option>SSDMF</option>
-            <option>Background SSN Verification</option>
-            <option>Background State Check</option>
-            <option>Board Certification</option>
-            <option>CDS/DPS</option>
-            <option>DEA</option>
-            <option>Other Licensure</option>
-            <option>Board Certification</option>
-          </select>
+  <div class="container">
+    <div class="card mb-4">
+      <div class="card-header">Web Crawler Files</div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="sub-section" class="form-label">Sub Section Name List:</label>
+            <select id="sub-section" class="form-select">
+              <option>Licensure</option>
+              <option>Certification</option>
+              <option>Background County Check</option>
+              <option>NJ Debartment</option>
+              <option>Background Driver License</option>
+              <option>EPLS</option>
+              <option>Background Misdemeanor</option>
+              <option>NPI</option>
+              <option>OGI</option>
+              <option>Ownership</option>
+              <option>Prescreen Delinquency NC</option>
+              <option>Prescreen IRS Tax Liens</option>
+              <option>SAM</option>
+              <option>Background Sexual Offender</option>
+              <option>SSDMF</option>
+              <option>Background SSN Verification</option>
+              <option>Background State Check</option>
+              <option>Board Certification</option>
+              <option>CDS/DPS</option>
+              <option>DEA</option>
+              <option>Other Licensure</option>
+              <option>Board Certification</option>
+            </select>
+          </div>
         </div>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th class="text-white fw-bold bg-primary">Web Crawler File Name</th>
+              <th class="text-white fw-bold bg-primary">Query Date Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th class="text-white fw-bold bg-primary">Web Crawler File Name</th>
-            <th class="text-white fw-bold bg-primary">Query Date Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td></td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </div>
 
   <!-- Collect Paper Copy Section -->
-  <div class="card mb-4">
-    <div class="card-header">Collect Paper Copy</div>
-    <div class="card-body">
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th class="text-white fw-bold bg-primary">Paper Copy Item</th>
-            <th class="text-white fw-bold bg-primary">Operation</th>
-            <th class="text-white fw-bold bg-primary">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
+  <div class="container">
+    <div class="card mb-4">
+      <div class="card-header">Collect Paper Copy</div>
+      <div class="card-body">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th class="text-white fw-bold bg-primary">Paper Copy Item</th>
+              <th class="text-white fw-bold bg-primary">Operation</th>
+              <th class="text-white fw-bold bg-primary">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
   <!-- Saved Profiles Section -->
-  <div class="card mb-4">
-    <div class="card-header">Saved Profiles</div>
-    <div class="card-body">
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th class="text-white fw-bold bg-primary">File</th>
-            <th class="text-white fw-bold bg-primary">Type</th>
-            <th class="text-white fw-bold bg-primary">Date</th>
-            <th class="text-white fw-bold bg-primary"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @psv_pdfs.each do |psv_data| %>
-            <tr class="profile-<%= psv_data.id %>">
-              <td><%= link_to File.basename(psv_data.file_path.url), psv_data.file_path.url, target: "_blank" %></td>
-              <td><%= psv_data.file_type %></td>
-              <td><%= psv_data.created_at.strftime('%d/%m/%Y %H:%M') %></td>
-              <td>
-                <input type="checkbox" name="selected_psvs[]" value="<%= psv_data.id %>" class="saved-profile-checkbox">
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-      <%= link_to "Delete", "#", class: "btn btn-danger mt-3", id: "delete-selected-link" %>
-    </div>
-  </div>
-
-  <div class="card mb-4">
-    <div class="card-header">Generate Profile</div>
+  <div class="container">
+    <div class="card mb-4">
+      <div class="card-header">Saved Profiles</div>
       <div class="card-body">
-        <!-- Generate Profile Button trigger modal -->
-      <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#generateProfileModal">
-        Generate Profile
-      </button>
-
-      <!-- Modal -->
-      <div class="modal fade" id="generateProfileModal" tabindex="-1" aria-labelledby="generateProfileModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <div class="container text-center">
-                <h1 class="text-center mb-3">Profile Order</h1>
-                <div class="table-container">
-                  <table class="table table-bordered">
-                    <thead>
-                      <tr>
-                        <th></th>
-                        <th class="fw-bold text-dark">File Name</th>
-                        <th class="fw-bold text-dark">Create Date</th>
-                        <th class="fw-bold text-dark">File Type</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td><input type="checkbox"></td>
-                        <td><a href="#" class="text-primary">Verified Profile</a></td>
-                        <td>09/26/2024 8:17:09 AM</td>
-                        <td>HTML</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="btn-container">
-                  <button class="btn btn-outline-secondary btn-sm">Close</button>
-                  <button class="btn btn-outline-secondary btn-sm">Download Profile as PDF</button>
-                  <button class="btn btn-outline-secondary btn-sm">Print Profile</button>
-                </div>
-                <div class="checkbox-container">
-                  <input type="checkbox" id="saveProfile">
-                  <label for="saveProfile">Save it to Profile</label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#generateProfileQueueModal">
-        Generate Profile (.NET)
-      </button>
-      <div class="modal fade" id="generateProfileQueueModal" tabindex="-1" aria-labelledby="generateProfileQueueModal" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <div class="container">
-                <center><h4>Generate Profile (.NET)</h4></center>
-                <br>
-
-                Verified Profile Version: 
-                <table id="rblVerifiedProfileVersion">
-                  <tbody>
-                    <tr>
-                      <td>
-                        <input id="rblVerifiedProfileVersion_0" type="radio" name="rblVerifiedProfileVersion" value="CrawlWebsitePractitioner" checked="checked"><label for="rblVerifiedProfileVersion_0">Original (Practitioner)</label>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <input id="rblVerifiedProfileVersion_1" type="radio" name="rblVerifiedProfileVersion" value="CrawlWebsiteFacility"><label for="rblVerifiedProfileVersion_1">Original (Facility)</label>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <input id="rblVerifiedProfileVersion_2" type="radio" name="rblVerifiedProfileVersion" value="WriteFilePractitioner"><label for="rblVerifiedProfileVersion_2">2.0 Beta</label>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <table class="table table-hover mt-5">
-                  <thead>
-                    <tr>
-                      <th><input type="checkbox" id="select-all-queue"></th>
-                      <th>Type</th>
-                      <th>File Name</th>
-                      <th>Create Date</th>
-                      <th>File Type</th>
-                    </tr>
-                  </thead>
-                  <tbody id="links-data">
-                    <tr>
-                      <td><input type="checkbox" id="cbVP" value="Verified Profile" data-provider-id="<%= @provider_personal_information.id %>" class="link-checkbox"></td>
-                      <td>Verified Profile</td>
-                      <td><a href="javascript:alert('Not Implemented');">Verified Profile</a></td>
-                      <td><%= Time.current.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
-                      <td>.HTML</td>
-                    </tr>
-                    <% @provider_personal_information.provider_personal_uploaded_docs.each do |doc| %>
-                      <% if doc&.file_upload&.file.present? %>
-                        <% content_type = doc.file_upload.file.content_type %>
-                        <% file_type = content_type.split('/').last if content_type.present? %>
-                      <% else %>
-                        <% file_type = 'unknown' %>
-                      <% end %>
-                      <tr>
-                        <td>
-                          <input type="checkbox"
-                                 id="<%= doc&.id %>"
-                                 value="<%= doc&.sub_section %>"
-                                 data-url="<%= doc&.file_upload&.url %>"
-                                 data-type="<%= doc&.sub_section %>"
-                                 data-provider-id="<%= @provider_personal_information.id %>"
-                                 class="link-checkbox">
-                        </td>
-                        <td><%= doc&.sub_section %></td>
-                        <td>
-                          <% if doc&.file_upload&.url.present? %>
-                            <a href="<%= doc.file_upload.url %>" target="_blank">
-                              <%= File.basename(URI.parse(doc&.file_upload.url).path) %>
-                            </a>
-                          <% else %>
-                            No file uploaded
-                          <% end %>
-                        </td>
-                        <td><%= doc&.created_at&.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
-                        <td><%= file_type %></td>
-                      </tr>
-                    <% end %>
-
-                    <tr>
-                  </tbody>
-                </table>
-                <input type="submit" name="btnQueue" value="Queue Profile Generation" id="btnQueue" class="btn btn-info mt-4">
-                <p class="alert alert-success d-none success-queue-msg mt-4"></p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="card-body">
-        <table class="table">
+        <table class="table table-bordered">
           <thead>
             <tr>
-              <th class="text-white fw-bold bg-primary">No.</th>
-              <th class="text-white fw-bold bg-primary">Status</th>
-              <th class="text-white fw-bold bg-primary">Queued Date</th>
-              <th class="text-white fw-bold bg-primary">Generated Date</th>
-              <th class="text-white fw-bold bg-primary">Message</th>
-              <th class="text-white fw-bold bg-primary">Details</th>
-              <th class="text-white fw-bold bg-primary">Actions</th>
+              <th class="text-white fw-bold bg-primary">File</th>
+              <th class="text-white fw-bold bg-primary">Type</th>
+              <th class="text-white fw-bold bg-primary">Date</th>
+              <th class="text-white fw-bold bg-primary"></th>
             </tr>
           </thead>
           <tbody>
-            <% @queues.each_with_index do |queue, index| %>
-              <% if queue.deleted == false || queue.deleted == nil %>
-                <tr>
-                  <td style="width: 20px;"><%= queue.queue_number %></td>
-                  <td style="width: 20px;"><%= queue.status %></td>
-                  <td style="width: 20px;"><%= queue.queued_date %></td>
-                  <td style="width: 20px;"><%= queue.generated_date %></td>
-                  <td style="width: 20px;"><%= queue.message %></td>
-                  <td>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" 
-                      data-bs-target="#providerQueueModal" data-queue-id="<%= queue.id %>" style="font-size: 12px;padding: 4px;" >
-                      View
-                    </button>
-                  </td>
-                  <td>
-                    <div class="d-flex">
-                      <button class="btn btn-secondary" style="font-size: 12px;padding: 4px;" onclick="pauseQueue(this)" data-queue-id="<%= queue.id %>">Pause</button>
-                      <%= button_to 'Delete', mhc_pdf_generation_queue_path(queue, provider_personal_information: @provider_personal_information ), method: :delete, class: 'btn btn-secondary', style: "font-size: 12px;padding: 4px;" %>
-                      <button class="btn btn-secondary" style="font-size: 12px;padding: 4px;" onclick="requeueQueue(<%= queue.id %>)">ReQueue</button>
-                    </div>
-                  </td>
-                </tr>
-              <% end %>  
+            <% @psv_pdfs.each do |psv_data| %>
+              <tr class="profile-<%= psv_data.id %>">
+                <td><%= link_to File.basename(psv_data.file_path.url), psv_data.file_path.url, target: "_blank" %></td>
+                <td><%= psv_data.file_type %></td>
+                <td><%= psv_data.created_at.strftime('%d/%m/%Y %H:%M') %></td>
+                <td>
+                  <input type="checkbox" name="selected_psvs[]" value="<%= psv_data.id %>" class="saved-profile-checkbox">
+                </td>
+              </tr>
             <% end %>
           </tbody>
         </table>
+        <%= link_to "Delete", "#", class: "btn btn-danger mt-3", id: "delete-selected-link" %>
       </div>
+    </div>
+  </div>
+
+   <!-- Generate Profiles Section -->
+  <div class="container">
+    <div class="card mb-4">
+      <div class="card-header">Generate Profile</div>
+        <div class="card-body">
+          <!-- Generate Profile Button trigger modal -->
+        <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#generateProfileModal">
+          Generate Profile
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="generateProfileModal" tabindex="-1" aria-labelledby="generateProfileModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="container text-center">
+                  <h1 class="text-center mb-3">Profile Order</h1>
+                  <div class="table-container">
+                    <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th class="fw-bold text-dark">File Name</th>
+                          <th class="fw-bold text-dark">Create Date</th>
+                          <th class="fw-bold text-dark">File Type</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><input type="checkbox"></td>
+                          <td><a href="#" class="text-primary">Verified Profile</a></td>
+                          <td>09/26/2024 8:17:09 AM</td>
+                          <td>HTML</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="btn-container">
+                    <button class="btn btn-outline-secondary btn-sm">Close</button>
+                    <button class="btn btn-outline-secondary btn-sm">Download Profile as PDF</button>
+                    <button class="btn btn-outline-secondary btn-sm">Print Profile</button>
+                  </div>
+                  <div class="checkbox-container">
+                    <input type="checkbox" id="saveProfile">
+                    <label for="saveProfile">Save it to Profile</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#generateProfileQueueModal">
+          Generate Profile (.NET)
+        </button>
+        <div class="modal fade" id="generateProfileQueueModal" tabindex="-1" aria-labelledby="generateProfileQueueModal" aria-hidden="true">
+          <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="container">
+                  <center><h4>Generate Profile (.NET)</h4></center>
+                  <br>
+
+                  Verified Profile Version: 
+                  <table id="rblVerifiedProfileVersion">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <input id="rblVerifiedProfileVersion_0" type="radio" name="rblVerifiedProfileVersion" value="CrawlWebsitePractitioner" checked="checked"><label for="rblVerifiedProfileVersion_0">Original (Practitioner)</label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input id="rblVerifiedProfileVersion_1" type="radio" name="rblVerifiedProfileVersion" value="CrawlWebsiteFacility"><label for="rblVerifiedProfileVersion_1">Original (Facility)</label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input id="rblVerifiedProfileVersion_2" type="radio" name="rblVerifiedProfileVersion" value="WriteFilePractitioner"><label for="rblVerifiedProfileVersion_2">2.0 Beta</label>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <table class="table table-hover mt-5">
+                    <thead>
+                      <tr>
+                        <th><input type="checkbox" id="select-all-queue"></th>
+                        <th>Type</th>
+                        <th>File Name</th>
+                        <th>Create Date</th>
+                        <th>File Type</th>
+                      </tr>
+                    </thead>
+                    <tbody id="links-data">
+                      <tr>
+                        <td><input type="checkbox" id="cbVP" value="Verified Profile" data-provider-id="<%= @provider_personal_information.id %>" class="link-checkbox"></td>
+                        <td>Verified Profile</td>
+                        <td><a href="javascript:alert('Not Implemented');">Verified Profile</a></td>
+                        <td><%= Time.current.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
+                        <td>.HTML</td>
+                      </tr>
+                      <% @provider_personal_information.provider_personal_uploaded_docs.each do |doc| %>
+                          <% if doc&.file_upload&.file.present? %>
+                            <% content_type = doc.file_upload.file.content_type %>
+                            <% file_type = content_type.split('/').last if content_type.present? %>
+                          <% else %>
+                            <% file_type = 'unknown' %>
+                          <% end %>
+                          <tr>
+                            <td>
+                              <input type="checkbox"
+                                     id="<%= doc&.id %>"
+                                     value="<%= doc&.sub_section %>"
+                                     data-url="<%= doc&.file_upload&.url %>"
+                                     data-type="<%= doc&.sub_section %>"
+                                     data-provider-id="<%= @provider_personal_information.id %>"
+                                     class="link-checkbox">
+                            </td>
+                            <td><%= doc&.sub_section %></td>
+                            <td>
+                              <% if doc&.file_upload&.url.present? %>
+                                <a href="<%= doc.file_upload.url %>" target="_blank">
+                                  <%= File.basename(URI.parse(doc&.file_upload.url).path) %>
+                                </a>
+                              <% else %>
+                                No file uploaded
+                              <% end %>
+                            </td>
+                            <td><%= doc&.created_at&.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
+                            <td><%= file_type %></td>
+                          </tr>
+                        <% end %>
+
+                        <% if (last_log = @provider_personal_information.npi_webcrawler_logs.last) %>
+                          <tr>
+                            <td>
+                              <input type="checkbox"
+                                     id="npi-log-<%= last_log.id %>"
+                                     value="NPI Log"
+                                     data-url="<%= last_log.filepath.url %>"
+                                     data-type="npi_log"
+                                     data-provider-id="<%= @provider_personal_information.id %>"
+                                     class="link-checkbox">
+                            </td>
+                            <td>NPI</td>
+                            <td>
+                              <% if last_log.filepath.present? %>
+                                <a href="<%= last_log.filepath.url %>" target="_blank">
+                                  <%= File.basename(URI.parse(last_log.filepath.url).path) %>
+                                </a>
+                              <% else %>
+                                No file
+                              <% end %>
+                            </td>
+                            <td><%= last_log.created_at.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
+                            <td><%= last_log.filetype || "unknown" %></td>
+                          </tr>
+                        <% end %>
+
+                        <% if (dea_log = @provider_personal_information.rva_informations.where(tab: "Registration").map(&:dea_webcrawler_logs).flatten.last) %>
+                          <tr>
+                            <td>
+                              <input type="checkbox"
+                                     id="dea-log-<%= dea_log.id %>"
+                                     value="DEA Log"
+                                     data-url="<%= dea_log.filepath.url %>"
+                                     data-type="dea_log"
+                                     data-provider-id="<%= @provider_personal_information.id %>"
+                                     class="link-checkbox">
+                            </td>
+                            <td>DEA</td>
+                            <td>
+                              <% if dea_log.filepath.present? %>
+                                <a href="<%= dea_log.filepath.url %>" target="_blank">
+                                  <%= File.basename(URI.parse(dea_log.filepath.url).path) %>
+                                </a>
+                              <% else %>
+                                No file
+                              <% end %>
+                            </td>
+                            <td><%= dea_log.created_at.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
+                            <td><%= dea_log.filetype || "unknown" %></td>
+                          </tr>
+                        <% end %>
+                      <tr>
+                    </tbody>
+                  </table>
+                  <input type="submit" name="btnQueue" value="Queue Profile Generation" id="btnQueue" class="btn btn-info mt-4">
+                  <p class="alert alert-success d-none success-queue-msg mt-4"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th class="text-white fw-bold bg-primary">No.</th>
+                <th class="text-white fw-bold bg-primary">Status</th>
+                <th class="text-white fw-bold bg-primary">Queued Date</th>
+                <th class="text-white fw-bold bg-primary">Generated Date</th>
+                <th class="text-white fw-bold bg-primary">Message</th>
+                <th class="text-white fw-bold bg-primary">Details</th>
+                <th class="text-white fw-bold bg-primary">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @queues.each_with_index do |queue, index| %>
+                <% if queue.deleted == false || queue.deleted == nil %>
+                  <tr>
+                    <td style="width: 20px;"><%= queue.queue_number %></td>
+                    <td style="width: 20px;"><%= queue.status %></td>
+                    <td style="width: 20px;"><%= queue.queued_date %></td>
+                    <td style="width: 20px;"><%= queue.generated_date %></td>
+                    <td style="width: 20px;"><%= queue.message %></td>
+                    <td>
+                      <button type="button" class="btn btn-primary" data-bs-toggle="modal" 
+                        data-bs-target="#providerQueueModal" data-queue-id="<%= queue.id %>" style="font-size: 12px;padding: 4px;" >
+                        View
+                      </button>
+                    </td>
+                    <td>
+                      <div class="d-flex">
+                        <button class="btn btn-secondary" style="font-size: 12px;padding: 4px;" onclick="pauseQueue(this)" data-queue-id="<%= queue.id %>">Pause</button>
+                        <%= button_to 'Delete', mhc_pdf_generation_queue_path(queue, provider_personal_information: @provider_personal_information ), method: :delete, class: 'btn btn-secondary', style: "font-size: 12px;padding: 4px;" %>
+                        <button class="btn btn-secondary" style="font-size: 12px;padding: 4px;" onclick="requeueQueue(<%= queue.id %>)">ReQueue</button>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>  
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+    </div>
   </div>
 </div>
 <!-- Modal -->
