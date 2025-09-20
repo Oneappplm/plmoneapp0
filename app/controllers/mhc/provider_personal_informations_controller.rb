@@ -30,39 +30,51 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
     npi_number = params[:number]
     provider   = ProviderPersonalInformation.find_by(npi: npi_number)
 
-    begin
-      uri = URI("https://npiregistry.cms.hhs.gov/api/?number=#{npi_number}&version=2.1")
-      response = Net::HTTP.get(uri)
-      json = JSON.parse(response)
+    scraper = Webscraper::NpiService.new(npi_number)
+    scraper_result = scraper.call # should generate public/webscrape/npi/screenshot.pdf
 
-      if json["results"] && json["results"].any?
-        
-        # Run your Webscraper service in addition to API
-        scraper = Webscraper::NpiService.new(npi_number)
-        scraper_result = scraper.call
+    if provider.present?
+      # ✅ Define source file path (from scraper)
+      source_file = Rails.root.join("public", "webscrape", "npi", "screenshot.pdf")
 
-        if provider.present?
-          provider.update(
-            npi_verification_status: "match",
-            npi_source_date: Date.today
-            )
+      # ✅ Generate unique filename
+      timestamp = Time.now.strftime("%Y-%m-%dT%H-%M-%S")
+      random_string = SecureRandom.hex(4)
+      filename = "NPI_#{npi_number}_#{timestamp}_#{random_string}.pdf"
 
-          render json: {
-            status: "match",
-            source_date: provider.npi_source_date,
-            screenshot_url: scraper_result[:screenshot_url]
-          }, serializer: nil
-        else
-          render json: { status: "no_match" }
-        end
-      else
-        render json: { status: "no_match" }
-      end
+      # ✅ Copy file to tmp for CarrierWave upload
+      tmp_file_path = Rails.root.join("tmp", filename)
+      FileUtils.cp(source_file, tmp_file_path)
 
-    rescue => e
-      render json: { status: "error", message: e.message }, status: 500
+      # ✅ Save log in NpiWebcrawlerLog (CarrierWave upload)
+      log = provider.npi_webcrawler_logs.new(
+        npi_number: npi_number,
+        filetype: "pdf",
+        status: 'completed'
+      )
+      log.filepath = File.open(tmp_file_path)
+      log.save!
+
+      # ✅ Remove temp file after saving
+      File.delete(tmp_file_path) if File.exist?(tmp_file_path)
+
+      # ✅ Update provider status
+      provider.update(
+        npi_verification_status: "match",
+        npi_source_date: Date.today
+      )
+
+      render json: {
+        status: "match",
+        source_date: provider.npi_source_date,
+        screenshot_url: log.filepath.url, # carrierwave url
+        file_name: File.basename(log.filepath.path)
+      }, serializer: nil
+    else
+      render json: { status: "no_match" }
     end
   end
+
 
   private
 
