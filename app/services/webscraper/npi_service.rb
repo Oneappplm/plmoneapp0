@@ -4,7 +4,7 @@ class Webscraper::NpiService < WebscraperService
 
   def initialize(npi)
     @npi = npi
-    @crawler_folder = 'Npi'
+    @crawler_folder = 'npi'
   end
 
   def call
@@ -15,13 +15,14 @@ class Webscraper::NpiService < WebscraperService
     crawler.get('https://npiregistry.cms.hhs.gov/search')
     wait = Selenium::WebDriver::Wait.new(timeout: 20)
 
+    # enter NPI
     wait.until { crawler.find_element(:id, 'npiNumber') }.send_keys(npi)
 
+    # click search
     search_button = wait.until { crawler.find_element(:css, "button[type='submit']") }
     crawler.execute_script("arguments[0].click();", search_button)
-    sleep(1)
-   
-    # Wait for content to load by waiting for spinner to go or real data to appear
+
+    # wait for results to load
     wait.until do
       begin
         !crawler.find_element(css: '.loading').displayed?
@@ -30,16 +31,11 @@ class Webscraper::NpiService < WebscraperService
       end
     end
 
-    FileUtils.mkdir_p(Rails.root.join("public/webscrape/Npi"))
-    screenshot_path = Rails.root.join("public/webscrape/Npi", "screenshot.png")
+    # use the same save_screenshot method as OIG
+    webcrawler_log = save_screenshot
 
-    crawler.save_screenshot(screenshot_path.to_s)
+    sleep(2)
     crawler.quit
-    
-    {
-      status: "match",
-      message: "Scraping completed successfully!",
-      screenshot_url: "/webscrape/Npi/screenshot.png"
-    }
+    webcrawler_log
   end
 end
