@@ -27,7 +27,11 @@
   <div class="row mb-3">
     <div class="col-lg-6">
       <label class="text-dark-grey">Application Status</label>
-       <%= f.select :enrollment_status, options_for_select(enrollment_status, f.object.enrollment_status), { prompt: 'Enrollment Status' }, { class: 'form-select multi-enrollment-status border border-dark', id: 'enrollment_status_id'  } %>
+       <%= f.select :enrollment_status,
+            options_for_select(enrollment_status, f.object.enrollment_status),
+            { prompt: 'Enrollment Status' },
+            { class: 'form-select multi-enrollment-status border border-dark',
+              data: { confirm_on_change: true } } %>
     </div>
     <div class="col-lg-6">
       <label class="text-dark-grey">State</label>
@@ -203,7 +207,6 @@
 
 </div>
 
-
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     var enrollmentStatusSelect = document.getElementById('enrollment_status_id');
@@ -225,5 +228,22 @@
 
     // Initialize visibility on page load
     toggleVisibility();
+
+    document.querySelectorAll("select[data-confirm-on-change]").forEach(function (select) {
+      // clone element to remove old event listeners
+      const newSelect = select.cloneNode(true);
+      select.parentNode.replaceChild(newSelect, select);
+
+      let previousValue = newSelect.value;
+
+      newSelect.addEventListener("change", function () {
+        let confirmed = confirm("Are you sure you want to change the status?");
+        if (!confirmed) {
+          newSelect.value = previousValue;
+        } else {
+          previousValue = newSelect.value;
+        }
+      });
+    });
   });
 </script>

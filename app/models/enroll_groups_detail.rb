@@ -47,6 +47,10 @@ class EnrollGroupsDetail < ApplicationRecord
     self.password_digest = BCrypt::Password.create(password)
   end
   def create_application_status_log
-    self.application_status_logs.create(status: self.application_status)
+    self.application_status_logs.create(
+      status: self.application_status,
+      updated_by: Current.user&.id,
+      source: Current.source
+    )
   end
 end

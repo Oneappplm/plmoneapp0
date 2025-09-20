@@ -31,7 +31,11 @@ class EnrollmentProvidersDetail < ApplicationRecord
 
   protected
   def create_application_status_log
-    self.application_status_logs.create(status: self.enrollment_status)
+    self.application_status_logs.create(
+      status: self.enrollment_status,
+      updated_by: Current.user&.id,
+      source: Current.source
+    )
   end
 
   # return back to previous value if the new value is nil
