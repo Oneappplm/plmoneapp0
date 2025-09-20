@@ -228,22 +228,27 @@
 
     // Initialize visibility on page load
     toggleVisibility();
-
-    document.querySelectorAll("select[data-confirm-on-change]").forEach(function (select) {
-      // clone element to remove old event listeners
-      const newSelect = select.cloneNode(true);
-      select.parentNode.replaceChild(newSelect, select);
-
-      let previousValue = newSelect.value;
-
-      newSelect.addEventListener("change", function () {
-        let confirmed = confirm("Are you sure you want to change the status?");
-        if (!confirmed) {
-          newSelect.value = previousValue;
-        } else {
-          previousValue = newSelect.value;
-        }
-      });
-    });
   });
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll("select[data-confirm-on-change]").forEach(function (select) {
+    // clone element to remove old event listeners
+    const newSelect = select.cloneNode(true);
+    select.parentNode.replaceChild(newSelect, select);
+
+    let previousValue = newSelect.value;
+
+    newSelect.addEventListener("change", function () {
+      let confirmed = confirm("Are you sure you want to change the status?");
+      if (!confirmed) {
+        newSelect.value = previousValue;
+      } else {
+        previousValue = newSelect.value;
+      }
+    });
+  });
+});
+
+</script>
+
