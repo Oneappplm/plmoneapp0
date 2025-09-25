@@ -11,6 +11,18 @@ class Mhc::VerificationPlatformController < ApplicationController
     @client_organizations = ClientOrganization.all
   end
 
+  def states
+    country_code = params[:country]
+    states = []
+
+    if country_code.present?
+      country = ISO3166::Country[country_code]
+      states = country&.subdivisions&.values&.map { |s| s["name"] } || []
+    end
+
+    render json: states
+  end
+
   def show
     @latest_tracking = @provider_personal_information&.provider_personal_information_app_trackings&.order(created_at: :desc)&.first
     if params[:page_tab]
