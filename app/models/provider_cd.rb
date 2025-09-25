@@ -9,12 +9,8 @@ class ProviderCd < ApplicationRecord
   private
 
   def set_provider_attest
-    if caqh_provider_attest_id.present?
-      self.provider_attest = ProviderAttest.where(caqh_provider_attest_id: self.caqh_provider_attest_id).last
-    end
-  
-    if self.provider_attest.nil?
-      errors.add(:provider_attest, "could not be found. Please check the CAQH Provider Attest ID.")
-    end
-  end  
+    return if provider_attest_id.present?
+    self.provider_attest = ProviderAttest.find_by(caqh_provider_attest_id: caqh_provider_attest_id)
+  end
 end
+
