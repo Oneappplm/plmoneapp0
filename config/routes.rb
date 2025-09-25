@@ -182,7 +182,12 @@ Rails.application.routes.draw do
     resources :practice_informations, path: 'practice-information'
     resources :provider_educations, only: [:index, :create, :update, :destroy], path: 'provider-education'
     resources :certifications, only: [:index, :create, :update, :destroy], path: 'certifications'
-    resources :practice_information_educations, only: [:index, :create, :update, :destroy], path: 'practice-information-education'
+    resources :practice_information_educations, only: [:index, :create, :update, :destroy], path: 'practice-information-education' do 
+      collection do
+        get  :search
+        post :create_temp
+      end
+    end
     resources :provider_specialties, only: [:index, :new, :create, :edit, :destroy, :update], path: 'provider-specialties'
     resources :provider_personal_informations, only: [:update], path: 'provider-personal-information'
     resources :provider_personal_information_sam_records, only: [:create, :show, :destroy], path: 'provider-personal-information-sam-record' do
@@ -469,6 +474,8 @@ Rails.application.routes.draw do
     delete 'delete_provider_licensure', to: 'quality_audits#delete_provider_licensure'
     delete 'delete_oig', to: 'quality_audits#delete_oig'
     delete 'delete_employment', to: 'quality_audits#delete_employment'
+    get "verify_npi/:npi", to: "provider_personal_informations#verify_npi"
+
     
     resources :alaska_states, only: [:index], path: 'state-alaska' do
       collection do
