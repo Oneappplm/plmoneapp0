@@ -9,6 +9,7 @@ class Mhc::VerificationPlatformController < ApplicationController
   end
 
   def show
+    @latest_tracking = @provider_personal_information&.provider_personal_information_app_trackings&.order(created_at: :desc)&.first
     if params[:page_tab]
       get_data
 
@@ -187,6 +188,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     
     @provider_oig_tab_details = @provider_personal_information.rva_informations.where(tab: 'OIG').where(status: 'completed').where.not(source_date: nil)
     @provider_npdb_tab_details = @provider_personal_information.rva_informations.where(tab: 'NPDB')
+    @user = current_user
     @queues = PdfGenerationQueue.all.order(created_at: :desc)
     @psv_pdfs = SavedProfile.joins(:pdf_generation_queue)
                        .where(pdf_generation_queues: { deleted: true, provider_personal_information_id: @provider_personal_information.id })

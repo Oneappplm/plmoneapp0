@@ -118,6 +118,7 @@ gem 'wkhtmltopdf-binary' # Required dependency for wicked_pdf
 gem 'ransack'
 gem 'mail_form'
 gem 'sidekiq'
+gem 'mini_magick'
 
 gem 'stripe'
 gem 'prawn-table', '~> 0.2.2'
