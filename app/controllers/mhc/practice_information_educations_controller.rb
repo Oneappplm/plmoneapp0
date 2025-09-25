@@ -7,6 +7,12 @@ class Mhc::PracticeInformationEducationsController < ApplicationController
 
   def create
     @practice_information_education = PracticeInformationEducation.new(practice_information_education_params)
+    
+    if params[:commit] == "Create"
+      @practice_information_education.form_type = "main"
+    elsif params[:commit] == "save"
+      @practice_information_education.form_type = "popup"
+    end
 
     if @practice_information_education.save
       redirect_to mhc_verification_platform_path(page_tab: 'education',id: params[:practice_information_education][:provider_attest_id]), notice: 'Education detail saved successfully.'
@@ -15,6 +21,7 @@ class Mhc::PracticeInformationEducationsController < ApplicationController
       redirect_to mhc_verification_platform_path(page_tab: 'education_record',id: params[:practice_information_education][:provider_attest_id]), alert: 'Failed to save education detail.'
     end
   end
+  
 
   def update
    @practice_information_education.assign_attributes(practice_information_education_params)
@@ -49,7 +56,8 @@ class Mhc::PracticeInformationEducationsController < ApplicationController
       :id, :provider_attest_id, :institution_name, :caqh_provider_attest_id,
       :address, :address2, :country, :county, :city, :province, :state, :postal_code, :start_date,
       :end_date, :email_address, :program_title, :program_completed_flag, :incomplete_explanation,
-      :phone_number, :fax_number, :degree_degree_abbreviation, :suite_dept_mail_stop, :if_other_list, :comments, :show_on_tickler
+      :phone_number, :fax_number, :degree_degree_abbreviation, :suite_dept_mail_stop, :if_other_list, :comments, :show_on_tickler,
+      :form_type
     )
   end
 end
