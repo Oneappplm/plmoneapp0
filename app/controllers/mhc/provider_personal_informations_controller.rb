@@ -1,5 +1,5 @@
 class Mhc::ProviderPersonalInformationsController < ApplicationController
-  before_action :set_provider_personal_information, only: [:update]
+  before_action :set_provider_personal_information, only: [:update, :update_audit_date, :submit_application]
 
   def update
     @provider_personal_information.assign_attributes(provider_personal_information_params)
@@ -24,6 +24,81 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
                     id: params[:provider_personal_information][:provider_attest_id]
                   ), alert: 'Failed to save practice information.'
     end
+  end
+
+  def update_audit_date
+    provider = @provider_personal_information
+    return render json: { error: "Provider not found" }, status: :unprocessable_entity unless provider
+
+    # ✅ update audit date
+    provider.update!(latest_audit_completed_date: Date.today)
+
+    # ✅ create queue
+    queue = provider.pdf_generation_queues.create!(
+      status: "queued",
+      queued_date: Time.current,
+      message: "Processing SRFD started"
+    )
+
+    # ✅ add Verified Profile
+    queue.pdf_queue_items.create!(
+      file_name: "Verified Profile",
+      file_path: "verified_profile",
+      status: "queued"
+    )
+
+    # ✅ add uploaded docs
+    provider.provider_personal_uploaded_docs.each do |doc|
+      next unless doc&.file_upload&.url.present?
+
+      queue.pdf_queue_items.create!(
+        file_name: File.basename(URI.parse(doc.file_upload.url).path),
+        file_path: doc.file_upload.url,
+        status: "queued"
+      )
+    end
+
+    # ✅ add NPI log
+    if (last_log = provider.npi_webcrawler_logs.last)
+      queue.pdf_queue_items.create!(
+        file_name: File.basename(URI.parse(last_log.filepath.url).path),
+        file_path: last_log.filepath.url,
+        status: "queued"
+      )
+    end
+
+    # ✅ add DEA log
+    if (dea_log = provider.rva_informations.where(tab: "Registration").map(&:dea_webcrawler_logs).flatten.last)
+      queue.pdf_queue_items.create!(
+        file_name: File.basename(URI.parse(dea_log.filepath.url).path),
+        file_path: dea_log.filepath.url,
+        status: "queued"
+      )
+    end
+
+    # ✅ start job
+    PdfGenerationJob.set(wait: 5.seconds).perform_later(queue.id, provider, current_user.id)
+
+    render json: {
+      message: "SRFD queued successfully. Queue #: #{queue.id}",
+      queue_number: queue.id,
+      queue_status: queue.status,
+      success: true
+    }
+  end
+
+  def submit_application
+    # update tracking & personal info
+    tracking = ProviderPersonalInformationAppTracking.find(params[:tracking_id])
+    tracking.update!(application_submitted_date: Time.current)
+
+    @provider_personal_information.update!(verification_status: "processing")
+
+    render json: {
+      status: "ok",
+      message: "Application submitted successfully",
+      submitted_date: tracking.application_submitted_date.strftime("%m/%d/%Y")
+    }
   end
 
   def verify_npi
@@ -80,8 +155,10 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
   private
 
   def set_provider_personal_information
-    @provider_personal_information = ProviderPersonalInformation.find_by(provider_attest_id: params[:provider_personal_information][:provider_attest_id])
+    ppi_attest_id = params.dig(:provider_personal_information, :provider_attest_id) || params[:id]
+    @provider_personal_information = ProviderPersonalInformation.find_by(provider_attest_id: ppi_attest_id)
   end
+
 
   # Strong parameters for security
   def provider_personal_information_params

@@ -11,9 +11,16 @@
         </tr>
       </thead>
       <tbody>
-        <% @provider_personal_information.provider_personal_information_app_trackings.each do |app_tracking| %>
+        <% provider_personal_information.provider_personal_information_app_trackings.each do |app_tracking| %>
           <tr>
-            <td><%= app_tracking.file_status.upcase %></td>
+            <td>
+              <%= if app_tracking.master_issues.present? || app_tracking.master_reviews.present?
+                    "UNCLEAN"
+                  else
+                    app_tracking.file_status.upcase
+                  end
+              %>
+            </td>
             
             <!-- File Issue Reason -->
             <td>
@@ -71,7 +78,7 @@
   <div class="table-responsive">
     <table class="table table-bordered">
       <tbody>
-        <% @provider_personal_information.provider_personal_information_app_trackings.each do |app_tracking| %>
+        <% provider_personal_information.provider_personal_information_app_trackings.each do |app_tracking| %>
           <tr>
             <td class="fw-bold text-dark">Application Received Date:</td>
             <td><%= app_tracking.application_receipt_date&.strftime('%m/%d/%Y') %></td>
@@ -81,7 +88,7 @@
           </tr>
           <tr>
             <td class="fw-bold text-dark">Signature Date:</td>
-            <td><%= @provider_personal_information.signature_date&.strftime('%m/%d/%Y') %></td>
+            <td><%= provider_personal_information.signature_date&.strftime('%m/%d/%Y') %></td>
 
             <td class="fw-bold text-dark">Verifications Complete Date:</td>
             <td><%= app_tracking.verification_complete_date&.strftime('%m/%d/%Y') %></td>
@@ -138,7 +145,7 @@
   <div class="table-responsive">
     <table class="table table-bordered">
       <tbody>
-        <% @provider_personal_information.practice_informations.each do |practice_info| %>
+        <% provider_personal_information.practice_informations.each do |practice_info| %>
           <tr>
             <td>
               <strong class="text-dark">Practice Address:</strong><br>
@@ -393,7 +400,7 @@
                   </p>
                   <p><strong>Finding:</strong> <%= rva.verification_sanctions || "None" %></p>
                   <p><strong>Verified By:</strong> SAM</p>
-                  <p><strong>Verifier:</strong> <%= current_user.full_name %></p>
+                  <p><strong>Verifier:</strong> <%= user.full_name %></p>
                   <p><strong>Comments:</strong> <%= rva.comments || "None" %></p>
                   <hr>
                 <% end %>
@@ -423,7 +430,7 @@
           <p><strong>NPI Number:</strong><%= provider_personal_information&.npi %></p>
           <p><strong>Search Results:</strong> <%= provider_personal_information&.npi_verification_status %></p>
           <p><strong>Verified By:</strong> NPI</p>
-          <p><strong>Verifier:</strong> <%= current_user.full_name %></p>
+          <p><strong>Verifier:</strong> <%= user.full_name %></p>
         </div>
         <div class="col-6">
           <p><strong>Source Date:</strong> <%= provider_personal_information&.npi_source_date&.strftime("%m/%d/%Y") %></p>
@@ -663,7 +670,7 @@
     <div class="section-content">
       <div class="row">
         <div class="col-12">
-          <% @grouped_disclosures.each do |heading, disclosures| %>
+          <% grouped_disclosures.each do |heading, disclosures| %>
             <% next if disclosures.blank? %>
 
             <div class="card mb-4 p-3">
