@@ -584,6 +584,9 @@ Rails.application.routes.draw do
   get "hippocrates/download_pdf", to: "hippocrates#download_pdf"
   post 'hippocrates/bulk_download_expired_licenses', to: 'hippocrates#bulk_download_expired_licenses'
 
+  namespace :mhc do
+    get "verification_platform/states", to: "verification_platform#states"
+  end
 
   #------for solana routes start here------
   resources :orders do
