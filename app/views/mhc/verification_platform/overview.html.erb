@@ -38,22 +38,74 @@
         <div class="form-row row mt-4">
             <div class="col-xl-6">
                 <div class="form-row">
-                    <label for="">Initial Application Received Date:</label>
+                    <label for="">Initial Application Received Date <span><%= @latest_tracking&.application_receipt_date&.strftime('%m/%d/%Y') %></span></label>
                 </div>
                 <div class="form-row">
-                    <label for="">Last Submitted Date:</label>
+                    <label for="">Last Submitted Date <span id="last-submitted-date"><%= @latest_tracking&.application_submitted_date&.strftime('%m/%d/%Y') %></span></label>
                 </div>
+                <% if @provider_personal_information&.latest_audit_completed_date.present? %>
+                  <div id="latest_audit_date_section">
+                    <label for="">Latest Audit Completed Sent Date is
+                      <span id="latest_audit_date">
+                        <%= @provider_personal_information.latest_audit_completed_date.strftime('%m/%d/%Y') %>
+                      </span>
+                    </label>  
+                  </div>
+                <% end %>
+
                 <div class="form-row">
-                    <label for="">Latest Audit Completed Sent Date:</label>
+                    <label for="">Signature Date 
+                    <span><%= @provider_personal_information&.signature_date&.strftime('%m/%d/%Y') %></span></label>
                 </div>
-                <div class="form-row">
-                    <label for="">Signature Date:</label>
-                    <strong class="fs-6"> <%= @provider_personal_information&.signature_date&.strftime('%m/%d/%Y') %></strong>
+                <div class="d-flex gap-2 mt-3">
+                    <div class="submit-application-btn">
+                      <button 
+                        id="submit-application-btn" 
+                        class="p-1 rounded-2" 
+                        data-id="<%= @provider_personal_information&.provider_attest_id %>"
+                        data-tracking-id="<%= @latest_tracking&.id %>">
+                        Submit Application
+                      </button>
+                    </div>
+
+                  <div class="auto-send-request-btn">
+                    <button class="p-1 rounded-2">Auto Send Request</button>
+                  </div>
+                  <div>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="privilleges-switch">
+                      <label class="form-check-label" for="privilleges-switch">Include Delineation of Privileges</label>
+                    </div>
+                  </div>
                 </div>
+                <div class="d-flex gap-2 mt-2">
+                  <div id="enable_srfd_btn">
+                    <button class="p-1 rounded-2">Enable SRFD Button</button>
+                  </div>
+                  <div id="enable_srfd_btn-2">
+                    <button class="p-1 rounded-2">SRFD Incomplete (2.0 Date Only)</button>
+                  </div>
+                </div>
+                <% if @latest_tracking&.present? &&
+                  @latest_tracking&.owner.present? &&
+                  @latest_tracking&.application_receipt_date.present? &&
+                  @latest_tracking&.application_submitted_date.present? &&
+                  @latest_tracking&.verification_complete_date.present? &&
+                  @latest_tracking&.file_return_to_client_date.present? &&
+                  @latest_tracking&.application_receive_complete_date.present? %>
+                  <div class="d-flex gap-2 mt-2">
+                    <div id="enable_srfd_btn">
+                      <button class="p-1 rounded-2" id="srfd_date_btn" data-id="<%= @provider_personal_information.provider_attest_id %>">SRFD Complete(2.0 Date only)</button>
+                    </div>
+                    <div id="enable_srfd_btn-2">
+                      <button class="p-1 rounded-2">SRFD Complete (2.0 Notification Only)</button>
+                    </div>
+                  </div>
+                <% end %>    
                 <div class="form-row d-flex gap-2">
-                    <button class="btn btn-sm btn-primary">
-                        Contact Us
-                    </button>
+                  <button class="btn btn-sm btn-primary">
+                    Contact Us
+                  </button>
                 </div>
             </div>
         </div>
@@ -264,3 +316,76 @@
     }
   </style>
 </div>
+<script>
+  // ✅ Update SRFD Date
+  $(document).on("click", "#srfd_date_btn", function(e) {
+    e.preventDefault();
+
+    const providerId = $(this).data("id");
+
+    $.ajax({
+      url: `/mhc/provider_personal_informations/${providerId}/update_audit_date`,
+      type: "PATCH",
+      dataType: "json",
+      headers: {
+        "X-CSRF-Token": $('meta[name="csrf-token"]').attr("content")
+      },
+      success: function(response) {
+        if (response.success) {
+          alert("SRFD dates updated successfully");
+
+          // Show latest audit date
+          $("#latest_audit_date").text(response.latest_date);
+          $("#latest_audit_date_section").show();
+        } else {
+          alert("Failed to update SRFD date");
+        }
+      },
+      error: function() {
+        alert("Something went wrong while updating SRFD date!");
+      }
+    });
+  });
+
+  // ✅ Submit Application
+  $(document).on("click", "#submit-application-btn", function(e) {
+    e.preventDefault();
+
+    const btn = $(this);
+    const providerId = btn.data("id");
+    const trackingId = btn.data("tracking-id");
+
+    btn.prop("disabled", true).text("Submitting...");
+
+    $.ajax({
+      url: `/mhc/provider-personal-information/${providerId}/submit_application`,
+      type: "POST",
+      dataType: "json",
+      data: { tracking_id: trackingId },
+      headers: {
+        "X-CSRF-Token": $('meta[name="csrf-token"]').attr("content")
+      },
+      success: function(response) {
+        if (response.status === "ok") {
+         alert("Application submitted successfully!");
+
+          // ✅ update button
+          btn.text("Application Submitted")
+             .removeClass("btn-primary")
+             .addClass("btn-success");
+
+          // ✅ update last submitted date field
+          $("#last-submitted-date").text(response.submitted_date);
+          btn.prop("disabled", false).text("Submit Application");
+        } else {
+          btn.prop("disabled", false).text("Submit Application");
+          alert(response.message || "Something went wrong!");
+        }
+      },
+      error: function() {
+        btn.prop("disabled", false).text("Submit Application");
+        alert("Request failed while submitting application!");
+      }
+    });
+  });
+</script>

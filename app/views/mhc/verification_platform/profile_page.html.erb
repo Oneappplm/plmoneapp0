@@ -45,7 +45,7 @@
             </div>
             <div class="modal-body text-dark">
               <%= render partial: 'mhc/verification_platform/credential_committee_content', locals: { provider_personal_information: @provider_personal_information }  %>
-              <%= render partial: 'mhc/verification_platform/verified_profile_content', locals: { oig_details: @provider_oig_tab_details, npdb_details: @provider_npdb_tab_details, provider_personal_information: @provider_personal_information } %>
+              <%= render partial: 'mhc/verification_platform/verified_profile_content', locals: { oig_details: @provider_oig_tab_details, npdb_details: @provider_npdb_tab_details, provider_personal_information: @provider_personal_information, user: @user, grouped_disclosures: @grouped_disclosures } %>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -442,90 +442,146 @@
                         <td><%= Time.current.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
                         <td>.HTML</td>
                       </tr>
+                      <%# ✅ Uploaded Docs %>
                       <% @provider_personal_information.provider_personal_uploaded_docs.each do |doc| %>
-                          <% if doc&.file_upload&.file.present? %>
-                            <% content_type = doc.file_upload.file.content_type %>
-                            <% file_type = content_type.split('/').last if content_type.present? %>
-                          <% else %>
-                            <% file_type = 'unknown' %>
-                          <% end %>
-                          <tr>
-                            <td>
-                              <input type="checkbox"
-                                     id="<%= doc&.id %>"
-                                     value="<%= doc&.sub_section %>"
-                                     data-url="<%= doc&.file_upload&.url %>"
-                                     data-type="<%= doc&.sub_section %>"
-                                     data-provider-id="<%= @provider_personal_information.id %>"
-                                     class="link-checkbox">
-                            </td>
-                            <td><%= doc&.sub_section %></td>
-                            <td>
-                              <% if doc&.file_upload&.url.present? %>
-                                <a href="<%= doc.file_upload.url %>" target="_blank">
-                                  <%= File.basename(URI.parse(doc&.file_upload.url).path) %>
-                                </a>
-                              <% else %>
-                                No file uploaded
-                              <% end %>
-                            </td>
-                            <td><%= doc&.created_at&.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
-                            <td><%= file_type %></td>
-                          </tr>
+                        <% if doc&.file_upload&.file.present? %>
+                          <% content_type = doc.file_upload.file.content_type %>
+                          <% file_type = content_type.split('/').last if content_type.present? %>
+                        <% else %>
+                          <% file_type = 'unknown' %>
                         <% end %>
+                        <tr>
+                          <td>
+                            <input type="checkbox"
+                                   id="<%= doc&.id %>"
+                                   value="<%= doc&.sub_section %>"
+                                   data-url="<%= doc&.file_upload&.url %>"
+                                   data-type="<%= doc&.sub_section %>"
+                                   data-provider-id="<%= @provider_personal_information.id %>"
+                                   class="link-checkbox">
+                          </td>
+                          <td><%= doc&.sub_section %></td>
+                          <td>
+                            <% if doc&.file_upload&.url.present? %>
+                              <a href="<%= doc.file_upload.url %>" target="_blank">
+                                <%= File.basename(URI.parse(doc.file_upload.url).path) %>
+                              </a>
+                            <% else %>
+                              No file uploaded
+                            <% end %>
+                          </td>
+                          <td><%= doc&.created_at&.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
+                          <td><%= file_type %></td>
+                        </tr>
+                      <% end %>
 
-                        <% if (last_log = @provider_personal_information.npi_webcrawler_logs.last) %>
-                          <tr>
-                            <td>
-                              <input type="checkbox"
-                                     id="npi-log-<%= last_log.id %>"
-                                     value="NPI Log"
-                                     data-url="<%= last_log.filepath.url %>"
-                                     data-type="npi_log"
-                                     data-provider-id="<%= @provider_personal_information.id %>"
-                                     class="link-checkbox">
-                            </td>
-                            <td>NPI</td>
-                            <td>
-                              <% if last_log.filepath.present? %>
-                                <a href="<%= last_log.filepath.url %>" target="_blank">
-                                  <%= File.basename(URI.parse(last_log.filepath.url).path) %>
-                                </a>
-                              <% else %>
-                                No file
-                              <% end %>
-                            </td>
-                            <td><%= last_log.created_at.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
-                            <td><%= last_log.filetype || "unknown" %></td>
-                          </tr>
-                        <% end %>
+                      <%# ✅ NPI Logs %>
+                      <% if (last_log = @provider_personal_information.npi_webcrawler_logs.last) %>
+                        <tr>
+                          <td>
+                            <input type="checkbox"
+                                   id="npi-log-<%= last_log.id %>"
+                                   value="NPI Log"
+                                   data-url="<%= last_log.filepath.url %>"
+                                   data-type="npi_log"
+                                   data-provider-id="<%= @provider_personal_information.id %>"
+                                   class="link-checkbox">
+                          </td>
+                          <td>NPI</td>
+                          <td>
+                            <% if last_log.filepath.present? %>
+                              <a href="<%= last_log.filepath.url %>" target="_blank">
+                                <%= File.basename(URI.parse(last_log.filepath.url).path) %>
+                              </a>
+                            <% else %>
+                              No file
+                            <% end %>
+                          </td>
+                          <td><%= last_log.created_at.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
+                          <td><%= last_log.filetype || "unknown" %></td>
+                        </tr>
+                      <% end %>
 
-                        <% if (dea_log = @provider_personal_information.rva_informations.where(tab: "Registration").map(&:dea_webcrawler_logs).flatten.last) %>
-                          <tr>
-                            <td>
-                              <input type="checkbox"
-                                     id="dea-log-<%= dea_log.id %>"
-                                     value="DEA Log"
-                                     data-url="<%= dea_log.filepath.url %>"
-                                     data-type="dea_log"
-                                     data-provider-id="<%= @provider_personal_information.id %>"
-                                     class="link-checkbox">
-                            </td>
-                            <td>DEA</td>
-                            <td>
-                              <% if dea_log.filepath.present? %>
-                                <a href="<%= dea_log.filepath.url %>" target="_blank">
-                                  <%= File.basename(URI.parse(dea_log.filepath.url).path) %>
-                                </a>
-                              <% else %>
-                                No file
-                              <% end %>
-                            </td>
-                            <td><%= dea_log.created_at.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
-                            <td><%= dea_log.filetype || "unknown" %></td>
-                          </tr>
-                        <% end %>
-                      <tr>
+                      <%# ✅ DEA Logs %>
+                      <% if (dea_log = @provider_personal_information.rva_informations.where(tab: "Registration").map(&:dea_webcrawler_logs).flatten.last) %>
+                        <tr>
+                          <td>
+                            <input type="checkbox"
+                                   id="dea-log-<%= dea_log.id %>"
+                                   value="DEA Log"
+                                   data-url="<%= dea_log.filepath.url %>"
+                                   data-type="dea_log"
+                                   data-provider-id="<%= @provider_personal_information.id %>"
+                                   class="link-checkbox">
+                          </td>
+                          <td>DEA</td>
+                          <td>
+                            <% if dea_log.filepath.present? %>
+                              <a href="<%= dea_log.filepath.url %>" target="_blank">
+                                <%= File.basename(URI.parse(dea_log.filepath.url).path) %>
+                              </a>
+                            <% else %>
+                              No file
+                            <% end %>
+                          </td>
+                          <td><%= dea_log.created_at.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
+                          <td><%= dea_log.filetype || "unknown" %></td>
+                        </tr>
+                      <% end %>
+
+                      <%# ✅ Licensure Logs %>
+                      <% if (lic_log = @provider_personal_information.rva_informations.map(&:licensure_webcrawler_logs).flatten.last) %>
+                        <tr>
+                          <td>
+                            <input type="checkbox"
+                                   id="lic-log-<%= lic_log.id %>"
+                                   value="Licensure Log"
+                                   data-url="<%= lic_log.filepath.url %>"
+                                   data-type="lic_log"
+                                   data-provider-id="<%= @provider_personal_information.id %>"
+                                   class="link-checkbox">
+                          </td>
+                          <td>Licensure</td>
+                          <td>
+                            <% if lic_log.filepath.present? %>
+                              <a href="<%= lic_log.filepath.url %>" target="_blank">
+                                <%= File.basename(URI.parse(lic_log.filepath.url).path) %>
+                              </a>
+                            <% else %>
+                              No file
+                            <% end %>
+                          </td>
+                          <td><%= lic_log.created_at.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
+                          <td><%= lic_log.filetype || "unknown" %></td>
+                        </tr>
+                      <% end %>
+
+                      <%# ✅ OIG Logs %>
+                      <% if (oig_log = @provider_personal_information.rva_informations.map(&:oig_webcrawler_logs).flatten.last) %>
+                        <tr>
+                          <td>
+                            <input type="checkbox"
+                                   id="oig-log-<%= oig_log.id %>"
+                                   value="OIG Log"
+                                   data-url="<%= oig_log.filepath.url %>"
+                                   data-type="oig_log"
+                                   data-provider-id="<%= @provider_personal_information.id %>"
+                                   class="link-checkbox">
+                          </td>
+                          <td>OIG</td>
+                          <td>
+                            <% if oig_log.filepath.present? %>
+                              <a href="<%= oig_log.filepath.url %>" target="_blank">
+                                <%= File.basename(URI.parse(oig_log.filepath.url).path) %>
+                              </a>
+                            <% else %>
+                              No file
+                            <% end %>
+                          </td>
+                          <td><%= oig_log.created_at.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
+                          <td><%= oig_log.filetype || "unknown" %></td>
+                        </tr>
+                      <% end %>
                     </tbody>
                   </table>
                   <input type="submit" name="btnQueue" value="Queue Profile Generation" id="btnQueue" class="btn btn-info mt-4">

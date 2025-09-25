@@ -49,7 +49,7 @@ class Mhc::PdfGenerationQueuesController < ApplicationController
     end
 
     # Start PDF Generation Job
-    PdfGenerationJob.set(wait: 10.seconds).perform_later(queue.id, provider)
+    PdfGenerationJob.set(wait: 10.seconds).perform_later(queue.id, provider_id, current_user.id)
 
     render json: {
       message: "Your request is queued. Number: #{queue.queue_number}",
