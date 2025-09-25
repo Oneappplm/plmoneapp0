@@ -189,7 +189,12 @@ Rails.application.routes.draw do
       end
     end
     resources :provider_specialties, only: [:index, :new, :create, :edit, :destroy, :update], path: 'provider-specialties'
-    resources :provider_personal_informations, only: [:update], path: 'provider-personal-information'
+    resources :provider_personal_informations, only: [:update], path: 'provider-personal-information' do
+      member do
+        patch :update_audit_date
+        post :submit_application
+      end
+    end
     resources :provider_personal_information_sam_records, only: [:create, :show, :destroy], path: 'provider-personal-information-sam-record' do
       collection do
         get :auto_create, path: 'auto-create'
