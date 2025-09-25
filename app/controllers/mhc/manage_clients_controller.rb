@@ -178,6 +178,7 @@ class Mhc::ManageClientsController < ApplicationController
       :record_item,
       :description,
       :exclude_from_profile,
+      :file_upload,
       :provider_personal_information_id)
   end
 
