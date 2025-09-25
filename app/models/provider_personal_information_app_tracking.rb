@@ -3,6 +3,10 @@ class ProviderPersonalInformationAppTracking < ApplicationRecord
   
   # Define constants before validation
   MASTER_ISSUE_LIST = [
+    'Accreditation Certification Not Received',
+    'Additional Information Explanation Not Received',
+    'Admitting Arrangement Not Received',
+    'Affirmative Disclosure Response',
     'Board Certification Not Received',
     'Board Certification Not Verified',
     'CDS Not Received',
@@ -72,6 +76,8 @@ class ProviderPersonalInformationAppTracking < ApplicationRecord
   ]
 
   MASTER_REVIEW_LIST = [
+    'Adverse License Status',
+    'Accreditation Finding',
     'CDS Expiring/Expired',
     'Claims History',
     'Claims History-1 or more cases greater than $100,000 each in previous 5 years',
@@ -105,6 +111,7 @@ class ProviderPersonalInformationAppTracking < ApplicationRecord
     'No/Expiring Professional Liability Coverage',
     'Not Boarded As Stated in Application',
     'Not Trained in Specialty',
+    'NPDB Finding',
     'Other Disclosure Finding',
     'PAR Hospital Finding',
     'PAR Specialty Not Verified',
