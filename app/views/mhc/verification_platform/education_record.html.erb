@@ -250,7 +250,16 @@
                                   <!-- Preview Letter -->
                                   <fieldset class="mb-4 p-3 border rounded shadow-sm">
                                     <legend class="fs-6 fw-bold mb-3 text-primary">📄 Preview Letter</legend>
-                                    <button type="button" class="btn btn-primary btn-sm w-100">Preview Letter</button>
+
+                                    <button type="button"
+                                            id="previewLetterBtn"
+                                            data-personal-information-id="<%= @provider_personal_information.id %>"
+                                            class="btn btn-primary btn-sm w-100">
+                                      Preview Letter
+                                    </button>
+
+                                    <div id="previewLetterFiles" class="mt-2"></div>
+
                                   </fieldset>
 
                                   <!-- Send Fax -->
@@ -2048,6 +2057,80 @@
     // showing the error message when clicked on preview letter button  
     const previewBtn = document.getElementById("previewLetterBtn");
     const filesDiv = document.getElementById("previewLetterFiles");
+		// Get outside form elements
+		const mainCarrier = document.getElementById("main-carrier-name");
+		const mainCountry = document.getElementById("practice_info_country_country_name");
+		const mainState = document.getElementById("practice_info_state");
+		const mainCity = document.getElementById("practice_info_city");
+
+		// Set values to outside form
+		if (mainCarrier && carrierName) mainCarrier.value = carrierName;
+		if (mainCountry && country) mainCountry.value = country;
+		if (mainState && state) mainState.value = state;
+		if (mainCity && city) mainCity.value = city;
+
+		// Hide modal
+		const modal = document.getElementById("myModal");
+		if (modal) {
+			modal.style.display = "none";
+		}
+	});
+
+    // showing the error message when clicked on preview letter button  
+    const previewBtn = document.getElementById("previewLetterBtn");
+    const filesDiv   = document.getElementById("previewLetterFiles");
+    const verificationModal = document.getElementById("verificationModal");
+
+    if (previewBtn) {
+      previewBtn.addEventListener("click", function () {
+        const personalInformationId = previewBtn.getAttribute("data-personal-information-id");
+
+        filesDiv.innerHTML = "<p class='text-muted'>Loading files...</p>";
+
+        fetch(`/mhc/manage-clients/get_provider_uploaded_docs?id=${personalInformationId}`, {
+          method: "GET",
+          headers: { "X-Requested-With": "XMLHttpRequest" }
+        })
+        .then(resp => resp.json())
+        .then(data => {
+          filesDiv.innerHTML = "";
+
+          // 🔎 filter only .tif or .tiff files
+          const tifDocs = data.filter(doc => {
+            const ext = doc.file_name?.split('.').pop().toLowerCase();
+            return ext === "tif" || ext === "tiff";
+          });
+
+          if (tifDocs.length > 0) {
+            tifDocs.forEach(doc => {
+              const link = document.createElement("a");
+              link.href = doc.file_url;
+              link.target = "_blank";
+              link.textContent = doc.file_name;
+              filesDiv.appendChild(link);
+              filesDiv.appendChild(document.createElement("br"));
+            });
+          } else {
+            filesDiv.innerHTML = "<p class='alert alert-danger'>The Release file might be missing. Please upload it and try again.</p>";
+          }
+        })
+        .catch(err => {
+          console.error("Error fetching docs:", err);
+          filesDiv.innerHTML = "<p class='text-danger'>Error loading documents.</p>";
+        });
+      });
+    }
+
+    if (verificationModal) {
+      verificationModal.addEventListener("hidden.bs.modal", function () {
+        window.location.reload();
+      });
+    }
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const countrySelect = document.getElementById("country-select");
+  const stateSelect = document.getElementById("state-select");
 
     if (previewBtn) {
       previewBtn.addEventListener("click", function () {
@@ -2249,4 +2332,4 @@
     max-width: 1000px;
     padding: 0;
   }
-</style>
+</style>  
