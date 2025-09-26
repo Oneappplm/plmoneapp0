@@ -141,92 +141,81 @@
       </tbody>
     </table>
   </div>
-  <div class="section-title mt-4">Primary Practice Location</div>
-  <div class="table-responsive">
-    <table class="table table-bordered">
-      <tbody>
-        <% provider_personal_information.practice_informations.each do |practice_info| %>
-          <tr>
-            <td>
-              <strong class="text-dark">Practice Address:</strong><br>
-              <%= [practice_info.complete_address].compact_blank.join(", ") %>
-            </td>
-            <td>
-              <strong class="text-dark">Practice Phone:</strong>
-              <%= [practice_info.phone_number].compact_blank.join(", ") %><br>
-
-              <strong class="text-dark">Practice Fax:</strong>
-              <%= [practice_info.fax_number].compact_blank.join(", ") %><br>
-
-              <strong class="text-dark">TIN Number:</strong>
-              <%= [practice_info.tin_number].compact_blank.join(", ") %>
-            </td>
-          </tr>
-          <tr>
-            <td class="fw-bold text-dark">TIN Name:</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td class="fw-bold text-dark">Comments:</td>
-            <td></td>
-          </tr>
-        <% end %>
-      </tbody>
-
-    </table>
-  </div>
-  <div class="section-title mt-4">Additional Practice Location</div>
-  <div class="table-responsive">
-    <table class="table table-bordered">
-      <tbody>
-        <tr>
-          <td>
-            <strong class="text-dark">Practice Address:</strong><br>
-            <%= provider_personal_information.provider_personal_information_credentialing_contact.complete_address %>
-          </td>
-          <td>
-            <strong class="text-dark">Practice Phone:</strong> <%= provider_personal_information.provider_personal_information_credentialing_contact&.phone_number %> <br>
-            <strong class="text-dark">Practice Fax:</strong> <%= provider_personal_information.provider_personal_information_credentialing_contact&.fax %><br>
-            <strong class="text-dark">TIN Number:</strong> <%#= provider_personal_information.practice_informations.map(&:tin_number).join(", ") %>
-          </td>
-        </tr>
-        <tr>
-          <td class="fw-bold text-dark">TIN Name:</td>
-          <td></td>
-        </tr>
-        <tr>
-          <td class="fw-bold text-dark">Comments:</td>
-          <td></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
   
-  <div class="table-responsive">
-    <table class="table table-bordered">
-      <tbody>
-        <tr>
-          <td>
-            <strong class="text-dark">Practice Address:</strong><br>
-            <%= provider_personal_information.provider_personal_information_confidential_contact.complete_address %>
-          </td>
-          <td>
-            <strong class="text-dark">Practice Phone:</strong> <%= provider_personal_information.provider_personal_information_confidential_contact&.phone_number %> <br>
-            <strong class="text-dark">Practice Fax:</strong> <%= provider_personal_information.provider_personal_information_confidential_contact&.fax %><br>
-            <strong class="text-dark">TIN Number:</strong> <%#= provider_personal_information.practice_informations.map(&:tin_number).join(", ") %>
-          </td>
-        </tr>
-        <tr>
-          <td class="fw-bold text-dark">TIN Name:</td>
-          <td></td>
-        </tr>
-        <tr>
-          <td class="fw-bold text-dark">Comments:</td>
-          <td></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <% primary_locations = provider_personal_information.practice_informations.select { |p| p.is_primary_location } %>
+  <% additional_locations = provider_personal_information.practice_informations.select { |p| !p.is_primary_location } %>
+
+  <% if primary_locations.any? %>
+    <div class="section-title mt-4">Primary Practice Location</div>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <tbody>
+          <% primary_locations.each do |practice_info| %>
+            <tr>
+              <td>
+                <strong class="text-dark">Practice Address:</strong><br>
+                <%= [practice_info.complete_address].compact_blank.join(", ") %>
+              </td>
+              <td>
+                <strong class="text-dark">Practice Phone:</strong>
+                <%= [practice_info.phone_number].compact_blank.join(", ") %><br>
+
+                <strong class="text-dark">Practice Fax:</strong>
+                <%= [practice_info.fax_number].compact_blank.join(", ") %><br>
+
+                <strong class="text-dark">TIN Number:</strong>
+                <%= [practice_info.tin_number].compact_blank.join(", ") %>
+              </td>
+            </tr>
+            <tr>
+              <td class="fw-bold text-dark">TIN Name:</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td class="fw-bold text-dark">Comments:</td>
+              <td></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <% if additional_locations.any? %>
+    <div class="section-title mt-4">Additional Practice Location(s)</div>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <tbody>
+          <% additional_locations.each do |practice_info| %>
+            <tr>
+              <td>
+                <strong class="text-dark">Practice Address:</strong><br>
+                <%= [practice_info.complete_address].compact_blank.join(", ") %>
+              </td>
+              <td>
+                <strong class="text-dark">Practice Phone:</strong>
+                <%= [practice_info.phone_number].compact_blank.join(", ") %><br>
+
+                <strong class="text-dark">Practice Fax:</strong>
+                <%= [practice_info.fax_number].compact_blank.join(", ") %><br>
+
+                <strong class="text-dark">TIN Number:</strong>
+                <%= [practice_info.tin_number].compact_blank.join(", ") %>
+              </td>
+            </tr>
+            <tr>
+              <td class="fw-bold text-dark">TIN Name:</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td class="fw-bold text-dark">Comments:</td>
+              <td></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
 </div>
 
 <div class="container mt-4">
