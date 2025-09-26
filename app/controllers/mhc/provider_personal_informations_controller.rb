@@ -28,33 +28,31 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
 
   def update_audit_date
     provider = @provider_personal_information
-    return render json: { error: "Provider not found" }, status: :unprocessable_entity unless provider
-
-    # ✅ update audit date
-    provider.update!(latest_audit_completed_date: Date.today)
+    return render json: { error: "Provider not found" },
+                  status: :unprocessable_entity unless provider
 
     # ✅ create queue
     queue = provider.pdf_generation_queues.create!(
-      status: "queued",
+      status:     "queued",
       queued_date: Time.current,
-      message: "Processing SRFD started"
+      message:    "Processing SRFD started"
     )
 
     # ✅ add Verified Profile
     queue.pdf_queue_items.create!(
       file_name: "Verified Profile",
       file_path: "verified_profile",
-      status: "queued"
+      status:    "queued"
     )
 
     # ✅ add uploaded docs
-    provider.provider_personal_uploaded_docs.each do |doc|
-      next unless doc&.file_upload&.url.present?
+    provider.provider_personal_uploaded_docs.find_each do |doc|
+      next unless doc.file_upload&.url.present?
 
       queue.pdf_queue_items.create!(
         file_name: File.basename(URI.parse(doc.file_upload.url).path),
         file_path: doc.file_upload.url,
-        status: "queued"
+        status:    "queued"
       )
     end
 
@@ -63,16 +61,24 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
       queue.pdf_queue_items.create!(
         file_name: File.basename(URI.parse(last_log.filepath.url).path),
         file_path: last_log.filepath.url,
-        status: "queued"
+        status:    "queued"
       )
     end
 
-    # ✅ add DEA log
-    if (dea_log = provider.rva_informations.where(tab: "Registration").map(&:dea_webcrawler_logs).flatten.last)
+    # ✅ add DEA log  (single query instead of map/flatten)
+    dea_log = DeaWebcrawlerLog.joins(:rva_information)
+              .where(rva_informations: {
+                provider_personal_information_id: provider.id,
+                tab: "Registration"
+              })
+              .order(:created_at)      # or :id / :source_date if that’s the intended “last”
+              .last
+
+    if dea_log
       queue.pdf_queue_items.create!(
         file_name: File.basename(URI.parse(dea_log.filepath.url).path),
         file_path: dea_log.filepath.url,
-        status: "queued"
+        status:    "queued"
       )
     end
 
@@ -80,12 +86,13 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
     PdfGenerationJob.set(wait: 5.seconds).perform_later(queue.id, provider, current_user.id)
 
     render json: {
-      message: "SRFD queued successfully. Queue #: #{queue.id}",
-      queue_number: queue.id,
-      queue_status: queue.status,
-      success: true
+      message:       "SRFD queued successfully. Queue #: #{queue.id}",
+      queue_number:  queue.id,
+      queue_status:  queue.status,
+      success:       true
     }
   end
+
 
   def submit_application
     # update tracking & personal info
