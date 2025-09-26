@@ -166,7 +166,7 @@ class PdfGenerationJob < ApplicationJob
       file_type: 'pdf'
     )
 
-    provider.update!(cred_status: 'psv', psv_completed_date: Date.today, progress_status: 'to_be_assigned', verification_status: 'completed')
+    provider.update!(cred_status: 'psv', psv_completed_date: Date.today, progress_status: 'to_be_assigned', verification_status: 'completed', latest_audit_completed_date: Date.today)
 
     merged_pdf_path.to_s
   end
