@@ -534,7 +534,7 @@ class ProviderSpecialty < ApplicationRecord
     "Pediatric Acute Care",
     "Pediatric Ophthalmology and Strabismus Specialist",
     "Pediatric Urology",
-    "selected="">Pediatrics",
+    "Pediatrics",
     "Pediatrics : Adolescent Medicine",
     "Pediatrics : Developmental - Behavioral Pediatrics",
     "Pediatrics : Medical Toxicology",
