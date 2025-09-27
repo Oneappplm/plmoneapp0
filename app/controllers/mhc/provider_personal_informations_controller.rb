@@ -181,6 +181,7 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
       :provider_type_provider_type_abbreviation, :graduate_type_graduate_type_description,
       :nid_country_country_name, :attest_date, :plan_provider_id, :last_recredential_date, :next_recredential_date,
       :npi_verification_status, :npi_source_date,
+      :specialty_name_1, :specialty_name_2, :specialty_name_3, :specialty_name_4, :specialty_name_5,
       provider_personal_information_credentialing_contact_attributes: [:id, :contact_method,
       :firstname, :middlename, :lastname, :title, :address, :suffix, :phone_number, :fax, :email, :suite, :address2,
       :city, :county, :state, :zip, :country],
