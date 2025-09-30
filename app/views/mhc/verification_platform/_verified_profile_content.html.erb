@@ -169,7 +169,10 @@
           <% primary_locations.each do |practice_info| %>
             <tr>
               <td>
-                <strong class="text-dark">Practice Address:</strong><br>
+                <strong class="text-dark">Facility Name:</strong>
+                <%= [practice_info.practice_name].compact_blank.join(", ") %>
+                <br>
+                <strong class="text-dark">Practice Address:</strong>
                 <%= [practice_info.complete_address].compact_blank.join(", ") %>
               </td>
               <td>
@@ -205,7 +208,10 @@
           <% additional_locations.each do |practice_info| %>
             <tr>
               <td>
-                <strong class="text-dark">Practice Address:</strong><br>
+                <strong class="text-dark">Facility Name:</strong>
+                <%= [practice_info.practice_name].compact_blank.join(", ") %>
+                <br>
+                <strong class="text-dark">Practice Address:</strong>
                 <%= [practice_info.complete_address].compact_blank.join(", ") %>
               </td>
               <td>
@@ -240,15 +246,16 @@
     <div class="section-title">Primary License:</div>
     <% provider_personal_information.provider_licensures
       .where(is_primary_license: true)
-      .where.not(audit_status: ['SkipRVA', nil])
-      .joins(:rva_informations)
-      .where.not(rva_informations: { source_date: nil })
-      .distinct
+      .where(audit_status: 'Quality Audited')             # Coverage audit_status must be 'Quality Audited'
+       .joins(:rva_informations)
+       .where.not(rva_informations: { audit_status: [nil], audit_comments: [nil, 'SkipRVA'] })
+       .distinct
       .each do |licensure| %>
 
       <% details = licensure.rva_informations
-        .where(audit_status: 'Quality Audited')
-        .order('source_date DESC')
+        .where(audit_status: true)   # Only RVAs with audit_status 'Quality Audited'
+        .where.not(audit_comments: [nil, 'SkipRVA'])
+        .order(created_at: :desc)
         .first %>
 
       <% if details.present? %>
@@ -285,16 +292,16 @@
     <div class="section-title">Additional License(s):</div>
     <% provider_personal_information.provider_licensures
       .where(is_primary_license: false)
-      .where.not(audit_status: ['SkipRVA', nil])
+      .where(audit_status: 'Quality Audited')             # Coverage audit_status must be 'Quality Audited'
       .joins(:rva_informations)
-      .where.not(rva_informations: { source_date: nil })
-      .distinct
-      .each do |licensure| %>
+      .where.not(rva_informations: { audit_status: [nil], audit_comments: [nil, 'SkipRVA'] })
+      .distinct.each do |licensure| %>
 
       <% details = licensure.rva_informations
-        .where(audit_status: 'Quality Audited')
-        .order('source_date DESC')
-        .first %>
+        .where(audit_status: true)   # Only RVAs with audit_status 'Quality Audited'
+                      .where.not(audit_comments: [nil, 'SkipRVA'])
+                      .order(created_at: :desc)
+                      .first %>
 
       <% if details.present? %>
         <div class="section-content">
@@ -330,13 +337,15 @@
   <div class="section mt-4">
     <div class="section-title">DEA</div>
      <div class="section-content">
-        <% provider_deas = provider_personal_information.provider_deas
-                          .joins(:rva_informations)
-                          .where(rva_informations: { audit_status: true })
-                          .where.not(rva_informations: { source_date: nil, audit_status: ['SkipRVA', nil] })
-                          .distinct %>
-        <% provider_deas.each do |dea| %>
-          <% dea_details = dea.rva_informations %>
+        <% provider_personal_information.provider_deas
+                           .where(audit_status: 'Quality Audited')
+                           .joins(:rva_informations)
+                           .where.not(rva_informations: { audit_status: [nil], audit_comments: [nil, 'SkipRVA'] })
+                           .distinct.each do |dea| %>
+          <% dea_details = dea.rva_informations.where(audit_status: true)   # Only RVAs with audit_status 'Quality Audited'
+                      .where.not(audit_comments: [nil, 'SkipRVA'])
+                      .order(created_at: :desc)
+                      .first %>
           <% if dea_details.present? %>
             <div class="row">
               <div class="col-6">
@@ -465,11 +474,11 @@
     </div>
   </div>
 
-  <% if oig_details.present? %>
+  <%# if @provider_oig_tab_details.present? %>
   <div class="section mt-4">
     <div class="section-title">OIG Exclusions</div>
     <div class="section-content">
-      <% if provider_personal_information.rva_informations.last.tab == "OIG" %>
+      <% if provider_personal_information.rva_informations.where(tab: 'OIG').last %>
         <div class="row">
           <div class="col-6">
             <p><strong>Search Result:</strong> <%= provider_personal_information.rva_informations.last&.status %></p>
@@ -486,18 +495,20 @@
       <% end %>
     </div>
   </div>
-  <% end %>
+  <%# end %>
 
   <div class="section mt-4">
     <div class="section-title">Board Certification:</div>
     <% provider_personal_information.provider_specialties
-      .where.not(audit_status: ['SkipRVA', nil])
+      .where(audit_status: 'Quality Audited')             # Coverage audit_status must be 'Quality Audited'
       .joins(:rva_informations)
-      .where(rva_informations: { audit_status: 'Quality Audited' })
-      .where.not(rva_informations: { source_date: nil })
+      .where.not(rva_informations: { audit_status: [nil], audit_comments: [nil, 'SkipRVA'] })
       .distinct
       .each do |certification| %>
-      <% details = certification.rva_informations.where(audit_status: 'Quality Audited').order('source_date DESC').first %>
+      <% details = certification.rva_informations.where(audit_status: true)   # Only RVAs with audit_status 'Quality Audited'
+                      .where.not(audit_comments: [nil, 'SkipRVA'])
+                      .order(created_at: :desc)
+                      .first %>
       <% if details.present? %>
         <div class="section-content">
           <div class="row">
@@ -524,13 +535,15 @@
   <div class="section mt-4">
     <div class="section-title">Training:</div>
     <% provider_personal_information.provider_educations
-      .where.not(audit_status: ['SkipRVA', nil])
+      .where(audit_status: 'Quality Audited')
       .joins(:rva_informations)
-      .where(rva_informations: { audit_status: 'Quality Audited' })
-      .where.not(rva_informations: { source_date: nil })
+      .where.not(rva_informations: { audit_status: [nil], audit_comments: [nil, 'SkipRVA'] })
       .distinct
       .each do |training| %>
-      <% details = training.rva_informations.where(audit_status: 'Quality Audited').order('source_date DESC').first %>
+      <% details = training.rva_informations.where(audit_status: true)   # Only RVAs with audit_status 'Quality Audited'
+                      .where.not(audit_comments: [nil, 'SkipRVA'])
+                      .order(created_at: :desc)
+                      .first %>
       <% if details.present? %>
       <div class="section-content">
         <div class="row">
@@ -560,14 +573,15 @@
   <div class="section mt-4">
     <div class="section-title">Education:</div>
     <% provider_personal_information.practice_information_educations
-      .where.not(verification_status: ['SkipRVA', nil])
+      .where(verification_status: 'Quality Audited')
       .joins(:rva_informations)
-      .where(rva_informations: { audit_status: true })
-      .where(verification_status: "Quality Audited")
-      .where.not(rva_informations: { source_date: nil })
+      .where.not(rva_informations: { audit_status: [nil], audit_comments: [nil, 'SkipRVA'] })
       .distinct
       .each do |education| %>
-      <% details = education.rva_informations.where(audit_status: true).order('source_date DESC').first %>
+      <% details = education.rva_informations.where(audit_status: true)   # Only RVAs with audit_status 'Quality Audited'
+                      .where.not(audit_comments: [nil, 'SkipRVA'])
+                      .order(created_at: :desc)
+                      .first %>
       <% if details.present? %>
         <div class="section-content">
           <div class="row">
@@ -597,18 +611,17 @@
   <div class="section mt-4">
     <div class="section-title">Work History</div>
      <% provider_personal_information.provider_employments
-       .where.not(audit_status: ['SkipRVA', nil])
+       .where(audit_status: 'Quality Audited') 
        .joins(:rva_informations)
-       .where(rva_informations: { audit_status: 'Quality Audited' })
-       .where.not(rva_informations: { source_date: nil, audit_comments: ['SkipRVA', nil] })
+       .where.not(rva_informations: { audit_status: [nil], audit_comments: [nil, 'SkipRVA'] })
        .distinct
        .each do |employment| %>
 
-    <% details = employment.rva_informations
+      <% details = employment.rva_informations
                            .where(audit_status: 'Quality Audited')
-                               .where.not(audit_comments: ['SkipRVA', nil])
-                               .order(source_date: :desc)
-                               .first %>
+                           .where.not(audit_comments: [nil, 'SkipRVA'])
+                           .order(created_at: :desc)
+                           .first %>
 
       <% if details.present? %>
         <div class="section-content">
@@ -640,30 +653,35 @@
   </div>
   
   <div class="section mt-4">
-    <div class="section-title">Liability Coverage</div>
-    <% provider_liablities = provider_personal_information.provider_insurance_coverages
-                            .where.not(audit_status: ['SkipRVA', nil])
-                            .joins(:rva_informations)
-                            .where(rva_informations: { audit_status: true })
-                            .where.not(rva_informations: { source_date: nil })
-                            .distinct %>
-	  <% provider_liablities.each do |provider_liability| %>
-		  <% provider_liability.rva_informations.each do |liability_details| %>
+    <div class="section-title">Liability Coverage</div>                
+    <% provider_personal_information.provider_insurance_coverages
+     .where(audit_status: 'Quality Audited')             # Coverage audit_status must be 'Quality Audited'
+     .joins(:rva_informations)
+     .where.not(rva_informations: { audit_status: [nil], audit_comments: [nil, 'SkipRVA'] })
+     .distinct
+     .each do |liability| %>
+
+      <% details = liability.rva_informations
+                      .where(audit_status: true)   # Only RVAs with audit_status 'Quality Audited'
+                      .where.not(audit_comments: [nil, 'SkipRVA'])
+                      .order(created_at: :desc)
+                      .first %>
+      <% if details.present? %>                         
 		    <div class="section-content">
 		      <div class="row">
 		        <div class="col-6">
-		          <p><strong>Carrier:</strong> <%= provider_liability.insurance_carrier_name %></p>
-		          <p><strong>Original Effective Date:</strong> <%= provider_liability.effective_date&.strftime('%m/%d/%Y') %></p>
-		          <p><strong>Source:</strong> <%= liability_details.source_name.presence || 'N/A' %></p>
-		          <p><strong>Source Date:</strong> <%= liability_details.source_date&.strftime('%m/%d/%Y') %></p>
-		          <p><strong>Review Criteria:</strong> <%= liability_details.adverse_action %></p>
+		          <p><strong>Carrier:</strong> <%= liability.insurance_carrier_name %></p>
+		          <p><strong>Original Effective Date:</strong> <%= liability.effective_date&.strftime('%m/%d/%Y') %></p>
+		          <p><strong>Source:</strong> <%= details.source_name.presence || 'N/A' %></p>
+		          <p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
+		          <p><strong>Review Criteria:</strong> <%= details.adverse_action %></p>
 		        </div>
 		        <div class="col-6">
-		          <p><strong>Claims History:</strong> Claims History</p>
-		          <p><strong>Expiration Date:</strong> <%= provider_liability.end_date&.strftime('%m/%d/%Y') %></p>
-		          <p><strong>Verifier:</strong> <%= liability_details.verifier.presence || 'N/A' %></p>
-		          <p><strong>Verification Date:</strong> <%= liability_details.verification_date&.strftime('%m/%d/%Y') %></p>
-		          <p><strong>Comments:</strong> <%= liability_details.verification_comments.presence || 'N/A' %></p>
+		          <!-- <p><strong>Claims History:</strong> Claims History</p> -->
+		          <p><strong>Expiration Date:</strong> <%= liability.end_date&.strftime('%m/%d/%Y') %></p>
+		          <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
+		          <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
+		          <p><strong>Comments:</strong> <%= details.verification_comments.presence || 'N/A' %></p>
 		        </div>
 		      </div>
 		    </div>
