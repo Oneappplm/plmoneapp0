@@ -35,12 +35,18 @@ class Mhc::ProviderInsuranceCoveragesController < ApplicationController
     end
   end
 
-  def destroy
+   def destroy
     @provider_insurance_coverage = ProviderInsuranceCoverage.find(params[:id])
+    provider_attest_id = @provider_insurance_coverage.provider_attest_id
+
     if @provider_insurance_coverage.destroy
-      redirect_to mhc_verification_platform_path(page_tab: 'liability', id: params[:provider_attest_id]), alert: 'liability detail deleted successfully.'
+      redirect_to mhc_verification_platform_path(
+        provider_attest_id,
+        page_tab: 'liability'
+      ), alert: 'Liability detail deleted successfully.'
     end
   end
+
 
   private
 
@@ -108,7 +114,8 @@ class Mhc::ProviderInsuranceCoveragesController < ApplicationController
       :comment,
       :liability_not_applicable,
       :liability_explanation,
-      :form_type
+      :form_type,
+      :prof_liability_does_not_expire,
     )
   end
 end
