@@ -10,7 +10,14 @@ class Mhc::ProviderPersonalInformationFacilitiesController < ApplicationControll
   end
 
   def create
-    @facility = ProviderPersonalInformationFacility.create(facility_params)
+    @facility = ProviderPersonalInformationFacility.new(facility_params)
+
+    if params[:commit] == "Create"
+      @facility.form_type = "main"
+    elsif params[:commit] == "Save"
+      @facility.form_type = "popup"
+    end
+
     if @facility.save
       redirect_to mhc_verification_platform_path(page_tab: 'facilities',id: params[:provider_personal_information_facility][:provider_attest_id]), notice: 'Facility detail saved successfully.'
     else
@@ -86,7 +93,8 @@ class Mhc::ProviderPersonalInformationFacilitiesController < ApplicationControll
       :is_admitting_arrangements,
       :is_following_physician,
       :show_on_tickler,
-      :comments
+      :comments,
+      :form_type
     )
   end
 end

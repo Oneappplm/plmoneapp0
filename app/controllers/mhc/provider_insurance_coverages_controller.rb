@@ -13,6 +13,12 @@ class Mhc::ProviderInsuranceCoveragesController < ApplicationController
   def create
     @provider_insurance_coverage = ProviderInsuranceCoverage.new(provider_insurance_coverages_params)
 
+    if params[:commit] == "Create"
+      @provider_insurance_coverage.form_type = "main"
+    elsif params[:commit] == "save"
+      @provider_insurance_coverage.form_type = "popup"
+    end
+
     if @provider_insurance_coverage.save
       redirect_to mhc_verification_platform_path(page_tab: 'liability',id: params[:provider_insurance_coverage][:provider_attest_id]), notice: 'liability detail saved successfully.'
     end
@@ -108,7 +114,8 @@ class Mhc::ProviderInsuranceCoveragesController < ApplicationController
       :comment,
       :liability_not_applicable,
       :liability_explanation,
-      :prof_liability_does_not_expire
+      :prof_liability_does_not_expire,
+      :form_type
     )
   end
 end
