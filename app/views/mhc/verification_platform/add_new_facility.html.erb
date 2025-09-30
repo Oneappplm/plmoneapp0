@@ -25,7 +25,7 @@
               <div class="form-row row mt-2">
                 <div class="col-xl-5">
                   <%= form.label :facility_name, "Facility Name:" %>
-                  <%= form.text_field :facility_name, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+                  <%= form.text_field :facility_name, class: 'form-control border border-dark', placeholder: 'Type here...' , id: "facility_facility_name"%>
                 </div>
                 <%# <div class="col-xl-1"> %>
                   <%# <div class="d-flex align-items-center gap-10"> %>
@@ -42,96 +42,139 @@
                 </div>
 
                 <!-- Search modal popup start here -->
-                <div id="myModal" class="modal">	
-                  <div class="modal-content">
-                    <p>
-                      To search for an existing Facility, please select the Country, State or Province, City and Facility Name from the drop down lists. If your Facility is not on the list, click the New button. Complete the requested address information of the department or office that may verify your affiliation/privileges status.. Click the Save button. Click the Close button to populate the record with the new address information.
-                    </p>
+                  <div id="myModal" class="modal">
+                    <div class="modal-content">
+                      <p>
+                        To search for an existing Facility, please select the Country, State or Province, City and Facility Name from the drop down lists. If your Facility is not on the list, click the New button. Complete the requested address information of the department or office that may verify your affiliation/privileges status.. Click the Save button. Click the Close button to populate the record with the new address information.
+                      </p>
 
-                    <div class="search-group">
-                      <div class="form-group">
-                        <label for="country">By Country:</label>
-                        <select id="country-select" name="country" class="form-control">
-                          <option value="">Select Country</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label for="state">By State/Province:</label>
-                        <select id="state-select" name="state" class="form-control">
-                          <option value="">Select State</option>
-                        </select>
-                      </div>
-                      
-                      <div class="form-group">
-                        <label>By City:</label>
-                        <input type="text" class="form-control" placeholder="Enter City Name" id="input-city" />
+                      <div class="search-group">
+                        <!-- Country -->
+                        <div class="form-group">
+                          <label>By Country:</label>
+                          <%= form.select :country,
+                            options_for_select(ISO3166::Country.all.map { |c| [c.translations['en'] || c.name, c.alpha2] }, form.object.country),
+                            { include_blank: "Select Country" },
+                            class: "form-control", id: "modal-country" %>
+                        </div>
+
+                        <!-- State -->
+                        <div class="form-group">
+                          <%= form.label :state, "By State/Province:" %>
+                          <%= form.select :state,
+                                          [],
+                                          { include_blank: "Select State" },
+                                          class: "form-control",
+                                          id: "state-select" %>
+                        </div>
+
+                        <!-- City -->
+                        <div class="form-group">
+                          <label for="modal-city-select">By City:</label>
+                          <%= form.select :city,
+                                          options_for_select(
+                                            ProviderPersonalInformationFacility.where(form_type: 'popup')
+                                                                              .distinct
+                                                                              .pluck(:city)
+                                                                              .compact
+                                                                              .sort,
+                                            form.object.city
+                                          ),
+                                          { include_blank: "Select City" },
+                                          class: "form-control",
+                                          id: "modal-city-select" %>
+                        </div>
+
+                        <!-- Facility -->
+                        <div class="form-group">
+                          <label>By Facility:</label>
+                          <input type="text" id="facility-search-input" class="form-control mb-2" placeholder="Type to search Facility...">
+
+                          <%= form.select :facility_name,
+                            options_for_select(
+                              ProviderPersonalInformationFacility.where(form_type: 'popup').map { |fc|
+                                [
+                                  fc.facility_name,
+                                  fc.facility_name,
+                                  {
+                                    "data-city": fc.city,
+                                    "data-address": fc.address,
+                                    "data-additional-address": fc.addition_address,
+                                    "data-county": fc.county,
+                                    "data-state": fc.state,
+                                    "data-zip": fc.zip_code,
+                                    "data-phone": fc.facility_office_pnone,
+                                    "data-fax": fc.facility_office_fax,
+                                    "data-email": fc.facility_office_email,
+                                    "data-country": fc.country || ""
+                                  }
+                                ]
+                              },
+                              form.object.facility_name
+                            ),
+                            { include_blank: "Select Facility" },
+                            class: "form-control", id: "modal-facility-select" %>
+                          <button type="button" class="btn btn-primary mt-2" id="facility-search-btn">Search</button>
+                        </div>
                       </div>
 
-                      <div class="form-group">
-                        <label>By Facility:</label>
-                        <input type="text" class="form-control" placeholder="Enter Carrier Name" id="input-carrier" />
-                        <button class="btn btn-primary mt-2">Search</button>
-                      </div>
-                    </div>
+                      <!-- Facility Information -->
+                      <div class="form-section">
+                        <div class="form-section-header"> Facility Information -Address of Department/Office Verifying Affiliation/Privileges.</div>
 
-                    <div class="form-section">
-                      <div class="form-section-header">Facility Information -Address of Department/Office Verifying Affiliation/Privileges.</div>
-                      <div class="form-group">
-                        <label>Facility:</label>
-                        <input type="text" id="auto-carrier-name" />
+                        <div class="form-group">
+                          <label>Facility Name:</label>
+                          <%= form.text_field :facility_name, class: "form-control", id: "modal-facility-name" %>
+                        </div>
+                        <div class="form-group">
+                          <label>Address:</label>
+                          <%= form.text_field :address, class: "form-control", id: "modal-address" %>
+                        </div>
+                        <div class="form-group">
+                          <label>Additional Address:</label>
+                          <%= form.text_field :addition_address, class: "form-control", id: "modal-additional-address" %>
+                        </div>
+                        <div class="form-group">
+                          <label>City:</label>
+                          <%= form.text_field :city, class: "form-control", id: "modal-city" %>
+                        </div>
+                        <div class="form-group">
+                          <label>County:</label>
+                          <%= form.text_field :county, class: "form-control", id: "modal-county" %>
+                        </div>
+                        <div class="form-group">
+                          <label>State:</label>
+                          <%= form.text_field :state, class: "form-control", id: "modal-state" %>
+                        </div>
+                        <div class="form-group">
+                          <label>Postal Code:</label>
+                          <%= form.text_field :zip_code, class: "form-control", id: "modal-zip" %>
+                        </div>
+                        <div class="form-group">
+                          <label>Country:</label>
+                          <%= form.text_field :country, class: "form-control", id: "modal-country-name" %>
+                        </div>
+                        <div class="form-group">
+                          <label>Phone:</label>
+                          <%= form.text_field :facility_office_pnone, class: "form-control", id: "modal-phone" %>
+                        </div>
+                        <div class="form-group">
+                          <label>Fax:</label>
+                          <%= form.text_field :facility_office_fax, class: "form-control", id: "modal-fax" %>
+                        </div>
+                        <div class="form-group">
+                          <label>Email:</label>
+                          <%= form.text_field :facility_office_email, class: "form-control", id: "modal-email" %>
+                        </div>
                       </div>
-                      <div class="form-group">
-                        <label>Address:</label><input type="text" />
-                      </div>
-                      <div class="form-group">
-                        <label>Contact:</label><input type="text" />
-                      </div>
-                      <div class="form-group">
-                        <label>Additional Address:</label><input type="text" />
-                      </div>
-                      <div class="form-group">
-                        <label>City:</label>
-                        <input type="text" id="auto-city" />
-                      </div>
-                      <div class="form-group">
-                        <label>County:</label>
-                        <input type="text" id="county-input" />
-                      </div>
-                      <div class="form-group">
-                        <label>State/Province:</label>
-                        <select id="lower-state-select">
-                          <option value="">Select State</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label>Zip/Postal Code:</label>
-                        <input type="text" id="county-input" />
-                      </div>
-                      <div class="form-group">
-                        <label>Contact Method:</label>
-                        <select>
-                          <option>Letter</option>
-                          <option>Phone</option>
-                          <option>Email</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label>Phone:</label><input type="text" placeholder="(xxx-xxx-xxxx)" />
-                      </div>
-                      <div class="form-group">
-                        <label>Fax:</label><input type="text" placeholder="(xxx-xxx-xxxx)" />
-                      </div>
-                      <div class="form-group">
-                        <label>Email:</label><input type="email" />
-                      </div>
-                    </div>
 
-                    <div class="form-actions">
-                      <button>New</button>
-                      <button type="button" id="modal-close-btn">Close</button>
+                      <div class="form-actions mt-3 d-flex justify-content-center gap-3">
+                        <button type="button" class="btn btn-success" id="new-btn">New</button>
+                        <%= form.submit 'Save', class: 'btn btn-success', name: 'commit', value: 'Save', id: 'popup-save-btn', style: 'display:none;' %>
+                        <button type="button" class="btn btn-secondary" id="modal-close-btn">Close</button>
+                      </div>
                     </div>
                   </div>
-                </div>
                 <!-- Search modal popup end here -->
               </div>
 
@@ -143,52 +186,52 @@
               <div class="form-row row mt-2">
                 <div class="col-xl-6">
                   <%= form.label :address, "Address:" %>
-                  <%= form.text_field :address, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+                  <%= form.text_field :address, class: 'form-control border border-dark', placeholder: 'Type here...', id: "facility_address" %>
                 </div>
                 <div class="col-xl-6">
                   <%= form.label :addition_address, "Additional Address:" %>
-                  <%= form.text_field :addition_address, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+                  <%= form.text_field :addition_address, class: 'form-control border border-dark', placeholder: 'Type here...', id: "facility_addition_address" %>
                 </div>
               </div>
 
               <div class="form-row row mt-2">
                 <div class="col-xl-6">
                   <%= form.label :city, "City:" %>
-                  <%= form.text_field :city, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+                  <%= form.text_field :city, class: 'form-control border border-dark', placeholder: 'Type here...', id: "facility_city"  %>
                 </div>
                 <div class="col-xl-6">
                   <%= form.label :county, "County:" %>
-                  <%= form.text_field :county, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+                  <%= form.text_field :county, class: 'form-control border border-dark', placeholder: 'Type here...' , id: "facility_county"%>
                 </div>
               </div>
 
               <div class="form-row row mt-2">
                 <div class="col-xl-4">
                   <%= form.label :state, "State/Province:" %>
-                  <%= form.collection_select :state, State.all, :id, :name, { include_blank: "Select State" }, class: "form-select form-select-lg" %>
+                  <%= form.text_field :state, class: 'form-control border border-dark', placeholder: 'Type here...' , id: "facility_state"%>
                 </div>
                 <div class="col-xl-4">
                   <%= form.label :zip_code, "Zip/Postal Code:" %>
-                  <%= form.text_field :zip_code, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+                  <%= form.text_field :zip_code, class: 'form-control border border-dark', placeholder: 'Type here...', id: "facility_zip_code"  %>
                 </div>
                 <div class="col-xl-4">
                   <%= form.label :country, "Country:" %>
-                  <%= form.text_field :country, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+                  <%= form.text_field :country, class: 'form-control border border-dark', placeholder: 'Type here...' , id: "facility_country" %>
                 </div>
               </div>
 
               <div class="form-row row mt-2">
                 <div class="col-xl-4">
                   <%= form.label :facility_office_pnone, "Medical Staff Office Phone:" %>
-                  <%= form.text_field :facility_office_pnone, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+                  <%= form.text_field :facility_office_pnone, class: 'form-control border border-dark', placeholder: 'Type here...', id: "facility_facility_office_pnone" %>
                 </div>
                 <div class="col-xl-4">
                   <%= form.label :facility_office_fax, "Medical Staff Office Fax:" %>
-                  <%= form.text_field :facility_office_fax, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+                  <%= form.text_field :facility_office_fax, class: 'form-control border border-dark', placeholder: 'Type here...' , id: "facility_facility_office_fax" %>
                 </div>
                 <div class="col-xl-4">
                   <%= form.label :facility_office_email, "Medical Staff Office Email Address:" %>
-                  <%= form.text_field :facility_office_email, class: 'form-control border border-dark', placeholder: 'Type here...' %>
+                  <%= form.text_field :facility_office_email, class: 'form-control border border-dark', placeholder: 'Type here...', id: "facility_facility_office_email" %>
                 </div>
               </div>
           </div>
@@ -347,7 +390,7 @@
           </div>
 
           <div class="form-row mt-1 d-flex justify-content-end">
-            <%= form.submit class: "btn btn-facility-save btn-primary mt-3" %>
+            <%= form.submit 'Save', class: 'btn btn-primary', name: 'commit', value: 'Create', id: 'main-save-btn' %>
           </div>
         <% end %>
       </div>
@@ -356,140 +399,147 @@
 </div>
 
 <script>
-	
-	// JavaScript to handle modal
-	document.getElementById("openModal").onclick = function () {
-    document.getElementById("myModal").style.display = "block";
-  };
-
-  // Close the modal function (used in onclick)
-  function closeModal() {
-    document.getElementById("myModal").style.display = "none";
-  }
-
-  // Close if user clicks outside the modal content
-  window.onclick = function (event) {
+  document.addEventListener("DOMContentLoaded", function () {
+    // -------------------- Modal Open/Close --------------------
     const modal = document.getElementById("myModal");
-    if (event.target == modal) {
+    const openBtn = document.getElementById("openModal");
+    const closeBtn = document.getElementById("modal-close-btn");
+    const newBtn = document.getElementById("new-btn");
+    const saveBtn = document.getElementById("popup-save-btn");
+
+    openBtn?.addEventListener("click", () => modal.style.display = "block");
+    window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+
+    // -------------------- Facility Search + Filter --------------------
+    const searchInput = document.getElementById("facility-search-input");
+    const facilitySelect = document.getElementById("modal-facility-select");
+    const searchBtn = document.getElementById("facility-search-btn");
+    const citySelect = document.getElementById("modal-city-select");
+
+    let allOptions = [];
+    if (facilitySelect) {
+      allOptions = Array.from(facilitySelect.options).map(opt => opt.cloneNode(true));
+    }
+
+    // -------------------- Keep Main Form and Modal in Sync --------------------
+    const mainFacilityName = document.getElementById("facility_facility_name");
+    const modalFacilityName = document.getElementById("modal-facility-name");
+
+    // main → modal sync
+    mainFacilityName?.addEventListener("input", function () {
+      if (modalFacilityName) modalFacilityName.value = this.value;
+    });
+
+    // modal → main sync (already handled in fillMainFormFromModal, but extra live sync)
+    modalFacilityName?.addEventListener("input", function () {
+      if (mainFacilityName) mainFacilityName.value = this.value;
+    });
+
+    function filterOptions() {
+      if (!facilitySelect) return;
+
+      const selectedCity = (citySelect?.value || "").toLowerCase();
+      const term = (searchInput?.value || "").toLowerCase();
+
+      facilitySelect.innerHTML = "";
+
+      let filtered = allOptions.filter(opt => {
+        const facCity = (opt.getAttribute("data-city") || "").toLowerCase();
+        const facName = opt.textContent.toLowerCase();
+        return (!selectedCity || facCity === selectedCity) &&
+              (!term || facName.includes(term));
+      });
+
+      if (filtered.length === 0) {
+        let opt = document.createElement("option");
+        opt.value = "";
+        opt.text = "No matching facility found";
+        facilitySelect.appendChild(opt);
+      } else {
+        filtered.forEach(opt => facilitySelect.appendChild(opt.cloneNode(true)));
+      }
+
+      facilitySelect.value = "";
+    }
+
+    searchBtn?.addEventListener("click", filterOptions);
+    searchInput?.addEventListener("input", filterOptions);
+    citySelect?.addEventListener("change", filterOptions);
+
+    // -------------------- Autofill Modal Fields on Facility Change --------------------
+    facilitySelect?.addEventListener("change", function () {
+      const selected = this.options[this.selectedIndex];
+      if (!selected) return;
+
+      document.getElementById("modal-facility-name").value = selected.text;
+      document.getElementById("modal-address").value = selected.dataset.address || "";
+      document.getElementById("modal-additional-address").value = selected.dataset.additionalAddress || "";
+      document.getElementById("modal-city").value = selected.dataset.city || "";
+      document.getElementById("modal-county").value = selected.dataset.county || "";
+      document.getElementById("modal-state").value = selected.dataset.state || "";
+      document.getElementById("modal-zip").value = selected.dataset.zip || "";
+      document.getElementById("modal-phone").value = selected.dataset.phone || "";
+      document.getElementById("modal-fax").value = selected.dataset.fax || "";
+      document.getElementById("modal-email").value = selected.dataset.email || "";
+      document.getElementById("modal-country-name").value = selected.dataset.country || "";
+    });
+
+    // -------------------- Copy Modal → Main Form --------------------
+    function fillMainFormFromModal() {
+      const fieldMap = {
+        "facility_address": "modal-address",
+        "facility_addition_address": "modal-additional-address",
+        "facility_city": "modal-city",
+        "facility_county": "modal-county",
+        "facility_state": "modal-state",
+        "facility_zip_code": "modal-zip",
+        "facility_country": "modal-country-name",
+        "facility_facility_office_pnone": "modal-phone",
+        "facility_facility_office_fax": "modal-fax",
+        "facility_facility_office_email": "modal-email"
+      };
+
+      Object.keys(fieldMap).forEach(mainId => {
+        const modalId = fieldMap[mainId];
+        const mainEl = document.getElementById(mainId) || document.querySelector(`[name='facility[${mainId.replace("facility_","")}]']`);
+        const modalEl = document.getElementById(modalId);
+        if (mainEl && modalEl) mainEl.value = modalEl.value || "";
+      });
+
+      // facility_name explicitly
+      const modalFacility = document.getElementById("modal-facility-name");
+      const mainFacility = document.getElementById("facility_facility_name") || document.querySelector("[name='facility[facility_name]']");
+      if (modalFacility && mainFacility) mainFacility.value = modalFacility.value || "";
+    }
+
+    closeBtn?.addEventListener("click", function () {
+      fillMainFormFromModal();
       modal.style.display = "none";
-    }
-  };
-	
-	document.addEventListener("DOMContentLoaded", function () {
-    // --- Load Countries ---
-    fetch("/multi_select_data/countries")
-      .then(response => response.json())
-      .then(data => {
-        const select = document.getElementById("country-select");
-        data.result.forEach(country => {
-          const option = document.createElement("option");
-          option.value = country.value;
-          option.textContent = country.label;
-          select.appendChild(option);
-        });
-      })
-      .catch(error => {
-        console.error("Error loading countries:", error);
-      });
+    });
+    newBtn?.addEventListener("click", () => saveBtn.style.display = "inline-block");
+    saveBtn?.addEventListener("click", fillMainFormFromModal);
 
-    // --- Load States ---
-    fetch("/multi_select_data/states")
-      .then(response => response.json())
-      .then(data => {
-        const select = document.getElementById("state-select");
-        data.result.forEach(state => {
-          const option = document.createElement("option");
-          option.value = state.value;
-          option.textContent = state.label;
-          select.appendChild(option);
-        });
-      })
-      .catch(error => {
-        console.error("Error loading states:", error);
-      });
+    // -------------------- Country → State Dropdown --------------------
+    const countrySelect = document.getElementById("modal-country");
+    const stateSelect = document.getElementById("state-select");
 
-    // --- Auto-fill for City and Carrier ---
-    const cityInput = document.getElementById('input-city');
-    const carrierInput = document.getElementById('input-carrier');
-    const autoCity = document.getElementById('auto-city');
-    const autoCarrierName = document.getElementById('auto-carrier-name');
+    countrySelect?.addEventListener("change", function () {
+      const countryCode = this.value;
+      stateSelect.innerHTML = '<option value="">Select State</option>';
 
-    if (cityInput && autoCity) {
-      cityInput.addEventListener('input', () => {
-        autoCity.value = cityInput.value;
-      });
-    }
-
-    if (carrierInput && autoCarrierName) {
-      carrierInput.addEventListener('input', () => {
-        autoCarrierName.value = carrierInput.value;
-      });
-    }
-
-    // --- Country select to County input ---
-    const countrySelect = document.getElementById('country-select');
-    if (countrySelect) {
-      countrySelect.addEventListener('change', function () {
-        const selectedCountry = this.value;
-        const countyInput = document.getElementById('county-input');
-        if (countyInput) {
-          countyInput.value = selectedCountry;
-        }
-      });
-    }
-
-    // --- State select to Lower state ---
-		const stateSelect = document.getElementById('state-select');
-			if (stateSelect) {
-				stateSelect.addEventListener('change', function () {
-					const selectedOption = stateSelect.options[stateSelect.selectedIndex];
-					const fullLabel = selectedOption.textContent; // e.g., "Colorado - CO"
-					const stateName = fullLabel.split(' - ')[0];  // Only "Colorado"
-
-					const lowerStateSelect = document.getElementById('lower-state-select');
-					if (lowerStateSelect) {
-						lowerStateSelect.innerHTML = '';
-
-						const option = document.createElement('option');
-						option.value = stateName;
-						option.text = stateName;
-						option.selected = true;
-
-						lowerStateSelect.appendChild(option);
-					}
-				});
-			}
-
-		// --- Modal Close Button ---
-		const closeBtn = document.getElementById("modal-close-btn");
-
-			if (closeBtn) {
-				closeBtn.addEventListener("click", function () {
-					// Get values from modal
-					const carrierName = document.getElementById("auto-carrier-name")?.value;
-					const country = document.getElementById("country-select")?.value;
-					const state = document.getElementById("lower-state-select")?.value;
-					const city = document.getElementById("auto-city")?.value;
-
-					// Get outside form elements
-					const mainCarrier = document.getElementById("main-carrier-name");
-					const mainCountry = document.getElementById("practice_info_country_country_name");
-					const mainState = document.getElementById("practice_info_state");
-					const mainCity = document.getElementById("practice_info_city");
-
-					// Set values to outside form
-					if (mainCarrier && carrierName) mainCarrier.value = carrierName;
-					if (mainCountry && country) mainCountry.value = country;
-					if (mainState && state) mainState.value = state;
-					if (mainCity && city) mainCity.value = city;
-
-					// Hide modal
-					const modal = document.getElementById("myModal");
-					if (modal) {
-						modal.style.display = "none";
-					}
-				});
-			}
+      if (countryCode) {
+        fetch(`/mhc/verification_platform/states?country=${countryCode}`)
+          .then(res => res.json())
+          .then(states => {
+            states.forEach(st => {
+              let opt = document.createElement("option");
+              opt.value = st;
+              opt.text = st;
+              stateSelect.appendChild(opt);
+            });
+          });
+      }
+    });
   });
 </script>
 <style>
@@ -506,6 +556,10 @@
       width: 80%;
       max-width: 800px;
       display: none; /* initially hidden */
+    }
+    
+    .btn-success {
+        height: 45px;
     }
 
     #myModal select,

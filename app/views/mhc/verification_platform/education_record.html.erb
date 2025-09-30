@@ -1851,6 +1851,12 @@
         const searchValue = searchInput.value.toLowerCase().trim();
         dropdown.innerHTML = "";
 
+      // Always keep "Select School" as the first option
+        const blankOption = document.createElement("option");
+        blankOption.value = "";
+        blankOption.text = "Select School";
+        dropdown.appendChild(blankOption);
+
         let filteredOptions = searchValue === ""
           ? allOptions
           : allOptions.filter(opt => opt.text.toLowerCase().includes(searchValue));
@@ -1859,8 +1865,8 @@
           filteredOptions.forEach(opt => dropdown.appendChild(opt.cloneNode(true)));
         } else {
           alert("No matching school found.");
-          allOptions.forEach(opt => dropdown.appendChild(opt.cloneNode(true)));
         }
+          dropdown.value = "";
       });
 
       dropdown.addEventListener("change", function () {
