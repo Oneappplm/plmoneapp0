@@ -113,7 +113,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     @rva_information = RvaInformation.find(params[:id])
     if params[:section] == "verification"
       @rva_information.verification_status = 'Verified'
-      @rva_information.verification_date = Date.today
+      @rva_information.verification_date = Time.now.in_time_zone('Pacific Time (US & Canada)') + 1.day
       @rva_information.verifier = current_user.first_name
       params[:rva_information][:verification_comments] = params[:rva_information][:verification_comments].presence || 'None'
       @rva_information.other_details = 'None'
@@ -197,8 +197,6 @@ class Mhc::VerificationPlatformController < ApplicationController
       flash[:error] = "Provider personal information not found."
       redirect_to mhc_verification_platform_index_path and return
     end
-    
-    @provider_oig_tab_details = @provider_personal_information.rva_informations.where(tab: 'OIG').where(status: 'completed').where.not(source_date: nil)
     @provider_npdb_tab_details = @provider_personal_information.rva_informations.where(tab: 'NPDB')
     @user = current_user
     @queues = PdfGenerationQueue.all.order(created_at: :desc)
@@ -454,8 +452,8 @@ class Mhc::VerificationPlatformController < ApplicationController
                     .where(liability_coverage: true).pluck(:restart_audit)
 
       @needs_prof_liability_rva = @provider_insurance_coverages.rva_informations
-                    .where(professional_liability: true).pluck(:restart_audit)       
-      @liability_rva_information_completed = @provider_insurance_coverages&.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
+                    .where(professional_liability: true).pluck(:restart_audit)
+      @liability_rva_information_completed = @provider_insurance_coverages&.rva_informations.where.not(source_date: nil).where.not(audit_status: false).where(restart_audit: false).last
     end
 
     if params[:page_tab] == 'npdb' || params[:page_tab] == 'npdb_record'
