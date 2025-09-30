@@ -483,7 +483,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
         auditor: current_user.first_name,
         audit_date: Date.today,
         audit_comments: 'SkipRVA',
-        restart_audit: false
+        restart_audit: false,
       )
     end
     rva_information = RvaInformation.create!(rva_params)
