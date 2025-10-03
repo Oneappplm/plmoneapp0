@@ -124,7 +124,11 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <%= form_for(@document, url: provider_personal_uploaded_docs_mhc_manage_clients_path, html: { multipart: true, id: "editDocumentForm" }) do |f| %>
+        <%= form_for(
+          @document,
+          url: ajax_upload_mhc_manage_clients_path,   # 👈 change here
+          html: { multipart: true, id: "editDocumentForm" }
+        ) do |f| %>
             <%= hidden_field_tag :_method, '', id: 'hidden_method_field' %>
             <%= hidden_field_tag :document_id %>
             <%= hidden_field_tag :authenticity_token,
@@ -177,7 +181,7 @@
           </div>
 
            <div class="form-group my-2">
-              <%= link_to 'Back', manage_clients_path, class: 'btn btn-default'  %>
+              <%= link_to 'Back', mhc_manage_clients_path, class: 'btn btn-default'  %>
               <%= f.submit "Upload & Save", class: 'btn btn-success' %>
             </div>
 
@@ -221,167 +225,172 @@
   document.addEventListener("DOMContentLoaded", function () {
     let imageUploadModal = document.getElementById("imageUploadModal");
     const formEl  = document.getElementById("editDocumentForm");
-    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    const methodField = document.getElementById("hidden_method_field"); //
+    const methodField = document.getElementById("hidden_method_field");
 
-    // Helper to turn "client_uploaded_documents" → "Client Uploaded Documents"
+    // Helper to turn snake_case → Human Readable
     function humanize(str) {
       if (!str) return "";
-      return str
-        .split("_")
-        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(" ");
+      return str.split("_").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
     }
 
-
-    // Delegate click handling to the container or body
+    // ========= ✏️ Edit document flow =========
     document.body.addEventListener("click", function (e) {
       const btn = e.target.closest(".edit-doc-btn");
-      let personalInformationId = btn.getAttribute("data-personal-information-id");
-      if (!btn) return; // not an edit button
+      if (!btn) return;
 
-      // --- run only when an edit button is clicked ---
-      const docId = btn.dataset.docId;
+      let docId = btn.dataset.docId;
 
-      // Prepare the form for PATCH
-      formEl.action = `/mhc/manage-clients/${docId}/update_uploaded_doc`;
-      formEl.method = "post";          // HTML form stays POST
-      methodField.value = "patch";     // Rails will treat as PATCH
-      document.getElementById("provider_personal_uploaded_doc_provider_personal_information_id").value = personalInformationId;
+      // Hide view modal first (if open)
+      let viewModal = bootstrap.Modal.getInstance(document.getElementById("viewDocumentModal"));
+      if (viewModal) {
+        viewModal.hide();
+      }
 
-      // Fetch the existing document details
-      fetch(`/mhc/manage-clients/${docId}/show_uploaded_doc`, {
-        method: "GET",
-        headers: { "X-Requested-With": "XMLHttpRequest" }
-      })
-      .then(resp => {
-        if (!resp.ok) throw new Error("Network error");
-        return resp.json();
-      })
-      .then(data => {
-        // Fill modal fields
-        document.getElementById("provider_personal_uploaded_doc_image_classification")
-          .value = humanize(data.image_classification);
-        document.getElementById("provider_personal_uploaded_doc_sub_section")
-          .value = data.sub_section;
-        document.getElementById("provider_personal_uploaded_doc_description")
-          .value = data.description;
-        document.getElementById("provider_personal_uploaded_doc_exclude_from_profile")
-          .checked = data.exclude_from_profile;
-        document.getElementById("document_id")
-          .value = data.id;
+      // Remove leftover backdrops (important!)
+      document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
 
-        // Show link to current file
-        document.getElementById("uploadedFilePreview").innerHTML =
-          `<a href="${data.file_url}" target="_blank">${data.file_name}</a>`;
+      let uploadModalEl = document.getElementById("imageUploadModal");
+      let uploadModal   = new bootstrap.Modal(uploadModalEl);
 
-        // Finally open the modal (if not using data-bs-toggle on the button)
-        const modal = new bootstrap.Modal(document.getElementById("imageUploadModal"));
-        modal.show();
-      })
-      .catch(err => console.error("Error loading document:", err));
+      // preload data before showing
+      fetch(`/mhc/manage-clients/${docId}/show_uploaded_doc`)
+        .then(resp => resp.json())
+        .then(data => {
+          document.getElementById("provider_personal_uploaded_doc_image_classification").value = humanize(data.image_classification);
+          document.getElementById("provider_personal_uploaded_doc_sub_section").value = data.sub_section;
+          document.getElementById("provider_personal_uploaded_doc_description").value = data.description;
+          document.getElementById("provider_personal_uploaded_doc_exclude_from_profile").checked = data.exclude_from_profile;
+          document.getElementById("document_id").value = data.id;
+          document.getElementById("uploadedFilePreview").innerHTML =
+            `<a href="${data.file_url}" target="_blank">${data.file_name}</a>`;
+
+          // ✅ Show modal safely
+          uploadModal.show();
+        })
+        .catch(err => console.error("Error loading document:", err));
     });
 
+
+    // ========= 📤 Upload modal trigger =========
     imageUploadModal.addEventListener("show.bs.modal", function (event) {
-      let button = event.relatedTarget; // Button that triggered the modal
+      let button = event.relatedTarget;
+      if (!button) return;
+
       let personalInformationId = button.getAttribute("data-personal-information-id");
-      // Set the values in the hidden fields inside the modal
-      let modal = event.target;
-      modal.querySelector("input[name='provider_personal_uploaded_doc[provider_personal_information_id]']").value = personalInformationId;
+      if (!personalInformationId) return;
+
+      let hiddenField = event.target.querySelector("input[name='provider_personal_uploaded_doc[provider_personal_information_id]']");
+      if (hiddenField) hiddenField.value = personalInformationId;
     });
 
+    // ========= 👁 View documents modal =========
     let viewDocumentModal = document.getElementById("viewDocumentModal");
 
     viewDocumentModal.addEventListener("show.bs.modal", function (event) {
-      let button = event.relatedTarget; // Button that triggered the modal
+      let button = event.relatedTarget;
       let personalInformationId = button.getAttribute("data-personal-information-id");
-
       let modalBody = viewDocumentModal.querySelector(".modal-body tbody");
 
-      // Clear previous content
       modalBody.innerHTML = `<tr><td colspan="5" class="text-center">Loading...</td></tr>`;
 
-      // Fetch uploaded documents via AJAX
       fetch(`/mhc/manage-clients/get_provider_uploaded_docs?id=${personalInformationId}`, {
         method: "GET",
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-        },
+        headers: { "X-Requested-With": "XMLHttpRequest" },
       })
-        .then(response => response.json())
-        .then(data => {
-          modalBody.innerHTML = "";
-          console.log(data);
+      .then(response => response.json())
+      .then(data => {
+        modalBody.innerHTML = "";
 
-          if (data.length > 0) {
-            data.forEach(doc => {
-              modalBody.innerHTML += `
-                <tr>
-                  <td>${doc.image_classification}</td>
-                  <td>${doc.sub_section}</td>
-                  <td><a href="${doc.file_url}" target="_blank">${doc.file_name}</a></td>
-                  <td>${new Date(doc.created_at).toLocaleDateString()}</td>
-                  <td style="    display: inline-flex;column-gap: 7px;">
-                    <button type="button"
-                      class="btn btn-primary btn-sm edit-doc-btn"
-                      data-doc-id="${doc.id}"
-                      data-bs-toggle="modal"
-                      data-bs-target="#imageUploadModal"
-                      data-personal-information-id="${doc.personal_information_id}">
-                      <i class="bi bi-pencil"></i>
-                    </button>
-
-                    <form action="/mhc/manage-clients/delete_provider_personal_docs" method="POST" onsubmit="return confirm('Are you sure you want to delete?')">
-                      <input type="hidden" name="authenticity_token" value="${token}">
-                      <input type="hidden" name="_method" value="delete">
-                      <input type="hidden" name="doc_id" value="${doc.id}">
-                      <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                    </form>
-                  </td>
-                </tr>
-              `;
-            });
-          } else {
-            modalBody.innerHTML = `<tr><td colspan="5" class="text-center">No documents found.</td></tr>`;
-          }
-        })
-        .catch(error => {
-          console.error("Error fetching documents:", error);
-          modalBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Error loading documents.</td></tr>`;
-        });
+        if (data.length > 0) {
+          data.forEach(doc => {
+            modalBody.innerHTML += `
+              <tr>
+                <td>${doc.image_classification || ""}</td>
+                <td>${doc.sub_section || ""}</td>
+                <td><a href="${doc.file_url}" target="_blank">${doc.file_name}</a></td>
+                <td>${new Date(doc.created_at).toLocaleDateString()}</td>
+                <td style="display:flex;gap:7px;">
+                  <button type="button" class="btn btn-primary btn-sm edit-doc-btn"
+                          data-doc-id="${doc.id}"
+                          data-bs-toggle="modal"
+                          data-bs-target="#imageUploadModal"
+                          data-personal-information-id="${doc.personal_information_id}">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button type="button" class="btn btn-danger btn-sm delete-doc-btn" 
+                          data-doc-id="${doc.id}">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>`;
+          });
+        } else {
+          modalBody.innerHTML = `<tr><td colspan="5" class="text-center">No documents found.</td></tr>`;
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching documents:", error);
+        modalBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Error loading documents.</td></tr>`;
+      });
     });
   });
-  // Use turbo:load if you have turbo-rails; otherwise DOMContentLoaded works.
+
+  // ========= 🗑 Delete document =========
+  document.addEventListener("click", function (event) {
+    if (!event.target.closest(".delete-doc-btn")) return;
+
+    let btn = event.target.closest(".delete-doc-btn");
+    let docId = btn.getAttribute("data-doc-id");
+    if (!confirm("Are you sure you want to delete?")) return;
+
+    fetch(`/mhc/manage-clients/delete_provider_personal_docs`, {
+      method: "DELETE",
+      headers: {
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content,
+        "X-Requested-With": "XMLHttpRequest",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ doc_id: docId })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        let row = btn.closest("tr");
+        row.remove();
+
+        let modalBody = document.querySelector("#viewDocumentModal .modal-body tbody");
+        if (!modalBody.querySelector("tr")) {
+          modalBody.innerHTML = `<tr><td colspan="5" class="text-center">No documents found.</td></tr>`;
+        }
+      } else {
+        alert("Failed to delete document.");
+      }
+    })
+    .catch(error => console.error("Delete error:", error));
+  });
+
+  // ========= 📂 File uploader =========
   document.addEventListener("turbo:load", attachFileUploader);
   document.addEventListener("DOMContentLoaded", attachFileUploader);
 
   function attachFileUploader() {
-    const fileInput      = document.getElementById("fileUploadInput");
-    const previewDiv     = document.getElementById("uploadedFilePreview");
-    const loader         = $("#uploadLoader");
-    const providerInfoId = document.getElementById(
-      "provider_personal_uploaded_doc_provider_personal_information_id"
-    );
-    const documentIdEl   = document.getElementById("document_id");
+    const form = document.getElementById("editDocumentForm");
+    const fileInput = document.getElementById("fileUploadInput");
+    const previewDiv = document.getElementById("uploadedFilePreview");
+    const loader = $("#uploadLoader");
+    const documentIdEl = document.getElementById("document_id");
 
-    if (!fileInput || fileInput.dataset.bound === "true") return;
-    fileInput.dataset.bound = "true";
+    if (!form || form.dataset.bound === "true") return;
+    form.dataset.bound = "true";
 
     let uploadInProgress = false;
 
-    fileInput.addEventListener("change", function () {
-      if (uploadInProgress || fileInput.files.length === 0) return;
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (uploadInProgress) return;
       uploadInProgress = true;
 
-      const file = fileInput.files[0];
-      const formData = new FormData();
-      formData.append("provider_personal_uploaded_doc[file_upload]", file);
-      formData.append(
-        "provider_personal_uploaded_doc[provider_personal_information_id]",
-        providerInfoId.value
-      );
-
-      // ✅ if we already have a document id, send it so the controller knows to update
+      const formData = new FormData(form);
       if (documentIdEl.value) {
         formData.append("provider_personal_uploaded_doc[id]", documentIdEl.value);
       }
@@ -390,40 +399,48 @@
 
       fetch("/mhc/manage-clients/ajax_upload", {
         method: "POST",
-        headers: {
-          "X-CSRF-Token": document.querySelector("meta[name=csrf-token]").content
-        },
+        headers: { "X-CSRF-Token": document.querySelector("meta[name=csrf-token]").content },
         body: formData
       })
-        .then(resp => resp.json())
-        .then(data => {
-          loader.addClass("d-none");
-          previewDiv.innerHTML = "";
+     .then(resp => resp.json())
+      .then(data => {
+        previewDiv.innerHTML = "";
 
-          if (data.success) {
-            const link = document.createElement("a");
-            link.href = data.file_url;
-            link.target = "_blank";
-            link.textContent = data.file_url;
-            previewDiv.appendChild(link);
-            // store the id returned so subsequent uploads update instead of create
-            documentIdEl.value = data.document_id;
+        if (data.success) {
+          if (data.file_url) {
+            // ✅ Only show file link when new file uploaded
+            previewDiv.innerHTML = `
+              <a href="${data.file_url}" target="_blank">${data.file_name}</a>
+              <p class="text-success mt-2">File uploaded successfully on ${data.uploaded_at}</p>
+            `;
           } else {
-            previewDiv.textContent = "Upload failed: " + data.errors.join(", ");
+            // ✅ Update message only
+            previewDiv.innerHTML = `
+              <p class="text-success mt-2">Data updated successfully on ${data.uploaded_at}</p>
+            `;
           }
-        })
-        .catch(err => {
-          console.error("Upload error", err);
-          previewDiv.textContent = "Upload failed.";
-        })
-        .finally(() => {
-          uploadInProgress = false;
-        });
+          documentIdEl.value = data.document_id;
+        } else {
+          previewDiv.textContent = "Save failed: " + (data.errors || []).join(", ");
+        }
+      })
+      .catch(err => {
+        console.error("Upload error", err);
+        previewDiv.textContent = "Save failed.";
+      })
+      .finally(() => {
+        loader.addClass("d-none");
+        $('.loading-overlay').addClass('d-none');
+        uploadInProgress = false;
+      });
     });
   }
-
+  document.getElementById("imageUploadModal").addEventListener("hidden.bs.modal", function () {
+    document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
+    document.body.classList.remove("modal-open");
+    document.body.style.removeProperty("padding-right");
+  });
 </script>
-
 <style>
   #viewDocumentModal .table td {
     white-space: normal !important;
