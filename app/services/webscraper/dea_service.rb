@@ -44,12 +44,18 @@ class Webscraper::DeaService < WebscraperService
 
   def insert_user_data(doc)
     provider_dea = ProviderDea.find_by(dea_number: @dea)
-    provider = ProviderPersonalInformation.find_by(provider_attest_id: provider_dea.provider_attest_id) if provider_dea
+    provider = ProviderPersonalInformation.find_by(provider_attest_id: provider_dea&.provider_attest_id)
+
+    state_name = if provider_dea&.state.present?
+                    State.find_by(id: provider_dea.state)&.name
+                  else
+                    nil
+                  end
 
     doc.at_css('#provider_name')&.content = "#{provider&.last_name}, #{provider&.first_name}"
     doc.at_css('#provider_city')&.content = provider&.birth_city
-    doc.at_css('#provider_dea_state')&.content = provider_dea&.state
-    doc.at_css('#provider_dea_schedules')&.content = provider_dea&.schedules_held.join(" ")
+    doc.at_css('#provider_dea_state')&.content = state_name
+    doc.at_css('#provider_dea_schedules')&.content = provider_dea&.schedules_held&.join(" ")
     doc.at_css('#dea_expiration_date')&.content = provider_dea&.expiration_date&.strftime('%m/%d/%Y')
     doc.at_css('#dea_source_date')&.content = Date.today.strftime('%m/%d/%Y')
   end
