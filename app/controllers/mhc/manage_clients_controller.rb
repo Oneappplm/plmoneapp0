@@ -1,6 +1,6 @@
 class Mhc::ManageClientsController < ApplicationController
 
-	def index
+  def index
     @q = ProviderPersonalInformation.ransack(params[:q])
     @provider_personal_informations = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
     @document = ProviderPersonalUploadedDoc.new
@@ -50,47 +50,32 @@ class Mhc::ManageClientsController < ApplicationController
     end
   end
 
-  def provider_personal_uploaded_docs
-    provider_personal_information =
-      ProviderPersonalInformation.find(
-        params[:provider_personal_uploaded_doc][:provider_personal_information_id]
-      )
-
-    @document =
-      ProviderPersonalUploadedDoc.find(params[:document_id])
-
-    # Merge the caqh_provider_attest_id into the update
-    update_attrs = provider_personal_uploaded_docs_params.merge(
-      caqh_provider_attest_id: provider_personal_information.caqh_provider_attest_id
-    )
-
-    # Assign attributes and save without validations
-    @document.assign_attributes(update_attrs)
-
-    if @document.save(validate: false)
-      redirect_to mhc_manage_clients_path,
-                  notice: "Document uploaded successfully (validations skipped)."
-    else
-      redirect_to mhc_manage_clients_path,
-                  alert:  "Document not saved."
-    end
-  end
-
   def ajax_upload
     provider_info = ProviderPersonalInformation.find(
       params[:provider_personal_uploaded_doc][:provider_personal_information_id]
     )
 
-    doc_params = params.require(:provider_personal_uploaded_doc).permit(:id, :file_upload)
-    if doc_params[:id].present?
+    doc_params = params.require(:provider_personal_uploaded_doc).permit(
+      :file_upload,
+      :image_classification,
+      :sub_section,
+      :description,
+      :exclude_from_profile
+    )
+
+    if params[:document_id].present?
       # ✅ update existing record
-      @document = ProviderPersonalUploadedDoc.find(doc_params[:id])
-      if @document.update(file_upload: doc_params[:file_upload])
+      @document = ProviderPersonalUploadedDoc.find(params[:document_id])
+
+      if @document.update(doc_params.merge(
+        caqh_provider_attest_id: provider_info.caqh_provider_attest_id
+      ))
         render json: {
           success: true,
           document_id: @document.id,
-          file_name: @document.file_upload_identifier,
-          file_url:  @document.file_upload.url
+          file_name:  @document.file_upload.identifier,
+          file_url:   @document.file_upload.url,
+          uploaded_at: @document.updated_at.strftime("%d-%m-%Y %H:%M")
         }
       else
         render json: { success: false, errors: @document.errors.full_messages },
@@ -99,16 +84,20 @@ class Mhc::ManageClientsController < ApplicationController
     else
       # ✅ create new record
       @document = ProviderPersonalUploadedDoc.new(
-        file_upload: doc_params[:file_upload],
-        provider_personal_information_id: provider_info.id,
-        provider_attest_id: provider_info.provider_attest_id
+        doc_params.merge(
+          provider_personal_information_id: provider_info.id,
+          caqh_provider_attest_id: provider_info.caqh_provider_attest_id,
+          provider_attest_id: provider_info.provider_attest_id
+        )
       )
+
       if @document.save
         render json: {
           success: true,
           document_id: @document.id,
-          file_name: @document.file_upload_identifier,
-          file_url:  @document.file_upload.url
+          file_name:  @document.file_upload.identifier,
+          file_url:   @document.file_upload.url,
+          uploaded_at: @document.created_at.strftime("%d-%m-%Y %H:%M")
         }
       else
         render json: { success: false, errors: @document.errors.full_messages },
@@ -116,8 +105,6 @@ class Mhc::ManageClientsController < ApplicationController
       end
     end
   end
-
-
 
   def get_provider_uploaded_docs
     personal_information_id = params[:id]
@@ -128,8 +115,8 @@ class Mhc::ManageClientsController < ApplicationController
         id: doc.id,
         image_classification: doc.image_classification,
         sub_section: doc.sub_section,
-        file_name: doc.file_upload.file.filename.to_s,
-        file_url: doc.file_upload.url,
+        file_name: doc.file_upload&.file&.filename.to_s,
+        file_url: doc.file_upload&.url,
         created_at: doc.created_at,
         personal_information_id: doc.provider_personal_information_id,
       }
@@ -151,9 +138,9 @@ class Mhc::ManageClientsController < ApplicationController
 
   def update_uploaded_doc
     doc = ProviderPersonalUploadedDoc.find(params[:id])
+
     if doc.update(provider_personal_uploaded_docs_params)
-      redirect_to mhc_manage_clients_path,
-                     notice: "Document updated successfully."
+      render json: { success: true, message: "Document updated successfully.", doc: doc }
     else
       render json: { success: false, errors: doc.errors.full_messages },
              status: :unprocessable_entity
@@ -161,12 +148,12 @@ class Mhc::ManageClientsController < ApplicationController
   end
 
 
-
   def delete_provider_personal_docs
-    doc_id = params.dig(:doc_id)
-    doc_file = ProviderPersonalUploadedDoc.find_by_id(doc_id)
-     if doc_file&.destroy
-      redirect_to mhc_manage_clients_path, notice: 'Document deleted successfully.'
+    doc = ProviderPersonalUploadedDoc.find(params[:doc_id])
+    if doc.destroy
+      render json: { success: true }
+    else
+      render json: { success: false }, status: :unprocessable_entity
     end
   end
 

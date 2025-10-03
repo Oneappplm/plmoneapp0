@@ -113,7 +113,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     @rva_information = RvaInformation.find(params[:id])
     if params[:section] == "verification"
       @rva_information.verification_status = 'Verified'
-      @rva_information.verification_date = Time.now.in_time_zone('Pacific Time (US & Canada)') + 1.day
+      @rva_information.verification_date = Time.now.in_time_zone('Pacific Time (US & Canada)').to_date
       @rva_information.verifier = current_user.first_name
       params[:rva_information][:verification_comments] = params[:rva_information][:verification_comments].presence || 'None'
       @rva_information.other_details = 'None'
@@ -410,6 +410,7 @@ class Mhc::VerificationPlatformController < ApplicationController
         provider_attest_id: @provider_personal_information&.provider_attest_id
       )
       @rva_information = RvaInformation.new
+      @dea_webcrawler_logs = @last_rva_information&.oig_webcrawler_logs&.order(updated_at: :desc)
     end
 
     if params[:page_tab] == 'billing_info'
