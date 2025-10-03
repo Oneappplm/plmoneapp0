@@ -58,17 +58,25 @@
                         <th class="text-white">Specialty</th>
                         <th class="text-white">Attended To</th>
                         <th class="text-white">Status</th>
+                        <th class="text-white">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                 <% @provider_educations.where(form_type: [nil, 'main']).each do |provider_education| %>
                     <tr>
-                        <td><a href="<%= mhc_verification_platform_path(provider_education_id: provider_education.id, page_tab: 'training_record')%>"
-                                class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none"><%= provider_education.institution_name %>
+                        <td><a href="<%= mhc_verification_platform_path(provider_education_id: provider_education.id, page_tab: 'training_record')%>" class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none"><%= provider_education.institution_name %>
                         <td><%= provider_education.training_area %></td>
                         <td><%= provider_education.specialty_specialty_name %></td>
                         <td><%= provider_education.end_date&.strftime('%b %d, %Y') %></td>
                         <td><%= provider_education.audit_status.presence || "Not Requested" %></td>
+                        <td>
+                          <%= button_to mhc_provider_education_path(provider_education), 
+                            method: :delete, 
+                            data: { confirm: 'Are you sure you want to delete this training detail?' }, 
+                            class: 'btn btn-outline-danger btn-sm' do %>
+                            <i class="bi bi-trash"></i>
+                          <% end %>  
+                        </td>
                     </tr>
                 <% end %>
             </table>
