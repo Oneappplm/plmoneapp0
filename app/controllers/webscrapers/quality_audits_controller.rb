@@ -476,7 +476,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
         source_date: Date.today,
         status: 'completed',
         verification_status: 'Verified',
-        verification_date: Date.today,
+        verification_date: Time.now.in_time_zone('Pacific Time (US & Canada)').to_date,
         verifier: current_user.first_name,
         verification_comments: 'SkipRVA',
         audit_status: true,
