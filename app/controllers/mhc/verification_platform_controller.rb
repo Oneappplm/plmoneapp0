@@ -37,11 +37,11 @@ class Mhc::VerificationPlatformController < ApplicationController
         @board_cert_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'BOARDCERT').where.not(source_date: nil).where.not(audit_status: false)
         @licensure_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Licensure').where.not(source_date: nil).where.not(audit_status: false)
         @certification_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Certification').where.not(source_date: nil).where.not(audit_status: false)
-        @employment_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'employment_record').where.not(source_date: nil).where.not(audit_status: false)
         @npdb_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'NPDB').where.not(source_date: nil).where.not(audit_status: false)
         @education_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'EDUCATION').where.not(source_date: nil).where.not(audit_status: false)
         @training_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Training').where.not(source_date: nil).where.not(audit_status: false)
         @employment_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Employment').where.not(source_date: nil).where.not(audit_status: false)
+        @peer_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Peer').where.not(source_date: nil).where.not(audit_status: false)
       end
       render 'overview'
     end
@@ -154,9 +154,12 @@ class Mhc::VerificationPlatformController < ApplicationController
       if params[:practice_claim_history_id].present?
         ProviderInsuranceCoverage.find(params[:practice_claim_history_id]).update(claims_history_audit: 'Quality Audited')
       end 
+      if params[:peer_id].present?
+        ProviderPersonalInformationPeerRef.find(params[:peer_id]).update(audit_status: 'Quality Audited')
+      end 
     end
     tabs = %w[
-      Licensure Registration OIG Certification Employment NPDB Liability BOARDCERT EDUCATION Training
+      Licensure Registration OIG Certification Employment NPDB Liability BOARDCERT EDUCATION Training Peer
     ]
 
     personal_info = ProviderPersonalInformation.find(params[:personal_info_id])
@@ -535,6 +538,9 @@ class Mhc::VerificationPlatformController < ApplicationController
 
     if params[:page_tab] == 'peer_ref_record' || params[:page_tab] == 'edit_peer_ref'
       @peer_ref = ProviderPersonalInformationPeerRef.find(params[:peer_ref_id])
+      @rva_information = RvaInformation.new
+      @last_rva_information = @peer_ref.rva_informations.where(restart_audit: false).last
+      @peer_rva_information_completed = @peer_ref.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
 
     if params[:page_tab] == 'facilities'
