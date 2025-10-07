@@ -2,8 +2,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
   before_action :set_common_params, only: %i[
     send_oig_request send_licensure_request send_employment_request
     send_npdb_request send_registration_request send_liability_request send_certification_request
-    send_board_cert_request send_education_request send_education_skip_rva send_liability_skip_rva send_training_skip_rva
-    send_dea_skip_rva send_training_request send_employment_skip_rva send_npdb_skip_rva send_board_cert_skip_rva send_oig_skip_rva
+    send_board_cert_request send_education_request send_education_skip_rva send_liability_skip_rva send_training_skip_rva send_dea_skip_rva send_training_request send_employment_skip_rva send_npdb_skip_rva send_board_cert_skip_rva send_oig_skip_rva send_peer_request send_peer_skip_rva
   ]
   def run_oig_webcrawler
     last_name = params[:last_name]
@@ -437,6 +436,33 @@ class Webscrapers::QualityAuditsController < ApplicationController
     ProviderEducation.find(training_id).update(audit_status: 'SkipRVA')
   end
 
+  def send_peer_request
+    peer_id = params[:peer_id]
+    create_rva_information('Peer', 'none', peer_id: peer_id)
+  end
+
+  def send_peer_skip_rva
+    peer_id = params[:peer_id]
+    create_rva_information(
+      'Peer', 'SkipRVA',
+      peer_id: peer_id,
+      skip_rva: true
+    )
+    ProviderPersonalInformationPeerRef.find(peer_id).update(audit_status: 'SkipRVA')
+  end
+
+  def delete_peer_request
+    rva_infos = RvaInformation.where(provider_personal_information_peer_ref_id: params[:peer_id])
+  
+    if rva_infos.any?
+      rva_infos.update(restart_audit: true)
+      ProviderPersonalInformationPeerRef.find(params[:peer_id]).update(audit_status: 'Not Requested')
+      render json: { message: 'All related RVA information deleted successfully' }, status: :ok
+    else
+      render json: { error: 'No RVA information found for the given Peer ID' }, status: :not_found
+    end
+  end
+
   private
 
   def set_common_params
@@ -444,7 +470,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
     @provider_dea_id = params[:provider_dea_id]
   end
 
-  def create_rva_information(tab, comments, provider_dea_id: nil, education_id: nil, licensure_id: nil, employment_id: nil, liability_id: nil, board_id: nil, training_id: nil, npdb_id: nil, certification_id: nil, skip_rva: false)
+  def create_rva_information(tab, comments, provider_dea_id: nil, education_id: nil, licensure_id: nil, employment_id: nil, liability_id: nil, board_id: nil, training_id: nil, npdb_id: nil, certification_id: nil, peer_id: nil, skip_rva: false)
     rva_params = {
       tab: tab,
       send_request: 'SENT',
@@ -466,6 +492,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
       provider_specialty_id: board_id,
       provider_education_id: training_id,
       certification_id: certification_id,
+      provider_personal_information_peer_ref_id: peer_id,
       liability_coverage: params[:liability_section].eql?('liability_coverage'),
       professional_liability: params[:liability_section].eql?('professional_liability')
     }
