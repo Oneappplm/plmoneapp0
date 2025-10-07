@@ -439,7 +439,7 @@
                         <td><input type="checkbox" id="cbVP" value="Verified Profile" data-provider-id="<%= @provider_personal_information.id %>" class="link-checkbox"></td>
                         <td>Verified Profile</td>
                         <td><a href="javascript:alert('Not Implemented');">Verified Profile</a></td>
-                        <td><%= Time.current.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
+                        <td><%= Time.current.strftime("%m/%d/%Y") %></td>
                         <td>.HTML</td>
                       </tr>
                       <%# ✅ Uploaded Docs %>
@@ -470,7 +470,7 @@
                               No file uploaded
                             <% end %>
                           </td>
-                          <td><%= doc&.created_at&.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
+                          <td><%= doc&.created_at&.strftime("%m/%d/%Y") %></td>
                           <td><%= file_type %></td>
                         </tr>
                       <% end %>
@@ -497,7 +497,7 @@
                               No file
                             <% end %>
                           </td>
-                          <td><%= last_log.created_at.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
+                          <td><%= last_log.created_at.strftime("%m/%d/%Y") %></td>
                           <td><%= last_log.filetype || "unknown" %></td>
                         </tr>
                       <% end %>
@@ -524,7 +524,7 @@
                               No file
                             <% end %>
                           </td>
-                          <td><%= dea_log.created_at.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
+                          <td><%= dea_log.created_at.strftime("%m/%d/%Y") %></td>
                           <td><%= dea_log.filetype || "unknown" %></td>
                         </tr>
                       <% end %>
@@ -551,7 +551,7 @@
                               No file
                             <% end %>
                           </td>
-                          <td><%= lic_log.created_at.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
+                          <td><%= lic_log.created_at.strftime("%m/%d/%Y") %></td>
                           <td><%= lic_log.filetype || "unknown" %></td>
                         </tr>
                       <% end %>
@@ -578,10 +578,42 @@
                               No file
                             <% end %>
                           </td>
-                          <td><%= oig_log.created_at.strftime("%-m/%-d/%Y %I:%M:%S %p") %></td>
+                          <td><%= oig_log.created_at.strftime("%m/%d/%Y") %></td>
                           <td><%= oig_log.filetype || "unknown" %></td>
                         </tr>
                       <% end %>
+
+                      <%# ✅ SAM Logs %>
+                      <% @provider_personal_information_sam_rva_records.each do |sam| %>
+                        <% if sam&.supporting_documentation&.file.present? %>
+                          <% file_path = sam.supporting_documentation.url %>
+                          <% file_name = File.basename(file_path) %>
+
+                          <% content_type = Marcel::MimeType.for(Pathname.new(sam.supporting_documentation.path)) rescue nil %>
+                          <% file_type = content_type&.split('/')&.last || 'unknown' %>
+
+                          <tr>
+                            <td>
+                              <input type="checkbox"
+                                     id="sam_<%= sam.id %>"
+                                     value="SAM Supporting Document"
+                                     data-url="<%= file_path %>"
+                                     data-type="supporting_documentation"
+                                     data-provider-id="<%#= sam.provider_attest_id %>"
+                                     class="link-checkbox">
+                            </td>
+                            <td>SAM</td>
+                            <td>
+                              <a href="<%= file_path %>" target="_blank">
+                                <%= file_name %>
+                              </a>
+                            </td>
+                            <td><%= sam.created_at.strftime("%m/%d/%Y") %></td>
+                            <td><%= file_type %></td>
+                          </tr>
+                        <% end %>
+                      <% end %>
+
                     </tbody>
                   </table>
                   <input type="submit" name="btnQueue" value="Queue Profile Generation" id="btnQueue" class="btn btn-info mt-4">
