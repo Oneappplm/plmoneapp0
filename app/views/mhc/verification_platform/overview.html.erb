@@ -283,6 +283,34 @@
                 <% end %>
             </div>
             <div class="p-2">
+              <h2>Section XV - Peer Reference
+                <% if @peer_rva_information_completed.present? %>
+                  <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
+                <% else %>
+                  <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
+                <% end %> 
+              </h2>
+
+              <% @provider_personal_information&.provider_personal_information_peer_refs&.each do |peer| %>
+                <div class="bg-light form-row row p-2 border-bottom border-dark">
+                  <div class="col-xl-6">
+                    Peer:
+                  </div>
+                  
+                  <div class="col-xl-6">
+                    <%= "#{peer.practitioner_name}" %>
+                  </div>
+                  <div class="col-xl-6">
+                    Specialty:
+                  </div>
+                  
+                  <div class="col-xl-6">
+                    <%= "#{peer.specialty}" %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+            <div class="p-2">
                 <h2>Section XVI - Billing Information</h2>
                 <% @provider_personal_information&.practice_associates.each do |practice_associate| %>
                     <div class="bg-light form-row row p-2 border-bottom border-dark">
