@@ -40,8 +40,15 @@ class EnrollmentProvidersController < ApplicationController
 	def update
 	  @enrollment_provider.assign_attributes(enrollment_provider_params)
 	  if @enrollment_provider.save
-	    redirect_to current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path,
+	  	@enrollment_provider.update_columns(
+	      provider_id: params[:provider_id],
+	      outreach_type: params[:outreach_type],
+	      updated_by: current_user&.full_name
+	    )
+	    redirect_to(
+	      current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path,
 	      notice: "Enrollment #{@enrollment_provider.full_name} has been successfully updated."
+	    )
 	  else
 	    render :edit
 	  end
