@@ -507,13 +507,16 @@
               <p><strong>Specialty:</strong> <%= certification.specialty_specialty_name %></p>
               <p><strong>Issuing Board:</strong> <%= certification.specialty_board_name %></p>
               <p><strong>Initial Certification Date:</strong> <%= certification.initial_certification_date&.strftime('%m/%d/%Y') %></p>
+              <p><strong>Re-Certification Date:</strong> <%= certification.recertification_date&.strftime('%m/%d/%Y') %></p>
               <p><strong>Source:</strong> <%= details.source_name.presence || 'N/A' %></p>
               <p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
               <p><strong>Review Criteria:</strong> <%= details.adverse_action %></p>
             </div>
             <div class="col-6">
               <p><strong>Board Status:</strong> <%= certification.board_certified_flag %></p>
-              <p><strong>Expiration Date:</strong> <%= certification.expiration_date&.strftime('%m/%d/%Y') %></p>
+              <p><strong>Expiration Date:</strong> 
+                <%= certification&.board_certification_expires_flag? ? "Does Not Expire" : (certification&.expiration_date.present? ? certification.expiration_date.strftime("%d-%m-%Y") : "") %>
+              </p>
               <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
               <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
             </div>
