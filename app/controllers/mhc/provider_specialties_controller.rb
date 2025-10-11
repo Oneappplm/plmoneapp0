@@ -63,6 +63,7 @@ class Mhc::ProviderSpecialtiesController < ApplicationController
       :board_certified_flag,
       :specialty_board_name,
       :initial_certification_date,
+      :recertification_date,
       :expiration_date,
       :board_certification_expires_flag,
       :failed_board_exam_flag,

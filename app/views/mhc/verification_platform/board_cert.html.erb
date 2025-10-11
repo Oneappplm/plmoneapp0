@@ -72,9 +72,10 @@
                           <%= certification.specialty_specialty_name %>
                         </a>
                       </td>
-                      <td><%= certification&.board_certified_flag %></td>
-                      <td><%= certification&.specialty_board_name %></td>
-                      <td><%= certification&.expiration_date&.strftime('%B %d, %Y') %></td> 
+                      <td><%= certification&.board_certified_flag %></td> <!-- Board Certification Status -->
+                      <td><%= certification&.specialty_board_name %></td> <!-- Issuing Board -->
+                      <td>
+                         <%= certification&.board_certification_expires_flag? ? "Does Not Expire" : (certification&.expiration_date.present? ? certification.expiration_date.strftime("%d-%m-%Y") : "") %>
                       <td><%= certification&.audit_status&.presence || "Not Requested" %></td>
                       <td>
                         <%= button_to mhc_provider_specialty_path(certification), method: :delete, data: { confirm: 'Are you sure you want to delete this record?' }, class: "btn btn-outline-danger btn-sm" do %>

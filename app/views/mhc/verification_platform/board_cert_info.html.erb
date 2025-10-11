@@ -61,13 +61,18 @@
                                         <%= f.date_field :initial_certification_date, class: "form-control" %>
                                     </div>
                                     <div class="col-md-3">
-                                        <%= f.label :expiration_date, "Certification Expiration Date" %>
-                                        <%= f.date_field :expiration_date, class: "form-control" %>
-                                        <div class="form-check mt-2">
-                                        <%= f.check_box :board_certification_expires_flag, class: "form-check-input" %>
-                                        <%= f.label :board_certification_expires_flag, "Does Not Expire", class: "form-check-label" %>
-                                        </div>
+                                        <%= f.label :recertification_date, "Re-Certification Date" %>
+                                        <%= f.date_field :recertification_date, class: "form-control" %>
                                     </div>
+                                </div>
+                                <div class="col-md-3">
+                                  <%= f.label :expiration_date, "Certification Expiration Date" %>
+                                  <%= f.date_field :expiration_date, class: "form-control", id: "expiration_date_field" %>
+
+                                  <div class="form-check mt-2">
+                                    <%= f.check_box :board_certification_expires_flag, class: "form-check-input  border-dark", id: "board_certification_expires_flag" %>
+                                    <%= f.label :board_certification_expires_flag, "Does Not Expire", class: "form-check-label" %>
+                                  </div>
                                 </div>
                             </div>
                         </div>
@@ -1222,4 +1227,26 @@
         if (adverseActionElement) adverseActionElement.checked = true;
       }
    }
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const checkbox = document.getElementById("board_certification_expires_flag");
+    const expirationDateField = document.getElementById("expiration_date_field");
+
+    function toggleExpirationField() {
+      if (checkbox.checked) {
+        expirationDateField.disabled = true;
+        expirationDateField.value = ""; // optional: clear value when disabled
+      } else {
+        expirationDateField.disabled = false;
+      }
+    }
+
+    // Run on page load
+    toggleExpirationField();
+
+    // Listen for changes
+    checkbox.addEventListener("change", toggleExpirationField);
+  });
 </script>
