@@ -1,0 +1,159 @@
+<div class="field card mb-3 p-2 py-3 mt-3" data-detail-index="NEW_INDEX">
+  <div class="col-lg-12">
+    <h3>Payor Enrollment Details</h3>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Enrollment Payor</label>
+      <input type="text" 
+             name="enrollment_provider[details_attributes][NEW_INDEX][enrollment_payer]" 
+             id="enrollment_provider_details_attributes_NEW_INDEX_enrollment_payer" 
+             placeholder="Type here" 
+             class="form-control border border-dark enrollment-payer" />
+    </div>
+
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Enrollment Type</label>
+      <select name="enrollment_provider[details_attributes][NEW_INDEX][enrollment_type]" 
+              id="enrollment_provider_details_attributes_NEW_INDEX_enrollment_type" 
+              class="form-select border border-dark enrollment_type">
+        <option value="">Enrollment Type</option>
+        <% EnrollmentProvider.enrollment_types.each do |type| %>
+          <option value="<%= type %>"><%= type %></option>
+        <% end %>
+      </select>
+    </div>
+  </div>
+
+  <% if current_setting.qualifacts? %>
+  <div class="row mb-3 d-none">
+    <div class="col-lg-6">
+      <label class="text-dark-grey">CPT® Code</label>
+      <input type="text" 
+             name="enrollment_provider[details_attributes][NEW_INDEX][cpt_code]" 
+             id="enrollment_provider_details_attributes_NEW_INDEX_cpt_code" 
+             placeholder="Type here" 
+             class="form-control border border-dark" />
+    </div>
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Descriptor</label>
+      <input type="text" 
+             name="enrollment_provider[details_attributes][NEW_INDEX][descriptor]" 
+             id="enrollment_provider_details_attributes_NEW_INDEX_descriptor" 
+             placeholder="Type here" 
+             class="form-control border border-dark" />
+    </div>
+  </div>
+  <% end %>
+
+  <div class="row mb-3">
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Application Status</label>
+      <select name="enrollment_provider[details_attributes][NEW_INDEX][enrollment_status]" 
+              id="enrollment_provider_details_attributes_NEW_INDEX_enrollment_status" 
+              class="form-select multi-enrollment-status border border-dark" 
+              data-confirm-on-change="true">
+        <option value="">Enrollment Status</option>
+        <% enrollment_status.each do |status| %>
+          <option value="<%= status %>"><%= status %></option>
+        <% end %>
+      </select>
+    </div>
+
+    <div class="col-lg-6">
+      <label class="text-dark-grey">State</label>
+      <select name="enrollment_provider[details_attributes][NEW_INDEX][payer_state]" 
+              id="enrollment_provider_details_attributes_NEW_INDEX_payer_state" 
+              class="form-select border border-dark payer-state single-select" 
+              data-value="">
+      </select>
+    </div>
+  </div>
+
+  <!-- Application Submitted Date -->
+  <div class="row mb-3 date_field d-none">
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Application Submitted Date</label>
+      <input type="date" 
+             name="enrollment_provider[details_attributes][NEW_INDEX][start_date]" 
+             id="enrollment_provider_details_attributes_NEW_INDEX_start_date" 
+             class="form-control border border-dark" />
+    </div>
+  </div>
+
+  <!-- Effective Dates -->
+  <div id="effective_date_id" class="mb-3 effective_date_field d-none">
+    <div class="col-lg-6 mt-3">
+      <label class="text-dark-grey">Initial Effective Date</label>
+      <input type="date" 
+             name="enrollment_provider[details_attributes][NEW_INDEX][enrollment_effective_date]" 
+             id="enrollment_provider_details_attributes_NEW_INDEX_enrollment_effective_date" 
+             class="form-control border border-dark" />
+    </div>
+
+    <div class="row mt-3 mb-3">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Most Current Revalidation Date</label>
+        <input type="date" 
+               name="enrollment_provider[details_attributes][NEW_INDEX][revalidation_date]" 
+               id="enrollment_provider_details_attributes_NEW_INDEX_revalidation_date" 
+               class="form-control border border-dark" />
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Revalidation Next Due Date</label>
+        <input type="date" 
+               name="enrollment_provider[details_attributes][NEW_INDEX][revalidation_due_date]" 
+               id="enrollment_provider_details_attributes_NEW_INDEX_revalidation_due_date" 
+               class="form-control border border-dark" />
+      </div>
+    </div>
+
+    <div class="col-lg-12">
+      <label class="text-dark-grey">Line of Business(can be multiple)</label>
+      <input type="text" 
+             name="enrollment_provider[details_attributes][NEW_INDEX][line_of_business]" 
+             id="enrollment_provider_details_attributes_NEW_INDEX_line_of_business" 
+             placeholder="Type here..." 
+             class="form-control border border-dark" />
+    </div>
+  </div>
+
+  <!-- Provider ID -->
+  <div class="row mb-3 application-not-submitted-field">
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Provider ID</label>
+      <input type="text" 
+             name="enrollment_provider[details_attributes][NEW_INDEX][provider_id]" 
+             id="enrollment_provider_details_attributes_NEW_INDEX_provider_id" 
+             placeholder="Medicare and Medicaid,  PIN, etc." 
+             class="form-control border border-dark" />
+    </div>
+  </div>
+
+  <% if current_setting.affordablecare? %>
+  <div class="row mb-3 application-not-submitted-field">
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Tax ID</label>
+      <input type="text" 
+             name="enrollment_provider[details_attributes][NEW_INDEX][tax_id]" 
+             id="enrollment_provider_details_attributes_NEW_INDEX_tax_id" 
+             placeholder="Enter Tax ID" 
+             class="form-control border border-dark" />
+    </div>
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Location</label>
+      <input type="text" 
+             name="enrollment_provider[details_attributes][NEW_INDEX][location]" 
+             id="enrollment_provider_details_attributes_NEW_INDEX_location" 
+             placeholder="Enter Location" 
+             class="form-control border border-dark" />
+    </div>
+  </div>
+  <% end %>
+
+  <!-- Other date fields, email, phone, username, password, questions, notes, file upload -->
+  <!-- Keep same structure with NEW_INDEX placeholders -->
+
+  <input type="hidden" name="enrollment_provider[details_attributes][NEW_INDEX][_destroy]" value="0">
+</div>
