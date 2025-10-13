@@ -463,6 +463,33 @@ class Webscrapers::QualityAuditsController < ApplicationController
     end
   end
 
+  def send_facility_request
+    facility_id = params[:facility_id]
+    create_rva_information('Facility', 'none', facility_id: facility_id)
+  end
+
+  def send_facility_skip_rva
+    facility_id = params[:facility_id]
+    create_rva_information(
+      'Peer', 'SkipRVA',
+      facility_id: facility_id,
+      skip_rva: true
+    )
+    ProviderPersonalInformationFacility.find(facility_id).update(audit_status: 'SkipRVA')
+  end
+
+  def delete_facility_request
+    rva_infos = RvaInformation.where(provider_personal_information_facility_id: params[:facility_id])
+  
+    if rva_infos.any?
+      rva_infos.update(restart_audit: true)
+      ProviderPersonalInformationFacility.find(params[:facility_id]).update(audit_status: 'Not Requested')
+      render json: { message: 'All related RVA information deleted successfully' }, status: :ok
+    else
+      render json: { error: 'No RVA information found for the given Peer ID' }, status: :not_found
+    end
+  end
+
   private
 
   def set_common_params
@@ -470,7 +497,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
     @provider_dea_id = params[:provider_dea_id]
   end
 
-  def create_rva_information(tab, comments, provider_dea_id: nil, education_id: nil, licensure_id: nil, employment_id: nil, liability_id: nil, board_id: nil, training_id: nil, npdb_id: nil, certification_id: nil, peer_id: nil, skip_rva: false)
+  def create_rva_information(tab, comments, provider_dea_id: nil, education_id: nil, licensure_id: nil, employment_id: nil, liability_id: nil, board_id: nil, training_id: nil, npdb_id: nil, certification_id: nil, peer_id: nil, facility_id: nil, skip_rva: false)
     rva_params = {
       tab: tab,
       send_request: 'SENT',
@@ -493,6 +520,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
       provider_education_id: training_id,
       certification_id: certification_id,
       provider_personal_information_peer_ref_id: peer_id,
+      provider_personal_information_facility_id: facility_id,
       liability_coverage: params[:liability_section].eql?('liability_coverage'),
       professional_liability: params[:liability_section].eql?('professional_liability')
     }
