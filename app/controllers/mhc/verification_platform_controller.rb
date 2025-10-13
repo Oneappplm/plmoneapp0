@@ -39,6 +39,7 @@ class Mhc::VerificationPlatformController < ApplicationController
         @training_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Training').where.not(source_date: nil).where.not(audit_status: false)
         @employment_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Employment').where.not(source_date: nil).where.not(audit_status: false)
         @peer_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Peer').where.not(source_date: nil).where.not(audit_status: false)
+        @facility_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Facility').where.not(source_date: nil).where.not(audit_status: false)
       end
       render 'overview'
     end
@@ -154,9 +155,12 @@ class Mhc::VerificationPlatformController < ApplicationController
       if params[:peer_id].present?
         ProviderPersonalInformationPeerRef.find(params[:peer_id]).update(audit_status: 'Quality Audited')
       end 
+      if params[:facility_id].present?
+        ProviderPersonalInformationFacility.find(params[:facility_id]).update(audit_status: 'Quality Audited')
+      end 
     end
     tabs = %w[
-      Licensure Registration OIG Certification Employment NPDB Liability BOARDCERT EDUCATION Training Peer
+      Licensure Registration OIG Certification Employment NPDB Liability BOARDCERT EDUCATION Training Peer Facility
     ]
 
     personal_info = ProviderPersonalInformation.find(params[:personal_info_id])
@@ -550,6 +554,9 @@ class Mhc::VerificationPlatformController < ApplicationController
 
     if params[:page_tab] == 'facility_record' || params[:page_tab] == 'edit_facility'
       @facility = ProviderPersonalInformationFacility.find(params[:facility_id])
+      @rva_information = RvaInformation.new
+      @last_rva_information = @facility.rva_informations.where(restart_audit: false).last
+      @facility_rva_information_completed = @facility.rva_informations.where.not(source_date: nil).where.not(audit_status: false)
     end
 
     if params[:page_tab] == 'disclosures'
