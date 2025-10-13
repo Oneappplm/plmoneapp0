@@ -81,24 +81,31 @@
 
 <div class="row mb-3">
    <div class="col-lg-12">
-      <div class="row">
-         <div id="details">
-            <div class="fields">
-               <%= f.fields_for :details do |details| %>
-                 <%= render 'details_fields', f: details %>
-               <% end %>
-            </div>
-            <div class="row">
-               <div class="col-lg-12 text-center">
-                  <div class="links mt-2">
-                     <button type="button" class="add_association btn btn-primary btn-xs" > Add New Payor </button>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
+     <div class="col-lg-12">
+        <h3>Payor Enrollment Details</h3>
+        <div id="payer_container">
+          <% if @enrollment_provider.details.empty? %>
+            <!-- Render initial blank entry (index 0) if none exist -->
+            <%= render partial: 'details_fields', locals: { index: 0, detail: EnrollmentProvidersDetail.new } %>
+          <% else %>
+            <% @enrollment_provider.details.each_with_index do |detail, index| %>
+              <%= render partial: 'details_fields', locals: { index: index, detail: detail } %>
+            <% end %>
+          <% end %>
+        </div>
+
+        <!-- Template to clone -->
+        <div id="payer_template" class="payer-entry d-none">
+          <%= render partial: 'details_fields', locals: { index: 'REPLACE_INDEX', detail: EnrollmentProvidersDetail.new } %>
+        </div>
+
+      <button type="button" class="btn btn-outline-primary mt-2" id="add_payer">
+        <i class="bi bi-plus-circle me-1"></i> Add Payer
+      </button>
+     </div>
    </div>
 </div>
+
 <div class="row">
    <div class="col-lg-12 d-flex justify-content-end pe-5">
       <button class="btn btn-primary btn-md">Submit</button>
@@ -152,6 +159,59 @@
   <script>
     $(document).ready(function(){
 
+      let index = $("#payer_container .payer-entry").length;
+      const pendingRequests = {}; // Track pending AJAX by input name
+
+      $("#add_payer").on("click", function () {
+        let newEntry = $("#payer_template").clone();
+        newEntry.removeClass("d-none").css("display", "block").removeAttr("id");
+
+        // Clear all inputs and assign names with new index
+        newEntry.find("input, select, textarea").each(function () {
+          let oldName = $(this).attr("name");
+          if (oldName) {
+            let newName = oldName.replace(/\[REPLACE_INDEX\]/, `[${index}]`);
+            $(this).attr("name", newName);
+          }
+
+          // Reset values
+          if ($(this).is("select")) {
+            $(this).val("");
+          } else if ($(this).attr("type") === "checkbox" || $(this).attr("type") === "radio") {
+            $(this).prop("checked", false);
+          } else {
+            $(this).val("");
+          }
+        });
+
+        newEntry.attr("data-id", ""); // Reset ID
+        newEntry.attr("data-saving", "false"); // Custom flag to avoid race conditions
+        newEntry.attr("data-index", index);
+
+        index++;
+        $("#payer_container").append(newEntry);
+      });
+
+      if ($("#payer_container .payer-entry").length === 1) {
+        $("#payer_container .payer-entry").first().find(".remove_payer").hide();
+      }
+
+      $(document).on("click", ".remove_payer", function () {
+        let entry = $(this).closest(".payer-entry");
+        entry.find(".destroy-field").val("1"); // mark for destruction
+        entry.hide(); // optionally hide from the UI
+      });
+
+      // Debounce logic
+      let debounceTimeout;
+      $(document).on("change", "#payer_container input, #payer_container select, #payer_container textarea", function () {
+        const $field = $(this);
+        const fieldName = $field.attr("name");
+        const value = $field.val();
+        const $entry = $field.closest(".payer-entry");
+        const $container = $("#payer_container");
+      });  
+
       // ===== VirtualSelect Initialization for Payers =====
       $('.enrollment-payer').each(function(){
         var id = $(this).attr('id');
@@ -179,72 +239,6 @@
           });
         }, 1000);
       });
-
-      // ===== Add New Enrollment Details Nested Form =====
-      $("#details").on("click", ".add_association", function () {
-        const detailsContainer = $("#details .fields");
-        const detailsFields = detailsContainer.find(".field");
-
-        if (detailsFields.length === 0) return; // nothing to clone
-
-        const newEnrollmentDetails = detailsFields.last().clone();
-
-        // Determine new index
-        let maxIndex = 0;
-        detailsFields.each(function () {
-          const idx = parseInt($(this).attr("data-detail-index"));
-          if (idx > maxIndex) maxIndex = idx;
-        });
-        const newId = maxIndex + 1;
-
-        // Reset input, textarea, checkbox, radio
-        newEnrollmentDetails.find("[id^='enrollment_provider_details_attributes_']").each(function () {
-          const $el = $(this);
-          const oldId = $el.attr("id");
-          const oldName = $el.attr("name");
-
-          $el.attr("id", oldId.replace(/\d+/, newId));
-          $el.attr("name", oldName.replace(/\d+/, newId));
-
-          if ($el.is("input, textarea")) $el.val("");
-          if ($el.is(":checkbox, :radio")) $el.prop("checked", false);
-          if ($el.is("select")) $el.val(""); // reset normal select
-        });
-
-        // Reset _destroy
-        newEnrollmentDetails.find('input[type="hidden"][name*="_destroy"]').val("0");
-
-        // Remove logs and hidden data
-        newEnrollmentDetails.find(".application-status-history-log").remove();
-        newEnrollmentDetails.find(".d-none").removeClass("d-none"); // unhide rows
-
-        newEnrollmentDetails.attr("data-detail-index", newId);
-
-        // Ensure top-level is visible
-        newEnrollmentDetails.show().removeClass("d-none");
-
-        // Append to container first
-        detailsContainer.append(newEnrollmentDetails);
-
-        // Re-initialize VirtualSelect for cloned selects
-        newEnrollmentDetails.find("select.payer_state, select.enrollment-payer, select.enrollment_type").each(function () {
-          const $select = $(this);
-          if (this.vsInstance) this.vsInstance.destroy(); // destroy old instance if any
-
-          VirtualSelect.init({
-            ele: "#" + $select.attr("id"),
-            search: true
-          });
-
-          // Optionally, clear value after re-init
-          this.vsInstance.clear?.();
-        });
-
-        // Scroll to new form
-        newEnrollmentDetails[0].scrollIntoView({ behavior: "smooth" });
-      });
-
-
        // ==== Multi-enrollment-status change handler ====
       $(document).on('change', '.multi-enrollment-status', function () {
         var status = $(this).val();
@@ -411,33 +405,6 @@
       $('.questions').each(function(){
         $(this).find('.remove-dynamic-fields').first().hide();
       });
-
-      window.addQuestions = function(btn){
-        var parentQuestions = $(btn).closest('.questions');
-        var parentQuestionFields = $(btn).closest('.question-fields').first();
-        var questionField = $(parentQuestionFields).find('.question-field').last().clone();
-        var newIndex = $(parentQuestions).find('.question-field').length;
-
-        questionField.css('display', 'block');
-        questionField.find('input[type="text"][name*="[questions_attributes]"]').each(function () {
-          var name = $(this).attr('name').replace(/\[questions_attributes\]\[\d+\]/g, '[questions_attributes][' + newIndex + ']');
-          var id = $(this).attr('id').replace(/\[questions_attributes\]\[\d+\]/g, '[questions_attributes][' + newIndex + ']');
-
-          $(this).attr('name', name);
-          $(this).attr('id', id);
-          $(this).val(''); // Clear input values for the new fields
-        });
-
-        questionField.find('.remove-dynamic-fields').show();
-        parentQuestionFields.append(questionField);
-      }
-
-      window.deleteQuestions = function(btn){
-        var parentQuestionFields = $(btn).closest('.question-fields .question-field');
-        var checkbox = $(parentQuestionFields).find('input[type="checkbox"][name*="[questions_attributes]"]');
-        checkbox.prop('checked', !checkbox.prop('checked'));
-        $(parentQuestionFields).fadeOut();
-      }
 
       // ===== Keep date input value updated =====
       $(document).on('change', "input[type='date']", function() {
