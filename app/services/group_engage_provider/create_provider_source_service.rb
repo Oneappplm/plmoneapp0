@@ -23,7 +23,7 @@ class GroupEngageProvider::CreateProviderSourceService < GroupEngageProvider::Ba
 	  provider_personal_info.save(validate: false)
 
 	  # also need to create provider attest
-	  provider_attest = ProviderAttest.create!(id: provider_personal_info.caqh_provider_attest_id, caqh_provider_attest_id: provider_personal_info.caqh_provider_attest_id)
+	  provider_attest = ProviderAttest.create!(id: provider_personal_info.provider_attest_id, caqh_provider_attest_id: provider_personal_info.caqh_provider_attest_id)
 	  
 	  provider_personal_info.update(provider_attest_id: provider_attest.id)
 
