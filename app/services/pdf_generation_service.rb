@@ -90,24 +90,27 @@ class PdfGenerationService
   end
 
   def download_file(url)
-    return nil if url.blank?
+	  return nil if url.blank?
 
-    if url.start_with?('/')
-      local_path = Rails.root.join('public', url.sub(%r{^/}, ''))
-      return nil unless File.exist?(local_path)
-      Tempfile.new(['downloaded', '.pdf'], binmode: true).tap do |f|
-        f.write(File.read(local_path))
-        f.rewind
-      end
-    else
-      Tempfile.new(['downloaded', '.pdf'], binmode: true).tap do |f|
-        URI.open(url, read_timeout: 10) { |remote| f.write(remote.read) }
-        f.rewind
-      end
-    rescue
-      nil
-    end
-  end
+	  if url.start_with?('/')
+	    local_path = Rails.root.join('public', url.sub(%r{^/}, ''))
+	    return nil unless File.exist?(local_path)
+	    Tempfile.new(['downloaded', '.pdf'], binmode: true).tap do |f|
+	      f.write(File.read(local_path))
+	      f.rewind
+	    end
+	  else
+	    begin
+	      Tempfile.new(['downloaded', '.pdf'], binmode: true).tap do |f|
+	        URI.open(url, read_timeout: 10) { |remote| f.write(remote.read) }
+	        f.rewind
+	      end
+	    rescue
+	      nil
+	    end
+	  end
+	end
+
 
   def valid_pdf?(url)
     return false if url.blank?
@@ -122,13 +125,15 @@ class PdfGenerationService
   end
 
   def image_to_pdf(temp_file)
-    img = MiniMagick::Image.open(temp_file.path)
-    pdf_temp = Tempfile.new(["converted", ".pdf"], binmode: true)
-    img.format("pdf")
-    img.write(pdf_temp.path)
-    CombinePDF.load(pdf_temp.path)
-  ensure
-    pdf_temp&.close
-    pdf_temp&.unlink
-  end
+	  pdf_temp = Tempfile.new(["converted", ".pdf"], binmode: true)
+	  begin
+	    img = MiniMagick::Image.open(temp_file.path)
+	    img.format("pdf")
+	    img.write(pdf_temp.path)
+	    CombinePDF.load(pdf_temp.path)
+	  ensure
+	    pdf_temp&.close
+	    pdf_temp&.unlink
+	  end
+	end
 end
