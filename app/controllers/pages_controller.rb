@@ -360,10 +360,11 @@ class PagesController < ApplicationController
   # end
 
   def record_approval
-    provider_params = params.permit(:status, :description, :send_confirmation, provider_ids: [])
-    provider_ids = provider_params[:provider_ids].presence || [params[:provider_personal_information][:id]]
+    provider_params = params.require(:provider_personal_information)
+                            .permit(:id, :status, :description, :send_confirmation, provider_ids: [])
 
-    # Handle description override if OTHER checkbox used
+    provider_ids = provider_params[:provider_ids].presence || [provider_params[:id]]
+
     desc = (params[:other_checkbox].present? && provider_params[:description].present?) ? "OTHER" : provider_params[:description]
 
     updated = []
@@ -382,7 +383,7 @@ class PagesController < ApplicationController
           review_details: desc,
           vote_date: Time.current,
           vote_by: current_user.full_name,
-          cred_status: 'returned'
+          cred_status: "returned"
         )
 
         if success
@@ -399,10 +400,8 @@ class PagesController < ApplicationController
       end
     end
 
-    # Example: handle the static checkbox logic
     if provider_params[:send_confirmation] == "1"
       updated.each do |p|
-        # Trigger your confirmation mailer/service here
         ProviderMailer.confirmation_email(p).deliver_later if defined?(ProviderMailer)
       end
     end
@@ -417,6 +416,7 @@ class PagesController < ApplicationController
 
     redirect_to virtual_review_committee_path
   end
+
 
   def providers;end
 
