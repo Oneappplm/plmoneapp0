@@ -21,10 +21,14 @@ class PdfGenerationService
 
     process_items_parallel!
 
-    return queue.update!(status: 'error', message: 'No valid files to merge') if file_links.empty?
+    if file_links.empty?
+      queue.update!(status: 'error', message: 'No valid files to merge')
+      return
+    end
 
     merged_path = merge_files(file_links)
     finalize_queue(merged_path)
+
   rescue => e
     Rails.logger.error "PdfGenerationService FAILED: #{e.class} #{e.message}"
     queue.update!(status: 'error', message: "#{e.class}: #{e.message}")
@@ -32,20 +36,20 @@ class PdfGenerationService
 
   private
 
-  # Process each PdfQueueItem in parallel using Sidekiq
+  # Enqueue each PdfQueueItem for processing
   def process_items_parallel!
     queue.pdf_queue_items.find_each do |item|
       PdfQueueItemJob.perform_later(item.id, provider.id, user.id)
     end
   end
 
+  # Merge multiple PDF/image files into one
   def merge_files(files)
     pdf_dir = Rails.root.join("public/generated_pdfs")
     FileUtils.mkdir_p(pdf_dir)
 
     filename = "#{provider.caqh_provider_attest_id}_#{SecureRandom.hex(5)}_#{Time.current.strftime('%Y%m%d%H%M%S')}.pdf"
     merged_pdf_path = pdf_dir.join(filename)
-
     combined_pdf = CombinePDF.new
 
     files.each do |file_url|
@@ -68,8 +72,10 @@ class PdfGenerationService
     merged_pdf_path.to_s
   end
 
+  # Mark queue and provider as completed
   def finalize_queue(merged_path)
     queue.pdf_queue_items.update_all(status: 'completed', message: 'completed')
+
     queue.update!(
       status: 'completed',
       generated_date: Time.current,
@@ -89,51 +95,56 @@ class PdfGenerationService
     Rails.logger.info "PDF generation completed for queue=#{queue.id}"
   end
 
+  # Safely download a local or remote file
   def download_file(url)
-	  return nil if url.blank?
+    return nil if url.blank?
 
-	  if url.start_with?('/')
-	    local_path = Rails.root.join('public', url.sub(%r{^/}, ''))
-	    return nil unless File.exist?(local_path)
-	    Tempfile.new(['downloaded', '.pdf'], binmode: true).tap do |f|
-	      f.write(File.read(local_path))
-	      f.rewind
-	    end
-	  else
-	    begin
-	      Tempfile.new(['downloaded', '.pdf'], binmode: true).tap do |f|
-	        URI.open(url, read_timeout: 10) { |remote| f.write(remote.read) }
-	        f.rewind
-	      end
-	    rescue
-	      nil
-	    end
-	  end
-	end
+    if url.start_with?('/')
+      local_path = Rails.root.join('public', url.sub(%r{^/}, ''))
+      return nil unless File.exist?(local_path)
 
+      Tempfile.new(['downloaded', '.pdf'], binmode: true).tap do |f|
+        f.write(File.read(local_path))
+        f.rewind
+      end
+    else
+      begin
+        Tempfile.new(['downloaded', '.pdf'], binmode: true).tap do |f|
+          URI.open(url, read_timeout: 10) { |remote| f.write(remote.read) }
+          f.rewind
+        end
+      rescue => e
+        Rails.logger.error "Download failed for #{url}: #{e.message}"
+        nil
+      end
+    end
+  end
 
+  # Check if file content starts with "%PDF"
   def valid_pdf?(url)
     return false if url.blank?
+
     if url.start_with?('/')
       path = Rails.root.join('public', url.sub(%r{^/}, ''))
       File.exist?(path) && File.open(path, 'rb') { |f| f.read(4).start_with?('%PDF') }
     else
       URI.open(url, read_timeout: 5) { |f| f.read(4).start_with?('%PDF') }
-    rescue
-      false
     end
+  rescue
+    false
   end
 
+  # Convert image files to PDF
   def image_to_pdf(temp_file)
-	  pdf_temp = Tempfile.new(["converted", ".pdf"], binmode: true)
-	  begin
-	    img = MiniMagick::Image.open(temp_file.path)
-	    img.format("pdf")
-	    img.write(pdf_temp.path)
-	    CombinePDF.load(pdf_temp.path)
-	  ensure
-	    pdf_temp&.close
-	    pdf_temp&.unlink
-	  end
-	end
+    pdf_temp = Tempfile.new(["converted", ".pdf"], binmode: true)
+    begin
+      img = MiniMagick::Image.open(temp_file.path)
+      img.format("pdf")
+      img.write(pdf_temp.path)
+      CombinePDF.load(pdf_temp.path)
+    ensure
+      pdf_temp&.close
+      pdf_temp&.unlink
+    end
+  end
 end
