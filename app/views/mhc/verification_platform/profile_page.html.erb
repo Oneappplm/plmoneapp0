@@ -503,7 +503,11 @@
                       <% end %>
 
                       <%# ✅ DEA Logs %>
-                      <% if (dea_log = @provider_personal_information.rva_informations.where(tab: "Registration").map(&:dea_webcrawler_logs).flatten.last) %>
+                      <% if (dea_log = @provider_personal_information.rva_informations
+                        .select { |rva| rva.tab == "Registration" }
+                        .flat_map(&:dea_webcrawler_logs)
+                        .last
+                      ) %>
                         <tr>
                           <td>
                             <input type="checkbox"
