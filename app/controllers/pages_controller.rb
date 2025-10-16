@@ -360,8 +360,7 @@ class PagesController < ApplicationController
   # end
 
   def record_approval
-    provider_params = params.require(:provider_personal_information)
-                            .permit(:id, :status, :description, :send_confirmation, provider_ids: [])
+    provider_params = params.permit(:id, :status, :description, :send_confirmation, provider_ids: [])
 
     provider_ids = provider_params[:provider_ids].presence || [provider_params[:id]]
 
