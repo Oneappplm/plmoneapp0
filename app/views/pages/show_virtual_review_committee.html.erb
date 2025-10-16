@@ -25,11 +25,11 @@
 					</button>
 				</div>
 				<div class="col-lg-2">
-					<div style="float: right" class="btn btn-primary">
+					<div style="float: right">
 						<% case @provider.cred_status %>
               <% when "psv" %>
                 <% if @psv_pdf.present? %>
-                  <%= link_to @psv_pdf.file_path.url, target: "_blank", class: "text-white fs-5" do %>
+                  <%= link_to @psv_pdf.file_path.url, target: "_blank", class: "text-white fs-5 btn btn-primary btn-sm" do %>
                     <i class="fas fa-file-pdf fa-xl"></i>
                     <span class="text-white fw-bold">Verified Profile</span>
                   <% end %>
@@ -304,7 +304,7 @@
 
 				<div id="change-review-level-container" class="col-lg-12 mt-2" style="display: none">
 					<h3 class="mt-2 p-3" style="background-color: #E9E9E9;">Review Level Change</h3>
-					<%= form_with model: @provider, url: record_approval_path, method: :patch do |form| %>
+					<%= form_with url: record_approval_path, method: :patch do |form| %>
 						<div class="form-group mb-3">
 							<label for="record_status">Review Level:</label>
 							<%= form.hidden_field :id, value: @provider.id %>
