@@ -518,7 +518,7 @@
               .where.not(rva_informations: { audit_status: [nil], audit_comments: [nil, 'SkipRVA'] })
               .distinct %>
     <% if board.any? %>   
-      <div class="section-title">Board Certification:</div>
+      <div class="section-title">Board Certification</div>
       <% board.each do |certification| %>
         <% details = certification.rva_informations.where(audit_status: true)   # Only RVAs with audit_status 'Quality Audited'
                         .where.not(audit_comments: [nil, 'SkipRVA'])
@@ -542,6 +542,47 @@
                   <%= certification&.board_certification_expires_flag? ? "Does Not Expire" : (certification&.expiration_date.present? ? certification.expiration_date.strftime("%d-%m-%Y") : "") %>
                 </p>
                 <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
+                <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <!-- Peer Ref -->
+  <div class="section mt-4">
+    <% peer = provider_personal_information.provider_personal_information_peer_refs
+              .where(audit_status: 'Quality Audited')            
+              .joins(:rva_informations)
+              .where.not(rva_informations: { audit_status: [nil], audit_comments: [nil, 'SkipRVA'] })
+              .distinct %>
+    <% if peer.any? %>   
+      <div class="section-title">Peer Ref</div>
+      <% peer.each do |ref| %>
+        <% details = ref.rva_informations.where(audit_status: true)   
+                        .where.not(audit_comments: [nil, 'SkipRVA'])
+                        .order(created_at: :desc)
+                        .first %>
+        <% if details.present? %>
+          <div class="section-content">
+            <div class="row">
+              <div class="col-6">
+                <p><strong>Peer:</strong> <%= ref.practitioner_name %></p>
+                <p><strong>Verified By:</strong> Peer </p>
+                <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
+                <p><strong>In Good Standing?:</strong> <%= details&.in_good_standing ? "Yes" : "No" %></p>
+                <p><strong>Comments:</strong> <%= details.comments %></p>
+                <p><strong>Adverse Action:</strong> <%= details.adverse_action %></p>
+                <p><strong>Adverse Action Comments:</strong> <%= details.adverse_action_comments %></p>
+              </div>
+              <div class="col-6">
+                <p><strong>Specialty:</strong> <%= ref.specialty %></p>
+                <p><strong>Board Certified?:</strong> 
+                  <%= ref&.is_board_certified ? "Yes" : "No" %>
+                </p>
+                <p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
                 <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
               </div>
             </div>
