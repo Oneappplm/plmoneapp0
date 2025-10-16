@@ -190,19 +190,21 @@ class Mhc::VerificationPlatformController < ApplicationController
         
   def profile_page
     @provider_personal_information = ProviderPersonalInformation.includes(
-        :provider_disclosures,
-        :provider_personal_information_confidential_contact,
-        :rva_informations,
-        :practice_informations,
-        provider_licensures: [:rva_informations],
-        provider_deas:       :rva_informations,
-        provider_specialties: :rva_informations,
-        provider_educations:  :rva_informations,
-        practice_information_educations: :rva_informations,
-        provider_employments: :rva_informations,
-        provider_insurance_coverages: :rva_informations,
-        provider_personal_uploaded_docs: []
-      ).find(params[:provider_personal_info])
+      :provider_disclosures,
+      :provider_personal_information_confidential_contact,
+      :practice_informations,
+      provider_licensures: [:rva_informations],
+      provider_deas:       :rva_informations,
+      provider_specialties: :rva_informations,
+      provider_educations:  :rva_informations,
+      practice_information_educations: :rva_informations,
+      provider_employments: :rva_informations,
+      provider_insurance_coverages: :rva_informations,
+      provider_personal_uploaded_docs: [],
+      # ✅ Preload nested association to avoid N+1 on DEA logs
+      rva_informations: [:dea_webcrawler_logs, :licensure_webcrawler_logs, :oig_webcrawler_logs]
+    ).find(params[:provider_personal_info])
+
     unless @provider_personal_information
       flash[:error] = "Provider personal information not found."
       redirect_to mhc_verification_platform_index_path and return
@@ -528,7 +530,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'peer_ref'
-      @peer_ref = ProviderPersonalInformationPeerRef.all
+      @peer_ref = @provider_personal_information.provider_personal_information_peer_refs
     end
 
     if params[:page_tab] == 'add_new_peer_ref' 
