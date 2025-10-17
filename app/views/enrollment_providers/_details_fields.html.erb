@@ -313,89 +313,128 @@
   </button>
 </div>
 
+
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var enrollmentStatusSelect = document.getElementById('enrollment_status_id');
-    var effectiveDateField = document.getElementById('effective_date_id');
+/*
+  Enrollment status behavior
+  - Works with Turbo (turbo:load)
+  - Uses focusin to capture previous value when user starts interacting
+  - Uses delegated change to handle user changes and confirm
+  - Initializes visibility on load without prompting
+*/
+(function () {
+  // run once guard (avoid double-binding)
+  if (window.__enrollmentStatusBehaviorInitialized) return;
+  window.__enrollmentStatusBehaviorInitialized = true;
 
-    function toggleVisibility() {
-      var selectedStatus = enrollmentStatusSelect.value;
+  // Helper: show/hide fields in a payer-entry
+  function toggleFieldsForEntry(entry, selectedStatus) {
+    if (!entry) return;
+    const effectiveDateField = entry.querySelector(".effective_date_field");
+    const processingField = entry.querySelector(".processing-field");
+    const deniedField = entry.querySelector(".denied-field");
+    const terminatedField = entry.querySelector(".terminated-field");
+    const dateField = entry.querySelector(".date_field");
 
-      // Toggle effective date field
-      if (selectedStatus === 'effective') {
-        effectiveDateField.classList.remove('d-none');
-      } else {
-        effectiveDateField.classList.add('d-none');
+    // Hide all first
+    [effectiveDateField, processingField, deniedField, terminatedField, dateField].forEach(f => {
+      if (f) f.classList.add("d-none");
+    });
+
+    if (["effective","approved"].includes(selectedStatus)) {
+      effectiveDateField?.classList.remove("d-none");
+    } else if (selectedStatus === "processing") {
+      processingField?.classList.remove("d-none");
+    } else if (selectedStatus === "denied") {
+      deniedField?.classList.remove("d-none");
+    } else if (selectedStatus === "terminated") {
+      terminatedField?.classList.remove("d-none");
+    }
+
+    if (selectedStatus && dateField) dateField.classList.remove("d-none");
+  }
+
+  // Initialize all existing payer-entry blocks (no confirm)
+  function initializeAll() {
+    document.querySelectorAll(".payer-entry").forEach(entry => {
+      const select = entry.querySelector(".multi-enrollment-status");
+      if (!select) return;
+      // set a dataset flag to mark that we've initialized this select
+      if (!select.dataset._initialized) {
+        select.dataset.previousValue = select.value ?? "";
+        select.dataset._initialized = "1";
+      }
+      toggleFieldsForEntry(entry, select.value ?? "");
+    });
+  }
+
+  // When user focuses a status select, store its current value as previousValue
+  function onFocusIn(e) {
+    const el = e.target;
+    if (!el || !el.matches) return;
+    if (!el.matches(".multi-enrollment-status")) return;
+    // mark that focus was user-driven - store current value
+    el.dataset.previousValue = el.value ?? "";
+    // do NOT toggle here (we only capture previous value)
+  }
+
+  // When user changes select (delegated), confirm if it was a user-driven change
+  function onChange(e) {
+    const el = e.target;
+    if (!el || !el.matches || !el.matches(".multi-enrollment-status")) return;
+
+    // ensure entry exists
+    const entry = el.closest(".payer-entry");
+    if (!entry) {
+      // still toggle with no confirm if structure missing
+      toggleFieldsForEntry(document, el.value ?? "");
+      return;
+    }
+
+    const prev = el.dataset.previousValue;
+    const curr = el.value ?? "";
+
+    // If previous value exists (captured on focus), and differs, prompt the user.
+    // If prev is undefined or empty string but same as curr — no prompt.
+    // If prev is undefined (no focus happened) — treat as programmatic/init change: no prompt.
+    if (typeof prev !== "undefined" && prev !== "" && prev !== curr) {
+      const ok = confirm("Are you sure you want to change the status?");
+      if (!ok) {
+        // revert UI and do not toggle fields
+        el.value = prev;
+        // Ensure dataset previousValue remains intact
+        el.dataset.previousValue = prev;
+        return;
       }
     }
 
-    // Add event listener
-    enrollmentStatusSelect.addEventListener('change', toggleVisibility);
+    // update previousValue after change
+    el.dataset.previousValue = curr;
+    // toggle fields based on new selection
+    toggleFieldsForEntry(entry, curr);
+  }
 
-    // Initialize visibility on page load
-    toggleVisibility();
-  });
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll("select[data-confirm-on-change]").forEach(function (select) {
-    // clone element to remove old event listeners
-    const newSelect = select.cloneNode(true);
-    select.parentNode.replaceChild(newSelect, select);
+  // Attach delegated event handlers once
+  function attachHandlers() {
+    // Focusin to capture previousValue (works for keyboard focus too)
+    document.body.addEventListener("focusin", onFocusIn, true);
+    // Delegated change handler for selects
+    document.body.addEventListener("change", onChange, true);
+  }
 
-    let previousValue = newSelect.value;
+  // Hook initialization to turbo:load and DOMContentLoaded (Turbo fires turbo:load on initial visit)
+  function boot() {
+    initializeAll();
+    attachHandlers();
+  }
 
-    newSelect.addEventListener("change", function () {
-      let confirmed = confirm("Are you sure you want to change the status?");
-      if (!confirmed) {
-        newSelect.value = previousValue;
-      } else {
-        previousValue = newSelect.value;
-      }
-    });
-  });
-});
-// Add new question dynamically
-function addQuestions(button) {
-  let container = $(button).closest('.payer-entry').find('.question-fields');
-  let index = $(button).closest('.payer-entry').data('index');
-  let q_index = container.children().length;
-
-  let newField = `
-    <div class="question-field mb-1 py-3">
-      <div class="row">
-        <div class="col-lg-6">
-          <input type="text"
-                 name="enrollment_provider[details_attributes][${index}][questions_attributes][${q_index}][question]"
-                 class="form-control border-dark"
-                 placeholder="Question">
-        </div>
-        <div class="col-lg-6">
-          <input type="text"
-                 name="enrollment_provider[details_attributes][${index}][questions_attributes][${q_index}][answer]"
-                 class="form-control border-dark"
-                 placeholder="Answer">
-        </div>
-      </div>
-      <input type="hidden"
-             name="enrollment_provider[details_attributes][${index}][questions_attributes][${q_index}][_destroy]"
-             class="destroy-field" value="0">
-      <button type="button" class="btn btn-danger btn-xs py-1 remove-dynamic-fields" onclick="deleteQuestions(this)">
-        Remove
-      </button>
-    </div>
-  `;
-
-  container.append(newField);
-}
-
-// Mark question for destruction
-function deleteQuestions(button) {
-  let entry = $(button).closest('.question-field');
-  entry.find('.destroy-field').val('1'); // Rails will delete this on save
-  entry.hide();
-}
-
-
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+  // Also run on turbo loads if you want (keeps everything robust with Turbo)
+  document.addEventListener("turbo:load", initializeAll);
+})();
 </script>
 
