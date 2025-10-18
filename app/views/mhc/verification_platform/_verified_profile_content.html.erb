@@ -551,6 +551,45 @@
     <% end %>
   </div>
 
+  <!-- Facilities -->
+  <div class="section mt-4">
+    <% facilties = provider_personal_information.provider_personal_information_facilities
+              .where(audit_status: 'Quality Audited')            
+              .joins(:rva_informations)
+              .where.not(rva_informations: { audit_status: [nil], audit_comments: [nil, 'SkipRVA'] })
+              .distinct %>
+    <% if facilties.any? %>   
+      <div class="section-title">Facilities</div>
+      <% facilties.each do |facility| %>
+        <% details = facility.rva_informations.where(audit_status: true)   
+                        .where.not(audit_comments: [nil, 'SkipRVA'])
+                        .order(created_at: :desc)
+                        .first %>
+        <% if details.present? %>
+          <div class="section-content">
+            <div class="row">
+              <div class="col-6">
+                <p><strong>Facility:</strong> <%= facility.facility_name %></p>
+                <p><strong>Appointment Date:</strong> <%= facility.appointment_date&.strftime('%m/%d/%Y') %> </p>
+                <p><strong>Department:</strong> <%= facility.department %></p>
+                <p><strong>Source:</strong> <%= details&.source_name %></p>
+                <p><strong>Source Date:</strong> <%= details&.source_date&.strftime('%m/%d/%Y') %></p>
+                <p><strong>Review Criteria:</strong> <%= details.adverse_action || 'None' %></p>
+              </div>
+              <div class="col-6">
+                <p><strong>Expiration Date:</strong> <%= facility.expiration_date&.strftime('%m/%d/%Y') %></p>
+                <p><strong>Status:</strong> <%= facility&.status %>
+                </p>
+                <p><strong>Verifier:</strong> <%= details&.verifier %></p>
+                <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
   <!-- Peer Ref -->
   <div class="section mt-4">
     <% peer = provider_personal_information.provider_personal_information_peer_refs
