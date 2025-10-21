@@ -71,7 +71,7 @@ class ProviderPersonalInformation < ApplicationRecord
   accepts_nested_attributes_for :provider_personal_information_confidential_contact, allow_destroy: false, update_only: true
 
 
-  def fullname = "#{last_name}, #{first_name} #{middle_name}"
+  def fullname = "#{last_name} #{first_name} #{middle_name}"
   def correspondence_address_type_correspondence_address_type_descripion = correspondence_address_type_correspondence_address_type_descrip
 
   before_validation :set_provider_attest

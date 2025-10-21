@@ -46,11 +46,11 @@
 								   I have received the Authorization, Attestation and Release.
 								  </label>
 							</div>
-							<%# if all_information_completed?(@current_provider_source) %>
+							<% if all_information_completed?(@provider) %>
 								<a  href="<%= custom_provider_source_path(page: "signature_page")%>"class="btn btn-sm btn-primary fw-bold">Next</a>
-							<%# else %>
-								<%# <a  href="#", class="btn btn-sm btn-danger fw-bold">Next</a> %>
-							<%# end %>
+							<% else %>
+								<a  href="#" id="incomplete-attestation" class="btn btn-sm btn-danger fw-bold">Next</a>
+							<% end %>
 						</div>
 					</div>
 				</div>
@@ -60,3 +60,12 @@
 	</div>
 
 
+<script>
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest("#incomplete-attestation");
+    if (btn) {
+      e.preventDefault(); // stop the default "#" jump
+      alert("Your attestation is not complete until you see the confirmation screen.");
+    }
+  });
+</script>
