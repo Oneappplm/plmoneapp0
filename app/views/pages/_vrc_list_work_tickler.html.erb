@@ -38,10 +38,10 @@
 <div class="d-flex gap-3 overflow-scroll py-2">
   <% @vrc_directors.each do |director| %>
     <% director.provider_personal_informations.where('committee_date >= ?', Date.today).pluck(:committee_date).uniq.each do |completed_record| %>
-      <div class="border border-dark p-2 text-dark date-box" data-date="<%= completed_record.to_date %>">
-        <%= completed_record.to_date %>
+      <div class="border border-dark p-2 text-dark date-box" data-date="<%= completed_record&.strftime('%m/%d/%Y') %>">
+        <%= completed_record&.strftime('%m/%d/%Y') %>
         <%= form_with url: '/virtual-review-committee/records', method: :get, html: { class: 'date-form', style: 'display:none;' } do |form| %>
-          <%= form.hidden_field :selected_date, value: completed_record.to_date %>
+          <%= form.hidden_field :selected_date, value: completed_record&.strftime('%m/%d/%Y') %>
         <% end %>
       </div>
     <% end %>
@@ -89,8 +89,8 @@
                      <td>Director</td>
                      <td><%= selected_committee_date&.cred_cycle %></td>
                      <td><%= selected_committee_date&.review_level %></td>
-                     <td><%= selected_committee_date.review_date&.to_date %></td>
-                     <td><%= selected_committee_date.committee_date&.to_date %></td>
+                     <td><%= selected_committee_date.review_date&.strftime('%m/%d/%Y') %></td>
+                     <td><%= selected_committee_date.committee_date&.strftime('%m/%d/%Y') %></td>
                      <td>
                         <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
                         <%#= selected_committee_date.status %>
@@ -118,8 +118,8 @@
                            <td>Director</td>
                            <td><%= assigned_records.cred_cycle %></td>
                            <td><%= assigned_records.review_level %></td>
-                           <td><%= assigned_records.review_date.to_date %></td>
-                           <td><%= assigned_records.committee_date.to_date %></td>
+                           <td><%= assigned_records.review_date&.strftime('%m/%d/%Y') %></td>
+                           <td><%= assigned_records.committee_date&.strftime('%m/%d/%Y') %></td>
                            <td>
                               <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
                               <%= assigned_records.status %>
@@ -146,8 +146,8 @@
                            <td>Director</td>
                            <td><%= assigned_records.cred_cycle %></td>
                            <td><%= assigned_records.review_level %></td>
-                           <td><%= assigned_records.review_date.to_date %></td>
-                           <td><%= assigned_records.committee_date.to_date %></td>
+                           <td><%= assigned_records.review_date&.strftime('%m/%d/%Y') %></td>
+                           <td><%= assigned_records.committee_date&.strftime('%m/%d/%Y') %></td>
                            <td>
                               <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
                               <%#= assigned_records.status %>
