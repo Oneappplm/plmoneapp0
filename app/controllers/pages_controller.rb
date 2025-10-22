@@ -80,7 +80,7 @@ class PagesController < ApplicationController
   def unassigned_records
     selected_ids = params[:selected_ids][0].split(',').map(&:to_i)
     puts "Selected IDs: #{selected_ids.inspect}"
-    VirtualReviewCommittee.where(id: selected_ids).update_all(progress_status: 'to_be_assigned')
+    ProviderPersonalInformation.where(id: selected_ids).update_all(progress_status: 'to_be_assigned')
 
     redirect_to virtual_review_committee_path, notice: 'Assignments have been successfully removed'
   end
