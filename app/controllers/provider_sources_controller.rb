@@ -24,7 +24,7 @@ class ProviderSourcesController < ApplicationController
         .distinct # Ensure uniqueness
     else
 			# @provider_sources = ProviderSource.where(created_by_user: current_user.id)
-			@provider_sources = ProviderSource.all
+			@provider_sources = ProviderSource.paginate(page: params[:page], per_page: params[:per_page] || 10)
 			@provider_source = ProviderSource.new
 		end
 	end
