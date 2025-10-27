@@ -78,23 +78,25 @@
                     show_virtual_review_committee_path(provider_personal_information.id)
                   ) %>
                 </td>
-                <td><%= provider_personal_information.provider_type_provider_type_abbreviation %></td>
+                <td><%= provider_personal_information&.practitioner_type %></td>
                 <td>
-                  <%= provider_personal_information.cred_cycle %>
+                  <%= provider_personal_information.cred_cycle&.titleize || '' %>
                 </td>
                 <td><%= provider_personal_information.psv_completed_date&.strftime('%m/%d/%Y') %></td>
                 <td><%= provider_personal_information.review_level %></td>
                 <td><%= provider_personal_information.recred_due_date&.strftime('%m/%d/%Y') %></td>
                 <td><%= provider_personal_information.review_date&.strftime('%m/%d/%Y') %></td>
                 <td><%= provider_personal_information.committee_date&.strftime('%m/%d/%Y') %></td>
-                <% if provider_personal_information.progress_status == "completed" %>
-                  <td><%= provider_personal_information.vote_date&.strftime('%m/%d/%Y') %></td>
-                <% end %>
+                <td>
+                  <% if provider_personal_information.progress_status == "completed" %>
+                    <%= provider_personal_information.vote_date&.strftime('%m/%d/%Y') %>
+                  <% end %>
+                </td>
                 <td>
                   <%#= vrc&.status %>
-                  <% if provider_personal_information.progress_status == "completed" %>
-                    <span style="font-size: 10px;">Approved</span>
-                  <% end %>
+                  <%# if provider_personal_information.progress_status == "completed" %>
+                    <span style="font-size: 10px;"><%= provider_personal_information.status %></span>
+                  <%# end %>
                 </td>
                 <td><%= provider_personal_information.npi %></td>
               </tr>
