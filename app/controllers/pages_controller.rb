@@ -360,37 +360,47 @@ class PagesController < ApplicationController
   # end
 
   def record_approval
-    provider_params = params.permit(:id, :status, :description, :send_confirmation, provider_ids: [])
-
-    provider_ids = provider_params[:provider_ids].presence || [provider_params[:id]]
-
-    desc = (params[:other_checkbox].present? && provider_params[:description].present?) ? "OTHER" : provider_params[:description]
-
-    updated = []
-    failed = []
+    # Get basic params
+    provider_ids = Array.wrap(params[:provider_ids].presence || params[:id])
+    description = params[:description].presence
+    updated, failed = [], []
 
     provider_ids.each do |pid|
       provider = ProviderPersonalInformation.find_by(id: pid)
       next unless provider
 
+      old_status = provider.status
       old_level = provider.review_level
 
-      if provider_params[:status].present? && provider_params[:status] != "Pending"
-        success = provider.update(
+      if params[:status].present? && params[:review_level].blank?
+        # 🟢 STATUS CHANGE ONLY
+        if provider.update(status: params[:status])
+          provider.review_level_changes.create!(
+            changed_by: current_user.email,
+            from_level: old_status,
+            to_level: params[:status],
+            reason: description
+          )
+          updated << provider
+        else
+          failed << provider
+        end
+
+      elsif params[:review_level].present? && params[:status].blank?
+        # 🟣 REVIEW LEVEL CHANGE ONLY
+        if provider.update(
           progress_status: "completed",
-          review_level: provider_params[:status],
-          review_details: desc,
+          review_level: params[:review_level],
+          review_details: description,
           vote_date: Time.current,
           vote_by: current_user.full_name,
           cred_status: "returned"
         )
-
-        if success
           provider.review_level_changes.create!(
             changed_by: current_user.email,
             from_level: old_level,
-            to_level: provider_params[:status],
-            reason: desc
+            to_level: params[:review_level],
+            reason: description
           )
           updated << provider
         else
@@ -399,23 +409,16 @@ class PagesController < ApplicationController
       end
     end
 
-    if provider_params[:send_confirmation] == "1"
-      updated.each do |p|
-        ProviderMailer.confirmation_email(p).deliver_later if defined?(ProviderMailer)
-      end
-    end
-
     if updated.any?
       flash[:notice] = "Updated #{updated.size} provider(s) successfully."
     elsif failed.any?
       flash[:alert] = "Some records failed: #{failed.map(&:id).join(', ')}"
     else
-      flash[:alert] = "No status change applied."
+      flash[:alert] = "No changes applied — missing status or review level."
     end
 
     redirect_to virtual_review_committee_path
   end
-
 
   def providers;end
 
