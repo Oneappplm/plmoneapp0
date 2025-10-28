@@ -95,6 +95,7 @@ class OfficeManagersController < ApplicationController
       if @provider.present?
         group_engage_provider = @provider.group_engage_provider
         user = group_engage_provider&.user
+        ppi_info = @provider.provider_personal_information
 
         # Destroy user sidebar preferences first (if any)
         UserSidebarPreference.where(user_id: user.id).destroy_all if user.present?
@@ -104,6 +105,9 @@ class OfficeManagersController < ApplicationController
 
         # Destroy group engage provider (if exists)
         group_engage_provider&.destroy
+
+        # Destroy ppi info
+        ppi_info&.destroy
 
         # Finally destroy provider itself
         @provider.destroy
