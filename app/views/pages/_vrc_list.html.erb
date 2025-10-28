@@ -84,7 +84,12 @@
                 </td>
                 <td><%= provider_personal_information.psv_completed_date&.strftime('%m/%d/%Y') %></td>
                 <td><%= provider_personal_information.review_level %></td>
-                <td><%= provider_personal_information.recred_due_date&.strftime('%m/%d/%Y') %></td>
+                <td>
+                  <% if provider_personal_information.cred_cycle&.downcase == 'cred' %>
+                    <% recred_date = provider_personal_information.recred_due_date || (Date.today + 2.years) %>
+                    <%= recred_date.strftime('%m/%d/%Y') %>
+                  <% end %>
+                </td>
                 <td><%= provider_personal_information.review_date&.strftime('%m/%d/%Y') %></td>
                 <td><%= provider_personal_information.committee_date&.strftime('%m/%d/%Y') %></td>
                 <td>
@@ -143,11 +148,11 @@
                       <div class="col-lg-6 ">
                         <div class="mb-4">
                           <%= form.label :review_date, class: 'form-label' %>
-                          <%= form.date_field :review_date, class: 'form-control', required: true %>
+                          <%= form.date_field :review_date, class: 'form-control', required: true, min: Date.today %>
                         </div>
                        <div>
                             <%= form.label :committee_date, class: 'form-label' %>
-                            <%= form.date_field :committee_date, class: 'form-control', required: true %>
+                            <%= form.date_field :committee_date, class: 'form-control', required: true, min: Date.today %>
                             <% unless params[:'vrc-progress-status'] == "assigned" || params[:'vrc-progress-status'] == "completed" %>
                               <%= form.text_field :progress_status, value: "assigned", class: 'form-control', style: 'display: none;' %>
                             <% end %>
