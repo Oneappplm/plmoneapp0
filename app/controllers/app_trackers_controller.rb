@@ -47,9 +47,9 @@ class AppTrackersController < ProvidersController
 		@client_organizations = @client_organizations.where(organization_name: params[:organization_name]) if params[:organization_name].present?	  
 
 	  if @practice_information.exists? && @client_organizations.exists? && @provider_personal_information.exists?
-		  # Results found
-		else
-		  flash[:alert] = "No results found"
+		#   # Results found
+		# else
+		#   flash[:alert] = "No results found"
 		end
 	end
 
