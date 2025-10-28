@@ -283,33 +283,42 @@ class ProviderSourcesController < ApplicationController
   end
 
   def autosave_multi_record
-    model = params[:model]
-    id = params[:id]
-    content = params[:content]
-    field = params[:field]
+	  model = params[:model]
+	  id = params[:id]
+	  content = params[:content]
+	  field = params[:field]
 
-    if model == 'dea' || model == 'cds'
-		  ProviderSources::AutosaveService.new(
-		    source: current_provider_source,
-		    field_name: field,
-		    value: content,
-		    model_id: id,
-		    model: model
-		  ).perform
-		end
+	  Rails.logger.debug ">>> AUTOSAVE_MULTI_RECORD: model=#{model}, id=#{id}, field=#{field}, content=#{content}"
 
-    record = if model == 'dea'
-      ProviderSourcesDea.find(id)
-    elsif model == 'cds'
-      ProviderSourcesCds.find(id)
-    elsif model == 'registration'
-      ProviderSourcesRegistration.find(id)
-    elsif model == 'cme'
-      ProviderSourceCme.find(id)
-    end
+	  record_class = case model
+	                 when 'dea' then ProviderSourcesDea
+	                 when 'cds' then ProviderSourcesCds
+	                 when 'registration' then ProviderSourcesRegistration
+	                 when 'cme' then ProviderSourceCme
+	                 end
 
-    record.update_attribute(field,content)
-  end
+	  return head :bad_request unless record_class
+
+	  record = record_class.find_by(id: id)
+	  return head :not_found unless record
+
+	  # call autosave service only if needed
+	  if %w[dea cds].include?(model)
+	    ProviderSources::AutosaveService.new(
+	      source: current_provider_source,
+	      field_name: field,
+	      value: content,
+	      model_id: id,
+	      model: model
+	    ).perform
+	  end
+
+	  # explicitly log the update
+	  success = record.update(field => content)
+	  Rails.logger.debug ">>> Updated #{record_class.name} id=#{id} field=#{field} to #{content.inspect} => #{success}"
+	  render json: { success: success, field: field, value: content }
+	end
+
 
 	def fetch
 	  return unless params[:field_name].present?
@@ -321,6 +330,47 @@ class ProviderSourcesController < ApplicationController
 
 	  data = current_provider_source.data.find_or_create_by(data_key: field_name)
 
+	  # ✅ Fallback for nested model fields if no value in provider_source_data
+	  if data.data_value.blank?
+	    ps = current_provider_source
+
+	    # ✅ Try dynamic nested model first (using data-model and data-id)
+	    if params[:model_name].present?
+	      model_name = params[:model_name].to_s
+
+	      begin
+	        # Check if the provider source responds to this association
+	        if ps.respond_to?(model_name)
+	          records = ps.send(model_name)
+
+	          record =
+	            if params[:record_id].present?
+	              records.find_by(id: params[:record_id])
+	            else
+	              records.last
+	            end
+
+	          if record&.respond_to?(field_name)
+	            data.data_value = record.send(field_name)
+	          end
+	        end
+	      rescue StandardError => e
+	        Rails.logger.warn "⚠️ fetch: Could not fetch nested model value for #{model_name}. Error: #{e.message}"
+	      end
+	    end
+
+	    # # ✅ Legacy hardcoded fallback (only if still blank)
+	    # if data.data_value.blank?
+	    #   case field_name
+	    #   when "issue_state", "registration_state", "registration_number", "specialty", "issuing_board", "zip_code", "address_line_1", "issue_date", "expiration_date", "practicing_under_number"
+	    #     data.data_value = ps.registrations.last&.send(field_name)
+	    #   when "state", "schedule_helds", "does_not_expire", "expiration_date"
+	    #     data.data_value = ps.deas.last&.send(field_name)
+	    #   when "full_schedule", "practicing_in_state", "no_cds_explanation", "schedule_limit_explanation"
+	    #     data.data_value = ps.cds.last&.send(field_name)
+	    #   end
+	    # end
+	  end
 
 	  respond_to do |format|
 	    format.json do
@@ -330,7 +380,7 @@ class ProviderSourcesController < ApplicationController
 	    end
 	  end
 	end
-
+	
 	def filtered_value field_value, field_name
 		case field_name
 		when 'ps-dob'

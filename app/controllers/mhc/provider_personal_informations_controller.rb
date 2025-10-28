@@ -83,8 +83,10 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
     end
 
     # ✅ start job
-    PdfGenerationJob.set(wait: 5.seconds).perform_later(queue.id, provider, current_user.id)
-
+    # PdfGenerationJob.set(wait: 5.seconds).perform_later(queue.id, provider, current_user.id)
+    queue.pdf_queue_items.find_each do |item|
+      PdfQueueItemJob.perform_later(item.id, provider.id, current_user.id)
+    end
     render json: {
       message:       "SRFD queued successfully. Queue #: #{queue.id}",
       queue_number:  queue.id,
