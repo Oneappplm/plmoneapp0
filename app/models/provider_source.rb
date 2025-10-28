@@ -209,42 +209,109 @@ class ProviderSource < ApplicationRecord
   rescue
     false
   end
+  
 
   def registration_ids_progress
-    percentage = 0
-    prerequisites = ['', '', '']
-    with_prerequisites = ['professional_ids_progress_dea_fields','professional_ids_progress_cds_fields','professional_ids_progress_registration_fields']
+    # prereq keys stored in provider_source_data
+    prereq_keys = %w[has_dea_registration_number has_cds_registration_number registration_id_form]
+    prereq_data = data.where(data_key: prereq_keys).pluck(:data_key, :data_value).to_h.transform_values { |v| v.to_s.strip.downcase }
 
-    values = fetch_many(prerequisites)&.pluck(:data_value)
+    # Count how many prereqs have an explicit value (non-blank)
+    answered_prereqs = prereq_data.values.reject(&:blank?).count
 
-    percentage = if values.include?('yes')
-      prerequisites_with_yes = values.map.with_index{|v,idx| idx if (v != 'no' && v != nil)}.compact
-
-      fields_to_fill_up = prerequisites_with_yes.map{|y| send(with_prerequisites[y])}
-      prerequisites_with_yes.reverse_each do |idx|
-        prerequisites.delete_at(idx)
-      end
-      fields_to_answer = fields_to_fill_up.flatten + prerequisites
-      answered = fetch_many(fields_to_answer)&.pluck(:data_value).compact.reject(&:empty?).count
-      (answered.to_f/(fields_to_answer.count).to_f) * 100
-    else
-      100
+    # If user explicitly said "no" to all and there are no records at all, return 100
+    if prereq_data.values.all? { |v| v != 'yes' } && deas.blank? && cds.blank? && registrations.blank?
+      Rails.logger.debug(">>> registration_ids_progress: all prereqs not 'yes' and no records exist -> returning 100")
+      return 100
     end
-    percentage.to_i
-  end
 
-  def professional_ids_progress_dea_fields
-    ['dea_expire_date']
-  end
+    total_nested = 0
+    answered_nested = 0
 
-  def professional_ids_progress_cds_fields
-    ['cds_expire_date']
-  end
+    # Helper to check presence (treats nil, '', whitespace as blank)
+    present_value = ->(val) { val.present? && val.to_s.strip.downcase != 'nil' }
 
-  def professional_ids_progress_registration_fields
-    ['registration_number','registration_specialty','registration_issuing_board',
-      'registration_address_1', 'registration_zipcode', 'registration_issue_date', 'registration_issue_state'
-    ]
+    # ===== DEA SECTION =====
+    has_dea = prereq_data['has_dea_registration_number'] == 'yes'
+    if has_dea
+      dea_required_fields = %w[registration_number issue_date expiration_date state]
+
+      if deas.any?
+        # Count fields per record
+        deas.each do |d|
+          dea_required_fields.each do |field|
+            total_nested += 1
+            val = (d.respond_to?(field) ? d.send(field) : nil) rescue nil
+            answered_nested += 1 if present_value.call(val)
+          end
+        end
+      else
+        # No DEA records exist but user said yes -> treat as required fields unanswered
+        total_nested += dea_required_fields.size
+        Rails.logger.debug(">>> DEA: flag=yes but no DEA records -> counting #{dea_required_fields.size} required fields as unanswered")
+      end
+    end
+
+    # ===== CDS SECTION =====
+    has_cds = prereq_data['has_cds_registration_number'] == 'yes'
+    if has_cds
+      cds_required_fields = %w[registration_number issue_date expiration_date state]
+
+      if cds.any?
+        cds.each do |c|
+          cds_required_fields.each do |field|
+            total_nested += 1
+            val = (c.respond_to?(field) ? c.send(field) : nil) rescue nil
+            answered_nested += 1 if present_value.call(val)
+          end
+        end
+      else
+        total_nested += cds_required_fields.size
+        Rails.logger.debug(">>> CDS: flag=yes but no CDS records -> counting #{cds_required_fields.size} required fields as unanswered")
+      end
+    end
+
+    # ===== REGISTRATION (State / Other) SECTION =====
+    has_registration = prereq_data['registration_id_form'] == 'yes'
+    if has_registration
+      registration_required_fields = %w[
+        registration_number specialty issuing_board zip_code address_line_1
+        issue_date registration_state issue_state expiration_date practicing_under_number
+      ]
+
+      if registrations.any?
+        registrations.each do |r|
+          registration_required_fields.each do |field|
+            total_nested += 1
+            val = (r.respond_to?(field) ? r.send(field) : nil) rescue nil
+            answered_nested += 1 if present_value.call(val)
+          end
+        end
+      else
+        total_nested += registration_required_fields.size
+        Rails.logger.debug(">>> Registration: flag=yes but no registration records -> counting #{registration_required_fields.size} required fields as unanswered")
+      end
+    end
+
+    total_fields = prereq_keys.size + total_nested
+    total_answered = answered_prereqs + answered_nested
+
+    progress = if total_fields.positive?
+                 ((total_answered.to_f / total_fields.to_f) * 100).round
+               else
+                 0
+               end
+
+    Rails.logger.debug(
+      ">>> registration_ids_progress: prereq_values=#{prereq_data.inspect}, " \
+      "answered_prereqs=#{answered_prereqs}, answered_nested=#{answered_nested}, " \
+      "total_nested=#{total_nested}, total_fields=#{total_fields}, progress=#{progress}"
+    )
+
+    progress
+  rescue => e
+    Rails.logger.error("registration_ids_progress error: #{e.message}\n#{e.backtrace.join("\n")}")
+    0
   end
 
   def licensure_progress
@@ -374,9 +441,16 @@ class ProviderSource < ApplicationRecord
     total_specialty_fields = 0
     answered_specialty_fields = 0
 
-    # Helper to treat both true and false as answered
+    # Treat both true and false as answered
     answered = ->(val) { val.present? || val == false }
 
+    # --- 1️⃣ Include student intern field (stored in provider_source_data) ---
+    student_intern_value = data.find_by(data_key: 'specialty_student_intern')&.data_value
+
+    total_specialty_fields += 1
+    answered_specialty_fields += 1 if answered.call(student_intern_value)
+
+    # --- 2️⃣ Handle nested specialties ---
     specialties.each do |spec|
       # Always-required fields
       always_required_fields.each do |field|
@@ -392,52 +466,57 @@ class ProviderSource < ApplicationRecord
       intend = spec.intend_applied_for_certification_exam
 
       if certified == true
-        %w[certifying_board address_line_1 address_line_2 city state zipcode telephone].each do |field|
+        %w[
+          certifying_board address_line_1 address_line_2 city state zipcode telephone
+        ].each do |field|
           total_specialty_fields += 1
           answered_specialty_fields += 1 if spec.send(field).present?
         end
-      elsif certified == false
-        if eligible == true
-          total_specialty_fields += 1
-          answered_specialty_fields += 1 if answered.call(pending)
 
-          if pending == true
-            %w[pending_address_line_1 pending_city pending_zipcode pending_state].each do |field|
-              total_specialty_fields += 1
-              answered_specialty_fields += 1 if spec.send(field).present?
-            end
-          elsif pending == false
+      elsif certified == false && eligible == true
+        total_specialty_fields += 1
+        answered_specialty_fields += 1 if answered.call(pending)
+
+        if pending == true
+          %w[pending_address_line_1 pending_city pending_zipcode pending_state].each do |field|
             total_specialty_fields += 1
-            answered_specialty_fields += 1 if answered.call(applied)
+            answered_specialty_fields += 1 if spec.send(field).present?
+          end
 
-            if applied == true
+        elsif pending == false
+          total_specialty_fields += 1
+          answered_specialty_fields += 1 if answered.call(applied)
+
+          if applied == true
+            total_specialty_fields += 1
+            answered_specialty_fields += 1 if answered.call(accepted)
+
+            if accepted == true
               total_specialty_fields += 1
-              answered_specialty_fields += 1 if answered.call(accepted)
+              answered_specialty_fields += 1 if spec.board_exam_date.present?
+            end
 
-              if accepted == true
-                total_specialty_fields += 1
-                answered_specialty_fields += 1 if spec.board_exam_date.present?
-              end
-            elsif applied == false
+          elsif applied == false
+            total_specialty_fields += 1
+            answered_specialty_fields += 1 if answered.call(intend)
+
+            if intend == true
               total_specialty_fields += 1
-              answered_specialty_fields += 1 if answered.call(intend)
-
-              if intend == true
-                total_specialty_fields += 1
-                answered_specialty_fields += 1 if spec.intend_date_apply.present?
-              elsif intend == false
-                total_specialty_fields += 1
-                answered_specialty_fields += 1 if spec.specialties_no_board_exam_reason.present?
-              end
+              answered_specialty_fields += 1 if spec.intend_date_apply.present?
+            elsif intend == false
+              total_specialty_fields += 1
+              answered_specialty_fields += 1 if spec.specialties_no_board_exam_reason.present?
             end
           end
         end
       end
     end
 
+    # --- 3️⃣ Compute percentage ---
     if total_specialty_fields.positive?
       percentage = ((answered_specialty_fields.to_f / total_specialty_fields) * 100).round
     end
+
     percentage.to_i
   end
 
