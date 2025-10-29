@@ -31,12 +31,12 @@
 </div>
 
 <div class="row mt-2">
-	<div id="alert-notification" class="alert alert-danger text-white fs-4" style="background-color:#ff0000; display: none;" role="alert">
+	<div id="alert-notification" class="alert alert-danger text-white" style="background-color:#ff0000; display: none;" role="alert">
 	   No provider selection is made. Please select provider(s).
   </div>
 </div>
   <div class="table-responsive">
-    <table class="table table-bordered practice-table mt-3">
+    <table class="table table-bordered practice-table mt-2">
       <thead>
         <tr>
           <th class="text-white">
@@ -126,25 +126,26 @@
 			            </div>
 			            <div class="modal-body">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                      <label class="form-check-label" for="flexCheckDefault">
+                      <input class="form-check-input border-dark" type="checkbox" id="assignToAll">
+                      <label class="form-check-label" for="assignToAll">
                         ASSIGN TO ALL
                       </label>
                     </div>
                     <hr>
   		              <div class="row">
-                      <form>
-                        <div class="col-lg-6 overflow-auto" style="max-height: 300px;">
-                          <% @vrc_directors.each do |vrc_director| %>
-                            <% if vrc_director.director? %>
-                              <div class="m-3">
-                                 <input type="checkbox" name="vrc_directors[]" value="<%= vrc_director.id %>">
-                                 <p class="d-inline ms-2 text-dark"><%= vrc_director.full_name%></p>
-                              </div>
-                            <% end %>
-                           <% end %>
-                        </div>
-                      </form>
+                      <div class="col-lg-6 overflow-auto" style="max-height: 300px;">
+                        <% @vrc_directors.each do |vrc_director| %>
+                          <% if vrc_director.director? %>
+                            <div class="m-3">
+                              <input type="checkbox" 
+                                     class="director-checkbox" 
+                                     name="vrc_directors[]" 
+                                     value="<%= vrc_director.id %>">
+                              <p class="d-inline ms-2 text-dark"><%= vrc_director.full_name %></p>
+                            </div>
+                          <% end %>
+                        <% end %>
+                      </div>
                       <div class="col-lg-6 ">
                         <div class="mb-4">
                           <%= form.label :review_date, class: 'form-label' %>
@@ -201,6 +202,16 @@
 
 <script>
 $(document).ready(function () {
+
+  const assignToAll = document.getElementById("assignToAll");
+    const directorCheckboxes = document.querySelectorAll(".director-checkbox");
+
+    if (assignToAll) {
+      assignToAll.addEventListener("change", function() {
+        directorCheckboxes.forEach(cb => cb.checked = assignToAll.checked);
+      });
+    }
+
   const $submitButton = $("#submit-button");
   const $checkboxes = $("input[name='selected_ids[]']");
   const modal = new bootstrap.Modal($("#exampleModal")[0]);  // Initialize the modal
@@ -309,4 +320,3 @@ $(document).ready(function () {
   });
 });
 </script>
-
