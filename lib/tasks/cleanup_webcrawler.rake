@@ -53,4 +53,5 @@ namespace :cleanup do
       Dir.rmdir(dir)
       Rails.logger.info "🧹 Removed empty folder: #{dir}"
     end
+  end
 end
