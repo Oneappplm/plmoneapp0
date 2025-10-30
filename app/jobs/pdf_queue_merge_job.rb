@@ -67,26 +67,40 @@ class PdfQueueMergeJob < ApplicationJob
     merged_path = pdf_dir.join(filename)
 
     combined_pdf = CombinePDF.new
+
     files.each do |file_url|
-      path = Rails.root.join("public", file_url.sub(%r{^/}, ""))
-      if File.exist?(path)
-        combined_pdf << CombinePDF.load(path)
-        Rails.logger.info "📎 [MERGE] Added file to combined PDF: #{path}"
+      # Detect if it's an S3 or HTTP(S) URL
+      if file_url =~ URI::DEFAULT_PARSER.make_regexp(%w[http https])
+        Rails.logger.info "🌐 [MERGE] Downloading remote file: #{file_url}"
+
+        begin
+          # Download temporarily
+          tempfile = Tempfile.new(['remote_pdf', '.pdf'], Rails.root.join('tmp'))
+          URI.open(file_url) do |remote_file|
+            tempfile.write(remote_file.read)
+            tempfile.rewind
+          end
+          combined_pdf << CombinePDF.load(tempfile.path)
+        ensure
+          tempfile.close!
+        end
       else
-        Rails.logger.warn "⚠️ [MERGE] File missing: #{path}"
-        PdfQueueItem.where(file_path: file_url).update_all(status: "error", message: "File missing: #{path}")
+        # Handle local files
+        path = Rails.root.join("public", file_url.sub(%r{^/}, ""))
+        if File.exist?(path)
+          combined_pdf << CombinePDF.load(path)
+          Rails.logger.info "📎 [MERGE] Added local file: #{path}"
+        else
+          Rails.logger.warn "⚠️ [MERGE] Missing local file: #{path}"
+        end
       end
     end
 
-    if combined_pdf.pages.any?
-      combined_pdf.save(merged_path)
-      merged_path.to_s
-    else
-      Rails.logger.warn "⚠️ [MERGE] No valid files found for merge"
-      nil
-    end
+    combined_pdf.save(merged_path)
+    Rails.logger.info "💾 [MERGE] Saved merged file at: #{merged_path}"
+    merged_path.to_s
   end
-
+  
   # 🧹 Cleanup helper
   def clean_up_temp_files(queue, verified_item, file_links)
     Rails.logger.info "🧹 [CLEANUP] Starting cleanup of temporary and upload files"
