@@ -7,47 +7,55 @@ class PdfQueueMergeJob < ApplicationJob
     provider = ProviderPersonalInformation.find(provider_id)
     user = User.find(user_id)
 
-    Rails.logger.info "Merging PDFs for queue #{queue.id}"
+    Rails.logger.info "📄 [PDF MERGE] Starting merge for queue #{queue.id}"
 
-    # Gather files in order: Verified Profile first
-	file_links = []
+    # Collect completed files
+    file_links = []
+    verified_item = queue.pdf_queue_items.find_by(file_name: "Verified Profile", status: "completed")
+    file_links << verified_item.file_path if verified_item
+    file_links.concat(queue.pdf_queue_items.where.not(file_name: "Verified Profile").where(status: "completed").pluck(:file_path))
 
-	# 1️⃣ Verified Profile first
-	verified_item = queue.pdf_queue_items.find_by(file_name: "Verified Profile")
-	file_links << verified_item.file_path if verified_item&.status == 'completed'
+    if file_links.empty?
+      Rails.logger.warn "⚠️ [PDF MERGE] No completed PDFs found for queue #{queue.id}"
+      return
+    end
 
-	# 2️⃣ All other files
-	other_items = queue.pdf_queue_items.where.not(file_name: "Verified Profile").where(status: 'completed')
-	file_links.concat(other_items.pluck(:file_path))
+    merged_pdf_path = merge_files(file_links, provider)
+    Rails.logger.info "✅ [PDF MERGE] Created merged file: #{merged_pdf_path}"
 
-	return if file_links.empty?
+    # Save final merged file to SavedProfile (CarrierWave)
+    queue.create_saved_profile!(file_path: File.open(merged_pdf_path), file_type: "pdf")
 
-	merged_pdf_path = merge_files(file_links, provider)
+    # 🧹 Cleanup temporary files and folders
+    clean_up_temp_files(queue, verified_item, file_links)
 
+    # Remove merged file from local disk after upload
+    if File.exist?(merged_pdf_path)
+      File.delete(merged_pdf_path)
+      Rails.logger.info "🗑️ [CLEANUP] Deleted merged file: #{merged_pdf_path}"
+    end
 
-    # Save to SavedProfile
-    queue.create_saved_profile!(
-      file_path: File.open(merged_pdf_path), # CarrierWave handles storage
-      file_type: 'pdf'
+    # Update queue and provider status
+    queue.update!(
+      status: "completed",
+      generated_date: Time.current,
+      pdf_path: merged_pdf_path,
+      message: "PDF generated successfully",
+      deleted: true
     )
 
-    queue.update!(
-	  status: 'completed',
-	  generated_date: Time.current,
-	  pdf_path: merged_pdf_path,
-	  message: 'PDF generated successfully',
-	  deleted: true  # <- add this
-	)
-
     provider.update!(
-      cred_status: 'psv',
+      cred_status: "psv",
       psv_completed_date: Date.today,
-      progress_status: 'to_be_assigned',
-      verification_status: 'completed',
+      progress_status: "to_be_assigned",
+      verification_status: "completed",
       latest_audit_completed_date: Date.today
     )
 
-    Rails.logger.info "Queue #{queue.id} merged successfully -> #{merged_pdf_path}"
+    Rails.logger.info "✅ [PDF MERGE] Queue #{queue.id} merged and cleaned successfully"
+  rescue => e
+    Rails.logger.error "❌ [PDF MERGE] FAILED for queue #{queue_id}: #{e.class} - #{e.message}"
+    queue.update(status: "error", message: e.message) if queue
   end
 
   private
@@ -60,11 +68,65 @@ class PdfQueueMergeJob < ApplicationJob
 
     combined_pdf = CombinePDF.new
     files.each do |file_url|
-      path = Rails.root.join('public', file_url.sub(%r{^/}, ''))
-      combined_pdf << CombinePDF.load(path) if File.exist?(path)
+      path = Rails.root.join("public", file_url.sub(%r{^/}, ""))
+      if File.exist?(path)
+        combined_pdf << CombinePDF.load(path)
+        Rails.logger.info "📎 [MERGE] Added file to combined PDF: #{path}"
+      else
+        Rails.logger.warn "⚠️ [MERGE] File missing: #{path}"
+        PdfQueueItem.where(file_path: file_url).update_all(status: "error", message: "File missing: #{path}")
+      end
     end
 
-    combined_pdf.save(merged_path)
-    merged_path.to_s
+    if combined_pdf.pages.any?
+      combined_pdf.save(merged_path)
+      merged_path.to_s
+    else
+      Rails.logger.warn "⚠️ [MERGE] No valid files found for merge"
+      nil
+    end
+  end
+
+  # 🧹 Cleanup helper
+  def clean_up_temp_files(queue, verified_item, file_links)
+    Rails.logger.info "🧹 [CLEANUP] Starting cleanup of temporary and upload files"
+
+    delete_path(Rails.root.join("public", verified_item.file_path.sub(%r{^/}, "")), "Verified Profile") if verified_item&.file_path.present?
+
+    queue.pdf_queue_items.where(temporary: true).each do |temp_item|
+      next unless temp_item.file_path.present?
+      delete_path(Rails.root.join("public", temp_item.file_path.sub(%r{^/}, "")), "Temporary Uploaded File")
+    end
+
+    file_links.each do |path|
+      full_path = Rails.root.join("public", path.sub(%r{^/}, ""))
+      next unless full_path.to_s.include?("/uploads/")
+      delete_path(full_path, "Uploaded Source File")
+    end
+
+    clean_empty_upload_dirs
+  end
+
+  def delete_path(path, label)
+    if File.exist?(path)
+      if File.directory?(path)
+        FileUtils.rm_rf(path)
+        Rails.logger.info "🗑️ [CLEANUP] Deleted directory (#{label}): #{path}"
+      else
+        File.delete(path)
+        Rails.logger.info "🗑️ [CLEANUP] Deleted file (#{label}): #{path}"
+      end
+    else
+      Rails.logger.warn "⚠️ [CLEANUP] #{label} missing: #{path}"
+    end
+  end
+
+  def clean_empty_upload_dirs
+    uploads_root = Rails.root.join("public/uploads")
+    Dir.glob("#{uploads_root}/**/*").select { |d| File.directory?(d) }.each do |dir|
+      next unless (Dir.entries(dir) - %w[. ..]).empty?
+      Dir.rmdir(dir)
+      Rails.logger.info "🧹 [CLEANUP] Removed empty uploads dir: #{dir}"
+    end
   end
 end

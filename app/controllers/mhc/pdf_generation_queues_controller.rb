@@ -29,7 +29,13 @@ class Mhc::PdfGenerationQueuesController < ApplicationController
     if uploaded_file.present?
       file_path = Rails.root.join("public/uploads", uploaded_file.original_filename)
       File.open(file_path, "wb") { |f| f.write(uploaded_file.read) }
-      queue.pdf_queue_items.create!(file_name: uploaded_file.original_filename, file_path: "/uploads/#{uploaded_file.original_filename}", status: "queued")
+
+      queue.pdf_queue_items.create!(
+        file_name: uploaded_file.original_filename,
+        file_path: "/uploads/#{uploaded_file.original_filename}",
+        status: "queued",
+        temporary: true  # mark for deletion later
+      )
     end
 
     # Enqueue each item separately
