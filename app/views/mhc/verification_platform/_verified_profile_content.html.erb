@@ -14,17 +14,17 @@
         <% provider_personal_information.provider_personal_information_app_trackings.each do |app_tracking| %>
           <tr>
             <td>
-              <%= if app_tracking.master_issues.present? || app_tracking.master_reviews.present?
-                    "UNCLEAN"
-                  else
-                    app_tracking.file_status.upcase
-                  end
-              %>
+              <% if app_tracking.master_issues.compact_blank.any? || app_tracking.master_reviews.compact_blank.any? %>
+                UNCLEAN
+              <% else %>
+                CLEAN
+                <%#= app_tracking.file_status.present? ? app_tracking.file_status.upcase : "CLEAN" %>
+              <% end %>
             </td>
-            
+                        
             <!-- File Issue Reason -->
             <td>
-              <% if app_tracking.master_issues.present? %>
+              <% if app_tracking.master_issues.compact_blank.any? %>
                 <ul class="mb-0 ps-3">
                   <% app_tracking.master_issues.each do |issue| %>
                     <li><%= issue %></li>
@@ -37,7 +37,7 @@
 
             <!-- File Review Reason -->
             <td>
-              <% if app_tracking.master_reviews.present? %>
+              <% if app_tracking.master_reviews.compact_blank.any? %>
                 <ul class="mb-0 ps-3">
                   <% app_tracking.master_reviews.each do |review| %>
                     <li><%= review %></li>
