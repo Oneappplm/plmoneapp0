@@ -7,30 +7,32 @@ class PdfQueueItemJob < ApplicationJob
     provider = ProviderPersonalInformation.find(provider_id)
     user = User.find(user_id)
 
-    Rails.logger.info "Processing PdfQueueItem #{item.id} for queue #{item.pdf_generation_queue.id}"
+    Rails.logger.info "🧾 [PDF ITEM] Processing PdfQueueItem #{item.id} for queue #{item.pdf_generation_queue.id}"
 
     if item.file_name == "Verified Profile"
       pdf_path = render_verified_profile_pdf(provider, user)
       item.update!(status: 'completed', file_path: pdf_path, message: 'Verified Profile PDF generated')
     else
-      # validate and mark item
-      if File.exist?(Rails.root.join('public', item.file_path.sub(%r{^/}, '')))
+      local_path = Rails.root.join('public', item.file_path.sub(%r{^/}, ''))
+      if File.exist?(local_path)
         item.update!(status: 'completed', message: 'File ready for merge')
       else
-        item.update!(status: 'error', message: 'File missing')
+        item.update!(status: 'error', message: "File missing: #{local_path}")
+        Rails.logger.warn "⚠️ [PDF ITEM] Missing file for item #{item.id}: #{local_path}"
       end
     end
 
-    # Trigger merge if all items done
+    # Trigger merge only once when all items completed
     queue = item.pdf_generation_queue
     queue.with_lock do
-	  if queue.pdf_queue_items.where.not(status: 'completed').count == 0 && !queue.merge_enqueued?
-	    queue.update!(merge_enqueued: true)
-	    PdfQueueMergeJob.perform_later(queue.id, provider.id, user.id)
-	  end
-	end
+      if queue.pdf_queue_items.where.not(status: 'completed').count.zero? && !queue.merge_enqueued?
+        queue.update!(merge_enqueued: true)
+        PdfQueueMergeJob.perform_later(queue.id, provider.id, user.id)
+        Rails.logger.info "🚀 [PDF ITEM] All items completed. Enqueued merge job for queue #{queue.id}"
+      end
+    end
   rescue => e
-    Rails.logger.error "PdfQueueItemJob FAILED for item #{item.id}: #{e.class} #{e.message}"
+    Rails.logger.error "❌ [PDF ITEM] FAILED for item #{item.id}: #{e.class} - #{e.message}"
     item.update!(status: 'error', message: e.message)
   end
 
@@ -43,19 +45,21 @@ class PdfQueueItemJob < ApplicationJob
     pdf_path = pdf_dir.join(filename)
 
     html_content = ApplicationController.render(
-	  template: 'mhc/verification_platform/verified_profile_pdf',
-	  layout: 'pdf',
-	  locals: {
-	    provider_personal_information: provider,
-	    user: user,
-	    oig_details: provider.rva_informations.where(tab: 'OIG').where(status: 'completed').where.not(source_date: nil),
-	    npdb_details: provider.rva_informations.where(tab: 'NPDB'),
-	    grouped_disclosures: provider.provider_disclosures
-	                          .where(disclosure_answer_flag: true)
-	                          .where.not(disclosure_explanation: [nil, ""])
-	                          .group_by { |d| QUESTIONS_DISCLOSURE.find { |_h, qs| qs.include?(d.disclosure_question_disclosure_summary) }&.first }
-	  }
-	)
+      template: 'mhc/verification_platform/verified_profile_pdf',
+      layout: 'pdf',
+      locals: {
+        provider_personal_information: provider,
+        user: user,
+        oig_details: provider.rva_informations.where(tab: 'OIG', status: 'completed').where.not(source_date: nil),
+        npdb_details: provider.rva_informations.where(tab: 'NPDB'),
+        grouped_disclosures: provider.provider_disclosures
+                                    .where(disclosure_answer_flag: true)
+                                    .where.not(disclosure_explanation: [nil, ""])
+                                    .group_by do |d|
+                                      QUESTIONS_DISCLOSURE.find { |_h, qs| qs.include?(d.disclosure_question_disclosure_summary) }&.first
+                                    end
+      }
+    )
 
     pdf_file = WickedPdf.new.pdf_from_string(html_content)
     File.open(pdf_path, 'wb') { |f| f.write(pdf_file) }
