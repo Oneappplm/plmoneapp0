@@ -56,42 +56,53 @@ class WebscraperService < ApplicationService
 
 	def save_screenshot
 	  if crawler_folder_name == 'pals'
-	    # Scroll to bottom and resize to full height for PALS
 	    crawler.execute_script('window.scrollTo(0, document.body.scrollHeight);')
 	    sleep 2
 	    height = crawler.execute_script("return document.body.scrollHeight")
 	    crawler.manage.window.resize_to(1024, height)
 	  else
-	    # Default behavior for all other scrapers
 	    crawler.execute_script('window.scrollTo(0, 0);')
 	    crawler.manage.window.resize_to(1024, 1024)
 	  end
 
-	  # Save screenshot
-	  save_path = PUBLIC_PATH.join(crawler_folder_name, SCREENSHOT_FILENAME)
-	  crawler.save_screenshot(save_path)
+	  # Define base paths
+	  base_path = Rails.root.join('public', 'webscrape', crawler_folder_name)
+	  FileUtils.mkdir_p(base_path) unless Dir.exist?(base_path)
 
-	  # Generate PDF from screenshot
+	  screenshot_path = base_path.join('screenshot.png')
+	  pdf_path        = base_path.join('screenshot.pdf')
+
+	  # === Step 1: Save screenshot
+	  crawler.save_screenshot(screenshot_path)
+
+	  # === Step 2: Convert screenshot to PDF
 	  pdf = Prawn::Document.new
-	  png_path = Rails.root.join('public', 'webscrape', crawler_folder_name, 'screenshot.png')
-	  pdf.image png_path, fit: [500, 500], position: :center
+	  pdf.image screenshot_path, fit: [500, 500], position: :center
+	  pdf.render_file(pdf_path)
 
-	  # Save PDF
-	  pdf_filename = 'screenshot.pdf'
-	  pdf_path = Rails.root.join('public', 'webscrape', crawler_folder_name, pdf_filename)
-	  pdf.render_file pdf_path
+	  # === Step 3: Log to database or attach (if required)
+	  WebcrawlerLog.create!(
+	    crawler_type: crawler_folder_name.upcase,
+	    file_path: pdf_path.to_s.gsub(Rails.root.to_s + '/', ''),
+	    status: 'success'
+	  )
 
-	  # Create WebcrawlerLog or log output (if needed)
-	  filepath = ['public', 'webscrape', crawler_folder_name, pdf_filename].join('/')
-	  extension = File.extname(pdf_path)
-	  crawl_type = crawler_folder_name.upcase
-	  
-	rescue => exception
-	  # Log failure if an error occurs
+	  # === Step 4: Cleanup temporary files
+	  [screenshot_path, pdf_path].each do |path|
+	    if File.exist?(path)
+	      File.delete(path)
+	      Rails.logger.info("🗑️ Deleted temp file: #{path}")
+	    else
+	      Rails.logger.info("⚠️ Temp file not found: #{path}")
+	    end
+	  end
+
+	rescue => e
 	  WebcrawlerLog.create(
 	    crawler_type: crawler_folder_name.upcase,
 	    status: 'failed'
 	  )
+	  Rails.logger.error("❌ Screenshot failed for #{crawler_folder_name}: #{e.message}")
 	  nil
 	end
 
