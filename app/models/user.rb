@@ -249,15 +249,15 @@ class User < ApplicationRecord
    end
   end
 
-  def can_access? page = nil
-    # role-based access v2 is now attached to current_user instead of application helpers
-    return false unless page.present?
+  def can_access?(page = nil)
+    return false if page.blank?
 
-    # to_role is monkey patch from String class in initializers/string.rb
-    # force to return false instead of nil if role is not found
-    roles.find_by(page: page.to_role)&.can_read || false
+    # Cache roles in memory to avoid N+1 queries
+    @role_access_map ||= roles.pluck(:page, :can_read).to_h
+
+    @role_access_map[page.to_role] || false
   end
-
+  
   def restricted? page
     !can_access?(page)
   end

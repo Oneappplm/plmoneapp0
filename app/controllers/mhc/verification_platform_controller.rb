@@ -287,7 +287,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'practice_info'
-      @q = PracticeInformation.ransack(params[:q])
+      @q = @provider_personal_information.practice_informations.ransack(params[:q])
       @practice_informations = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
       @url = mhc_practice_informations_path
     end
@@ -444,7 +444,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'liability'
-      @q = ProviderInsuranceCoverage.ransack(params[:q])
+      @q = @provider_personal_information.provider_insurance_coverages.ransack(params[:q])
       @provider_insurance_coverages = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
       @states = State.all
       @limit = 10 # Set limit
@@ -549,7 +549,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
 
     if params[:page_tab] == 'facilities'
-      @facilities = ProviderPersonalInformationFacility.all
+      @facilities = @provider_personal_information.provider_personal_information_facilities.all
     end
 
     if params[:page_tab] == 'add_new_facility' 

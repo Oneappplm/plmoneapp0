@@ -69,26 +69,53 @@ class PdfQueueMergeJob < ApplicationJob
     combined_pdf = CombinePDF.new
 
     files.each do |file_url|
-      # Detect if it's an S3 or HTTP(S) URL
       if file_url =~ URI::DEFAULT_PARSER.make_regexp(%w[http https])
-        Rails.logger.info "🌐 [MERGE] Downloading remote file: #{file_url}"
+        uri = URI.parse(file_url)
+        if uri.host&.include?("amazonaws.com")
+          # ✅ Extract clean key (remove query params, strip leading slash)
+          s3_key = uri.path.sub(%r{^/}, '')
+          Rails.logger.info "🌐 [MERGE] Fetching from S3 by key: #{s3_key}"
 
-        begin
-          # Download temporarily
-          tempfile = Tempfile.new(['remote_pdf', '.pdf'], Rails.root.join('tmp'))
-          URI.open(file_url) do |remote_file|
-            tempfile.write(remote_file.read)
-            tempfile.rewind
+          s3 = Aws::S3::Client.new(
+            region: ENV.fetch("AWS_REGION", "us-east-1"),
+            access_key_id: ENV["AWS_ACCESS_KEY_ID"],
+            secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"]
+          )
+
+          begin
+            tmp_file = Tempfile.new(["s3_download_", ".pdf"], Rails.root.join("tmp"))
+            s3.get_object(bucket: ENV.fetch("AWS_BUCKET", "plmhealthoneapp-hvhs"), key: s3_key, response_target: tmp_file.path)
+            combined_pdf << CombinePDF.load(tmp_file.path, allow_optional_content: true)
+            Rails.logger.info "📎 [MERGE] Successfully added S3 file: #{s3_key}"
+          rescue Aws::S3::Errors::NoSuchKey
+            Rails.logger.error "⚠️ [MERGE] S3 key not found: #{s3_key}"
+          rescue => e
+            Rails.logger.error "❌ [MERGE] Failed to fetch S3 file #{s3_key}: #{e.class} - #{e.message}"
+          ensure
+            tmp_file.close
+            tmp_file.unlink if tmp_file
           end
-          combined_pdf << CombinePDF.load(tempfile.path)
-        ensure
-          tempfile.close!
+        else
+          # Fallback for non-S3 URLs
+          begin
+            tmp_file = Tempfile.new(["remote_download_", ".pdf"])
+            URI.open(file_url, open_timeout: 10, read_timeout: 20) do |remote_file|
+              IO.copy_stream(remote_file, tmp_file)
+            end
+            combined_pdf << CombinePDF.load(tmp_file.path, allow_optional_content: true)
+            Rails.logger.info "📎 [MERGE] Added remote file: #{file_url}"
+          rescue => e
+            Rails.logger.error "❌ [MERGE] Failed to download remote file: #{file_url} - #{e.message}"
+          ensure
+            tmp_file.close
+            tmp_file.unlink if tmp_file
+          end
         end
       else
-        # Handle local files
+        # Local file path
         path = Rails.root.join("public", file_url.sub(%r{^/}, ""))
         if File.exist?(path)
-          combined_pdf << CombinePDF.load(path)
+          combined_pdf << CombinePDF.load(path, allow_optional_content: true)
           Rails.logger.info "📎 [MERGE] Added local file: #{path}"
         else
           Rails.logger.warn "⚠️ [MERGE] Missing local file: #{path}"
@@ -100,7 +127,7 @@ class PdfQueueMergeJob < ApplicationJob
     Rails.logger.info "💾 [MERGE] Saved merged file at: #{merged_path}"
     merged_path.to_s
   end
-  
+
   # 🧹 Cleanup helper
   def clean_up_temp_files(queue, verified_item, file_links)
     Rails.logger.info "🧹 [CLEANUP] Starting cleanup of temporary and upload files"

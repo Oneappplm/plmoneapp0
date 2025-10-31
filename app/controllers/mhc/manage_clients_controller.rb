@@ -110,31 +110,32 @@ class Mhc::ManageClientsController < ApplicationController
     personal_information_id = params[:id]
 
     sql_order = <<-SQL
-    CASE
-    WHEN image_classification = 'application' THEN 1
-    WHEN image_classification = 'profile' THEN 2
-    WHEN image_classification = 'received_request' THEN 3
-    ELSE 999
-  END, created_at DESC
-  SQL
+      CASE
+        WHEN image_classification = 'application' THEN 1
+        WHEN image_classification = 'profile' THEN 2
+        WHEN image_classification = 'received_request' THEN 3
+        ELSE 999
+      END, created_at DESC
+    SQL
 
-  documents = ProviderPersonalUploadedDoc
-  .where(provider_personal_information_id: personal_information_id)
-  .order(Arel.sql(sql_order))
+    documents = ProviderPersonalUploadedDoc
+                  .where(provider_personal_information_id: personal_information_id)
+                  .order(Arel.sql(sql_order))
 
-  render json: documents.map { |doc|
-    {
-      id: doc.id,
-      image_classification: doc.image_classification,
-      sub_section: doc.sub_section,
-      file_name: doc.file_upload&.file&.filename.to_s,
-      file_url: doc.file_upload&.url,
-      created_at: doc.created_at,
-      personal_information_id: doc.provider_personal_information_id
+    render json: documents.map { |doc|
+      {
+        id: doc.id,
+        image_classification: doc.image_classification,
+        sub_section: doc.sub_section,
+        # ✅ safer filename extraction for CarrierWave
+        file_name: File.basename(doc.file_upload.path.to_s),
+        # ✅ correct file URL for direct link
+        file_url: doc.file_upload.url,
+        created_at: doc.created_at,
+        personal_information_id: doc.provider_personal_information_id
+      }
     }
-  }
-end
-
+  end
 
   def show_uploaded_doc
     doc = ProviderPersonalUploadedDoc.find(params[:id])

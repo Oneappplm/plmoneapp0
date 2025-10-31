@@ -312,46 +312,47 @@
                               </div>
 
                               <div class="modal-body">
-                                <form>
-                                  <!-- Preview Letter -->
-                                  <fieldset class="mb-4 p-3 border rounded shadow-sm">
-                                    <legend class="fs-6 fw-bold mb-3 text-primary">📄 Preview Letter</legend>
+                                <!-- Preview Letter -->
+                                <fieldset class="mb-4 p-3 border rounded shadow-sm">
+                                  <legend class="fs-6 fw-bold mb-3 text-primary">📄 Preview Letter</legend>
 
-                                    <button type="button"
-                                            id="previewLetterBtn"
-                                            data-personal-information-id="<%= @provider_personal_information.id %>"
-                                            class="btn btn-primary btn-sm w-100">
-                                      Preview Letter
-                                    </button>
+                                  
+                                  <%= button_tag "Preview Letter",
+                                  id: "previewLetterBtn",
+                                  type: "button",                      # ← prevents form submit
+                                  class: "btn btn-primary",
+                                  target: '_blank',  
+                                  data: {
+                                    url: preview_letter_mhc_practice_information_education_path(@practice_information_education), personal_information_id: @provider_personal_information&.id
+                                  } %>
 
-                                    <div id="previewLetterFiles" class="mt-2"></div>
+                                  <div id="previewLetterFiles" class="mt-2"></div>
 
-                                  </fieldset>
+                                </fieldset>
 
-                                  <!-- Send Fax -->
-                                  <fieldset class="mb-4 p-3 border rounded shadow-sm">
-                                    <legend class="fs-6 fw-bold mb-3 text-secondary">📠 Send Fax</legend>
-                                    <div class="mb-3">
-                                      <label for="faxEmail" class="form-label">Fax2Mail Email Address</label>
-                                      <input type="text" id="faxEmail" name="faxEmail" class="form-control form-control-sm" value="1234456677.Medversant.1234456677@fax2mail.com">
-                                    </div>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm w-100">Send Fax</button>
-                                  </fieldset>
+                                <!-- Send Fax -->
+                                <fieldset class="mb-4 p-3 border rounded shadow-sm">
+                                  <legend class="fs-6 fw-bold mb-3 text-secondary">📠 Send Fax</legend>
+                                  <div class="mb-3">
+                                    <label for="faxEmail" class="form-label">Fax2Mail Email Address</label>
+                                    <input type="text" id="faxEmail" name="faxEmail" class="form-control form-control-sm" value="1234456677.Medversant.1234456677@fax2mail.com">
+                                  </div>
+                                  <button type="button" class="btn btn-outline-secondary btn-sm w-100">Send Fax</button>
+                                </fieldset>
 
-                                  <!-- Send Email -->
-                                  <fieldset class="mb-4 p-3 border rounded shadow-sm">
-                                    <legend class="fs-6 fw-bold mb-3 text-success">📧 Send Email</legend>
-                                    <div class="mb-3">
-                                      <label for="emailTo" class="form-label">Email Address To</label>
-                                      <input type="text" id="emailTo" name="emailTo" class="form-control form-control-sm" disabled>
-                                    </div>
-                                    <div class="mb-3">
-                                      <label for="emailCc" class="form-label">Email Address Cc</label>
-                                      <input type="text" id="emailCc" name="emailCc" class="form-control form-control-sm" disabled>
-                                    </div>
-                                    <button type="button" class="btn btn-outline-success btn-sm w-100">Send Email</button>
-                                  </fieldset>
-                                </form>
+                                <!-- Send Email -->
+                                <fieldset class="mb-4 p-3 border rounded shadow-sm">
+                                  <legend class="fs-6 fw-bold mb-3 text-success">📧 Send Email</legend>
+                                  <div class="mb-3">
+                                    <label for="emailTo" class="form-label">Email Address To</label>
+                                    <input type="text" id="emailTo" name="emailTo" class="form-control form-control-sm" disabled>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="emailCc" class="form-label">Email Address Cc</label>
+                                    <input type="text" id="emailCc" name="emailCc" class="form-control form-control-sm" disabled>
+                                  </div>
+                                  <button type="button" class="btn btn-outline-success btn-sm w-100">Send Email</button>
+                                </fieldset>
                               </div>
 
                               <div class="modal-footer">
@@ -1832,7 +1833,7 @@
       }
     };
     
-    document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("school-search-input");
     const dropdown = document.getElementById("input-carrier");
     const searchBtn = document.getElementById("school-search-btn");
@@ -1939,48 +1940,115 @@
       document.getElementById("myModal").style.display = "block";
     });
 
+			// Get outside form elements
+			const mainCarrier = document.getElementById("main-carrier-name");
+			const mainCountry = document.getElementById("practice_info_country_country_name");
+			const mainState = document.getElementById("practice_info_state");
+			const mainCity = document.getElementById("practice_info_city");
+
+			// Set values to outside form
+			if (mainCarrier && carrierName) mainCarrier.value = carrierName;
+			if (mainCountry && country) mainCountry.value = country;
+			if (mainState && state) mainState.value = state;
+			if (mainCity && city) mainCity.value = city;
+
+			// Hide modal
+			const modal = document.getElementById("myModal");
+			if (modal) {
+				modal.style.display = "none";
+			}
+		});
     // showing the error message when clicked on preview letter button  
     const previewBtn = document.getElementById("previewLetterBtn");
-    const filesDiv   = document.getElementById("previewLetterFiles");
-    const verificationModal = document.getElementById("verificationModal");
+    const filesDiv = document.getElementById("previewLetterFiles");
 
     if (previewBtn) {
       previewBtn.addEventListener("click", function () {
         const personalInformationId = previewBtn.getAttribute("data-personal-information-id");
+        const previewUrl = previewBtn.getAttribute("data-url");
 
-        filesDiv.innerHTML = "<p class='text-muted'>Loading files...</p>";
+        filesDiv.innerHTML = "<p class='text-muted text-center'>Checking for Release files...</p>";
 
+        // Step 1️⃣ - Check uploaded docs via AJAX
         fetch(`/mhc/manage-clients/get_provider_uploaded_docs?id=${personalInformationId}`, {
           method: "GET",
           headers: { "X-Requested-With": "XMLHttpRequest" }
         })
-        .then(resp => resp.json())
-        .then(data => {
-          filesDiv.innerHTML = "";
+          .then(resp => resp.json())
+          .then(data => {
+            filesDiv.innerHTML = "";
 
-          // 🔎 filter only .tif or .tiff files
-          const tifDocs = data.filter(doc => {
-            const ext = doc.file_name?.split('.').pop().toLowerCase();
-            return ext === "tif" || ext === "tiff";
-          });
-
-          if (tifDocs.length > 0) {
-            tifDocs.forEach(doc => {
-              const link = document.createElement("a");
-              link.href = doc.file_url;
-              link.target = "_blank";
-              link.textContent = doc.file_name;
-              filesDiv.appendChild(link);
-              filesDiv.appendChild(document.createElement("br"));
+            // Step 2️⃣ - Filter only .tiff/.tif release files
+            const releaseTiffDocs = data.filter(doc => {
+              const ext = doc.file_name?.split(".").pop()?.toLowerCase();
+              return (
+                doc.image_classification?.toLowerCase() === "release" &&
+                (ext === "tif" || ext === "tiff")
+              );
             });
-          } else {
-            filesDiv.innerHTML = "<p class='alert alert-danger'>The Release file might be missing. Please upload it and try again.</p>";
-          }
-        })
-        .catch(err => {
-          console.error("Error fetching docs:", err);
-          filesDiv.innerHTML = "<p class='text-danger'>Error loading documents.</p>";
-        });
+
+            if (releaseTiffDocs.length > 0) {
+              // ✅ Show found release file(s)
+              releaseTiffDocs.forEach(doc => {
+                const link = document.createElement("a");
+                link.href = doc.file_url;
+                link.target = "_blank";
+                link.textContent = doc.file_name;
+                link.classList.add("d-block", "mb-2", "text-success");
+                filesDiv.appendChild(link);
+              });
+
+              // Step 3️⃣ - Now generate the PDF by calling Rails preview_letter
+              filesDiv.insertAdjacentHTML(
+                "beforeend",
+                "<p class='text-info text-center'>Generating education verification letter...</p>"
+              );
+
+              fetch(previewUrl, {
+                method: "POST",
+                headers: {
+                  "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
+                  "Accept": "application/pdf"
+                }
+              })
+                .then(response => {
+                  if (!response.ok) throw new Error("PDF generation failed");
+                  return response.blob();
+                })
+                .then(blob => {
+                  const url = URL.createObjectURL(blob);
+                  window.open(url, "_blank"); // 🔥 Opens PDF in new tab
+                  filesDiv.innerHTML = `
+                    <p class='alert alert-success text-center'>
+                      PDF generated successfully! It will open in a new tab.
+                    </p>
+                  `;
+                })
+                .catch(err => {
+                  console.error("Error generating PDF:", err);
+                  filesDiv.innerHTML = `
+                    <p class='alert alert-danger text-center'>
+                      Could not generate the PDF letter. Please try again.
+                    </p>
+                  `;
+                });
+            } else {
+              // 🚨 Show missing message *inside modal*, no redirect or close
+              filesDiv.innerHTML = `
+                <p class="alert alert-danger text-center">
+                  The Release file might be missing (only .tif or .tiff supported). Please upload it and try again.
+                </p>
+              `;
+            }
+          })
+          .catch(err => {
+            console.error("Error fetching docs:", err);
+            filesDiv.innerHTML = `
+              <p class='alert alert-danger text-center'>
+                Error loading documents. Please try again.
+              </p>
+            `;
+          });
       });
     }
 
@@ -2074,6 +2142,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
+
 </script>
 <style>
   #myModal {

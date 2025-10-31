@@ -5,13 +5,20 @@ class AppTrackersController < ProvidersController
 	before_action :set_provider, only: [:upload_documents, :delete_uploaded_document, :view_uploaded_documents]
 
 	def index
-	  @provider_personal_information = ProviderPersonalInformation.where.not(cred_status: 'no-application').paginate(per_page: 10, page: params[:page] || 1)
+	  @provider_personal_information = ProviderPersonalInformation.includes(:provider_attest,
+    :provider_source,
+    :rva_informations,
+    :provider_personal_attempts,
+    :provider_personal_docs_receive,
+    :provider_personal_docs_uploaded_documents,
+    :rva_informations,
+    :practice_informations).where.not(cred_status: 'no-application').paginate(per_page: 10, page: params[:page] || 1)
 	  @provider_personal_attempt = ProviderPersonalAttempt.new
 	  @provider_personal_docs_receive = ProviderPersonalDocsReceive.new
 	  @practice_information = PracticeInformation.new
 	  @practice_information = PracticeInformation.paginate(per_page: 10, page: params[:page] || 1)
 	  @client_organizations = ClientOrganization.paginate(per_page: 10, page: params[:page] || 1)
-
+	  @states = State.all
 	  # Filtering for @app_trackers
 	 if params[:user_search].present?
 		  search_term = "%#{params[:user_search]}%"
