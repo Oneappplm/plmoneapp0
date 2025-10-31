@@ -17,6 +17,7 @@ class ProviderPersonalInformation < ApplicationRecord
   }
 
 
+
   PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID','ProviderID']
 
   belongs_to :provider_attest
@@ -33,7 +34,6 @@ class ProviderPersonalInformation < ApplicationRecord
   has_many :provider_insurance_coverages, through: :provider_attest
   has_many :provider_deas, through: :provider_attest
   has_many :provider_cds, through: :provider_attest
-  has_many :provider_insurance_coverages, through: :provider_attest
   has_many :practice_associates, through: :provider_attest
   has_many :provider_medicares, foreign_key: :provider_attest_id, primary_key: :provider_attest_id
   has_many :provider_medicaids, foreign_key: :provider_attest_id, primary_key: :provider_attest_id, dependent: :destroy
@@ -75,11 +75,18 @@ class ProviderPersonalInformation < ApplicationRecord
   def correspondence_address_type_correspondence_address_type_descripion = correspondence_address_type_correspondence_address_type_descrip
 
   before_validation :set_provider_attest
+
+  def full_name
+    name = [first_name, middle_name.presence, last_name, suffix.presence].compact.join(" ").squish
+    practitioner_type.present? ? "#{name}, #{practitioner_type}" : name
+  end
+  
   private
 
   def set_provider_attest
     self.provider_attest = ProviderAttest.where(caqh_provider_attest_id: self.caqh_provider_attest_id).last
   end
+
 
   FIELD_MAP = {
     "first_name" => :first_name,
