@@ -1,9 +1,21 @@
 class Mhc::PracticeInformationEducationsController < ApplicationController
-  before_action :set_practice_information_education, only: [:update, :destroy]
+  before_action :set_practice_information_education, only: [:update, :destroy, :preview_letter]
 
   def index
     @practice_information_educations = PracticeInformationEducation.all
   end
+
+  # app/controllers/mhc/practice_information_educations_controller.rb
+  def preview_letter
+    education = PracticeInformationEducation.find(params[:id])
+    pdf_binary = PdfLetterGenerator.new(education).generate_preview!
+
+    send_data pdf_binary,
+              filename: "education_letter_preview.pdf",
+              type: "application/pdf",
+              disposition: "inline" # 👈 opens in new tab
+  end
+
 
   def create
     @practice_information_education = PracticeInformationEducation.new(practice_information_education_params)
