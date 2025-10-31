@@ -187,6 +187,9 @@ Rails.application.routes.draw do
         get  :search
         post :create_temp
       end
+      member do
+        post :preview_letter
+      end
     end
     resources :provider_specialties, only: [:index, :new, :create, :edit, :destroy, :update], path: 'provider-specialties'
     resources :provider_personal_informations, only: [:update], path: 'provider-personal-information' do

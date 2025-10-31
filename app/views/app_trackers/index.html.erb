@@ -105,7 +105,7 @@
 					<tbody>
 						<% @provider_personal_information.each do |provider| %>
 					    <% provider_source = provider.provider_source %>
-					    <% row_class = provider_source&.all_sections_completed? ? 'table-success' : 'table-danger' %>
+					    <% row_class = provider.verification_status == 'completed' ? 'table-success' : 'table-danger' %>
               <tr class="<%= row_class %>">
 								<td><a href="javascript:void()" class="text-secondary show-provider-button" data-provider-id=<%= provider.caqh_provider_id %> data-remote="true"><%= provider.caqh_provider_attest_id %></a></td>
 								<td>
@@ -147,7 +147,7 @@
 											<label class="text-dark-grey">State <span class="text-red">*</span></label>
 											<%#= form.collection_select :state, State.all, :alpha_code, :name, { prompt: 'Select State' }, class: 'form-control mt-1 mb-1 border-dark' %>
 											<%= form.select :state,
-				                options_from_collection_for_select(State.all, :alpha_code, :name, provider.practice_informations.first&.state),
+				                options_from_collection_for_select(@states, :alpha_code, :name, provider.practice_informations.first&.state),
 				                { prompt: 'Select State' },
 				                class: 'form-select border-dark' %>
 										</div>
