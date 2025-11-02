@@ -1,18 +1,21 @@
 require 'zip'
+require 'axlsx'
 
 class AppTrackersController < ProvidersController
 	before_action :set_providers, only: [:index]
 	before_action :set_provider, only: [:upload_documents, :delete_uploaded_document, :view_uploaded_documents]
 
 	def index
-	  @provider_personal_information = ProviderPersonalInformation.includes(:provider_attest,
-    :provider_source,
-    :rva_informations,
-    :provider_personal_attempts,
-    :provider_personal_docs_receive,
-    :provider_personal_docs_uploaded_documents,
-    :rva_informations,
-    :practice_informations).where.not(cred_status: 'no-application').paginate(per_page: 10, page: params[:page] || 1)
+	  @provider_personal_information = ProviderPersonalInformation.includes(
+	  	:provider_attest,
+	    :provider_source,
+	    :rva_informations,
+	    :provider_personal_attempts,
+	    :provider_personal_docs_receive,
+	    :provider_personal_docs_uploaded_documents,
+	    :practice_informations,
+	    provider_attest: :practice_informations
+	  ).where.not(cred_status: 'no-application').paginate(per_page: 10, page: params[:page] || 1)
 	  @provider_personal_attempt = ProviderPersonalAttempt.new
 	  @provider_personal_docs_receive = ProviderPersonalDocsReceive.new
 	  @practice_information = PracticeInformation.new
@@ -181,6 +184,20 @@ class AppTrackersController < ProvidersController
       temp_file.unlink
     end
   end
+
+  # download the app-tracker data into excel
+  def export_excel
+	  providers = AppTrackers::ProviderQuery.new(params).call
+	  exporter = AppTrackers::Exporters::ProviderExcelExporter.new(providers)
+	  package  = exporter.generate
+
+	  timestamp = Time.current.strftime("%Y%m%d_%H%M")
+	  send_data package.to_stream.read,
+	            filename: "AppTrackerData_#{timestamp}.xlsx",
+	            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	end
+
+
 
 	protected
 
