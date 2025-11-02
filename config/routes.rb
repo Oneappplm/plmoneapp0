@@ -548,6 +548,9 @@ Rails.application.routes.draw do
       delete :delete_uploaded_document
       get :view_uploaded_documents
     end
+    collection do
+      get :export_excel
+    end
   end
   resources :help_codes, path: 'help-codes'
   resources :pdf_populators, only: [:index], path: 'pdf-populator' do

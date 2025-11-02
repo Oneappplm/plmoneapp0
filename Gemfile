@@ -124,6 +124,7 @@ gem 'ruby-openai'
 gem 'chronic'
 gem "bundler", "~> 2.4"
 gem "uri", "1.0.3"
+gem 'axlsx_rails'
 
 gem 'aws-sdk-s3', '~> 1.150'
 gem 'caxlsx_rails'
