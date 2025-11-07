@@ -135,4 +135,3 @@ gem "uri", "0.10.1"
 
 gem 'aws-sdk-s3', '~> 1.150'
 gem 'caxlsx_rails'
-gem 'dotenv', groups: [:development, :test]
