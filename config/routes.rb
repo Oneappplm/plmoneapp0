@@ -96,6 +96,7 @@ Rails.application.routes.draw do
   post 'logout-on-close', to: 'ajax#logout_on_close'
   patch '/record_approval', to: 'pages#record_approval', as: 'record_approval'
   get '/virtual_review_committee/minutes', to: 'pages#minutes', as: 'minutes'
+  get "virtual_review_committee/minutes/download", to: "pages#minutes_download", as: :download_minutes
   get "verify_npi/:npi", to: "provider_personal_informations#verify_npi"
   
   get '/auth/auth0/callback', to: 'auth0#callback'
