@@ -51,23 +51,26 @@
       <div class="col-lg-6">
          <h5>Search Result: <%= @completed_records.count %> records</h5>
       </div>
-      <div class="col-lg-6" style="padding: 0;">
-         <div style="float: right;" class="d-flex gap-4">
+      <div class="col-lg-6">
+         <div style="float: right;">
             <div>
-               <label class="text-dark-grey">Show limit</label>
-               <% per_page_limits = [5,10,15,20,25,30,35,40,45,50]%>
-               <select name="per_page" class="border ms-2 px-1 <%= dark_mode %>" onchange="document.getElementById('per_page_selector').submit();">
-                  <% per_page_limits.each do |per_page| %>
-                     <% if per_page == @per_page.to_i %>
-                        <option selected><%= per_page %></option>
-                     <% else %>
-                        <option><%= per_page %></option>
-                     <% end %>
-                  <% end %>
-               </select>
+               <%# <label class="text-dark-grey">Show limit</label> %>
+               <%# per_page_limits = [5,10,15,20,25,30,35,40,45,50]%>
+               <%# <select name="per_page" class="border ms-2 px-1 <%#= dark_mode" onchange="document.getElementById('per_page_selector').submit();"> %>
+                  <%# per_page_limits.each do |per_page| %>
+                     <%# if per_page == @per_page.to_i %>
+                        <%# <option selected><%#= per_page</option> %>
+                     <%# else %>
+                        <%# <option><%= per_page</option> %>
+                     <%# end %>
+                  <%# end %>
+               <%# </select> %>
             </div>
-            <label for="">Page 3 of 32 </label>
-            <input type="text" value="1" style="width: 35px; text-align: center; font-size: 12px;" class="">
+            <%# <label for="">Page 3 of 32 </label> %>
+            <%# <input type="text" value="1" style="width: 35px; text-align: center; font-size: 12px;" class=""> %>
+            <%= link_to download_minutes_path(request.query_parameters), class: 'btn btn-success  btn-sm fw-bold', target: "_blank" do %>
+              <i class="fa-solid fa-arrow-down me-1"></i> Download
+            <% end %>
          </div>
       </div>
    </div>
@@ -76,19 +79,21 @@
      <table id="vrc-table" class="border shadow p-3 mb-5 me-2 <%= dark_mode %> rounded table table-striped">
       <thead style="background-color: #377dff; color: #fff;">
          <tr class="text-center">
-            <th>
+            <%# <th>
                <div class="form-check">
                   <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
                </div>
-            </th>
-            <th>Provider Name</th>
-            <th>Type</th>
-            <th>Category</th>
-            <th>Cred Cycle</th>
-            <th>Review Level</th>
-            <th>Review Date</th>
+            </th> %>
             <th>Committee Date</th>
-            <th>Status</th>
+            <th>Category</th>
+            <th>Provider #</th>
+            <th>Name</th>
+            <th>City</th>
+            <th>Taxonomy</th>
+            <th>Results</th>
+            <th>Issues / Comments</th>
+            <th>Specialty</th>
+            <th>MedV ID</th>
          </tr>
       </thead>
       <tbody class="bg-light">
@@ -129,25 +134,25 @@
          <% else %>
             <% @completed_records.each do |completed_record|%>
                  <tr class="text-center">
-                    <td>
+                    <%# <td>
                        <div class="form-check">
                           <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
                        </div>
                     </td>
                     <td class="text-start">
-                       <i class="bi bi-file-earmark-check-fill" style="font-size: 1rem; color: #1CC775;"></i>
-                    <%= completed_record.fullname %>
-                  </td>
-                    <td><%= completed_record&.practitioner_type %></td>
-                    <td>Director</td>
-                    <td><%= completed_record.cred_cycle %></td>
-                    <td><%= completed_record.review_level %></td>
-                    <td><%= completed_record.review_date&.strftime('%m/%d/%Y') %></td>
-                    <td><%= completed_record.committee_date&.strftime('%m/%d/%Y') %></td>
+                       <i class="bi bi-file-earmark-check-fill" style="font-size: 1rem; color: #1CC775;"></i> %>
+                    <%#= completed_record.fullname %>
+                  <%# </td> %>
+                    <td><%= completed_record&.committee_date&.strftime('%m/%d/%Y') %></td>
+                    <td>CREDENTIALING</td>
+                    <td><%= completed_record&.caqh_provider_attest_id %></td>
+                    <td><%= completed_record&.fullname %></td>
+                    <td><%= completed_record&.city %></td>
+                    <td><%#= completed_record&.taxonomy || '-' %></td>
                     <td>
                        <button id="backToTopBtn" class="btn-back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
                        <%#= completed_record.status %>
-                       <span style="font-size: 10px;"><%= completed_record&.status %></span>
+                       <span style="font-size: 12px;"><%= completed_record&.status %></span>
                        <%# case completed_record.progress_status %>
                           <%# when "completed" %>
                             <%# <span style="font-size: 10px;">Approved</span> %>
@@ -156,6 +161,19 @@
                         <%# else %>
                         <%# end %>
                     </td>
+                    <td class="text-start">
+                      <% dea = ProviderDea.find_by(provider_attest_id: completed_record.provider_attest_id) %>
+
+                      <% if dea&.expiration_date && dea.expiration_date <= Date.today %>
+                        <span class="text-danger" style="font-size: 11px;">
+                          Expired DEA License (<%= dea.expiration_date.strftime('%m/%d/%Y') %>)
+                        </span>
+                      <% else %>
+                        <span class="text-success" style="font-size: 12px;">No Issues</span>
+                      <% end %>
+                    </td>
+                    <td><%#= completed_record&.specialty || '-' %></td>
+                    <td><%= completed_record&.npi || '-' %></td>
                  </tr>
               <% end %>
             <% end %>

@@ -194,12 +194,97 @@ class PagesController < ApplicationController
   end
 
   def minutes
-    if params_present?.present?
-      @params_present = params_present?
-    else
-      @completed_records = ProviderPersonalInformation.where(progress_status: "completed")
+    @completed_records = ProviderPersonalInformation.where(progress_status: "completed")
+
+    if params[:from_committee_date].present? || params[:to_committee_date].present? ||
+       params[:first_name].present? || params[:last_name].present?
+
+      @completed_records = @completed_records.where.not(committee_date: nil)
+
+      if params[:from_committee_date].present? && params[:to_committee_date].present?
+        from_date = Date.parse(params[:from_committee_date]) rescue nil
+        to_date   = Date.parse(params[:to_committee_date]) rescue nil
+        @completed_records = @completed_records.where(committee_date: from_date..to_date) if from_date && to_date
+      elsif params[:from_committee_date].present?
+        from_date = Date.parse(params[:from_committee_date]) rescue nil
+        @completed_records = @completed_records.where("committee_date >= ?", from_date) if from_date
+      elsif params[:to_committee_date].present?
+        to_date = Date.parse(params[:to_committee_date]) rescue nil
+        @completed_records = @completed_records.where("committee_date <= ?", to_date) if to_date
+      end
+
+      if params[:first_name].present?
+        @completed_records = @completed_records.where("LOWER(first_name) LIKE ?", "%#{params[:first_name].downcase}%")
+      end
+
+      if params[:last_name].present?
+        @completed_records = @completed_records.where("LOWER(last_name) LIKE ?", "%#{params[:last_name].downcase}%")
+      end
     end
-  end 
+  end
+
+  # download minutes summerize file in PDF
+  def minutes_download
+    @completed_records = ProviderPersonalInformation.where(progress_status: "completed")
+
+    if params[:from_committee_date].present? && params[:to_committee_date].present?
+      from_date = Date.parse(params[:from_committee_date]) rescue nil
+      to_date = Date.parse(params[:to_committee_date]) rescue nil
+      @completed_records = @completed_records.where(committee_date: from_date..to_date) if from_date && to_date
+    end
+
+    if params[:first_name].present?
+      @completed_records = @completed_records.where("LOWER(first_name) LIKE ?", "%#{params[:first_name].downcase}%")
+    end
+
+    if params[:last_name].present?
+      @completed_records = @completed_records.where("LOWER(last_name) LIKE ?", "%#{params[:last_name].downcase}%")
+    end
+
+    # Generate PDF
+    pdf = Prawn::Document.new(page_size: 'A4', margin: 40)
+
+    pdf.text "Credentialing Committee Minutes", size: 18, style: :bold, align: :center
+    pdf.move_down 10
+    pdf.text "Generated on: #{Time.current.strftime('%B %d, %Y')}", size: 10, align: :right
+    pdf.move_down 20
+
+    data = [["Committee Date", "Category", "Provider #", "Name", "City", "Results", "Issues / Comments", "MedV ID"]]
+
+    @completed_records.each do |record|
+      dea = ProviderDea.find_by(provider_attest_id: record.provider_attest_id)
+      issue_text = if dea&.expiration_date && dea.expiration_date <= Date.today
+                     "Expired DEA (#{dea.expiration_date.strftime('%m/%d/%Y')})"
+                   else
+                     "No Issues"
+                   end
+
+      data << [
+        record.committee_date&.strftime("%m/%d/%Y") || "-",
+        "CREDENTIALING",
+        record.caqh_provider_attest_id || "-",
+        record.fullname,
+        record.city || "-",
+        record.status || "-",
+        issue_text,
+        record.npi || "-"
+      ]
+    end
+
+    pdf.table(data, header: true, cell_style: { borders: [:bottom], size: 9, padding: [4, 6] }, row_colors: ["F0F0F0", "FFFFFF"]) do
+      row(0).font_style = :bold
+      row(0).background_color = '377dff'
+      row(0).text_color = 'FFFFFF'
+      self.position = :center
+    end
+
+    send_data pdf.render,
+              filename: "minutes_summary_#{Time.now.strftime('%Y%m%d')}.pdf",
+              type: "application/pdf",
+              disposition: "inline"
+  end
+
+
 
 	def client_portal
     if current_setting.mhc?
