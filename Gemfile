@@ -126,5 +126,5 @@ gem "bundler", "~> 2.4"
 gem "uri", "1.0.3"
 
 gem 'aws-sdk-s3', '~> 1.150'
-gem 'axlsx_rails'
+gem 'caxlsx_rails'
 gem 'dotenv', groups: [:development, :test]
