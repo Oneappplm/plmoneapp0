@@ -68,7 +68,7 @@
             </div>
             <%# <label for="">Page 3 of 32 </label> %>
             <%# <input type="text" value="1" style="width: 35px; text-align: center; font-size: 12px;" class=""> %>
-            <%= link_to download_minutes_path(request.query_parameters), class: 'btn btn-success  btn-sm fw-bold', target: "_blank" do %>
+            <%= link_to download_minutes_path(format: :pdf), class: 'btn btn-success btn-sm fw-bold' do %>
               <i class="fa-solid fa-arrow-down me-1"></i> Download
             <% end %>
          </div>
@@ -144,7 +144,7 @@
                     <%#= completed_record.fullname %>
                   <%# </td> %>
                     <td><%= completed_record&.committee_date&.strftime('%m/%d/%Y') %></td>
-                    <td>CREDENTIALING</td>
+                    <td><%= completed_record&.cred_cycle&.upcase %></td>
                     <td><%= completed_record&.caqh_provider_attest_id %></td>
                     <td><%= completed_record&.fullname %></td>
                     <td><%= completed_record&.city %></td>
