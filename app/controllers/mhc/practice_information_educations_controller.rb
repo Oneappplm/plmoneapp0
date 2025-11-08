@@ -25,7 +25,8 @@ class Mhc::PracticeInformationEducationsController < ApplicationController
     elsif params[:commit] == "save"
       @practice_information_education.form_type = "popup"
     end
-
+    # set institution_name 
+    @practice_information_education.institution_name = params[:institution_name_main]
     if @practice_information_education.save
       redirect_to mhc_verification_platform_path(page_tab: 'education',id: params[:practice_information_education][:provider_attest_id]), notice: 'Education detail saved successfully.'
     else

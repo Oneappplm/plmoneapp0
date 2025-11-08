@@ -2018,6 +2018,194 @@
       if (autoField) autoField.value = this.value;
     });
   });
+  // showing the error message when clicked on preview letter button  
+  const previewBtn = document.getElementById("previewLetterBtn");
+  const filesDiv = document.getElementById("previewLetterFiles");
+
+    if (previewBtn) {
+      previewBtn.addEventListener("click", function () {
+        const personalInformationId = previewBtn.getAttribute("data-personal-information-id");
+        const previewUrl = previewBtn.getAttribute("data-url");
+
+        filesDiv.innerHTML = "<p class='text-muted text-center'>Checking for Release files...</p>";
+
+        // Step 1️⃣ - Check uploaded docs via AJAX
+        fetch(`/mhc/manage-clients/get_provider_uploaded_docs?id=${personalInformationId}`, {
+          method: "GET",
+          headers: { "X-Requested-With": "XMLHttpRequest" }
+        })
+          .then(resp => resp.json())
+          .then(data => {
+            filesDiv.innerHTML = "";
+
+            // Step 2️⃣ - Filter only .tiff/.tif release files
+            const releaseTiffDocs = data.filter(doc => {
+              const ext = doc.file_name?.split(".").pop()?.toLowerCase();
+              return (
+                doc.image_classification?.toLowerCase() === "release" &&
+                (ext === "tif" || ext === "tiff")
+              );
+            });
+
+            if (releaseTiffDocs.length > 0) {
+              // ✅ Show found release file(s)
+              releaseTiffDocs.forEach(doc => {
+                const link = document.createElement("a");
+                link.href = doc.file_url;
+                link.target = "_blank";
+                link.textContent = doc.file_name;
+                link.classList.add("d-block", "mb-2", "text-success");
+                filesDiv.appendChild(link);
+              });
+
+              // Step 3️⃣ - Now generate the PDF by calling Rails preview_letter
+              filesDiv.insertAdjacentHTML(
+                "beforeend",
+                "<p class='text-info text-center'>Generating education verification letter...</p>"
+              );
+
+              fetch(previewUrl, {
+                method: "POST",
+                headers: {
+                  "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
+                  "Accept": "application/pdf"
+                }
+              })
+                .then(response => {
+                  if (!response.ok) throw new Error("PDF generation failed");
+                  return response.blob();
+                })
+                .then(blob => {
+                  const url = URL.createObjectURL(blob);
+                  window.open(url, "_blank"); // 🔥 Opens PDF in new tab
+                  filesDiv.innerHTML = `
+                    <p class='alert alert-success text-center'>
+                      PDF generated successfully! It will open in a new tab.
+                    </p>
+                  `;
+                })
+                .catch(err => {
+                  console.error("Error generating PDF:", err);
+                  filesDiv.innerHTML = `
+                    <p class='alert alert-danger text-center'>
+                      Could not generate the PDF letter. Please try again.
+                    </p>
+                  `;
+                });
+            } else {
+              // 🚨 Show missing message *inside modal*, no redirect or close
+              filesDiv.innerHTML = `
+                <p class="alert alert-danger text-center">
+                  The Release file might be missing (only .tif or .tiff supported). Please upload it and try again.
+                </p>
+              `;
+            }
+          })
+          .catch(err => {
+            console.error("Error fetching docs:", err);
+            filesDiv.innerHTML = `
+              <p class='alert alert-danger text-center'>
+                Error loading documents. Please try again.
+              </p>
+            `;
+          });
+      });
+    }
+
+ // showing the error message when clicked on preview letter button  
+    const previewBtn = document.getElementById("previewLetterBtn");
+    const filesDiv = document.getElementById("previewLetterFiles");
+
+    if (previewBtn) {
+      previewBtn.addEventListener("click", function () {
+        const personalInformationId = previewBtn.getAttribute("data-personal-information-id");
+        const previewUrl = previewBtn.getAttribute("data-url");
+
+        filesDiv.innerHTML = "<p class='text-muted text-center'>Checking for Release files...</p>";
+
+        // Step 1️⃣ - Check uploaded docs via AJAX
+        fetch(`/mhc/manage-clients/get_provider_uploaded_docs?id=${personalInformationId}`, {
+          method: "GET",
+          headers: { "X-Requested-With": "XMLHttpRequest" }
+        })
+          .then(resp => resp.json())
+          .then(data => {
+            filesDiv.innerHTML = "";
+
+            // Step 2️⃣ - Filter only .tiff/.tif release files
+            const releaseTiffDocs = data.filter(doc => {
+              const ext = doc.file_name?.split(".").pop()?.toLowerCase();
+              return (
+                doc.image_classification?.toLowerCase() === "release" &&
+                (ext === "tif" || ext === "tiff")
+              );
+            });
+
+            if (releaseTiffDocs.length > 0) {
+              // ✅ Show found release file(s)
+              releaseTiffDocs.forEach(doc => {
+                const link = document.createElement("a");
+                link.href = doc.file_url;
+                link.target = "_blank";
+                link.textContent = doc.file_name;
+                link.classList.add("d-block", "mb-2", "text-success");
+                filesDiv.appendChild(link);
+              });
+
+              // Step 3️⃣ - Now generate the PDF by calling Rails preview_letter
+              filesDiv.insertAdjacentHTML(
+                "beforeend",
+                "<p class='text-info text-center'>Generating education verification letter...</p>"
+              );
+
+              fetch(previewUrl, {
+                method: "POST",
+                headers: {
+                  "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
+                  "Accept": "application/pdf"
+                }
+              })
+                .then(response => {
+                  if (!response.ok) throw new Error("PDF generation failed");
+                  return response.blob();
+                })
+                .then(blob => {
+                  const url = URL.createObjectURL(blob);
+                  window.open(url, "_blank"); // 🔥 Opens PDF in new tab
+                  filesDiv.innerHTML = `
+                    <p class='alert alert-success text-center'>
+                      PDF generated successfully! It will open in a new tab.
+                    </p>
+                  `;
+                })
+                .catch(err => {
+                  console.error("Error generating PDF:", err);
+                  filesDiv.innerHTML = `
+                    <p class='alert alert-danger text-center'>
+                      Could not generate the PDF letter. Please try again.
+                    </p>
+                  `;
+                });
+            } else {
+              // 🚨 Show missing message *inside modal*, no redirect or close
+              filesDiv.innerHTML = `
+                <p class="alert alert-danger text-center">
+                  The Release file might be missing (only .tif or .tiff supported). Please upload it and try again.
+                </p>
+              `;
+            }
+          })
+          .catch(err => {
+            console.error("Error fetching docs:", err);
+            filesDiv.innerHTML = `
+              <p class='alert alert-danger text-center'>
+                Error loading documents. Please try again.
+              </p>
+            `;
+          });
+      });
+    }
+
 </script>
 
 <script>
