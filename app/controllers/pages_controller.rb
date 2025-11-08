@@ -225,65 +225,33 @@ class PagesController < ApplicationController
 
   # download minutes summerize file in PDF
   def minutes_download
-    @completed_records = ProviderPersonalInformation.where(progress_status: "completed")
+    # your real data (uncomment and remove build_dummy_records)
+    @records = ProviderPersonalInformation
+                 .where(progress_status: "completed")
+                 .order(:committee_date)
 
-    if params[:from_committee_date].present? && params[:to_committee_date].present?
-      from_date = Date.parse(params[:from_committee_date]) rescue nil
-      to_date = Date.parse(params[:to_committee_date]) rescue nil
-      @completed_records = @completed_records.where(committee_date: from_date..to_date) if from_date && to_date
+
+    respond_to do |format|
+      format.pdf do   
+        render pdf: "committee_minutes_#{Date.today}.pdf",
+               template: "pages/minutes_reports",
+               formats: [:html],
+               disposition: "attachment", # or "inline"
+               page_size: "A4",
+               margin: { top: 30, bottom: 40, left: 16, right: 16 }, # space for header/footer
+               header: {
+                 html: { template: "shared/minutes_reports/header", formats: [:html] },
+                 spacing: 2
+               },
+               footer: {
+                 html: { template: "shared/minutes_reports/footer", formats: [:html] },
+                 spacing: 6
+               },
+               encoding: "UTF-8",
+               show_as_html: params[:debug].present? # /minutes_report.pdf?debug=1           
+      end
     end
-
-    if params[:first_name].present?
-      @completed_records = @completed_records.where("LOWER(first_name) LIKE ?", "%#{params[:first_name].downcase}%")
-    end
-
-    if params[:last_name].present?
-      @completed_records = @completed_records.where("LOWER(last_name) LIKE ?", "%#{params[:last_name].downcase}%")
-    end
-
-    # Generate PDF
-    pdf = Prawn::Document.new(page_size: 'A4', margin: 40)
-
-    pdf.text "Credentialing Committee Minutes", size: 18, style: :bold, align: :center
-    pdf.move_down 10
-    pdf.text "Generated on: #{Time.current.strftime('%B %d, %Y')}", size: 10, align: :right
-    pdf.move_down 20
-
-    data = [["Committee Date", "Category", "Provider #", "Name", "City", "Results", "Issues / Comments", "MedV ID"]]
-
-    @completed_records.each do |record|
-      dea = ProviderDea.find_by(provider_attest_id: record.provider_attest_id)
-      issue_text = if dea&.expiration_date && dea.expiration_date <= Date.today
-                     "Expired DEA (#{dea.expiration_date.strftime('%m/%d/%Y')})"
-                   else
-                     "No Issues"
-                   end
-
-      data << [
-        record.committee_date&.strftime("%m/%d/%Y") || "-",
-        "CREDENTIALING",
-        record.caqh_provider_attest_id || "-",
-        record.fullname,
-        record.city || "-",
-        record.status || "-",
-        issue_text,
-        record.npi || "-"
-      ]
-    end
-
-    pdf.table(data, header: true, cell_style: { borders: [:bottom], size: 9, padding: [4, 6] }, row_colors: ["F0F0F0", "FFFFFF"]) do
-      row(0).font_style = :bold
-      row(0).background_color = '377dff'
-      row(0).text_color = 'FFFFFF'
-      self.position = :center
-    end
-
-    send_data pdf.render,
-              filename: "minutes_summary_#{Time.now.strftime('%Y%m%d')}.pdf",
-              type: "application/pdf",
-              disposition: "inline"
   end
-
 
 
 	def client_portal
@@ -719,6 +687,34 @@ class PagesController < ApplicationController
       params.permit(:name, :committee_date, :file_upload)
     end
 
-
+    def build_dummy_records
+      require "ostruct"
+      [
+        OpenStruct.new(
+          committee_date: Date.today - 10,
+          cred_cycle: "credentialing",
+          review_level: "clean",
+          caqh_provider_attest_id: "P-001234",
+          fullname: "Doe, Jane MD",
+          city: "Detroit",
+          specialty: "Psychiatry",
+          status: "APPROVED",
+          recred_due_date: Date.today + 365,
+          provider_attest_id: "ATT-001234"
+        ),
+        OpenStruct.new(
+          committee_date: Date.today - 7,
+          cred_cycle: "recredentialing",
+          review_level: "clean",
+          caqh_provider_attest_id: "P-004567",
+          fullname: "Smith, John DO",
+          city: "Dearborn",
+          specialty: "Family Medicine",
+          status: "APPROVED",
+          recred_due_date: Date.today + 540,
+          provider_attest_id: "ATT-004567"
+        )
+      ]
+    end
 end
 
