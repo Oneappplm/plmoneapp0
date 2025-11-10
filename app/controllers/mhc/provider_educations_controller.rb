@@ -5,6 +5,17 @@ class Mhc::ProviderEducationsController < ApplicationController
     @provider_educations = ProviderEducation.all
   end
 
+  def preview_letter
+    training = ProviderEducation.find(params[:id])
+    tab = 'training'
+    pdf_binary = PdfLetterGenerator.new(training, tab).generate_preview!
+
+    send_data pdf_binary,
+              filename: "training_letter_preview.pdf",
+              type: "application/pdf",
+              disposition: "inline" # 👈 opens in new tab
+  end
+
   def create
     @provider_education = ProviderEducation.new(provider_education_params)
 

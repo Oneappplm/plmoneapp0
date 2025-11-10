@@ -46,28 +46,46 @@
   <main>
     <p style="margin-top: 80PX!important;"><%= Date.current.strftime("%B %e, %Y") %></p>
     <div class="spacer"></div>
-    <p style="margin-bottom: 0; padding-bottom: 0;"><%= @education.institution_name.presence %></p>
-    <p style="margin-top: 0; padding-top: 0;"><%= @education.address.presence %></p>
+    <p style="margin-bottom: 0; padding-bottom: 0;"><%= @record.institution_name.presence %></p>
+    <p style="margin-top: 0; padding-top: 0;"><%= @record.address.presence %></p>
     <div class="spacer"></div>
-    <p style="margin-bottom: 0; padding-bottom: 0;"><%= @education.suite_dept_mail_stop.presence %></p>
-    <p style="margin-top: 0; padding-top: 0;"><%= @education.city.presence %> <%= @education.state.presence %> <%= @education.postal_code.presence %></p>
+    <% if @tab == 'education' %>
+      <p style="margin-bottom: 0; padding-bottom: 0;"><%= @record.suite_dept_mail_stop.presence %></p>
+    <% end %>
+    <p style="margin-top: 0; padding-top: 0;"><%= @record.city.presence %> <%= @record.state.presence %> <%= @record.postal_code.presence %></p>
 
-
-    <h2>Professional School Education Verification</h2>
+    <% if @tab == 'education' %>
+      <h2>Professional School Education Verification</h2>
+    <% elsif  @tab == 'training' %>
+      <h2>Professional Training Verification</h2>
+    <% end %>  
 
     <div class="indent">
       <p>Re:&nbsp;&nbsp;<strong style="margin-left:20px !important;"><%= @ppi.full_name %></strong></p>
       <p>DOB:&nbsp;&nbsp;<strong style="margin-left:20px !important;"><%= @ppi.birth_date&.strftime("%B %e, %Y") %></strong></p>
       <div class="spacer"></div>
-      <p>Program Title:&nbsp;&nbsp;<strong style="margin-left:20px !important;"><%= @education.program_title.presence %></strong></p>
-      <p>Degree Received:&nbsp;&nbsp;<strong style="margin-left:20px !important;"><%= @education.degree_degree_abbreviation.presence %></strong></p>
-      <p>
-        Attendance Dates:&nbsp;&nbsp;
-        <strong style="margin-left:20px !important;"><%= [
-              @education.start_date&.strftime("%m/%d/%Y"),
-              @education.end_date&.strftime("%m/%d/%Y")
-            ].compact.join("–") %></strong>
-      </p>
+      <% if @tab == 'education' %>
+        <p>Program Title:&nbsp;&nbsp;<strong style="margin-left:20px !important;"><%= @record.program_title.presence %></strong></p>
+      <% elsif @tab == 'training' %> 
+        <p>Type of Training:&nbsp;&nbsp;<strong style="margin-left:20px !important;"><%= @record.training_area.presence %></strong></p> 
+      <% end %>  
+      <% if @tab == 'education' %>
+        <p>Degree Received:&nbsp;&nbsp;<strong style="margin-left:20px !important;"><%= @record.degree_degree_abbreviation.presence %></strong></p>
+      <% elsif @tab == 'training' %>
+        <p>Specialty:&nbsp;&nbsp;<strong style="margin-left:20px !important;"><%= @record.specialty_specialty_name.presence %></strong></p>
+      <% end %>  
+      <% if @tab == 'education' %>
+        <p>
+          Attendance Dates:&nbsp;&nbsp;
+          <strong style="margin-left:20px !important;"><%= [
+                @record.start_date&.strftime("%m/%d/%Y"),
+                @record.end_date&.strftime("%m/%d/%Y")
+              ].compact.join("–") %></strong>
+        </p>
+      <% elsif @tab == 'training' %>
+        <p>From:&nbsp;&nbsp;<strong style="margin-left:20px !important;"><%= @record.start_date&.strftime("%m/%d/%Y") %></strong></p>
+        <p>To:&nbsp;&nbsp;<strong style="margin-left:20px !important;"><%= @record.end_date&.strftime("%m/%d/%Y") %></strong></p>
+      <% end %>  
     </div>
 
     <div class="spacer"></div>
