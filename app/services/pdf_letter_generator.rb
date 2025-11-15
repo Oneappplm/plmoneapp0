@@ -75,7 +75,7 @@ class PdfLetterGenerator
     letter_pdf_binary = WickedPdf.new.pdf_from_string(
       letter_html,
       margin: { top: 0, bottom: 0, left: 15, right: 15 },
-      page_size: 'A3',           # 👈 Bigger than default A4
+      page_size: 'A4',           # 👈 Bigger than default A4
       zoom: 1.2,                 # 👈 Optional: makes everything slightly larger
     )
 
@@ -155,8 +155,8 @@ class PdfLetterGenerator
       page_pdf_binary = WickedPdf.new.pdf_from_string(
         html,
         margin: { top: 0, bottom: 0, left: 15, right: 15 },
-        page_size: 'A3',
-        zoom: 1.2,
+        page_size: 'A4',           # 👈 Bigger than default A4
+        zoom: 1.2,                 # 👈 Optional: makes everything slightly larger
       )
 
       pdf_pages << CombinePDF.parse(page_pdf_binary)

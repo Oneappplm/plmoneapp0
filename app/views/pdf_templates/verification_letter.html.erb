@@ -89,41 +89,66 @@
     </div>
 
     <div class="spacer"></div>
-
-    <p style="margin-top: 20px !important;">
-      The above named practitioner has applied for membership to the staff of a Heritage Valley Health System hospital.
-      The noted practitioner has stated completion of education as above. A copy of the practitioner’s signed authorization and release is attached.
-    </p>
-
+    <% if @tab == 'education' %>
+      <p style="margin-top: 20px !important;">
+        The above named practitioner has applied for membership to the staff of a Heritage Valley Health System hospital.
+        The noted practitioner has stated completion of education as above. A copy of the practitioner’s signed authorization and release is attached.
+      </p>
+    <% elsif @tab == 'training' %>
+      <p style="margin-top: 20px !important;">
+        The noted practitioner has stated a completion of the above training at your institution. A copy of the practitioner’s signed authorization and release is attached. Please complete the following questionnaire. Any additional information you may have regarding this practitioner is greatly appreciated. 
+      </p>
+    <% end %>
     <div class="spacer"></div>
-
-    <p>Is the above information correct?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No</p>
+    <% if @tab == 'training' %>
+      <p><strong>PLEASE FAX THE COMPLETED FORM TO 877-303-5180 or email to<br><a href="mailto:cvoacademics@medversant.com">cvoacademics@medversant.com</a></strong></p>
+      <p>Thank you for your assistance.</p>
+    <% end %>  
+    <div class="spacer"></div>
+    <p style="margin-top: 4px;">Is the above information correct?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No</p>
     <p>If No, please provide the correct information in the spaces provided below:</p>
+     
+    <% if @tab == 'education' %>
+      <div class="indent">
+        <p>Program Title: </p>
+        <p>Degree Received: ____________________ &nbsp;&nbsp;From: ____________________ &nbsp;&nbsp;To: ____________________</p>
+        <p>Comments:  ____________________________________________________________</p>
+      </div>
+    <% elsif @tab == 'training' %>
+      <div class="indent">
+        <p>Type of Training:____________________&nbsp;&nbsp;Specialty:____________________</p>
+        <p>Program Director: ________________________________________________________</p>
+        <p>From:___________________________________&nbsp;&nbsp;To:____________________</p>
+        <p>Comments:____________________________________________________________________________________________________________________________________________________________</p>
+      </div>
+    <% end %>
+    <% if @tab == 'education' %>
+      <p>
+        Any additional information you may have regarding this practitioner is greatly appreciated.
+      </p>
 
-    <div class="indent">
-      <p>Program Title: </p>
-      <p>Degree Received: ____________________ &nbsp;&nbsp;From: ____________________ &nbsp;&nbsp;To: ____________________</p>
-      <p>Comments:</p>
-    </div>
+      <p>
+        Consider that without your verification of this information, the application is incomplete and processing cannot move forward.
+      </p>
 
-    <p>
-      Any additional information you may have regarding this practitioner is greatly appreciated.
-    </p>
-
-    <p>
-      Consider that without your verification of this information, the application is incomplete and processing cannot move forward.
-    </p>
-
-    <p>Thank you in advance for your cooperation.</p>
-
-    <div class="signature-block">
-      <p>Print Name/Title: _____________________________________</p>
-      <p>Signature: __________________________ Date: ___________</p>
-      <p>Phone: ______________________________ Email: ____________________________</p>
-    </div>
-
-    <div class="spacer"></div>
-    <p style="margin-top: 30px !important; padding-bottom: 30px!important;"><strong>PLEASE FORWARD THIS COMPLETED FORM TO THE FAX NUMBER OR E-MAIL INDICATED BELOW.</strong></p>
+      <p>Thank you in advance for your cooperation.</p>
+    <% end %>  
+    <% if @tab == 'education' %>
+      <div class="signature-block">
+        <p>Print Name/Title: _____________________________________</p>
+        <p>Signature: __________________________ Date: ___________</p>
+        <p>Phone: ______________________________ Email: ____________________________</p>
+      </div>
+      <div class="spacer"></div>
+      <p style="margin-top: 30px !important; padding-bottom: 30px!important;"><strong>PLEASE FORWARD THIS COMPLETED FORM TO THE FAX NUMBER OR E-MAIL INDICATED BELOW.</strong></p>
+    <% elsif @tab == 'training' %>
+      <div class="signature-block">
+        <p>Signature: __________________________ Date: ___________</p>
+        <p>Print Name/Title: _____________________________________</p>
+        <p>Fax: __________________________________________________________</p>
+        <p style="margin-top: 30px !important; padding-bottom: 30px!important;">Ref No.: BCBENC1437209</p>
+      </div>
+    <% end %>  
   </main>
 </body>
 </html>
