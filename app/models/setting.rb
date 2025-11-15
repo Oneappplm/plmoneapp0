@@ -25,12 +25,13 @@ class Setting < ApplicationRecord
 	def plmhealthoneapp? = client_name == 'plmhealthoneapp'
 	def hvhs? = client_name == 'hvhs'
 	def qualifacts? = client_name == 'qualifacts'
- def cignahealth? = client_name == 'cignahealth'
+ 	def cignahealth? = client_name == 'cignahealth'
 	def dcs? = client_name == 'dcs'
 	def sprout? = client_name == 'sprout'
 	def affordablecare? = client_name == 'affordablecare'
 	def groups? = client_name == 'groups'
 	def mhc? = client_name == 'mhc'
+	def docgo? = client_name == 'docgo'
 
 	def t(key)
 		I18n.t("#{client_name}.#{key}")
