@@ -154,6 +154,10 @@ class Webscrapers::QualityAuditsController < ApplicationController
     # Define source file path
     source_file = Rails.root.join('public', 'webscrape', 'Licensure', 'screenshot.pdf')
 
+    unless File.exist?(source_file)
+      raise "Screenshot file not found: #{source_file}"
+    end
+
     # Generate unique filename including license_number
     timestamp = Time.now.strftime('%Y-%m-%dT%H-%M-%S')
     random_string = SecureRandom.hex(4)

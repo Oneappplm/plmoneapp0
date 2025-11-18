@@ -198,7 +198,7 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
     @provider_npdb_tab_details = @provider_personal_information.rva_informations.where(tab: 'NPDB')
     @user = current_user
-    @queues = PdfGenerationQueue.all.order(created_at: :desc)
+    @queues = @provider_personal_information.pdf_generation_queues.order(created_at: :desc)
     @psv_pdfs = SavedProfile.joins(:pdf_generation_queue)
                        .where(pdf_generation_queues: { deleted: true, provider_personal_information_id: @provider_personal_information.id })
     @grouped_disclosures = @provider_personal_information.provider_disclosures.where(disclosure_answer_flag: true).where.not(disclosure_explanation: [nil, ""]).group_by { |d| QUESTIONS_DISCLOSURE.find { |_h, qs| qs.include?(d.disclosure_question_disclosure_summary) }&.first }   

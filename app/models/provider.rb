@@ -125,6 +125,8 @@ class Provider < ApplicationRecord
 
   after_save :send_welcome_letter
 
+  after_create :create_provider_source
+
   def self.displayable_attributes
     %i[id first_name middle_name last_name birth_date practitioner_type ssn caqhid
     ]
@@ -482,6 +484,10 @@ class Provider < ApplicationRecord
 				update_columns(welcome_letter_sent: Date.today) if email.present?
 
     # attachments
+  end
+
+  def create_provider_source
+    EnrollmentDashboard::EnrollmentProviderService.call(self)
   end
 
 		def sent_welcome_letter?
