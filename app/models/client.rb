@@ -41,7 +41,7 @@ class Client < ApplicationRecord
      		client.street_address = Faker::Address.street_address
      		client.city = Faker::Address.city
      		client.zipcode = Faker::Address.zip_code
-     		client.ssn = Faker::IDNumber.valid
+     		client.ssn = Faker::IdNumber.valid
      		client.npi = npis[(rand(0..7))]
      		client.attested_date = Faker::Date.between(from: '2008-09-23', to: '2014-09-25')
      		client.provider_type = "Facility"
