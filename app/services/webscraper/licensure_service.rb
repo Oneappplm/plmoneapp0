@@ -12,45 +12,62 @@ class Webscraper::LicensureService < WebscraperService
   end
 
   def crawl!
+    puts "➡️ Opening site..."
     crawler.get('https://mqa-internet.doh.state.fl.us/mqasearchservices/healthcareproviders')
 
+    puts "➡️ Entering license number..."
     crawler.find_element(:id, 'SearchDto_LicenseNumber').send_keys(license_number)
 
-    # click search button with id  ctl00_cpExclusions_ibSearchSP
-    search_button = wait.until { crawler.find_element(:xpath, "//input[@type='submit' and @value='Search']") }
+    puts "➡️ Clicking search button..."
+    search_button = fast_wait.until { crawler.find_element(:xpath, "//input[@type='submit' and @value='Search']") }
     search_button.click
-    sleep(3)
 
-   
-    # Check if the search result page is loaded correctly
+    puts "⏳ Waiting for redirect..."
+    wait_for_redirect
+
     if crawler.current_url.include?('LicenseVerification')
-      puts "✅ Redirected to URL: #{crawler.current_url}"
+      puts "✅ Redirected successfully!"
 
-      # Look for the 'Printer Friendly Version' link
-      link = wait.until { crawler.find_element(:xpath, "//a[contains(., 'Printer Friendly Version')]") } rescue nil
+      puts "➡️ Looking for printer-friendly link..."
+      link = slow_wait.until { crawler.find_element(:xpath, "//a[contains(., 'Printer Friendly Version')]") } rescue nil
 
       if link
-        # Scroll into view and click using JavaScript
+        puts "➡️ Clicking printer-friendly link..."
         crawler.execute_script("arguments[0].scrollIntoView();", link)
-        sleep(1) # Small delay after scrolling
         crawler.execute_script("arguments[0].click();", link)
-        sleep(5) # Allow PDF page to load
       else
-        puts "❌ 'Printer Friendly Version' link not found."
+        puts "❌ Printer-friendly link not found!"
       end
     else
-      puts "❌ No redirect to LicenseVerification found after search."
+      puts "❌ Not redirected to LicenseVerification page!"
     end
 
+    puts "➡️ Saving screenshot..."
     webcrawler_log = save_screenshot
 
-    sleep(2)
-    crawler.quit()
+    puts "➡️ Closing browser..."
+    crawler.quit
+
+    webcrawler_log
   end
 
   private
 
-  def wait
-    Selenium::WebDriver::Wait.new(timeout: 10)
+  # Fast wait for buttons/elements that should appear quickly
+  def fast_wait
+    Selenium::WebDriver::Wait.new(timeout: 4)
+  end
+
+  # Slow wait for pages that load slowly (government websites)
+  def slow_wait
+    Selenium::WebDriver::Wait.new(timeout: 15)
+  end
+
+  def wait_for_redirect
+    slow_wait.until do
+      crawler.current_url.include?('LicenseVerification')
+    end
+  rescue
+    puts "⚠️ Redirect timeout reached"
   end
 end
