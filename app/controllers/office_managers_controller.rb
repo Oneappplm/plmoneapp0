@@ -97,6 +97,12 @@ class OfficeManagersController < ApplicationController
         user = group_engage_provider&.user
         ppi_info = @provider.provider_personal_information
 
+        # Find duplicate PPI created for roster/group engage provider
+        duplicate_ppi = ProviderPersonalInformation.find_by(
+          email_address: ppi_info&.email_address,
+          roster: true # or any flag you set for duplicate PPI
+        )
+
         # Destroy user sidebar preferences first (if any)
         UserSidebarPreference.where(user_id: user.id).destroy_all if user.present?
 
@@ -105,6 +111,9 @@ class OfficeManagersController < ApplicationController
 
         # Destroy group engage provider (if exists)
         group_engage_provider&.destroy
+
+        # Destroy duplicate PPI if exists
+        duplicate_ppi&.destroy
 
         # Destroy ppi info
         ppi_info&.destroy
