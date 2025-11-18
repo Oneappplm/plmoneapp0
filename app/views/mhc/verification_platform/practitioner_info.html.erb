@@ -393,14 +393,23 @@
                             <div class="col-lg-4">
                                 <label class="text-dark-grey">Contact Method:</label>
                                 <% form_object = provider_personal_information_credentialing_contact_form&.object %>
+                                    <% form_object =
+                                          provider_personal_information_credentialing_contact_form&.object
+                                          form_object = nil unless form_object.is_a?(ApplicationRecord)
+                                    %>
 
-                                <%= provider_personal_information_credentialing_contact_form&.select :contact_method,
-                                      options_for_select([['Email', 'email'], ['Fax', 'fax'], ['Letter', 'letter']],
-                                                         form_object.respond_to?(:contact_method) ? form_object.contact_method : nil),
-                                      { prompt: '' },
-                                      class: 'form-select border border-dark single-select',
-                                      data: { value: form_object.respond_to?(:contact_method) ? form_object.contact_method : nil }
-                                %>
+                                    <%= provider_personal_information_credentialing_contact_form&.select(
+                                          :contact_method,
+                                          options_for_select(
+                                            [['Email', 'email'], ['Fax', 'fax'], ['Letter', 'letter']],
+                                            form_object&.contact_method
+                                          ),
+                                          { prompt: '' },
+                                          class: "form-select border border-dark single-select",
+                                          data: { value: form_object&.contact_method }
+                                        )
+                                    %>
+
                         </div>
                     </div>
                     <div class="col-lg-12">

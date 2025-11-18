@@ -152,6 +152,10 @@ class ProvidersController < ApplicationController
 	end
 	def destroy
 		if @provider.destroy
+
+			# delete related ppi record 
+			ppi_info = ProviderPersonalInformation.find_by(caqh_provider_id: @provider.id)
+			ppi_info.destroy!
 			PlmMailer.with(
 				email: Setting.take.t('system_notification_email'),
 				subject: "Delete Provider",
