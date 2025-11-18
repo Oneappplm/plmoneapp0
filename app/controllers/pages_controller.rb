@@ -427,7 +427,11 @@ class PagesController < ApplicationController
 
       if params[:status].present? && params[:review_level].blank?
         # 🟢 STATUS CHANGE ONLY
-        if provider.update(status: params[:status])
+        
+        new_progress_status =
+          ["Final Approved", "Deny"].include?(params[:status]) ? "completed" : provider.progress_status
+          
+        if provider.update(status: params[:status], progress_status: new_progress_status)
           provider.review_level_changes.create!(
             changed_by: current_user.email,
             from_level: old_status,
