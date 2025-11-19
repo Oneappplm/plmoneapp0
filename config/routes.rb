@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 	get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
   post 'caqh/upload', to: 'caqh#upload'
   get 'caqh/upload', to: 'caqh#show'
+  post "caqh/upload_pdf", to: "caqh#upload_pdf"
 		# get 'app-tracker', to: 'pages#app_tracker'
   get 'encompass', to: 'pages#encompass'
   get 'microsite', to: 'pages#microsite'
