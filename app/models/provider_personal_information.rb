@@ -84,7 +84,15 @@ class ProviderPersonalInformation < ApplicationRecord
   private
 
   def set_provider_attest
-    self.provider_attest = ProviderAttest.where(caqh_provider_attest_id: self.caqh_provider_attest_id).last
+    # If already assigned, DO NOT OVERWRITE (fixes your error)
+    return if provider_attest.present?
+
+    # No CAQH attest ID — cannot auto find
+    return if self.caqh_provider_attest_id.blank?
+
+    self.provider_attest = ProviderAttest.where(
+      caqh_provider_attest_id: self.caqh_provider_attest_id
+    ).last
   end
   
   FLAT_FIELD_MAP = {
