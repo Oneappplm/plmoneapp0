@@ -88,92 +88,47 @@ class ProviderPersonalInformation < ApplicationRecord
   end
   
   FLAT_FIELD_MAP = {
-    # --- NAME ---
-    "first-name"                                  => :first_name,
-    "middle-name"                                 => :middle_name,
-    "last-name"                                   => :last_name,
-    "suffix"                                      => :suffix,
+    # ---- Name ----
+    "first_name"       => :first_name,
+    "middle_name"      => :middle_name,
+    "last_name"        => :last_name,
+    "suffix"           => :suffix,
 
-    # --- BASIC IDENTIFIERS ---
-    "caqh-provider-id"                            => :caqh_provider_id,
-    "do-you-have-an-individual-type-1-yes-individual-npi" => :npi,
-    "social-security-number"                      => :ssn,
+    # ---- Home Address (from “Home Address” block) ----
+    # raw_fields: "street-1", "street-2", "city", "state", "country", "county", "county-zip-code"
+    "street_1"         => :address_line1,
+    "street_2"         => :address_line2,
+    "city"             => :city,
+    "state"            => :state,
+    "country"          => :country,
+    "county"           => :county,
+    "county_zip_code"  => :zipcode,
 
-    # --- GENDER & DOB ---
-    "ps-gender"                                   => :gender,
-    "gender-gender-description"                   => :gender,
-    "ps-dob"                                      => :date_of_birth,
-    "dob"                                         => :date_of_birth,
+    # ---- Primary contact ----
+    # From “Primary Method of Contact”
+    "primarye-mail-address"  => :email_address,
+    "personal-e-mail-address"=> :other_correspondence_address, # or wherever you want
+    "home-phone"             => :telephone_number,
+    "personal-cell-phone"    => :cell_phone_number,
+    "personal-fax"           => :fax_number,
 
-    # --- PRACTITIONER TYPE ---
-    "provider-type-provider-type-abbreviation"    => :practitioner_type,
-    "primary-practitioner-type"                   => :practitioner_type,
+    # ---- IDs / Numbers ----
+    # “Social Security Number : 084-68-7360”
+    "social-securitynumber"  => :ssn,
+    # “Individual NPI”
+    "do-youhave-anindividual-type-1-yes-individual-npi" => :npi,
 
-    # --- ADDRESS ---
-    "address-line-1"                              => :address_line1,
-    "address-line-2"                              => :address_line2,
-    "city"                                        => :city,
-    "state"                                       => :state,
-    "zipcode"                                     => :zipcode,
-    "county"                                      => :county,
-    "country"                                     => :country,
+    # ---- Demographics ----
+    "birthdate"        => :birth_date,   # you can switch to :date_of_birth if you prefer
+    "birthcity"        => :birth_city,
+    "birthstate"       => :birth_state,
+    "birthcountry"     => :birth_country_country_name,
+    "gender-identity"  => :gender_gender_description,
+    "race-ethnicity"   => :ethnicity_description,
 
-    # --- BIRTH INFORMATION ---
-    "birth-city"                                  => :birth_city,
-    "birth-state"                                 => :birth_state,
-    "birth-country-country-name"                  => :birth_country_country_name,
-
-    # --- CITIZENSHIP / VISA ---
-    "ps-citizenship"                              => :citizenship_status,
-    "citizenship-country-country-name"            => :citizenship_status,
-    "permanent-work-permit"                       => :work_permit_status,
-    "visa-number"                                 => :visa_number,
-    "gi-visa-types"                               => :visa_type,
-    "visa-status"                                 => :visa_status,
-    "visa-issue-date"                             => :visa_issue_date,
-    "visa-expire-date"                            => :visa_expiration_date,
-
-    # --- CONTACT INFORMATION ---
-    "email-address"                               => :email_address,
-    "telephone"                                   => :telephone_number,
-    "fax-number"                                  => :fax_number,
-    "mobile-number"                               => :cell_phone_number,
-    "pager-beeper-number"                         => :pager_beeper_number,
-
-    # --- EMERGENCY CONTACT ---
-    "emergency-contact-first-name"                => :emergency_contact_first_name,
-    "emergency-contact-middle-name"               => :emergency_contact_middle_name,
-    "emergency-contact-last-name"                 => :emergency_contact_last_name,
-    "emergency-contact-phone-number"              => :emergency_contact_phone,
-
-    # --- FLAGS & BOOLEANS ---
-    "has-dea-registration-number"                  => :dea_flag,
-    "has-cds-registration-number"                  => :cds_flag,
-    "medicare-field"                               => :medicare_provider_flag,
-    "medicaid-field"                               => :medicaid_provider_flag,
-    "other-name"                                   => :other_name_flag,
-    "served-in-military"                           => :active_military_flag,
-    "has-employment-gap"                           => :work_history_gap_flag,
-    "undergraduate-school"                         => :other_graduate_education_flag,
-    "has-training-program"                         => :fellowship_training_flag,
-    "has-hospital-privilege"                       => :hospital_privilege_flag,
-    "has-admitting-arrangement"                    => :hospital_admitting_arrangements,
-    "has-malpractice-claim"                        => :no_malpractice_claims_flag,
-
-    # --- HEALTH PLANS ---
-    "hp-health-plans"                              => :hp_health_plans,
-    "hp-hospitals"                                 => :hp_hospitals,
-    "hp-directories"                               => :hp_directories,
-
-    # --- SIGNATURE / ATTEST ---
-    "signature-date"                               => :attest_date,
-
-    # --- PREPARE SECTION ---
-    "degree-titles"                                => :degree_titles,
-    "primarypractice-state"                        => :primary_practice_state
+    # ---- Practice state ----
+    "primarypractice-state" => :primary_practice_state
   }.freeze
-
-
 
   FIELD_MAP = {
     "first_name" => :first_name,
