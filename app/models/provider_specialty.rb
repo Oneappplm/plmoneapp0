@@ -1003,7 +1003,7 @@ class ProviderSpecialty < ApplicationRecord
     "American Board of Pain Medicine",
     "American Board of Pathology",
     "American Board of Pediatric Dentistry",
-    " selected="">American Board of Pediatrics",
+    "American Board of Pediatrics",
     "American Board of Periodontology",
     "American Board of Phlebology",
     "American Board of Physical Medicine & Rehabilitation",
@@ -1059,6 +1059,7 @@ class ProviderSpecialty < ApplicationRecord
     "National Board of Certification and Recertificatio",
     "National Board of Osteopathic Medical Examiners",
     "National Board of Physicians and Surgeons",
+    "National Commission on Certification of Physician Assistants",
     "Neurocritical Care",
     "Other, not listed",
     "Pain Medicine"

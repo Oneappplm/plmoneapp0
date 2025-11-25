@@ -10,31 +10,34 @@ class CaqhController < ApplicationController
 
   # NEW PDF upload — CALLS ProviderImporter DIRECTLY
   def upload_pdf
-    pdf_files = params.values.select { |v| v.is_a?(ActionDispatch::Http::UploadedFile) }
+    uploaded = params.values.find { |v| v.is_a?(ActionDispatch::Http::UploadedFile) }
 
-    raise "No PDF uploaded" if pdf_files.empty?
+    tmp_path = Rails.root.join("tmp", uploaded.original_filename)
+    FileUtils.cp(uploaded.tempfile.path, tmp_path)
 
-    imported_records = []
+    result = Caqh::ProviderImporter.new(tmp_path).call
 
-    pdf_files.each do |uploaded_pdf|
-      # Save temporarily
-      tmp_path = Rails.root.join("tmp", uploaded_pdf.original_filename)
-      File.open(tmp_path, "wb") { |f| f.write(uploaded_pdf.read) }
+    provider_attest = result[:provider_attest]
+    ppi             = result[:provider_personal_information]
 
-      # This is exactly what you did in Rails console:
-      importer = Caqh::ProviderImporter.new(tmp_path)
-      ppi      = importer.call
-
-      imported_records << {
-        provider_attest_id: ppi.provider_attest_id,
-        caqh_provider_id:   ppi.caqh_provider_id,
-        name:               "#{ppi.first_name} #{ppi.last_name}"
-      }
-
-      # cleanup
-      File.delete(tmp_path) if File.exist?(tmp_path)
-    end
-
-    render json: { status: "pdf_imported", providers: imported_records }
+    render json: {
+      provider_attest_id: provider_attest.id,
+      caqh_provider_attest_id: provider_attest.caqh_provider_attest_id,
+      ppi: ppi.attributes.slice(
+        "caqh_provider_attest_id",
+        "caqh_provider_id",
+        "first_name",
+        "middle_name",
+        "last_name",
+        "address_line1",
+        "city",
+        "state",
+        "zipcode",
+        "npi",
+        "email_address",
+        "date_of_birth"
+      )
+    }
   end
+
 end

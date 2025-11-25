@@ -78,6 +78,53 @@
   <div class="table-responsive">
     <table class="table table-bordered">
       <tbody>
+        <% if provider_personal_information.signature_date.present? %>
+        <tr>
+          <td class="fw-bold text-dark">Signature Date:</td>
+          <td><%= provider_personal_information.signature_date.strftime('%m/%d/%Y') %></td>
+        </tr>
+        <% end %>
+
+        <% if provider_personal_information.id.present? || provider_personal_information.caqh_provider_id.present? %>
+        <tr>
+          <td class="fw-bold text-dark">ClientID:</td>
+          <td><%= provider_personal_information.id %></td>
+
+          <td class="fw-bold text-dark">CAQH ID:</td>
+          <td><%= provider_personal_information.caqh_provider_id %></td>
+        </tr>
+        <% end %>
+
+        <% if provider_personal_information.ssn.present? || provider_personal_information.birth_date.present? %>
+        <tr>
+          <td class="fw-bold text-dark">Social Security No.:</td>
+          <td><%= provider_personal_information.ssn %></td>
+
+          <td class="fw-bold text-dark">Date of Birth:</td>
+          <td><%= provider_personal_information.birth_date&.strftime('%m/%d/%Y') %></td>
+        </tr>
+        <% end %>
+
+        <% if provider_personal_information.npi.present? || provider_personal_information.birth_country_country_name.present? %>
+        <tr>
+          <td class="fw-bold text-dark">NPI:</td>
+          <td><%= provider_personal_information.npi %></td>
+
+          <td class="fw-bold text-dark">Country of Birth:</td>
+          <td><%= provider_personal_information.birth_country_country_name %></td>
+        </tr>
+        <% end %>
+
+        <% if provider_personal_information.citizenship_status.present? %>
+        <tr>
+          <td class="fw-bold text-dark">US Citizen:</td>
+          <td><%= provider_personal_information.citizenship_status %></td>
+
+          <td class="fw-bold text-dark">PMRS ID:</td>
+          <td><%= provider_personal_information.citizenship_status %></td>
+        </tr>
+        <% end %>
+
         <% provider_personal_information.provider_personal_information_app_trackings.each do |app_tracking| %>
           <tr>
             <td class="fw-bold text-dark">Application Received Date:</td>
@@ -87,39 +134,8 @@
             <td><%= app_tracking.application_receive_complete_date&.strftime('%m/%d/%Y') %></td>
           </tr>
           <tr>
-            <td class="fw-bold text-dark">Signature Date:</td>
-            <td><%= provider_personal_information.signature_date&.strftime('%m/%d/%Y') %></td>
-
             <td class="fw-bold text-dark">Verifications Complete Date:</td>
             <td><%= app_tracking.verification_complete_date&.strftime('%m/%d/%Y') %></td>
-          </tr>
-          <tr>
-            <td class="fw-bold text-dark">ClientID:</td>
-            <td><%= provider_personal_information&.id %></td>
-
-            <td class="fw-bold text-dark">CAQH ID:</td>
-            <td><%= provider_personal_information&.caqh_provider_id %></td>
-          </tr>
-          <tr>
-            <td class="fw-bold text-dark">Social Security No.:</td>
-            <td><%= provider_personal_information&.ssn %></td>
-
-            <td class="fw-bold text-dark">Date of Birth:</td>
-            <td><%= provider_personal_information&.birth_date&.strftime('%m/%d/%Y') %></td>
-          </tr>
-          <tr>
-            <td class="fw-bold text-dark">NPI:</td>
-            <td><%= provider_personal_information&.npi %></td>
-
-            <td class="fw-bold text-dark">Country of Birth:</td>
-            <td><%= provider_personal_information&.birth_country_country_name %></td>
-          </tr>
-          <tr>
-            <td class="fw-bold text-dark">US Citizen:</td>
-            <td><%= provider_personal_information&.citizenship_status %></td>
-
-            <td class="fw-bold text-dark">PMRS ID:</td>
-            <td><%= provider_personal_information&.citizenship_status %></td>
           </tr>
         <% end %>
       </tbody>
@@ -166,6 +182,9 @@
                 <br>
                 <strong class="text-dark">Practice Address:</strong>
                 <%= [practice_info.complete_address].compact_blank.join(", ") %>
+                <br>
+                <strong class="text-dark">Practice State:</strong>
+                <%= practice_info.get_state.name %>
               </td>
               <td>
                 <strong class="text-dark">Practice Phone:</strong>
@@ -487,7 +506,7 @@
   <% end %>
 
   <!-- OIG -->
-  <% if @provider_oig_tab_details.present? %>
+  <%# if @provider_oig_tab_details.present? %>
     <div class="section mt-4">
       <div class="section-title">OIG Exclusions</div>
       <div class="section-content">
@@ -508,7 +527,7 @@
         <% end %>
       </div>
     </div>
-  <% end %>
+  <%# end %>
 
   <!-- Board Certification -->
   <div class="section mt-4">
@@ -539,7 +558,7 @@
               <div class="col-6">
                 <p><strong>Board Status:</strong> <%= certification.board_certified_flag %></p>
                 <p><strong>Expiration Date:</strong> 
-                  <%= certification&.board_certification_expires_flag? ? "Does Not Expire" : (certification&.expiration_date.present? ? certification.expiration_date.strftime("%d-%m-%Y") : "") %>
+                  <%= certification&.board_certification_expires_flag? ? "Does Not Expire" : (certification&.expiration_date.present? ? certification.expiration_date.strftime("%m/%d/%Y") : "") %>
                 </p>
                 <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
                 <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
@@ -578,7 +597,7 @@
               </div>
               <div class="col-6">
                 <p><strong>Expiration Date:</strong> <%= facility.expiration_date&.strftime('%m/%d/%Y') %></p>
-                <p><strong>Status:</strong> <%= facility&.status %>
+                <p><strong>Status:</strong> <%= details&.status %>
                 </p>
                 <p><strong>Verifier:</strong> <%= details&.verifier %></p>
                 <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
