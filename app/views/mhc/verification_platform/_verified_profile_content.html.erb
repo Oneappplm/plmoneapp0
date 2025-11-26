@@ -370,18 +370,18 @@
                 <p><strong>DEA Number:</strong> <%= dea.dea_number %></p>
                 <p><strong>Schedule:</strong> <%= dea.schedules_held.join(" ") %></p>
                 <p><strong>Source:</strong> DEA</p>
-                <p><strong>Source Date:</strong> <%= dea_details[-1]&.source_date&.strftime('%m/%d/%Y') %></p>
-                <p><strong>Review Criteria:</strong> <%= dea_details[-1]&.adverse_action %></p>
+                <p><strong>Source Date:</strong> <%= dea_details&.source_date&.strftime('%m/%d/%Y') %></p>
+                <p><strong>Review Criteria:</strong> <%= dea_details&.adverse_action %></p>
               </div>
               <div class="col-6">
-                <p><strong>Status:</strong> <%= dea_details[-1]&.status %></p>
+                <p><strong>Status:</strong> <%= dea_details&.status %></p>
                 <p><strong>State:</strong> <%= dea.state %></p>
-                <p><strong>Verifier:</strong> <%= dea_details[-1]&.verifier %></p>
+                <p><strong>Verifier:</strong> <%= dea_details&.verifier %></p>
                 <p><strong>Expiration Date:</strong> <%= dea.expiration_date&.strftime('%m/%d/%Y') %></p>
-                <p><strong>Verification Date:</strong> <%= dea_details[-1]&.verification_date&.strftime('%m/%d/%Y') %></p>
+                <p><strong>Verification Date:</strong> <%= dea_details&.verification_date&.strftime('%m/%d/%Y') %></p>
               </div>
               <div class="col-12">
-                <p><strong>Comments:</strong> <%= dea_details[-1]&.verification_comments %></p>
+                <p><strong>Comments:</strong> <%= dea_details&.verification_comments %></p>
               </div>
             </div>
             <hr>
@@ -436,7 +436,7 @@
                     <p><strong>Search Results:</strong> 
                       <%= verification_search_results.to_h.key(rva.search_result) || "None" %>
                     </p>
-                    <p><strong>Finding:</strong> <%= rva.verification_sanctions || "None" %></p>
+                    <p><strong>Finding:</strong> <%= verification_search_results.to_h.key(rva.search_result) || "None" %></p>
                     <p><strong>Verified By:</strong> SAM</p>
                     <p><strong>Verifier:</strong> <%= user.full_name %></p>
                     <p><strong>Comments:</strong> <%= rva.comments || "None" %></p>
