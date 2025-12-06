@@ -1558,4 +1558,50 @@
 	  document.querySelector('[name="practice_licensure_id"]').value = practiceInfoEducationId;
     });
   });
+
+  // for run webcrawler button inside the Quality Audit section
+  document.addEventListener("turbo:load", () => {
+	  const button = document.getElementById("run-licensure-webcrawler-btn");
+	  if (!button) return;
+
+	  button.addEventListener("click", async () => {
+	    const providerLicensureId = button.dataset.providerLicensureId;
+	    const infoId = button.dataset.infoId;
+	    const licenseNumber = button.dataset.licenseNumber;
+
+	    const response = await fetch("/run_licensure_webcrawler", {
+	      method: "POST",
+	      headers: { "Content-Type": "application/json", "X-CSRF-Token": Rails.csrfToken() },
+	      body: JSON.stringify({
+	        provider_licensure_id: providerLicensureId,
+	        info_id: infoId,
+	        license_number: licenseNumber
+	      })
+	    });
+
+	    const data = await response.json();
+
+	    if (data.webscraper_log) {
+	      const container = document.getElementById("licensure-crawler-link");
+	      const tempDiv = document.createElement("div");
+	      tempDiv.innerHTML = `
+	        <div class="col-md-6">
+	          <div class="text-decoration-underline">
+	            <a href="${data.webscraper_log.filepath.url}" target="_blank">${data.webscraper_log.filepath.url.split('/').pop()}</a>
+	          </div>
+	        </div>
+	        <div class="col-md-3">
+	          <div class="date-time d-flex">
+	            <span>${new Date(data.webscraper_log.created_at).toISOString().split('T')[0].replace(/-/g,'/')}</span>
+	            <span class="ms-2">${new Date(data.webscraper_log.created_at).toTimeString().split(' ')[0].slice(0,5)}</span>
+	          </div>
+	        </div>
+	      `;
+	      container.prepend(tempDiv);
+	    }
+	  });
+	});
+
 </script>
+
+
