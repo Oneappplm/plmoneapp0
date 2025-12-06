@@ -23,7 +23,7 @@ class ProviderAttest < ApplicationRecord
   has_many :provider_certifications, dependent: :destroy
   has_many :provider_criminal_actions, dependent: :destroy
   has_many :provider_deas, dependent: :destroy
-  has_many :provider_employments
+  has_many :provider_employments, dependent: :destroy
   has_many :provider_degrees, dependent: :destroy
   has_many :provider_disclosures, dependent: :destroy
   accepts_nested_attributes_for :provider_disclosures, reject_if: proc { |attrs|
