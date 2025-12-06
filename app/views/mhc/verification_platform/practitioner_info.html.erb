@@ -789,7 +789,15 @@
                                 <label class="text-dark-grey">Contact Name (Title-F-L-Suffix):</label>
                                 <div class="row">
                                     <div class="col-2">
-                                        <%= provider_personal_information_credentialing_contact_form.select :title, options_for_select(titles), { prompt: 'Title' }, {:class => 'form-select border border-dark payer-state single-select',  data: { value: provider_personal_information_credentialing_contact_form.object.title } }  %>
+                                       <%= form_with model: @provider_personal_uploaded_docs_mhc_manage_clients_path, local: true do |f| %>
+                                          <%= f.select :title,
+                                              options_for_select(titles, f.object&.title),
+                                              { prompt: "Title" },
+                                              class: "form-select border border-dark payer-state single-select",
+                                              data: { value: f.object&.title }
+                                          %>
+                                        <% end %>
+
                                     </div>
                                     <div class="col-4">
                                         <%= provider_personal_information_credentialing_contact_form.text_field :firstname,  placeholder: 'Firstname', class: 'form-control border border-dark' %>
@@ -871,7 +879,14 @@
                         <div class="row mb-3">
                             <div class="col-lg-4">
                                 <label class="text-dark-grey">Contact Method:</label>
-                                <%= provider_personal_information_confidential_contact_form.select :contact_method, options_for_select([['Email', 'email'], ['Fax', 'fax'], ['Letter', 'letter']]), { prompt: '' }, {:class => 'form-select border border-dark single-select'}  %>
+                                <%= provider_personal_information_confidential_contact_form.select(
+                                      :contact_method,
+                                      options_for_select([['Email', 'email'], ['Fax', 'fax'], ['Letter', 'letter']], 
+                                      provider_personal_information_confidential_contact_form.try(:contact_method)),
+                                      { prompt: '' },
+                                      { class: 'form-select border border-dark single-select' }
+                                ) %>
+
                             </div>
                         </div>
                     </div>

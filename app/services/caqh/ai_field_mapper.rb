@@ -14,7 +14,9 @@ module Caqh
     #   attrs  = mapper.attributes_for(ProviderPersonalInformation)
     #
     # Returns a plain Ruby hash: { "first_name" => "Alan", "last_name" => "Xia", ... }
-    def attributes_for(model_class)
+    # Build an attributes hash for a given AR model class using AI.
+    # ADDED: full_pdf_text parameter for supplementary context.
+    def attributes_for(model_class, full_pdf_text: nil)
       columns = model_class.columns_hash.transform_values { |c| c.type.to_s }
 
       prompt = <<~PROMPT
@@ -25,23 +27,25 @@ module Caqh
 
         1) RAW_FIELDS: a flat hash of key/value pairs extracted from a CAQH provider PDF.
            Keys are noisy field labels from the PDF, values are strings.
-           Example keys: "first-name", "personal-e-mail-address", "license-state", etc.
 
         2) SCHEMA: the database columns for the #{model_class.table_name} table
            with their data types.
 
+        3) FULL_TEXT: The complete, raw text extracted from the PDF. Use this as
+           a secondary source ONLY to find values for SCHEMA columns that were not
+           found in RAW_FIELDS (e.g., 'birth_date', 'ssn', etc.).
+
         Your task:
-        - Examine RAW_FIELDS and SCHEMA.
-        - Decide which RAW_FIELDS values should populate which SCHEMA columns
-          for the #{model_class.name} record.
+        - Examine RAW_FIELDS, SCHEMA, and FULL_TEXT.
+        - Decide which values should populate which SCHEMA columns for the #{model_class.name} record.
         - Only use column names that exist in SCHEMA.
-        - If you're not sure about a column, omit it instead of guessing.
-        - Do NOT invent values.
+        - **If you're not sure, omit the column.**
+        - **Do NOT invent values.**
 
         OUTPUT FORMAT (IMPORTANT):
         - Output a single JSON object.
-        - Keys MUST be column names from SCHEMA (e.g. "first_name", "last_name", "address_line1").
-        - Values should be strings (dates as strings are fine; we will cast them in Ruby).
+        - Keys MUST be column names from SCHEMA.
+        - Values should be strings (dates as strings are fine).
         - Do NOT wrap the JSON in ``` fences.
         - Do NOT include any explanation, only JSON.
 
@@ -51,10 +55,15 @@ module Caqh
         SCHEMA (as JSON: column_name => type):
         #{columns.to_json}
 
+        FULL_TEXT (for context and finding missing data - truncated to 10k chars):
+        --- START FULL TEXT ---
+        #{full_pdf_text.to_s.truncate(10000)}
+        --- END FULL TEXT ---
+
         Now output ONLY the JSON object of column_name => value for #{model_class.name}.
       PROMPT
 
-      response = OpenAI_CLIENT.chat(
+      response = OPENAI_CLIENT.chat(
         parameters: {
           model: "gpt-4.1-mini",
           # If supported by your gem, uncomment this to force JSON:
