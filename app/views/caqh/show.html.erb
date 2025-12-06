@@ -41,8 +41,12 @@
           $('#submit-pdf-files').prop('disabled', true).html('Processing…');
         },
         success: function(result){
-          alert('PDF processed!');
-          console.log(result);
+          if (result.redirect_url) {
+            window.location.href = result.redirect_url;
+          } else {
+            alert("PDF processed!");
+            console.log(result);
+          }
         },
         error: function(err){
           alert('Error uploading PDF.');
