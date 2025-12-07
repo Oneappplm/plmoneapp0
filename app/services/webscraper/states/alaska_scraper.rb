@@ -1,12 +1,9 @@
-require "capybara"
-require "capybara/dsl"
 require "selenium-webdriver"
 require "fileutils"
 
 module Webscraper
   module States
     class AlaskaScraper
-      include Capybara::DSL
 
       SEARCH_URL = "https://www.commerce.alaska.gov/cbp/main/Search/Professional".freeze
 
@@ -14,34 +11,36 @@ module Webscraper
         @license_number = license_number
         @state = state
         @url = url || SEARCH_URL
-        setup_capybara!
+        @driver = build_driver
       end
 
       def crawl!
         puts "Running Alaska scraper for #{@license_number} at #{@url}"
 
-        visit @url
-        fill_in "LicenseNumber", with: @license_number
+        @driver.navigate.to(@url)
 
-        # Check reCAPTCHA inside iframe
+        # Fill form
+        license_input = wait_until { @driver.find_element(id: "LicenseNumber") }
+        license_input.clear
+        license_input.send_keys(@license_number)
+
+        # Check CAPTCHA
         if captcha_present?
-          puts "⚠️ CAPTCHA detected! Please solve it manually."
-          puts "Waiting for completion..."
-
+          puts "⚠️ CAPTCHA detected! Please solve it manually..."
           wait_until_captcha_solved
-
-          puts "✔️ CAPTCHA solved automatically detected. Continuing..."
+          puts "✔ CAPTCHA solved!"
         end
 
-        puts "➡️ Clicking search button..."
-        find("#search").click
-        
-        # sleep 1
+        # Click search button
+        search_button = wait_until { @driver.find_element(id: "search") }
+        search_button.click
 
-        puts "Checking results..."
-        results_table = all("table tbody tr")
+        sleep 1 # minor wait
 
-        if results_table.empty?
+        # Parse results
+        rows = @driver.find_elements(css: "table tbody tr")
+
+        if rows.empty?
           screenshot_path = take_screenshot("no_results")
           return {
             status: "no_results",
@@ -51,7 +50,7 @@ module Webscraper
           }
         end
 
-        first_row = results_table.first
+        first_row = rows.first
 
         extracted = {
           name: safe_text(first_row, "td[data-label='Name']"),
@@ -69,76 +68,79 @@ module Webscraper
           state: @state.alpha_code,
           pdf_path: screenshot_path
         )
-
+      ensure
+        @driver.quit if @driver
       end
 
       private
 
-      #######################################################################
-      ## 1️⃣ Capybara Driver (HEADFUL browser so human can solve CAPTCHA)
-      #######################################################################
-      def setup_capybara!
-        Capybara.register_driver :selenium_chrome_visible do |app|
-          options = Selenium::WebDriver::Chrome::Options.new
-          options.add_argument("--disable-dev-shm-usage")
-          options.add_argument("--no-sandbox")
-          options.add_argument("--window-size=1400,2000")
+      ###############################################################
+      # 1️⃣ Build Selenium driver
+      ###############################################################
+      def build_driver
+        options = Selenium::WebDriver::Chrome::Options.new
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--window-size=1400,2000")
 
-          Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
-        end
-
-        Capybara.default_driver = :selenium_chrome_visible
-        Capybara.javascript_driver = :selenium_chrome_visible
+        Selenium::WebDriver.for(:chrome, options: options)
       end
 
-      #######################################################################
-      ## 2️⃣ CAPTCHA detection
-      #######################################################################
+      ###############################################################
+      # 2️⃣ CAPTCHA detection (pure Selenium)
+      ###############################################################
       def captcha_present?
-        return false unless page.has_css?("iframe[title='reCAPTCHA']")
-
-        within_frame(find("iframe[title='reCAPTCHA']")) do
-          page.has_css?("#recaptcha-anchor")
-        end
+        @driver.find_elements(css: "iframe[title='reCAPTCHA']").any?
       end
 
-      #######################################################################
-      ## 3️⃣ Wait until solved
-      #######################################################################
+      ###############################################################
+      # 3️⃣ Wait for CAPTCHA to be solved
+      ###############################################################
       def wait_until_captcha_solved(timeout = 300)
         start = Time.now
 
         while captcha_not_solved?
           sleep 1
-          if Time.now - start > timeout
-            raise "CAPTCHA not solved within #{timeout} seconds"
-          end
+          raise "CAPTCHA not solved within #{timeout} seconds" if Time.now - start > timeout
         end
       end
 
       def captcha_not_solved?
-        within_frame(find("iframe[title='reCAPTCHA']")) do
-          page.has_css?("#recaptcha-anchor[aria-checked='false']")
-        end
-      rescue Capybara::ElementNotFound
+        iframe = @driver.find_elements(css: "iframe[title='reCAPTCHA']").first
+        return false unless iframe
+
+        @driver.switch_to.frame(iframe)
+
+        anchor = @driver.find_elements(css: "#recaptcha-anchor").first
+        checked = anchor&.attribute("aria-checked") == "false"
+
+        @driver.switch_to.default_content
+        checked
+      rescue
         false
       end
 
-      #######################################################################
-      ## 4️⃣ Screenshot
-      #######################################################################
+      ###############################################################
+      # 4️⃣ Screenshot
+      ###############################################################
       def take_screenshot(filename)
         dir = Rails.root.join("public", "webscrape", "Licensure", @state.alpha_code)
         FileUtils.mkdir_p(dir)
 
         path = dir.join("#{filename}.png")
-        save_screenshot(path.to_s)
-
+        @driver.save_screenshot(path.to_s)
         path.to_s
       end
 
+      ###############################################################
+      # Helpers
+      ###############################################################
+      def wait_until(timeout = 10)
+        Selenium::WebDriver::Wait.new(timeout: timeout).until { yield }
+      end
+
       def safe_text(row, selector)
-        row.find(selector).text.strip
+        row.find_element(css: selector).text.strip
       rescue
         ""
       end
