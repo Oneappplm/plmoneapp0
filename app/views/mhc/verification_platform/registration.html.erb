@@ -1790,8 +1790,18 @@
             $('.request-comment')[0].value = data.comments;
             $('.loading-overlay').hide();
           },
-          error: function () {
-          },
+          error: function (xhr) {
+            $('.loading-overlay').hide();
+
+            try {
+              const response = JSON.parse(xhr.responseText);
+
+              // Show backend message
+              alert(response.message || "Webcrawler failed.");
+            } catch (e) {
+              alert("Webcrawler failed due to an unknown error.");
+            }
+          }
         });
       });
       $('#verification-btn').click(function(e) {
