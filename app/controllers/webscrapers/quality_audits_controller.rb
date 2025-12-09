@@ -62,64 +62,151 @@ class Webscrapers::QualityAuditsController < ApplicationController
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
+  # def run_registration_webcrawler
+  #   dea_number = params[:dea_number]
+  #   last_name = params[:last_name]
+  #   first_name = params[:first_name]
+  #   provider_personal_info = ProviderPersonalInformation.find(params[:info_id])
+
+  #   provider_dea = ProviderDea.find(params[:provider_dea_id])
+  
+  #   # Create RVA information for Registration when running webcrawler
+  #   rva_information = RvaInformation.create!(
+  #     tab: 'Registration',
+  #     send_request: 'SENT',
+  #     requested_by: 'SYSTEM',
+  #     requested_date: Date.today,
+  #     requested_method: 'Letter',
+  #     required_fee_amount: 0,
+  #     check_generated: false,
+  #     received_status: true,
+  #     provider_personal_information_id: provider_personal_info.id,
+  #     comments: 'Webcrawler',
+  #     received_by: 'SYSTEM',
+  #     provider_dea_id: provider_dea.id,
+  #     received_date: Date.today
+  #   )
+  
+  #   # Create the service instance and call it with parameters
+  #   reference_html = 'dea_template.html'
+  #   service = Webscraper::DeaService.new(dea_number, reference_html)
+  #   service.call
+  
+  #   # Define source file path
+  #   source_file = Rails.root.join('public', 'screenshots', 'dea_screenshot.pdf')
+  
+  #   # Generate unique filename
+  #   timestamp = Time.now.strftime('%Y-%m-%dT%H-%M-%S')
+  #   random_string = SecureRandom.hex(4)
+  #   filename = "DEA_#{last_name.upcase}_#{first_name.upcase}_#{timestamp}_#{random_string}_M.pdf"
+  
+  #   # Copy the file to a temporary directory for uploading
+  #   tmp_file_path = Rails.root.join('tmp', filename)
+  #   FileUtils.cp(source_file, tmp_file_path)
+  
+  #   # Save the file in WebscraperLog using CarrierWave
+  #   webscraper_log = DeaWebcrawlerLog.new(status: 'completed',rva_information_id: rva_information.id, filetype: 'PDF')
+  #   webscraper_log.filepath = File.open(tmp_file_path) # Attach the file using CarrierWave
+  #   webscraper_log.save!
+  
+  #   # Remove the temporary file after saving
+  #   File.delete(tmp_file_path) if File.exist?(tmp_file_path)
+  
+  #   if params[:info_id].present?
+  #     provider_personal_info.update(verification_status: 'Processing')
+  #   end
+  
+  #   render json: { message: 'Registration Webcrawler completed successfully', rva_information: rva_information, webscraper_log: webscraper_log }, status: :ok
+  # rescue => e
+  #   render json: { error: e.message }, status: :unprocessable_entity
+  # end 
+
   def run_registration_webcrawler
     dea_number = params[:dea_number]
-    last_name = params[:last_name]
     first_name = params[:first_name]
-    provider_personal_info = ProviderPersonalInformation.find(params[:info_id])
+    last_name  = params[:last_name]
 
-    provider_dea = ProviderDea.find(params[:provider_dea_id])
-  
-    # Create RVA information for Registration when running webcrawler
-    rva_information = RvaInformation.create!(
-      tab: 'Registration',
-      send_request: 'SENT',
-      requested_by: 'SYSTEM',
+    provider_info = ProviderPersonalInformation.find(params[:info_id])
+    provider_dea  = ProviderDea.find(params[:provider_dea_id])
+
+    # Validate DEA #
+    unless dea_number =~ /\A[A-Z0-9]{10}\z/
+      return render json: { success: false, message: "Invalid DEA format." }, status: :unprocessable_entity
+    end
+
+    master = DeaMasterRecord.find_by(dea_number: dea_number)
+    if master.blank?
+      return render json: { success: false, message: "DEA Number not found in Master Database." }, status: :unprocessable_entity
+    end
+
+    # Create RVA
+    rva_info = RvaInformation.create!(
+      tab: "Registration",
+      send_request: "SENT",
+      requested_by: "SYSTEM",
       requested_date: Date.today,
-      requested_method: 'Letter',
+      requested_method: "DEA Master Lookup",
       required_fee_amount: 0,
       check_generated: false,
       received_status: true,
-      provider_personal_information_id: provider_personal_info.id,
-      comments: 'Webcrawler',
-      received_by: 'SYSTEM',
-      provider_dea_id: provider_dea.id,
-      received_date: Date.today
+      received_by: "SYSTEM",
+      received_date: Date.today,
+      comments: "Used DEA Master Database Match",
+      provider_personal_information_id: provider_info.id,
+      provider_dea_id: provider_dea.id
     )
-  
-    # Create the service instance and call it with parameters
-    reference_html = 'dea_template.html'
+
+    # Correct HTML TEMPLATE PATH
+    reference_html = Rails.root.join("public", "dea_template.html").to_s
+
+    # Run the service (updates the HTML and generates PDF)
     service = Webscraper::DeaService.new(dea_number, reference_html)
-    service.call
-  
-    # Define source file path
-    source_file = Rails.root.join('public', 'screenshots', 'dea_screenshot.pdf')
-  
-    # Generate unique filename
-    timestamp = Time.now.strftime('%Y-%m-%dT%H-%M-%S')
-    random_string = SecureRandom.hex(4)
-    filename = "DEA_#{last_name.upcase}_#{first_name.upcase}_#{timestamp}_#{random_string}_M.pdf"
-  
-    # Copy the file to a temporary directory for uploading
-    tmp_file_path = Rails.root.join('tmp', filename)
-    FileUtils.cp(source_file, tmp_file_path)
-  
-    # Save the file in WebscraperLog using CarrierWave
-    webscraper_log = DeaWebcrawlerLog.new(status: 'completed',rva_information_id: rva_information.id, filetype: 'PDF')
-    webscraper_log.filepath = File.open(tmp_file_path) # Attach the file using CarrierWave
-    webscraper_log.save!
-  
-    # Remove the temporary file after saving
-    File.delete(tmp_file_path) if File.exist?(tmp_file_path)
-  
-    if params[:info_id].present?
-      provider_personal_info.update(verification_status: 'Processing')
+    wicked_pdf_path = service.call
+
+    unless wicked_pdf_path && File.exist?(wicked_pdf_path)
+      return render json: { success: false, message: "PDF generation failed." }, status: :unprocessable_entity
     end
-  
-    render json: { message: 'Registration Webcrawler completed successfully', rva_information: rva_information, webscraper_log: webscraper_log }, status: :ok
+
+    provider_filename = "DEA_#{dea_number}.pdf"
+
+    final_path = Rails.root.join("tmp", provider_filename)
+    FileUtils.cp(wicked_pdf_path, final_path)
+
+    # Log PDF
+    log = DeaWebcrawlerLog.new(
+      status: "completed",
+      rva_information_id: rva_info.id,
+      filetype: "PDF"
+    )
+    log.filepath = File.open(final_path)
+    log.save!
+
+    File.delete(final_path) if File.exist?(final_path)
+
+    provider_info.update(verification_status: "Processing")
+
+    # Load updated DEA HTML
+    updated_html_path = Rails.root.join("tmp", "updated_page.html")
+    updated_html = File.exist?(updated_html_path) ? File.read(updated_html_path) : ""
+
+    # Return JSON
+    render json: {
+      success: true,
+      message: "Webcrawler completed successfully.",
+      webscraper_log: {
+        filepath: { url: log.filepath.url },
+        created_at: log.created_at
+      },
+      rva_information: rva_info,
+      updated_html: updated_html
+    }, status: :ok
+
   rescue => e
-    render json: { error: e.message }, status: :unprocessable_entity
-  end 
+    render json: { success: false, message: e.message }, status: :unprocessable_entity
+  end
+
+
+
 
   def send_oig_request
     create_rva_information('OIG', 'none')
