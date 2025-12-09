@@ -602,6 +602,11 @@ Rails.application.routes.draw do
 
   namespace :mhc do
     get "verification_platform/states", to: "verification_platform#states"
+
+    # for DEA file uploadation
+    resources :dea_files, only: [:new, :create]
+    get "dea_import_progress/:job_id", to: "dea_import_progress#show"
+    get "mhc/dea_import_stream/:job_id", to: "mhc/dea_import_progress#stream"
   end
 
   #------for solana routes start here------

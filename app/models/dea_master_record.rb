@@ -1,0 +1,2 @@
+class DeaMasterRecord < ApplicationRecord
+end
