@@ -3,16 +3,20 @@ require 'aws-sdk-s3'
 require 'open-uri'
 require 'net/http'
 require 'uri'
+require 'fileutils'
+require 'wicked_pdf'
 
 class PdfQueueItemJob < ApplicationJob
   queue_as :pdf_generation
 
   def perform(item_id, provider_id, user_id)
-    item = PdfQueueItem.find(item_id)
-    provider = ProviderPersonalInformation.find(provider_id)
-    user = User.find(user_id)
+    item     = PdfQueueItem.unscoped.find(item_id)
+    provider = ProviderPersonalInformation.unscoped.find(provider_id)
+    user     = User.unscoped.find(user_id)
 
-    Rails.logger.info "🧾 [PDF ITEM] Processing PdfQueueItem #{item.id} for queue #{item.pdf_generation_queue.id}"
+    queue = PdfGenerationQueue.unscoped.find(item.pdf_generation_queue_id)
+
+    Rails.logger.info "🧾 [PDF ITEM] Processing PdfQueueItem #{item.id} for queue #{queue.id}"
 
     if item.file_name == "Verified Profile"
       pdf_path = render_verified_profile_pdf(provider, user)
@@ -23,27 +27,41 @@ class PdfQueueItemJob < ApplicationJob
     end
 
     # 🚀 Trigger merge when all items are complete
-    queue = item.pdf_generation_queue
     queue.with_lock do
-      if queue.pdf_queue_items.where.not(status: 'completed').count.zero? && !queue.merge_enqueued?
+      all_done = queue.pdf_queue_items.where.not(status: 'completed').count.zero?
+
+      if all_done && !queue.merge_enqueued?
         queue.update!(merge_enqueued: true)
         PdfQueueMergeJob.perform_later(queue.id, provider.id, user.id)
         Rails.logger.info "🚀 [PDF ITEM] All items completed. Enqueued merge job for queue #{queue.id}"
       end
     end
+
   rescue => e
-    Rails.logger.error "❌ [PDF ITEM] FAILED for item #{item&.id || 'unknown'}: #{e.class} - #{e.message}\n#{e.backtrace.first(10).join("\n")}"
-    item.update!(status: 'error', message: e.message) if item && item.persisted?
+    Rails.logger.error "❌ [PDF ITEM] FAILED item_id=#{item_id}: #{e.class} - #{e.message}\n#{e.backtrace.first(10).join("\n")}"
+    PdfQueueItem.unscoped.where(id: item_id).update_all(status: 'error', message: e.message)
   end
 
   private
 
-  # Handles items that are not 'Verified Profile'
   def handle_non_verified_item(item)
     file_path_value = item.file_path.to_s.strip
+
     if file_path_value.blank?
       item.update!(status: 'error', message: 'File path blank')
       Rails.logger.warn "⚠️ [PDF ITEM] Blank file_path for item #{item.id}"
+      return
+    end
+
+    # ✅ Treat "uploads/..." as S3 key (not local path)
+    if s3_key_path?(file_path_value)
+      if s3_key_accessible?(file_path_value)
+        item.update!(status: 'completed', message: 'S3 key verified')
+        Rails.logger.info "🌐 [PDF ITEM] S3 key verified for item #{item.id}: #{file_path_value}"
+      else
+        item.update!(status: 'error', message: 'S3 key not accessible')
+        Rails.logger.warn "⚠️ [PDF ITEM] S3 key inaccessible for item #{item.id}: #{file_path_value}"
+      end
       return
     end
 
@@ -55,60 +73,64 @@ class PdfQueueItemJob < ApplicationJob
         item.update!(status: 'error', message: 'Remote file not accessible')
         Rails.logger.warn "⚠️ [PDF ITEM] Remote file inaccessible for item #{item.id}: #{file_path_value}"
       end
-    else
-      # Treat as local file
-      local_path = Rails.root.join('public', file_path_value.sub(%r{^/}, ''))
-      if File.exist?(local_path)
-        item.update!(status: 'completed', message: 'File ready for merge')
-        Rails.logger.info "📁 [PDF ITEM] Local file exists for item #{item.id}: #{local_path}"
-      else
-        item.update!(status: 'error', message: "File missing: #{local_path}")
-        Rails.logger.warn "⚠️ [PDF ITEM] Missing local file for item #{item.id}: #{local_path}"
-      end
+      return
     end
+
+    # Local file under public/
+    local_path = Rails.root.join('public', file_path_value.sub(%r{^/}, ''))
+    if File.exist?(local_path)
+      item.update!(status: 'completed', message: 'File ready for merge')
+      Rails.logger.info "📁 [PDF ITEM] Local file exists for item #{item.id}: #{local_path}"
+    else
+      item.update!(status: 'error', message: "File missing: #{local_path}")
+      Rails.logger.warn "⚠️ [PDF ITEM] Missing local file for item #{item.id}: #{local_path}"
+    end
+  end
+
+  def s3_key_path?(path)
+    path.start_with?("uploads/")
+  end
+
+  def s3_key_accessible?(key)
+    bucket = ENV.fetch("AWS_BUCKET", "plmhealthoneapp-hvhs")
+
+    s3 = Aws::S3::Client.new(
+      region: ENV.fetch("AWS_REGION", "us-east-1"),
+      access_key_id: ENV["AWS_ACCESS_KEY_ID"],
+      secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"]
+    )
+
+    s3.head_object(bucket: bucket, key: key)
+    Rails.logger.info "✅ [PDF ITEM] S3 HEAD successful for #{key}"
+    true
+  rescue Aws::S3::Errors::NotFound
+    Rails.logger.warn "⚠️ [PDF ITEM] S3 object missing: #{key}"
+    false
+  rescue => e
+    Rails.logger.error "❌ [PDF ITEM] S3 HEAD failed for #{key}: #{e.class} - #{e.message}"
+    false
   end
 
   def remote_accessible?(url)
     uri = URI.parse(url)
+
     if uri.host&.include?("amazonaws.com")
-      # ✅ Clean up the key (remove query params)
+      # old behavior kept for full S3 URLs
       key = uri.path.sub(%r{^/}, '')
-      bucket = ENV.fetch("AWS_BUCKET", "plmhealthoneapp-hvhs")
-
-      s3 = Aws::S3::Client.new(
-        region: ENV.fetch("AWS_REGION", "us-east-1"),
-        access_key_id: ENV["AWS_ACCESS_KEY_ID"],
-        secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"]
-      )
-
-      begin
-        s3.head_object(bucket: bucket, key: key)
-        Rails.logger.info "✅ [PDF ITEM] S3 HEAD successful for #{key}"
-        true
-      rescue Aws::S3::Errors::NotFound
-        Rails.logger.warn "⚠️ [PDF ITEM] S3 object missing: #{key}"
-        false
-      rescue => e
-        Rails.logger.error "❌ [PDF ITEM] S3 HEAD failed for #{key}: #{e.class} - #{e.message}"
-        false
-      end
+      s3_key_accessible?(key)
     else
-      # Non-S3: fallback check
-      begin
-        URI.open(url, open_timeout: 5, read_timeout: 10) { |f| f.read(1) }
-        true
-      rescue => e
-        Rails.logger.warn "⚠️ [PDF ITEM] HTTP check failed for #{url}: #{e.message}"
-        false
-      end
+      URI.open(url, open_timeout: 5, read_timeout: 10) { |f| f.read(1) }
+      true
     end
+  rescue => e
+    Rails.logger.warn "⚠️ [PDF ITEM] HTTP check failed for #{url}: #{e.message}"
+    false
   end
 
   def remote_url?(str)
-    !!(str =~ /\Ahttps?:\/\//i)
+    str.match?(/\Ahttps?:\/\//i)
   end
 
-  # 🔧 Generates "Verified Profile" PDFs locally
   def render_verified_profile_pdf(provider, user)
     pdf_dir = Rails.root.join("public/generated_pdfs")
     FileUtils.mkdir_p(pdf_dir)
@@ -124,11 +146,11 @@ class PdfQueueItemJob < ApplicationJob
         oig_details: provider.rva_informations.where(tab: 'OIG', status: 'completed').where.not(source_date: nil),
         npdb_details: provider.rva_informations.where(tab: 'NPDB'),
         grouped_disclosures: provider.provider_disclosures
-                                    .where(disclosure_answer_flag: true)
-                                    .where.not(disclosure_explanation: [nil, ""])
-                                    .group_by do |d|
-                                      QUESTIONS_DISCLOSURE.find { |_h, qs| qs.include?(d.disclosure_question_disclosure_summary) }&.first
-                                    end
+          .where(disclosure_answer_flag: true)
+          .where.not(disclosure_explanation: [nil, ""])
+          .group_by do |d|
+            QUESTIONS_DISCLOSURE.find { |_h, qs| qs.include?(d.disclosure_question_disclosure_summary) }&.first
+          end
       }
     )
 
