@@ -11,9 +11,9 @@ class Mhc::DeaFilesController < ApplicationController
     uploaded_file = params[:dea_file]
 
     # 1 — remove previous DEA files
-    Dir.glob(Rails.root.join("tmp", "dea_*")).each do |old_file|
-      File.delete(old_file) if File.exist?(old_file)
-    end
+    # Dir.glob(Rails.root.join("tmp", "dea_*")).each do |old_file|
+    #   File.delete(old_file) if File.exist?(old_file)
+    # end
 
     # 2 — save uploaded file
     filename = "dea_#{Time.now.to_i}_#{uploaded_file.original_filename}"
