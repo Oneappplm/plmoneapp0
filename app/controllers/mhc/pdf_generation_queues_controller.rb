@@ -39,9 +39,7 @@ class Mhc::PdfGenerationQueuesController < ApplicationController
     end
 
     # Enqueue each item separately
-    queue.pdf_queue_items.find_each do |item|
-      PdfQueueItemJob.perform_later(item.id, provider.id, current_user.id)
-    end
+    PdfGenerationService.new(queue, provider, current_user).process_queue!
 
     render json: { message: "Your request is queued", queue_number: queue.id, queue_status: queue.status }
   end

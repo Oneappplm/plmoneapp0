@@ -4,17 +4,14 @@ require 'combine_pdf'
 require 'open-uri'
 require 'fileutils'
 require 'mini_magick'
+require 'tempfile'
+require 'uri'
 
 class PdfQueueMergeJob < ApplicationJob
   queue_as :pdf_generation
 
   def perform(queue_id, provider_id, user_id)
-    queue = PdfGenerationQueue.unscoped.find_by(id: queue_id)
-    unless queue
-      Rails.logger.error "❌ [PDF MERGE] Queue not found queue_id=#{queue_id}"
-      return
-    end
-
+    queue    = PdfGenerationQueue.unscoped.find(queue_id)
     provider = ProviderPersonalInformation.unscoped.find(provider_id)
     user     = User.unscoped.find(user_id)
 
@@ -36,13 +33,14 @@ class PdfQueueMergeJob < ApplicationJob
 
     saved_profile = queue.create_saved_profile!(file_path: File.open(merged_pdf_path), file_type: "pdf")
 
-    # cleanup local merged after upload
+    # Cleanup
+    clean_up_temp_files(queue, verified_item, file_links)
+
     if File.exist?(merged_pdf_path)
       File.delete(merged_pdf_path)
       Rails.logger.info "🗑️ [CLEANUP] Deleted merged file: #{merged_pdf_path}"
     end
 
-    # Prefer the uploaded URL (CarrierWave) instead of local deleted path
     saved_url =
       if saved_profile.respond_to?(:file_path) && saved_profile.file_path.respond_to?(:url)
         saved_profile.file_path.url
@@ -51,7 +49,7 @@ class PdfQueueMergeJob < ApplicationJob
     queue.update!(
       status: "completed",
       generated_date: Time.current,
-      pdf_path: (saved_url.presence || "(uploaded)"),
+      pdf_path: (saved_url.presence || "uploaded"),
       message: "PDF generated successfully",
       deleted: true
     )
@@ -64,10 +62,9 @@ class PdfQueueMergeJob < ApplicationJob
       latest_audit_completed_date: Date.today
     )
 
-    Rails.logger.info "✅ [PDF MERGE] Queue #{queue.id} merged successfully"
-
+    Rails.logger.info "✅ [PDF MERGE] Queue #{queue.id} merged and cleaned successfully"
   rescue => e
-    Rails.logger.error "❌ [PDF MERGE] FAILED queue_id=#{queue_id}: #{e.class} - #{e.message}\n#{e.backtrace.first(10).join("\n")}"
+    Rails.logger.error "❌ [PDF MERGE] FAILED for queue #{queue_id}: #{e.class} - #{e.message}\n#{e.backtrace.first(10).join("\n")}"
     PdfGenerationQueue.unscoped.where(id: queue_id).update_all(status: "error", message: e.message)
   end
 
@@ -82,30 +79,13 @@ class PdfQueueMergeJob < ApplicationJob
 
     combined_pdf = CombinePDF.new
 
-    files.each do |file_ref|
-      next if file_ref.blank?
+    files.each do |file_url|
+      next if file_url.blank?
 
-      if s3_key_path?(file_ref)
-        add_from_s3_key!(combined_pdf, file_ref)
-        next
-      end
-
-      if remote_url?(file_ref)
-        add_from_remote_url!(combined_pdf, file_ref)
-        next
-      end
-
-      # Local file under public/
-      local_path = Rails.root.join("public", file_ref.sub(%r{^/}, ""))
-      if File.exist?(local_path)
-        if image_ext?(local_path.to_s)
-          combined_pdf << image_file_to_pdf(local_path.to_s)
-        else
-          combined_pdf << CombinePDF.load(local_path.to_s, allow_optional_content: true)
-        end
-        Rails.logger.info "📎 [MERGE] Added local file: #{local_path}"
+      if file_url =~ URI::DEFAULT_PARSER.make_regexp(%w[http https])
+        add_remote!(combined_pdf, file_url)
       else
-        Rails.logger.warn "⚠️ [MERGE] Missing local file: #{local_path}"
+        add_local!(combined_pdf, file_url)
       end
     end
 
@@ -114,66 +94,40 @@ class PdfQueueMergeJob < ApplicationJob
     merged_path.to_s
   end
 
-  def add_from_s3_key!(combined_pdf, key)
-    bucket = ENV.fetch("AWS_BUCKET", "plmhealthoneapp-hvhs")
-
-    s3 = Aws::S3::Client.new(
-      region: ENV.fetch("AWS_REGION", "us-east-1"),
-      access_key_id: ENV["AWS_ACCESS_KEY_ID"],
-      secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"]
-    )
-
-    tmp_file = Tempfile.new(["s3_download_", File.extname(key).presence || ".bin"], Rails.root.join("tmp"))
-
-    begin
-      Rails.logger.info "🌐 [MERGE] Fetching from S3 key: #{key}"
-      s3.get_object(bucket: bucket, key: key, response_target: tmp_file.path)
-
-      if image_ext?(key)
-        combined_pdf << image_file_to_pdf(tmp_file.path)
-      else
-        combined_pdf << CombinePDF.load(tmp_file.path, allow_optional_content: true)
-      end
-
-      Rails.logger.info "📎 [MERGE] Added S3 key: #{key}"
-    rescue Aws::S3::Errors::NoSuchKey
-      Rails.logger.error "⚠️ [MERGE] S3 key not found: #{key}"
-    rescue => e
-      Rails.logger.error "❌ [MERGE] Failed S3 key #{key}: #{e.class} - #{e.message}"
-    ensure
-      tmp_file.close
-      tmp_file.unlink
-    end
-  end
-
-  def add_from_remote_url!(combined_pdf, url)
+  def add_remote!(combined_pdf, url)
     uri = URI.parse(url)
 
-    # If it's a full S3 URL, fetch by key
-    if uri.host&.include?("amazonaws.com")
-      key = uri.path.sub(%r{^/}, '')
-      add_from_s3_key!(combined_pdf, key)
-      return
-    end
-
-    tmp_file = Tempfile.new(["remote_download_", File.extname(uri.path).presence || ".bin"])
+    tmp = Tempfile.new(["remote_", File.extname(uri.path).presence || ".bin"])
     begin
-      URI.open(url, open_timeout: 10, read_timeout: 20) do |remote_file|
-        IO.copy_stream(remote_file, tmp_file)
-      end
+      URI.open(url, open_timeout: 15, read_timeout: 30) { |f| IO.copy_stream(f, tmp) }
+      tmp.flush
 
-      if image_ext?(url)
-        combined_pdf << image_file_to_pdf(tmp_file.path)
+      if image_ext?(uri.path)
+        combined_pdf << image_file_to_pdf(tmp.path)
       else
-        combined_pdf << CombinePDF.load(tmp_file.path, allow_optional_content: true)
+        combined_pdf << CombinePDF.load(tmp.path, allow_optional_content: true)
       end
 
       Rails.logger.info "📎 [MERGE] Added remote file: #{url}"
     rescue => e
       Rails.logger.error "❌ [MERGE] Failed remote file #{url}: #{e.class} - #{e.message}"
     ensure
-      tmp_file.close
-      tmp_file.unlink
+      tmp.close
+      tmp.unlink
+    end
+  end
+
+  def add_local!(combined_pdf, file_url)
+    path = Rails.root.join("public", file_url.sub(%r{^/}, ""))
+    if File.exist?(path)
+      if image_ext?(path.to_s)
+        combined_pdf << image_file_to_pdf(path.to_s)
+      else
+        combined_pdf << CombinePDF.load(path.to_s, allow_optional_content: true)
+      end
+      Rails.logger.info "📎 [MERGE] Added local file: #{path}"
+    else
+      Rails.logger.warn "⚠️ [MERGE] Missing local file: #{path}"
     end
   end
 
@@ -190,15 +144,50 @@ class PdfQueueMergeJob < ApplicationJob
     end
   end
 
-  def s3_key_path?(path)
-    path.start_with?("uploads/")
-  end
-
-  def remote_url?(str)
-    str.match?(/\Ahttps?:\/\//i)
-  end
-
   def image_ext?(path)
     path.to_s.match?(/\.(png|jpg|jpeg)$/i)
+  end
+
+  # --- your existing cleanup kept ---
+  def clean_up_temp_files(queue, verified_item, file_links)
+    Rails.logger.info "🧹 [CLEANUP] Starting cleanup of temporary and upload files"
+
+    delete_path(Rails.root.join("public", verified_item.file_path.sub(%r{^/}, "")), "Verified Profile") if verified_item&.file_path.present?
+
+    queue.pdf_queue_items.where(temporary: true).each do |temp_item|
+      next unless temp_item.file_path.present?
+      delete_path(Rails.root.join("public", temp_item.file_path.sub(%r{^/}, "")), "Temporary Uploaded File")
+    end
+
+    file_links.each do |path|
+      full_path = Rails.root.join("public", path.sub(%r{^/}, ""))
+      next unless full_path.to_s.include?("/uploads/")
+      delete_path(full_path, "Uploaded Source File")
+    end
+
+    clean_empty_upload_dirs
+  end
+
+  def delete_path(path, label)
+    if File.exist?(path)
+      if File.directory?(path)
+        FileUtils.rm_rf(path)
+        Rails.logger.info "🗑️ [CLEANUP] Deleted directory (#{label}): #{path}"
+      else
+        File.delete(path)
+        Rails.logger.info "🗑️ [CLEANUP] Deleted file (#{label}): #{path}"
+      end
+    else
+      Rails.logger.warn "⚠️ [CLEANUP] #{label} missing: #{path}"
+    end
+  end
+
+  def clean_empty_upload_dirs
+    uploads_root = Rails.root.join("public/uploads")
+    Dir.glob("#{uploads_root}/**/*").select { |d| File.directory?(d) }.each do |dir|
+      next unless (Dir.entries(dir) - %w[. ..]).empty?
+      Dir.rmdir(dir)
+      Rails.logger.info "🧹 [CLEANUP] Removed empty uploads dir: #{dir}"
+    end
   end
 end
