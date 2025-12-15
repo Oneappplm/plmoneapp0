@@ -13,8 +13,9 @@ class PdfQueueItemJob < ApplicationJob
     item     = PdfQueueItem.unscoped.find(item_id)
     provider = ProviderPersonalInformation.unscoped.find(provider_id)
     user     = User.unscoped.find(user_id)
+    queue    = PdfGenerationQueue.unscoped.find(item.pdf_generation_queue_id)
 
-    queue = PdfGenerationQueue.unscoped.find(item.pdf_generation_queue_id)
+    item.update!(status: 'processing', message: 'Processing item') if item.status == 'queued'
 
     Rails.logger.info "🧾 [PDF ITEM] Processing PdfQueueItem #{item.id} for queue #{queue.id}"
 
@@ -29,14 +30,12 @@ class PdfQueueItemJob < ApplicationJob
     # 🚀 Trigger merge when all items are complete
     queue.with_lock do
       all_done = queue.pdf_queue_items.where.not(status: 'completed').count.zero?
-
       if all_done && !queue.merge_enqueued?
         queue.update!(merge_enqueued: true)
         PdfQueueMergeJob.perform_later(queue.id, provider.id, user.id)
         Rails.logger.info "🚀 [PDF ITEM] All items completed. Enqueued merge job for queue #{queue.id}"
       end
     end
-
   rescue => e
     Rails.logger.error "❌ [PDF ITEM] FAILED item_id=#{item_id}: #{e.class} - #{e.message}\n#{e.backtrace.first(10).join("\n")}"
     PdfQueueItem.unscoped.where(id: item_id).update_all(status: 'error', message: e.message)
@@ -53,18 +52,6 @@ class PdfQueueItemJob < ApplicationJob
       return
     end
 
-    # ✅ Treat "uploads/..." as S3 key (not local path)
-    if s3_key_path?(file_path_value)
-      if s3_key_accessible?(file_path_value)
-        item.update!(status: 'completed', message: 'S3 key verified')
-        Rails.logger.info "🌐 [PDF ITEM] S3 key verified for item #{item.id}: #{file_path_value}"
-      else
-        item.update!(status: 'error', message: 'S3 key not accessible')
-        Rails.logger.warn "⚠️ [PDF ITEM] S3 key inaccessible for item #{item.id}: #{file_path_value}"
-      end
-      return
-    end
-
     if remote_url?(file_path_value)
       if remote_accessible?(file_path_value)
         item.update!(status: 'completed', message: 'Remote file verified')
@@ -73,57 +60,43 @@ class PdfQueueItemJob < ApplicationJob
         item.update!(status: 'error', message: 'Remote file not accessible')
         Rails.logger.warn "⚠️ [PDF ITEM] Remote file inaccessible for item #{item.id}: #{file_path_value}"
       end
-      return
-    end
-
-    # Local file under public/
-    local_path = Rails.root.join('public', file_path_value.sub(%r{^/}, ''))
-    if File.exist?(local_path)
-      item.update!(status: 'completed', message: 'File ready for merge')
-      Rails.logger.info "📁 [PDF ITEM] Local file exists for item #{item.id}: #{local_path}"
     else
-      item.update!(status: 'error', message: "File missing: #{local_path}")
-      Rails.logger.warn "⚠️ [PDF ITEM] Missing local file for item #{item.id}: #{local_path}"
+      local_path = Rails.root.join('public', file_path_value.sub(%r{^/}, ''))
+      if File.exist?(local_path)
+        item.update!(status: 'completed', message: 'File ready for merge')
+        Rails.logger.info "📁 [PDF ITEM] Local file exists for item #{item.id}: #{local_path}"
+      else
+        item.update!(status: 'error', message: "File missing: #{local_path}")
+        Rails.logger.warn "⚠️ [PDF ITEM] Missing local file for item #{item.id}: #{local_path}"
+      end
     end
-  end
-
-  def s3_key_path?(path)
-    path.start_with?("uploads/")
-  end
-
-  def s3_key_accessible?(key)
-    bucket = ENV.fetch("AWS_BUCKET", "plmhealthoneapp-hvhs")
-
-    s3 = Aws::S3::Client.new(
-      region: ENV.fetch("AWS_REGION", "us-east-1"),
-      access_key_id: ENV["AWS_ACCESS_KEY_ID"],
-      secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"]
-    )
-
-    s3.head_object(bucket: bucket, key: key)
-    Rails.logger.info "✅ [PDF ITEM] S3 HEAD successful for #{key}"
-    true
-  rescue Aws::S3::Errors::NotFound
-    Rails.logger.warn "⚠️ [PDF ITEM] S3 object missing: #{key}"
-    false
-  rescue => e
-    Rails.logger.error "❌ [PDF ITEM] S3 HEAD failed for #{key}: #{e.class} - #{e.message}"
-    false
   end
 
   def remote_accessible?(url)
     uri = URI.parse(url)
 
     if uri.host&.include?("amazonaws.com")
-      # old behavior kept for full S3 URLs
-      key = uri.path.sub(%r{^/}, '')
-      s3_key_accessible?(key)
+      key    = uri.path.sub(%r{^/}, '')
+      bucket = ENV.fetch("AWS_BUCKET", "plmhealthoneapp-hvhs")
+
+      s3 = Aws::S3::Client.new(
+        region: ENV.fetch("AWS_REGION", "us-east-1"),
+        access_key_id: ENV["AWS_ACCESS_KEY_ID"],
+        secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"]
+      )
+
+      s3.head_object(bucket: bucket, key: key)
+      Rails.logger.info "✅ [PDF ITEM] S3 HEAD successful for #{key}"
+      true
     else
-      URI.open(url, open_timeout: 5, read_timeout: 10) { |f| f.read(1) }
+      URI.open(url, open_timeout: 10, read_timeout: 20) { |f| f.read(1) }
       true
     end
+  rescue Aws::S3::Errors::NotFound
+    Rails.logger.warn "⚠️ [PDF ITEM] S3 object missing"
+    false
   rescue => e
-    Rails.logger.warn "⚠️ [PDF ITEM] HTTP check failed for #{url}: #{e.message}"
+    Rails.logger.error "❌ [PDF ITEM] Remote check failed: #{e.class} - #{e.message}"
     false
   end
 
@@ -134,6 +107,7 @@ class PdfQueueItemJob < ApplicationJob
   def render_verified_profile_pdf(provider, user)
     pdf_dir = Rails.root.join("public/generated_pdfs")
     FileUtils.mkdir_p(pdf_dir)
+
     filename = "#{provider.caqh_provider_attest_id}_verified_profile_#{Time.current.strftime('%Y%m%d%H%M%S')}.pdf"
     pdf_path = pdf_dir.join(filename)
 
