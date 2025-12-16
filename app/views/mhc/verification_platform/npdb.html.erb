@@ -477,7 +477,28 @@
                                     Restart Request
                                   </button>
                                 </div>
+
                                 <hr class="form-hr">
+
+                                <%# ✅ NPDB Uploaded Documents %>
+                                <% if @npdb_documents.present? %>
+                                  <div class="mt-4">
+                                    <ul class="list-unstyled mt-2">
+                                      <% @npdb_documents.each do |doc| %>
+                                        <% if doc.file_upload.present? %>
+                                          <li class="mb-1">
+                                            📄
+                                            <%= link_to File.basename(doc.file_upload.url),
+                                                        doc.file_upload.url,
+                                                        target: "_blank",
+                                                        class: "text-primary text-decoration-underline" %>
+                                          </li>
+                                        <% end %>
+                                      <% end %>
+                                    </ul>
+                                  </div>
+                                <% end %>
+
                                 <%# <div class="row">
                                   <div class="col-md-3">
                                     <button class="btn btn-success py-1" id="run-webcrawler-btn" type="button">

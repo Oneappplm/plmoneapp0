@@ -439,6 +439,18 @@
     document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
     document.body.classList.remove("modal-open");
     document.body.style.removeProperty("padding-right");
+
+    // Reload page when either modal is closed
+    ['imageUploadModal', 'viewDocumentModal'].forEach(modalId => {
+      let modalEl = document.getElementById(modalId);
+      if (modalEl) {
+        modalEl.addEventListener('hidden.bs.modal', function () {
+          // ✅ Reload page after modal fully hidden
+          location.reload();
+        });
+      }
+    });
+
   });
 </script>
 <style>
