@@ -7,31 +7,44 @@ require "wicked_pdf"
 class PdfQueueItemJob < ApplicationJob
   queue_as :pdf_generation
 
-  def perform(item_id)
-    item  = PdfQueueItem.unscoped.find(item_id)
-    queue = PdfGenerationQueue.unscoped.find(item.pdf_generation_queue_id)
+    # ✅ Backward compatible:
+  # - old jobs: perform(item_id, provider_id, user_id)
+  # - new jobs: perform(item_id)
+  def perform(item_id, provider_id = nil, user_id = nil)
+    item = PdfQueueItem.find(item_id)
+    queue = item.pdf_generation_queue
 
-    provider = ProviderPersonalInformation.unscoped.find(queue.provider_personal_information_id)
-    user     = User.unscoped.find(queue.user_id || 1)
+    # ✅ Always derive provider/user from queue if not passed
+    provider_id ||= queue.provider_personal_information_id
+    user_id     ||= queue.user_id || 1
 
-    Rails.logger.info "🧾 [PDF ITEM] start item=#{item.id} queue=#{queue.id} file=#{item.file_name} status=#{item.status}"
+    provider = ProviderPersonalInformation.find(provider_id)
+    user     = User.find(user_id)
 
-    item.update!(status: "queued") if item.status.nil?
+    Rails.logger.info "🧾 [PDF ITEM] start item_id=#{item.id} queue_id=#{queue.id}"
 
-    if item.file_name == "Verified Profile"
-      pdf_public_path = render_verified_profile_pdf(provider, user)
-      item.update!(status: "completed", file_path: pdf_public_path, message: "Verified Profile PDF generated")
-      Rails.logger.info "✅ [PDF ITEM] verified_profile done item=#{item.id} path=#{pdf_public_path}"
+    # ✅ mark item processing (only if your enum allows it, otherwise skip)
+    item.update!(status: "queued") if item.status.blank?
+
+    if item.file_name == "Verified Profile" || item.file_path == "verified_profile"
+      pdf_path = render_verified_profile_pdf(provider, user)
+      item.update!(status: "completed", file_path: pdf_path, message: "Verified Profile PDF generated")
     else
-      verify_or_fail_item!(item)
+      handle_non_verified_item(item)
     end
 
-    trigger_merge_if_ready!(queue)
+    # ✅ Trigger merge when all items complete
+    queue.with_lock do
+      if queue.pdf_queue_items.where.not(status: "completed").count.zero? && !queue.merge_enqueued?
+        queue.update!(merge_enqueued: true)
+        PdfQueueMergeJob.perform_later(queue.id, provider.id, user.id)
+        Rails.logger.info "🚀 [PDF ITEM] merge enqueued queue=#{queue.id}"
+      end
+    end
   rescue => e
-    Rails.logger.error "❌ [PDF ITEM] FAILED item_id=#{item_id}: #{e.class} #{e.message}\n#{e.backtrace.first(12).join("\n")}"
-
-    # Never leave stuck queued silently
-    PdfQueueItem.unscoped.where(id: item_id).update_all(status: "error", message: "#{e.class}: #{e.message}")
+    Rails.logger.error "❌ [PDF ITEM] FAILED item_id=#{item_id}: #{e.class} - #{e.message}"
+    item.update!(status: "error", message: e.message) if defined?(item) && item&.persisted?
+    raise e
   end
 
   private
