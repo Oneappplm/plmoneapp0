@@ -469,6 +469,13 @@ class Mhc::VerificationPlatformController < ApplicationController
       @rva_information = RvaInformation.new
       @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'NPDB', restart_audit: false).last
       @npdb_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'NPDB').where.not(source_date: nil).where.not(audit_status: false)
+
+      @npdb_documents =
+        ProviderPersonalUploadedDoc
+          .where(
+            provider_personal_information_id: @provider_personal_information.id,
+            sub_section: ProviderPersonalUploadedDoc.sub_sections[:npdb]
+          ).order(created_at: :desc)
     end
 
     if params[:page_tab] == 'app_tracking'
