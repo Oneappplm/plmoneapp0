@@ -13,7 +13,8 @@ class Mhc::PdfGenerationQueuesController < ApplicationController
       status: "queued",
       queued_date: Time.current,
       message: "Processing started",
-      user_id: current_user.id
+      user_id: current_user.id,
+      merge_enqueued: false
     )
 
     # Add queue items
@@ -38,8 +39,12 @@ class Mhc::PdfGenerationQueuesController < ApplicationController
       )
     end
 
-    # Enqueue each item separately
-    PdfGenerationService.new(queue, provider, current_user).process_queue!
+    # Enqueue each item separately (ONLY this)
+    queue.pdf_queue_items.find_each do |item|
+      PdfQueueItemJob.perform_later(item.id)  # ✅ only item.id
+    end
+
+    queue.update!(status: "processing", message: "Items queued for processing")
 
     render json: { message: "Your request is queued", queue_number: queue.id, queue_status: queue.status }
   end
