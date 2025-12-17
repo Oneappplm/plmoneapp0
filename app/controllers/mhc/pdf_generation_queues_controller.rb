@@ -2,9 +2,9 @@ class Mhc::PdfGenerationQueuesController < ApplicationController
   before_action :set_queue, only: [:pause, :destroy, :requeue]
 
   def create
-    provider_id = params[:selected_files][0][:provider_id]
-    selected_links = params[:selected_files] || []
-    uploaded_file = params[:file] 
+    provider_id     = params[:selected_files][0][:provider_id]
+    selected_links  = params[:selected_files] || []
+    uploaded_file   = params[:file]
 
     provider = ProviderPersonalInformation.find(provider_id)
     return render json: { error: "Provider not found" }, status: :unprocessable_entity unless provider
@@ -24,7 +24,7 @@ class Mhc::PdfGenerationQueuesController < ApplicationController
 
     selected_links.each do |link|
       next if link["file_name"] == "Verified Profile"
-      queue.pdf_queue_items.create!(file_name: File.basename(link['file_url']), file_path: link['file_url'], status: "queued")
+      queue.pdf_queue_items.create!(file_name: File.basename(link["file_url"]), file_path: link["file_url"], status: "queued")
     end
 
     if uploaded_file.present?
@@ -35,16 +35,12 @@ class Mhc::PdfGenerationQueuesController < ApplicationController
         file_name: uploaded_file.original_filename,
         file_path: "/uploads/#{uploaded_file.original_filename}",
         status: "queued",
-        temporary: true  # mark for deletion later
+        temporary: true
       )
     end
 
-    # Enqueue each item separately (ONLY this)
-    queue.pdf_queue_items.find_each do |item|
-      PdfQueueItemJob.perform_later(item.id)  # ✅ only item.id
-    end
-
-    queue.update!(status: "processing", message: "Items queued for processing")
+    # ✅ Enqueue ONE job for the whole queue
+    PdfGenerationQueueJob.perform_later(queue.id)
 
     render json: { message: "Your request is queued", queue_number: queue.id, queue_status: queue.status }
   end
