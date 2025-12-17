@@ -1,3 +1,4 @@
+# app/jobs/pdf_generation_queue_job.rb
 class PdfGenerationQueueJob < ApplicationJob
   queue_as :pdf_generation
 
@@ -7,6 +8,7 @@ class PdfGenerationQueueJob < ApplicationJob
     user = User.find(queue.user_id || 1)
 
     queue.update!(status: "processing", message: "Processing started")
+
     queue.pdf_queue_items.where(status: "queued").find_each do |item|
       PdfQueueItemJob.perform_later(item.id, provider.id, user.id)
     end
