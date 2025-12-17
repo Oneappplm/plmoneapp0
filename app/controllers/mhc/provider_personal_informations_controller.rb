@@ -115,34 +115,31 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
     provider   = ProviderPersonalInformation.find_by(npi: npi_number)
 
     scraper = Webscraper::NpiService.new(npi_number)
-    scraper_result = scraper.call # should generate public/webscrape/npi/screenshot.pdf
+    png_path = scraper.call # returns full absolute path (Pathname) or nil
 
-    if provider.present?
-      # ✅ Define source file path (from scraper)
-      source_file = Rails.root.join("public", "webscrape", "npi", "screenshot.pdf")
+    if provider.present? && png_path.present?
+      # scraper already saved a WebcrawlerLog with relative path under Rails.root
+      timestamp      = Time.now.strftime("%Y-%m-%dT%H-%M-%S")
+      random_string  = SecureRandom.hex(4)
+      filename       = "NPI_#{npi_number}_#{timestamp}_#{random_string}.png"
 
-      # ✅ Generate unique filename
-      timestamp = Time.now.strftime("%Y-%m-%dT%H-%M-%S")
-      random_string = SecureRandom.hex(4)
-      filename = "NPI_#{npi_number}_#{timestamp}_#{random_string}.pdf"
+      # source_file is the file that scraper just wrote
+      source_file = png_path
 
-      # ✅ Copy file to tmp for CarrierWave upload
+      # copy file to tmp for CarrierWave upload
       tmp_file_path = Rails.root.join("tmp", filename)
       FileUtils.cp(source_file, tmp_file_path)
 
-      # ✅ Save log in NpiWebcrawlerLog (CarrierWave upload)
       log = provider.npi_webcrawler_logs.new(
         npi_number: npi_number,
-        filetype: "pdf",
-        status: 'completed'
+        filetype: "png",
+        status: "completed"
       )
       log.filepath = File.open(tmp_file_path)
       log.save!
 
-      # ✅ Remove temp file after saving
       File.delete(tmp_file_path) if File.exist?(tmp_file_path)
 
-      # ✅ Update provider status
       provider.update(
         npi_verification_status: "match",
         npi_source_date: Date.today
@@ -151,15 +148,13 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
       render json: {
         status: "match",
         source_date: provider.npi_source_date,
-        screenshot_url: log.filepath.url, # carrierwave url
+        screenshot_url: log.filepath.url,
         file_name: File.basename(log.filepath.path)
       }, serializer: nil
     else
       render json: { status: "no_match" }
     end
   end
-
-
 
   private
 
