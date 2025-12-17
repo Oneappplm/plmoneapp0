@@ -1,5 +1,6 @@
 require "selenium-webdriver"
 require "fileutils"
+require "mini_magick"
 
 class Webscraper::NpiService
   SEARCH_URL = "https://npiregistry.cms.hhs.gov/search".freeze
@@ -90,9 +91,11 @@ class Webscraper::NpiService
     base_path = Rails.root.join("public", "webscrape", "npi")
     FileUtils.mkdir_p(base_path)
 
-    timestamp = Time.now.to_i
-    png_path  = base_path.join("npi_#{npi}_#{timestamp}.png")
-    
+    timestamp    = Time.now.to_i
+    human_time   = Time.current.strftime("%Y-%m-%d")
+    png_path     = base_path.join("npi_#{npi}_#{timestamp}.png")
+    final_path   = base_path.join("npi_#{npi}_#{timestamp}_ts.png") # with timestamp text
+
     # 🔹 Scroll to top
     crawler.execute_script("window.scrollTo(0, 0)")
     sleep 1
@@ -107,22 +110,36 @@ class Webscraper::NpiService
 
     # 🔹 Resize window to full height
     crawler.manage.window.resize_to(1400, full_height)
+    sleep 1
 
-    sleep 1 # allow resize to apply
-
-    # 🔹 Take screenshot
+    # 🔹 Take raw screenshot
     crawler.save_screenshot(png_path)
     raise "Screenshot failed" unless File.exist?(png_path)
 
-    # 🔹 Log to DB (PNG only)
+    # 🔹 Add timestamp text using MiniMagick
+    image = MiniMagick::Image.open(png_path.to_s)
+    image.combine_options do |c|
+      c.gravity "SouthEast"              # bottom-right corner
+      c.fill "white"
+      c.stroke "black"
+      c.strokewidth 1
+      c.pointsize 18
+      c.draw "text 10,10 '#{human_time}'"
+    end
+    image.write(final_path.to_s)
+
+    # Optionally delete the raw screenshot without text
+    File.delete(png_path) if File.exist?(png_path)
+
+    # 🔹 Log to DB with final path
     WebcrawlerLog.create!(
       crawler_type: "NPI",
-      filepath: png_path.relative_path_from(Rails.root).to_s,
+      filepath: final_path.relative_path_from(Rails.root).to_s,
       filetype: "png",
       status: "success"
     )
 
-    png_path
+    final_path
   rescue => e
     WebcrawlerLog.create!(
       crawler_type: "NPI",
