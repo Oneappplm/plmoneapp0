@@ -1,3 +1,4 @@
+# app/jobs/pdf_queue_merge_job.rb
 require "aws-sdk-s3"
 require "combine_pdf"
 require "fileutils"
@@ -9,7 +10,8 @@ require "open-uri"
 class PdfQueueMergeJob < ApplicationJob
   queue_as :pdf_generation
 
-  def perform(queue_id)
+  # Backward-compatible: allow extra args even if we don’t use them
+  def perform(queue_id, _provider_id = nil, _user_id = nil)
     queue    = PdfGenerationQueue.unscoped.find(queue_id)
     provider = ProviderPersonalInformation.unscoped.find(queue.provider_personal_information_id)
 
@@ -22,18 +24,15 @@ class PdfQueueMergeJob < ApplicationJob
       return
     end
 
-    merged_disk_path = merge_files_to_disk(file_links, provider) # ✅ returns DISK path
+    merged_disk_path = merge_files_to_disk(file_links, provider)
 
-    # ✅ Upload to SavedProfile safely (File.open needs DISK path)
     queue.create_saved_profile!(file_path: File.open(merged_disk_path), file_type: "pdf")
-
-    # Optional: delete merged file after upload
     File.delete(merged_disk_path) if File.exist?(merged_disk_path)
 
     queue.update!(
       status: "completed",
       generated_date: Time.current,
-      pdf_path: queue.saved_profile.file_path.url,  # or set this however you want
+      pdf_path: queue.saved_profile.file_path.url,
       message: "PDF generated successfully",
       deleted: true
     )
@@ -46,7 +45,6 @@ class PdfQueueMergeJob < ApplicationJob
 
   private
 
-  # Returns DISK path like ".../public/generated_pdfs/xxx.pdf"
   def merge_files_to_disk(files, provider)
     pdf_dir = Rails.root.join("public/generated_pdfs")
     FileUtils.mkdir_p(pdf_dir)
@@ -58,12 +56,7 @@ class PdfQueueMergeJob < ApplicationJob
 
     files.each do |file_ref|
       next if file_ref.blank?
-
-      if http_url?(file_ref)
-        add_remote!(combined_pdf, file_ref)
-      else
-        add_local!(combined_pdf, file_ref)
-      end
+      http_url?(file_ref) ? add_remote!(combined_pdf, file_ref) : add_local!(combined_pdf, file_ref)
     end
 
     combined_pdf.save(merged_disk_path.to_s)
@@ -73,24 +66,15 @@ class PdfQueueMergeJob < ApplicationJob
 
   def add_local!(combined_pdf, public_or_relative_path)
     disk_path = Rails.root.join("public", public_or_relative_path.sub(%r{^/}, ""))
-    unless File.exist?(disk_path)
-      Rails.logger.warn "⚠️ [MERGE] Missing local file: #{disk_path}"
-      return
-    end
+    return Rails.logger.warn("⚠️ [MERGE] Missing local file: #{disk_path}") unless File.exist?(disk_path)
 
     ext = File.extname(disk_path.to_s).downcase
-    if image_ext?(ext)
-      combined_pdf << image_path_to_pdf(disk_path.to_s)
-    else
-      combined_pdf << CombinePDF.load(disk_path.to_s, allow_optional_content: true)
-    end
+    combined_pdf << (image_ext?(ext) ? image_path_to_pdf(disk_path.to_s) : CombinePDF.load(disk_path.to_s, allow_optional_content: true))
   end
 
-  # S3-safe: downloads by key (no presigned expiry issues)
   def add_remote!(combined_pdf, url)
     uri = URI.parse(url)
     ext = File.extname(uri.path).downcase
-
     tmp = Tempfile.new(["merge_", ext.presence || ".bin"], Rails.root.join("tmp"))
 
     begin
@@ -109,11 +93,7 @@ class PdfQueueMergeJob < ApplicationJob
         URI.open(url, open_timeout: 15, read_timeout: 30) { |f| IO.copy_stream(f, tmp) }
       end
 
-      if image_ext?(ext)
-        combined_pdf << image_path_to_pdf(tmp.path)
-      else
-        combined_pdf << CombinePDF.load(tmp.path, allow_optional_content: true)
-      end
+      combined_pdf << (image_ext?(ext) ? image_path_to_pdf(tmp.path) : CombinePDF.load(tmp.path, allow_optional_content: true))
     ensure
       tmp.close
       tmp.unlink
@@ -135,11 +115,6 @@ class PdfQueueMergeJob < ApplicationJob
     end
   end
 
-  def http_url?(str)
-    str.match?(/\Ahttps?:\/\//i)
-  end
-
-  def image_ext?(ext)
-    ext.to_s.match?(/\.(png|jpg|jpeg)$/i)
-  end
+  def http_url?(str) = str.match?(/\Ahttps?:\/\//i)
+  def image_ext?(ext) = ext.to_s.match?(/\.(png|jpg|jpeg)$/i)
 end
