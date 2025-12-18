@@ -1,5 +1,6 @@
 require "selenium-webdriver"
 require "fileutils"
+require "mini_magick"
 
 module Webscraper
   module States
@@ -96,11 +97,27 @@ module Webscraper
         dir = Rails.root.join("public", "webscrape", "Licensure", @state.alpha_code)
         FileUtils.mkdir_p(dir)
 
-        path = dir.join("florida_#{@license_number}.png").to_s
+        filename   = "florida_#{@license_number}.png"
+        path       = dir.join(filename).to_s
+        public_url = "/webscrape/Licensure/#{@state.alpha_code}/#{filename}"
+
+        # 1️⃣ Take raw screenshot
         crawler.save_screenshot(path)
 
-        # Return URL accessible via browser
-        "/webscrape/Licensure/#{@state.alpha_code}/florida_#{@license_number}.png"
+        # 2️⃣ Add timestamp (e.g. "2025-12-18")
+        human_date = Time.current.strftime("%Y-%m-%d")
+
+        image = MiniMagick::Image.open(path)
+        image.combine_options do |c|
+          c.gravity "NorthWest"          # top-left as origin
+          c.fill "black"
+          c.pointsize 14
+          c.draw "text 30,70 '#{human_date}'"
+        end
+        image.write(path)
+
+        # 3️⃣ Return URL accessible via browser
+        public_url
       end
     end
   end

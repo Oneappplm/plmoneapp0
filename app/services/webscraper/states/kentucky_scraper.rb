@@ -129,16 +129,43 @@ module Webscraper
       end
 
       # Save Screenshot
+      # def save_screenshot
+      #   dir = Rails.root.join("public", "webscrape", "Licensure", @state.alpha_code)
+      #   FileUtils.mkdir_p(dir)
+
+      #   file_name = "#{@state.name}_#{@license_number}.png"
+      #   full_path = dir.join(file_name).to_s
+
+      #   crawler.save_screenshot(full_path)
+
+      #   "/webscrape/Licensure/#{@state.alpha_code}/#{file_name}"
+      # end
+
       def save_screenshot
         dir = Rails.root.join("public", "webscrape", "Licensure", @state.alpha_code)
         FileUtils.mkdir_p(dir)
 
-        file_name = "#{@state.name}_#{@license_number}.png"
-        full_path = dir.join(file_name).to_s
+        filename   = "#{@state.name}_#{@license_number}.png"
+        path       = dir.join(filename).to_s
+        public_url = "/webscrape/Licensure/#{@state.alpha_code}/#{filename}"
 
-        crawler.save_screenshot(full_path)
+        # 1️⃣ Take raw screenshot
+        crawler.save_screenshot(path)
 
-        "/webscrape/Licensure/#{@state.alpha_code}/#{file_name}"
+        # 2️⃣ Add timestamp (e.g. "2025-12-18")
+        human_date = Time.current.strftime("%Y-%m-%d")
+
+        image = MiniMagick::Image.open(path)
+        image.combine_options do |c|
+          c.gravity "NorthEast"          # top-left as origin
+          c.fill "black"
+          c.pointsize 14
+          c.draw "text 30,70 '#{human_date}'"
+        end
+        image.write(path)
+
+        # 3️⃣ Return URL accessible via browser
+        public_url
       end
     end
   end
