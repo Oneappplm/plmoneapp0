@@ -42,24 +42,6 @@ module Webscraper
         puts "⏳ Waiting for redirect..."
         wait_for_redirect
 
-        # if crawler.current_url.include?('LicenseVerification')
-        #   puts "✅ Redirected successfully!"
-
-        #   puts "➡️ Looking for printer-friendly link..."
-        #   link = slow_wait.until {
-        #     crawler.find_element(:xpath, "//a[contains(., 'Printer Friendly Version')]")
-        #   } rescue nil
-
-        #   if link
-        #     crawler.execute_script("arguments[0].scrollIntoView();", link)
-        #     crawler.execute_script("arguments[0].click();", link)
-        #   else
-        #     puts "❌ Printer-friendly link not found!"
-        #   end
-        # else
-        #   puts "❌ Not redirected to LicenseVerification page!"
-        # end
-
         puts "➡️ Saving screenshot..."
         screenshot_path = save_screenshot
 
@@ -101,16 +83,44 @@ module Webscraper
         puts "⚠️ Redirect timeout reached"
       end
 
+      # def save_screenshot
+      #   dir = Rails.root.join("public", "webscrape", "Licensure", @state.alpha_code)
+      #   FileUtils.mkdir_p(dir)
+
+      #   filename = "#{@state.name}_#{@license_number}.png"
+      #   path = dir.join(filename).to_s
+      #   crawler.save_screenshot(path)
+
+      #   # Return URL accessible via browser
+      #   "/webscrape/Licensure/#{@state.alpha_code}/#{filename}"
+      # end
+
       def save_screenshot
         dir = Rails.root.join("public", "webscrape", "Licensure", @state.alpha_code)
         FileUtils.mkdir_p(dir)
 
-        filename = "#{@state.name}_#{@license_number}.png"
-        path = dir.join(filename).to_s
+        filename   = "#{@state.name}_#{@license_number}.png"
+        path       = dir.join(filename).to_s
+        public_url = "/webscrape/Licensure/#{@state.alpha_code}/#{filename}"
+
+        # 1️⃣ Take raw screenshot
         crawler.save_screenshot(path)
 
-        # Return URL accessible via browser
-        "/webscrape/Licensure/#{@state.alpha_code}/#{filename}"
+        # 2️⃣ Add timestamp (e.g. "2025-12-18")
+        human_date = Time.current.strftime("%Y-%m-%d")
+
+        image = MiniMagick::Image.open(path)
+        image.combine_options do |c|
+          c.gravity "NorthWest"        # top center
+          c.fill "black"             
+          c.pointsize 14           
+          # x offset = 0 (centered), y offset ~ 520px from top (tweak this)
+          c.draw "text 70,265 '#{human_date}'"
+        end
+        image.write(path)
+
+        # 3️⃣ Return URL accessible via browser
+        public_url
       end
     end
   end
