@@ -41,7 +41,7 @@ class WebscraperService < ApplicationService
 		end
 
 		# uncomment the following line to run headless else comment it out to run in browser
-		options.add_argument('--headless')
+		options.add_argument('--headless-new')
 
 		options.add_argument('--disable-gpu')
 		options.add_argument('--no-sandbox')
