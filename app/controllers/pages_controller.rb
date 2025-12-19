@@ -253,6 +253,7 @@ class PagesController < ApplicationController
     end
   end
 
+
 	def client_portal
     if current_setting.mhc?
       redirect_to mhc_client_portal_index_path
