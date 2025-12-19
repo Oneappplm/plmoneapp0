@@ -359,6 +359,7 @@
 
                         <%= hidden_field_tag :first_name %>
                         <%= hidden_field_tag :last_name %>
+                        <%= hidden_field_tag :middle_name %>
                         <div class="form-row row mt-3">
                           <div class="col-xl-12">
                             <div class="card other-name-card">
@@ -971,9 +972,10 @@
         e.preventDefault();
         var firstName = $('#firstname').html().trim();
         var lastName = $('#lastname').html().trim();
+        var middleName = $('#middlename').html().trim();
         var personalInfoId = $('input[name="personal_info_id"]').val();
 
-        if (!firstName || !lastName) {
+        if (!firstName || !lastName || !middleName) {
           $('#qaModalMessage').text('Crawling failed due to some error: First name or last name is missing.');
           return;
         }
@@ -989,6 +991,7 @@
           data: {
             first_name: firstName, 
             last_name: lastName,
+            middle_name: middleName,
             info_id: personalInfoId,
           },
           success: function (response) {
