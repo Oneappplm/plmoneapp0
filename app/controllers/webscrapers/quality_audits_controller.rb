@@ -7,6 +7,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
   def run_oig_webcrawler
     last_name = params[:last_name]
     first_name = params[:first_name]
+    middle_name = params[:middle_name]
     provider_personal_info = ProviderPersonalInformation.find(params[:info_id])
 
     # Create RVA information for OIG when running webcrawler
@@ -26,7 +27,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
     )
 
     # Create the service instance and call it with parameters
-    service = Webscraper::OigService.new(last_name, first_name)
+    service = Webscraper::OigService.new(last_name, first_name, middle_name)
     service.call
 
     # Define source file path
