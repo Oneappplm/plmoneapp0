@@ -62,7 +62,7 @@ class Webscraper::NpiService
 
   rescue => e
     Rails.logger.error("❌ NPI lookup failed for #{npi}: #{e.message}")
-    { status: "error", message: e.message }
+    nil
   ensure
     crawler.quit if @crawler
   end
@@ -92,7 +92,7 @@ class Webscraper::NpiService
     FileUtils.mkdir_p(base_path)
 
     timestamp    = Time.now.to_i
-    human_time   = Time.current.strftime("%Y-%m-%d")
+    human_time   = Time.current.strftime("%Y-%m-%d, %I:%M %p")
     png_path     = base_path.join("npi_#{npi}_#{timestamp}.png")
     final_path   = base_path.join("npi_#{npi}_#{timestamp}_ts.png") # with timestamp text
 
@@ -119,7 +119,7 @@ class Webscraper::NpiService
     # 🔹 Add timestamp text using MiniMagick
     image = MiniMagick::Image.open(png_path.to_s)
     image.combine_options do |c|
-      c.gravity "SouthEast"              # bottom-right corner
+      c.gravity "SouthEast"         
       c.fill "white"
       c.stroke "black"
       c.strokewidth 1
