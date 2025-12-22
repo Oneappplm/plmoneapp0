@@ -97,22 +97,24 @@ module Webscraper
         dir = Rails.root.join("public", "webscrape", "Licensure", @state.alpha_code)
         FileUtils.mkdir_p(dir)
 
-        filename   = "florida_#{@license_number}.png"
+        filename   = "LICENSURE_#{@license_number}_#{@state.alpha_code}.png"
         path       = dir.join(filename).to_s
         public_url = "/webscrape/Licensure/#{@state.alpha_code}/#{filename}"
 
         # 1️⃣ Take raw screenshot
         crawler.save_screenshot(path)
 
+        Rails.logger.info("✅ Screenshot saved at: #{public_url}")
+
         # 2️⃣ Add timestamp (e.g. "2025-12-18")
-        human_date = Time.current.strftime("%Y-%m-%d")
+        human_date = Time.current.strftime("%Y-%m-%d, %I:%M %p")
 
         image = MiniMagick::Image.open(path)
         image.combine_options do |c|
-          c.gravity "NorthWest"          # top-left as origin
+          c.gravity "SouthEast"         
           c.fill "black"
           c.pointsize 14
-          c.draw "text 30,70 '#{human_date}'"
+          c.draw "text 30,10 '#{human_date}'"
         end
         image.write(path)
 
