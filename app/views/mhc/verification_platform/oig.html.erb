@@ -516,7 +516,12 @@
                                     <div class="row justify-content-end" id="crawler-link">
                                       <% @oig_webcrawler_logs&.each do |crawler_log| %>
                                         <div class="col-md-6">
-                                          <div class="text-decoration-underline"><%= link_to "#{File.basename(crawler_log.filepath.url)}", crawler_log.filepath.url, target: '_blank' %></div>
+                                          <div class="text-decoration-underline">
+                                              <% file_url = crawler_log.filepath.url %>
+                                              <% file_name = File.basename(file_url.split('?').first) %>
+
+                                              <%= link_to file_name, file_url, target: '_blank' %>
+                                          </div>
                                         </div>
                                         <div class="col-md-3">
                                           <div class="date-time d-flex">
@@ -975,8 +980,10 @@
         var middleName = $('#middlename').html().trim();
         var personalInfoId = $('input[name="personal_info_id"]').val();
 
-        if (!firstName || !lastName || !middleName) {
-          $('#qaModalMessage').text('Crawling failed due to some error: First name or last name is missing.');
+        if (!firstName && !lastName && !middleName) {
+          $('#qaModalMessage').text(
+            'Crawling failed: At least one of First, Middle, or Last name is required.'
+          );
           return;
         }
 
@@ -1008,7 +1015,7 @@
                         <div class="col-md-6">
                             <div class="text-decoration-underline">
                                 <a href="${crawlerData.filepath.url}" target="_blank">
-                                    ${crawlerData.filepath.url.split('/').pop()}
+                                  ${crawlerData.filepath.url.split('?')[0].split('/').pop()}
                                 </a>
                             </div>
                         </div>
