@@ -619,7 +619,10 @@
 																			<% @licensure_webcrawler_logs&.each do |crawler_log| %>
 																				<div class="col-md-6">
 																					<div class="text-decoration-underline">
-																						<%= link_to "#{File.basename(crawler_log.filepath.url)}", crawler_log.filepath.url, target: '_blank' %>
+																						<% file_url = crawler_log.filepath.url %>
+																						<% file_name = File.basename(file_url.split('?').first) %>
+
+																						<%= link_to file_name, file_url, target: '_blank' %>
 																					</div>
 																				</div>
 																				<div class="col-md-3">
@@ -1262,7 +1265,7 @@
                           <div class="col-md-6">
                               <div class="text-decoration-underline">
                                   <a href="${crawlerData.filepath.url}" target="_blank">
-                                      ${crawlerData.filepath.url.split('/').pop()}
+                                      ${crawlerData.filepath.url.split('?')[0].split('/').pop()}
                                   </a>
                               </div>
                           </div>
