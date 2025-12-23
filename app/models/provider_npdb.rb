@@ -145,6 +145,13 @@ class ProviderNpdb < ApplicationRecord
     "Speech/Language Pathologist"
   ]
 
+  enum status: {
+    pending: 'PENDING',
+    completed: 'COMPLETED',
+    no_hit: 'NO_HIT',
+    failed: 'FAILED'
+  }
+
   private
 
   def set_provider_attest

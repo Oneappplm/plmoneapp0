@@ -178,7 +178,13 @@ Rails.application.routes.draw do
     resources :provider_personal_information_facilities
     
     resources :provider_insurance_coverages
-    resources :provider_npdbs
+    
+    resources :provider_npdbs do
+      collection do
+        post :run_npdb
+      end
+    end
+    
     resources :provider_npdb_comments
     resources :provider_personal_information_comments
     resources :provider_personal_information_app_trackings

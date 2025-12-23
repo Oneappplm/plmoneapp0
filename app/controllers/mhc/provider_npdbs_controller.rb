@@ -27,6 +27,27 @@ class Mhc::ProviderNpdbsController < ApplicationController
     end
   end
 
+  def run_npdb
+    personal_info = ProviderPersonalInformation.find(params[:personal_info_id])
+    provider_npdb = ProviderNpdb.find(params[:id])
+    provider      = provider_npdb.provider
+
+    result = Npdb::QueryService.new(provider, provider_npdb).call
+
+    provider_npdb.update!(
+      status:        result[:status],
+      submit_date:   result[:submit_date],
+      response_date: result[:response_date],
+      comments:      result[:comments]
+    )
+
+    redirect_to mhc_provider_npdb_path(provider_npdb),
+                notice: 'NPDB query completed'
+  rescue => e
+    provider_npdb.update!(status: 'failed', comments: e.message)
+    redirect_back fallback_location: root_path, alert: e.message
+  end
+
   private
 
   def set_provider_npdb
