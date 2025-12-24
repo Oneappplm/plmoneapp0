@@ -21,12 +21,12 @@ module Webscraper
       scraper = scraper_class.new(
         @license_number,
         @state,
-        config[:url],
+        # config[:url],
         # first_name: @first_name,
         # last_name: @last_name
       )
 
-      scraper.crawl!
+      scraper.call
     end
   end
 end
