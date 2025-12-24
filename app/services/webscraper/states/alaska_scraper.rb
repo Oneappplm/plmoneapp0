@@ -74,9 +74,7 @@ module Webscraper
 
       private
 
-      ###############################################################
       # 1️⃣ Build Selenium driver
-      ###############################################################
       def build_driver
         options = Selenium::WebDriver::Chrome::Options.new
         options.add_argument("--disable-dev-shm-usage")
@@ -86,16 +84,12 @@ module Webscraper
         Selenium::WebDriver.for(:chrome, options: options)
       end
 
-      ###############################################################
       # 2️⃣ CAPTCHA detection (pure Selenium)
-      ###############################################################
       def captcha_present?
         @driver.find_elements(css: "iframe[title='reCAPTCHA']").any?
       end
 
-      ###############################################################
       # 3️⃣ Wait for CAPTCHA to be solved
-      ###############################################################
       def wait_until_captcha_solved(timeout = 300)
         start = Time.now
 
@@ -120,9 +114,7 @@ module Webscraper
         false
       end
 
-      ###############################################################
       # 4️⃣ Screenshot
-      ###############################################################
       def take_screenshot(filename)
         dir = Rails.root.join("public", "webscrape", "Licensure", @state.alpha_code)
         FileUtils.mkdir_p(dir)
@@ -132,9 +124,7 @@ module Webscraper
         path.to_s
       end
 
-      ###############################################################
       # Helpers
-      ###############################################################
       def wait_until(timeout = 10)
         Selenium::WebDriver::Wait.new(timeout: timeout).until { yield }
       end

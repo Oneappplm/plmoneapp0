@@ -4,8 +4,8 @@ require "mini_magick"
 
 module Webscraper
   module States
-    class FloridaScraper
-      # SEARCH_URL = "https://mqa-internet.doh.state.fl.us/mqasearchservices/healthcareproviders".freeze
+    class DistrictOfColumbiaScraper
+      # SEARCH_URL = "https://doh.force.com/ver/s/".freeze
 
       def initialize(license_number, state)
         @license_number = license_number
@@ -23,35 +23,40 @@ module Webscraper
         crawler.get(@url)
 
         puts "➡️ Entering license number..."
-        crawler.find_element(:id, 'SearchDto_LicenseNumber')
+        crawler.find_element(:id, 'LicenseNumber')
                .send_keys(@license_number)
 
         puts "➡️ Clicking search button..."
-        search_button = fast_wait.until {
-          crawler.find_element(:xpath, "//input[@type='submit' and @value='Search']")
-        }
-        search_button.click
+        search_button = fast_wait.until do
+          el = crawler.find_element(
+            :xpath,
+            "//a[contains(@class,'slds-button') and normalize-space()='Search']"
+          )
+          el if el.displayed?
+        end
+
+        # Salesforce buttons often need JS click
+        crawler.execute_script("arguments[0].scrollIntoView(true);", search_button)
+        crawler.execute_script("arguments[0].click();", search_button)
+
+        puts "➡️ Waiting for results table..."
+
+        rows = slow_wait.until do
+          els = crawler.find_elements(
+            :xpath,
+            "//table[contains(@class,'slds-table')]//tr[position()>1]"
+          )
+          els if els.any?
+        end
+
+        puts "➡️ Clicking provider name..."
+        result_link = rows.first.find_element(:xpath, ".//td[1]//a")
+
+        crawler.execute_script("arguments[0].scrollIntoView({block:'center'});", result_link)
+        crawler.execute_script("arguments[0].click();", result_link)
 
         puts "⏳ Waiting for redirect..."
         wait_for_redirect
-
-        if crawler.current_url.include?('LicenseVerification')
-          puts "✅ Redirected successfully!"
-
-          puts "➡️ Looking for printer-friendly link..."
-          link = slow_wait.until {
-            crawler.find_element(:xpath, "//a[contains(., 'Printer Friendly Version')]")
-          } rescue nil
-
-          if link
-            crawler.execute_script("arguments[0].scrollIntoView();", link)
-            crawler.execute_script("arguments[0].click();", link)
-          else
-            puts "❌ Printer-friendly link not found!"
-          end
-        else
-          puts "❌ Not redirected to LicenseVerification page!"
-        end
 
         puts "➡️ Saving screenshot..."
         screenshot_path = save_screenshot

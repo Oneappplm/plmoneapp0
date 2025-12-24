@@ -4,12 +4,12 @@ require "fileutils"
 module Webscraper
   module States
     class KentuckyScraper
-      SEARCH_URL = "http://web1.ky.gov/GenSearch/LicenseSearch.aspx?AGY=5".freeze
+      # SEARCH_URL = "http://web1.ky.gov/GenSearch/LicenseSearch.aspx?AGY=5".freeze
 
-      def initialize(license_number, state, url = nil)
+      def initialize(license_number, state)
         @license_number = license_number
         @state = state
-        @url = url || SEARCH_URL
+        @url = state.license_search_url
       end
 
       def call
@@ -153,7 +153,7 @@ module Webscraper
         crawler.save_screenshot(path)
 
         # 2️⃣ Add timestamp (e.g. "2025-12-18")
-        human_date = Time.current.strftime("%Y-%m-%d")
+        human_date = Time.current.strftime("%Y-%m-%d, %I:%M %p")
 
         image = MiniMagick::Image.open(path)
         image.combine_options do |c|
