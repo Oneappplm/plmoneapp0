@@ -117,7 +117,8 @@ class RoleBasedAccess < ApplicationRecord
     "Hippocrates",
     "Verification Products",
     "Activity Logs",
-    "DEA File Uplodation"
+    "DEA File Uplodation",
+    "State License"
 	]
 
 	default_scope { order(:id) }
