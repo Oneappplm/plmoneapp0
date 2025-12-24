@@ -145,6 +145,9 @@ Rails.application.routes.draw do
 
   namespace :mhc do
     get 'verify_npi/:number', to: 'provider_personal_informations#verify_npi'
+
+    resources :states, only: %i[index edit update]
+
     resources :provider_employments
     resources :provider_medicares
     resources :provider_disclosures, only: [:create, :update]
