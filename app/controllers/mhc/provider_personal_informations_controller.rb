@@ -28,14 +28,20 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
 
   def update_audit_date
     provider = @provider_personal_information
-    return render json: { error: "Provider not found" },
-                  status: :unprocessable_entity unless provider
+    return render json: { error: "Provider not found" }, status: :unprocessable_entity unless provider
+
+    # ✅ client wants SRFD date to appear immediately after click
+    audited_time = Time.current.in_time_zone('Pacific Time (US & Canada)')
+
+    provider.update!(
+      latest_audit_completed_date: audited_time
+    )
 
     # ✅ create queue
     queue = provider.pdf_generation_queues.create!(
-      status:     "queued",
-      queued_date: Time.current,
-      message:    "Processing SRFD started"
+      status:      "queued",
+      queued_date: audited_time, # use same PST time
+      message:     "Processing SRFD started"
     )
 
     # ✅ add Verified Profile
@@ -65,14 +71,11 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
       )
     end
 
-    # ✅ add DEA log  (single query instead of map/flatten)
+    # ✅ add DEA log
     dea_log = DeaWebcrawlerLog.joins(:rva_information)
-              .where(rva_informations: {
-                provider_personal_information_id: provider.id,
-                tab: "Registration"
-              })
-              .order(:created_at)      # or :id / :source_date if that’s the intended “last”
-              .last
+      .where(rva_informations: { provider_personal_information_id: provider.id, tab: "Registration" })
+      .order(:created_at)
+      .last
 
     if dea_log
       queue.pdf_queue_items.create!(
@@ -82,31 +85,33 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
       )
     end
 
-    # ✅ start job
-    # PdfGenerationJob.set(wait: 5.seconds).perform_later(queue.id, provider, current_user.id)
+    # ✅ start jobs
     queue.pdf_queue_items.find_each do |item|
       PdfQueueItemJob.perform_later(item.id, provider.id, current_user.id)
     end
+
     render json: {
-      message:       "SRFD queued successfully. Queue #: #{queue.id}",
-      queue_number:  queue.id,
-      queue_status:  queue.status,
-      success:       true
+      message:      "SRFD queued successfully. Queue #: #{queue.id}",
+      queue_number: queue.id,
+      queue_status: queue.status,
+      success:      true,
+      latest_date: audited_time.strftime("%m/%d/%Y") # ✅ send date back for UI
     }
   end
 
 
-  def submit_application
-    # update tracking & personal info
+   def submit_application
     tracking = ProviderPersonalInformationAppTracking.find(params[:tracking_id])
-    tracking.update!(application_submitted_date: Time.current)
 
+    submitted_time = Time.current.in_time_zone('Pacific Time (US & Canada)')
+
+    tracking.update!(application_submitted_date: submitted_time)
     @provider_personal_information.update!(verification_status: "processing")
 
     render json: {
       status: "ok",
       message: "Application submitted successfully",
-      submitted_date: tracking.application_submitted_date.strftime("%m/%d/%Y")
+      submitted_date: submitted_time.strftime("%m/%d/%Y")
     }
   end
 
