@@ -11,9 +11,10 @@ class PdfLetterGenerator
     The Release file might be missing. Please upload it and try again.
   </p>"
 
-  def initialize(practice_education)
-    @education = practice_education
-    @ppi = ProviderPersonalInformation.find_by(provider_attest_id: @education.provider_attest.id)
+  def initialize(record, tab)
+    @record = record
+    @tab = tab
+    @ppi = ProviderPersonalInformation.find_by(provider_attest_id: @record.provider_attest.id)
     raise ArgumentError, "Provider personal information not found" unless @ppi
   end
 
@@ -47,9 +48,9 @@ class PdfLetterGenerator
     header_html = ApplicationController.render(template: "pdf_templates/shared/header", layout: false)
     footer_html = ApplicationController.render(template: "pdf_templates/shared/footer", layout: false)
     letter_html_body = ApplicationController.render(
-      template: "pdf_templates/education_letter",
+      template: "pdf_templates/verification_letter",
       layout: false,
-      assigns: { ppi: @ppi, education: @education }
+      assigns: { ppi: @ppi, record: @record, tab: @tab }
     )
 
     # Inject inline CSS and structure
@@ -74,7 +75,7 @@ class PdfLetterGenerator
     letter_pdf_binary = WickedPdf.new.pdf_from_string(
       letter_html,
       margin: { top: 0, bottom: 0, left: 15, right: 15 },
-      page_size: 'A3',           # 👈 Bigger than default A4
+      page_size: 'A4',           # 👈 Bigger than default A4
       zoom: 1.2,                 # 👈 Optional: makes everything slightly larger
     )
 
@@ -109,10 +110,12 @@ class PdfLetterGenerator
 
     pdf_pages = CombinePDF.new
 
-    frame_count = MiniMagick::Tool::Identify.new do |identify|
+    # ✅ Compatible with MiniMagick 5.3.1 (uses Tool.new("identify"))
+    frame_count = MiniMagick::Tool.new("identify") do |identify|
       identify.format("%n")
       identify << tiff_path
-    end.to_i
+    end
+    frame_count = frame_count.to_i
     frame_count = 1 if frame_count.zero?
 
     Rails.logger.info("🖼️ TIFF has #{frame_count} page(s)")
@@ -123,7 +126,8 @@ class PdfLetterGenerator
     frame_count.times do |i|
       tmp_png = Rails.root.join("tmp", "tiff_frame_#{SecureRandom.hex(6)}.png")
 
-      MiniMagick::Tool::Convert.new do |convert|
+      # ✅ Also use Tool.new("convert")
+      MiniMagick::Tool.new("convert") do |convert|
         convert << "#{tiff_path}[#{i}]"
         convert << tmp_png.to_s
       end
@@ -134,9 +138,7 @@ class PdfLetterGenerator
         <html>
           <head>
             <meta charset="UTF-8">
-            <style>
-              #{custom_pdf_styles}
-            </style>
+            <style>#{custom_pdf_styles}</style>
           </head>
           <body>
             <div class="header">#{header_html}</div>
@@ -153,7 +155,7 @@ class PdfLetterGenerator
       page_pdf_binary = WickedPdf.new.pdf_from_string(
         html,
         margin: { top: 0, bottom: 0, left: 15, right: 15 },
-        page_size: 'A3',           # 👈 Bigger than default A4
+        page_size: 'A4',           # 👈 Bigger than default A4
         zoom: 1.2,                 # 👈 Optional: makes everything slightly larger
       )
 

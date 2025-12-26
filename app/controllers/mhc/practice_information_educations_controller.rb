@@ -5,10 +5,9 @@ class Mhc::PracticeInformationEducationsController < ApplicationController
     @practice_information_educations = PracticeInformationEducation.all
   end
 
-  # app/controllers/mhc/practice_information_educations_controller.rb
   def preview_letter
-    education = PracticeInformationEducation.find(params[:id])
-    pdf_binary = PdfLetterGenerator.new(education).generate_preview!
+    tab = 'education'
+    pdf_binary = PdfLetterGenerator.new(@practice_information_education, tab).generate_preview!
 
     send_data pdf_binary,
               filename: "education_letter_preview.pdf",
@@ -25,7 +24,8 @@ class Mhc::PracticeInformationEducationsController < ApplicationController
     elsif params[:commit] == "save"
       @practice_information_education.form_type = "popup"
     end
-
+    # set institution_name 
+    @practice_information_education.institution_name = params[:institution_name_main]
     if @practice_information_education.save
       redirect_to mhc_verification_platform_path(page_tab: 'education',id: params[:practice_information_education][:provider_attest_id]), notice: 'Education detail saved successfully.'
     else

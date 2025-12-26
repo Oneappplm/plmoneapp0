@@ -184,7 +184,11 @@ Rails.application.routes.draw do
     resources :provider_personal_information_app_trackings
     resources :provider_licensures
     resources :practice_informations, path: 'practice-information'
-    resources :provider_educations, only: [:index, :create, :update, :destroy], path: 'provider-education'
+    resources :provider_educations, only: [:index, :create, :update, :destroy], path: 'provider-education' do
+      member do
+        post :preview_letter
+      end
+    end
     resources :certifications, only: [:index, :create, :update, :destroy], path: 'certifications'
     resources :practice_information_educations, only: [:index, :create, :update, :destroy], path: 'practice-information-education' do 
       collection do
