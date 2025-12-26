@@ -473,9 +473,22 @@
             <p><strong>Verified By:</strong> NPI</p>
             <p><strong>Verifier:</strong> <%= user.full_name %></p>
           </div>
-          <div class="col-6">
-            <p><strong>Source Date:</strong> <%= provider_personal_information&.npi_source_date&.strftime("%m/%d/%Y") %></p>
-            <p><strong>Verification Date:</strong> <%= provider_personal_information&.updated_at&.strftime("%m/%d/%Y") %></p>
+         <div class="col-6">
+            <p>
+              <strong>Source Date:</strong>
+              <%= provider_personal_information
+                    &.npi_source_date
+                    &.in_time_zone('Pacific Time (US & Canada)')
+                    &.strftime("%m/%d/%Y") %>
+            </p>
+
+            <p>
+              <strong>Verification Date:</strong>
+              <%= provider_personal_information
+                    &.updated_at
+                    &.in_time_zone('Pacific Time (US & Canada)')
+                    &.strftime("%m/%d/%Y") %>
+            </p>
           </div>
         </div>
       </div>
