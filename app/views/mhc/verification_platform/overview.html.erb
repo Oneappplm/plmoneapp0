@@ -41,15 +41,33 @@
                     <label for="">Initial Application Received Date <span><%= @latest_tracking&.application_receipt_date&.strftime('%m/%d/%Y') %></span></label>
                 </div>
                 <div class="form-row">
-                    <label for="">Last Submitted Date <span id="last-submitted-date"><%= @latest_tracking&.application_submitted_date&.strftime('%m/%d/%Y') %></span></label>
+                    <label>
+                      Last Submitted Date
+                      <span id="last-submitted-date">
+                        <%= @latest_tracking
+                              &.application_submitted_date
+                              &.in_time_zone('Pacific Time (US & Canada)')
+                              &.strftime('%m/%d/%Y') %>
+                      </span>
+                    </label>
+
                 </div>
                 <% if @provider_personal_information&.latest_audit_completed_date.present? %>
                   <div id="latest_audit_date_section">
-                    <label for="">Latest Audit Completed Sent Date is
+                    <label>Latest Audit Completed Sent Date is
                       <span id="latest_audit_date">
-                        <%= @provider_personal_information.latest_audit_completed_date.strftime('%m/%d/%Y') %>
+                        <%= @provider_personal_information
+                              .latest_audit_completed_date
+                              .in_time_zone('Pacific Time (US & Canada)')
+                              .strftime('%m/%d/%Y') %>
                       </span>
-                    </label>  
+                    </label>
+                  </div>
+                <% else %>
+                  <div id="latest_audit_date_section" style="display:none;">
+                    <label>Latest Audit Completed Sent Date is
+                      <span id="latest_audit_date"></span>
+                    </label>
                   </div>
                 <% end %>
 
