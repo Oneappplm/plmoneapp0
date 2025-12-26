@@ -50,7 +50,8 @@ class Mhc::ProviderLicensuresController < ApplicationController
 
   # ✅ find only from params[:id] (not nested id inside strong params)
   def set_provider_licensure
-    @provider_licensure = ProviderLicensure.find(params[:id])
+    licensure_id = params.dig(:provider_licensure, :id) || params[:provider_licensure_id]
+    @provider_licensure = ProviderLicensure.find(licensure_id)
   end
 
   def provider_licensure_params
