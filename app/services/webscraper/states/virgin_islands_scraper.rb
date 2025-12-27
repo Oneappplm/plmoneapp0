@@ -33,19 +33,6 @@ module Webscraper
         puts "⏳ Waiting for redirect..."
         wait_for_redirect
 
-        # puts "➡️ Clicking on license result..."
-        # result_link = slow_wait.until do
-        #   # Either match by license number in href
-        #   crawler.find_element(:xpath, "//a[contains(@href, '/Lookup/Detail/#{@license_number}')]")
-        #   # Or match by visible text if you know it: "//a[contains(., 'JAMES M ROBERTSON')]"
-        # end
-
-        # crawler.execute_script("arguments[0].scrollIntoView(true);", result_link)
-        # crawler.execute_script("arguments[0].click();", result_link)
-
-        # # Optional: wait a moment for details page to load
-        # sleep 1
-
         puts "➡️ Saving screenshot..."
         screenshot_path = save_screenshot
 
@@ -91,11 +78,29 @@ module Webscraper
         dir = Rails.root.join("public", "webscrape", "Licensure", @state.alpha_code)
         FileUtils.mkdir_p(dir)
 
-        path = dir.join("#{@state.name}_#{@license_number}.png").to_s
+        filename   = "LICENSURE_#{@license_number}_#{@state.alpha_code}.png"
+        path       = dir.join(filename).to_s
+        public_url = "/webscrape/Licensure/#{@state.alpha_code}/#{filename}"
+
+        # 1️⃣ Take raw screenshot
         crawler.save_screenshot(path)
 
-        # Return URL accessible via browser
-        "/webscrape/Licensure/#{@state.alpha_code}/#{@state.name}_#{@license_number}.png"
+        Rails.logger.info("✅ Screenshot saved at: #{public_url}")
+
+        # 2️⃣ Add timestamp (e.g. "2025-12-18")
+        human_date = Time.current.strftime("%Y-%m-%d, %I:%M %p")
+
+        image = MiniMagick::Image.open(path)
+        image.combine_options do |c|
+          c.gravity "SouthEast"         
+          c.fill "black"
+          c.pointsize 14
+          c.draw "text 30,10 '#{human_date}'"
+        end
+        image.write(path)
+
+        # 3️⃣ Return URL accessible via browser
+        public_url
       end
     end
   end
