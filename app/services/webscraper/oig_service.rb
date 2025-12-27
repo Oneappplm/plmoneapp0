@@ -55,7 +55,7 @@ class Webscraper::OigService < WebscraperService
       # no verify => no results, continue attempts
     end
 
-    save_screenshot
+    save_oig_screenshot
     crawler.quit
   end
 
