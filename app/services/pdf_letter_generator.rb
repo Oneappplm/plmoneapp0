@@ -109,7 +109,7 @@ class PdfLetterGenerator
 
     pdf_pages = CombinePDF.new
 
-    frame_count = MiniMagick::Tool::Identify.new do |identify|
+    frame_count = MiniMagick::Tool.new("identify") do |identify|
       identify.format("%n")
       identify << tiff_path
     end.to_i
@@ -123,7 +123,7 @@ class PdfLetterGenerator
     frame_count.times do |i|
       tmp_png = Rails.root.join("tmp", "tiff_frame_#{SecureRandom.hex(6)}.png")
 
-      MiniMagick::Tool::Convert.new do |convert|
+      MiniMagick::Tool.new("convert") do |convert|
         convert << "#{tiff_path}[#{i}]"
         convert << tmp_png.to_s
       end
