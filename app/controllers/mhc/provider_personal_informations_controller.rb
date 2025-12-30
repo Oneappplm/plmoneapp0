@@ -1,4 +1,6 @@
 class Mhc::ProviderPersonalInformationsController < ApplicationController
+  skip_before_action :verify_authenticity_token, only: [:update]
+
   before_action :set_provider_personal_information, only: [:update, :update_audit_date, :submit_application]
 
   def update
