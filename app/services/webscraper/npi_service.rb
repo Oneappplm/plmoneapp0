@@ -92,7 +92,7 @@ class Webscraper::NpiService
     FileUtils.mkdir_p(base_path)
 
     timestamp    = Time.now.to_i
-    human_time   = Time.current.strftime("%Y-%m-%d, %I:%M %p")
+    human_time   = Time.current.in_time_zone('Pacific Time (US & Canada)').strftime('%Y-%m-%d, %I:%M %p')
     png_path     = base_path.join("npi_#{npi}_#{timestamp}.png")
     final_path   = base_path.join("npi_#{npi}_#{timestamp}_ts.png") # with timestamp text
 
@@ -120,10 +120,8 @@ class Webscraper::NpiService
     image = MiniMagick::Image.open(png_path.to_s)
     image.combine_options do |c|
       c.gravity "SouthEast"         
-      c.fill "white"
-      c.stroke "black"
-      c.strokewidth 1
-      c.pointsize 18
+      c.fill "black"
+      c.pointsize 16
       c.draw "text 10,10 '#{human_time}'"
     end
     image.write(final_path.to_s)
