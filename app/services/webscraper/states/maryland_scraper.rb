@@ -4,8 +4,8 @@ require "mini_magick"
 
 module Webscraper
   module States
-    class AlaskaScraper
-      # SEARCH_URL = "https://www.commerce.alaska.gov/cbp/main/Search/Professional".freeze
+    class MarylandScraper
+      # SEARCH_URL = "https://mdbnc.health.maryland.gov/psychverification/Default.aspx".freeze
 
       def initialize(license_number, state)
         @license_number = license_number
@@ -19,51 +19,47 @@ module Webscraper
       end
 
       def crawl!
-        puts "➡️ Opening #{@state.name} site..."
+        puts "➡️ Opening site..."
         crawler.get(@url)
 
         puts "➡️ Entering license number..."
-        crawler.find_element(:id, "LicenseNumber").send_keys(@license_number)
+        crawler.find_element(:id, 'bodyContentPlaceHolder_licenseNoSearch').send_keys(@license_number)
 
         puts "➡️ Clicking search button..."
-        search_button = fast_wait.until do
-          crawler.find_element(:id, "search")
-        end
-        crawler.execute_script("arguments[0].click();", search_button)
+        crawler.find_element(:id, 'bodyContentPlaceHolder_search2').click
 
-        # 🔹 Wait for CAPTCHA modal/popup to appear
-        slow_wait.until do
-          crawler.find_elements(:css, ".modal, .popup, [role='dialog'], .captcha-container").any? ||
-          crawler.find_elements(:css, "iframe[src*='recaptcha']").any?
-        end
+        # 1️⃣ Wait for results table
+        slow_wait.until { crawler.find_elements(:xpath, "//a[contains(@href, 'Details.aspx')]").any? }
 
-        # 🔹 Click CAPTCHA checkbox
-        captcha_checkbox = fast_wait.until do
-          # Try multiple common selectors
-          crawler.find_elements(:css, "input[type='checkbox'], #recaptcha input, .recaptcha-checkbox input, input[aria-label*='robot']").first
-        end
-        crawler.execute_script("arguments[0].click();", captcha_checkbox)
+        # 2️⃣ Click "View Details"
+        puts "➡️ Clicking View Details..."
+        view_details = crawler.find_element(:xpath, "//a[contains(@href, 'Details.aspx')]")
+        view_details.click
 
-        sleep 2  # wait for checkbox animation & validation
+        # 3️⃣ Wait for details page and click "Print Verification"
+        slow_wait.until { crawler.find_element(:id, "bodyContentPlaceHolder_hy_printVerification") }
+        puts "➡️ Clicking Print Verification..."
+        
+        original_window = crawler.window_handle
+        print_link = crawler.find_element(:id, "bodyContentPlaceHolder_hy_printVerification")
+        crawler.execute_script("arguments[0].click();", print_link)
 
-        # 🔹 Click Continue button
-        continue_btn = fast_wait.until do
-          crawler.find_elements(:css, "button:contains('Continue'), input[value*='Continue'], button[class*='continue'], #continue").first
-        end
-        crawler.execute_script("arguments[0].click();", continue_btn)
+        # 4️⃣ Switch to new tab
+        slow_wait.until { crawler.window_handles.size > 1 }
+        new_handle = (crawler.window_handles - [original_window]).first
+        crawler.switch_to.window(new_handle)
 
-        # 🔹 Wait for results (modal closes, results appear)
-        sleep 5
+        # 5️⃣ Wait for print page to load
+        sleep 2
 
         puts "➡️ Saving screenshot..."
         screenshot_path = save_screenshot
         puts "✅ Screenshot saved at: #{screenshot_path}"
         screenshot_path
       ensure
+        puts "➡️ Closing browser..."
         crawler.quit if @crawler
       end
-
-
 
 
       private
