@@ -148,7 +148,7 @@ class WebscraperService < ApplicationService
 	  crawler.save_screenshot(screenshot_path)
 
 	  # === Step 3: Add timestamp watermark
-	  human_date = Time.current.strftime("%Y-%m-%d, %I:%M %p")
+	  human_date = Time.current.in_time_zone('Pacific Time (US & Canada)').strftime('%Y-%m-%d, %I:%M %p')
 
 	  image = MiniMagick::Image.open(screenshot_path)
 	  image.combine_options do |c|
