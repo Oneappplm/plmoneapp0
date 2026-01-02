@@ -4,8 +4,8 @@ require "mini_magick"
 
 module Webscraper
   module States
-    class AlaskaScraper
-      # SEARCH_URL = "https://www.commerce.alaska.gov/cbp/main/Search/Professional".freeze
+    class OklahomaScraper
+      # SEARCH_URL = "https://pay.apps.ok.gov/OSBEP/_app/search/index.php".freeze
 
       def initialize(license_number, state)
         @license_number = license_number
@@ -23,59 +23,39 @@ module Webscraper
         crawler.get(@url)
 
         puts "➡️ Entering license number..."
-        crawler.find_element(:id, "LicenseNumber").send_keys(@license_number)
+        enter_license_number
 
         puts "➡️ Clicking search button..."
-        search_button = fast_wait.until do
-          crawler.find_element(:id, "search")
-        end
-        crawler.execute_script("arguments[0].click();", search_button)
+        click_search
 
-        # 🔹 Wait for CAPTCHA modal/popup to appear
-        slow_wait.until do
-          crawler.find_elements(:css, ".modal, .popup, [role='dialog'], .captcha-container").any? ||
-          crawler.find_elements(:css, "iframe[src*='recaptcha']").any?
-        end
+        puts "⏳ Waiting for results table..."
+        wait_for_results_table
 
-        # 🔹 Click CAPTCHA checkbox
-        captcha_checkbox = fast_wait.until do
-          # Try multiple common selectors
-          crawler.find_elements(:css, "input[type='checkbox'], #recaptcha input, .recaptcha-checkbox input, input[aria-label*='robot']").first
-        end
-        crawler.execute_script("arguments[0].click();", captcha_checkbox)
+        puts "➡️ Clicking license result link..."
+        click_result_link
 
-        sleep 2  # wait for checkbox animation & validation
-
-        # 🔹 Click Continue button
-        continue_btn = fast_wait.until do
-          crawler.find_elements(:css, "button:contains('Continue'), input[value*='Continue'], button[class*='continue'], #continue").first
-        end
-        crawler.execute_script("arguments[0].click();", continue_btn)
-
-        # 🔹 Wait for results (modal closes, results appear)
-        sleep 5
+        puts "⏳ Waiting for detail page..."
+        wait_for_detail_page
 
         puts "➡️ Saving screenshot..."
         screenshot_path = save_screenshot
+
         puts "✅ Screenshot saved at: #{screenshot_path}"
         screenshot_path
       ensure
+        puts "➡️ Closing browser..."
         crawler.quit if @crawler
       end
 
-
-
-
       private
 
-      # Selenium headless browser
       def crawler
         @crawler ||= Selenium::WebDriver.for(:chrome, options: chrome_options)
       end
 
       def chrome_options
         opts = Selenium::WebDriver::Chrome::Options.new
-        opts.add_argument("--headless=new")   # 👈 headless Chrome
+        opts.add_argument("--headless=new")
         opts.add_argument("--disable-gpu")
         opts.add_argument("--disable-dev-shm-usage")
         opts.add_argument("--no-sandbox")
@@ -91,10 +71,44 @@ module Webscraper
         Selenium::WebDriver::Wait.new(timeout: 15)
       end
 
-      def wait_for_redirect
-        slow_wait.until { crawler.current_url.include?('LicenseVerification') }
-      rescue
-        puts "⚠️ Redirect timeout reached"
+      def enter_license_number
+        # License Number field on OK psychologist search
+        input = fast_wait.until { crawler.find_element(:id, "LICENSE_NUM") }
+        input.clear
+        input.send_keys(@license_number)
+      end
+
+      def click_search
+        search_button = fast_wait.until {
+          crawler.find_element(:xpath, "//input[@type='submit' and @value='Search']")
+        }
+        search_button.click
+      end
+
+      def wait_for_results_table
+        slow_wait.until do
+          # Results table with id="psychologists"
+          crawler.find_elements(:id, "psychologists").any?
+        end
+      end
+
+      def click_result_link
+        # First result link inside the results table
+        link = slow_wait.until do
+          crawler.find_element(
+            :xpath,
+            "//table[@id='psychologists']//tbody//tr[1]//td[1]//a[contains(@href,'psychologist.php?id=')]"
+          )
+        end
+        crawler.execute_script("arguments[0].click();", link)
+      end
+
+      def wait_for_detail_page
+        slow_wait.until do
+          url = crawler.current_url
+          html = crawler.page_source
+          url.include?("psychologist.php?id=") && html.include?("License Info")
+        end
       end
 
       def save_screenshot
@@ -105,24 +119,20 @@ module Webscraper
         path       = dir.join(filename).to_s
         public_url = "/webscrape/Licensure/#{@state.alpha_code}/#{filename}"
 
-        # 1️⃣ Take raw screenshot
         crawler.save_screenshot(path)
 
         Rails.logger.info("✅ Screenshot saved at: #{public_url}")
 
-        # 2️⃣ Add timestamp (e.g. "2025-12-18")
         human_date = Time.current.strftime("%Y-%m-%d, %I:%M %p")
-
         image = MiniMagick::Image.open(path)
         image.combine_options do |c|
-          c.gravity "SouthEast"         
-          c.fill "black"
-          c.pointsize 14
+          c.gravity "SouthEast"
+          c.fill "white"
+          c.pointsize 16
           c.draw "text 30,10 '#{human_date}'"
         end
         image.write(path)
 
-        # 3️⃣ Return URL accessible via browser
         public_url
       end
     end
