@@ -4,8 +4,9 @@ require "mini_magick"
 
 module Webscraper
   module States
-    class AlaskaScraper
-      # SEARCH_URL = "https://www.commerce.alaska.gov/cbp/main/Search/Professional".freeze
+    class MississippiScraper
+
+      # SEARCH_URL = "https://www.msbop.ms.gov/secure/licensesearch.asp".freeze
 
       def initialize(license_number, state)
         @license_number = license_number
@@ -23,48 +24,35 @@ module Webscraper
         crawler.get(@url)
 
         puts "➡️ Entering license number..."
-        crawler.find_element(:id, "LicenseNumber").send_keys(@license_number)
+        crawler.find_element(:id, 'licnbr')
+               .send_keys(@license_number)
 
         puts "➡️ Clicking search button..."
-        search_button = fast_wait.until do
-          crawler.find_element(:id, "search")
-        end
-        crawler.execute_script("arguments[0].click();", search_button)
+        search_button = fast_wait.until {
+          crawler.find_element(:xpath, "//input[@type='submit' and @value='SEARCH']")
+        }
+        search_button.click
 
-        # 🔹 Wait for CAPTCHA modal/popup to appear
-        slow_wait.until do
-          crawler.find_elements(:css, ".modal, .popup, [role='dialog'], .captcha-container").any? ||
-          crawler.find_elements(:css, "iframe[src*='recaptcha']").any?
-        end
+        puts "⏳ Waiting for redirect..."
+        wait_for_redirect
 
-        # 🔹 Click CAPTCHA checkbox
-        captcha_checkbox = fast_wait.until do
-          # Try multiple common selectors
-          crawler.find_elements(:css, "input[type='checkbox'], #recaptcha input, .recaptcha-checkbox input, input[aria-label*='robot']").first
-        end
-        crawler.execute_script("arguments[0].click();", captcha_checkbox)
+        puts "⏳ Waiting for results..."
+        click_license_result
 
-        sleep 2  # wait for checkbox animation & validation
-
-        # 🔹 Click Continue button
-        continue_btn = fast_wait.until do
-          crawler.find_elements(:css, "button:contains('Continue'), input[value*='Continue'], button[class*='continue'], #continue").first
-        end
-        crawler.execute_script("arguments[0].click();", continue_btn)
-
-        # 🔹 Wait for results (modal closes, results appear)
-        sleep 5
+        puts "⏳ Waiting for license details page..."
+        slow_wait.until {
+          crawler.current_url.include?("licensesearchdetails.asp")
+        }
 
         puts "➡️ Saving screenshot..."
         screenshot_path = save_screenshot
+
         puts "✅ Screenshot saved at: #{screenshot_path}"
         screenshot_path
       ensure
+        puts "➡️ Closing browser..."
         crawler.quit if @crawler
       end
-
-
-
 
       private
 
@@ -95,6 +83,20 @@ module Webscraper
         slow_wait.until { crawler.current_url.include?('LicenseVerification') }
       rescue
         puts "⚠️ Redirect timeout reached"
+      end
+
+      def click_license_result
+        puts "➡️ Waiting for license result link..."
+
+        license_link = slow_wait.until do
+          crawler.find_element(
+            :xpath,
+            "//a[contains(@href, 'licensesearchdetails.asp')]"
+          )
+        end
+
+        puts "➡️ Clicking license link: #{license_link.text}"
+        license_link.click
       end
 
       def save_screenshot
