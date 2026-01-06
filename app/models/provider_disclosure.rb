@@ -6,9 +6,13 @@ class ProviderDisclosure < ApplicationRecord
   validates :provider_attest_id, presence: true
 
   before_validation :set_provider_attest
+
   private
 
   def set_provider_attest
-    self.provider_attest = ProviderAttest.where(caqh_provider_attest_id: self.caqh_provider_attest_id).last
+    if provider_attest_id.blank? && provider_personal_information&.provider_attest_id.present?
+      self.provider_attest_id = provider_personal_information.provider_attest_id
+    end
   end
+
 end

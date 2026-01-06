@@ -615,7 +615,7 @@ function saveInputMultiRecord(input) {
   var model = input.data('model');
   var id = input.data('id')
   var content = input.val();
-  var field = input.attr('name');
+  var field = input.attr('name') || input.data('altname');
 
   if(input.is(':checkbox')){
     field = $('#schedules-'+id).attr('name');
@@ -689,6 +689,8 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
   var tagName = $(this).prop('tagName').toLowerCase();
   var inputType = $(this).attr('type');
   var isMultiRecord = $(this).hasClass('multi-field');
+  var modelName = this.dataset.model;
+  var recordId = this.dataset.id;
 
   //  add multi-select and single-select to inputType name
   if (inputName && inputName.includes('provider_source_specialities')) return true; // skip this iteration
@@ -715,7 +717,7 @@ $('input:not(.no-auto-save), textarea:not(.no-auto-save), select, div.multi-sele
 	$.ajax({
 			url: '/provider_sources/fetch',
 			type: 'GET',
-			data: { authenticity_token: csrfToken, field_name: inputName },
+			data: { authenticity_token: csrfToken, field_name: inputName, model_name: modelName, record_id: recordId },
 			dataType: 'json',
 			success: function(data) {
           if (inputType == 'radio' || inputType == 'checkbox') {

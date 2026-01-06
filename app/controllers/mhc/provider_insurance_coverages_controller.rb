@@ -13,6 +13,12 @@ class Mhc::ProviderInsuranceCoveragesController < ApplicationController
   def create
     @provider_insurance_coverage = ProviderInsuranceCoverage.new(provider_insurance_coverages_params)
 
+    if params[:commit] == "Create"
+      @provider_insurance_coverage.form_type = "main"
+    elsif params[:commit] == "save"
+      @provider_insurance_coverage.form_type = "popup"
+    end
+
     if @provider_insurance_coverage.save
       redirect_to mhc_verification_platform_path(page_tab: 'liability',id: params[:provider_insurance_coverage][:provider_attest_id]), notice: 'liability detail saved successfully.'
     end
@@ -29,12 +35,18 @@ class Mhc::ProviderInsuranceCoveragesController < ApplicationController
     end
   end
 
-  def destroy
+   def destroy
     @provider_insurance_coverage = ProviderInsuranceCoverage.find(params[:id])
+    provider_attest_id = @provider_insurance_coverage.provider_attest_id
+
     if @provider_insurance_coverage.destroy
-      redirect_to mhc_verification_platform_path(page_tab: 'liability', id: params[:provider_attest_id]), alert: 'liability detail deleted successfully.'
+      redirect_to mhc_verification_platform_path(
+        provider_attest_id,
+        page_tab: 'liability'
+      ), alert: 'Liability detail deleted successfully.'
     end
   end
+
 
   private
 
@@ -101,7 +113,9 @@ class Mhc::ProviderInsuranceCoveragesController < ApplicationController
       :show_on_tickler,
       :comment,
       :liability_not_applicable,
-      :liability_explanation
+      :liability_explanation,
+      :form_type,
+      :prof_liability_does_not_expire,
     )
   end
 end
