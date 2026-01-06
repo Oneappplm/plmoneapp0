@@ -164,7 +164,11 @@ Rails.application.routes.draw do
     resources :billing_companies
     resources :provider_medicaids
     resources :provider_militaries
-    resources :provider_cds
+    resources :provider_cds do
+      member do
+        get :quality_audit_details
+      end
+    end
     resources :client_portal
 
     resources :client_organizations do
@@ -481,6 +485,10 @@ Rails.application.routes.draw do
     delete 'delete_provider_licensure', to: 'quality_audits#delete_provider_licensure'
     delete 'delete_oig', to: 'quality_audits#delete_oig'
     delete 'delete_employment', to: 'quality_audits#delete_employment'
+    post   '/send_cds_request',  to: 'quality_audits#send_cds_request'
+    delete '/delete_cds_request', to: 'quality_audits#delete_cds_request'
+    post   '/send_cds_skip_rva',  to: 'quality_audits#send_cds_skip_rva'
+
     get "verify_npi/:npi", to: "provider_personal_informations#verify_npi"
 
     
