@@ -61,6 +61,7 @@ class Mhc::ProviderSpecialtiesController < ApplicationController
       :caqh_provider_attest_id,
       :specialty_specialty_name,
       :board_certified_flag,
+      :certification_number,
       :specialty_board_name,
       :initial_certification_date,
       :recertification_date,

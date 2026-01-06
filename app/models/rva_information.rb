@@ -1,6 +1,7 @@
 class RvaInformation < ApplicationRecord
 	belongs_to :provider_personal_information, optional: true
 	belongs_to :provider_dea, optional: true
+	belongs_to :provider_cd, optional: true
 	belongs_to :practice_information_education, optional: true
 	belongs_to :provider_education, optional: true
 	belongs_to :provider_specialty, optional: true
