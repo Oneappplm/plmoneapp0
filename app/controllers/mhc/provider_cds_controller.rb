@@ -47,6 +47,23 @@ class Mhc::ProviderCdsController < ApplicationController
                     alert: 'There was an error deleting the CDS/DPS Number.'
       end
     end    
+
+    # app/controllers/mhc/provider_cds_controller.rb (or wherever CDS lives)
+    def quality_audit_details
+      provider_cd = ProviderCd.find(params[:id])
+
+      # last "active" rva info for CDS (ignore restarted)
+      last_rva_information = provider_cd.rva_informations
+                                        .where(tab: 'CDS')
+                                        .where(restart_audit: [false, nil])
+                                        .last
+
+      render json: {
+        success: true,
+        rva_information: last_rva_information
+      }, status: :ok
+    end
+
   
     private
   
