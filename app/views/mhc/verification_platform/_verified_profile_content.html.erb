@@ -392,6 +392,47 @@
   </div>    
 </div>
 
+<!-- CDS -->
+<div class="container mt-4">
+  <div class="section mt-4">
+    <% cds = provider_personal_information.provider_cds
+            .joins(:rva_informations)
+            .where.not(rva_informations: { audit_status: [nil], audit_comments: [nil, 'SkipRVA'] })
+            .distinct %>
+    <% if cds.any? %>        
+      <div class="section-title">CDS</div>
+      <div class="section-content">
+        <% cds.each do |cds| %>
+          <% cds_details = cds.rva_informations.where(audit_status: true)   # Only RVAs with audit_status 'Quality Audited'
+                      .where.not(audit_comments: [nil, 'SkipRVA'])
+                      .order(created_at: :desc)
+                      .first %>
+          <% if cds_details.present? %>
+            <div class="row">
+              <div class="col-6">
+                <p><strong>cds Number:</strong> <%= cds.cds_number %></p>
+                <p><strong>Source:</strong> CDS State Board</p>
+                <p><strong>Source Date:</strong> <%= cds_details&.source_date&.strftime('%m/%d/%Y') %></p>
+                <p><strong>Review Criteria:</strong> <%= cds_details&.adverse_action %></p>
+              </div>
+              <div class="col-6">
+                <p><strong>State:</strong> <%= cds.state %></p>
+                <p><strong>Expiration Date:</strong> <%= cds.expiration_date&.strftime('%m/%d/%Y') %></p>
+                <p><strong>Verifier:</strong> <%= cds_details&.verifier %></p>
+                <p><strong>Verification Date:</strong> <%= dea_details&.verification_date&.strftime('%m/%d/%Y') %></p>
+              </div>
+              <div class="col-12">
+                <p><strong>Comments:</strong> <%= dea_details&.verification_comments %></p>
+              </div>
+            </div>
+            <hr>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>    
+</div>
+
 <!-- NPDB -->
 <div class="container mt-4">
   <div class="section mt-4">
