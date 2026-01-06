@@ -79,11 +79,12 @@
           <th class="text-white">Per Claim Amount</th>
           <th class="text-white">Aggregate Amount</th>
           <th class="text-white">Coverage Status</th>
-          <th class="text-white">Claims History Status</th>
+          <th></th>
+          <%# <th class="text-white">Claims History Status</th> %>
         </tr>
       </thead>
       <tbody>
-        <% @provider_insurance_coverages.each do |provider| %>
+        <% @provider_insurance_coverages.where(form_type: [nil, 'main']).each do |provider| %>
           <tr>
             <td>
               <%= link_to mhc_verification_platform_path(page_tab: 'liability_info', coverage_id: provider.id), id: "BoardCertificateDisplay", class: "text-dark text-start bg-transparent border-0 fw-bold text-decoration-none" do %>
@@ -91,18 +92,29 @@
               <% end %>
             </td>
             <td><%= provider.policy_number %></td>
-            <td><%= provider.end_date %></td>
-            <td><%= provider.claim_amount %></td>
-            <td><%= provider.coverage_amount_aggregate %></td>
+            <td>
+              <%= provider.end_date.present? ? provider.end_date.strftime("%d-%m-%Y") : "Does Not Expire" %>
+            </td>
+
+            <td><%= number_with_delimiter(provider.claim_amount, delimiter: ",") %></td>
+            <td><%= number_with_delimiter(provider.coverage_amount_aggregate, delimiter: ",") %></td>
             <td><%= provider.audit_status.presence || "Not Requested" %></td>
-            <td><%= provider.claims_history_audit.presence || "Not Requested" %></td>
+            <%# <td><%#= provider.claims_history_audit.presence || "Not Requested"</td> %>
+            <td>
+              <%= button_to mhc_provider_insurance_coverage_path(provider),
+                method: :delete,
+                data: { turbo_confirm: "Are you sure?" },
+                class: "btn btn-outline-danger" do %>
+                <i class="bx bx-trash"></i>
+              <% end %>
+            </td>
           </tr>
         <% end %>
       </tbody>
     </table>
      <% if @provider_insurance_coverages %>
       <div class="col-lg-12">
-        <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-0">
+        <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-1">
           <div class="page_info ms-3 text-black">
             <%= page_entries_info @provider_insurance_coverages %>
           </div>

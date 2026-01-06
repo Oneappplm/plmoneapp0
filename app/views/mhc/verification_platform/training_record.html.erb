@@ -24,42 +24,199 @@
                                 <label class="text-dark-grey">Institution Name:</label>
                                 <div class="row">
                                     <div class="col-10">
-                                        <%= f.text_field :institution_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                        <%= f.text_field :institution_name,  placeholder: 'Type here...', class: 'form-control border border-dark', id: 'main-carrier-name' %>
                                     </div>
                                     <div class="col-2">
-                                        <button id="search_school_button" type="button" class="btn btn-primary btn-sm" id="asdf" style="min-width: 100px; font-size: 12px" data-bs-toggle="modal" data-bs-target="#search_school">
+                                        <%# <button id="search_school_button" type="button" class="btn btn-primary btn-sm" id="asdf" style="min-width: 100px; font-size: 12px" data-bs-toggle="modal" data-bs-target="#search_school">
                                             Search
-                                        </button>
+                                        </button> %>
+									                      <button type="button" class="btn btn-primary" id="openModal">Search</button>
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Modal -->
+                            <div id="myModal" class="modal">
+                              <div class="modal-content">
+                                <p>
+                                  To search for an existing Institution/Program, please select the Country, State or Province, City and Institution/Program from the drop down lists.
+                                  If your Institution/Program is not on the list, click the New button.
+                                  Complete the requested address information of the department or office that may verify your training program completion.
+                                  Click the Save button. Click the Close button to populate the record with the new address information.
+                                </p>
+
+                                <div class="search-group">
+                                  <!-- Country -->
+                                  <div class="form-group">
+                                    <%= f.label :country, "By Country:" %>
+                                    <%= f.select :country,
+                                      options_for_select(
+                                        ISO3166::Country.all.map { |c| [c.translations['en'] || c.name, c.alpha2] },
+                                        f.object.country
+                                      ),
+                                      { include_blank: "Select Country" },
+                                      class: "form-control",
+                                      id: "country-select" %>
+                                  </div>
+
+                                  <!-- State -->
+                                  <div class="form-group">
+                                    <%= f.label :state, "By State/Province:" %>
+                                    <%= f.select :state, [],
+                                      { include_blank: "Select State" },
+                                      class: "form-control",
+                                      id: "state-select" %>
+                                  </div>
+
+                                  <!-- City -->
+                                  <div class="form-group">
+                                    <label for="input-city">By City:</label>
+                                    <%= f.select :city,
+                                      options_for_select(
+                                        ProviderEducation.where(form_type: 'popup')
+                                                        .distinct
+                                                        .pluck(:city)
+                                                        .compact
+                                                        .sort,
+                                        f.object.city
+                                      ),
+                                      { include_blank: "Select City" },
+                                      class: "form-control",
+                                      id: "input-city" %>
+                                  </div>
+
+                                  <!-- Institution -->
+                                  <div class="form-group">
+                                    <label for="input-carrier">By Institution:</label>
+                                    <input type="text" id="institution-search-input" class="form-control mb-2" placeholder="Type to search institution name...">
+
+                                    <%= f.select :institution_name,
+                                      options_for_select(
+                                        ProviderEducation.where(form_type: 'popup').map { |s|
+                                          [
+                                            s.institution_name,
+                                            s.institution_name,
+                                            {
+                                              "data-city": s.city,
+                                              "data-address": s.address,
+                                              "data-contact": s.contact,
+                                              "data-address2": s.address2,
+                                              "data-county": s.county,
+                                              "data-province": s.province,
+                                              "data-state": s.state,
+                                              "data-postal": s.postal_code,
+                                              "data-phone": s.phone_number,
+                                              "data-fax": s.fax_number,
+                                              "data-email": s.email_address
+                                            }
+                                          ]
+                                        },
+                                        f.object.institution_name
+                                      ),
+                                      { include_blank: "Select Institution" },
+                                      class: "form-control",
+                                      id: "input-carrier" %>
+
+                                    <button class="btn btn-primary mt-2" type="button" id="institution-search-btn">Search</button>
+                                  </div>
+                                </div>
+
+                                <!-- Institution Information Section -->
+                                <div class="form-section">
+                                  <div class="form-section-header">Institution Information - Address of Department/Office Verifying Program Completion</div>
+
+                                  <div class="col-md-6">
+                                    <label>Institution:</label>
+                                    <%= f.text_field :institution_name, placeholder: 'Type here...', class: 'form-control border border-dark', id: 'auto-carrier-name' %>
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label>Address:</label>
+                                    <%= f.text_field :address, placeholder: 'Address', class: 'form-control' %>
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label>Contact:</label>
+                                    <%= f.text_field :contact, placeholder: 'Contact', class: 'form-control' %>
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label>Additional Address:</label>
+                                    <%= f.text_field :address2, placeholder: 'Additional Address', class: 'form-control' %>
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label>City:</label>
+                                    <%= f.text_field :city, placeholder: 'City', class: 'form-control', id: 'auto-city' %>
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label>County:</label>
+                                    <%= f.text_field :county, placeholder: 'County', class: 'form-control' %>
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label>State:</label>
+                                    <%= f.text_field :state, placeholder: 'State', class: 'form-control' %>
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label>Postal Code:</label>
+                                    <%= f.text_field :postal_code, placeholder: 'Postal Code', class: 'form-control' %>
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label>Phone:</label>
+                                    <%= f.text_field :phone_number, placeholder: 'Phone', class: 'form-control' %>
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label>Fax:</label>
+                                    <%= f.text_field :fax_number, placeholder: 'Fax', class: 'form-control' %>
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label>Email:</label>
+                                    <%= f.text_field :email_address, placeholder: 'Email', class: 'form-control' %>
+                                  </div>
+                                </div>
+
+                                <div class="form-actions mt-3 d-flex justify-content-center align-items-start gap-3">
+                                  <button type="button" class="btn btn-success" id="new-btn">New</button>
+
+                                  <%= f.submit 'Save', class: 'btn btn-success', name: 'commit', value: 'save', id: 'popup-save-btn', style: 'display:none;' %>
+
+                                  <button type="button" class="btn btn-secondary" id="modal-close-btn">Close</button>
+                                </div>
+                              </div>
+                            </div>
                             <div class="col-12">
                                 <label for="address">Address:</label>
-                                <%= f.text_field :address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                <%= f.text_field :address,  placeholder: 'Type here...',id: 'main-address', class: 'form-control border border-dark' %>
                             </div>
                             <div class="col-12">
                                 <label for="address">Contact:</label>
-                                <%= f.text_field :contact,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                <%= f.text_field :contact,  placeholder: 'Type here...',id: 'main-contact',  class: 'form-control border border-dark' %>
                             </div>
                             <div class="col-12">
                                 <label for="add-address">Additional Address:</label>
-                                <%= f.text_field :address2,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                <%= f.text_field :address2,  placeholder: 'Type here...', id: 'main-address2',  class: 'form-control border border-dark' %>
                             </div>
                             <div class="col-xl-6">
                                 <label for="city">City:</label>
-                                <%= f.text_field :city,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                <%= f.text_field :city, placeholder: 'Type here...',  id: 'main-city', class: 'form-control border border-dark' %>
                             </div>
                             <div class="col-xl-6">
                                 <label for="county">County:</label>
-                                <%= f.text_field :county,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                <%= f.text_field :county,  placeholder: 'Type here...', id: 'main-county',  class: 'form-control border border-dark' %>
                             </div>
                             <div class="col-xl-6">
                                 <label for="state">State/Province:</label>
-                                <%= f.text_field :province,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                <%= f.text_field :province,  placeholder: 'Type here...', id: 'main-state',class: 'form-control border border-dark' %>
                             </div>
                             <div class="col-xl-6">
                                 <label for="zip">Zip/Postal Code:</label>
-                                <%= f.text_field :postal_code,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                <%= f.text_field :postal_code,  placeholder: 'Type here...',  id: 'main-postal', class: 'form-control border border-dark' %>
                             </div>
                             <div class="col-xl-6">
                                 <label for="country">Country:</label>
@@ -67,15 +224,15 @@
                             </div>
                             <div class="col-xl-6">
                                 <label for="phone-number">Phone Number:</label>
-                                <%= f.text_field :phone_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                <%= f.text_field :phone_number,  placeholder: 'Type here...',id: 'main-phone', class: 'form-control border border-dark' %>
                             </div>
                             <div class="col-xl-6">
                                 <label for="email-address">Email Address :</label>
-                                <%= f.text_field :email_address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                <%= f.text_field :email_address,  placeholder: 'Type here...', id: 'main-email', class: 'form-control border border-dark' %>
                             </div>
                             <div class="col-xl-6">
                                 <label for="fax-number">Fax Number:</label>
-                                <%= f.text_field :fax_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+                                <%= f.text_field :fax_number,  placeholder: 'Type here...', id: 'main-fax',  class: 'form-control border border-dark' %>
                             </div>
                             <div class="col-xl-6">
                                 <label for="type">Type of Training:</label>
@@ -139,7 +296,7 @@
                                 </div>
                             </div>
                             <div class="col-12 text-left" style="margin-top: 20px;">
-                                <%= f.submit 'Save', class: 'btn btn-primary', style: 'width: 200px;' %>
+                                <%= f.submit 'Save', class: 'btn btn-primary',  style: 'width: 200px;', name: 'commit', value: 'Create', id: 'main-save-btn' %>
                             </div>
                     <% end %>
                     <% if @provider_education.persisted? %>
@@ -245,13 +402,11 @@
                                           Skip RVA
                                     </button>
                                 </div>
-                                <!--
-                                  <div class="col-12 m-2">
-                                    <button class="btn text-danger <%= @training_rva_information_completed.present? ? '' : 'd-none' %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" id="re-rva">
-                                      Need ReRVA
-                                    </button>
+                                <div class="col-12 m-2">
+                                  <div class="text-danger <%= @provider_education.rva_informations.pluck(:restart_audit).include?(false) ? 'd-none' : '' %>" id="re-rva">
+                                    Need ReRVA
                                   </div>
-                                -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -559,7 +714,7 @@
               <%= hidden_field_tag :id, @last_rva_information&.id %>
               <%= hidden_field_tag :personal_info_id %>
               <%= hidden_field_tag :practice_education_id %>
-              <%= hidden_field_tag :provider_education %>
+              <%= hidden_field_tag :training_id, @last_rva_information&.provider_education_id, id: 'training-id' %>
 
               <%= hidden_field_tag :first_name %>
               <%= hidden_field_tag :last_name %>
@@ -707,7 +862,7 @@
                       <div class="form-row d-flex justify-content-end gap-2 mt-3">
                         <button class="btn btn-primary py-1" type="button">View Received Images</button>
                         <button class="btn btn-primary py-1" type="button" <%= 'disabled' if @last_rva_information.present? %>>Save Request</button>
-                        <button class="btn btn-primary py-1" type="button" <%= 'disabled' if !@last_rva_information.present? %>>Restart Request</button>
+                        <button class="btn btn-primary py-1" type="button" id="restart-request-btn" <%= 'disabled' if !@last_rva_information.present? %>>Restart Request</button>
                       </div>
                     </div>
                   </div>
@@ -1501,6 +1656,33 @@
             }
           });
         });
+        document.getElementById('restart-request-btn')?.addEventListener('click', function (e) {
+          e.preventDefault();
+
+          const trainingId = document.getElementById('training-id')?.value;
+          if (!trainingId) return;
+
+          document.querySelector('.loading-overlay').style.display = 'block';
+
+          fetch('/webscrapers/delete_training_request', {
+            method: 'DELETE',
+            headers: {
+              'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ training_id: trainingId }) // 👈 this is the change
+          })
+          .then(response => response.json())
+          .then(data => {
+            document.querySelector('.loading-overlay').style.display = 'none';
+            document.getElementById('re-rva').classList.remove('d-none');
+            window.location.reload();
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            document.querySelector('.loading-overlay').style.display = 'none';
+          });
+        });
         $('#audit-btn').click(function(e) {
           e.preventDefault(); // Prevent default form submission
             if (!$('input[name="rva_information[audit_status]"]:checked').val()) {
@@ -1525,6 +1707,7 @@
               $('#rva_information_audit_date')[0].innerHTML = data.audit_date;
               $('#rva_information_auditor')[0].innerHTML = data.auditor;
               $('#rva_information_audit_comments')[0].value = data.audit_comments;
+              window.location.reload();
               $('#re-rva')[0].classList.remove('d-none');
             },
             error: function(xhr, status, error) {
@@ -1563,7 +1746,7 @@
     });
 
         // Skip RVA Button Click
-      if (!document.getElementById('skip-rva-btn').dataset.listenerAttached) {
+    if (!document.getElementById('skip-rva-btn').dataset.listenerAttached) {
        document.getElementById('skip-rva-btn').dataset.listenerAttached = 'true';
  
        document.getElementById('skip-rva-btn').addEventListener('click', function (e) {
@@ -1689,6 +1872,221 @@
       }
     }
 </script>
+<script>
+  // --- Modal open/close for Training ---
+  document.getElementById("openModal")?.addEventListener("click", function () {
+    document.getElementById("myModal").style.display = "block";
+  });
+
+  function closeModal() {
+    document.getElementById("myModal").style.display = "none";
+  }
+
+  // Close modal when clicking outside
+  window.onclick = function (event) {
+    const modal = document.getElementById("myModal");
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  };
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("institution-search-input");
+    const dropdown = document.getElementById("input-carrier");
+    const searchBtn = document.getElementById("institution-search-btn");
+    const closeBtn = document.getElementById("modal-close-btn");
+    const newBtn = document.getElementById("new-btn");
+    const saveBtn = document.getElementById("popup-save-btn");
+
+    // --- Search button functionality ---
+    if (searchInput && dropdown && searchBtn) {
+      const allOptions = Array.from(dropdown.options);
+
+      // Remove duplicate event listeners
+      searchBtn.replaceWith(searchBtn.cloneNode(true));
+      const newSearchBtn = document.getElementById("institution-search-btn");
+
+      newSearchBtn.addEventListener("click", function () {
+        const searchValue = searchInput.value.toLowerCase().trim();
+        dropdown.innerHTML = "";
+          // Always keep "Select School" as the first option
+          const blankOption = document.createElement("option");
+          blankOption.value = "";
+          blankOption.text = "Select School";
+          dropdown.appendChild(blankOption);
+
+        let filteredOptions =
+          searchValue === ""
+            ? allOptions
+            : allOptions.filter(opt =>
+                opt.text.toLowerCase().includes(searchValue)
+              );
+
+        if (filteredOptions.length > 0) {
+          filteredOptions.forEach(opt => dropdown.appendChild(opt.cloneNode(true)));
+        } else {
+          alert("No matching institution found.");
+        }
+         // Reset select to blank
+          dropdown.value = "";
+      });
+
+      // --- Dropdown change: populate modal form fields ---
+      dropdown.addEventListener("change", function () {
+        const selected = this.options[this.selectedIndex];
+        if (!selected) return;
+
+        // Fill modal form fields for ProviderEducation
+        document.getElementById("auto-carrier-name").value = selected.text;
+        document.querySelector("input[name='provider_education[address]']").value =
+          selected.dataset.address || "";
+        document.querySelector("input[name='provider_education[address2]']").value =
+          selected.dataset.address2 || "";
+        document.querySelector("input[name='provider_education[city]']").value =
+          selected.dataset.city || "";
+        document.querySelector("input[name='provider_education[county]']").value =
+          selected.dataset.county || "";
+        document.querySelector("input[name='provider_education[province]']").value =
+          selected.dataset.province || "";
+        document.querySelector("input[name='provider_education[state]']").value =
+          selected.dataset.state || "";
+        document.querySelector("input[name='provider_education[postal_code]']").value =
+          selected.dataset.postal || "";
+        document.querySelector("input[name='provider_education[phone_number]']").value =
+          selected.dataset.phone || "";
+        document.querySelector("input[name='provider_education[fax_number]']").value =
+          selected.dataset.fax || "";
+        document.querySelector("input[name='provider_education[email_address]']").value =
+          selected.dataset.email || "";
+        document.querySelector("input[name='provider_education[contact]']").value =
+          selected.dataset.contact || "";
+      });
+    }
+
+    // --- Fill main form from modal fields ---
+    function fillMainFormFromModal() {
+      const fieldsMap = {
+        "main-carrier-name": "auto-carrier-name",
+        "main-address": "provider_education[address]",
+        "main-address2": "provider_education[address2]",
+        "main-city": "provider_education[city]",
+        "main-county": "provider_education[county]",
+        "main-province": "provider_education[province]",
+        "main-state": "provider_education[state]",
+        "main-postal": "provider_education[postal_code]",
+        "main-phone": "provider_education[phone_number]",
+        "main-fax": "provider_education[fax_number]",
+        "main-email": "provider_education[email_address]",
+        "main-contact": "provider_education[contact]",
+      };
+
+      Object.keys(fieldsMap).forEach(mainId => {
+        const modalField =
+          document.getElementById(fieldsMap[mainId]) ||
+          document.querySelector(`input[name='${fieldsMap[mainId]}']`);
+        const mainField = document.getElementById(mainId);
+
+        if (modalField && mainField) {
+          mainField.value = modalField.value || "";
+        }
+      });
+    }
+
+    // --- Close modal and update main form ---
+    if (closeBtn) {
+      closeBtn.addEventListener("click", function () {
+        fillMainFormFromModal();
+        document.getElementById("myModal").style.display = "none";
+      });
+    }
+
+    // --- New button shows Save button ---
+    if (newBtn && saveBtn) {
+      newBtn.addEventListener("click", function () {
+        saveBtn.style.display = "inline-block";
+      });
+    }
+
+    // --- Save button also fills main form ---
+    if (saveBtn) {
+      saveBtn.addEventListener("click", fillMainFormFromModal);
+    }
+
+    // --- Sync institution name between modal and main form ---
+    document.getElementById("main-carrier-name")?.addEventListener("input", function () {
+      const autoField = document.getElementById("auto-carrier-name");
+      if (autoField) autoField.value = this.value;
+    });
+  });
+</script>
+
+<script>
+  // --- Country → State dropdown ---
+  document.addEventListener("DOMContentLoaded", function () {
+    const countrySelect = document.getElementById("country-select");
+    const stateSelect = document.getElementById("state-select");
+
+    if (countrySelect) {
+      countrySelect.addEventListener("change", function () {
+        const countryCode = this.value;
+        stateSelect.innerHTML = '<option value="">Select State</option>';
+
+        if (countryCode) {
+          fetch(`/mhc/verification_platform/states?country=${countryCode}`)
+            .then((response) => response.json())
+            .then((states) => {
+              states.forEach((state) => {
+                let option = document.createElement("option");
+                option.value = state;
+                option.text = state;
+                stateSelect.appendChild(option);
+              });
+            });
+        }
+      });
+    }
+  });
+
+  // --- City → Institution dropdown ---
+  document.addEventListener("DOMContentLoaded", function () {
+    const citySelect = document.getElementById("input-city");
+    const institutionSelect = document.getElementById("input-carrier");
+    const searchInput = document.getElementById("institution-search-input");
+
+    if (!citySelect || !institutionSelect) return;
+
+    citySelect.addEventListener("change", function () {
+      const selectedCity = this.value.toLowerCase();
+
+      Array.from(institutionSelect.options).forEach((option) => {
+        if (option.value === "") return;
+
+        const instCity = (option.getAttribute("data-city") || "").toLowerCase();
+
+        if (!selectedCity || instCity === selectedCity) {
+          option.style.display = "block";
+        } else {
+          option.style.display = "none";
+        }
+      });
+
+      institutionSelect.value = "";
+    });
+
+    searchInput.addEventListener("input", function () {
+      const searchTerm = this.value.toLowerCase();
+
+      Array.from(institutionSelect.options).forEach((option) => {
+        if (option.value === "") return;
+
+        const instName = option.textContent.toLowerCase();
+        option.style.display = instName.includes(searchTerm)
+          ? "block"
+          : "none";
+      });
+    });
+  });
+</script>
 
 
 <style type="text/css">
@@ -1702,4 +2100,95 @@
     max-width: 1000px;
     padding: 0;
   }
+</style>
+<style>
+  #myModal {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: white;
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      width: 80%;
+      max-width: 800px;
+      display: none; /* initially hidden */
+    }
+
+    #myModal select,
+    #myModal input[type="text"],
+    #myModal input[type="email"] {
+      width: 300px;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+
+    #myModal .form-section {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-top: 20px;
+    }
+
+    #myModal .form-section-header {
+      background-color: #2c5aa0;
+      color: #fff;
+      padding: 8px;
+      font-weight: bold;
+    }
+
+    #myModal .form-group {
+      margin-bottom: 8px;
+    }
+
+    #myModal label {
+      display: inline-block;
+      width: 180px;
+    }
+
+    #myModal .form-actions {
+      margin-top: 20px;
+    }
+
+    #myModal button {
+      padding: 6px 16px;
+      margin-right: 10px;
+    }
+
+    #myModal .search-group input[type="text"] {
+      width: 180px;
+    }
+    #myModal .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      cursor: pointer;
+    }
+
+    #myModal .form-actions {
+      margin-top: 20px;
+      text-align: right;
+    }
+
+    #myModal .form-actions button {
+      padding: 8px 16px;
+      background-color: #2c5aa0;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      margin-left: 10px;
+      cursor: pointer;
+      margin-bottom: 61px;
+    }
+
+    #myModal .form-actions button:hover {
+      background-color: #20457e;
+    }
+    #myModal .search-group input[type="text"] {
+        width: 300px;
+    }
 </style>

@@ -25,11 +25,11 @@
 					</button>
 				</div>
 				<div class="col-lg-2">
-					<div style="float: right" class="btn btn-primary">
+					<div style="float: right">
 						<% case @provider.cred_status %>
               <% when "psv" %>
                 <% if @psv_pdf.present? %>
-                  <%= link_to @psv_pdf.file_path.url, target: "_blank", class: "text-white fs-5" do %>
+                  <%= link_to @psv_pdf.file_path.url, target: "_blank", class: "text-white fs-5 btn btn-primary btn-sm" do %>
                     <i class="fas fa-file-pdf fa-xl"></i>
                     <span class="text-white fw-bold">Verified Profile</span>
                   <% end %>
@@ -73,7 +73,7 @@
 											<%= provider.cell_phone_number %> <br>
 											<%= provider.email_address%>
 										</td>
-										<td><%= provider.birth_date.strftime("%Y-%m-%d") %></td>
+										<td><%= provider.birth_date.strftime('%m/%d/%Y') %></td>
 										<td><%= provider.ssn %></td>
 										<td><%= provider.npi %></td>
 										<td> NA </td>
@@ -94,15 +94,15 @@
 							<tr>
 								<td>
 									<strong for="">Received Date:</strong> <br>
-									2/10/2016
+									02/10/2016
 								</td>
 								<td>
 									<strong for="">Completed Date:</strong> <br>
-									2/10/2016
+									02/10/2016
 								</td>
 								<td>
 									<strong for="">PSV Date:</strong> <br>
-									<%= @provider&.attest_date&.strftime("%m/%d/%Y") %>
+									<%= @provider&.attest_date&.strftime('%m/%d/%Y') %>
 								</td>
 								<td>
 									<strong for="">Cred Cycle Cred:</strong> <br>
@@ -159,11 +159,11 @@
 					            <td><%= lic.license_number %></td>
 					            <td>Licensure - <%= lic.license_type %></td>
 					            <td><%= State.find_by(id: lic.state_id)&.alpha_code || "N/A" %></td>
-					            <td style="text-align:center;"><%= lic.license_issue_date&.strftime('%Y-%m-%d') %></td>
-					            <td style="text-align:center;"><%= lic.license_expiration_date&.strftime('%Y-%m-%d') %></td>
+					            <td style="text-align:center;"><%= lic.license_issue_date&.strftime('%m/%d/%Y') %></td>
+					            <td style="text-align:center;"><%= lic.license_expiration_date&.strftime('%m/%d/%Y') %></td>
 					           <%#  <td style="text-align:center;">State Board</td>
 					            <td style="text-align:center;">ACTIVE</td> %>
-					            <td style="text-align:center;"><%= lic.updated_at&.strftime('%Y-%m-%d') %></td>
+					            <td style="text-align:center;"><%= lic.updated_at&.strftime('%m/%d/%Y') %></td>
 					          </tr>
 					        <% end %>
 
@@ -173,10 +173,10 @@
 					            <td>Registration - DEA</td>
 					            <td><%= dea.state %></td>
 					            <td style="text-align:center;">-</td>
-					            <td style="text-align:center;"><%= dea.expiration_date&.strftime('%Y-%m-%d') %></td>
+					            <td style="text-align:center;"><%= dea.expiration_date&.strftime('%m/%d/%Y') %></td>
 					            <%# <td style="text-align:center;">DEA</td>
 					            <td style="text-align:center;">ACTIVE</td> %>
-					            <td style="text-align:center;"><%= dea.updated_at&.strftime('%Y-%m-%d') %></td>
+					            <td style="text-align:center;"><%= dea.updated_at&.strftime('%m/%d/%Y') %></td>
 					          </tr>
 					        <% end %>
 					      </tbody>
@@ -202,14 +202,14 @@
 			          </thead>
 			          <tbody>
 			            <tr class="alt-row">
-			              <td>2022-03-23</td>
+			              <td>03/23/2022</td>
 			              <td>DemoDirector Test</td>
 			              <td>VRC Director</td>
 			              <td></td>
 			              <td>Approved</td>
 			            </tr>
 			            <tr>
-			              <td>2022-03-23</td>
+			              <td>03/23/2022</td>
 			              <td>DemoMember Test</td>
 			              <td>VRC Member</td>
 			              <td></td>
@@ -287,7 +287,7 @@
 					      <tbody>
 					        <% @review_level_changes.each do |change| %>
 					          <tr>
-					            <td><%= change.created_at.strftime("%Y/%m/%d") %></td>
+					            <td><%= change.created_at.strftime('%m/%d/%Y') %></td>
 					            <td><%= change.from_level %></td>
 					            <td><%= change.to_level %></td>
 					            <td><%= change.changed_by.truncate(30) %></td>
@@ -304,11 +304,16 @@
 
 				<div id="change-review-level-container" class="col-lg-12 mt-2" style="display: none">
 					<h3 class="mt-2 p-3" style="background-color: #E9E9E9;">Review Level Change</h3>
-					<%= form_with model: @provider, url: record_approval_path, method: :patch do |form| %>
+					<%= form_with url: record_approval_path, method: :patch do |form| %>
 						<div class="form-group mb-3">
 							<label for="record_status">Review Level:</label>
 							<%= form.hidden_field :id, value: @provider.id %>
-							<%= form.select :status, options_for_select([['All', ''], 'Expedited', 'Non-Expedited', 'Clean', 'unclean']), {}, { id: 'record_status', class: 'form-control' } %>
+							
+							<% if current_setting.mhc? %>
+								<%= form.select :review_level, options_for_select([['All', ''], 'Clean', 'Unclean', 'Pending']), {}, { id: 'record_status', class: 'form-control' } %>
+							<% else %>
+								<%= form.select :review_level, options_for_select([['All', ''], 'Expedited', 'Non-Expedited', 'Clean', 'Unclean', 'Pending']), {}, { id: 'record_status', class: 'form-control' } %>
+							<% end %>
 						</div>
 						
 					  <div class="form-group mb-3" style="position: relative;">

@@ -8,6 +8,12 @@ class Mhc::ProviderEducationsController < ApplicationController
   def create
     @provider_education = ProviderEducation.new(provider_education_params)
 
+    if params[:commit] == "Create"
+      @provider_education.form_type = "main"
+    elsif params[:commit] == "save"
+      @provider_education.form_type = "popup"
+    end
+
     if @provider_education.save
       redirect_to mhc_verification_platform_path(page_tab: 'training',id: params[:provider_education][:provider_attest_id]), notice: 'Training detail saved successfully.'
     else
@@ -52,7 +58,8 @@ class Mhc::ProviderEducationsController < ApplicationController
       :phone_number, :fax_number, :disciplinary_action_flag, :disciplinary_action_explanation,
       :program_director_degree, :program_type, :additional_training_description, :education_type_name,
       :hours, :country_country_name, :degree_degree_abbreviation, :specialty_specialty_name,
-      :institution_type_institution_type_description,  :contact, :comments, :show_on_tickler, :current_program_director_flag
+      :institution_type_institution_type_description,  :contact, :comments, :show_on_tickler, :current_program_director_flag,
+      :form_type
     )
   end
 end

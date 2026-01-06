@@ -91,9 +91,41 @@ class OfficeManagersController < ApplicationController
   end
 
   def remove_provider
-    @provider.destroy
-    redirect_to request.referrer, notice: "Provider Source is deleted."
+    ActiveRecord::Base.transaction do
+      if @provider.present?
+        group_engage_provider = @provider.group_engage_provider
+        user = group_engage_provider&.user
+        ppi_info = @provider.provider_personal_information
+
+        # Find duplicate PPI created for roster/group engage provider
+        duplicate_ppi = ProviderPersonalInformation.find_by(
+          email_address: ppi_info&.email_address,
+          roster: true # or any flag you set for duplicate PPI
+        )
+
+        # Destroy user sidebar preferences first (if any)
+        UserSidebarPreference.where(user_id: user.id).destroy_all if user.present?
+
+        # Destroy user (if exists)
+        user&.destroy
+
+        # Destroy group engage provider (if exists)
+        group_engage_provider&.destroy
+
+        # Destroy duplicate PPI if exists
+        duplicate_ppi&.destroy
+
+        # Destroy ppi info
+        ppi_info&.destroy
+
+        # Finally destroy provider itself
+        @provider.destroy
+      end
+    end
+
+    redirect_to request.referrer, notice: "Provider and related records deleted successfully."
   end
+
 
   def bulk_remove_providers
     data = params[:data]

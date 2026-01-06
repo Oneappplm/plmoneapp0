@@ -52,6 +52,8 @@ module ProviderSources
     def extract_index_and_attribute(field_name)
       if field_name =~ /\Aprovider_source_specialities\[(\d+)\]\[(\w+)\]\z/
         [Regexp.last_match(1).to_i, Regexp.last_match(2)]
+      elsif FIELD_MAP.key?(field_name)
+        [nil, field_name] # direct attribute match
       else
         [nil, nil]
       end

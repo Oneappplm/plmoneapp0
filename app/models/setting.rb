@@ -33,7 +33,6 @@ class Setting < ApplicationRecord
 	def mhc? = client_name == 'mhc'
 	def docgo? = client_name == 'docgo'
 
-
 	def t(key)
 		I18n.t("#{client_name}.#{key}")
 	end

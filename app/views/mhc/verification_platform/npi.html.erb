@@ -57,53 +57,72 @@
                     </div>
                 </div>
             </div>
+            
             <div class="col-xl-6 mt-2">
               <button type="button" class="btn btn-info" id="verify_npi_button">Auto Rva</button>
+              <div id="npi_loader" class="mt-2" style="display:none;">
+                <div class="spinner-border text-info" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <span class="ms-2">Verifying NPI...</span>
+              </div>
+              <div id="npi_result_area" class="mt-2"></div>
             </div>
+
             <div class="form-row mt-2 d-flex justify-content-end">
                <%= f.submit 'Save', class: 'btn btn-primary', style: 'width: 200px;' %>
             </div>
         <% end %>
     </div>
 </div>
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const verifyButton = document.getElementById("verify_npi_button");
     const npiInput = document.getElementById("npi_input");
-
-    // Check if handler already exists (prevent multiple bindings)
+    const resultArea = document.getElementById("npi_result_area");
+    const loader = document.getElementById("npi_loader");
+  
     if (verifyButton && !verifyButton.dataset.listenerAttached) {
       verifyButton.addEventListener("click", function (e) {
         e.preventDefault();
-        console.log("🧪 Verify NPI Clicked");
-
+  
         const npiNumber = npiInput.value.trim();
-
         if (!npiNumber) {
           alert("⚠️ Please enter an NPI number before verifying.");
           return;
         }
-
+  
+        // Show loader + clear old results
+        loader.style.display = "block";
+        resultArea.innerHTML = "";
+  
         fetch(`/mhc/verify_npi/${npiNumber}`)
           .then(response => response.json())
           .then(data => {
+            loader.style.display = "none"; // Hide loader
+  
             if (data.status === "match") {
-              alert("✅ Match found for NPI Number.");
-              document.querySelector("[name='provider_personal_information[npi_verification_status]']").value = "match";
+              resultArea.innerHTML = `<p class="text-danger">✅ Match found for NPI Number.</p>`;
+              resultArea.innerHTML = `
+                <a href="${data.screenshot_url}" target="_blank" style="font-weight: bold;" >
+                ${data.file_name}
+              </a>
+              `;
             } else if (data.status === "no_match") {
               alert("❌ No match found.");
-              document.querySelector("[name='provider_personal_information[npi_verification_status]']").value = "no_match";
+              resultArea.innerHTML = `<p class="text-danger">❌ No match found.</p>`;
             } else {
-              alert("⚠️ An unexpected error occurred.");
+              resultArea.innerHTML = `<p class="text-warning">⚠️ ${data.message || "Unexpected error"}</p>`;
             }
           })
           .catch(error => {
+            loader.style.display = "none";
             console.error("Error during NPI lookup:", error);
-            alert("⚠️ An error occurred while verifying NPI.");
+            resultArea.innerHTML = `<p class="text-warning">⚠️ An error occurred while verifying NPI.</p>`;
           });
       });
-
-      // Mark that we've attached the listener
+  
       verifyButton.dataset.listenerAttached = "true";
     }
   });

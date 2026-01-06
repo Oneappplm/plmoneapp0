@@ -1,17 +1,27 @@
 require 'zip'
+require 'axlsx'
 
 class AppTrackersController < ProvidersController
 	before_action :set_providers, only: [:index]
 	before_action :set_provider, only: [:upload_documents, :delete_uploaded_document, :view_uploaded_documents]
 
 	def index
-	  @provider_personal_information = ProviderPersonalInformation.where.not(cred_status: 'no-application').paginate(per_page: 10, page: params[:page] || 1)
+	  @provider_personal_information = ProviderPersonalInformation.includes(
+	  	:provider_attest,
+	    :provider_source,
+	    :rva_informations,
+	    :provider_personal_attempts,
+	    :provider_personal_docs_receive,
+	    :provider_personal_docs_uploaded_documents,
+	    :practice_informations,
+	    provider_attest: :practice_informations
+	  ).where.not(cred_status: 'no-application').paginate(per_page: 10, page: params[:page] || 1)
 	  @provider_personal_attempt = ProviderPersonalAttempt.new
 	  @provider_personal_docs_receive = ProviderPersonalDocsReceive.new
 	  @practice_information = PracticeInformation.new
 	  @practice_information = PracticeInformation.paginate(per_page: 10, page: params[:page] || 1)
 	  @client_organizations = ClientOrganization.paginate(per_page: 10, page: params[:page] || 1)
-
+	  @states = State.all
 	  # Filtering for @app_trackers
 	 if params[:user_search].present?
 		  search_term = "%#{params[:user_search]}%"
@@ -47,9 +57,9 @@ class AppTrackersController < ProvidersController
 		@client_organizations = @client_organizations.where(organization_name: params[:organization_name]) if params[:organization_name].present?	  
 
 	  if @practice_information.exists? && @client_organizations.exists? && @provider_personal_information.exists?
-		  # Results found
-		else
-		  flash[:alert] = "No results found"
+		#   # Results found
+		# else
+		#   flash[:alert] = "No results found"
 		end
 	end
 
@@ -174,6 +184,20 @@ class AppTrackersController < ProvidersController
       temp_file.unlink
     end
   end
+
+  # download the app-tracker data into excel
+  def export_excel
+	  providers = AppTrackers::ProviderQuery.new(params).call
+	  exporter = AppTrackers::Exporters::ProviderExcelExporter.new(providers)
+	  package  = exporter.generate
+
+	  timestamp = Time.current.strftime("%Y%m%d_%H%M")
+	  send_data package.to_stream.read,
+	            filename: "AppTrackerData_#{timestamp}.xlsx",
+	            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	end
+
+
 
 	protected
 

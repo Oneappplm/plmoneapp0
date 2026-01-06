@@ -65,11 +65,11 @@
                                 </div>
                                 <div class="col-12 m-2">
                                   <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" data-information-id="<%= @last_rva_information&.id %>" data-personal-information-id="<%= @provider_personal_information&.id %>" data-provider-dea-id="<%= provider_dea.id %>" id="skip-rva-btn" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>">
-                                        Skip RVA
+                                    Skip RVA
                                   </button>
                                 </div>
                                 <div class="col-12 m-2">
-                                  <button class="btn text-danger <%= @dea_rva_information_completed.present? ? '' : 'd-none' %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" id="re-rva">
+                                  <button class="btn text-danger <%= provider_dea.rva_informations.pluck(:restart_audit).include?(false) ? 'd-none' : '' %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" id="re-rva">
                                     Need ReRVA
                                   </button>
                                 </div>
@@ -99,9 +99,9 @@
         <% @provider_cds&.each do |provider_cd| %>
           <%= form_with model: provider_cd, url: mhc_provider_cd_path(provider_cd), method: :put, local: true do |f| %>
             <%= f.hidden_field :caqh_provider_attest_id %>
-            <%= f.hidden_field :provider_attest_id %>
+            <%= f.hidden_field :provider_attest_id, value: params[:id] %>
 
-            <div class="form-row row page-applicable mt-3">
+            <div class="container page-applicable mt-3">
               <div class="col-xl-12">
                 <div class="card other-name-card">
                   <div class="card-body">
@@ -177,7 +177,7 @@
             <%= f.hidden_field :caqh_provider_attest_id, value: @new_provider_cd.caqh_provider_attest_id %>
             <%= f.hidden_field :provider_attest_id, value: @new_provider_cd.provider_attest_id %>
 
-            <div class="form-row row page-applicable mt-3">
+            <div class="container page-applicable mt-3">
               <div class="col-xl-12">
                 <div class="card other-name-card">
                   <div class="card-body">
@@ -246,7 +246,7 @@
           });
         </script>
 
-        <div class="form-row row page-applicable mt-3">
+        <div class="container page-applicable mt-3">
             <div class="col-xl-12">
                 <%= form_for(@personal_information, url: mhc_provider_personal_information_path(page_tab: 'registration')) do |f| %>
                     <%= f.hidden_field :caqh_provider_attest_id %>
@@ -316,7 +316,7 @@
           <%= form_with model: provider_medicare, url: mhc_provider_medicare_path(provider_medicare), method: :put, local: true do |f| %>
             <%= f.hidden_field :provider_attest_id %>
 
-            <div class="form-row row page-applicable mt-3">
+            <div class="container page-applicable mt-3">
               <div class="col-xl-12">
                 <div class="card other-name-card">
                   <div class="card-body">
@@ -380,7 +380,7 @@
             <%= form_with model: @new_provider_medicare, url: mhc_provider_medicares_path, method: :post, local: true do |f| %>
               <%= f.hidden_field :provider_attest_id, value: @new_provider_medicare&.provider_attest_id || "" %>
 
-              <div class="form-row row page-applicable mt-3">
+              <div class="container page-applicable mt-3">
                 <div class="col-xl-12">
                   <div class="card other-name-card">
                     <div class="card-body">
@@ -438,7 +438,7 @@
           </script>
         <% if @provider_medicaids&.any? %>
           <% @provider_medicaids.each do |provider_medicaid| %>
-          <div class="form-row row page-applicable mt-3">
+          <div class="container page-applicable mt-3">
             <div class="col-xl-12">
                 <div class="card other-name-card">
                     <div class="card-body">
@@ -514,7 +514,7 @@
           </script>
         <% else %>
           <!-- Show the form directly if no records exist -->
-            <div class="form-row row page-applicable mt-3">
+            <div class="container page-applicable mt-3">
               <div class="col-xl-12">
                   <div class="card other-name-card">
                       <div class="card-body">
@@ -545,7 +545,7 @@
         <% end %>
         <% if @provider_militaries&.any? %>
           <% @provider_militaries.each do |provider_military| %>
-            <div class="form-row row page-applicable mt-3">
+            <div class="container page-applicable mt-3">
               <div class="col-xl-12">
                 <div class="card other-name-card">
                   <div class="card-body">
@@ -721,7 +721,7 @@
 
           <!-- Form for adding a new Military Service Info -->
           <div id="new-military-form" style="display: none;">
-            <div class="form-row row page-applicable mt-3">
+            <div class="container page-applicable mt-3">
               <div class="col-xl-12">
                 <div class="card other-name-card">
                   <div class="card-body">
@@ -760,15 +760,15 @@
                       </div>
                       <div class="form-row">
                         <label>If Reserve, anticipated date of separation from reserve duty:</label>
-                        <div class="col-xl-6">
+                        <div class="col-xl-6 mt-2 mb-2">
                           <%= f.text_field :reserve_separation_month, class: "form-control", placeholder: "Month" %>
                         </div>
-                        <div class="col-xl-6">
+                        <div class="col-xl-6 mt-2 mb-2">
                           <%= f.text_field :reserve_separation_year, class: "form-control", placeholder: "Year" %>
                         </div>
                       </div>
 
-                      <div class="form-group">
+                      <div class="form-group mt-3 mb-3">
                         <%= f.label :currently_active_reserve, "Are You Currently on Active or Reserve Military Duty?" %>
                         <%= f.check_box :currently_active_reserve %>
                       </div>
@@ -893,7 +893,7 @@
             });
           </script>
         <% else %>
-            <div class="form-row row page-applicable mt-3">
+            <div class="container page-applicable mt-3">
               <div class="col-xl-12">
                 <div class="card other-name-card">
                   <div class="card-body">
@@ -933,15 +933,15 @@
 
                       <div class="form-row">
                         <label>If Reserve, anticipated date of separation from reserve duty:</label>
-                        <div class="col-xl-6">
+                        <div class="col-xl-6 mt-2 mb-2">
                           <%= f.text_field :reserve_separation_month, class: "form-control", placeholder: "Month" %>
                         </div>
-                        <div class="col-xl-6">
+                        <div class="col-xl-6 mt-2 mb-2">
                           <%= f.text_field :reserve_separation_year, class: "form-control", placeholder: "Year" %>
                         </div>
                       </div>
 
-                      <div class="form-group">
+                      <div class="form-group mt-3 mb-3">
                         <%= f.label :currently_active_reserve, "Are You Currently on Active or Reserve Military Duty?" %>
                         <%= f.check_box :currently_active_reserve %>
                       </div>
@@ -1041,7 +1041,7 @@
                             <div class="form-row row mt-3">
                               <div class="col-xl-12">
                                 <%= f.label :comments, "Please list any comments:" %>
-                                <%= f.text_area :comments, class: "form-control" %>
+                                <%= f.text_area :comments, class: "form-control border-dark" %>
                               </div>
                             </div>
                           </div>
@@ -1248,7 +1248,7 @@
                       <div class="form-row d-flex justify-content-end gap-2 mt-3">
                         <button class="btn btn-primary py-1" type="button">View Received Images</button>
                         <button class="btn btn-primary py-1" type="button" id="save-request-button">Save Request</button>
-                        <button class="btn btn-primary py-1" type="button">Restart Request</button>
+                        <button class="btn btn-primary py-1" type="button" id="restart-request-btn">Restart Request</button>
                       </div>
                       <hr class="form-hr">
                       <div class="row">
@@ -1257,7 +1257,22 @@
                         </div>
                         <div class="col-md-9">
                           <div class="row justify-content-end" id="crawler-link">
-                            
+                            <% @dea_webcrawler_logs&.each do |crawler_log| %>
+                              <div class="col-md-6">
+                                <div class="text-decoration-underline">
+                                  <% file_url = crawler_log.filepath.url %>
+                                  <% file_name = File.basename(file_url.split('?').first) %>
+
+                                  <%= link_to file_name, file_url, target: '_blank' %>
+                                </div>
+                              </div>
+                              <div class="col-md-3">
+                                <div class="date-time d-flex">
+                                  <span><%= crawler_log.created_at.strftime('%Y/%m/%d') %></span>
+                                  <span class="ms-2"><%= crawler_log.created_at.strftime('%H:%M') %></span>
+                                </div>
+                              </div>
+                            <% end %>
                           </div>
                         </div>
                       </div>
@@ -1745,7 +1760,7 @@
                       <div class="col-md-6">
                           <div class="text-decoration-underline">
                               <a href="${crawlerData.filepath.url}" target="_blank">
-                                  ${crawlerData.filepath.url.split('/').pop()}
+                                  ${crawlerData.filepath.url.split('?')[0].split('/').pop()}
                               </a>
                           </div>
                       </div>
@@ -1778,8 +1793,18 @@
             $('.request-comment')[0].value = data.comments;
             $('.loading-overlay').hide();
           },
-          error: function () {
-          },
+          error: function (xhr) {
+            $('.loading-overlay').hide();
+
+            try {
+              const response = JSON.parse(xhr.responseText);
+
+              // Show backend message
+              alert(response.message || "Webcrawler failed.");
+            } catch (e) {
+              alert("Webcrawler failed due to an unknown error.");
+            }
+          }
         });
       });
       $('#verification-btn').click(function(e) {
@@ -1833,11 +1858,14 @@
           data: `${auditFormData}&section=audit`, // Combine serialized data
           success: function(response) {
             const data = response.rva_information;
-            $('input[name="rva_information[audit_status]"]').value = data.audit_status;
-            $('#rva_information_audit_date')[0].innerHTML = data.audit_date;
-            $('#rva_information_auditor')[0].innerHTML = data.auditor;
-            $('#rva_information_audit_comments')[0].value = data.audit_comments;
-            $('#re-rva')[0].classList.remove('d-none');
+            $('input[name="rva_information[audit_status]"]').val(data.audit_status);
+            $('#rva_information_audit_date').text(data.audit_date);
+            $('#rva_information_auditor').text(data.auditor);
+            $('#rva_information_audit_comments').val(data.audit_comments);
+            $('#re-rva').removeClass('d-none');
+
+            // Reload page after updating the UI
+            window.location.reload();
           },
           error: function(xhr, status, error) {
             console.error('Error:', error);
@@ -1876,6 +1904,35 @@
           alert('An error occurred.')
           $('.loading-overlay').hide();
       });
+  });
+   // restart request for quality audit
+  document.getElementById('restart-request-btn')?.addEventListener('click', function (e) {
+    e.preventDefault();
+
+    var providerDeaId = $('input[name="provider_dea_id"]').val();
+
+    if (!providerDeaId) return;
+
+    document.querySelector('.loading-overlay').style.display = 'block';
+
+    fetch('/webscrapers/delete_registration_request', {
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ provider_dea_id: providerDeaId })
+    })
+    .then(response => response.json())
+    .then(data => {
+      document.querySelector('.loading-overlay').style.display = 'none';
+      document.getElementById('re-rva').classList.remove('d-none');
+      window.location.reload();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      document.querySelector('.loading-overlay').style.display = 'none';
+    });
   });
   document.addEventListener('DOMContentLoaded', function() {
     const qualityAuditModal = document.getElementById('QAModal');

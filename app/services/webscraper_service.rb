@@ -56,42 +56,133 @@ class WebscraperService < ApplicationService
 
 	def save_screenshot
 	  if crawler_folder_name == 'pals'
-	    # Scroll to bottom and resize to full height for PALS
 	    crawler.execute_script('window.scrollTo(0, document.body.scrollHeight);')
 	    sleep 2
 	    height = crawler.execute_script("return document.body.scrollHeight")
 	    crawler.manage.window.resize_to(1024, height)
 	  else
-	    # Default behavior for all other scrapers
 	    crawler.execute_script('window.scrollTo(0, 0);')
 	    crawler.manage.window.resize_to(1024, 1024)
 	  end
 
-	  # Save screenshot
-	  save_path = PUBLIC_PATH.join(crawler_folder_name, SCREENSHOT_FILENAME)
-	  crawler.save_screenshot(save_path)
+	  # Define base paths
+	  base_path = Rails.root.join('public', 'webscrape', crawler_folder_name)
+	  FileUtils.mkdir_p(base_path) unless Dir.exist?(base_path)
 
-	  # Generate PDF from screenshot
+	  screenshot_path = base_path.join('screenshot.png')
+	  pdf_path        = base_path.join('screenshot.pdf')
+
+	  # === Step 1: Save screenshot
+	  crawler.save_screenshot(screenshot_path)
+
+	  # === Step 2: Convert screenshot to PDF
 	  pdf = Prawn::Document.new
-	  png_path = Rails.root.join('public', 'webscrape', crawler_folder_name, 'screenshot.png')
-	  pdf.image png_path, fit: [500, 500], position: :center
+	  pdf.image screenshot_path, fit: [500, 500], position: :center
+	  pdf.render_file(pdf_path)
 
-	  # Save PDF
-	  pdf_filename = 'screenshot.pdf'
-	  pdf_path = Rails.root.join('public', 'webscrape', crawler_folder_name, pdf_filename)
-	  pdf.render_file pdf_path
+	  # === Step 3: Log to database or attach (if required)
+	  WebcrawlerLog.create!(
+	    crawler_type: crawler_folder_name.upcase,
+	    file_path: pdf_path.to_s.gsub(Rails.root.to_s + '/', ''),
+	    status: 'success'
+	  )
 
-	  # Create WebcrawlerLog or log output (if needed)
-	  filepath = ['public', 'webscrape', crawler_folder_name, pdf_filename].join('/')
-	  extension = File.extname(pdf_path)
-	  crawl_type = crawler_folder_name.upcase
-	  
-	rescue => exception
-	  # Log failure if an error occurs
+	  # === Step 4: Cleanup temporary files
+	  [screenshot_path, pdf_path].each do |path|
+	    if File.exist?(path)
+	      File.delete(path)
+	      Rails.logger.info("🗑️ Deleted temp file: #{path}")
+	    else
+	      Rails.logger.info("⚠️ Temp file not found: #{path}")
+	    end
+	  end
+
+	rescue => e
 	  WebcrawlerLog.create(
 	    crawler_type: crawler_folder_name.upcase,
 	    status: 'failed'
 	  )
+	  Rails.logger.error("❌ Screenshot failed for #{crawler_folder_name}: #{e.message}")
+	  nil
+	end
+
+	def save_oig_screenshot
+	  # === Step 0: Calculate full page size
+	  scroll_height = crawler.execute_script(<<~JS)
+	    return Math.max(
+	      document.body.scrollHeight,
+	      document.documentElement.scrollHeight,
+	      document.body.offsetHeight,
+	      document.documentElement.offsetHeight,
+	      document.body.clientHeight,
+	      document.documentElement.clientHeight
+	    );
+	  JS
+
+	  scroll_width = crawler.execute_script(<<~JS)
+	    return Math.max(
+	      document.body.scrollWidth,
+	      document.documentElement.scrollWidth,
+	      document.body.offsetWidth,
+	      document.documentElement.offsetWidth,
+	      document.body.clientWidth,
+	      document.documentElement.clientWidth
+	    );
+	  JS
+
+	  # Scroll to top before resize (important)
+	  crawler.execute_script('window.scrollTo(0, 0);')
+	  sleep 0.3
+
+	  # Resize browser to FULL page
+	  crawler.manage.window.resize_to(scroll_width, scroll_height)
+	  sleep 0.5
+
+	  # === Step 1: Define base paths
+	  base_path = Rails.root.join('public', 'webscrape', crawler_folder_name)
+	  FileUtils.mkdir_p(base_path) unless Dir.exist?(base_path)
+
+	  screenshot_path = base_path.join('screenshot.png')
+	  pdf_path        = base_path.join('screenshot.pdf')
+
+	  # === Step 2: Save FULL PAGE screenshot
+	  crawler.save_screenshot(screenshot_path)
+
+	  # === Step 3: Add timestamp watermark
+	  human_date = Time.current.in_time_zone('Pacific Time (US & Canada)').strftime('%Y-%m-%d, %I:%M %p')
+
+	  image = MiniMagick::Image.open(screenshot_path)
+	  image.combine_options do |c|
+	    c.gravity "SouthEast"
+	    c.fill "black"
+	    c.pointsize 16
+	    c.draw "text 20,10 '#{human_date}'"
+	  end
+	  image.write(screenshot_path)
+
+	  # === Step 4: Convert screenshot → PDF (auto-scale)
+	  pdf = Prawn::Document.new(page_layout: :portrait)
+	  pdf.image screenshot_path, fit: [540, 720], position: :center
+	  pdf.render_file(pdf_path)
+
+	  # === Step 5: Log success
+	  WebcrawlerLog.create!(
+	    crawler_type: crawler_folder_name.upcase,
+	    file_path: pdf_path.to_s.gsub(Rails.root.to_s + '/', ''),
+	    status: 'success'
+	  )
+
+	  # === Step 6: Cleanup
+	  [screenshot_path, pdf_path].each do |path|
+	    File.delete(path) if File.exist?(path)
+	  end
+
+	rescue => e
+	  WebcrawlerLog.create(
+	    crawler_type: crawler_folder_name.upcase,
+	    status: 'failed'
+	  )
+	  Rails.logger.error("❌ Screenshot failed for #{crawler_folder_name}: #{e.message}")
 	  nil
 	end
 

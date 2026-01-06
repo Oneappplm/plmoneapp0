@@ -49,7 +49,7 @@ class PracticeInformation < ApplicationRecord
   validates :provider_attest_id, presence: true
 
   def complete_address
-    "#{address}, #{city}, #{state} #{zip}"
+    "#{address} #{city} #{state} #{zip}"
   end
 
   COUNTRY = 

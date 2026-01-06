@@ -2,41 +2,31 @@ class Mhc::PdfGenerationQueuesController < ApplicationController
   before_action :set_queue, only: [:pause, :destroy, :requeue]
 
   def create
-    provider_id = params[:selected_files][0][:provider_id]
-    selected_links = params[:selected_files] || []
-    uploaded_file = params[:file] 
+    provider_id     = params[:selected_files][0][:provider_id]
+    selected_links  = params[:selected_files] || []
+    uploaded_file   = params[:file]
 
     provider = ProviderPersonalInformation.find(provider_id)
     return render json: { error: "Provider not found" }, status: :unprocessable_entity unless provider
 
-    # Create queue
     queue = provider.pdf_generation_queues.create!(
       status: "queued",
       queued_date: Time.current,
-      message: "Processing started"
+      message: "Processing started",
+      user_id: current_user.id,
+      merge_enqueued: false
     )
 
-    # Add Verified Profile if selected
+    # Add queue items
     if selected_links.any? { |link| link["file_name"] == "Verified Profile" }
-      queue.pdf_queue_items.create!(
-        file_name: "Verified Profile",
-        file_path: "verified_profile",
-        status: "queued"
-      )
+      queue.pdf_queue_items.create!(file_name: "Verified Profile", file_path: "verified_profile", status: "queued")
     end
 
-    # Process selected file links
     selected_links.each do |link|
-      next if link["file_name"] == "Verified Profile"  
-
-      queue.pdf_queue_items.create!(
-        file_name: File.basename(link['file_url']),
-        file_path: link['file_url'],
-        status: "queued"
-      )
+      next if link["file_name"] == "Verified Profile"
+      queue.pdf_queue_items.create!(file_name: File.basename(link["file_url"]), file_path: link["file_url"], status: "queued")
     end
 
-    # Handle file upload
     if uploaded_file.present?
       file_path = Rails.root.join("public/uploads", uploaded_file.original_filename)
       File.open(file_path, "wb") { |f| f.write(uploaded_file.read) }
@@ -44,18 +34,15 @@ class Mhc::PdfGenerationQueuesController < ApplicationController
       queue.pdf_queue_items.create!(
         file_name: uploaded_file.original_filename,
         file_path: "/uploads/#{uploaded_file.original_filename}",
-        status: "queued"
+        status: "queued",
+        temporary: true
       )
     end
 
-    # Start PDF Generation Job
-    PdfGenerationJob.set(wait: 10.seconds).perform_later(queue.id, provider)
+    # ✅ Enqueue ONE job for the whole queue
+    PdfGenerationQueueJob.perform_later(queue.id)
 
-    render json: {
-      message: "Your request is queued. Number: #{queue.queue_number}",
-      queue_number: queue.id,
-      queue_status: queue.status
-    }
+    render json: { message: "Your request is queued", queue_number: queue.id, queue_status: queue.status }
   end
 
   # delete saved profile
