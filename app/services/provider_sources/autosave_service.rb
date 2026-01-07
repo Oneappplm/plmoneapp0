@@ -268,6 +268,7 @@ module ProviderSources
       "practice_clia_radiology" => :radiology_services,
       "midlevel_practitioner_field" => :any_allied_health_practitioner,
       "radiology_services" => :radiology_services,
+      "radiology_services" => :is_class_a,
       "practice_partner" => :partners_flag,
       "practice_partners_cover" => :any_cover_practitioner,
     }.freeze
@@ -331,6 +332,7 @@ module ProviderSources
       "practice_partners_last_name" => :associate_last_name,
       "practice_partners_middle_name" => :associate_middle_initial,
       "practice_partners_degree" => :degree_degree_abbreviation,
+      "practice_partners_license_number" => :license_number,
       "practice_partners_license_number" => :license_number,
       "practice_partners_cover" => :coverage_flag,
       "practice_partners_specialty" => :provider_type_provider_type_abbreviation,
@@ -417,8 +419,8 @@ module ProviderSources
 
         if record.has_attribute?(:provider_attest_id)
           record.provider_attest_id ||= attest.id
-        elsif record.has_attribute?(:provider_personal_information_id)
-          record.provider_personal_information_id ||= attest.provider_personal_information_id
+        else
+          record.provider_personal_information_id = attest
         end
 
         if model_class.name == "ProfessionalOrganization"

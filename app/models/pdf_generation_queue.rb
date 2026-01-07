@@ -5,7 +5,7 @@ class PdfGenerationQueue < ApplicationRecord
 
   before_create :generate_queue_number
 
-  enum status: { queued: "queued", processing: "processing", sent: "sent", error: "error", completed: "completed" }
+  enum status: { queued: "queued", sent: "sent", error: "error", completed: "completed" }
 
   def generate_queue_number
     self.queue_number = rand(100000..999999).to_s

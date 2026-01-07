@@ -4,11 +4,8 @@ class DocumentUploader < CarrierWave::Uploader::Base
   # include CarrierWave::MiniMagick
 
   # Choose what kind of storage to use for this uploader:
-  if Rails.env.production?
-    storage :fog
-  else
-    storage :file
-  end
+  # storage :file
+  storage :fog
 
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
@@ -40,7 +37,7 @@ class DocumentUploader < CarrierWave::Uploader::Base
   # For images you might use something like this:
   def extension_allowlist
     # %w(jpg jpeg gif png docx doc pdf xls xlsx ppt pptx csv txt rtf zip)
-    %w(docx doc pdf xls xlsx ppt pptx csv txt rtf zip png jpeg jpg tif tiff)
+    %w(docx doc pdf xls xlsx ppt pptx csv txt rtf zip png jpeg jpg)
   end
 
   # Override the filename of the uploaded files:

@@ -23,12 +23,9 @@ class ProviderAttest < ApplicationRecord
   has_many :provider_certifications, dependent: :destroy
   has_many :provider_criminal_actions, dependent: :destroy
   has_many :provider_deas, dependent: :destroy
-  has_many :provider_employments, dependent: :destroy
+  has_many :provider_employments
   has_many :provider_degrees, dependent: :destroy
   has_many :provider_disclosures, dependent: :destroy
-  accepts_nested_attributes_for :provider_disclosures, reject_if: proc { |attrs|
-    attrs['disclosure_answer_flag'].blank? && attrs['disclosure_explanation'].blank?
-  }
   has_many :provider_educations, dependent: :destroy
   has_many :provider_education_associates, dependent: :destroy
   has_many :provider_hospital_associates, dependent: :destroy
@@ -62,11 +59,9 @@ class ProviderAttest < ApplicationRecord
   has_many :provider_personal_docs_uploaded_documents, class_name: 'ProviderPersonalDocsUpload', dependent: :destroy
   has_one :provider_personal_docs_receive, dependent: :destroy
   has_many :provider_personal_uploaded_docs, dependent: :destroy
-  has_one :provider_npdbs, class_name: 'ProviderNpdbs'
+  has_many :provider_npdbs, dependent: :destroy
   has_many :practice_information_educations, dependent: :destroy
   has_many :provider_licensures, dependent: :destroy
   has_many :certifications, dependent: :destroy
   has_many :professional_organizations, dependent: :destroy
-  has_many :provider_personal_information_peer_refs, dependent: :destroy
-  has_many :provider_personal_information_facilities, dependent: :destroy
 end

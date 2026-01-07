@@ -54,8 +54,8 @@
 							<div class="col-xl-6 ">
 								<%= f.label :insurance_carrier_name, "Carrier Name" %>
 								<div class="input-group gap-1">
-									<%= f.text_field :insurance_carrier_name, class: "form-control form-control-lg", id: "main-carrier-name" %>
-									<button type="button" class="btn btn-primary" id="openModal">Search</button>
+									<%= f.text_field :insurance_carrier_name, class: "form-control form-control-lg" %>
+									<button class="btn btn-primary" type="button">Search</button>
 								</div>
 							</div>
 							<div class="col-xl-6">
@@ -63,145 +63,6 @@
 								<%= f.text_field :address, class: "form-control form-control-lg", placeholder: "Type here.." %>
 							</div>
 						</div>
-						<!-- MODAL START -->
-						<!-- MODAL START -->
-						<div id="myModal" class="modal">
-							<div class="modal-content">
-								<p>
-									To search for an existing carrier, please select the Country, State/Province, City and Carrier Name.
-									If your Carrier Name is not listed, click <b>New</b> and complete the details. 
-									Click <b>Save</b> and then <b>Close</b> to populate the data in the main form.
-								</p>
-
-								<div class="search-group">
-									<!-- Country -->
-									<div class="form-group">
-										<label>By Country:</label>
-										<%= f.select :country_country_name,
-											options_for_select(ISO3166::Country.all.map { |c| [c.translations['en'] || c.name, c.alpha2] }, f.object.country_country_name),
-											{ include_blank: "Select Country" },
-											class: "form-control", id: "modal-country" %>
-									</div>
-
-									<!-- State -->
-									<div class="form-group">
-										<%= f.label :state, "By State/Province:" %>
-										<%= f.select :state,
-													[],
-													{ include_blank: "Select State" },
-													class: "form-control",
-													id: "state-select" %>
-									</div>
-
-									<!-- City Dropdown -->
-									<div class="form-group">
-										<label for="modal-city-select">By City:</label>
-										<%= f.select :city,
-													options_for_select(
-														ProviderInsuranceCoverage.where(form_type: 'popup')
-																										.distinct
-																										.pluck(:city)
-																										.compact
-																										.sort,
-														f.object.city
-													),
-													{ include_blank: "Select City" },
-													class: "form-control",
-													id: "modal-city-select" %>
-									</div>
-
-									<!-- Carrier -->
-									<div class="form-group">
-										<label>By Carrier:</label>
-										<input type="text" id="carrier-search-input" class="form-control mb-2" placeholder="Type to search Carrier...">
-
-										<%= f.select :insurance_carrier_name,
-											options_for_select(
-												ProviderInsuranceCoverage.where(form_type: 'popup').map { |c|
-													[
-														c.insurance_carrier_name,
-														c.insurance_carrier_name,
-														{
-															"data-city": c.city,
-															"data-address": c.address,
-															"data-suite": c.address2,
-															"data-additional-address": c.additional_address,
-															"data-state": c.state,
-															"data-postal": c.postal_code,
-															"data-phone": c.phone_number,
-															"data-fax": c.fax_number,
-															"data-email": c.email_address,
-															"data-country": c.country_country_name || ""   # <--- Add this
-														}
-													]
-												},
-												f.object.insurance_carrier_name
-											),
-											{ include_blank: "Select Carrier" },
-											class: "form-control", id: "modal-carrier-select" %>
-										<button type="button" class="btn btn-primary mt-2" id="carrier-search-btn">Search</button>
-									</div>
-								</div>
-
-								<!-- Carrier Information -->
-								<div class="form-section">
-									<div class="form-section-header">Carrier Information</div>
-
-									<div class="form-group">
-										<label>Carrier Name:</label>
-										<%= f.text_field :insurance_carrier_name, class: "form-control", id: "modal-carrier-name" %>
-									</div>
-									<div class="form-group">
-										<label>Address:</label>
-										<%= f.text_field :address, class: "form-control", id: "modal-address" %>
-									</div>
-									<div class="form-group">
-										<label>Suite/Dept/Mail Stop:</label>
-										<%= f.text_field :address2, class: "form-control", id: "modal-address2" %>
-									</div>
-									<div class="form-group">
-										<label>Additional Address:</label>
-										<%= f.text_field :additional_address, class: "form-control", id: "modal-additional-address" %>
-									</div>
-									<div class="form-group">
-										<label>City:</label>
-										<%= f.text_field :city, class: "form-control", id: "modal-city" %>
-									</div>
-									<div class="form-group">
-										<label>Country:</label>
-										<%= f.text_field :country_country_name, class: "form-control", id: "modal-country-name" %>
-									</div>
-									<div class="form-group">
-										<label>State:</label>
-										<%= f.text_field :state, class: "form-control", id: "modal-state" %>
-									</div>
-									<div class="form-group">
-										<label>Postal Code:</label>
-										<%= f.text_field :postal_code, class: "form-control", id: "modal-postal-code" %>
-									</div>
-									<div class="form-group">
-										<label>Phone:</label>
-										<%= f.text_field :phone_number, class: "form-control", id: "modal-phone" %>
-									</div>
-									<div class="form-group">
-										<label>Fax:</label>
-										<%= f.text_field :fax_number, class: "form-control", id: "modal-fax" %>
-									</div>
-									<div class="form-group">
-										<label>Email:</label>
-										<%= f.text_field :email_address, class: "form-control", id: "modal-email" %>
-									</div>
-								</div>
-
-								<div class="form-actions mt-3 d-flex justify-content-center gap-3">
-									<button type="button" class="btn btn-success" id="new-btn">New</button>
-									 <%= f.submit 'Save', class: 'btn btn-success', name: 'commit', value: 'save', id: 'popup-save-btn', style: 'display:none;' %>
-									<button type="button" class="btn btn-secondary" id="modal-close-btn">Close</button>
-								</div>
-							</div>
-						</div>
-						<!-- MODAL END -->
-     
 						<div class="form-row row">
 							<div class="col-xl-6">
 								<%= f.label :address2, "Suite/Dept/Mail Stop:" %>
@@ -219,14 +80,13 @@
 							</div>
 							<div class="col-xl-6">
 								<%= f.label :country_country_name, "Country" %>
-								<%= f.text_field :country_country_name, class: "form-control" %>
+								<%= f.text_field :country_country_name, class: "form-control form-control-lg", placeholder: "Type here.." %>
 							</div>
 						</div>
 						<div class="form-row row">
 							<div class="col-xl-4">
 								<%= f.label :state, "State:" %>
-								<%# <%= f.collection_select :state, State.all, :id, :name, {}, class: "form-control", id: "practice_info_state" %> 
-								<%= f.text_field :state,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
+								<%= f.collection_select :state, State.all, :id, :name, { include_blank: "Select State" }, class: "form-select form-select-lg" %>
 							</div>
 							<div class="col-xl-4">
 								<%= f.label :postal_code, "Zip/Postal Code:" %>
@@ -253,18 +113,8 @@
 								<%= f.text_field :email_address, class: "form-control form-control-lg", placeholder: "Type here.." %>
 							</div>
 						</div>
-						<div class="form-row row mt-3 mb-3">
-
-							<div class="col-xl-3">
-								<%= f.label :policy_holder, "Policy Holder:" %>
-								<%= f.text_field :policy_holder, class: "form-control form-control-lg", placeholder: "Type here.." %>
-							</div>
-							<div class="col-xl-3">
-								<%= f.label :policy_number, "Policy Number:" %>
-								<%= f.text_field :policy_number, class: "form-control form-control-lg", placeholder: "Type here.." %>
-							</div>
-
-							<div class="col-xl-3">
+						<div class="form-row row">
+							<div class="col-xl-6">
 							  <%= f.label :effective_date, "Original Effective Date:", class: "" %>
 							  <%= f.text_field :effective_date, 
 							                   class: "form-control form-control-lg", 
@@ -273,7 +123,7 @@
 							                   onblur: "this.type='text'" %>
 							</div>
 
-							<div class="col-xl-3">
+							<div class="col-xl-6">
 							  <%= f.label :end_date, "Expiration Date:", class: "" %>
 							  <div class="input-group gap-3 d-flex align-items-center">
 							    <%= f.text_field :end_date, 
@@ -283,17 +133,17 @@
 							                     onblur: "this.type='text'",
 							                     id: "expiredate" %>
 							    <div class="form-check">
-									  <%= f.check_box :prof_liability_does_not_expire, 
-									        { class: "form-check-input border-dark", id: "present-switch" }, 
-									        true, false %>
-									  <%= f.label :prof_liability_does_not_expire, "Does Not Expire", class: "form-check-label" %>
-									</div>
+							      <%= check_box_tag :prof_liability_does_not_expire, "1", false, 
+							                        class: "form-check-input", 
+							                        id: "present-switch" %>
+							      <%= label_tag :prof_liability_does_not_expire, "Does Not Expire", class: "form-check-label" %>
+							    </div>
 							  </div>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="form-row row mb-2 mt-3">
+				<div class="form-row row mb-2">
 					<div class="col-xl-4">
 						<%= f.label :claim_amount, "Per Claim Amount:" %>
 						<%= f.text_field :claim_amount, class: "form-control form-control-lg", placeholder: "Type here.." %>
@@ -384,7 +234,7 @@
 
 				<div class="form-row row justify-content-end">
 					<div class="col-xl-3">
-            <%= f.submit 'Save', class: 'btn btn-primary', name: 'commit', value: 'Create', id: 'main-save-btn' %>
+						<%= f.submit class: "btn btn-primary form-control mt-2" %>
 					</div>
 				</div>
 			</div>
@@ -426,279 +276,4 @@
 	  // Initial state check
 	  toggleExclusions();
 	});
-
-	document.addEventListener("DOMContentLoaded", function () {
-		const modal = document.getElementById("myModal");
-		const openBtn = document.getElementById("openModal");
-		const closeBtn = document.getElementById("modal-close-btn");
-		const newBtn = document.getElementById("new-btn");
-		const saveBtn = document.getElementById("popup-save-btn");
-
-		// --- Open modal
-		openBtn?.addEventListener("click", () => modal.style.display = "block");
-
-		// --- Close modal when clicked outside
-		window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
-
-		// --- Carrier Search ---
-		const searchInput = document.getElementById("carrier-search-input");
-		const carrierSelect = document.getElementById("modal-carrier-select");
-		const searchBtn = document.getElementById("carrier-search-btn");
-
-		if (searchInput && carrierSelect && searchBtn) {
-			// Keep original options safely cloned once
-			const allOptions = Array.from(carrierSelect.options).map(opt => opt.cloneNode(true));
-
-			searchBtn.addEventListener("click", () => {
-				const searchValue = searchInput.value.toLowerCase().trim();
-
-				// Clear current options
-				carrierSelect.innerHTML = "";
-
-				// Always keep blank option
-				const blankOption = document.createElement("option");
-				blankOption.value = "";
-				blankOption.text = "Select Carrier";
-				carrierSelect.appendChild(blankOption);
-
-				// Filter options
-				const filtered = allOptions.filter(opt => 
-					opt.value !== "" && (searchValue === "" || opt.text.toLowerCase().includes(searchValue))
-				);
-
-				if (filtered.length > 0) {
-					filtered.forEach(opt => carrierSelect.appendChild(opt.cloneNode(true)));
-				} else {
-					// Show alert only once
-					if (!carrierSelect.dataset.alertShown) {
-						alert("No matching carrier found.");
-						carrierSelect.dataset.alertShown = "true"; // mark that alert has shown
-					}
-				}
-
-				// Reset selection
-				carrierSelect.value = "";
-
-				// Reset alert flag after next search click
-				setTimeout(() => delete carrierSelect.dataset.alertShown, 0);
-			});
-
-			// --- Auto fill modal fields on carrier change
-			carrierSelect.addEventListener("change", function () {
-				const selected = this.options[this.selectedIndex];
-				if (!selected) return;
-
-				document.getElementById("modal-carrier-name").value = selected.text;
-				document.getElementById("modal-address").value = selected.dataset.address || "";
-				document.getElementById("modal-address2").value = selected.dataset.suite || "";
-				document.getElementById("modal-additional-address").value = selected.dataset.additionalAddress || "";
-				document.getElementById("modal-city").value = selected.dataset.city || "";
-				document.getElementById("modal-state").value = selected.dataset.state || "";
-				document.getElementById("modal-postal-code").value = selected.dataset.postal || "";
-				document.getElementById("modal-phone").value = selected.dataset.phone || "";
-				document.getElementById("modal-fax").value = selected.dataset.fax || "";
-				document.getElementById("modal-email").value = selected.dataset.email || "";
-				document.getElementById("modal-country-name").value = selected.dataset.country || "";
-			});
-		}
-
-		// --- Copy Modal → Main Form
-		function fillMainFormFromModal() {
-			const fieldMap = {
-				"provider_insurance_coverage_address": "modal-address",
-				"provider_insurance_coverage_address2": "modal-address2",
-				"provider_insurance_coverage_additional_address": "modal-additional-address",
-				"provider_insurance_coverage_city": "modal-city",
-				"provider_insurance_coverage_state": "modal-state",
-				"provider_insurance_coverage_postal_code": "modal-postal-code",
-				"provider_insurance_coverage_phone_number": "modal-phone",
-				"provider_insurance_coverage_fax_number": "modal-fax",
-				"provider_insurance_coverage_email_address": "modal-email",
-				"provider_insurance_coverage_country_country_name": "modal-country-name"
-			};
-
-			// Copy all mapped fields
-			Object.keys(fieldMap).forEach(mainId => {
-				const modalId = fieldMap[mainId];
-				const mainEl = document.getElementById(mainId) || document.querySelector(`[name='${mainId}']`);
-				const modalEl = document.getElementById(modalId) || document.querySelector(`[name='${modalId}']`);
-				if (mainEl && modalEl) mainEl.value = modalEl.value || "";
-			});
-
-			// --- Explicitly copy carrier name to main input
-			const modalCarrier = document.getElementById("modal-carrier-name");
-			const mainCarrier = document.getElementById("main-carrier-name");
-			if (modalCarrier && mainCarrier) mainCarrier.value = modalCarrier.value || "";
-		}
-
-		// --- Close button → copy + close
-		closeBtn?.addEventListener("click", function () {
-			fillMainFormFromModal();
-			modal.style.display = "none";
-		});
-
-		// --- New → show Save button
-		newBtn?.addEventListener("click", () => saveBtn.style.display = "inline-block");
-
-		// --- Save → copy data to main form
-		saveBtn?.addEventListener("click", fillMainFormFromModal);
-
-		// --- Keep carrier names synced
-		document.getElementById("main-carrier-name")?.addEventListener("input", function () {
-			const autoField = document.getElementById("modal-carrier-name");
-			if (autoField) autoField.value = this.value;
-		});
-	});
-
-	document.addEventListener("DOMContentLoaded", function () {
-		const countrySelect = document.getElementById("modal-country"); // match ERB id
-		const stateSelect = document.getElementById("state-select");    // make sure this exists
-
-		countrySelect?.addEventListener("change", function () {
-			const countryCode = this.value;
-			stateSelect.innerHTML = '<option value="">Select State</option>';
-
-			if (countryCode) {
-				fetch(`/mhc/verification_platform/states?country=${countryCode}`)
-					.then(res => res.json())
-					.then(states => {
-						states.forEach(st => {
-							let opt = document.createElement("option");
-							opt.value = st;
-							opt.text = st;
-							stateSelect.appendChild(opt);
-						});
-					});
-			}
-		});
-	});
-
-	document.addEventListener("DOMContentLoaded", function () {
-		const citySelect = document.getElementById("modal-city-select");
-		const carrierSelect = document.getElementById("modal-carrier-select");
-		const searchInput = document.getElementById("carrier-search-input");
-
-		if (!citySelect || !carrierSelect) return;
-
-		const allOptions = Array.from(carrierSelect.options).map(opt => opt.cloneNode(true));
-
-		function filterOptions() {
-			const selectedCity = citySelect.value.toLowerCase();
-			const term = searchInput.value.toLowerCase();
-			carrierSelect.innerHTML = "";
-
-			let filtered = allOptions.filter(opt => {
-				const carrierCity = (opt.getAttribute("data-city") || "").toLowerCase();
-				const carrierName = opt.textContent.toLowerCase();
-				return (!selectedCity || carrierCity === selectedCity) && carrierName.includes(term);
-			});
-
-			if (filtered.length === 0) {
-				let opt = document.createElement("option");
-				opt.value = "";
-				opt.text = "No matching carrier found";
-				carrierSelect.appendChild(opt);
-			} else {
-				filtered.forEach(opt => carrierSelect.appendChild(opt.cloneNode(true)));
-			}
-
-			carrierSelect.value = "";
-		}
-
-		citySelect.addEventListener("change", filterOptions);
-		searchInput?.addEventListener("input", filterOptions);
-	});
-</script>
-<style>
-	#myModal {
-		font-family: Arial, sans-serif;
-		padding: 20px;
-		background-color: white;
-		position: fixed;
-		top: 10%;
-		left: 50%;
-		transform: translateX(-50%);
-		z-index: 1000;
-		box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-		width: 80%;
-		max-width: 800px;
-		display: none; /* initially hidden */
-	}
-	.btn-success {
-			height: 45px;
-	}
-	#myModal select,
-	#myModal input[type="text"],
-	#myModal input[type="email"] {
-		width: 300px;
-		padding: 5px;
-		margin-bottom: 10px;
-	}
-
-	#myModal .form-section {
-		border: 1px solid #ccc;
-		padding: 15px;
-		margin-top: 20px;
-	}
-
-	#myModal .form-section-header {
-		background-color: #2c5aa0;
-		color: #fff;
-		padding: 8px;
-		font-weight: bold;
-	}
-
-	#myModal .form-group {
-		margin-bottom: 8px;
-	}
-
-	#myModal label {
-		display: inline-block;
-		width: 180px;
-	}
-
-	#myModal .form-actions {
-		margin-top: 20px;
-	}
-
-	#myModal button {
-		padding: 6px 16px;
-		margin-right: 10px;
-	}
-
-	#myModal .search-group input[type="text"] {
-		width: 180px;
-	}
-	#myModal .close-btn {
-		position: absolute;
-		top: 10px;
-		right: 15px;
-		font-size: 24px;
-		font-weight: bold;
-		color: #333;
-		cursor: pointer;
-	}
-
-	#myModal .form-actions {
-		margin-top: 20px;
-		text-align: right;
-	}
-
-	#myModal .form-actions button {
-		padding: 8px 16px;
-		background-color: #2c5aa0;
-		color: white;
-		border: none;
-		border-radius: 4px;
-		margin-left: 10px;
-		cursor: pointer;
-		margin-bottom: 61px;
-	}
-
-	#myModal .form-actions button:hover {
-		background-color: #20457e;
-	}
-	#myModal .search-group input[type="text"] {
-			width: 300px;
-	}
-</style>
+	</script>

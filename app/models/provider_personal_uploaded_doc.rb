@@ -25,7 +25,6 @@ class ProviderPersonalUploadedDoc < ApplicationRecord
 		epls: 'MedicareOrMedicaid - EPLS',
 		ownership: 'MedicareOrMedicaid - Ownership',
 		npdb: 'NPDB - NPDB',
-		npi: 'NPI - NPI',
 		oig: 'OIG - OIG',
 		sitevisit: 'SiteVisit - SiteVisit',
 		training: 'V - Training',

@@ -31,12 +31,12 @@
 </div>
 
 <div class="row mt-2">
-	<div id="alert-notification" class="alert alert-danger text-white" style="background-color:#ff0000; display: none;" role="alert">
+	<div id="alert-notification" class="alert alert-danger text-white fs-4" style="background-color:#ff0000; display: none;" role="alert">
 	   No provider selection is made. Please select provider(s).
   </div>
 </div>
   <div class="table-responsive">
-    <table class="table table-bordered practice-table mt-2">
+    <table class="table table-bordered practice-table mt-3">
       <thead>
         <tr>
           <th class="text-white">
@@ -74,62 +74,27 @@
                 </td>
                 <td>
                   <%= link_to(
-                    "#{provider_personal_information.fullname} #{provider_personal_information.provider_type_provider_type_abbreviation}",
+                    "#{provider_personal_information.fullname}, #{provider_personal_information.provider_type_provider_type_abbreviation}",
                     show_virtual_review_committee_path(provider_personal_information.id)
                   ) %>
                 </td>
-                <td><%= provider_personal_information&.practitioner_type %></td>
+                <td><%= provider_personal_information.provider_type_provider_type_abbreviation %></td>
                 <td>
-                  <%= provider_personal_information.cred_cycle&.titleize || '' %>
+                  <%= provider_personal_information.cred_cycle %>
                 </td>
-                <td>
-                  <% unless provider_personal_information.progress_status == "to_be_assigned" %>
-                    <%= provider_personal_information.psv_completed_date&.strftime('%m/%d/%Y') %>
-                  <% end %>
-                </td>
-                
-                <td>
-                  <% dea_record = ProviderDea.find_by(provider_attest_id: provider_personal_information.provider_attest_id) %>
-                  <% if dea_record&.expiration_date.present? %>
-                    <span class="badge bg-danger text-white">Unclean</span>
-                  <% else %>
-                    <%= provider_personal_information.review_level %>
-                  <% end %>
-                </td>
-                
-                <td>
-                  <% if provider_personal_information.cred_cycle&.downcase == 'cred' %>
-                    <% recred_date = provider_personal_information.recred_due_date || (Date.today + 2.years) %>
-                    <%= recred_date.strftime('%m/%d/%Y') %>
-                  <% end %>
-                </td>
-                
-                <td>
-                  <% unless provider_personal_information.progress_status == "to_be_assigned" %>
-                    <%= provider_personal_information.review_date&.strftime('%m/%d/%Y') %>
-                  <% end %>
-                </td>
-
-                <td>
-                  <% unless provider_personal_information.progress_status == "to_be_assigned" %>
-                    <%= provider_personal_information.committee_date&.strftime('%m/%d/%Y') %> 
-                  <% end %>
-                </td>
-
-                <td>
-                  <% if provider_personal_information.progress_status == "completed" %>
-                    <%= provider_personal_information.vote_date&.strftime('%m/%d/%Y') %>
-                  <% end %>
-                </td>
+                <td><%= provider_personal_information.psv_completed_date&.strftime('%Y-%m-%d') %></td>
+                <td><%= provider_personal_information.review_level %></td>
+                <td><%= provider_personal_information.recred_due_date&.strftime('%Y-%m-%d') %></td>
+                <td><%= provider_personal_information.review_date&.strftime('%Y-%m-%d') %></td>
+                <td><%= provider_personal_information.committee_date&.strftime('%Y-%m-%d') %></td>
+                <% if provider_personal_information.progress_status == "completed" %>
+                  <td><%= provider_personal_information.vote_date&.strftime('%Y-%m-%d') %></td>
+                <% end %>
                 <td>
                   <%#= vrc&.status %>
-                  <%# if provider_personal_information.progress_status == "completed" %>
-                  <% unless provider_personal_information.progress_status == "assigned" %>
-                    <span style="font-size: 10px;">
-                      <%= provider_personal_information.status %>
-                    </span>
+                  <% if provider_personal_information.progress_status == "completed" %>
+                    <span style="font-size: 10px;">Approved</span>
                   <% end %>
-                  <%# end %>
                 </td>
                 <td><%= provider_personal_information.npi %></td>
               </tr>
@@ -154,34 +119,33 @@
 			            </div>
 			            <div class="modal-body">
                     <div class="form-check">
-                      <input class="form-check-input border-dark" type="checkbox" id="assignToAll">
-                      <label class="form-check-label" for="assignToAll">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                      <label class="form-check-label" for="flexCheckDefault">
                         ASSIGN TO ALL
                       </label>
                     </div>
                     <hr>
   		              <div class="row">
-                      <div class="col-lg-6 overflow-auto" style="max-height: 300px;">
-                        <% @vrc_directors.each do |vrc_director| %>
-                          <% if vrc_director.director? %>
-                            <div class="m-3">
-                              <input type="checkbox" 
-                                     class="director-checkbox" 
-                                     name="vrc_directors[]" 
-                                     value="<%= vrc_director.id %>">
-                              <p class="d-inline ms-2 text-dark"><%= vrc_director.full_name %></p>
-                            </div>
-                          <% end %>
-                        <% end %>
-                      </div>
+                      <form>
+                        <div class="col-lg-6 overflow-auto" style="max-height: 300px;">
+                          <% @vrc_directors.each do |vrc_director| %>
+                            <% if vrc_director.director? %>
+                              <div class="m-3">
+                                 <input type="checkbox" name="vrc_directors[]" value="<%= vrc_director.id %>">
+                                 <p class="d-inline ms-2 text-dark"><%= vrc_director.full_name%></p>
+                              </div>
+                            <% end %>
+                           <% end %>
+                        </div>
+                      </form>
                       <div class="col-lg-6 ">
                         <div class="mb-4">
                           <%= form.label :review_date, class: 'form-label' %>
-                          <%= form.date_field :review_date, class: 'form-control', required: true, min: Date.today %>
+                          <%= form.date_field :review_date, class: 'form-control', required: true %>
                         </div>
                        <div>
                             <%= form.label :committee_date, class: 'form-label' %>
-                            <%= form.date_field :committee_date, class: 'form-control', required: true, min: Date.today %>
+                            <%= form.date_field :committee_date, class: 'form-control', required: true %>
                             <% unless params[:'vrc-progress-status'] == "assigned" || params[:'vrc-progress-status'] == "completed" %>
                               <%= form.text_field :progress_status, value: "assigned", class: 'form-control', style: 'display: none;' %>
                             <% end %>
@@ -230,16 +194,6 @@
 
 <script>
 $(document).ready(function () {
-
-  const assignToAll = document.getElementById("assignToAll");
-    const directorCheckboxes = document.querySelectorAll(".director-checkbox");
-
-    if (assignToAll) {
-      assignToAll.addEventListener("change", function() {
-        directorCheckboxes.forEach(cb => cb.checked = assignToAll.checked);
-      });
-    }
-
   const $submitButton = $("#submit-button");
   const $checkboxes = $("input[name='selected_ids[]']");
   const modal = new bootstrap.Modal($("#exampleModal")[0]);  // Initialize the modal
@@ -348,3 +302,4 @@ $(document).ready(function () {
   });
 });
 </script>
+

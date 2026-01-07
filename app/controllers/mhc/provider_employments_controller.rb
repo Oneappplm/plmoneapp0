@@ -49,7 +49,7 @@ class Mhc::ProviderEmploymentsController < ApplicationController
         :provider_attest_id, :employer_name, :title, :contact_first_name, :contact_middle_name,
         :contact_last_name, :contact_suffix, :practitioner_type, :address, :mail_stop, :additional_address,
         :city, :county, :state, :country, :zip, :phone_number, :fax, :email, :work_status, :population_serviced,
-        :contact_method, :from_date, :to_date, :position, :show_on_tickler, :comments, :present
+        :contact_method, :from_date, :to_date, :position, :show_on_tickler, :comments
       )
     end  
 end

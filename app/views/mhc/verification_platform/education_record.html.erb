@@ -14,200 +14,45 @@
             <div class="col-xl-8 row">
                 <%= form_with model: [:mhc, @practice_information_education] do |f| %>
                     <%= f.hidden_field :caqh_provider_attest_id %>
-                    <%= f.hidden_field :provider_attest_id, value: params[:id] %>
+                    <%= f.hidden_field :provider_attest_id %>
                     <div class="form-row row page-applicable mt-3">
                         <span class="page-note">
-                            <i class='bx bx-error-circle font-lightblue'></i> <span>To search for a School name, please click the search button.</span>
+                            <i class='bx bx-error-circle font-lightblue'></i> <span>To search for a School name,
+                                please
+                                click the search button.</span>
                         </span>
                         <div class="col-12">
                             <label class="text-dark-grey">School:</label>
                             <div class="row">
                                 <div class="col-10">
-                                    <%= f.text_field :institution_name,  placeholder: 'Type here...', class: 'form-control border border-dark' , id: 'main-carrier-name'%>
+                                    <%= f.text_field :institution_name,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                                 </div>
                                 <div class="col-2">
-                                    <%# <button id="search_school_button" type="button" class="btn btn-primary btn-sm" id="asdf" style="min-width: 100px; font-size: 12px" data-bs-toggle="modal" data-bs-target="#search_school">
+                                    <button id="search_school_button" type="button" class="btn btn-primary btn-sm" id="asdf" style="min-width: 100px; font-size: 12px" data-bs-toggle="modal" data-bs-target="#search_school">
                                         Search
-                                    </button> %>
-									                  <button type="button" class="btn btn-primary" id="openModal">Search</button>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                            <div id="myModal" class="modal">	
-                              <div class="modal-content">
-                                <p>
-                                  To search for an existing school, please select the Country, State or Province, City and School from the drop down lists. If your School is not on the list, click the New button. Complete the requested address information of the department or office that may verify your degree or certificate. Click the Save button. Click the Close button to populate the record with the new address information.
-                                </p>
-
-                                <div class="search-group">
-                                  <!-- Country -->
-                                  <div class="form-group">
-                                    <%= f.label :country, "By Country:" %>
-                                    <%= f.select :country,
-                                          options_for_select(
-                                            ISO3166::Country.all.map { |c| [c.translations['en'] || c.name, c.alpha2] },
-                                            f.object.country
-                                          ),
-                                          { include_blank: "Select Country" },
-                                          class: "form-control",
-                                          id: "country-select" %>
-                                  </div>
-
-                                  <!-- State -->
-                                  <div class="form-group">
-                                    <%= f.label :state, "By State/Province:" %>
-                                    <%= f.select :state,
-                                          [],
-                                          { include_blank: "Select State" },
-                                          class: "form-control",
-                                          id: "state-select" %>
-                                  </div>
-
-                                <!-- City -->
-                                  <div class="form-group">
-                                    <label for="input-city">By City:</label>
-                                    <%= f.select :city,
-                                          options_for_select(
-                                            PracticeInformationEducation.where(form_type: 'popup')
-                                                                        .distinct
-                                                                        .pluck(:city)
-                                                                        .compact
-                                                                        .sort,
-                                            f.object.city
-                                          ),
-                                          { include_blank: "Select City" },
-                                          class: "form-control",
-                                          id: "input-city" %>
-                                  </div>
-
-                                  <!-- School -->
-                                  <div class="form-group">
-                                    <label for="input-carrier">By School:</label>
-
-                                    <!-- Input box for typing -->
-                                    <input type="text" id="school-search-input" class="form-control mb-2" placeholder="Type to search school name...">
-
-                                    <!-- Dropdown -->
-                                    <%= f.select :institution_name,
-                                      options_for_select(
-                                        PracticeInformationEducation.where(form_type: 'popup').map { |s|
-                                          [
-                                            s.institution_name, # Label
-                                            s.institution_name, # Value
-                                            {
-                                              "data-city": s.city,          # For city filtering
-                                              "data-address": s.address,
-                                              "data-suite": s.suite_dept_mail_stop,
-                                              "data-address2": s.address2,
-                                              "data-county": s.county,
-                                              "data-province": s.province,
-                                              "data-state": s.state,
-                                              "data-postal": s.postal_code,
-                                              "data-phone": s.phone_number,
-                                              "data-fax": s.fax_number,
-                                              "data-email": s.email_address
-                                            }
-                                          ]
-                                        },
-                                        f.object.institution_name
-                                      ),
-                                      { include_blank: "Select School" },
-                                      class: "form-control",
-                                      id: "input-carrier" %>
-
-                                    <!-- Search button -->
-                                    <button class="btn btn-primary mt-2" type="button" id="school-search-btn">Search</button>
-                                  </div>
-                                </div>
-
-                                <div class="form-section">
-                                  <div class="form-section-header">School Information - Address of Department/Office Verifying Degree or Certificate</div>
-                                 
-                                  <div class="col-md-6">
-                                    <label>School Name:</label>
-                                    <%= f.text_field :institution_name, placeholder: 'Type here...', class: 'form-control border border-dark', id: 'auto-carrier-name' %>
-                                  </div>
-                
-                                  <div class="col-md-6">
-                                    <label> Address :</label>
-                                    <%= f.text_field :address, placeholder: 'Address', class: 'form-control' %>
-                                  </div>
-                                  
-                                  <div class="col-md-6">
-                                    <label> Suite/Dept/Mail Stop :</label>
-                                    <%= f.text_field :suite_dept_mail_stop, placeholder: 'Suite/Dept/Mail Stop', class: 'form-control' %>
-                                  </div>
-                        
-                                  <div class="col-md-6 mt-2">
-                                    <label> Additional Address :</label>
-                                    <%= f.text_field :address2, placeholder: 'Additional Address', class: 'form-control' %>
-                                  </div>
-
-                                  <div class="col-xl-6">
-                                      <label class="text-dark-grey">City:</label>
-                                      <%= f.text_field :city,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                                  </div> 
-
-                                  <div class="col-md-6 mt-2">
-                                    <label> county :</label>
-                                    <%= f.text_field :county, placeholder: 'County', class: 'form-control' %>
-                                  </div>
-                                 
-                                  <div class="col-xl-6">
-                                      <label class="text-dark-grey">Province:</label>
-                                      <%= f.text_field :province,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                                  </div>
-                                  <div class="col-xl-6">
-                                      <label class="text-dark-grey">State:</label>
-                                      <%= f.text_field :state,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
-                                  </div>
-                                  <div class="col-md-6 mt-2">
-                                    <label> Postal Code :</label>
-                                    <%= f.text_field :postal_code, placeholder: 'Postal Code', class: 'form-control' %>
-                                  </div>
-                                  
-                                  <div class="col-md-6 mt-2">
-                                    <label> Phone number :</label>
-                                    <%= f.text_field :phone_number, placeholder: 'Phone', class: 'form-control' %>
-                                  </div>
-                                  
-                                  <div class="col-md-6 mt-2">
-                                    <label> Fax number :</label>
-                                    <%= f.text_field :fax_number, placeholder: 'Fax', class: 'form-control' %>
-                                  </div>
-                                  <div class="col-md-6 mt-2">
-                                    <label> Email address :</label>
-                                    <%= f.text_field :email_address, placeholder: 'Email', class: 'form-control' %>
-                                  </div>
-                                </div>
-                                <div class="form-actions mt-3 d-flex justify-content-center align-items-start gap-3">
-                                  <button type="button" class="btn btn-success" id="new-btn">New</button>
-                                  
-                                  <%= f.submit 'Save', class: 'btn btn-success', name: 'commit', value: 'save', id: 'popup-save-btn', style: 'display:none;' %>
-                                  
-                                  <button type="button" class="btn btn-secondary" id="modal-close-btn">Close</button>
-                                </div>
-                              </div>
-                            </div>
                         <div class="col-12">
                             <label class="text-dark-grey">Address:</label>
-                            <%= f.text_field :address,  placeholder: 'Type here...', class: 'form-control border border-dark', id: 'main-address' %>
+                            <%= f.text_field :address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                         </div>
                         <div class="col-12">
                             <label class="text-dark-grey">Suite/Dept/Mail Stop:</label>
-                            <%= f.text_field :suite_dept_mail_stop,  placeholder: 'Type here...', class: 'form-control border border-dark', id: 'main-suite' %>
+                            <%= f.text_field :suite_dept_mail_stop,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                         </div>
                         <div class="col-12">
                             <label class="text-dark-grey">Additional Address:</label>
-                            <%= f.text_field :address2,  placeholder: 'Type here...', class: 'form-control border border-dark', id: 'main-address2' %>
+                            <%= f.text_field :address2,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                         </div>
                         <div class="col-xl-6">
                             <label class="text-dark-grey">City:</label>
-                            <%= f.text_field :city,  placeholder: 'Type here...', class: 'form-control border border-dark' , id: 'practice_info_city'%>
+                            <%= f.text_field :city,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                         </div>
                         <div class="col-xl-6">
                             <label class="text-dark-grey">County:</label>
-                            <%= f.text_field :county,  placeholder: 'Type here...', class: 'form-control border border-dark' , id: 'practice_info_country_country_name'%>
+                            <%= f.text_field :county,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                         </div>
                         <div class="col-xl-6">
                             <label class="text-dark-grey">Country:</label>
@@ -215,27 +60,27 @@
                         </div>
                         <div class="col-xl-6">
                             <label class="text-dark-grey">Province:</label>
-                            <%= f.text_field :province,  placeholder: 'Type here...', class: 'form-control border border-dark', id: 'main-province'%>
+                            <%= f.text_field :province,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                         </div>
                         <div class="col-xl-6">
                             <label class="text-dark-grey">State:</label>
-                            <%= f.text_field :state,  placeholder: 'Type here...', class: 'form-control border border-dark' , id: 'practice_info_state'%>
+                            <%= f.text_field :state,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                         </div>
                         <div class="col-xl-6">
                             <label class="text-dark-grey">Postal Code:</label>
-                            <%= f.text_field :postal_code,  placeholder: 'Type here...', class: 'form-control border border-dark' , id: 'main-postal'%>
+                            <%= f.text_field :postal_code,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                         </div>
                         <div class="col-xl-6">
                             <label class="text-dark-grey">Email Address:</label>
-                            <%= f.text_field :email_address,  placeholder: 'Type here...', class: 'form-control border border-dark',  id: 'main-email' %>
+                            <%= f.text_field :email_address,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                         </div>
                         <div class="col-xl-6">
                             <label class="text-dark-grey">Phone Number:</label>
-                            <%= f.text_field :phone_number,  placeholder: 'Type here...', class: 'form-control border border-dark',  id: 'main-phone' %>
+                            <%= f.text_field :phone_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                         </div>
                         <div class="col-xl-6">
                             <label class="text-dark-grey">Fax Number:</label>
-                            <%= f.text_field :fax_number,  placeholder: 'Type here...', class: 'form-control border border-dark', id: 'main-fax' %>
+                            <%= f.text_field :fax_number,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                         </div>
                         <div class="col-xl-6">
                         </div>
@@ -280,7 +125,7 @@
                         <%= f.check_box :show_on_tickler, class: "form-check-input" %>
                         </div>
                         <div class="col-12 text-left" style="margin-top: 20px;">
-                            <%= f.submit 'Save', class: 'btn btn-primary', name: 'commit', value: 'Create', id: 'main-save-btn' %>
+                            <%= f.submit 'Save', class: 'btn btn-primary', style: 'width: 200px;' %>
                         </div>
                     </div>
                 <% end %>
@@ -312,47 +157,37 @@
                               </div>
 
                               <div class="modal-body">
-                                <!-- Preview Letter -->
-                                <fieldset class="mb-4 p-3 border rounded shadow-sm">
-                                  <legend class="fs-6 fw-bold mb-3 text-primary">📄 Preview Letter</legend>
+                                <form>
+                                  <!-- Preview Letter -->
+                                  <fieldset class="mb-4 p-3 border rounded shadow-sm">
+                                    <legend class="fs-6 fw-bold mb-3 text-primary">📄 Preview Letter</legend>
+                                    <button type="button" class="btn btn-primary btn-sm w-100">Preview Letter</button>
+                                  </fieldset>
 
-                                  
-                                  <%= button_tag "Preview Letter",
-                                  id: "previewLetterBtn",
-                                  type: "button",                      # ← prevents form submit
-                                  class: "btn btn-primary",
-                                  target: '_blank',  
-                                  data: {
-                                    url: preview_letter_mhc_practice_information_education_path(@practice_information_education), personal_information_id: @provider_personal_information&.id
-                                  } %>
+                                  <!-- Send Fax -->
+                                  <fieldset class="mb-4 p-3 border rounded shadow-sm">
+                                    <legend class="fs-6 fw-bold mb-3 text-secondary">📠 Send Fax</legend>
+                                    <div class="mb-3">
+                                      <label for="faxEmail" class="form-label">Fax2Mail Email Address</label>
+                                      <input type="text" id="faxEmail" name="faxEmail" class="form-control form-control-sm" value="1234456677.Medversant.1234456677@fax2mail.com">
+                                    </div>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm w-100">Send Fax</button>
+                                  </fieldset>
 
-                                  <div id="previewLetterFiles" class="mt-2"></div>
-
-                                </fieldset>
-
-                                <!-- Send Fax -->
-                                <fieldset class="mb-4 p-3 border rounded shadow-sm">
-                                  <legend class="fs-6 fw-bold mb-3 text-secondary">📠 Send Fax</legend>
-                                  <div class="mb-3">
-                                    <label for="faxEmail" class="form-label">Fax2Mail Email Address</label>
-                                    <input type="text" id="faxEmail" name="faxEmail" class="form-control form-control-sm" value="1234456677.Medversant.1234456677@fax2mail.com">
-                                  </div>
-                                  <button type="button" class="btn btn-outline-secondary btn-sm w-100">Send Fax</button>
-                                </fieldset>
-
-                                <!-- Send Email -->
-                                <fieldset class="mb-4 p-3 border rounded shadow-sm">
-                                  <legend class="fs-6 fw-bold mb-3 text-success">📧 Send Email</legend>
-                                  <div class="mb-3">
-                                    <label for="emailTo" class="form-label">Email Address To</label>
-                                    <input type="text" id="emailTo" name="emailTo" class="form-control form-control-sm" disabled>
-                                  </div>
-                                  <div class="mb-3">
-                                    <label for="emailCc" class="form-label">Email Address Cc</label>
-                                    <input type="text" id="emailCc" name="emailCc" class="form-control form-control-sm" disabled>
-                                  </div>
-                                  <button type="button" class="btn btn-outline-success btn-sm w-100">Send Email</button>
-                                </fieldset>
+                                  <!-- Send Email -->
+                                  <fieldset class="mb-4 p-3 border rounded shadow-sm">
+                                    <legend class="fs-6 fw-bold mb-3 text-success">📧 Send Email</legend>
+                                    <div class="mb-3">
+                                      <label for="emailTo" class="form-label">Email Address To</label>
+                                      <input type="text" id="emailTo" name="emailTo" class="form-control form-control-sm" disabled>
+                                    </div>
+                                    <div class="mb-3">
+                                      <label for="emailCc" class="form-label">Email Address Cc</label>
+                                      <input type="text" id="emailCc" name="emailCc" class="form-control form-control-sm" disabled>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-success btn-sm w-100">Send Email</button>
+                                  </fieldset>
+                                </form>
                               </div>
 
                               <div class="modal-footer">
@@ -396,12 +231,6 @@
                                     <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" data-information-id="<%= @last_rva_information&.id %>" data-personal-information-id="<%= @provider_personal_information&.id %>" data-education-id = "<%= @practice_information_education.id %>" id="skip-rva-btn">
                                         Skip RVA
                                     </button>
-
-                                  <div class="col-12 m-2">
-                                    <div class="text-danger <%= @practice_information_education.rva_informations.pluck(:restart_audit).include?(false) ? 'd-none' : '' %>" id="re-rva">
-                                      Need ReRVA
-                                    </div>
-                                  </div>
                                 </div>
                             </div>
                         </div>
@@ -904,7 +733,7 @@
                                   </div>
                                   <div class="col-md-6">
                                     <span class="font-bold received-date">
-                                      <%= @last_rva_information&.received_date&.in_time_zone("Pacific Time (US & Canada)")&.strftime("%b %d, %Y %I:%M %p") %>
+                                      <%= @last_rva_information&.received_date.presence || ' ' %>
                                     </span>
                                   </div>
                                 </div>
@@ -918,6 +747,7 @@
                                   <button class="btn btn-primary py-1" type="button" <%= 'disabled' if @last_rva_information.present? %>>Save Request</button>
                                   <button class="btn btn-primary py-1" type="button" id="restart-request-btn" <%= 'disabled' if !@last_rva_information.present? %>>Restart Request</button>
                                   <%= hidden_field_tag :education_id, @last_rva_information&.practice_information_education_id, id: 'education-id' %>
+
                                 </div>
                               </div>
                             </div>
@@ -1614,7 +1444,7 @@
       })
       .catch(error => console.error('Error:', error));
   });
-  document.getElementById('restart-request-btn')?.addEventListener('click', function (e) {
+   document.getElementById('restart-request-btn')?.addEventListener('click', function (e) {
       e.preventDefault();
 
       const educationId = document.getElementById('education-id')?.value;
@@ -1633,7 +1463,6 @@
       .then(response => response.json())
       .then(data => {
         document.querySelector('.loading-overlay').style.display = 'none';
-        document.getElementById('re-rva').classList.remove('d-none');
         window.location.reload();
       })
       .catch(error => {
@@ -1689,7 +1518,7 @@
       .then(response => response.json())
       .then(data => {
         populateRvaData(data.rva_information);
-        window.location.reload();
+        document.getElementById('re-rva').classList.remove('d-none');
       })
       .catch(error => console.error('Error:', error));
   });
@@ -1813,417 +1642,6 @@
     }
   }
 </script>
-<script>
-	
-	// JavaScript to handle modal
-    document.getElementById("openModal").onclick = function () {
-      document.getElementById("myModal").style.display = "block";
-    };
-
-    // Close the modal function (used in onclick)
-    function closeModal() {
-      document.getElementById("myModal").style.display = "none";
-    }
-
-    // Close if user clicks outside the modal content
-    window.onclick = function (event) {
-      const modal = document.getElementById("myModal");
-      if (event.target == modal) {
-        modal.style.display = "none";
-      }
-    };
-    
-  document.addEventListener("DOMContentLoaded", function () {
-    const searchInput = document.getElementById("school-search-input");
-    const dropdown = document.getElementById("input-carrier");
-    const searchBtn = document.getElementById("school-search-btn");
-    const closeBtn = document.getElementById("modal-close-btn");
-    const newBtn = document.getElementById("new-btn");
-    const saveBtn = document.getElementById("popup-save-btn");
-
-    // --- Search button functionality ---
-    if (searchInput && dropdown && searchBtn) {
-      const allOptions = Array.from(dropdown.options);
-
-      searchBtn.replaceWith(searchBtn.cloneNode(true));
-      const newSearchBtn = document.getElementById("school-search-btn");
-
-      newSearchBtn.addEventListener("click", function () {
-        const searchValue = searchInput.value.toLowerCase().trim();
-        dropdown.innerHTML = "";
-
-      // Always keep "Select School" as the first option
-        const blankOption = document.createElement("option");
-        blankOption.value = "";
-        blankOption.text = "Select School";
-        dropdown.appendChild(blankOption);
-
-        let filteredOptions = searchValue === ""
-          ? allOptions
-          : allOptions.filter(opt => opt.text.toLowerCase().includes(searchValue));
-
-        if (filteredOptions.length > 0) {
-          filteredOptions.forEach(opt => dropdown.appendChild(opt.cloneNode(true)));
-        } else {
-          alert("No matching school found.");
-        }
-          dropdown.value = "";
-      });
-
-      dropdown.addEventListener("change", function () {
-        const selected = this.options[this.selectedIndex];
-        if (!selected) return;
-
-        // Fill modal form fields
-        document.getElementById("auto-carrier-name").value = selected.text;
-        document.querySelector("input[name='practice_information_education[address]']").value = selected.dataset.address || "";
-        document.querySelector("input[name='practice_information_education[suite_dept_mail_stop]']").value = selected.dataset.suite || "";
-        document.querySelector("input[name='practice_information_education[address2]']").value = selected.dataset.address2 || "";
-        document.querySelector("input[name='practice_information_education[city]']").value = selected.dataset.city || "";
-        document.querySelector("input[name='practice_information_education[county]']").value = selected.dataset.county || "";
-        document.querySelector("input[name='practice_information_education[province]']").value = selected.dataset.province || "";
-        document.querySelector("input[name='practice_information_education[state]']").value = selected.dataset.state || "";
-        document.querySelector("input[name='practice_information_education[postal_code]']").value = selected.dataset.postal || "";
-        document.querySelector("input[name='practice_information_education[phone_number]']").value = selected.dataset.phone || "";
-        document.querySelector("input[name='practice_information_education[fax_number]']").value = selected.dataset.fax || "";
-        document.querySelector("input[name='practice_information_education[email_address]']").value = selected.dataset.email || "";
-      });
-    }
-
-    // --- Function to fill main form from modal ---
-    function fillMainFormFromModal() {
-      const fieldsMap = {
-        "main-carrier-name": "auto-carrier-name",
-        "main-address": "practice_information_education[address]",
-        "main-suite": "practice_information_education[suite_dept_mail_stop]",
-        "main-address2": "practice_information_education[address2]",
-        "practice_info_city": "practice_information_education[city]",
-        "practice_info_country_country_name": "practice_information_education[county]",
-        "main-province": "practice_information_education[province]",
-        "practice_info_state": "practice_information_education[state]",
-        "main-postal": "practice_information_education[postal_code]",
-        "main-phone": "practice_information_education[phone_number]",
-        "main-fax": "practice_information_education[fax_number]",
-        "main-email": "practice_information_education[email_address]"
-      };
-
-      Object.keys(fieldsMap).forEach(mainId => {
-        const modalField = document.getElementById(fieldsMap[mainId]) 
-          || document.querySelector(`input[name='${fieldsMap[mainId]}']`);
-        const mainField = document.getElementById(mainId);
-        if (modalField && mainField) mainField.value = modalField.value || "";
-      });
-    }
-
-    // --- Close modal button ---
-    if (closeBtn) {
-      closeBtn.addEventListener("click", function () {
-        fillMainFormFromModal();
-        document.getElementById("myModal").style.display = "none";
-      });
-    }
-
-    // --- New button shows Save button ---
-    if (newBtn && saveBtn) {
-      newBtn.addEventListener("click", function () {
-        saveBtn.style.display = "inline-block";
-      });
-    }
-
-    // --- Optional: Save button also fills main form (in case user clicks Save inside modal) ---
-    if (saveBtn) {
-      saveBtn.addEventListener("click", fillMainFormFromModal);
-    }
-
-    // --- Modal open ---
-    document.getElementById("openModal")?.addEventListener("click", function () {
-      document.getElementById("myModal").style.display = "block";
-    });
-			// Get outside form elements
-			const mainCarrier = document.getElementById("main-carrier-name");
-			const mainCountry = document.getElementById("practice_info_country_country_name");
-			const mainState = document.getElementById("practice_info_state");
-			const mainCity = document.getElementById("practice_info_city");
-
-			// Set values to outside form
-			if (mainCarrier && carrierName) mainCarrier.value = carrierName;
-			if (mainCountry && country) mainCountry.value = country;
-			if (mainState && state) mainState.value = state;
-			if (mainCity && city) mainCity.value = city;
-
-			// Hide modal
-			const modal = document.getElementById("myModal");
-			if (modal) {
-				modal.style.display = "none";
-			}
-		});
-    // showing the error message when clicked on preview letter button  
-    const previewBtn = document.getElementById("previewLetterBtn");
-    const filesDiv = document.getElementById("previewLetterFiles");
-
-    if (previewBtn) {
-      previewBtn.addEventListener("click", function () {
-        const personalInformationId = previewBtn.getAttribute("data-personal-information-id");
-        const previewUrl = previewBtn.getAttribute("data-url");
-
-        filesDiv.innerHTML = "<p class='text-muted text-center'>Checking for Release files...</p>";
-
-        // Step 1️⃣ - Check uploaded docs via AJAX
-        fetch(`/mhc/manage-clients/get_provider_uploaded_docs?id=${personalInformationId}`, {
-          method: "GET",
-          headers: { "X-Requested-With": "XMLHttpRequest" }
-        })
-          .then(resp => resp.json())
-          .then(data => {
-            filesDiv.innerHTML = "";
-
-            // Step 2️⃣ - Filter only .tiff/.tif release files
-            const releaseTiffDocs = data.filter(doc => {
-              const ext = doc.file_name?.split(".").pop()?.toLowerCase();
-              return (
-                doc.image_classification?.toLowerCase() === "release" &&
-                (ext === "tif" || ext === "tiff")
-              );
-            });
-
-            if (releaseTiffDocs.length > 0) {
-              // ✅ Show found release file(s)
-              releaseTiffDocs.forEach(doc => {
-                const link = document.createElement("a");
-                link.href = doc.file_url;
-                link.target = "_blank";
-                link.textContent = doc.file_name;
-                link.classList.add("d-block", "mb-2", "text-success");
-                filesDiv.appendChild(link);
-              });
-
-              // Step 3️⃣ - Now generate the PDF by calling Rails preview_letter
-              filesDiv.insertAdjacentHTML(
-                "beforeend",
-                "<p class='text-info text-center'>Generating education verification letter...</p>"
-              );
-
-              fetch(previewUrl, {
-                method: "POST",
-                headers: {
-                  "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
-                  "Accept": "application/pdf"
-                }
-              })
-                .then(response => {
-                  if (!response.ok) throw new Error("PDF generation failed");
-                  return response.blob();
-                })
-                .then(blob => {
-                  const url = URL.createObjectURL(blob);
-                  window.open(url, "_blank"); // 🔥 Opens PDF in new tab
-                  filesDiv.innerHTML = `
-                    <p class='alert alert-success text-center'>
-                      PDF generated successfully! It will open in a new tab.
-                    </p>
-                  `;
-                })
-                .catch(err => {
-                  console.error("Error generating PDF:", err);
-                  filesDiv.innerHTML = `
-                    <p class='alert alert-danger text-center'>
-                      Could not generate the PDF letter. Please try again.
-                    </p>
-                  `;
-                });
-            } else {
-              // 🚨 Show missing message *inside modal*, no redirect or close
-              filesDiv.innerHTML = `
-                <p class="alert alert-danger text-center">
-                  The Release file might be missing (only .tif or .tiff supported). Please upload it and try again.
-                </p>
-              `;
-            }
-          })
-          .catch(err => {
-            console.error("Error fetching docs:", err);
-            filesDiv.innerHTML = `
-              <p class='alert alert-danger text-center'>
-                Error loading documents. Please try again.
-              </p>
-            `;
-          });
-      });
-    }
-
-    if (verificationModal) {
-      verificationModal.addEventListener("hidden.bs.modal", function () {
-        window.location.reload();
-      });
-    }
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const countrySelect = document.getElementById("country-select");
-  const stateSelect = document.getElementById("state-select");
-
-  if (countrySelect) {
-    countrySelect.addEventListener("change", function () {
-      const countryCode = this.value;
-
-      stateSelect.innerHTML = '<option value="">Select State</option>';
-
-      if (countryCode) {
-        fetch(`/mhc/verification_platform/states?country=${countryCode}`)
-          .then((response) => response.json())
-          .then((states) => {
-            states.forEach((state) => {
-              let option = document.createElement("option");
-              option.value = state;
-              option.text = state;
-              stateSelect.appendChild(option);
-            });
-          });
-      }
-    });
-  }
-});
-document.addEventListener("DOMContentLoaded", function () {
-  const citySelect = document.getElementById("input-city");
-  const schoolSelect = document.getElementById("input-carrier");
-  const searchInput = document.getElementById("school-search-input");
-
-  if (!citySelect || !schoolSelect) return;
-
-  // Filter schools based on selected city
-  citySelect.addEventListener("change", function () {
-    const selectedCity = this.value.toLowerCase();
-
-    Array.from(schoolSelect.options).forEach(option => {
-      if (option.value === "") return; // Skip "Select School" blank option
-
-      const schoolCity = (option.getAttribute("data-city") || "").toLowerCase();
-
-      if (!selectedCity || schoolCity === selectedCity) {
-        option.style.display = "block"; // Show
-      } else {
-        option.style.display = "none"; // Hide
-      }
-    });
-
-    // Reset the school selection whenever the city changes
-    schoolSelect.value = "";
-  });
-
-  // Search functionality within schools
-  searchInput.addEventListener("input", function () {
-    const searchTerm = this.value.toLowerCase();
-
-    Array.from(schoolSelect.options).forEach(option => {
-      if (option.value === "") return; // Skip "Select School"
-
-      const schoolName = option.textContent.toLowerCase();
-      const isVisible = schoolName.includes(searchTerm);
-
-      // Keep hidden schools hidden even if they match search,
-      // unless they match current city filter
-      if (isVisible) {
-        option.style.display = "block";
-      } else {
-        option.style.display = "none";
-      }
-    });
-  });
-});
-
-
-</script>
-<style>
-  #myModal {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background-color: white;
-      position: fixed;
-      top: 10%;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      width: 80%;
-      max-width: 800px;
-      display: none; /* initially hidden */
-    }
-
-    #myModal select,
-    #myModal input[type="text"],
-    #myModal input[type="email"] {
-      width: 300px;
-      padding: 5px;
-      margin-bottom: 10px;
-    }
-
-    #myModal .form-section {
-      border: 1px solid #ccc;
-      padding: 15px;
-      margin-top: 20px;
-    }
-
-    #myModal .form-section-header {
-      background-color: #2c5aa0;
-      color: #fff;
-      padding: 8px;
-      font-weight: bold;
-    }
-
-    #myModal .form-group {
-      margin-bottom: 8px;
-    }
-
-    #myModal label {
-      display: inline-block;
-      width: 180px;
-    }
-
-    #myModal .form-actions {
-      margin-top: 20px;
-    }
-
-    #myModal button {
-      padding: 6px 16px;
-      margin-right: 10px;
-    }
-
-    #myModal .search-group input[type="text"] {
-      width: 180px;
-    }
-    #myModal .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 24px;
-      font-weight: bold;
-      color: #333;
-      cursor: pointer;
-    }
-
-    #myModal .form-actions {
-      margin-top: 20px;
-      text-align: right;
-    }
-
-    #myModal .form-actions button {
-      padding: 8px 16px;
-      background-color: #2c5aa0;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      margin-left: 10px;
-      cursor: pointer;
-      margin-bottom: 61px;
-    }
-
-    #myModal .form-actions button:hover {
-      background-color: #20457e;
-    }
-    #myModal .search-group input[type="text"] {
-        width: 300px;
-    }
-</style>
 
 
 <style type="text/css">
@@ -2237,4 +1655,4 @@ document.addEventListener("DOMContentLoaded", function () {
     max-width: 1000px;
     padding: 0;
   }
-</style>  
+</style>

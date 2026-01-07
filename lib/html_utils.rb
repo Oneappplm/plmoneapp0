@@ -122,6 +122,8 @@ module HtmlUtils
 
     value = options[:value]
     data_attrs = options[:data] || {}
+
+
     dropdown_class = ['form-select']
     if value.nil?
       dropdown_class << 'border-dark'

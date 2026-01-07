@@ -1,2 +1,0 @@
-module Mhc::ProviderPersonalInformationFacilitiesHelper
-end

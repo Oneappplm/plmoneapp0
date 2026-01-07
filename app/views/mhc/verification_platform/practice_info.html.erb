@@ -1,118 +1,117 @@
-<div class="enc-content">
-    <div class="container">
-        <%= render "top_nav_buttons"%>
-        <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
-            <div class="d-flex align-items-center gap-3">
-                <h4 class="page-heading">Practice Information</h4>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="practice-info-switch">
-                    <label class="form-check-label" for="practice-info-switch">Not Applicable</label>
+
+
+    <div class="enc-content">
+        <div class="container">
+            <%= render "top_nav_buttons"%>
+            <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <h4 class="page-heading">Practice Information</h4>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="practice-info-switch">
+                        <label class="form-check-label" for="practice-info-switch">Not Applicable</label>
+                    </div>
                 </div>
+                <a href="<%= mhc_verification_platform_path(page_tab: 'add_practice_info')%>" class="btn btn-primary py-1">
+                    <i class='bx bx-plus' ></i>
+                    Add New Practice
+                </a>
             </div>
-            <a href="<%= mhc_verification_platform_path(page_tab: 'add_practice_info')%>" class="btn btn-primary py-1">
-                <i class='bx bx-plus' ></i>
-                Add New Practice
-            </a>
-        </div>
-        <div class="mt-2 page-applicable">
-            <span class="page-note">
-                <i class='bx bx-error-circle font-red'></i> <span>Please complete for each office location. Required fields are marked with the symbol “<span class="font-red">*</span>”.</span>
-            </span>
-        </div>
-          <div class="row mt-3 page-applicable">
-            <div class="col-xl-4 mb-3">
-              <%= search_form_for @q, url: mhc_verification_platform_path(page_tab: 'practice_info'), method: :get, html: { class: 'form_search_with_icon' } do |f| %>
-                <%= hidden_field_tag "page_tab", "practice_info" %>
-                <div class="position-relative">
-                  <%= f.text_field :practice_name_cont, value: (params.dig(:q, :practice_name_cont) || ''), placeholder: 'Search...', class: "form-control py-2" %>
-                  <button type="submit" class="search-icon-btn">
-                    <i class="bx bx-search"></i>
-                  </button>
-                </div>
-              <% end %>
+            <div class="mt-2 page-applicable">
+                <span class="page-note">
+                    <i class='bx bx-error-circle font-red'></i> <span>Please complete for each office location. Required fields are marked with the symbol “<span class="font-red">*</span>”.</span>
+                </span>
             </div>
-          </div>
-            <%# <div class="col-xl-4">
-                <div class="form-control enc-search-wrp">
-                    <input type="" class="enc-search-input" placeholder="Search">
-                    <!-- <i class='bx bx-search' ></i> -->
-                </div>
-            </div> %>
-        </div>
-        <div class="container filter-result mt-2 mb-3">
-          <h6>Result: <%= @practice_informations.count %> records</h6>
-        </div>
-        <% if @practice_informations %>
-          <div class="container">
-            <div class="d-flex justify-content-between bg-medium-grey align-items-center py-2">
-              <div class="page_info ms-3 text-black">
-                <%= page_entries_info @practice_informations %>
-              </div>
-              <% if params[:per_page ].present? %>
-                <%= will_paginate @practice_informations, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-              <% else %>
-                <%= will_paginate @practice_informations, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-              <% end %>
-            </div>
-          </div>
-        <% end %>
-        <table class="table table-bordered practice-table mt-3 page-applicable ">
-          <thead>
-            <tr>
-              <th class="text-white" scope="col">Practice/Facility Name</th>
-              <th class="text-white">State/Province</th>
-              <th class="text-white">Zip/Postal Code</th>
-              <th class="text-white">Is this location your primary office</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @practice_informations.each do |practice_information| %>
-              <tr>
-                <td>
-                  <%= link_to mhc_verification_platform_path(page_tab: 'practice_info_record', practice_information_id: practice_information.id), class: "text-dark text-start bg-transparent border-0 fw-bold text-decoration-none" do %>
-                  <%= practice_information.practice_name %>
+              <div class="row mt-3 page-applicable">
+                <div class="col-xl-4 mb-3">
+                  <%= search_form_for @q, url: mhc_verification_platform_path(page_tab: 'practice_info'), method: :get, html: { class: 'form_search_with_icon' } do |f| %>
+                    <%= hidden_field_tag "page_tab", "practice_info" %>
+                    <div class="position-relative">
+                      <%= f.text_field :practice_name_cont, value: (params.dig(:q, :practice_name_cont) || ''), placeholder: 'Search...', class: "form-control py-2" %>
+                      <button type="submit" class="search-icon-btn">
+                        <i class="bx bx-search"></i>
+                      </button>
+                    </div>
                   <% end %>
-                </td>
-                <td><%= State.find_by(alpha_code: practice_information.state)&.name %></td>
-                <td><%= practice_information.zip %></td>
-                <td>
-                  <%= @provider_personal_information.primary_practice_state == practice_information.state ? "Yes" : "No" %>
-                </td>
-              </tr>
+                </div>
+              </div>
+                <%# <div class="col-xl-4">
+                    <div class="form-control enc-search-wrp">
+                        <input type="" class="enc-search-input" placeholder="Search">
+                        <!-- <i class='bx bx-search' ></i> -->
+                    </div>
+                </div> %>
+            </div>
+            <div class="col-xl-6 filter-result mt-2 mb-3">
+              <h6>Result: <%= @practice_informations.count %> records</h6>
+            </div>
+            <% if @practice_informations %>
+              <div class="col-lg-12">
+                <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-0">
+                  <div class="page_info ms-3 text-black">
+                    <%= page_entries_info @practice_informations %>
+                  </div>
+                  <% if params[:per_page ].present? %>
+                    <%= will_paginate @practice_informations, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                  <% else %>
+                    <%= will_paginate @practice_informations, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                  <% end %>
+                </div>
+              </div>
             <% end %>
-          </tbody>
-        </table>
-        <form action="" class="page-not-applicable">
-          <div class="form-row mt-4">
-            <label for="">Please explain:<span class="font-red">*</span></label>
-            <textarea name="" id="" cols="30" rows="5" class="form-control" required></textarea>
-          </div>
-          <div class="form-row mt-2 d-flex justify-content-end">
-            <button type="submit" class="btn btn-sm btn-primary">
-              Save
-            </button>
-          </div>
-        </form>
+            <table class="table table-bordered practice-table mt-3 page-applicable ">
+                <thead>
+                    <tr>
+                        <th class="text-white" scope="col">Practice/Facility Name</th>
+                        <th class="text-white">State/Province</th>
+                        <th class="text-white">Zip/Postal Code</th>
+                        <th class="text-white">Is this location your primary office</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% @practice_informations.each do |practice_information| %>
+                        <tr>
+                            <td>
+                              <%= link_to mhc_verification_platform_path(page_tab: 'practice_info_record', practice_information_id: practice_information.id), class: "text-dark text-start bg-transparent border-0 fw-bold text-decoration-none" do %>
+                                <%= practice_information.practice_name %>
+                              <% end %>
+                            </td>
+                            <td><%= State.find_by(alpha_code: practice_information.state)&.name %></td>
+                            <td><%= practice_information.zip %></td>
+                            <td><%= @provider_personal_information.primary_practice_state == practice_information.state %></td>
+                        </tr>
+                    <% end %>
+                </tbody>
+            </table>
+            <form action="" class="page-not-applicable">
+                <div class="form-row mt-4">
+                    <label for="">Please explain:<span class="font-red">*</span></label>
+                    <textarea name="" id="" cols="30" rows="5" class="form-control" required></textarea>
+                </div>
+                <div class="form-row mt-2 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        Save
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
 <style>
-  .search-icon-btn {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
+    .search-icon-btn {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
 
-  .search-icon-btn i {
-    font-size: 20px;
-    color: #007bff; /* Blue color */
-  }
+    .search-icon-btn i {
+      font-size: 20px;
+      color: #007bff; /* Blue color */
+    }
 
-  .search-icon-btn:hover i {
-    color: #0056b3; /* Darker blue on hover */
-  }
+    .search-icon-btn:hover i {
+      color: #0056b3; /* Darker blue on hover */
+    }
 </style>

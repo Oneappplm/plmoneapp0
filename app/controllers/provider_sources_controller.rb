@@ -23,8 +23,7 @@ class ProviderSourcesController < ApplicationController
         .where("provider_source_data.data_key IN ('first_name', 'last_name') AND provider_source_data.data_value LIKE ?", search_term).where(created_by_user: current_user.id)
         .distinct # Ensure uniqueness
     else
-			# @provider_sources = ProviderSource.where(created_by_user: current_user.id)
-			@provider_sources = ProviderSource.paginate(page: params[:page], per_page: params[:per_page] || 10)
+			@provider_sources = ProviderSource.where(created_by_user: current_user.id)
 			@provider_source = ProviderSource.new
 		end
 	end
@@ -44,15 +43,6 @@ class ProviderSourcesController < ApplicationController
 	# end
 
 	def autosave
-	  # === Helper for Boolean Normalization ===
-	  normalize_boolean = ->(val) do
-	    case val.to_s.strip.downcase
-	    when "yes", "true", "1" then true
-	    when "no", "false", "0" then false
-	    else nil
-	    end
-	  end
-
 	  # === Deletion Logic ===
 	  if params[:delete_other_name_id].present?
 	    other_name = current_provider_source.other_names.find_by(id: params[:delete_other_name_id])
@@ -114,40 +104,33 @@ class ProviderSourcesController < ApplicationController
 
 	  # populate data handle
 	  model_training = if field_name.include?("tf-") || field_name.include?("tr_") || field_name.include?("tfu-")
-	    'training'
-	  else
-	    nil
-	  end
+                   'training'
+                 else
+                   nil
+                 end
 
-	  model_to_use = model.presence || model_training
+		model_to_use = model.presence || model_training
 
-	  if %w[licensure medicare medicaid other_cert training liability malpractice military employment employment_gap prof_references prof_organization cred_contact prac_general_info prac_location_info].include?(model_to_use)
-	    ProviderSources::AutosaveService.new(
-	      source: current_provider_source,
-	      field_name: field_name,
-	      value: value,
-	      model_id: nil,
-	      model: model_to_use
-	    ).perform
-	  end
-
-	  if model == 'disclosure'
-	    ProviderSources::DisclosureAutosaveService.new(
-	      source: current_provider_source,
-	      field_name: params[:field_name],
-	      value: params[:value]
-	    ).perform
-	  end
-
-	  # === Update credentialing status safely ===
-		if defined?(update_cred_status!) && current_provider_source&.persisted?
-		  begin
-		    update_cred_status!
-		  rescue NoMethodError => e
-		    Rails.logger.warn "⚠️ autosave: skipped cred status update (#{e.message})"
-		  end
+		if %w[licensure medicare medicaid other_cert training liability malpractice military employment employment_gap prof_references prof_organization cred_contact prac_general_info prac_location_info].include?(model_to_use)
+		  ProviderSources::AutosaveService.new(
+		    source: current_provider_source,
+		    field_name: field_name,
+		    value: value,
+		    model_id: nil,
+		    model: model_to_use
+		  ).perform
 		end
 
+		
+		if model == 'disclosure'
+		  ProviderSources::DisclosureAutosaveService.new(
+		    source: current_provider_source,
+		    field_name: params[:field_name],
+		    value: params[:value]
+		  ).perform
+		end
+
+	  update_cred_status!
 
 	  # === Handle nested fields ===
 	  match = field_name.match(/\[(\d+)\]\[(\w+)\]$/)
@@ -156,32 +139,45 @@ class ProviderSourcesController < ApplicationController
 	    field = match[2]
 
 	    record =
-	      if field_name.include?("other_names") && nested_form
+	      if field_name.include?("other_names") && params[:nested_form] == "true"
 	        other_name_id.present? ?
 	          current_provider_source.other_names.find_or_initialize_by(id: other_name_id) :
 	          current_provider_source.other_names.new
-	        handle_other_name_autosave and return
-	      elsif field_name.include?("provider_source_specialities") && nested_form
-	        specialty_id.present? ?
-	          current_provider_source.provider_source_specialities.find_or_initialize_by(id: specialty_id) :
-	          current_provider_source.provider_source_specialities.new
-	        # handle_speciality_autosave and return
-	      elsif field_name.include?("provider_source_undergrad_schools") && nested_form
+	          handle_other_name_autosave and return
+	      elsif field_name.include?("provider_source_specialities") && params[:nested_form] == "true"
+				  specialty_id.present? ?
+				    current_provider_source.provider_source_specialities.find_or_initialize_by(id: specialty_id) :
+				    current_provider_source.provider_source_specialities.new
+
+				  # Pass these to the service call
+				  handle_speciality_autosave and return
+	      elsif field_name.include?("provider_source_undergrad_schools") && params[:nested_form] == "true"
 	        undergrad_id.present? ?
 	          current_provider_source.provider_source_undergrad_schools.find_or_initialize_by(id: undergrad_id) :
 	          current_provider_source.provider_source_undergrad_schools.new
-	        handle_education_autosave and return
-	      elsif field_name.include?("graduate_details") && nested_form
-	        graduate_id.present? ?
+	          handle_education_autosave and return
+	      elsif field_name.include?("graduate_details") && params[:nested_form] == "true"
+				  # graduate_id = params[:graduate_school_id].presence ||
+				  #               field_name.match(/graduate_details\[(\d+)\]/)&.captures&.first
+
+				  # graduate_detail =
+				  #   if graduate_id.present?
+				  #     detail = GraduateDetail.find_by(id: graduate_id)
+				  #     detail if detail&.provider_source_id == current_provider_source.id
+				  #   end
+
+				  # graduate_detail ||= current_provider_source.graduate_details.new
+				  graduate_id.present? ?
 	          current_provider_source.graduate_details.find_or_initialize_by(id: graduate_id) :
 	          current_provider_source.graduate_details.new
-	        handle_education_autosave and return
-	      elsif field_name.include?("hospital_privileges") && nested_form
+
+          handle_education_autosave and return
+	      elsif field_name.include?("hospital_privileges") && params[:nested_form] == "true"
 	        privilege_id.present? ?
 	          current_provider_source.hospital_privileges.find_or_initialize_by(id: privilege_id) :
 	          current_provider_source.hospital_privileges.new  
-	        handle_hospital_privilege_autosave and return  
-	      elsif field_name.include?("admitting_arrangements") && nested_form
+	          handle_hospital_privilege_autosave and return  
+	      elsif field_name.include?("admitting_arrangements") && params[:nested_form] == "true"
 	        admitting_id.present? ?
 	          current_provider_source.admitting_arrangements.find_or_initialize_by(id: admitting_id) :
 	          current_provider_source.admitting_arrangements.new    
@@ -193,18 +189,19 @@ class ProviderSourcesController < ApplicationController
 	      return render json: { error: "Invalid field: #{field}" }, status: :unprocessable_entity
 	    end
 
-	    # ✅ Boolean normalization for nested fields
+	    # Convert boolean if needed
 	    converted_value =
 	      if record.has_attribute?(field) && record.column_for_attribute(field).type == :boolean
-	        normalize_boolean.call(value)
+	        case value.to_s.strip.downcase
+	        when "yes", "true", "1" then true
+	        when "no", "false", "0" then false
+	        else nil
+	        end
 	      else
 	        value
 	      end
 
-	    # Always save for boolean fields, even if value hasn't changed
-	    if record.new_record? ||
-	       record.send(field) != converted_value ||
-	       (record.has_attribute?(field) && record.column_for_attribute(field).type == :boolean)
+	    if record.new_record? || record.send(field) != converted_value
 	      record[field] = converted_value
 	      if record.save
 	        return render json: { message: "Saved successfully!", id: record.id }, status: :ok
@@ -215,40 +212,37 @@ class ProviderSourcesController < ApplicationController
 	      return render json: { success: true, data_key: field_name, data_value: value }
 	    end
 	  else
-	    # === Flat fields (non-nested, fallback to provider_source.data) ===
-	    mapped_attribute = ProviderPersonalInformation::FIELD_MAP[field_name]
+      # call autosave service
+	  	# Step 1: Save to ProviderPersonalInformation if mapped
+		  mapped_attribute = ProviderPersonalInformation::FIELD_MAP[field_name]
 
-	    if mapped_attribute.present?
-	      personal_info = current_provider_source.provider_personal_information || current_provider_source.build_provider_personal_information
+			if mapped_attribute.present?
+				personal_info = current_provider_source.provider_personal_information || current_provider_source.build_provider_personal_information
+			  if personal_info.respond_to?(mapped_attribute)
+			    value_to_store =
+			      if value.is_a?(String) && %w[yes no].include?(value.downcase)
+			        value.downcase == "yes"
+			      elsif value.is_a?(Array)
+			        value.join(",")
+			      else
+			        value
+			      end
 
-	      if personal_info.respond_to?(mapped_attribute)
-	        if personal_info.has_attribute?(mapped_attribute) && personal_info.column_for_attribute(mapped_attribute).type == :boolean
-	          value_to_store = normalize_boolean.call(value)
-	        elsif value.is_a?(Array)
-	          value_to_store = value.join(",")
-	        else
-	          value_to_store = value
-	        end
+			    personal_info[mapped_attribute] = value_to_store
 
-	        personal_info[mapped_attribute] = value_to_store
+			    # 👇 Additional logic to set cred_status
+			    if mapped_attribute.to_s == "attest_date"
+			      personal_info.cred_status = "attested"
+			    end
 
-	        if mapped_attribute.to_s == "attest_date"
-	          personal_info.cred_status = "attested"
-	        end
+			    personal_info.save(validate: false) # Save without validations
+			  end
+			end
 
-	        personal_info.save(validate: false)
-	      end
-	    end
-
+	    # === Handle flat fields (non-nested, fallback to provider_source.data) ===
 	    field_key = field_name.parameterize(separator: "_")
 	    data_record = current_provider_source.data.find_or_initialize_by(data_key: field_key)
-
-	    # ✅ Boolean normalization for flat fields
-	    if data_record.has_attribute?(:data_value) && data_record.column_for_attribute(:data_value).type == :boolean
-	      data_record.data_value = normalize_boolean.call(value)
-	    else
-	      data_record.data_value = value.is_a?(Array) ? value.join(",") : value
-	    end
+	    data_record.data_value = value.is_a?(Array) ? value.join(",") : value
 
 	    if data_record.save
 	      return render json: { success: true, data_key: field_key, data_value: value }
@@ -291,41 +285,33 @@ class ProviderSourcesController < ApplicationController
   end
 
   def autosave_multi_record
-	  model = params[:model]
-	  id = params[:id]
-	  content = params[:content]
-	  field = params[:field]
+    model = params[:model]
+    id = params[:id]
+    content = params[:content]
+    field = params[:field]
 
-	  Rails.logger.debug ">>> AUTOSAVE_MULTI_RECORD: model=#{model}, id=#{id}, field=#{field}, content=#{content}"
+    if model == 'dea' || model == 'cds'
+		  ProviderSources::AutosaveService.new(
+		    source: current_provider_source,
+		    field_name: field,
+		    value: content,
+		    model_id: id,
+		    model: model
+		  ).perform
+		end
 
-	  record_class = case model
-	                 when 'dea' then ProviderSourcesDea
-	                 when 'cds' then ProviderSourcesCds
-	                 when 'registration' then ProviderSourcesRegistration
-	                 when 'cme' then ProviderSourceCme
-	                 end
+    record = if model == 'dea'
+      ProviderSourcesDea.find(id)
+    elsif model == 'cds'
+      ProviderSourcesCds.find(id)
+    elsif model == 'registration'
+      ProviderSourcesRegistration.find(id)
+    elsif model == 'cme'
+      ProviderSourceCme.find(id)
+    end
 
-	  return head :bad_request unless record_class
-
-	  record = record_class.find_by(id: id)
-	  return head :not_found unless record
-
-	  # call autosave service only if needed
-	  if %w[dea cds].include?(model)
-	    ProviderSources::AutosaveService.new(
-	      source: current_provider_source,
-	      field_name: field,
-	      value: content,
-	      model_id: id,
-	      model: model
-	    ).perform
-	  end
-
-	  # explicitly log the update
-	  success = record.update(field => content)
-	  Rails.logger.debug ">>> Updated #{record_class.name} id=#{id} field=#{field} to #{content.inspect} => #{success}"
-	  render json: { success: success, field: field, value: content }
-	end
+    record.update_attribute(field,content)
+  end
 
 	def fetch
 	  return unless params[:field_name].present?
@@ -335,47 +321,14 @@ class ProviderSourcesController < ApplicationController
 	  # 🚫 Skip fetching if it's part of the specialty section
 	  return if field_name.include?("provider_source_specialities")
 
-	  ps = current_provider_source
+	  data = current_provider_source.data.find_or_create_by(data_key: field_name)
 
-	  # ✅ Ensure provider source is saved before calling create
-	  if ps.nil? || !ps.persisted?
-	    Rails.logger.warn "⚠️ fetch: current_provider_source not persisted or nil"
-	    return render json: { value: nil }, status: :ok
-	  end
-
-	  # ✅ Safe find_or_create_by
-	  data = ps.data.find_or_initialize_by(data_key: field_name)
-	  data.save if data.new_record? && ps.persisted?
-
-	  # ✅ Fallback for nested model fields if no value in provider_source_data
-	  if data.data_value.blank?
-	    if params[:model_name].present?
-	      model_name = params[:model_name].to_s
-
-	      begin
-	        if ps.respond_to?(model_name)
-	          records = ps.send(model_name)
-	          record = if params[:record_id].present?
-	                     records.find_by(id: params[:record_id])
-	                   else
-	                     records.last
-	                   end
-
-	          if record&.respond_to?(field_name)
-	            data.data_value = record.send(field_name)
-	          end
-	        end
-	      rescue StandardError => e
-	        Rails.logger.warn "⚠️ fetch: Could not fetch nested model value for #{model_name}. Error: #{e.message}"
-	      end
-	    end
-	  end
 
 	  respond_to do |format|
 	    format.json do
 	      render json: {
 	        value: filtered_value(data&.data_value, field_name),
-	      }, status: :ok
+	      }
 	    end
 	  end
 	end

@@ -38,7 +38,7 @@
         </div>
         <% if @practice_information_educations %>
             <div class="col-lg-12">
-                <div class="d-flex justify-content-between bg-medium-grey align-items-center py-2 mt-3">
+                <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-0">
                     <div class="page_info ms-3 text-black">
                     <%= page_entries_info @practice_information_educations %>
                     </div>
@@ -58,11 +58,10 @@
                     <th class="text-white">Attended From</th>
                     <th class="text-white">Attended To</th>
                     <th class="text-white">Status</th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                <% @practice_information_educations.where(form_type: [nil, 'main']).each do |practice_information_educations| %>
+                <% @practice_information_educations.each do |practice_information_educations| %>
                     <tr>
                         <td><a href="<%= mhc_verification_platform_path(practice_information_education_id: practice_information_educations.id, page_tab: 'education_record')%>" id="OigDisplayGeneral"
                                 class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none"><%= practice_information_educations.institution_name %>
@@ -70,14 +69,6 @@
                         <td><%= practice_information_educations.start_date&.strftime('%b %d, %Y') %></td>
                         <td><%= practice_information_educations.end_date&.strftime('%b %d, %Y') %></td>
                         <td><%= practice_information_educations.verification_status.presence || "Not Requested" %></td>
-                        <td>
-                          <%= button_to mhc_practice_information_education_path(practice_information_educations), 
-                            method: :delete, 
-                            data: { confirm: 'Are you sure you want to delete this education detail?' }, 
-                            class: 'btn btn-outline-danger btn-sm' do %>
-                            <i class="bi bi-trash"></i>
-                          <% end %>  
-                        </td>
                     </tr>
                 <% end %>
             </tbody>

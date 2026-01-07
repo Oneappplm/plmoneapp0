@@ -48,7 +48,7 @@ gem 'will_paginate-bootstrap-style' #https://github.com/delef/will_paginate-boot
 
 # placed this so I can create dummy records on live we can just delete fake record later.
 gem 'faker' #https://github.com/faker-ruby/faker
-gem 'countries', '~> 3.0', require: 'countries/global' # https://github.com/countries/countries
+gem 'countries', require: 'countries/global' #https://github.com/countries/countries
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
@@ -118,7 +118,6 @@ gem 'wkhtmltopdf-binary' # Required dependency for wicked_pdf
 gem 'ransack'
 gem 'mail_form'
 gem 'sidekiq'
-gem 'mini_magick'
 
 gem 'stripe'
 gem 'prawn-table', '~> 0.2.2'
@@ -127,11 +126,3 @@ gem 'turbo-rails'
 
 gem 'ruby-openai'
 gem 'chronic'
-
-gem "bundler", "~> 2.4"
-gem "uri", "1.0.3"
-gem 'axlsx_rails'
-
-gem 'aws-sdk-s3', '~> 1.150'
-gem 'caxlsx_rails'
-gem 'pdf-reader'

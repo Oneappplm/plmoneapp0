@@ -4,9 +4,6 @@ class State < ApplicationRecord
   has_many :providers
   has_many :dea_licenses, class_name: 'ProviderDeaLicense'
   has_many :state_licenses, class_name: 'ProviderLicense'
-  has_many :license_url_histories,
-           class_name: "StateLicenseUrlHistory",
-           dependent: :destroy
 
   def self.providers_count
     State.select(:alpha_code, :name, :color, 'COUNT(providers.id) AS providers_count').joins(:providers).group(:alpha_code, :name, :color)

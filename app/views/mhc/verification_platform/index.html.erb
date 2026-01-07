@@ -54,6 +54,7 @@
                               <tr>
                                 <th class="text-white" scope="col">Practitioner Name</th>
                                 <th class="text-white" scope="col">Encompass ID</th>
+                                <th class="text-white" scope="col">Verification Status</th>
                                 <th class="text-white">Ready for download</th>
                                 <th class="text-white">In Process</th>
                                 <th class="text-white">Submitted</th>
@@ -65,7 +66,7 @@
                             <tbody>
                               <% if @provider_personal_informations.present? %>
                                 <% @provider_personal_informations.each do |ppi| %>
-                                  <%# provider_source = ppi.provider_source %>
+                                  <% provider_source = ppi.provider_source %>
                                   <tr>
                                     <td>
                                       <% if ppi.provider_attest_id.present? %>
@@ -77,12 +78,13 @@
                                       <% end %>
                                     </td>
                                     <td><%= ppi.caqh_provider_attest_id || ppi.provider_attest_id %></td>
+                                    <td><%= ppi.verification_status || 'Pending' %></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
-                                    <td><%#= provider_source&.all_sections_completed? ? 'Completed' : 'In Progress' %></td>
+                                    <td><%= provider_source&.all_sections_completed? ? 'Completed' : 'In Progress' %></td>
                                   </tr>
                                 <% end %>    
                               <% end %>

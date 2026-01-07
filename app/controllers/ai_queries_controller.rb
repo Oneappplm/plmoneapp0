@@ -29,16 +29,7 @@ class AiQueriesController < ApplicationController
     @input = query_string
 
     if @input.present?
-      raw_response = ChatGptService.new.ask(@input)
-
-      Rails.logger.info("ChatGPT raw response: #{raw_response}")
-
-      begin
-        @result = JSON.parse(raw_response)
-      rescue JSON::ParserError
-        Rails.logger.error("ChatGPT returned non-JSON: #{raw_response}")
-        @result = {}
-      end
+      @result = GeminiService.ask(@input)
 
       model_name = extract_model_name(@result)
 
@@ -55,20 +46,8 @@ class AiQueriesController < ApplicationController
           base_query = model.all
           base_query = base_query.joins(joins_clause.to_sym) if joins_clause.present?
 
-          # @q = base_query.ransack(params[:q])
-          # @records = @q.result.where(conditions).paginate(per_page: 10, page: params[:page] || 1)
-          begin
-            @q = base_query.ransack(params[:q])
-            @records = @q.result.where(conditions).paginate(per_page: 10, page: params[:page] || 1)
-          rescue ActiveRecord::StatementInvalid => e
-            Rails.logger.error("AI Query Error: #{e.message}")
-            @records = []
-            flash.now[:alert] = "Your AI query referred to a field or relation that doesn’t exist. Please try rephrasing your request."
-          rescue => e
-            Rails.logger.error("Unexpected AI error: #{e.message}")
-            @records = []
-            flash.now[:alert] = "Something went wrong while processing your query. Please try again."
-          end
+          @q = base_query.ransack(params[:q])
+          @records = @q.result.where(conditions).paginate(per_page: 10, page: params[:page] || 1)
         end
       end
     end

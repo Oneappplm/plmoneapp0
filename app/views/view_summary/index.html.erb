@@ -45,14 +45,7 @@
 		<div class="row g-0 border-bottom border-dark">
 			<% titles = [['Last Name:', '4', :last_name], ['Suffix:', '2', :suffix], ['First Name:', '3', :first_name], ['Middle Name:', '3', :middle_name]]%>
 			<% titles.each_with_index do |title,idx|%>
-				<%= HtmlUtils.table_column(
-				      title: title[0],
-				      value: @current_provider_source&.public_send(title[2])&.to_s.titleize,
-				      height: 'h-50px',
-				      last: ((titles.count - 1) == idx),
-				      size: title[1]
-				) %>
-
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
 			<% end %>
 		</div>
 

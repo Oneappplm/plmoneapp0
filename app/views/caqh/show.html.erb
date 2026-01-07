@@ -6,13 +6,6 @@
     <input id="file_id" type="file" webkitdirectory mozdirectory name="files" multiple=true/>
   </h3>
   <button class="button btn btn-primary" id="submit-files" disabled>Submit</button>
-  <hr>
-  <h3>Select PDF file(s):</h3>
-  <input id="pdf_files" type="file" accept="application/pdf" multiple />
-  <br/>
-  <button class="btn btn-success mt-3" id="submit-pdf-files">
-    Upload PDF File(s)
-  </button>
 </div>
 <script>
   $(document).ready(function() {
@@ -24,42 +17,6 @@
         }
       };
     });
-    $('#submit-pdf-files').on("click", function() {
-      var data = new FormData();
-      $.each($("#pdf_files")[0].files, function(i, file) {
-        data.append(file.name, file);
-      });
-
-      $.ajax({
-        type: 'POST',
-        url: '/caqh/upload_pdf',
-        cache: false,
-        contentType: false,
-        processData: false,
-        data : data,
-        beforeSend: function() {
-          $('#submit-pdf-files').prop('disabled', true).html('Processing…');
-        },
-        success: function(result){
-          if (result.redirect_url) {
-            window.location.href = result.redirect_url;
-          } else {
-            alert("PDF processed!");
-            console.log(result);
-          }
-        },
-        error: function(err){
-          alert('Error uploading PDF.');
-        },
-        complete: function() {
-          $("#pdf_files").val('');
-          $('#submit-pdf-files').prop('disabled', true).html('Upload PDF File(s)');
-        }
-      });
-
-      return false;
-    });
-
 
     $('#submit-files').on("click", function(e){
       var data = new FormData();

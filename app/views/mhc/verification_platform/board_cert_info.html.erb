@@ -23,8 +23,7 @@
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <%= f.label :specialty_specialty_name, "Specialty" %>
-                                        <%= f.select :specialty_specialty_name, ProviderSpecialty::SPECIALITIES, {prompt: "Select Specialty"}, { class: "form-select" } %>
-                                        <%#= f.text_field :specialty_specialty_name, class: "form-control", placeholder: "Enter Specialty" %>
+                                        <%= f.text_field :specialty_specialty_name, class: "form-control", placeholder: "Enter Specialty" %>
                                     </div>
                                     <div class="col-md-6">
                                       <%= f.label :board_certified_flag, "Board Certification Status" %>
@@ -46,33 +45,27 @@
                                           "Unable to Verify"
                                         ], 
                                         { prompt: "Select Status" }, 
-                                        { class: "form-select" } 
+                                        { class: "form-control" } 
                                       %>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <%= f.label :specialty_board_name, "Issuing Board" %>
-                                        <%= f.select :specialty_board_name, ProviderSpecialty::ISSUING_BOARD, {prompt: "Select Issuing Board"}, { class: "form-select" } %>
-                                        <%#= f.text_field :specialty_board_name, class: "form-control", placeholder: "Enter Issuing Board" %>
+                                        <%= f.text_field :specialty_board_name, class: "form-control", placeholder: "Enter Issuing Board" %>
                                     </div>
                                     <div class="col-md-3">
                                         <%= f.label :initial_certification_date, "Initial Certification Date" %>
                                         <%= f.date_field :initial_certification_date, class: "form-control" %>
                                     </div>
                                     <div class="col-md-3">
-                                        <%= f.label :recertification_date, "Re-Certification Date" %>
-                                        <%= f.date_field :recertification_date, class: "form-control" %>
+                                        <%= f.label :expiration_date, "Certification Expiration Date" %>
+                                        <%= f.date_field :expiration_date, class: "form-control" %>
+                                        <div class="form-check mt-2">
+                                        <%= f.check_box :board_certification_expires_flag, class: "form-check-input" %>
+                                        <%= f.label :board_certification_expires_flag, "Does Not Expire", class: "form-check-label" %>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                  <%= f.label :expiration_date, "Certification Expiration Date" %>
-                                  <%= f.date_field :expiration_date, class: "form-control", id: "expiration_date_field" %>
-
-                                  <div class="form-check mt-2">
-                                    <%= f.check_box :board_certification_expires_flag, class: "form-check-input  border-dark", id: "board_certification_expires_flag" %>
-                                    <%= f.label :board_certification_expires_flag, "Does Not Expire", class: "form-check-label" %>
-                                  </div>
                                 </div>
                             </div>
                         </div>
@@ -203,7 +196,7 @@
                             </div>
                             <div class="card-body">
                                 <%= f.label :comments, "Additional Comments" %>
-                                <%= f.text_area :comments, class: "form-control border-dark", placeholder: "Enter comments here" %>
+                                <%= f.text_area :comments, class: "form-control", placeholder: "Enter comments here" %>
                             </div>
                         </div>
 
@@ -261,11 +254,13 @@
                                           Skip RVA
                                         </button>
                                     </div>
-                                    <div class="col-12 m-2">
-                                      <div class="text-danger <%= @provider_specialty.rva_informations.pluck(:restart_audit).include?(false) ? 'd-none' : '' %>" id="re-rva">
-                                        Need ReRVA
+                                    <!--
+                                      <div class="col-12 m-2">
+                                        <button class="btn text-danger <%= @board_cert_rva_information_completed.present? ? '' : 'd-none' %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" id="re-rva">
+                                          Need ReRVA
+                                        </button>
                                       </div>
-                                  </div>
+                                    --> 
                                 </div>
                             </div>
                         </div>
@@ -543,12 +538,7 @@
                                 <div class="form-row d-flex justify-content-end gap-2 mt-3">
                                   <button class="btn btn-primary py-1" type="button">View Received Images</button>
                                   <button class="btn btn-primary py-1" type="button" <%= 'disabled' if @last_rva_information.present? %>>Save Request</button>
-                                  
-                                  <button class="btn btn-primary py-1" type="button" id="restart-request-btn" 
-                                          <%= 'disabled' if !@last_rva_information.present? %>>
-                                    Restart Request
-                                  </button>
-
+                                  <button class="btn btn-primary py-1" type="button" <%= 'disabled' if !@last_rva_information.present? %>>Restart Request</button>
                                 </div>
                               </div>
                             </div>
@@ -567,7 +557,7 @@
                                     <%= f.label :source_name, 'Source Name:' %>
                                   </div>
                                   <div class="col-md-6">  
-                                    <%= f.select :source_name, options_for_select([['ABDPH', 'ABDPH'] , ['ABE', 'ABE'], ['ABFAS', 'ABFAS'], ['ABGD', 'ABGD'] , ['ABMS MasterFile', 'ABMS MasterFile'], ['ABO', 'ABO'], ['ABOG', 'ABOG'], ['ABOI/ID', 'ABOI/ID'], ['ABOMP', 'ABOMP'] , ['ABOMS', 'ABOMS'] , ['ABP', 'ABP'] , ['ABPD', 'ABPD'] , ['ABPHD', 'ABPHD'] , ['ABPM', 'ABPM'], ['ABPS', 'ABPS'], ['AMA PROFILE', 'AMM PROFILE'], ['AOA PROFILE', 'AOA PROFILE'], ['APPLICASTION', 'APPLICATION'], ['Certifacts', 'Certifacts'], ['ISSUING BORD', 'ISSUING BORD'], ['NCCPA', 'NCCPA'], ['UNABLE TO VERIFY', 'UNABLE TO VERIFY'] ], selected: @last_rva_information&.source_name.present? ? @last_rva_information&.source_name : ''), { include_blank: 'Select option' }, class: 'form-select' %>
+                                    <%= f.select :source_name, options_for_select([['ABDPH', 'ABDPH'] , ['ABE', 'ABE'], ['ABFAS', 'ABFAS'], ['ABGD', 'ABGD'] , ['ABMS MasterFile', 'ABMS MasterFile'], ['ABO', 'ABO'], ['ABOG', 'ABOG'], ['ABOI/ID', 'ABOI/ID'], ['ABOMP', 'ABOMP'] , ['ABOMS', 'ABOMS'] , ['ABP', 'ABP'] , ['ABPD', 'ABPD'] , ['ABPHD', 'ABPHD'] , ['ABPM', 'ABPM'], ['ABPS', 'ABPS'], ['AMA PROFILE', 'AMM PROFILE'], ['AOA PROFILE', 'AOA PROFILE'], ['APPLICASTION', 'APPLICATION'], ['Certifacts', 'Certifacts'], ['ISSUING BORD', 'ISSUING BORD']], selected: @last_rva_information&.source_name.present? ? @last_rva_information&.source_name : ''), { include_blank: 'Select option' }, class: 'form-select' %>
                                   </div>
                                 </div>
                                 <hr>
@@ -925,6 +915,7 @@
         // send request parameter
         $('#send-request-btn').click(function (e) {
           e.preventDefault();
+          var firstName = $('#firstname').html().trim();
           var personalInfoId = $('input[name="personal_info_id"]').val();
           var practiceInfoEducationId = $('input[name="practice_board_id"]').val();
 
@@ -937,6 +928,7 @@
               'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
             },
             data: {
+              first_name: firstName,
               personal_info_id: personalInfoId,
               board_id: practiceInfoEducationId,
             },
@@ -1004,73 +996,39 @@
             }
           });
         });
-        // restart request for quality audit
-        document.getElementById('restart-request-btn')?.addEventListener('click', function (e) {
-          e.preventDefault();
-
-          var boardId = $('input[name="practice_board_id"]').val();
-
-          if (!boardId) return;
-
-          document.querySelector('.loading-overlay').style.display = 'block';
-
-          fetch('/webscrapers/delete_provider_specialty', {
-            method: 'DELETE',
-            headers: {
-              'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ board_id: boardId })
-          })
-          .then(response => response.json())
-          .then(data => {
-            document.querySelector('.loading-overlay').style.display = 'none';
-            document.getElementById('re-rva').classList.remove('d-none');
-            window.location.reload();
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            document.querySelector('.loading-overlay').style.display = 'none';
-          });
-        });
-
-
         $('#audit-btn').click(function(e) {
           e.preventDefault(); // Prevent default form submission
+            // Check if an audit status is selected
+            if (!$('input[name="rva_information[audit_status]"]:checked').val()) {
+              alert("Please select an Audit Status before saving.");
+              return;
+            }
 
-          if (!$('input[name="rva_information[audit_status]"]:checked').val()) {
-            alert("Please select an Audit Status before saving.");
-            return;
-          }
-
+          // Serialize the form data from #audit-form
           const auditFormData = $('#audit-form').serialize();
-          const practiceInfoEducationId = $('input[name="practice_board_id"]').val();
+          var practiceInfoEducationId = $('input[name="practice_board_id"]').val();
 
+          // Combine the form data and additional data into a single object
           $.ajax({
             url: '/mhc/verification-platform/generate_rva_information',
             method: 'POST',
             headers: {
               'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
             },
-            data: `${auditFormData}&section=audit&practice_board_id=${practiceInfoEducationId}`,
+            data: `${auditFormData}&section=audit&practice_board_id=${practiceInfoEducationId}`, // Combine serialized data
             success: function(response) {
               const data = response.rva_information;
-
-              $('input[name="rva_information[audit_status]"]').val(data.audit_status);
-              $('#rva_information_audit_date').text(data.audit_date);
-              $('#rva_information_auditor').text(data.auditor);
-              $('#rva_information_audit_comments').val(data.audit_comments);
-              $('#re-rva').removeClass('d-none');
-
-              // Reload page after updating the UI
-              window.location.reload();
+              $('input[name="rva_information[audit_status]"]').value = data.audit_status;
+              $('#rva_information_audit_date')[0].innerHTML = data.audit_date;
+              $('#rva_information_auditor')[0].innerHTML = data.auditor;
+              $('#rva_information_audit_comments')[0].value = data.audit_comments;
+              $('#re-rva')[0].classList.remove('d-none');
             },
             error: function(xhr, status, error) {
               console.error('Error:', error);
             }
           });
         });
-
       });
 
     var csrfToken = $('meta[name="csrf-token"]').attr('content');
@@ -1227,26 +1185,4 @@
         if (adverseActionElement) adverseActionElement.checked = true;
       }
    }
-</script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const checkbox = document.getElementById("board_certification_expires_flag");
-    const expirationDateField = document.getElementById("expiration_date_field");
-
-    function toggleExpirationField() {
-      if (checkbox.checked) {
-        expirationDateField.disabled = true;
-        expirationDateField.value = ""; // optional: clear value when disabled
-      } else {
-        expirationDateField.disabled = false;
-      }
-    }
-
-    // Run on page load
-    toggleExpirationField();
-
-    // Listen for changes
-    checkbox.addEventListener("change", toggleExpirationField);
-  });
 </script>

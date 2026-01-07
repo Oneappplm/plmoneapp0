@@ -150,11 +150,10 @@ class ProviderLicensure < ApplicationRecord
     "Fellow"
   ]
 
-  before_validation :set_provider_attest, if: -> { caqh_provider_attest_id.present? }
+  before_validation :set_provider_attest
   private
 
   def set_provider_attest
-    match = ProviderAttest.find_by(caqh_provider_attest_id: caqh_provider_attest_id)
-    self.provider_attest ||= match
+    self.provider_attest = ProviderAttest.where(caqh_provider_attest_id: self.caqh_provider_attest_id).last
   end
 end

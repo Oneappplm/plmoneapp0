@@ -1,8 +1,6 @@
-require "sidekiq/web"
 Rails.application.routes.draw do
   get 'orders/index'
   resources :hvhs_data
-  mount Sidekiq::Web => "/sidekiq"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
@@ -19,7 +17,6 @@ Rails.application.routes.draw do
 	get 'show-virtual-review-committee', to: 'pages#show_virtual_review_committee'
   post 'caqh/upload', to: 'caqh#upload'
   get 'caqh/upload', to: 'caqh#show'
-  post "caqh/upload_pdf", to: "caqh#upload_pdf"
 		# get 'app-tracker', to: 'pages#app_tracker'
   get 'encompass', to: 'pages#encompass'
   get 'microsite', to: 'pages#microsite'
@@ -99,8 +96,6 @@ Rails.application.routes.draw do
   post 'logout-on-close', to: 'ajax#logout_on_close'
   patch '/record_approval', to: 'pages#record_approval', as: 'record_approval'
   get '/virtual_review_committee/minutes', to: 'pages#minutes', as: 'minutes'
-  get "virtual_review_committee/minutes/download", to: "pages#minutes_download", as: :download_minutes
-  get "verify_npi/:npi", to: "provider_personal_informations#verify_npi"
   
   get '/auth/auth0/callback', to: 'auth0#callback'
   get '/auth/failure', to: redirect('/')
@@ -145,12 +140,8 @@ Rails.application.routes.draw do
 
   namespace :mhc do
     get 'verify_npi/:number', to: 'provider_personal_informations#verify_npi'
-
-    resources :states, only: %i[index edit update]
-
     resources :provider_employments
     resources :provider_medicares
-    resources :provider_disclosures, only: [:create, :update]
     resources :pdf_generation_queues, only: [:create, :destroy] do
       member do
         get :queue_items
@@ -177,8 +168,18 @@ Rails.application.routes.draw do
       end
     end
     
-    resources :provider_personal_information_peer_refs
-    resources :provider_personal_information_facilities
+    resources :manage_clients, path: 'manage-clients' do
+      collection do
+        get 'edit_provider_personal_information'
+        post 'load_provider_personal_information'
+        get :append_remove_practitioner
+        get :get_provider_uploaded_docs
+      end
+      member do
+        get 'edit'
+        patch 'update'
+      end
+    end
     
     resources :provider_insurance_coverages
     resources :provider_npdbs
@@ -189,22 +190,9 @@ Rails.application.routes.draw do
     resources :practice_informations, path: 'practice-information'
     resources :provider_educations, only: [:index, :create, :update, :destroy], path: 'provider-education'
     resources :certifications, only: [:index, :create, :update, :destroy], path: 'certifications'
-    resources :practice_information_educations, only: [:index, :create, :update, :destroy], path: 'practice-information-education' do 
-      collection do
-        get  :search
-        post :create_temp
-      end
-      member do
-        post :preview_letter
-      end
-    end
+    resources :practice_information_educations, only: [:index, :create, :update, :destroy], path: 'practice-information-education'
     resources :provider_specialties, only: [:index, :new, :create, :edit, :destroy, :update], path: 'provider-specialties'
-    resources :provider_personal_informations, only: [:update], path: 'provider-personal-information' do
-      member do
-        patch :update_audit_date
-        post :submit_application
-      end
-    end
+    resources :provider_personal_informations, only: [:update], path: 'provider-personal-information'
     resources :provider_personal_information_sam_records, only: [:create, :show, :destroy], path: 'provider-personal-information-sam-record' do
       collection do
         get :auto_create, path: 'auto-create'
@@ -240,24 +228,12 @@ Rails.application.routes.draw do
 
 
     resources :manage_practitioners, only: [:index], path: 'manage-practitioners'
-    resources :manage_clients, path: 'manage-clients' do
+    resources :manage_clients, only: [:index], path: 'manage-clients' do
       collection do
-        get 'edit_provider_personal_information'
-        post 'load_provider_personal_information'
-        get :append_remove_practitioner
-        get :get_provider_uploaded_docs
-        post :ajax_upload
         post :provider_personal_uploaded_docs, path: 'provider-personal-uploaded-docs'
         delete :delete_provider_personal_docs, path: 'delete_provider_personal_docs'
       end
-      member do
-        get 'edit'
-        patch 'update'
-        get :show_uploaded_doc
-        patch :update_uploaded_doc
-      end
     end
-
     resources :schools
     get 'california_participating_physician_reapplication', to: 'verification_platform#california_participating_physician_reapplication'
     get 'california_participating_physician_addendum_b', to: 'verification_platform#california_participating_physician_addendum_b'
@@ -467,8 +443,6 @@ Rails.application.routes.draw do
     post '/send_liability_request', to: 'quality_audits#send_liability_request'
     post '/send_education_request', to: 'quality_audits#send_education_request' 
     post '/send_training_request', to: 'quality_audits#send_training_request' 
-    post '/send_peer_request', to: 'quality_audits#send_peer_request' 
-    post '/send_facility_request', to: 'quality_audits#send_facility_request' 
     post '/send_board_cert_request', to: 'quality_audits#send_board_cert_request' 
     post '/send_licensure_request', to: 'quality_audits#send_licensure_request'
     post '/send_certification_request', to: 'quality_audits#send_certification_request'
@@ -477,27 +451,11 @@ Rails.application.routes.draw do
     post '/send_dea_skip_rva', to: 'quality_audits#send_dea_skip_rva'
     post '/send_employment_skip_rva', to: 'quality_audits#send_employment_skip_rva'
     post '/send_npdb_skip_rva', to: 'quality_audits#send_npdb_skip_rva'
-    post '/send_oig_skip_rva', to: 'quality_audits#send_oig_skip_rva'
     post '/send_board_cert_skip_rva', to: 'quality_audits#send_board_cert_skip_rva'
     post '/send_liability_skip_rva', to: 'quality_audits#send_liability_skip_rva'
     post '/send_training_skip_rva', to: 'quality_audits#send_training_skip_rva'
-    post '/send_peer_skip_rva', to: 'quality_audits#send_peer_skip_rva'
-    post '/send_facility_skip_rva', to: 'quality_audits#send_facility_skip_rva'
-    post '/send_licensure_skip_rva', to: 'quality_audits#send_licensure_skip_rva'
     delete 'delete_npdb_request', to: 'quality_audits#delete_npdb_request'
     delete 'delete_education_request', to: 'quality_audits#delete_education_request'
-    delete 'delete_training_request', to: 'quality_audits#delete_training_request'
-    delete 'delete_peer_request', to: 'quality_audits#delete_peer_request'
-    delete 'delete_facility_request', to: 'quality_audits#delete_facility_request'
-    delete 'delete_liability_request', to: 'quality_audits#delete_liability_request'
-    delete 'delete_registration_request', to: 'quality_audits#delete_registration_request'
-    delete 'delete_provider_specialty', to: 'quality_audits#delete_provider_specialty'
-    delete 'delete_provider_licensure', to: 'quality_audits#delete_provider_licensure'
-    delete 'delete_oig', to: 'quality_audits#delete_oig'
-    delete 'delete_employment', to: 'quality_audits#delete_employment'
-    get "verify_npi/:npi", to: "provider_personal_informations#verify_npi"
-
-    
     resources :alaska_states, only: [:index], path: 'state-alaska' do
       collection do
         get :crawl
@@ -519,9 +477,6 @@ Rails.application.routes.draw do
       get :download_as_pdf
     end
   end
-
-  get 'multi_select_data/countries', to: 'multi_select_data#countries'
-  get 'multi_select_data/states', to: 'multi_select_data#states'
   resources :multi_select_data, only: [], path: 'multi-select-data' do
     collection do
       get :states
@@ -569,9 +524,6 @@ Rails.application.routes.draw do
       delete :delete_uploaded_document
       get :view_uploaded_documents
     end
-    collection do
-      get :export_excel
-    end
   end
   resources :help_codes, path: 'help-codes'
   resources :pdf_populators, only: [:index], path: 'pdf-populator' do
@@ -618,14 +570,6 @@ Rails.application.routes.draw do
   get "hippocrates/download_pdf", to: "hippocrates#download_pdf"
   post 'hippocrates/bulk_download_expired_licenses', to: 'hippocrates#bulk_download_expired_licenses'
 
-  namespace :mhc do
-    get "verification_platform/states", to: "verification_platform#states"
-
-    # for DEA file uploadation
-    resources :dea_files, only: [:new, :create]
-    get "dea_import_progress/:job_id", to: "dea_import_progress#show"
-    get "mhc/dea_import_stream/:job_id", to: "mhc/dea_import_progress#stream"
-  end
 
   #------for solana routes start here------
   resources :orders do

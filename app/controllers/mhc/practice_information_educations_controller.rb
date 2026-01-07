@@ -1,39 +1,19 @@
 class Mhc::PracticeInformationEducationsController < ApplicationController
-  before_action :set_practice_information_education, only: [:update, :destroy, :preview_letter]
+  before_action :set_practice_information_education, only: [:update, :destroy]
 
   def index
     @practice_information_educations = PracticeInformationEducation.all
   end
 
-  # app/controllers/mhc/practice_information_educations_controller.rb
-  def preview_letter
-    education = PracticeInformationEducation.find(params[:id])
-    pdf_binary = PdfLetterGenerator.new(education).generate_preview!
-
-    send_data pdf_binary,
-              filename: "education_letter_preview.pdf",
-              type: "application/pdf",
-              disposition: "inline" # 👈 opens in new tab
-  end
-
-
   def create
     @practice_information_education = PracticeInformationEducation.new(practice_information_education_params)
-    
-    if params[:commit] == "Create"
-      @practice_information_education.form_type = "main"
-    elsif params[:commit] == "save"
-      @practice_information_education.form_type = "popup"
-    end
 
     if @practice_information_education.save
       redirect_to mhc_verification_platform_path(page_tab: 'education',id: params[:practice_information_education][:provider_attest_id]), notice: 'Education detail saved successfully.'
     else
-      Rails.logger.error @practice_information_education.errors.full_messages.join(", ")
       redirect_to mhc_verification_platform_path(page_tab: 'education_record',id: params[:practice_information_education][:provider_attest_id]), alert: 'Failed to save education detail.'
     end
   end
-  
 
   def update
    @practice_information_education.assign_attributes(practice_information_education_params)
@@ -41,7 +21,6 @@ class Mhc::PracticeInformationEducationsController < ApplicationController
     if @practice_information_education.save
       redirect_to mhc_verification_platform_path(page_tab: 'education',id: params[:practice_information_education][:provider_attest_id]), notice: 'Education detail saved successfully.'
     else
-      Rails.logger.error @practice_information_education.errors.full_messages.join(", ")
       redirect_to mhc_verification_platform_path(page_tab: 'education_record',id: params[:practice_information_education][:provider_attest_id]), alert: 'Failed to save education detail.'
     end
   end
@@ -68,8 +47,7 @@ class Mhc::PracticeInformationEducationsController < ApplicationController
       :id, :provider_attest_id, :institution_name, :caqh_provider_attest_id,
       :address, :address2, :country, :county, :city, :province, :state, :postal_code, :start_date,
       :end_date, :email_address, :program_title, :program_completed_flag, :incomplete_explanation,
-      :phone_number, :fax_number, :degree_degree_abbreviation, :suite_dept_mail_stop, :if_other_list, :comments, :show_on_tickler,
-      :form_type
+      :phone_number, :fax_number, :degree_degree_abbreviation, :suite_dept_mail_stop, :if_other_list, :comments, :show_on_tickler
     )
   end
 end

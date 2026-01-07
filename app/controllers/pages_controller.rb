@@ -80,7 +80,7 @@ class PagesController < ApplicationController
   def unassigned_records
     selected_ids = params[:selected_ids][0].split(',').map(&:to_i)
     puts "Selected IDs: #{selected_ids.inspect}"
-    ProviderPersonalInformation.where(id: selected_ids).update_all(progress_status: 'to_be_assigned')
+    VirtualReviewCommittee.where(id: selected_ids).update_all(progress_status: 'to_be_assigned')
 
     redirect_to virtual_review_committee_path, notice: 'Assignments have been successfully removed'
   end
@@ -194,65 +194,12 @@ class PagesController < ApplicationController
   end
 
   def minutes
-    @completed_records = ProviderPersonalInformation.where(progress_status: "completed")
-
-    if params[:from_committee_date].present? || params[:to_committee_date].present? ||
-       params[:first_name].present? || params[:last_name].present?
-
-      @completed_records = @completed_records.where.not(committee_date: nil)
-
-      if params[:from_committee_date].present? && params[:to_committee_date].present?
-        from_date = Date.parse(params[:from_committee_date]) rescue nil
-        to_date   = Date.parse(params[:to_committee_date]) rescue nil
-        @completed_records = @completed_records.where(committee_date: from_date..to_date) if from_date && to_date
-      elsif params[:from_committee_date].present?
-        from_date = Date.parse(params[:from_committee_date]) rescue nil
-        @completed_records = @completed_records.where("committee_date >= ?", from_date) if from_date
-      elsif params[:to_committee_date].present?
-        to_date = Date.parse(params[:to_committee_date]) rescue nil
-        @completed_records = @completed_records.where("committee_date <= ?", to_date) if to_date
-      end
-
-      if params[:first_name].present?
-        @completed_records = @completed_records.where("LOWER(first_name) LIKE ?", "%#{params[:first_name].downcase}%")
-      end
-
-      if params[:last_name].present?
-        @completed_records = @completed_records.where("LOWER(last_name) LIKE ?", "%#{params[:last_name].downcase}%")
-      end
+    if params_present?.present?
+      @params_present = params_present?
+    else
+      @completed_records = ProviderPersonalInformation.where(progress_status: "completed")
     end
-  end
-
-  # download minutes summerize file in PDF
-  def minutes_download
-    # your real data (uncomment and remove build_dummy_records)
-    @records = ProviderPersonalInformation
-                 .where(progress_status: "completed")
-                 .order(:committee_date)
-
-
-    respond_to do |format|
-      format.pdf do   
-        render pdf: "committee_minutes_#{Date.today}.pdf",
-               template: "pages/minutes_reports",
-               formats: [:html],
-               disposition: "attachment", # or "inline"
-               page_size: "A4",
-               margin: { top: 30, bottom: 40, left: 16, right: 16 }, # space for header/footer
-               header: {
-                 html: { template: "shared/minutes_reports/header", formats: [:html] },
-                 spacing: 2
-               },
-               footer: {
-                 html: { template: "shared/minutes_reports/footer", formats: [:html] },
-                 spacing: 6
-               },
-               encoding: "UTF-8",
-               show_as_html: params[:debug].present? # /minutes_report.pdf?debug=1           
-      end
-    end
-  end
-
+  end 
 
 	def client_portal
     if current_setting.mhc?
@@ -413,51 +360,37 @@ class PagesController < ApplicationController
   # end
 
   def record_approval
-    # Get basic params
-    provider_ids = Array.wrap(params[:provider_ids].presence || params[:id])
-    description = params[:description].presence
-    updated, failed = [], []
+    provider_params = params.permit(:status, :description, :send_confirmation, provider_ids: [])
+    provider_ids = provider_params[:provider_ids].presence || [params[:provider_personal_information][:id]]
+
+    # Handle description override if OTHER checkbox used
+    desc = (params[:other_checkbox].present? && provider_params[:description].present?) ? "OTHER" : provider_params[:description]
+
+    updated = []
+    failed = []
 
     provider_ids.each do |pid|
       provider = ProviderPersonalInformation.find_by(id: pid)
       next unless provider
 
-      old_status = provider.status
       old_level = provider.review_level
 
-      if params[:status].present? && params[:review_level].blank?
-        # 🟢 STATUS CHANGE ONLY
-        
-        new_progress_status =
-          ["Final Approved", "Deny"].include?(params[:status]) ? "completed" : provider.progress_status
-          
-        if provider.update(status: params[:status], progress_status: new_progress_status)
-          provider.review_level_changes.create!(
-            changed_by: current_user.email,
-            from_level: old_status,
-            to_level: params[:status],
-            reason: description
-          )
-          updated << provider
-        else
-          failed << provider
-        end
-
-      elsif params[:review_level].present? && params[:status].blank?
-        # 🟣 REVIEW LEVEL CHANGE ONLY
-        if provider.update(
+      if provider_params[:status].present? && provider_params[:status] != "Pending"
+        success = provider.update(
           progress_status: "completed",
-          review_level: params[:review_level],
-          review_details: description,
+          review_level: provider_params[:status],
+          review_details: desc,
           vote_date: Time.current,
           vote_by: current_user.full_name,
-          cred_status: "returned"
+          cred_status: 'returned'
         )
+
+        if success
           provider.review_level_changes.create!(
             changed_by: current_user.email,
             from_level: old_level,
-            to_level: params[:review_level],
-            reason: description
+            to_level: provider_params[:status],
+            reason: desc
           )
           updated << provider
         else
@@ -466,12 +399,20 @@ class PagesController < ApplicationController
       end
     end
 
+    # Example: handle the static checkbox logic
+    if provider_params[:send_confirmation] == "1"
+      updated.each do |p|
+        # Trigger your confirmation mailer/service here
+        ProviderMailer.confirmation_email(p).deliver_later if defined?(ProviderMailer)
+      end
+    end
+
     if updated.any?
       flash[:notice] = "Updated #{updated.size} provider(s) successfully."
     elsif failed.any?
       flash[:alert] = "Some records failed: #{failed.map(&:id).join(', ')}"
     else
-      flash[:alert] = "No changes applied — missing status or review level."
+      flash[:alert] = "No status change applied."
     end
 
     redirect_to virtual_review_committee_path
@@ -691,34 +632,6 @@ class PagesController < ApplicationController
       params.permit(:name, :committee_date, :file_upload)
     end
 
-    def build_dummy_records
-      require "ostruct"
-      [
-        OpenStruct.new(
-          committee_date: Date.today - 10,
-          cred_cycle: "credentialing",
-          review_level: "clean",
-          caqh_provider_attest_id: "P-001234",
-          fullname: "Doe, Jane MD",
-          city: "Detroit",
-          specialty: "Psychiatry",
-          status: "APPROVED",
-          recred_due_date: Date.today + 365,
-          provider_attest_id: "ATT-001234"
-        ),
-        OpenStruct.new(
-          committee_date: Date.today - 7,
-          cred_cycle: "recredentialing",
-          review_level: "clean",
-          caqh_provider_attest_id: "P-004567",
-          fullname: "Smith, John DO",
-          city: "Dearborn",
-          specialty: "Family Medicine",
-          status: "APPROVED",
-          recred_due_date: Date.today + 540,
-          provider_attest_id: "ATT-004567"
-        )
-      ]
-    end
+
 end
 

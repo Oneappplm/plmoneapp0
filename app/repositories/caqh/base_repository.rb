@@ -8,54 +8,39 @@ class Caqh::BaseRepository < ApplicationService
     @model                     = model.constantize
     @primary_foreign_key_names = row.headers.first(headers_limit)
     @keys_replacement          = keys_replacement
-
-    # Preload or create ProviderAttest early
-    if row["ProviderAttestID"].present?
-      @provider_attest = ProviderAttest.find_or_create_by(
-        caqh_provider_attest_id: row["ProviderAttestID"]
-      )
-    end
+    ProviderAttest.find_or_create_by(caqh_provider_attest_id: row["ProviderAttestID"])
   end
 
   def call
-    ActiveRecord::Base.transaction do
-      # Stop if any primary keys are missing or not digits
-      return if model::PRIMARY_KEY_ROW_NAMES.map { |key| row[key] =~ /\A\d+\Z/ }.include?(nil)
-
-      object = model.find_or_initialize_by(primary_foreign_keys(row, model::PRIMARY_KEY_ROW_NAMES))
-
-      # Assign all non-primary fields
-      object.assign_attributes_from_csv_row(
-        row,
-        exclude_keys: model::PRIMARY_KEY_ROW_NAMES,
-        keys_replacement: keys_replacement
-      )
-
-      # Ensure provider_attest_id is assigned automatically
-      if @provider_attest.present? && object.respond_to?(:provider_attest_id)
-        object.provider_attest_id = @provider_attest.id
-      end
-
-      begin
-        object.save!
-      rescue => e
-        Rails.logger.error "🔥 ERROR saving #{model} record"
-        Rails.logger.error "➡️ MESSAGE: #{e.message}"
-        Rails.logger.error "➡️ ROW DATA: #{row.to_h}"
-        Rails.logger.error "➡️ ATTRIBUTES: #{object.attributes}"
-        Rails.logger.error "➡️ BACKTRACE: #{e.backtrace.first(10)}"
-        raise
-      end
-    end
+   ActiveRecord::Base.transaction do
+    # return early if one of the primary key is not present or not numbers
+    return if model::PRIMARY_KEY_ROW_NAMES.map { |key| row[key] =~ /\A\d+\Z/ }.include?(nil)
+    # Find an existing object or initialize a new one using the primary foreign keys from the CSV row
+    # 'model_class' is assumed to be the class of the object being worked with
+    # 'primary_foreign_keys' returns a hash of primary foreign keys derived from the CSV row
+    object = model.find_or_initialize_by(primary_foreign_keys(row, model::PRIMARY_KEY_ROW_NAMES))
+    # Assign attributes to the object from the CSV row, excluding primary foreign keys and using any key replacements
+    object.assign_attributes_from_csv_row(row, exclude_keys: model::PRIMARY_KEY_ROW_NAMES, keys_replacement: keys_replacement)
+    # Save the object to the database
+    object.save!
+   end
   end
 
   protected
-
   def primary_foreign_keys(row, keys = [])
-    return {} if keys.empty?
+   # Return an empty hash if the keys array is empty
+   return {} unless keys.size != 0
 
-    keys.each_with_object({}) do |key, hash|
-      hash["caqh_#{key.snake_case}"] = row[key]
-    end
+   # Initialize an empty hash to store the primary foreign keys
+   hash = {}
+
+   # Iterate through each key in the keys array
+   keys.each do |key|
+    # Convert the key to a snake_case string and set its value from the row
+    hash["caqh_#{key.snake_case.to_s}"] = row[key]
+   end
+
+   # Return the hash containing the primary foreign keys
+   hash
   end
 end
