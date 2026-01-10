@@ -114,24 +114,31 @@ class PagesController < ApplicationController
     # Apply search and filters via Ransack
     @provider_personal_informations = @q.result
 
+    @practitioner_types =
+      ProviderPersonalInformation
+        .where.not(practitioner_type: [nil, ""])
+        .distinct
+        .order(:practitioner_type)
+        .pluck(:practitioner_type)
+
     # Date range filtering
-    if params[:review_date_from].present? && params[:review_date_to].present?
-      @provider_personal_informations = @provider_personal_informations.where(review_date: Date.parse(params[:review_date_from])..Date.parse(params[:review_date_to]))
-    end
+    # if params[:review_date_from].present? && params[:review_date_to].present?
+    #   @provider_personal_informations = @provider_personal_informations.where(review_date: Date.parse(params[:review_date_from])..Date.parse(params[:review_date_to]))
+    # end
 
-    if params[:committee_date_from].present? && params[:committee_date_to].present?
-      @provider_personal_informations = @provider_personal_informations.where(committee_date: Date.parse(params[:committee_date_from])..Date.parse(params[:committee_date_to]))
-    end
+    # if params[:committee_date_from].present? && params[:committee_date_to].present?
+    #   @provider_personal_informations = @provider_personal_informations.where(committee_date: Date.parse(params[:committee_date_from])..Date.parse(params[:committee_date_to]))
+    # end
 
-    if params[:PSV_date_from].present? && params[:PSV_date_to].present?
-      @provider_personal_informations = @provider_personal_informations.where(psv_completed_date: Date.parse(params[:PSV_date_from])..Date.parse(params[:PSV_date_to]))
-    end
+    # if params[:PSV_date_from].present? && params[:PSV_date_to].present?
+    #   @provider_personal_informations = @provider_personal_informations.where(psv_completed_date: Date.parse(params[:PSV_date_from])..Date.parse(params[:PSV_date_to]))
+    # end
 
     # Progress status filter
     progress_status = params[:'vrc-progress-status'].presence || 'to_be_assigned'
 
-    if progress_status != 'all' && params[:vrc] != 'work-tickler'
-      @provider_personal_informations = @provider_personal_informations.send(progress_status)
+    if params[:q].blank? && progress_status != 'all' && params[:vrc] != 'work-tickler'
+      @provider_personal_informations = @provider_personal_informations.public_send(progress_status)
     end
 
 
@@ -156,7 +163,8 @@ class PagesController < ApplicationController
     when 'issue'
       render 'issue'
     when 'minutes'
-      @completed_records = ProviderPersonalInformation.where(progress_status: "completed")
+      base = ProviderPersonalInformation.where(cred_status: %w[psv returned])
+      @completed_records = base.where(progress_status: "completed")
       render 'minutes'
     end
   end
