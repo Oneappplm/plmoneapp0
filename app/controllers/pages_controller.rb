@@ -105,14 +105,15 @@ class PagesController < ApplicationController
 	end
 
 	def virtual_review_committee
-    # @provider_personal_informations = ProviderPersonalInformation.all
-    @q = ProviderPersonalInformation.where(cred_status: ['psv', 'returned']).ransack(params[:q])
+    base_scope = ProviderPersonalInformation.where(cred_status: %w[psv returned])
+
+    @q = base_scope.ransack(params[:q])
     @vrc_documents = VrcDocument.all
     @vrc_directors = User.directors
     @psv_pdf = SavedProfile.last
 
-    # Apply search and filters via Ransack
-    @provider_personal_informations = @q.result
+    # Apply search via Ransack (still PSV/Returned only)
+    scoped = @q.result
 
     @practitioner_types =
       ProviderPersonalInformation
@@ -121,26 +122,20 @@ class PagesController < ApplicationController
         .order(:practitioner_type)
         .pluck(:practitioner_type)
 
-    # Date range filtering
-    # if params[:review_date_from].present? && params[:review_date_to].present?
-    #   @provider_personal_informations = @provider_personal_informations.where(review_date: Date.parse(params[:review_date_from])..Date.parse(params[:review_date_to]))
-    # end
+    # ✅ Card counts (PSV/Returned + current search filters)
+    # If you want counts to ignore search filters, use base_scope instead of scoped.
+    @completed_count      = scoped.where(progress_status: 'completed').count
+    @assigned_count       = scoped.where(progress_status: 'assigned').count
+    @to_be_assigned_count = scoped.where(progress_status: 'to_be_assigned').count
 
-    # if params[:committee_date_from].present? && params[:committee_date_to].present?
-    #   @provider_personal_informations = @provider_personal_informations.where(committee_date: Date.parse(params[:committee_date_from])..Date.parse(params[:committee_date_to]))
-    # end
-
-    # if params[:PSV_date_from].present? && params[:PSV_date_to].present?
-    #   @provider_personal_informations = @provider_personal_informations.where(psv_completed_date: Date.parse(params[:PSV_date_from])..Date.parse(params[:PSV_date_to]))
-    # end
-
-    # Progress status filter
+    # Progress status filter for main list
     progress_status = params[:'vrc-progress-status'].presence || 'to_be_assigned'
+
+    @provider_personal_informations = scoped
 
     if params[:q].blank? && progress_status != 'all' && params[:vrc] != 'work-tickler'
       @provider_personal_informations = @provider_personal_informations.public_send(progress_status)
     end
-
 
     # Additional filter for 'work-tickler'
     if params[:vrc] == 'work-tickler'
@@ -150,8 +145,13 @@ class PagesController < ApplicationController
         .where.not(review_date: nil)
     end
 
+    # ✅ Total count for the CURRENT filtered list (before pagination)
+    @total_vrc_count = @provider_personal_informations.count
+
     # Pagination after all filters
-    @provider_personal_informations = @provider_personal_informations.paginate(page: params[:page], per_page: 50)
+    @provider_personal_informations =
+      @provider_personal_informations.paginate(page: params[:page], per_page: 50)
+
     # Conditional rendering based on `vrc` parameter
     case params[:vrc]
     when 'work-tickler'
@@ -163,12 +163,12 @@ class PagesController < ApplicationController
     when 'issue'
       render 'issue'
     when 'minutes'
-      base = ProviderPersonalInformation.where(cred_status: %w[psv returned])
-      @completed_records = base.where(progress_status: "completed")
+      # ✅ keep consistent: PSV/Returned only + paginate for correct counts
+      @completed_records = base_scope.where(progress_status: "completed")
+                                     .paginate(page: params[:page], per_page: 50)
       render 'minutes'
     end
   end
-
 
   def records
     @vrc_directors = User.directors
