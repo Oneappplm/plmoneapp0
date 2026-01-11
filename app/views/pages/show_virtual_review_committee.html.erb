@@ -117,9 +117,17 @@
 							</tr>
 							<tr>
 								<td>
-									<strong for="">Level of Review:</strong> <br>
-									<span id="review-level"><%= @provider&.review_level %></span>
+								  <strong>Level of Review:</strong> <br>
+
+								  <% dea_record = ProviderDea.find_by(provider_attest_id: @provider&.provider_attest_id) %>
+
+								  <% if dea_record&.expiration_date.present? %>
+								    <span class="badge bg-danger text-white">Unclean</span>
+								  <% else %>
+								    <span id="review-level"><%= @provider&.review_level %></span>
+								  <% end %>
 								</td>
+
 								<td>
 									<strong for="">Review Details:</strong> <br>
 									<%= @provider.review_details %>
@@ -240,7 +248,15 @@
 			            <tr class="alt-row">
 			              <td clas><%= @provider&.caqh_provider_attest_id || @provider&.provider_attest_id %></td>
 			              <td clas><%= @provider&.id %></td>
-			              <td clas><%= @provider&.review_level %></td>
+			              <td clas>
+			              	<% dea_record = ProviderDea.find_by(provider_attest_id: @provider&.provider_attest_id) %>
+			              	
+										  <% if dea_record&.expiration_date.present? %>
+										    <span class="badge bg-danger text-white">Unclean</span>
+										  <% else %>
+										    <span id="review-level"><%= @provider&.review_level %></span>
+										  <% end %>
+			              </td>
 			              <td clas></td>
 			              <td clas></td>
 			            </tr>
