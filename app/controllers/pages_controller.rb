@@ -202,51 +202,21 @@ class PagesController < ApplicationController
   end
 
   def minutes
-    @completed_records = ProviderPersonalInformation.where(progress_status: "completed")
-
-    if params[:from_committee_date].present? || params[:to_committee_date].present? ||
-       params[:first_name].present? || params[:last_name].present?
-
-      @completed_records = @completed_records.where.not(committee_date: nil)
-
-      if params[:from_committee_date].present? && params[:to_committee_date].present?
-        from_date = Date.parse(params[:from_committee_date]) rescue nil
-        to_date   = Date.parse(params[:to_committee_date]) rescue nil
-        @completed_records = @completed_records.where(committee_date: from_date..to_date) if from_date && to_date
-      elsif params[:from_committee_date].present?
-        from_date = Date.parse(params[:from_committee_date]) rescue nil
-        @completed_records = @completed_records.where("committee_date >= ?", from_date) if from_date
-      elsif params[:to_committee_date].present?
-        to_date = Date.parse(params[:to_committee_date]) rescue nil
-        @completed_records = @completed_records.where("committee_date <= ?", to_date) if to_date
-      end
-
-      if params[:first_name].present?
-        @completed_records = @completed_records.where("LOWER(first_name) LIKE ?", "%#{params[:first_name].downcase}%")
-      end
-
-      if params[:last_name].present?
-        @completed_records = @completed_records.where("LOWER(last_name) LIKE ?", "%#{params[:last_name].downcase}%")
-      end
-    end
+    @completed_records = filtered_completed_records
   end
 
   # download minutes summerize file in PDF
   def minutes_download
-    # your real data (uncomment and remove build_dummy_records)
-    @records = ProviderPersonalInformation
-                 .where(progress_status: "completed")
-                 .order(:committee_date)
-
+    @records = filtered_completed_records.order(:committee_date)
 
     respond_to do |format|
       format.pdf do   
         render pdf: "committee_minutes_#{Date.today}.pdf",
                template: "pages/minutes_reports",
                formats: [:html],
-               disposition: "attachment", # or "inline"
+               disposition: "attachment",
                page_size: "A4",
-               margin: { top: 30, bottom: 40, left: 16, right: 16 }, # space for header/footer
+               margin: { top: 30, bottom: 40, left: 16, right: 16 },
                header: {
                  html: { template: "shared/minutes_reports/header", formats: [:html] },
                  spacing: 2
@@ -256,7 +226,7 @@ class PagesController < ApplicationController
                  spacing: 6
                },
                encoding: "UTF-8",
-               show_as_html: params[:debug].present? # /minutes_report.pdf?debug=1           
+               show_as_html: params[:debug].present?        
       end
     end
   end
@@ -352,6 +322,14 @@ class PagesController < ApplicationController
                                  else
                                    ProviderPersonalInformation.all
                                  end
+    provider_attest_ids =
+      @provider_personal_informations.map(&:provider_attest_id).compact                          
+    
+    dea_map =
+      ProviderDea
+        .where(provider_attest_id: @provider_personal_informations.pluck(:provider_attest_id))
+        .pluck(:provider_attest_id, :expiration_date)
+        .to_h
 
     csv_data = CSV.generate(headers: true) do |csv|
       csv << [
@@ -361,6 +339,9 @@ class PagesController < ApplicationController
       ]
 
       @provider_personal_informations.each do |ppi|
+        review_level =
+          dea_map[ppi.provider_attest_id].present? ? "Unclean" : ppi.review_level
+
         csv << [
           ppi.caqh_provider_attest_id || ppi.provider_attest_id,
           ppi.progress_status,
@@ -368,7 +349,7 @@ class PagesController < ApplicationController
           ppi.provider_type_provider_type_abbreviation,
           ppi.cred_cycle,
           ppi.attest_date&.strftime('%Y-%m-%d'),
-          ppi.review_level,
+          review_level,
           ppi.recred_due_date&.strftime('%Y-%m-%d'),
           ppi.review_date&.strftime('%Y-%m-%d'),
           ppi.committee_date&.strftime('%Y-%m-%d'),
@@ -683,6 +664,37 @@ class PagesController < ApplicationController
   end
 
   private
+
+    def filtered_completed_records
+      records = ProviderPersonalInformation.where(progress_status: "completed")
+
+      if params[:from_committee_date].present? || params[:to_committee_date].present?
+        records = records.where.not(committee_date: nil)
+
+        if params[:from_committee_date].present? && params[:to_committee_date].present?
+          from_date = Date.parse(params[:from_committee_date]) rescue nil
+          to_date   = Date.parse(params[:to_committee_date]) rescue nil
+          records = records.where(committee_date: from_date..to_date) if from_date && to_date
+        elsif params[:from_committee_date].present?
+          from_date = Date.parse(params[:from_committee_date]) rescue nil
+          records = records.where("committee_date >= ?", from_date) if from_date
+        elsif params[:to_committee_date].present?
+          to_date = Date.parse(params[:to_committee_date]) rescue nil
+          records = records.where("committee_date <= ?", to_date) if to_date
+        end
+      end
+
+      if params[:first_name].present?
+        records = records.where("LOWER(first_name) LIKE ?", "%#{params[:first_name].downcase}%")
+      end
+
+      if params[:last_name].present?
+        records = records.where("LOWER(last_name) LIKE ?", "%#{params[:last_name].downcase}%")
+      end
+
+      records
+    end
+
   	def assigned_params
   	  params.permit(:review_date, :committee_date, :progress_status, :vrc_progress_status)
   	end
