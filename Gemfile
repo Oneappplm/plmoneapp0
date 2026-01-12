@@ -129,4 +129,3 @@ gem 'chronic'
 gem "bundler", "~> 2.4"
 gem "nio4r", "= 2.7.4"
 gem 'rexml', '~> 3.2', '>= 3.2.4'
-gem "uri", "1.1.1"
