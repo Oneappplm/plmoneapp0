@@ -16,8 +16,7 @@ class PdfGenerationQueueJob < ApplicationJob
       )
 
       # Enqueue only items that aren't completed yet
-      queue.pdf_queue_items.where.not(status: "completed").find_each do |item|
-        # Backward-compatible: PdfQueueItemJob supports 1 or 3 args
+      queue.pdf_queue_items.queued.find_each do |item|
         PdfQueueItemJob.perform_later(item.id, provider.id, user.id)
       end
     end
