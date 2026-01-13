@@ -123,7 +123,7 @@ gem 'turbo-rails'
 gem 'ruby-openai'
 gem 'chronic'
 gem "bundler", "~> 2.4"
-gem "uri", "1.0.3"
+gem "uri", "0.10.1"
 gem 'axlsx_rails'
 
 gem 'aws-sdk-s3', '~> 1.150'
