@@ -55,23 +55,35 @@ class PdfQueueItemJob < ApplicationJob
     item.file_name == "Verified Profile" || item.file_path.to_s == "verified_profile"
   end
 
-  def mark_processing(item)
-    safe_update_item(item,
-      status: "processing",
-      message: "Processing started"
-    ) if status_allowed?(item, "processing")
+   def mark_processing(item)
+    return unless item.queued? || item.sent?
+    safe_update_item(item, status: "processing", message: "Processing started")
   end
 
   def enqueue_merge_if_ready(queue, provider, user)
     queue.with_lock do
-      remaining = queue.pdf_queue_items.where.not(status: "completed").count
+      total     = queue.pdf_queue_items.count
+      completed = queue.pdf_queue_items.completed.count
+      errors    = queue.pdf_queue_items.error.count
+      queued    = queue.pdf_queue_items.queued.count
+      processing = queue.pdf_queue_items.processing.count
 
-      if remaining.zero? && !queue.merge_enqueued?
-        queue.update!(merge_enqueued: true)
+      Rails.logger.info "🔎 [QUEUE] id=#{queue.id} total=#{total} completed=#{completed} processing=#{processing} queued=#{queued} errors=#{errors} merge_enqueued=#{queue.merge_enqueued?}"
+
+      # If any item failed, mark queue error and STOP.
+      if errors > 0
+        queue.update!(
+          status: "error",
+          message: "#{errors} item(s) failed. Check Sidekiq Failed tab/logs."
+        )
+        return
+      end
+
+      # All items completed -> enqueue merge once
+      if total > 0 && completed == total && !queue.merge_enqueued?
+        queue.update!(merge_enqueued: true, status: "processing", message: "Merging PDFs...")
         PdfQueueMergeJob.perform_later(queue.id, provider.id, user.id)
         Rails.logger.info "🚀 [MERGE] enqueued queue=#{queue.id}"
-      else
-        Rails.logger.info "⏳ [MERGE] waiting queue=#{queue.id} remaining=#{remaining}"
       end
     end
   end
