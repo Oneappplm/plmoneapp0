@@ -1,4 +1,5 @@
 class QueryReportsController < ApplicationController
+  before_action :set_ransack_search, except: :cme_practitioner_report
 
   def index
     if params[:page].present?
@@ -51,6 +52,12 @@ class QueryReportsController < ApplicationController
    respond_to do |format|
       format.csv { send_data csv_data, filename: "cme_practitioner_report_#{Date.today}.csv" }
     end
+  end
+
+  private
+
+  def set_ransack_search
+    @q = ProviderPersonalInformation.where.not(cred_status: 'no-application').or( ProviderPersonalInformation.where(cred_status: nil) ).ransack(params[:q])
   end
 end
 
