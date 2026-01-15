@@ -4,14 +4,14 @@ class WeeklyDeaImportJob < ApplicationJob
 
   REDIS_TTL_SECONDS = 6.hours.to_i
 
-  def perform(filepath)
-    return unless File.exist?(filepath)
-
+  def perform(file_path)
     job_id = self.job_id
     redis  = $redis
     key    = "dea_import:#{job_id}"
 
-    total_lines = count_lines(filepath) # still a pass, but isolated
+    raise "File not found: #{file_path}" unless File.exist?(file_path)
+
+    total_lines = count_lines(file_path)
 
     redis.multi do |r|
       r.hset(key, "status", "running")
@@ -21,15 +21,19 @@ class WeeklyDeaImportJob < ApplicationJob
       r.expire(key, REDIS_TTL_SECONDS)
     end
 
-    DeaMasterImporter.new(filepath, job_id).import!
+    # 🔥 Directly process the CarrierWave file
+    DeaMasterImporter.new(file_path, job_id).import!
 
-    File.delete(filepath) if File.exist?(filepath)
+    redis.multi do |r|
+      r.hset(key, "status", "completed")
+      r.hset(key, "last_update", Time.current.to_i)
+      r.expire(key, REDIS_TTL_SECONDS)
+    end
+
   rescue => e
-    # mark failed
-    redis = $redis
     redis.multi do |r|
       r.hset(key, "status", "failed")
-      r.hset(key, "error", e.message.to_s.truncate(500))
+      r.hset(key, "error", e.message.to_s[0, 500])
       r.hset(key, "last_update", Time.current.to_i)
       r.expire(key, REDIS_TTL_SECONDS)
     end
@@ -39,9 +43,8 @@ class WeeklyDeaImportJob < ApplicationJob
   private
 
   def count_lines(path)
-    # Very simple & reliable. If you want the absolute fastest: use `wc -l` via Open3, but this is portable.
-    c = 0
-    File.foreach(path) { c += 1 }
-    c
+    count = 0
+    File.foreach(path) { count += 1 }
+    count
   end
 end

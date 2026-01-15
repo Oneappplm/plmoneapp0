@@ -10,21 +10,30 @@ class Mhc::DeaFilesController < ApplicationController
       return
     end
 
-    uploaded_file = params[:dea_file]
-    FileUtils.mkdir_p(DEA_TMP_DIR)
+    # Store upload in ActiveStorage (works on Hatchbox/Sidekiq)
+    upload = DeaImportUpload.create!(
+      file: params[:dea_file]
+    )
 
-    # (Optional) cleanup old files (safe + cheap)
-    cleanup_old_files!(DEA_TMP_DIR, older_than: 2.days)
+    file_path = upload.file.path
+    raise "File not saved" unless file_path && File.exist?(file_path)
 
-    filename = "dea_#{SecureRandom.hex(8)}_#{uploaded_file.original_filename}"
-    filepath = DEA_TMP_DIR.join(filename)
+    # Enqueue background job using blob signed_id (NOT tmp path)
+    job = WeeklyDeaImportJob.perform_later(file_path)
 
-    # Stream copy instead of uploaded_file.read (less memory for large files)
-    File.open(filepath, "wb") do |f|
-      IO.copy_stream(uploaded_file.tempfile, f)
+    # Create progress entry immediately so UI doesn't show "not_found"
+    begin
+      key = "dea_import:#{job.job_id}"
+      $redis.multi do |r|
+        r.hset(key, "status", "queued")
+        r.hset(key, "processed", 0)
+        r.hset(key, "total", 0)
+        r.hset(key, "last_update", Time.current.to_i)
+        r.expire(key, REDIS_TTL_SECONDS)
+      end
+    rescue => e
+      Rails.logger.warn("Redis progress init failed for job #{job.job_id}: #{e.class} #{e.message}")
     end
-
-    job = WeeklyDeaImportJob.perform_later(filepath.to_s)
 
     redirect_to new_mhc_dea_file_path(job_id: job.job_id), notice: "DEA import started."
   end
