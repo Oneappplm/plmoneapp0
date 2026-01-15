@@ -18,7 +18,7 @@ class WeeklyDeaImportJob < ApplicationJob
     )
 
     DeaMasterImporter.new(filepath, job_id).import!
-
+  ensure
     File.delete(filepath) if File.exist?(filepath)
   end
 end
