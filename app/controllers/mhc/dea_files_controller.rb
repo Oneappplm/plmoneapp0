@@ -3,38 +3,28 @@ class Mhc::DeaFilesController < ApplicationController
   end
 
   def create
+    if params[:dea_file].blank?
+      redirect_to new_mhc_dea_file_path, alert: "Please select a file."
+      return
+    end
+
     uploaded_file = params[:dea_file]
 
-    unless uploaded_file
-      redirect_to new_mhc_dea_file_path, alert: "Please select a file"
-      return
-    end
+    # 1 — remove previous DEA files
+    # Dir.glob(Rails.root.join("tmp", "dea_*")).each do |old_file|
+    #   File.delete(old_file) if File.exist?(old_file)
+    # end
 
-    # optional safety check
-    if uploaded_file.size > 1000.megabytes
-      redirect_to new_mhc_dea_file_path, alert: "File too large"
-      return
-    end
-
-    storage_dir = Rails.root.join("storage", "dea_imports")
-    FileUtils.mkdir_p(storage_dir)
-
-    # ✅ replace existing DEA file
-    Dir.glob(storage_dir.join("dea_*")).each do |old_file|
-      File.delete(old_file) if File.exist?(old_file)
-    end
-
+    # 2 — save uploaded file
     filename = "dea_#{Time.now.to_i}_#{uploaded_file.original_filename}"
-    filepath = storage_dir.join(filename)
+    filepath = Rails.root.join("tmp", filename)
 
-    # ✅ stream upload
-    File.open(filepath, "wb") do |f|
-      IO.copy_stream(uploaded_file.tempfile, f)
-    end
+    File.binwrite(filepath, uploaded_file.read)
 
+    # 3 — enqueue job
     job = WeeklyDeaImportJob.perform_later(filepath.to_s)
 
-    redirect_to new_mhc_dea_file_path(job_id: job.job_id),
-                notice: "DEA import started."
+    # 4 — CORRECT redirect helper
+    redirect_to new_mhc_dea_file_path(job_id: job.job_id), notice: "DEA import started."
   end
 end
