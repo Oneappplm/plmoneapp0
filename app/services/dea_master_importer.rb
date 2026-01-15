@@ -1,3 +1,4 @@
+# app/services/dea_master_importer.rb
 class DeaMasterImporter
   FIELD_MAP = {
     dea_number:            0..10,
@@ -14,54 +15,82 @@ class DeaMasterImporter
     state_license_number:  237..270
   }.freeze
 
-  # >>>> Add job_id to track progress
+  BATCH_SIZE         = 2_000
+  PROGRESS_EVERY     = 5_000 # update redis every 5k lines
+
   def initialize(file_path, job_id)
     @file_path = file_path
-    @job_id = job_id
+    @job_id    = job_id
   end
 
   def import!
-    redis = $redis      # FIX: global redis instance
+    redis = $redis
+    key   = "dea_import:#{@job_id}"
+
     processed = 0
+    buffer    = []
+    now       = Time.current
 
-    total = redis.hget("dea_import:#{@job_id}", "total").to_i
-
+    # (Optional) speed: skip AR callbacks/validations by using upsert_all (already does)
     File.foreach(@file_path, encoding: "bom|utf-8") do |line|
       processed += 1
-
-      # update progress
-      if processed % 300 == 0
-        redis.hset("dea_import:#{@job_id}", "processed", processed)
-        redis.hset("dea_import:#{@job_id}", "last_update", Time.now.to_i)
-      end
 
       line = sanitize(line)
       next if line.strip.empty?
 
       attrs = extract_attributes(line)
-      upsert_record(attrs)
+      next if attrs[:dea_number].blank?
+
+      # timestamps for bulk upsert
+      ts = now # you can set Time.current per batch instead if you prefer
+      attrs[:created_at] ||= ts
+      attrs[:updated_at] = ts
+
+      buffer << attrs
+
+      if buffer.size >= BATCH_SIZE
+        flush!(buffer)
+        buffer.clear
+      end
+
+      if (processed % PROGRESS_EVERY).zero?
+        redis.pipelined do |r|
+          r.hset(key, "processed", processed)
+          r.hset(key, "last_update", Time.current.to_i)
+        end
+      end
     end
 
-    # final progress
-    redis.hset("dea_import:#{@job_id}", "processed", processed)
-    redis.hset("dea_import:#{@job_id}", "last_update", Time.now.to_i)
-    redis.hset("dea_import:#{@job_id}", "status", "finished")
+    flush!(buffer) if buffer.any?
+
+    redis.pipelined do |r|
+      r.hset(key, "processed", processed)
+      r.hset(key, "last_update", Time.current.to_i)
+      r.hset(key, "status", "finished")
+    end
   end
 
   private
 
-  # Encode string to UTF-8 safely and strip whitespace
+  def flush!(rows)
+    # IMPORTANT: unique_by must match your unique index name
+    DeaMasterRecord.upsert_all(
+      rows,
+      unique_by: :index_dea_master_records_on_dea_number
+    )
+  rescue ActiveRecord::StatementInvalid => e
+    Rails.logger.warn("DEA bulk upsert failed: #{e.message}")
+  end
+
   def sanitize(str)
     str.to_s.encode("UTF-8", invalid: :replace, undef: :replace, replace: "?")
   end
 
-  # Slice each field safely
   def safe_slice(line, range)
     return "" unless line && range
     line[range] || ""
   end
 
-  # Extract and normalize attributes
   def extract_attributes(line)
     raw_vals = {}
 
@@ -70,34 +99,29 @@ class DeaMasterImporter
     end
 
     {
-      dea_number:          raw_vals[:dea_number],
-      schedules:           normalize_schedules(raw_vals[:schedules]),
-      expiration_date:     parse_date(raw_vals[:expiration_raw]),
-      business_activity:   raw_vals[:business_activity],
-      name:                raw_vals[:name],
-      address1:            raw_vals[:address1],
-      address2:            raw_vals[:address2],
-      city:                raw_vals[:city],
-      state:               raw_vals[:state],
-      zip:                 normalize_zip(raw_vals[:zip]),
-      status:              raw_vals[:status],
+      dea_number:           raw_vals[:dea_number],
+      schedules:            normalize_schedules(raw_vals[:schedules]),
+      expiration_date:      parse_date(raw_vals[:expiration_raw]),
+      business_activity:    raw_vals[:business_activity],
+      name:                 raw_vals[:name],
+      address1:             raw_vals[:address1],
+      address2:             raw_vals[:address2],
+      city:                 raw_vals[:city],
+      state:                raw_vals[:state],
+      zip:                  normalize_zip(raw_vals[:zip]),
+      status:               raw_vals[:status],
       state_license_number: raw_vals[:state_license_number]
     }
   end
 
-  # Convert schedules like "22N 33N 4 5" => "22N,33N,4,5"
   def normalize_schedules(s)
-    s.split(" ").reject(&:blank?).join(",")
+    s.to_s.split(" ").reject(&:blank?).join(",")
   end
 
-  # Parse expiration date safely
   def parse_date(raw)
-    return nil unless raw.present?
-    raw = raw.strip
-
+    raw = raw.to_s.strip
     return nil unless raw.match?(/\A\d{8}\z/)
-    return nil if raw == "00000000" || raw == "99999999"
-    return nil if raw.start_with?("0000")
+    return nil if raw == "00000000" || raw == "99999999" || raw.start_with?("0000")
 
     mm = raw[4..5].to_i
     dd = raw[6..7].to_i
@@ -109,17 +133,8 @@ class DeaMasterImporter
     nil
   end
 
-  # Normalize zip to 5 digits
   def normalize_zip(z)
-    digits = z.gsub(/\D/, "")
+    digits = z.to_s.gsub(/\D/, "")
     digits[0..4]
-  end
-
-  # Upsert record in DB
-  def upsert_record(attrs)
-    rec = DeaMasterRecord.find_or_initialize_by(dea_number: attrs[:dea_number])
-    rec.update!(attrs)
-  rescue ActiveRecord::StatementInvalid => e
-    warn "Database insert failed for DEA #{attrs[:dea_number]}: #{e.message}"
   end
 end
