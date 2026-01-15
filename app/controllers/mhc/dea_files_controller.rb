@@ -1,6 +1,8 @@
+# app/controllers/mhc/dea_files_controller.rb
 class Mhc::DeaFilesController < ApplicationController
-  def new
-  end
+  DEA_TMP_DIR = Rails.root.join("tmp", "dea_uploads")
+
+  def new; end
 
   def create
     if params[:dea_file].blank?
@@ -9,22 +11,33 @@ class Mhc::DeaFilesController < ApplicationController
     end
 
     uploaded_file = params[:dea_file]
+    FileUtils.mkdir_p(DEA_TMP_DIR)
 
-    # 1 — remove previous DEA files
-    # Dir.glob(Rails.root.join("tmp", "dea_*")).each do |old_file|
-    #   File.delete(old_file) if File.exist?(old_file)
-    # end
+    # (Optional) cleanup old files (safe + cheap)
+    cleanup_old_files!(DEA_TMP_DIR, older_than: 2.days)
 
-    # 2 — save uploaded file
-    filename = "dea_#{Time.now.to_i}_#{uploaded_file.original_filename}"
-    filepath = Rails.root.join("tmp", filename)
+    filename = "dea_#{SecureRandom.hex(8)}_#{uploaded_file.original_filename}"
+    filepath = DEA_TMP_DIR.join(filename)
 
-    File.binwrite(filepath, uploaded_file.read)
+    # Stream copy instead of uploaded_file.read (less memory for large files)
+    File.open(filepath, "wb") do |f|
+      IO.copy_stream(uploaded_file.tempfile, f)
+    end
 
-    # 3 — enqueue job
     job = WeeklyDeaImportJob.perform_later(filepath.to_s)
 
-    # 4 — CORRECT redirect helper
     redirect_to new_mhc_dea_file_path(job_id: job.job_id), notice: "DEA import started."
+  end
+
+  private
+
+  def cleanup_old_files!(dir, older_than:)
+    Dir.glob(dir.join("dea_*")).each do |path|
+      begin
+        File.delete(path) if File.file?(path) && File.mtime(path) < Time.current - older_than
+      rescue => e
+        Rails.logger.warn("DEA cleanup failed for #{path}: #{e.message}")
+      end
+    end
   end
 end
