@@ -181,14 +181,16 @@ class PagesController < ApplicationController
       @provider_personal_informations = ProviderPersonalInformation.where(committee_date: @selected_date )
     elsif params[:selected_director].present?
       if params[:selected_director] == "All"
+        @director = nil
        @provider_personal_informations = ProviderPersonalInformation.all
       else 
-         selected_director_id = params[:selected_director]
-         @director = User.find(selected_director_id)     
+         # selected_director_id = params[:selected_director]
+         # @director = User.find(selected_director_id) 
+         @director = User.find(params[:selected_director])    
          @provider_personal_informations = @director.provider_personal_informations
       end
     else
-      @director = true
+      @director = nil
       @provider_personal_informations = ProviderPersonalInformation.all
     end
 
