@@ -65,7 +65,7 @@ class Webscraper::DeaService < WebscraperService
     doc.at_css('#provider_dea_state')&.content = state_name
     doc.at_css('#provider_dea_schedules')&.content = provider_dea&.schedules_held&.join(" ")
     doc.at_css('#dea_expiration_date')&.content = provider_dea&.expiration_date&.strftime('%m/%d/%Y')
-    doc.at_css('#dea_source_date')&.content = Date.today.strftime('%m/%d/%Y')
+    doc.at_css('#dea_source_date')&.content = Time.current.strftime("%m/%d/%Y")
   end
 
   #################################
