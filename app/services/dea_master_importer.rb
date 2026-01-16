@@ -27,24 +27,28 @@ class DeaMasterImporter
     redis = $redis
     key   = "dea_import:#{@job_id}"
 
-    processed = 0
-    buffer    = []
-    now       = Time.current
+    processed  = 0
+    bytes_read = 0
+    buffer     = []
 
-    # (Optional) speed: skip AR callbacks/validations by using upsert_all (already does)
+    total_bytes = File.size(@file_path)
+
+    redis.pipelined do |r|
+      r.hset(key, "processed", 0)
+      r.hset(key, "bytes_read", 0)
+      r.hset(key, "total_bytes", total_bytes)
+      r.hset(key, "last_update", Time.current.to_i)
+    end
+
     File.foreach(@file_path, encoding: "bom|utf-8") do |line|
       processed += 1
+      bytes_read += line.bytesize
 
       line = sanitize(line)
       next if line.strip.empty?
 
       attrs = extract_attributes(line)
       next if attrs[:dea_number].blank?
-
-      # timestamps for bulk upsert
-      ts = now # you can set Time.current per batch instead if you prefer
-      attrs[:created_at] ||= ts
-      attrs[:updated_at] = ts
 
       buffer << attrs
 
@@ -56,6 +60,7 @@ class DeaMasterImporter
       if (processed % PROGRESS_EVERY).zero?
         redis.pipelined do |r|
           r.hset(key, "processed", processed)
+          r.hset(key, "bytes_read", bytes_read)
           r.hset(key, "last_update", Time.current.to_i)
         end
       end
@@ -65,6 +70,7 @@ class DeaMasterImporter
 
     redis.pipelined do |r|
       r.hset(key, "processed", processed)
+      r.hset(key, "bytes_read", bytes_read)
       r.hset(key, "last_update", Time.current.to_i)
       r.hset(key, "status", "finished")
     end
