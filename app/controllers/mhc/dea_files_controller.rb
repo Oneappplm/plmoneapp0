@@ -19,7 +19,7 @@ class Mhc::DeaFilesController < ApplicationController
     raise "File not saved" unless file_path && File.exist?(file_path)
 
     # Enqueue background job using blob signed_id (NOT tmp path)
-    job = WeeklyDeaImportJob.perform_later(file_path)
+    job = WeeklyDeaImportJob.perform_later(upload.id)
 
     # Create progress entry immediately so UI doesn't show "not_found"
     begin
