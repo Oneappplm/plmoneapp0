@@ -68,10 +68,7 @@ class DeaMasterImporter
   private
 
   def flush!(rows)
-    DeaMasterRecord.upsert_all(
-      rows,
-      unique_by: :index_dea_master_records_on_dea_number
-    )
+    DeaMasterRecord.upsert_all(rows, unique_by: :index_dea_master_records_on_dea_number)
   rescue => e
     Rails.logger.warn("[DEA IMPORT] bulk upsert failed: #{e.message}")
   end
@@ -86,9 +83,7 @@ class DeaMasterImporter
 
   def extract_attributes(line)
     raw = {}
-    FIELD_MAP.each do |key, range|
-      raw[key] = sanitize(safe_slice(line, range)).strip
-    end
+    FIELD_MAP.each { |k, r| raw[k] = sanitize(safe_slice(line, r)).strip }
 
     {
       dea_number:           raw[:dea_number],
@@ -114,7 +109,6 @@ class DeaMasterImporter
     raw = raw.to_s.strip
     return nil unless raw.match?(/\A\d{8}\z/)
     return nil if raw == "00000000" || raw == "99999999" || raw.start_with?("0000")
-
     Date.strptime(raw, "%Y%m%d")
   rescue
     nil
