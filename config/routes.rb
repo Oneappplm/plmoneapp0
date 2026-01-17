@@ -144,6 +144,14 @@ Rails.application.routes.draw do
   resources :missing_field_submissions
 
   namespace :mhc do
+    get "verification_platform/states", to: "verification_platform#states"
+
+    # for DEA file uploadation
+    resources :dea_files, only: [:new, :create]
+    get "dea_import_progress/:job_id", to: "dea_import_progress#show"
+    get "mhc/dea_import_stream/:job_id", to: "mhc/dea_import_progress#stream"
+    post "dea_uploads/presign", to: "dea_uploads#presign"
+    
     get 'verify_npi/:number', to: 'provider_personal_informations#verify_npi'
 
     resources :states, only: %i[index edit update]
@@ -610,15 +618,6 @@ Rails.application.routes.draw do
   get "hippocrates/download_expired_license", to: "hippocrates#download_expired_license"
   get "hippocrates/download_pdf", to: "hippocrates#download_pdf"
   post 'hippocrates/bulk_download_expired_licenses', to: 'hippocrates#bulk_download_expired_licenses'
-
-  namespace :mhc do
-    get "verification_platform/states", to: "verification_platform#states"
-
-    # for DEA file uploadation
-    resources :dea_files, only: [:new, :create]
-    get "dea_import_progress/:job_id", to: "dea_import_progress#show"
-    get "mhc/dea_import_stream/:job_id", to: "mhc/dea_import_progress#stream"
-  end
 
   #------for solana routes start here------
   resources :orders do
