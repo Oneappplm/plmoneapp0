@@ -3,10 +3,15 @@
 
   <div class="card mt-4">
     <div class="card-body">
-      <%= form_with url: mhc_dea_files_path, id: "dea-upload-form", multipart: true, local: true do |f| %>
+      <%= form_with url: mhc_dea_files_path,
+            id: "dea-upload-form",
+            multipart: true,
+            local: true,
+            data: { turbo: false } do |f| %>
+
         <div class="mb-3">
           <label class="form-label">DEA File</label>
-          <%= file_field_tag :dea_file, class: "form-control", id: "dea_file_input" %>
+          <%= file_field_tag :dea_file, id: "dea_file_input", class: "form-control" %>
         </div>
 
         <%= f.submit "Upload & Import", class: "btn btn-primary" %>
@@ -14,97 +19,286 @@
     </div>
   </div>
 
-  <% if params[:job_id].present? %>
-    <div id="import-progress-container" class="mt-5">
-      <h5 class="fw-bold">DEA File Import Progress</h5>
+  <!-- ✅ Always render progress UI so JS can show it immediately -->
+  <div id="import-progress-container" class="mt-5" style="display:none;">
+    <h5 class="fw-bold">DEA File Import Progress</h5>
 
-      <div class="progress" style="height: 20px; border-radius: 15px; overflow: hidden;">
-        <div
-          id="import-progress-bar"
-          class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
-          role="progressbar"
-          style="width: 0%; font-weight:600; font-size:14px; height: 20px;"
-        >
-          0%
-        </div>
-      </div>
-
-      <p id="import-status" class="mt-2 text-muted">Starting...</p>
-      <p id="import-bytes" class="text-muted small"></p>
+    <!-- Upload loader -->
+    <div id="upload-loader" class="mt-3" style="display:none;">
+      <div class="spinner-border text-primary" role="status"></div>
+      <span class="ms-2">Uploading file... please wait</span>
     </div>
-  <% end %>
+
+    <!-- Messages -->
+    <div id="upload-error" class="alert alert-danger mt-3" style="display:none;"></div>
+    <div id="upload-success" class="alert alert-success mt-3" style="display:none;"></div>
+
+    <!-- Progress bar -->
+    <div class="progress" style="height: 20px; border-radius: 15px; overflow: hidden;">
+      <div
+        id="import-progress-bar"
+        class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+        role="progressbar"
+        style="width: 0%; font-weight:600; font-size:14px; height: 20px;"
+        aria-valuenow="0"
+        aria-valuemin="0"
+        aria-valuemax="100"
+      >
+        0%
+      </div>
+    </div>
+
+    <!-- Counts + status -->
+    <p id="import-count" class="mt-2 fw-semibold"></p>
+    <p id="import-status" class="mt-1 text-muted">Waiting...</p>
+  </div>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  const jobId = "<%= params[:job_id] %>";
-  if (!jobId) return;
+(function () {
+  function log(...args) { console.log("[DEA-UPLOAD]", ...args); }
+  function $(id) { return document.getElementById(id); }
 
-  const bar = document.getElementById("import-progress-bar");
-  const statusText = document.getElementById("import-status");
-
-  function fmtMB(bytes) {
-    return (bytes / 1024 / 1024).toFixed(1) + " MB";
+  function show(el, html) {
+    if (!el) return;
+    el.style.display = "";
+    if (html !== undefined) el.innerHTML = html;
   }
+  function hide(el) { if (el) el.style.display = "none"; }
 
-  async function checkProgress() {
-    const r = await fetch(`/mhc/dea_import_progress/${jobId}`);
-    const data = await r.json();
-
-    const status = data.status;
-    const processed = parseInt(data.processed || 0, 10);
-    const total = parseInt(data.total || 0, 10);
-    const bytesRead = parseInt(data.bytes_read || 0, 10);
-    const totalBytes = parseInt(data.total_bytes || 0, 10);
-
-    if (status === "not_found" || status === "queued") {
-      bar.style.width = "5%";
-      bar.innerText = "Queued...";
-      statusText.innerHTML = `<span class="text-warning">Waiting for worker...</span>`;
-      return;
-    }
-
-    if (status === "failed") {
-      bar.style.width = "100%";
-      bar.classList.add("bg-danger");
-      bar.innerText = "Failed";
-      statusText.innerHTML = `<span class="text-danger fw-bold">❌ ${data.error || "Import failed"}</span>`;
-      clearInterval(timer);
-      return;
-    }
-
-    // percent by bytes (works immediately for huge file)
-    let pct = 0;
-    if (totalBytes > 0) pct = Math.min(100, Math.round((bytesRead / totalBytes) * 100));
-
+  function setBar(pct, text) {
+    const bar = $("import-progress-bar");
+    if (!bar) return;
     bar.style.width = pct + "%";
-    bar.innerText = pct + "%";
+    bar.innerText = text || (pct + "%");
+    bar.setAttribute("aria-valuenow", String(pct));
+  }
 
-    let lineText = total > 0
-      ? `${processed.toLocaleString()} / ${total.toLocaleString()} records`
-      : `${processed.toLocaleString()} records (estimating total...)`;
+  async function safeJson(resp) {
+    const text = await resp.text();
+    try { return { json: JSON.parse(text), text }; }
+    catch (_) { return { json: null, text }; }
+  }
 
-    let bytesText = totalBytes > 0
-      ? `${fmtMB(bytesRead)} / ${fmtMB(totalBytes)}`
-      : `${fmtMB(bytesRead)}`;
+  async function presignUpload({ file, csrf }) {
+    const presignResp = await fetch("/mhc/dea_uploads/presign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
+      credentials: "same-origin",
+      body: JSON.stringify({
+        filename: file.name,
+        content_type: file.type || "text/plain"
+      })
+    });
 
-    statusText.innerText = `${lineText} • ${bytesText}`;
+    const presignBody = await safeJson(presignResp);
+    if (!presignResp.ok || !presignBody.json?.url || !presignBody.json?.key) {
+      throw new Error(`Presign failed (${presignResp.status}): ${presignBody.json?.message || presignBody.text || ""}`);
+    }
+    return presignBody.json; // { url, key }
+  }
 
-    if (status === "finished") {
-      bar.style.width = "100%";
-      bar.innerText = "100%";
-      bar.classList.remove("progress-bar-animated");
-      statusText.innerHTML = `<span class="text-success fw-bold">✔ Import Completed</span>`;
-      clearInterval(timer);
+  async function putToS3({ url, file, onPct }) {
+    await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("PUT", url, true);
+      xhr.setRequestHeader("Content-Type", file.type || "text/plain");
+
+      xhr.upload.onprogress = (evt) => {
+        if (!evt.lengthComputable) return;
+        const pct = Math.round((evt.loaded / evt.total) * 100);
+        onPct && onPct(pct);
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) resolve();
+        else reject(new Error(`S3 upload failed (${xhr.status}). ${xhr.responseText || ""}`));
+      };
+
+      xhr.onerror = () => reject(new Error("S3 upload failed (network/CORS)"));
+      xhr.send(file);
+    });
+  }
+
+  async function startImport({ key, filename, byte_size, csrf }) {
+    const startResp = await fetch("/mhc/dea_files", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
+      credentials: "same-origin",
+      body: JSON.stringify({ key, filename, byte_size })
+    });
+
+    const startBody = await safeJson(startResp);
+    if (!startResp.ok || !startBody.json?.success || !startBody.json?.job_id) {
+      throw new Error(`Import start failed (${startResp.status}): ${startBody.json?.message || startBody.text || ""}`);
+    }
+    return startBody.json.job_id;
+  }
+
+  function formatInt(n) {
+    try { return new Intl.NumberFormat().format(n); }
+    catch (_) { return String(n); }
+  }
+
+  function startPolling(jobId) {
+    const statusEl = $("import-status");
+    const countEl  = $("import-count");
+    const loader   = $("upload-loader");
+
+    let lastProcessed = 0;
+    let unchangedTicks = 0;
+
+    const tick = async () => {
+      try {
+        const resp = await fetch(`/mhc/dea_import_progress/${encodeURIComponent(jobId)}`, { credentials: "same-origin" });
+        const body = await resp.json();
+
+        const status = body.status;
+        const processed = parseInt(body.processed || 0, 10);
+        const total = parseInt(body.total || 0, 10);
+
+        if (processed === lastProcessed) unchangedTicks += 1;
+        else unchangedTicks = 0;
+        lastProcessed = processed;
+
+        if (status === "not_found" || status === "queued" || status === "starting") {
+          setBar(5, "Starting...");
+          show(statusEl, `<span class="text-warning">Preparing import...</span>`);
+          show(countEl, `Imported: <b>${formatInt(processed)}</b>${total > 0 ? " / " + formatInt(total) : ""}`);
+          return;
+        }
+
+        if (status === "failed") {
+          hide(loader);
+          setBar(100, "Failed");
+          show(statusEl, `<span class="text-danger fw-bold">❌ ${body.error || "Import failed"}</span>`);
+          show(countEl, `Imported: <b>${formatInt(processed)}</b>${total > 0 ? " / " + formatInt(total) : ""}`);
+          clearInterval(timer);
+          alert("DEA import failed. Check logs.");
+          return;
+        }
+
+        // running
+        let pct = 0;
+        if (total > 0) pct = Math.min(99, Math.round((processed / total) * 100));
+        else pct = 50;
+
+        setBar(pct, total > 0 ? `${pct}%` : "Working...");
+        show(statusEl, unchangedTicks >= 6
+          ? `<span class="text-muted">Still working... (large file)</span>`
+          : `<span class="text-muted">Import in progress...</span>`
+        );
+
+        const remaining = total > 0 ? Math.max(0, total - processed) : null;
+        show(countEl,
+          total > 0
+            ? `Imported: <b>${formatInt(processed)}</b> / ${formatInt(total)} &nbsp; | &nbsp; Remaining: <b>${formatInt(remaining)}</b>`
+            : `Imported: <b>${formatInt(processed)}</b>`
+        );
+
+        if (status === "finished") {
+          hide(loader);
+          setBar(100, "100%");
+          show(statusEl, `<span class="text-success fw-bold">✔ Import Completed</span>`);
+          show(countEl, `Imported: <b>${formatInt(processed)}</b> / ${formatInt(total || processed)}`);
+          clearInterval(timer);
+
+          // optional: hide progress UI after 3 seconds
+          setTimeout(() => {
+            // hide($("import-progress-container"));
+          }, 3000);
+
+          alert(`✅ DEA import completed. Imported ${formatInt(processed)} records.`);
+          return;
+        }
+      } catch (err) {
+        log("poll error:", err);
+      }
+    };
+
+    const timer = setInterval(tick, 5000);
+    tick();
+  }
+
+  async function handler(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const form = $("dea-upload-form");
+    const fileInput = $("dea_file_input");
+    const loader = $("upload-loader");
+    const errBox = $("upload-error");
+    const okBox  = $("upload-success");
+
+    hide(errBox); hide(okBox);
+
+    // show UI immediately
+    show($("import-progress-container"));
+    show(loader);
+    setBar(1, "0%");
+    show($("import-status"), `<span class="text-muted">Requesting upload URL...</span>`);
+    show($("import-count"), `Uploading: <b>0%</b>`);
+
+    try {
+      const file = fileInput.files?.[0];
+      if (!file) throw new Error("Please select a file.");
+
+      const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+      if (!csrf) throw new Error("Missing CSRF token");
+
+      // 1) presign
+      const presign = await presignUpload({ file, csrf });
+      log("presigned:", presign.key);
+
+      // 2) upload to S3
+      show($("import-status"), `<span class="text-muted">Uploading file to S3...</span>`);
+      await putToS3({
+        url: presign.url,
+        file,
+        onPct: (pct) => {
+          setBar(Math.min(90, pct), `${pct}%`);
+          show($("import-count"), `Uploading: <b>${pct}%</b>`);
+        }
+      });
+
+      // 3) start import
+      setBar(95, "Starting...");
+      show($("import-status"), `<span class="text-muted">Upload complete. Starting import...</span>`);
+      const jobId = await startImport({ key: presign.key, filename: file.name, byte_size: file.size, csrf });
+
+      hide(loader);
+      show(okBox, "Import started.");
+      startPolling(jobId);
+
+    } catch (err) {
+      hide(loader);
+      show(errBox, err.message || "Upload failed.");
+      log("error:", err);
     }
   }
 
-  const timer = setInterval(checkProgress, 3000);
-  checkProgress();
-});
+  function bind() {
+    const form = $("dea-upload-form");
+    if (!form) return;
+    if (form.dataset.bound === "1") return;
+    form.dataset.bound = "1";
+
+    form.setAttribute("data-turbo", "false");
+    form.addEventListener("submit", handler, true);
+    log("bound submit handler");
+  }
+
+  document.addEventListener("turbo:load", bind);
+  document.addEventListener("DOMContentLoaded", bind);
+
+  // ✅ If page loaded already with job_id in URL, start polling immediately
+  document.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    const jobId = params.get("job_id");
+    if (jobId) {
+      show($("import-progress-container"));
+      startPolling(jobId);
+    }
+  });
+})();
 </script>
-
-
-
-
-
