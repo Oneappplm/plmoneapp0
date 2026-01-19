@@ -3,13 +3,13 @@
 
   <div class="card mt-4">
     <div class="card-body">
-      <%= form_with url: mhc_dea_files_path, multipart: true, local: true,  id: "dea-upload-form" do |f| %>
+      <%= form_with url: mhc_dea_files_path, id: "dea-upload-form", multipart: true, local: true do |f| %>
         <div class="mb-3">
           <label class="form-label">DEA File</label>
           <%= file_field_tag :dea_file, class: "form-control", id: "dea_file_input" %>
         </div>
 
-        <%= f.submit "Upload & Import", class: "btn btn-primary", id: "dea_upload_btn" %>
+        <%= f.submit "Upload & Import", class: "btn btn-primary" %>
       <% end %>
     </div>
   </div>
@@ -30,137 +30,81 @@
       </div>
 
       <p id="import-status" class="mt-2 text-muted">Starting...</p>
+      <p id="import-bytes" class="text-muted small"></p>
     </div>
   <% end %>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("dea-upload-form");
-  const fileInput = document.getElementById("dea_file_input");
+document.addEventListener("DOMContentLoaded", function() {
+  const jobId = "<%= params[:job_id] %>";
+  if (!jobId) return;
 
   const bar = document.getElementById("import-progress-bar");
   const statusText = document.getElementById("import-status");
 
-  if (!form || !fileInput) return;
-
-  function setStatus(msg) {
-    if (statusText) statusText.innerHTML = msg;
+  function fmtMB(bytes) {
+    return (bytes / 1024 / 1024).toFixed(1) + " MB";
   }
 
-  function setProgress(pct) {
-    if (!bar) return;
+  async function checkProgress() {
+    const r = await fetch(`/mhc/dea_import_progress/${jobId}`);
+    const data = await r.json();
+
+    const status = data.status;
+    const processed = parseInt(data.processed || 0, 10);
+    const total = parseInt(data.total || 0, 10);
+    const bytesRead = parseInt(data.bytes_read || 0, 10);
+    const totalBytes = parseInt(data.total_bytes || 0, 10);
+
+    if (status === "not_found" || status === "queued") {
+      bar.style.width = "5%";
+      bar.innerText = "Queued...";
+      statusText.innerHTML = `<span class="text-warning">Waiting for worker...</span>`;
+      return;
+    }
+
+    if (status === "failed") {
+      bar.style.width = "100%";
+      bar.classList.add("bg-danger");
+      bar.innerText = "Failed";
+      statusText.innerHTML = `<span class="text-danger fw-bold">❌ ${data.error || "Import failed"}</span>`;
+      clearInterval(timer);
+      return;
+    }
+
+    // percent by bytes (works immediately for huge file)
+    let pct = 0;
+    if (totalBytes > 0) pct = Math.min(100, Math.round((bytesRead / totalBytes) * 100));
+
     bar.style.width = pct + "%";
     bar.innerText = pct + "%";
+
+    let lineText = total > 0
+      ? `${processed.toLocaleString()} / ${total.toLocaleString()} records`
+      : `${processed.toLocaleString()} records (estimating total...)`;
+
+    let bytesText = totalBytes > 0
+      ? `${fmtMB(bytesRead)} / ${fmtMB(totalBytes)}`
+      : `${fmtMB(bytesRead)}`;
+
+    statusText.innerText = `${lineText} • ${bytesText}`;
+
+    if (status === "finished") {
+      bar.style.width = "100%";
+      bar.innerText = "100%";
+      bar.classList.remove("progress-bar-animated");
+      statusText.innerHTML = `<span class="text-success fw-bold">✔ Import Completed</span>`;
+      clearInterval(timer);
+    }
   }
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const file = fileInput.files[0];
-    if (!file) { alert("Please select a file."); return; }
-
-    const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
-
-    // Always send a valid content-type (important for S3 presign)
-    const contentType = file.type && file.type.length > 0
-      ? file.type
-      : "application/octet-stream";
-
-    try {
-      setStatus(`<span class="text-warning">⏳ Requesting upload URL...</span>`);
-      setProgress(0);
-
-      // 1) Presign
-      const presignResp = await fetch("/mhc/dea_uploads/presign", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": csrf
-        },
-        body: JSON.stringify({
-          filename: file.name,
-          content_type: contentType
-        })
-      });
-
-      if (!presignResp.ok) {
-        const txt = await presignResp.text();
-        throw new Error(`Presign failed (${presignResp.status}): ${txt}`);
-      }
-
-      const presign = await presignResp.json();
-      if (!presign.url || !presign.key) {
-        throw new Error("Presign response missing url/key");
-      }
-
-      // 2) Upload to S3
-      setStatus(`<span class="text-warning">⬆ Uploading to S3... (this may take time)</span>`);
-
-      await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open("PUT", presign.url, true);
-
-        // Must match presigned content-type
-        xhr.setRequestHeader("Content-Type", contentType);
-
-        xhr.upload.onprogress = (event) => {
-          if (event.lengthComputable) {
-            const pct = Math.min(99, Math.round((event.loaded / event.total) * 100));
-            setProgress(pct);
-            setStatus(`<span class="text-warning">⬆ Uploading... ${pct}%</span>`);
-          }
-        };
-
-        xhr.onload = () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            setProgress(100);
-            resolve();
-          } else {
-            reject(new Error(`S3 upload failed (${xhr.status}): ${xhr.responseText}`));
-          }
-        };
-
-        xhr.onerror = () => reject(new Error("S3 upload failed (network/CORS)"));
-        xhr.send(file);
-      });
-
-      // 3) Trigger import (small JSON POST)
-      setStatus(`<span class="text-info">⚙ Starting import...</span>`);
-
-      const startResp = await fetch("/mhc/dea_files", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": csrf
-        },
-        body: JSON.stringify({
-          key: presign.key,
-          filename: file.name,
-          byte_size: file.size
-        })
-      });
-
-      if (!startResp.ok) {
-        const txt = await startResp.text();
-        throw new Error(`Import start failed (${startResp.status}): ${txt}`);
-      }
-
-      const data = await startResp.json();
-      if (!data.success) {
-        throw new Error(data.message || "Import start failed");
-      }
-
-      // redirect to progress page
-      window.location = `/mhc/dea_files/new?job_id=${encodeURIComponent(data.job_id)}`;
-
-    } catch (err) {
-      console.error(err);
-      setStatus(`<span class="text-danger fw-bold">❌ ${err.message}</span>`);
-      alert(err.message);
-    }
-  });
+  const timer = setInterval(checkProgress, 3000);
+  checkProgress();
 });
 </script>
+
+
+
 
 
