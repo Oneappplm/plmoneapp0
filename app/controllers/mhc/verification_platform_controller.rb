@@ -488,6 +488,7 @@ class Mhc::VerificationPlatformController < ApplicationController
             provider_personal_information_id: @provider_personal_information.id,
             sub_section: ProviderPersonalUploadedDoc.sub_sections[:npdb]
           ).order(created_at: :desc)
+       @npdb_webcrawler_logs = NpdbWebcrawlerLog.joins(:rva_information).where(rva_informations: { provider_personal_information_id: @provider_personal_information.id, tab: 'NPDB' }).order(created_at: :desc)    
     end
 
     if params[:page_tab] == 'app_tracking'

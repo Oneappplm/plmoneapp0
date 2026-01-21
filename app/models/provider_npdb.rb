@@ -8,6 +8,7 @@ class ProviderNpdb < ApplicationRecord
   validates :provider_attest_id, presence: true
 
   before_validation :set_provider_attest
+   has_many :rva_informations, dependent: :destroy
 
   PRACTITIONER_TYPE = [
     "Accountant",
