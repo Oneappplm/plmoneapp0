@@ -101,8 +101,11 @@ class Webscraper::DeaService < WebscraperService
     doc.at_css('#provider_dea_schedules')&.content = master.schedules.to_s
 
     # Expiration Date
-    doc.at_css('#dea_expiration_date')&.content =
-      (master.expiration_date ? master.expiration_date.strftime("%m/%d/%Y") : "")
+    if master.expiration_date.present?
+      doc.at_css('#dea_expiration_date')&.content =
+        master.expiration_date.strftime("%m/%d/%Y")
+    end
+
 
     # Fee status
     doc.at_css('#fee_status')&.content = "Exempt"
