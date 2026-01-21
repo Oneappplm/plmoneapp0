@@ -162,7 +162,7 @@
                                     </button>
                                 </div>
                                 <div class="col-12 m-2">
-                                    <button class="btn btn-primary btn-audit btn-sm" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>">
+                                    <button class="btn btn-primary btn-audit btn-sm" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>"  data-npdb-id ="<%= @provider_npdb.id %>" >
                                         Quality Audit
                                     </button>
                                 </div>
@@ -477,6 +477,32 @@
                                     Restart Request
                                   </button>
                                 </div>
+                                <div class="row">
+                                  <div class="col-md-3">
+                                    <button class="btn btn-primary py-1" id="run-npdb-webcrawler-btn" type="button">Run Webcrawler</button>
+                                  </div>
+                                  <div class="col-md-9">
+                                    <div class="row justify-content-end" id="crawler-link">
+                                      <% @npdb_webcrawler_logs&.each do |crawler_log| %>
+                                        <div class="col-md-6">
+                                          <div class="text-decoration-underline">
+                                              <% file_url = crawler_log.filepath.url %>
+                                              <% file_name = File.basename(file_url.split('?').first) %>
+
+                                              <%= link_to file_name, file_url, target: '_blank' %>
+                                          </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                          <div class="date-time d-flex">
+                                            <span><%= crawler_log.created_at.strftime('%Y/%m/%d') %></span>
+                                            <span class="ms-2"><%= crawler_log.created_at.strftime('%H:%M') %></span>
+                                          </div>
+                                        </div>
+                                      <% end %>
+                                    </div>
+                                  </div>
+                                </div>
+                                <hr class="form-hr">
 
                                 <hr class="form-hr">
 
@@ -1066,6 +1092,60 @@ $(document).ready(function() {
             }
           });
         });
+        $('#run-npdb-webcrawler-btn').click(function (e) {
+          e.preventDefault();
+
+          var personalInfoId = $('input[name="personal_info_id"]').val();
+          var npdbId = $('#provider_npdb').val(); // add hidden field
+
+          if (!npdbId) { alert("Missing NPDB id"); return; }
+          if (!personalInfoId) { alert("Missing personal info id"); return; }
+
+          $('.loading-overlay').show();
+
+          $.ajax({
+            url: '/webscrapers/run_npdb_demo_webcrawler',
+            method: 'POST',
+            headers: { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') },
+            data: {
+              npdb_id: npdbId,
+              info_id: personalInfoId
+            },
+            success: function (response) {
+              const crawlerData = response.webscraper_log;
+
+              if (crawlerData && crawlerData.filepath && crawlerData.filepath.url && crawlerData.created_at) {
+                const createdDate = new Date(crawlerData.created_at);
+
+                const crawlerLinkHTML = `
+                  <div class="row justify-content-end">
+                    <div class="col-md-6">
+                      <div class="text-decoration-underline">
+                        <a href="${crawlerData.filepath.url}" target="_blank">
+                          ${crawlerData.filepath.url.split('?')[0].split('/').pop()}
+                        </a>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="date-time d-flex">
+                        <span>${createdDate.toISOString().split('T')[0]}</span>
+                        <span class="ms-2">${createdDate.toTimeString().slice(0, 5)}</span>
+                      </div>
+                    </div>
+                  </div>`;
+
+                document.getElementById('crawler-link').insertAdjacentHTML('afterbegin', crawlerLinkHTML);
+              }
+
+              $('.loading-overlay').hide();
+            },
+            error: function (xhr) {
+              alert(xhr?.responseJSON?.error || 'NPDB demo failed');
+              $('.loading-overlay').hide();
+            }
+          });
+        });
+
         $('#audit-btn').click(function(e) {
           e.preventDefault(); // Prevent default form submission
            // Check if an audit status is selected
