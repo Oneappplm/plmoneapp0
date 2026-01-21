@@ -457,6 +457,7 @@ Rails.application.routes.draw do
   namespace :webscrapers do
     root to: 'logs#index'
     post '/run_oig_webcrawler', to: 'quality_audits#run_oig_webcrawler'
+    post '/run_npdb_demo_webcrawler', to: 'quality_audits#run_npdb_demo_webcrawler'
     post '/run_registration_webcrawler', to: 'quality_audits#run_registration_webcrawler'
     post '/send_oig_request', to: 'quality_audits#send_oig_request'
     post '/run_licensure_webcrawler', to: 'quality_audits#run_licensure_webcrawler'

@@ -130,3 +130,4 @@ gem 'aws-sdk-s3', '~> 1.150'
 gem 'caxlsx_rails'
 gem 'pdf-reader'
 gem "open-uri"
+gem "savon", "~> 2.14"
