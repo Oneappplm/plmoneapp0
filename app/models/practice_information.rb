@@ -48,6 +48,9 @@ class PracticeInformation < ApplicationRecord
 
   validates :provider_attest_id, presence: true
 
+  scope :primary, -> { where(is_primary_location: true) }
+  scope :additional, -> { where(is_primary_location: [false, nil]) }
+
   def complete_address
     "#{address} #{city} #{state} #{zip}"
   end
