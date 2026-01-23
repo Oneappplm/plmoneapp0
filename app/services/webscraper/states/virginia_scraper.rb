@@ -4,12 +4,12 @@ require "fileutils"
 module Webscraper
   module States
     class VirginiaScraper
-      # SEARCH_URL = "https://dhp.virginiainteractive.org/Lookup/Index".freeze
+      SEARCH_URL = "https://dhp.virginiainteractive.org/Lookup/Index".freeze
 
       def initialize(license_number, state)
         @license_number = license_number
         @state = state
-        @url = state.license_search_url
+        @url = state.license_search_url || SEARCH_URL
       end
 
       def call
