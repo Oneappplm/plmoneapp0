@@ -5,12 +5,12 @@ require "mini_magick"
 module Webscraper
   module States
     class OklahomaScraper
-      # SEARCH_URL = "https://pay.apps.ok.gov/OSBEP/_app/search/index.php".freeze
+      SEARCH_URL = "https://pay.apps.ok.gov/OSBEP/_app/search/index.php".freeze
 
       def initialize(license_number, state)
         @license_number = license_number
         @state = state
-        @url = state.license_search_url
+        @url = state.license_search_url || SEARCH_URL
       end
 
       def call
