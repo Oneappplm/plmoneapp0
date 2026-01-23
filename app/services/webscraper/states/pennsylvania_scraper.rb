@@ -5,12 +5,12 @@ module Webscraper
   module States
     class PennsylvaniaScraper
       
-      # SEARCH_URL = "https://www.pals.pa.gov/#!/page/search"
+      SEARCH_URL = "https://www.pals.pa.gov/#!/page/search"
 
       def initialize(license_number, state)
         @license_number = license_number.to_s.strip
         @state = state
-        @url = state.license_search_url
+        @url = state.license_search_url || SEARCH_URL
       end
 
       def call
