@@ -6,12 +6,12 @@ module Webscraper
   module States
     class MissouriScraper
       
-      # SEARCH_URL = "https://pr.mo.gov/licensee-search-division.asp".freeze
+      SEARCH_URL = "https://pr.mo.gov/licensee-search-division.asp".freeze
 
       def initialize(license_number, state)
         @license_number = license_number
         @state = state
-        @url = state.license_search_url
+        @url = state.license_search_url || SEARCH_URL
       end
 
       def call
