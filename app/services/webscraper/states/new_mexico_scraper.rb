@@ -5,12 +5,12 @@ require "mini_magick"
 module Webscraper
   module States
     class NewMexicoScraper
-      # SEARCH_URL = "http://docfinder.docboard.org/nm/".freeze
+      SEARCH_URL = "http://docfinder.docboard.org/nm/".freeze
 
       def initialize(license_number, state)
         @license_number = license_number
         @state = state
-        @url = state.license_search_url
+        @url = state.license_search_url || SEARCH_URL
       end
 
       def call
