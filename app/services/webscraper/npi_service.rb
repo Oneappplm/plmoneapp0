@@ -91,45 +91,41 @@ class Webscraper::NpiService
     base_path = Rails.root.join("public", "webscrape", "npi")
     FileUtils.mkdir_p(base_path)
 
-    timestamp    = Time.now.to_i
-    human_time   = Time.current.in_time_zone('Pacific Time (US & Canada)').strftime('%Y-%m-%d, %I:%M %p')
-    png_path     = base_path.join("npi_#{npi}_#{timestamp}.png")
-    final_path   = base_path.join("npi_#{npi}_#{timestamp}_ts.png") # with timestamp text
+    final_path = base_path.join("npi_#{npi}_ts.png")
+    human_time = Time.current
+                    .in_time_zone('Pacific Time (US & Canada)')
+                    .strftime('%Y-%m-%d, %I:%M %p')
 
-    # 🔹 Scroll to top
+    # 🧹 Remove previous screenshots
+    Dir.glob(base_path.join("npi_#{npi}_*.png")).each do |file|
+      File.delete(file)
+    end
+
     crawler.execute_script("window.scrollTo(0, 0)")
     sleep 1
 
-    # 🔹 Get full page height
-    full_height = crawler.execute_script(
-      "return Math.max(
+    full_height = crawler.execute_script(<<~JS)
+      return Math.max(
         document.body.scrollHeight,
         document.documentElement.scrollHeight
-      );"
-    )
+      );
+    JS
 
-    # 🔹 Resize window to full height
     crawler.manage.window.resize_to(1400, full_height)
     sleep 1
 
-    # 🔹 Take raw screenshot
-    crawler.save_screenshot(png_path)
-    raise "Screenshot failed" unless File.exist?(png_path)
+    crawler.save_screenshot(final_path.to_s)
+    raise "Screenshot failed" unless File.exist?(final_path)
 
-    # 🔹 Add timestamp text using MiniMagick
-    image = MiniMagick::Image.open(png_path.to_s)
+    image = MiniMagick::Image.open(final_path.to_s)
     image.combine_options do |c|
-      c.gravity "SouthEast"         
+      c.gravity "SouthEast"
       c.fill "black"
       c.pointsize 16
       c.draw "text 10,10 '#{human_time}'"
     end
     image.write(final_path.to_s)
 
-    # Optionally delete the raw screenshot without text
-    File.delete(png_path) if File.exist?(png_path)
-
-    # 🔹 Log to DB with final path
     WebcrawlerLog.create!(
       crawler_type: "NPI",
       filepath: final_path.relative_path_from(Rails.root).to_s,
@@ -139,13 +135,11 @@ class Webscraper::NpiService
 
     final_path
   rescue => e
-    WebcrawlerLog.create!(
-      crawler_type: "NPI",
-      status: "failed"
-    )
+    WebcrawlerLog.create!(crawler_type: "NPI", status: "failed")
     Rails.logger.error("❌ NPI screenshot failed: #{e.message}")
     nil
   end
+
 
   # ======================================================
   # 🚗 Selenium driver

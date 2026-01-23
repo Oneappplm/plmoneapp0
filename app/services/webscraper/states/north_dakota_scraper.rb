@@ -6,6 +6,9 @@ require "selenium/webdriver/support/select"
 module Webscraper
   module States
     class NorthDakotaScraper
+
+      SEARCH_URL = "https://www.ndpodiatryboard.org/podiatrists/".freeze
+
       def initialize(license_number, state)
         @license_number = license_number
         @state = state
