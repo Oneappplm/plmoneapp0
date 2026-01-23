@@ -63,44 +63,41 @@ class Webscrapers::QualityAuditsController < ApplicationController
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
-   def run_npdb_demo_webcrawler
+  # app/controllers/webscrapers/quality_audits_controller.rb
+  def run_npdb_demo_webcrawler
     npdb = ProviderNpdb.find(params[:npdb_id])
     provider_personal_info = ProviderPersonalInformation.find(params[:info_id])
 
     rva_information = RvaInformation.create!(
-      tab: 'NPDB',
-      send_request: 'SENT',
-      requested_by: 'SYSTEM',
+      tab: "NPDB",
+      send_request: "SENT",
+      requested_by: "SYSTEM",
       requested_date: Date.today,
-      requested_method: 'Website',
+      requested_method: "Website",
       required_fee_amount: 0,
       check_generated: false,
       received_status: true,
-      comments: 'NPDB Demo Webcrawler',
-      received_by: 'SYSTEM',
+      comments: "NPDB Demo Webcrawler",
+      received_by: "SYSTEM",
       provider_personal_information_id: provider_personal_info.id,
       provider_npdb_id: npdb.id,
       received_date: Date.today
     )
 
-    result = Webscraper::NpdbDemoService.new(
+    service = Webscraper::NpdbQrxsService.new(
       provider_npdb: npdb,
-      rva_information: rva_information
-    ).call
-
-    log = result[:log]
-
-    npdb.update!(
-      status: "COMPLETED(DEMO)",
-      submit_date: npdb.submit_date || Date.current,
-      response_date: Date.current,
-      comments: "DEMO: PDF generated & uploaded. Waiting for DataBankID for real QRXS."
+      provider_personal_information: provider_personal_info,
+      rva_information: rva_information,
+      query_mode: "ONE_TIME_QUERY",
+      identifier_type: "NPI"
     )
 
-    provider_personal_info.update(verification_status: 'Processing')
+    log = service.call
+
+    provider_personal_info.update(verification_status: "Processing") if params[:info_id].present?
 
     render json: {
-      message: 'NPDB demo completed successfully',
+      message: "NPDB demo completed successfully",
       rva_information: rva_information,
       webscraper_log: log
     }, status: :ok
