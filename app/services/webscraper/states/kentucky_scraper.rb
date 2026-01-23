@@ -4,12 +4,12 @@ require "fileutils"
 module Webscraper
   module States
     class KentuckyScraper
-      # SEARCH_URL = "http://web1.ky.gov/GenSearch/LicenseSearch.aspx?AGY=5".freeze
+      SEARCH_URL = "http://web1.ky.gov/GenSearch/LicenseSearch.aspx?AGY=5".freeze
 
       def initialize(license_number, state)
         @license_number = license_number
         @state = state
-        @url = state.license_search_url
+        @url = state.license_search_url || SEARCH_URL
       end
 
       def call

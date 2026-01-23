@@ -6,12 +6,12 @@ module Webscraper
   module States
     class NorthCarolinaScraper
 
-      # SEARCH_URL = "https://portal.ncblcmhc.org/verification/search.aspx".freeze
+      SEARCH_URL = "https://portal.ncblcmhc.org/verification/search.aspx".freeze
 
       def initialize(license_number, state)
         @license_number = license_number
         @state = state
-        @url = state.license_search_url
+        @url = state.license_search_url || SEARCH_URL
       end
 
       def call
