@@ -722,7 +722,7 @@ module ApplicationHelper
 				},
 				verification_platform: {
 					client_home: {
-						controller: 'verification_platform',
+						controller: 'mhc/verification_platform',
 						action: 'index'
 					},
 					manage_client: {
