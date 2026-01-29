@@ -108,7 +108,8 @@ module Webscraper
         Rails.logger.info("✅ Screenshot saved at: #{public_url}")
 
         # 2️⃣ Add timestamp (e.g. "2025-12-18")
-        human_date = Time.current.strftime("%Y-%m-%d, %I:%M %p")
+        # human_date = Time.current.strftime("%Y-%m-%d, %I:%M %p")
+        human_date = Time.now.in_time_zone('Pacific Time (US & Canada)').strftime("%Y-%m-%d, %I:%M %p")
 
         image = MiniMagick::Image.open(path)
         image.combine_options do |c|
