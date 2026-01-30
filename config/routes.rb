@@ -144,6 +144,24 @@ Rails.application.routes.draw do
   resources :missing_field_submissions
 
   namespace :mhc do
+    resources :manage_clients, path: 'manage-clients' do
+      collection do
+        get 'edit_provider_personal_information'
+        post 'load_provider_personal_information'
+        get :append_remove_practitioner
+        get :get_provider_uploaded_docs
+        post :ajax_upload
+        post :provider_personal_uploaded_docs, path: 'provider-personal-uploaded-docs'
+        delete :delete_provider_personal_docs, path: 'delete_provider_personal_docs'
+      end
+      member do
+        get 'edit'
+        patch 'update'
+        get :show_uploaded_doc
+        patch :update_uploaded_doc
+      end
+    end
+
     get "verification_platform/states", to: "verification_platform#states"
 
     # for DEA file uploadation
