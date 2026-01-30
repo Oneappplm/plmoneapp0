@@ -8,17 +8,32 @@ class Mhc::ManageClientsController < ApplicationController
   end
 
   def new 
-    @practitioner = Practitioner.new
+    @practitioner = ProviderPersonalInformation.new
   end
 
   def create
-    @practitioner = Practitioner.new(practitioner_params)
+    ActiveRecord::Base.transaction do
+      provider_attest = ProviderAttest.create!(
+        caqh_provider_attest_id: random_id
+      )
 
-    if @practitioner.save
-      redirect_to mhc_manage_clients_path, notice: "Practitioner saved successfully"
-      else
-      render :new, status: :unprocessable_entity
+      @practitioner = ProviderPersonalInformation.new(
+        practitioner_params.merge(
+          caqh_provider_id: random_id,
+          provider_attest_id: provider_attest.id,
+          caqh_provider_attest_id: provider_attest.caqh_provider_attest_id
+        )
+      )
+
+      @practitioner.save!
     end
+
+    redirect_to mhc_manage_clients_path, notice: "Provider Personal Information saved successfully"
+
+  rescue ActiveRecord::RecordInvalid => e
+    @practitioner ||= ProviderPersonalInformation.new(practitioner_params)
+    flash.now[:alert] = e.record.errors.full_messages.join(", ")
+    render :new, status: :unprocessable_entity
   end
 
   def edit_provider_personal_information
@@ -183,11 +198,16 @@ class Mhc::ManageClientsController < ApplicationController
       :provider_personal_information_id)
   end
 
+  def random_id
+    rand(10**8).to_s.rjust(8, '5')
+  end
+
   def practitioner_params
     params.require(:provider_personal_information).permit(
       :id, :caqh_provider_id, :provider_attest_id, :caqh_provider_attest_id, :last_name, :first_name,
       :middle_name, :suffix, :primary_practice_state, :other_name_flag, :birth_date, :us_eligible_flag,
       :ssn, :nid, :dea_flag, :cds_flag, :upin, :upin_flag, :npi_flag, :npi, :medicare_provider_flag,
+      :gender, :practitioner_type, :credentials_committee_date, :client_batch_date, :client_batch_name, :client_batch_id, :market, :status, :application_method, :availability,
       :medicaid_provider_flag, :other_graduate_education_flag, :fellowship_training_flag, :teaching_appointment_flag,
       :secondary_specialty_flag, :other_specialty_flag, :hospital_privilege_flag, :hospital_admitting_arrangements,
       :work_history_gap_flag, :active_military_flag, :citizenship_status, :visa_number, :federal_employee_id,
