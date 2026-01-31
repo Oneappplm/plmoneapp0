@@ -37,13 +37,13 @@ class Mhc::ManageClientsController < ApplicationController
   end
 
   def edit_provider_personal_information
-    @providers = ProviderPersonalInformation.select(:id, :first_name).distinct
+    @providers = ProviderPersonalInformation.select(:id, :first_name, :middle_name, :last_name, :suffix, :practitioner_type).distinct
     @provider_personal_information = nil
   end
 
   def load_provider_personal_information
     provider_id = params[:provider_personal_information_id]
-    @providers = ProviderPersonalInformation.select(:id, :first_name).distinct
+    @providers = ProviderPersonalInformation.select(:id, :first_name, :middle_name, :last_name, :suffix, :practitioner_type).distinct
     @provider_personal_information = ProviderPersonalInformation.find_by(id: provider_id)
 
     if @provider_personal_information
@@ -57,10 +57,10 @@ class Mhc::ManageClientsController < ApplicationController
   def update_provider_personal_information
     @provider_personal_information = ProviderPersonalInformation.find(params[:id])
 
-    if @provider_personal_information.update(provider_personal_information_params)
+    if @provider_personal_information.update(practitioner_params)
       redirect_to mhc_manage_clients_path, notice: 'Provider information updated successfully.'
     else
-      @providers = ProviderPersonalInformation.select(:id, :first_name).distinct
+      @providers = ProviderPersonalInformation.select(:id, :first_name, :middle_name, :last_name, :suffix, :practitioner_type).distinct
       render :edit_provider_personal_information, status: :unprocessable_entity
     end
   end
