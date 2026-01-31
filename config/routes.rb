@@ -157,6 +157,7 @@ Rails.application.routes.draw do
       member do
         get 'edit'
         patch 'update'
+        patch 'update_provider_personal_information'
         get :show_uploaded_doc
         patch :update_uploaded_doc
       end
