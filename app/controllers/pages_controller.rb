@@ -141,6 +141,7 @@ class PagesController < ApplicationController
     if params[:vrc] == 'work-tickler'
       @provider_personal_informations = @provider_personal_informations
         .where(vote_date: nil)
+        .where(progress_status: 'assigned')
         .where.not(committee_date: nil)
         .where.not(review_date: nil)
     end
