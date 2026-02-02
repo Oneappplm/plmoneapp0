@@ -258,6 +258,107 @@ class EnrollmentClientsController < ApplicationController
     end
   end
 
+  def provider_licensures_report_to_csv
+    ppis = ProviderPersonalInformation.all
+
+    # As-of date for expired check
+    as_of_date = @month.present? ? @month.end_of_month.to_date : Date.current
+
+    # 🔁 USE caqh_provider_attest_id INSTEAD
+    caqh_attest_ids =
+      ppis.pluck(:caqh_provider_attest_id).compact.uniq
+
+    licensures =
+      ProviderLicensure
+        .includes(:rva_informations)
+        .where(caqh_provider_attest_id: caqh_attest_ids)
+
+    # State map
+    state_name_by_id =
+      State
+        .where(id: licensures.pluck(:state_id).compact.uniq)
+        .pluck(:id, :name)
+        .to_h
+
+    # 🔁 Group by caqh_provider_attest_id
+    licensures_by_caqh_attest_id =
+      licensures.group_by(&:caqh_provider_attest_id)
+
+    CSV.generate(headers: true) do |csv|
+      csv << [
+        "PracID",
+        "Source Date",
+        "Last Name",
+        "First Name",
+        "Middle Name",
+        "Practitioner Type",
+        "License Numbers",
+        "License States",
+        "License Types",
+        "Expiration Dates",
+        "License Status",
+        "Adverse Action"
+      ]
+
+      ppis.find_each do |ppi|
+        caqh_attest_id = ppi.caqh_provider_attest_id
+
+        provider_lics =
+          licensures_by_caqh_attest_id[caqh_attest_id] || []
+
+        states =
+          provider_lics.map { |l| state_name_by_id[l.state_id] }.compact.uniq
+
+        numbers =
+          provider_lics.map(&:license_number).compact
+
+        types =
+          provider_lics.map(&:license_type).compact
+
+        expirations =
+          provider_lics.map(&:license_expiration_date).compact
+
+        audit_status =
+          provider_lics
+            .map(&:audit_status)
+            .compact
+            .uniq
+            .join(", ")
+            .presence || "Not Requested"
+
+        # Latest RVA across all licensures
+        all_rvas =
+          provider_lics.flat_map(&:rva_informations)
+
+        latest_rva =
+          all_rvas.max_by { |r| [r.source_date || Date.new(0), r.created_at || Time.at(0)] }
+
+        adverse_action_value =
+          if latest_rva&.respond_to?(:adverse_action)
+            val = latest_rva.adverse_action
+            val.is_a?(TrueClass) || val.is_a?(FalseClass) ? (val ? "Yes" : "No") : (val.presence || "-")
+          else
+            "-"
+          end
+
+        csv << [
+          caqh_attest_id || "-",
+          latest_rva&.source_date || "-",
+          ppi.last_name.presence   || "-",
+          ppi.first_name.presence  || "-",
+          ppi.middle_name.presence || "-",
+          ppi.practitioner_type || "-",
+          numbers.join(", ").presence || "-",
+          states.join(", ").presence || "-",
+          types.join(", ").presence || "-",
+          expirations.map(&:to_s).join(", ").presence || "-",
+          audit_status,
+          adverse_action_value
+        ]
+      end
+    end
+  end
+
   def dea_to_csv
     providers = Provider.includes(:dea_licenses, :group)
     if current_user.clinic_admin? || current_user.clinic_super_admin?
