@@ -108,68 +108,58 @@ class PagesController < ApplicationController
     base_scope = ProviderPersonalInformation.where(cred_status: %w[psv returned])
 
     @q = base_scope.ransack(params[:q])
+    scoped = @q.result
+
     @vrc_documents = VrcDocument.all
     @vrc_directors = User.directors
     @psv_pdf = SavedProfile.last
 
-    # Apply search via Ransack (still PSV/Returned only)
-    scoped = @q.result
-
     @practitioner_types =
-      ProviderPersonalInformation
-        .where.not(practitioner_type: [nil, ""])
-        .distinct
-        .order(:practitioner_type)
-        .pluck(:practitioner_type)
+      ProviderPersonalInformation.where.not(practitioner_type: [nil, ""])
+                                 .distinct
+                                 .order(:practitioner_type)
+                                 .pluck(:practitioner_type)
 
-    # ✅ Card counts (PSV/Returned + current search filters)
-    # If you want counts to ignore search filters, use base_scope instead of scoped.
-    @completed_count      = scoped.where(progress_status: 'completed').count
-    @assigned_count       = scoped.where(progress_status: 'assigned').count
-    @to_be_assigned_count = scoped.where(progress_status: 'to_be_assigned').count
-
-    # Progress status filter for main list
-    progress_status = params[:'vrc-progress-status'].presence || 'to_be_assigned'
+    # counts based on current search filters
+    @completed_count      = scoped.where(progress_status: "completed").count
+    @assigned_count       = scoped.where(progress_status: "assigned").count
+    @to_be_assigned_count = scoped.where(progress_status: "to_be_assigned").count
 
     @provider_personal_informations = scoped
 
-    if params[:q].blank? && progress_status != 'all' && params[:vrc] != 'work-tickler'
-      @provider_personal_informations = @provider_personal_informations.public_send(progress_status)
+    if params[:vrc] == "work-tickler"
+      # ✅ ALWAYS show only assigned items for work-tickler
+      @provider_personal_informations =
+        @provider_personal_informations
+          .where(progress_status: "assigned")
+          .where(vote_date: nil)
+          .where.not(committee_date: nil)
+          .where.not(review_date: nil)
+    else
+      progress_status = params[:'vrc-progress-status'].presence || "to_be_assigned"
+
+      if params[:q].blank? && progress_status != "all"
+        @provider_personal_informations = @provider_personal_informations.public_send(progress_status)
+      end
     end
 
-    # Additional filter for 'work-tickler'
-    if params[:vrc] == 'work-tickler'
-      @provider_personal_informations = @provider_personal_informations
-        .where(vote_date: nil)
-        .where(progress_status: 'assigned')
-        .where.not(committee_date: nil)
-        .where.not(review_date: nil)
-    end
-
-    # ✅ Total count for the CURRENT filtered list (before pagination)
     @total_vrc_count = @provider_personal_informations.count
 
-    # Pagination after all filters
     @provider_personal_informations =
       @provider_personal_informations.paginate(page: params[:page], per_page: 50)
 
-    # Conditional rendering based on `vrc` parameter
     case params[:vrc]
-    when 'work-tickler'
-      render 'work_tickler'
-    when 'documents'
-      render 'documents'
-    when 'reports'
-      render 'reports'
-    when 'issue'
-      render 'issue'
-    when 'minutes'
-      # ✅ keep consistent: PSV/Returned only + paginate for correct counts
+    when "work-tickler" then render "work_tickler"
+    when "documents"    then render "documents"
+    when "reports"      then render "reports"
+    when "issue"        then render "issue"
+    when "minutes"
       @completed_records = base_scope.where(progress_status: "completed")
                                      .paginate(page: params[:page], per_page: 50)
-      render 'minutes'
+      render "minutes"
     end
   end
+
 
   def records
     @vrc_directors = User.directors
