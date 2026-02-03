@@ -258,6 +258,8 @@ class EnrollmentClientsController < ApplicationController
     end
   end
 
+  # download the State License monthly report 
+
   def provider_licensures_report_to_csv
     ppis = ProviderPersonalInformation.all
 
@@ -358,6 +360,88 @@ class EnrollmentClientsController < ApplicationController
       end
     end
   end
+
+  # download the DEA monthly report 
+
+  def provider_deas_report_to_csv
+    ppis = ProviderPersonalInformation.all
+
+    as_of_date = @month.present? ? @month.end_of_month.to_date : Date.current
+
+    attest_ids = ppis.pluck(:provider_attest_id).compact.uniq
+
+    deas =
+      ProviderDea
+        .includes(:rva_informations)
+        .where(provider_attest_id: attest_ids)
+
+    deas_by_attest_id = deas.group_by(&:provider_attest_id)
+
+    CSV.generate(headers: true) do |csv|
+      csv << [
+        "PracID", # caqh_provider_attest_id
+        "Source Date",
+        "Last Name",
+        "First Name",
+        "Middle Name",
+        "Practitioner Type",
+        "DEA Numbers",
+        "DEA States",
+        "DEA Expiration Dates",
+        "DEA Status",
+        "Any DEA Expired As Of",
+        "Adverse Action"
+      ]
+
+      ppis.find_each do |ppi|
+        provider_deas = deas_by_attest_id[ppi.provider_attest_id] || []
+
+        dea_numbers = provider_deas.map(&:dea_number).compact
+        dea_states  = provider_deas.map(&:state).compact.uniq
+        expirations = provider_deas.map(&:expiration_date).compact
+
+        any_expired = expirations.any? { |d| d < as_of_date }
+
+        all_rvas =
+          provider_deas.flat_map(&:rva_informations)
+
+        latest_rva =
+          all_rvas.max_by { |r| [(r.source_date || r.received_date || Date.new(0)), (r.created_at || Time.at(0))] }
+
+        dea_status =
+          if latest_rva.present?
+            if latest_rva.audit_status == true
+              "Quality Audited"
+            elsif latest_rva.audit_status == false
+              "Not Audited"
+            end
+          else
+            "-"
+          end
+
+        adverse_action_value =
+          if latest_rva.present?
+            latest_rva.adverse_action.presence || "-"
+          end
+
+        csv << [
+          ppi.caqh_provider_attest_id || "-",
+          (latest_rva&.source_date || latest_rva&.received_date || "-"),
+          ppi.last_name.presence   || "-",
+          ppi.first_name.presence  || "-",
+          ppi.middle_name.presence || "-",
+          ppi.practitioner_type.presence || "-",
+          dea_numbers.join(", ").presence || "-",
+          dea_states.join(", ").presence || "-",
+          expirations.map(&:to_s).join(", ").presence || "-",
+          dea_status,
+          any_expired ? "Yes" : "No",
+          adverse_action_value
+        ]
+      end
+    end
+  end
+
 
   def dea_to_csv
     providers = Provider.includes(:dea_licenses, :group)

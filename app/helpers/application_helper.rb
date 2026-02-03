@@ -263,7 +263,7 @@ module ApplicationHelper
       # ['Missing Items Report','missing_items_report'],
       # ['License Report','license_report'],
       ["Licensures Report", "provider_licensures_report"],
-      ['DEA','dea'],
+      ['DEA','provider_deas_report'],
       # ['SAM(coming soon)','sam'],
 			# ['CAQH','caqh'],
 			# ['OIG(coming soon)','oig'],
