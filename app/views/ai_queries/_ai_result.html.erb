@@ -9,7 +9,8 @@
   <% end %>
 
   <div class="">
-    <h4 class="mb-3 text-secondary">Results: <%= @records.first.class.name.pluralize %></h4>
+    <h4 class="mb-3 text-secondary">Results: <%= @records.first.class.name.pluralize %> <%= @records.count %>
+    </h4>
 
     <div class="table-responsive rounded border">
       <table class="table table-hover align-middle mb-0">
@@ -42,14 +43,7 @@
       </table>
     </div>
 
-    <div class="mt-1 mb-2 py-2 d-flex justify-content-between align-items-center">
-      <div class="">
-        <%= page_entries_info @records %>
-      </div>
-      <div>
-        <%= will_paginate @records, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-      </div>
-    </div>
+    
   </div>
 <% elsif @input.present? %>
   <p class="alert alert-warning mt-2">No results found for "<%= @input %>". Please try a different query.</p>
