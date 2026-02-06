@@ -261,13 +261,10 @@ class EnrollmentClientsController < ApplicationController
   # download the State License monthly report 
 
   def provider_licensures_report_to_csv
-    ppis_scope = ProviderPersonalInformation.select(
-      :id, :caqh_provider_attest_id, :last_name, :first_name, :middle_name, :practitioner_type
-    )
-
+    ppis = ProviderPersonalInformation.all
     as_of_date = @month.present? ? @month.end_of_month.to_date : Date.current
 
-    caqh_attest_ids = ppis_scope.where.not(caqh_provider_attest_id: nil).distinct.pluck(:caqh_provider_attest_id)
+    caqh_attest_ids = ppis.pluck(:caqh_provider_attest_id).compact.uniq
 
     licensures =
       ProviderLicensure
@@ -275,7 +272,7 @@ class EnrollmentClientsController < ApplicationController
         .where(caqh_provider_attest_id: caqh_attest_ids)
 
     state_name_by_id =
-      State.where(id: licensures.map(&:state_id).compact.uniq).pluck(:id, :name).to_h
+      State.where(id: licensures.pluck(:state_id).compact.uniq).pluck(:id, :name).to_h
 
     licensures_by_caqh_attest_id = licensures.group_by(&:caqh_provider_attest_id)
 
@@ -296,21 +293,11 @@ class EnrollmentClientsController < ApplicationController
         "Adverse Action"
       ]
 
-      ppis_scope.find_each(batch_size: 1000) do |ppi|
+      ppis.find_each do |ppi|
         caqh_attest_id = ppi.caqh_provider_attest_id
         provider_lics  = licensures_by_caqh_attest_id[caqh_attest_id] || []
 
-        # keep deterministic ordering
-        provider_lics = provider_lics.sort_by do |l|
-          [
-            l.respond_to?(:is_primary_license) && l.is_primary_license ? 0 : 1,
-            state_name_by_id[l.state_id].to_s,
-            l.license_number.to_s,
-            l.id.to_i
-          ]
-        end
-
-        # No licensures -> one row only
+        # If provider has no licensures, still output a row (optional)
         if provider_lics.blank?
           csv << [
             caqh_attest_id || "-",
@@ -330,25 +317,27 @@ class EnrollmentClientsController < ApplicationController
           next
         end
 
-        provider_lics.each_with_index do |lic, idx|
-          show_provider_cols = (idx == 0)
-
+        provider_lics.each do |lic|
+          # Latest RVA for THIS licensure (more accurate than “latest across all”)
           latest_rva =
             lic.rva_informations.max_by { |r| [r.source_date || Date.new(0), r.created_at || Time.at(0)] }
 
-          exp_date   = lic.license_expiration_date
+          adverse_action_value =
+            latest_rva&.adverse_action.presence || "-"
+
+          exp_date = lic.license_expiration_date
           is_expired = exp_date.present? ? (exp_date < as_of_date) : false
 
-          audit_status = lic.audit_status.presence || "Not Requested"
-          adverse_action_value = latest_rva&.adverse_action.presence || "-"
+          audit_status =
+            lic.audit_status.presence || "Not Requested"
 
           csv << [
-            (show_provider_cols ? (caqh_attest_id || "-") : ""),
-            (show_provider_cols ? (latest_rva&.source_date || "-") : ""),
-            (show_provider_cols ? (ppi.last_name.presence || "-") : ""),
-            (show_provider_cols ? (ppi.first_name.presence || "-") : ""),
-            (show_provider_cols ? (ppi.middle_name.presence || "-") : ""),
-            (show_provider_cols ? (ppi.practitioner_type.presence || "-") : ""),
+            caqh_attest_id || "-",
+            latest_rva&.source_date || "-",
+            ppi.last_name.presence   || "-",
+            ppi.first_name.presence  || "-",
+            ppi.middle_name.presence || "-",
+            ppi.practitioner_type.presence || "-",
             lic.license_number.presence || "-",
             state_name_by_id[lic.state_id].presence || "-",
             lic.license_type.presence || "-",
@@ -361,6 +350,7 @@ class EnrollmentClientsController < ApplicationController
       end
     end
   end
+
 
 
 
