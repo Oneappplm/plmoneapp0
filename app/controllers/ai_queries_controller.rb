@@ -59,7 +59,7 @@ class AiQueriesController < ApplicationController
           # @records = @q.result.where(conditions).paginate(per_page: 10, page: params[:page] || 1)
           begin
             @q = base_query.ransack(params[:q])
-            @records = @q.result.where(conditions).paginate(per_page: 10, page: params[:page] || 1)
+            @records = @q.result.where(conditions)
           rescue ActiveRecord::StatementInvalid => e
             Rails.logger.error("AI Query Error: #{e.message}")
             @records = []
