@@ -261,30 +261,23 @@ class EnrollmentClientsController < ApplicationController
   # download the State License monthly report 
 
   def provider_licensures_report_to_csv
-    ppis = ProviderPersonalInformation.all
+    ppis_scope = ProviderPersonalInformation.select(
+      :id, :caqh_provider_attest_id, :last_name, :first_name, :middle_name, :practitioner_type
+    )
 
-    # As-of date for expired check
     as_of_date = @month.present? ? @month.end_of_month.to_date : Date.current
 
-    # 🔁 USE caqh_provider_attest_id INSTEAD
-    caqh_attest_ids =
-      ppis.pluck(:caqh_provider_attest_id).compact.uniq
+    caqh_attest_ids = ppis_scope.where.not(caqh_provider_attest_id: nil).distinct.pluck(:caqh_provider_attest_id)
 
     licensures =
       ProviderLicensure
         .includes(:rva_informations)
         .where(caqh_provider_attest_id: caqh_attest_ids)
 
-    # State map
     state_name_by_id =
-      State
-        .where(id: licensures.pluck(:state_id).compact.uniq)
-        .pluck(:id, :name)
-        .to_h
+      State.where(id: licensures.map(&:state_id).compact.uniq).pluck(:id, :name).to_h
 
-    # 🔁 Group by caqh_provider_attest_id
-    licensures_by_caqh_attest_id =
-      licensures.group_by(&:caqh_provider_attest_id)
+    licensures_by_caqh_attest_id = licensures.group_by(&:caqh_provider_attest_id)
 
     CSV.generate(headers: true) do |csv|
       csv << [
@@ -294,72 +287,82 @@ class EnrollmentClientsController < ApplicationController
         "First Name",
         "Middle Name",
         "Practitioner Type",
-        "License Numbers",
-        "License States",
-        "License Types",
-        "Expiration Dates",
+        "License Number",
+        "License State",
+        "License Type",
+        "Expiration Date",
+        "Is Expired?",
         "License Status",
         "Adverse Action"
       ]
 
-      ppis.find_each do |ppi|
+      ppis_scope.find_each(batch_size: 1000) do |ppi|
         caqh_attest_id = ppi.caqh_provider_attest_id
+        provider_lics  = licensures_by_caqh_attest_id[caqh_attest_id] || []
 
-        provider_lics =
-          licensures_by_caqh_attest_id[caqh_attest_id] || []
+        # keep deterministic ordering
+        provider_lics = provider_lics.sort_by do |l|
+          [
+            l.respond_to?(:is_primary_license) && l.is_primary_license ? 0 : 1,
+            state_name_by_id[l.state_id].to_s,
+            l.license_number.to_s,
+            l.id.to_i
+          ]
+        end
 
-        states =
-          provider_lics.map { |l| state_name_by_id[l.state_id] }.compact.uniq
-
-        numbers =
-          provider_lics.map(&:license_number).compact
-
-        types =
-          provider_lics.map(&:license_type).compact
-
-        expirations =
-          provider_lics.map(&:license_expiration_date).compact
-
-        audit_status =
-          provider_lics
-            .map(&:audit_status)
-            .compact
-            .uniq
-            .join(", ")
-            .presence || "Not Requested"
-
-        # Latest RVA across all licensures
-        all_rvas =
-          provider_lics.flat_map(&:rva_informations)
-
-        latest_rva =
-          all_rvas.max_by { |r| [r.source_date || Date.new(0), r.created_at || Time.at(0)] }
-
-        adverse_action_value =
-          if latest_rva&.respond_to?(:adverse_action)
-            val = latest_rva.adverse_action
-            val.is_a?(TrueClass) || val.is_a?(FalseClass) ? (val ? "Yes" : "No") : (val.presence || "-")
-          else
+        # No licensures -> one row only
+        if provider_lics.blank?
+          csv << [
+            caqh_attest_id || "-",
+            "-",
+            ppi.last_name.presence   || "-",
+            ppi.first_name.presence  || "-",
+            ppi.middle_name.presence || "-",
+            ppi.practitioner_type.presence || "-",
+            "-",
+            "-",
+            "-",
+            "-",
+            "-",
+            "Not Requested",
             "-"
-          end
+          ]
+          next
+        end
 
-        csv << [
-          caqh_attest_id || "-",
-          latest_rva&.source_date || "-",
-          ppi.last_name.presence   || "-",
-          ppi.first_name.presence  || "-",
-          ppi.middle_name.presence || "-",
-          ppi.practitioner_type || "-",
-          numbers.join(", ").presence || "-",
-          states.join(", ").presence || "-",
-          types.join(", ").presence || "-",
-          expirations.map(&:to_s).join(", ").presence || "-",
-          audit_status,
-          adverse_action_value
-        ]
+        provider_lics.each_with_index do |lic, idx|
+          show_provider_cols = (idx == 0)
+
+          latest_rva =
+            lic.rva_informations.max_by { |r| [r.source_date || Date.new(0), r.created_at || Time.at(0)] }
+
+          exp_date   = lic.license_expiration_date
+          is_expired = exp_date.present? ? (exp_date < as_of_date) : false
+
+          audit_status = lic.audit_status.presence || "Not Requested"
+          adverse_action_value = latest_rva&.adverse_action.presence || "-"
+
+          csv << [
+            (show_provider_cols ? (caqh_attest_id || "-") : ""),
+            (show_provider_cols ? (latest_rva&.source_date || "-") : ""),
+            (show_provider_cols ? (ppi.last_name.presence || "-") : ""),
+            (show_provider_cols ? (ppi.first_name.presence || "-") : ""),
+            (show_provider_cols ? (ppi.middle_name.presence || "-") : ""),
+            (show_provider_cols ? (ppi.practitioner_type.presence || "-") : ""),
+            lic.license_number.presence || "-",
+            state_name_by_id[lic.state_id].presence || "-",
+            lic.license_type.presence || "-",
+            exp_date || "-",
+            is_expired ? "Yes" : "No",
+            audit_status,
+            adverse_action_value
+          ]
+        end
       end
     end
   end
+
+
 
   # download the DEA monthly report 
 
@@ -409,12 +412,8 @@ class EnrollmentClientsController < ApplicationController
           all_rvas.max_by { |r| [(r.source_date || r.received_date || Date.new(0)), (r.created_at || Time.at(0))] }
 
         dea_status =
-          if latest_rva.present?
-            if latest_rva.audit_status == true
-              "Quality Audited"
-            elsif latest_rva.audit_status == false
-              "Not Audited"
-            end
+          if dea_numbers.present?
+              "Exempt"
           else
             "-"
           end
