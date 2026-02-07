@@ -422,6 +422,9 @@
                 <p><strong>Verifier:</strong> <%= cds_details&.verifier %></p>
                 <p><strong>Verification Date:</strong> <%= cds_details&.verification_date&.strftime('%m/%d/%Y') %></p>
               </div>
+              <div class="col-12">
+                <p><strong>Comments:</strong> <%= cds_details&.verification_comments %></p>
+              </div>
             </div>
             <hr>
           <% end %>
@@ -516,7 +519,7 @@
             <p>
               <strong>Source Date:</strong>
               <%= provider_personal_information
-                    &.npi_source_date
+                    &.updated_at
                     &.in_time_zone('Pacific Time (US & Canada)')
                     &.strftime("%m/%d/%Y") %>
             </p>
@@ -565,12 +568,12 @@
         <% if provider_personal_information.rva_informations.where(tab: 'OIG').last %>
           <div class="row">
             <div class="col-6">
-              <p><strong>Search Result:</strong> <%= provider_personal_information.rva_informations.last&.status %></p>
+              <p><strong>Search Result:</strong> <%= provider_personal_information.rva_informations.where(tab: 'OIG').last&.status %></p>
               <p><strong>Finding:</strong> None</p>
               <p><strong>Verified By:</strong> <%#= provider_personal_information.rva_informations.last&.tab %>
                 OIG
               </p>
-              <p><strong>Verifier:</strong> <%= provider_personal_information.rva_informations.last&.verifier %></p>
+              <p><strong>Verifier:</strong> <%= provider_personal_information.rva_informations.where(tab: 'OIG').last&.verifier %></p>
               <p><strong>Comments:</strong> <%= provider_personal_information.rva_informations.where(tab: 'OIG').last&.verification_comments %></p>
             </div>
             <div class="col-6">
