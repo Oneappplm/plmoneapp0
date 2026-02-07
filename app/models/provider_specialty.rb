@@ -7,6 +7,10 @@ class ProviderSpecialty < ApplicationRecord
   validates :provider_attest_id, presence: true
 
   SPECIALITIES = [
+    "American Academy of Nurse Practitioners",
+    "American Nurses Credentialing Center",
+    "American Association of Critical Care Nurses",
+    "American Midwifery Certification Board",
     "Adult Cardiac Anesthesiology",
     "Adult Companion",
     "Advanced Practice Midwife",
@@ -432,6 +436,8 @@ class ProviderSpecialty < ApplicationRecord
     "Nursing Service Providers : Registered Nurse : Psych/Mental Health",
     "Nutritionist",
     "Nutritionist: Nutrition, Education",
+    "NBCRNA",
+    "National Certification Corporation",
     "Obstetrics & Gynecology",
     "Obstetrics & Gynecology : Critical Care Medicine",
     "Obstetrics & Gynecology : Gynecologic Oncology",
