@@ -7,6 +7,19 @@ class ProviderDea < ApplicationRecord
 
   validates :provider_attest_id, presence: true
 
+  scope :expired_strict, -> {
+    where("expiration_date < ?", Date.current)
+  }
+
+  scope :active, -> {
+    where("expiration_date >= ?", Date.current)
+  }
+
+  scope :missing_expiration, -> {
+    where(expiration_date: nil)
+  }
+
+
   before_validation :set_provider_attest
   private
 
