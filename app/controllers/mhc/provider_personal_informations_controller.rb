@@ -207,6 +207,17 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
       :city, :county, :state, :zip, :country],
       provider_personal_information_confidential_contact_attributes: [:id, :contact_method,
       :firstname, :middlename, :lastname, :title, :address, :suffix, :phone_number, :fax, :email, :suite, :address2,
-      :city, :county, :state, :zip, :country])
+      :city, :county, :state, :zip, :country],
+      provider_other_names_attributes: [
+        :id,
+        :first_name,
+        :middle_name,
+        :last_name,
+        :suffix,
+        :start_date,
+        :end_date,
+        :other_name_explanation,
+        :_destroy
+      ])
   end
 end

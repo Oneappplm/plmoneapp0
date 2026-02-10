@@ -1112,33 +1112,65 @@ $(document).ready(function() {
               info_id: personalInfoId
             },
             success: function (response) {
-              const crawlerData = response.webscraper_log;
+              // Prefer top-level pdf_url if you add it, otherwise fall back to nested structure
+              const url =
+                response?.pdf_url ||
+                response?.webscraper_log?.filepath?.url ||
+                response?.webscraper_log?.filepath?.file?.url; // extra-safe fallback if serializer differs
 
-              if (crawlerData && crawlerData.filepath && crawlerData.filepath.url && crawlerData.created_at) {
-                const createdDate = new Date(crawlerData.created_at);
+              const createdAt =
+                response?.webscraper_log?.created_at ||
+                response?.webscraper_log?.createdAt ||
+                response?.created_at;
 
-                const crawlerLinkHTML = `
-                  <div class="row justify-content-end">
-                    <div class="col-md-6">
-                      <div class="text-decoration-underline">
-                        <a href="${crawlerData.filepath.url}" target="_blank">
-                          ${crawlerData.filepath.url.split('?')[0].split('/').pop()}
-                        </a>
-                      </div>
-                    </div>
-                    <div class="col-md-3">
-                      <div class="date-time d-flex">
-                        <span>${createdDate.toISOString().split('T')[0]}</span>
-                        <span class="ms-2">${createdDate.toTimeString().slice(0, 5)}</span>
-                      </div>
-                    </div>
-                  </div>`;
-
-                document.getElementById('crawler-link').insertAdjacentHTML('afterbegin', crawlerLinkHTML);
-              }
-
+              // Always stop loader first
               $('.loading-overlay').hide();
+
+              if (!url) return;
+
+              // Build filename safely
+              const fileName = decodeURIComponent(
+                (url.split('?')[0].split('/').pop() || 'npdb_mmpr.pdf')
+              );
+
+              // Parse date (fallback to "now" if not provided)
+              const createdDate = createdAt ? new Date(createdAt) : new Date();
+
+              // Format date/time in local timezone (avoids ISO UTC confusion)
+              const dateStr = createdDate.toLocaleDateString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' });
+              const timeStr = createdDate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false });
+
+              // Remove old link block to prevent duplicates
+              const container = document.getElementById('crawler-link');
+              if (!container) return;
+
+              // Option A: replace the whole container content
+              // Option B: remove only previously inserted rows (safer if container has other stuff)
+              container.querySelectorAll('.crawler-link-row').forEach(el => el.remove());
+
+              const crawlerLinkHTML = `
+                <div class="row justify-content-end crawler-link-row">
+                  <div class="col-md-6">
+                    <div class="text-decoration-underline">
+                      <a href="${url}" target="_blank" rel="noopener noreferrer">
+                        ${fileName}
+                      </a>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="date-time d-flex">
+                      <span>${dateStr}</span>
+                      <span class="ms-2">${timeStr}</span>
+                    </div>
+                  </div>
+                </div>`;
+
+              container.insertAdjacentHTML('afterbegin', crawlerLinkHTML);
+
+              // If you're using a modal, ensure it is visible + DOM updated
+              // (Optional) $('#yourModalId').modal('show');
             },
+
             error: function (xhr) {
               alert(xhr?.responseJSON?.error || 'NPDB demo failed');
               $('.loading-overlay').hide();
