@@ -229,7 +229,6 @@ class Mhc::VerificationPlatformController < ApplicationController
 
   def get_data
     if params[:page_tab] == 'practitioner_info'
-
       @provider_personal_information_credentialing_contact =
         @provider_personal_information.provider_personal_information_credentialing_contact ||
         @provider_personal_information.build_provider_personal_information_credentialing_contact
@@ -246,7 +245,6 @@ class Mhc::VerificationPlatformController < ApplicationController
       if @provider_personal_information.provider_attest.provider_other_names.blank?
         @provider_personal_information.provider_attest.provider_other_names.build
       end
-
     end
 
 
