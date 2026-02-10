@@ -63,7 +63,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
-   def run_npdb_demo_webcrawler
+  def run_npdb_demo_webcrawler
     npdb = ProviderNpdb.find(params[:npdb_id])
     provider_personal_info = ProviderPersonalInformation.find(params[:info_id])
 
@@ -83,26 +83,27 @@ class Webscrapers::QualityAuditsController < ApplicationController
       received_date: Date.today
     )
 
-    result = Webscraper::NpdbDemoService.new(
+    log = Webscraper::NpdbQrxsService.new(
       provider_npdb: npdb,
+      provider_personal_information: provider_personal_info,
       rva_information: rva_information
     ).call
 
-    log = result[:log]
-
+    # if you want these updates, keep them (you said you need save/update now)
     npdb.update!(
       status: "COMPLETED(DEMO)",
       submit_date: npdb.submit_date || Date.current,
       response_date: Date.current,
-      comments: "DEMO: PDF generated & uploaded. Waiting for DataBankID for real QRXS."
+      comments: "DEMO: PDF generated & uploaded."
     )
 
-    provider_personal_info.update(verification_status: 'Processing')
+    provider_personal_info.update!(verification_status: 'Processing')
 
     render json: {
       message: 'NPDB demo completed successfully',
-      rva_information: rva_information,
-      webscraper_log: log
+      rva_information_id: rva_information.id,
+      webscraper_log_id: log.id,
+      pdf_url: log.filepath.url # CarrierWave
     }, status: :ok
 
   rescue => e
@@ -110,6 +111,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
     Rails.logger.error e.backtrace.join("\n")
     render json: { error: e.message }, status: :unprocessable_entity
   end
+
 
   def run_registration_webcrawler
     dea_number = params[:dea_number]
@@ -179,18 +181,18 @@ class Webscrapers::QualityAuditsController < ApplicationController
     updated_html_path = Rails.root.join("tmp", "updated_page.html")
     updated_html = File.exist?(updated_html_path) ? File.read(updated_html_path) : ""
 
-    # Return JSON
     render json: {
       success: true,
       message: "Webcrawler completed successfully.",
+      pdf_url: log.filepath.url,
       webscraper_log: {
+        id: log.id,
         filepath: { url: log.filepath.url },
         created_at: log.created_at
       },
       rva_information: rva_info,
       updated_html: updated_html
     }, status: :ok
-
   rescue => e
     render json: { success: false, message: e.message }, status: :unprocessable_entity
   end
