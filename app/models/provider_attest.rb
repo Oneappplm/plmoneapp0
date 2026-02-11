@@ -50,6 +50,9 @@ class ProviderAttest < ApplicationRecord
   has_many :provider_other_business_interests, dependent: :destroy
   has_many :provider_other_interests, dependent: :destroy
   has_many :provider_other_names, dependent: :destroy
+  accepts_nested_attributes_for :provider_other_names,
+    allow_destroy: true,
+    reject_if: :all_blank
   has_many :provider_other_questions, dependent: :destroy
   has_many :provider_personal_informations, dependent: :destroy
   has_many :provider_race_ethnicities, dependent: :destroy
