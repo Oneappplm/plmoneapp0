@@ -1,0 +1,53 @@
+<div class="other-name-fields border p-3 mt-3 rounded">
+
+  <%= f.hidden_field :id %>
+  <%= f.hidden_field :_destroy, class: "destroy-flag" %>
+
+  <h3>Other Name Used</h3>
+
+  <div class="row">
+    <div class="col-lg-3">
+      <%= f.label :first_name, "First Name" %>
+      <%= f.text_field :first_name, placeholder: "First Name", class: "form-control" %>
+    </div>
+    <div class="col-lg-3">
+      <%= f.label :middle_name, "Middle Name" %>
+      <%= f.text_field :middle_name, placeholder: "Middle Name", class: "form-control" %>
+    </div>
+    <div class="col-lg-3">
+      <%= f.label :last_name, "Last Name" %>
+      <%= f.text_field :last_name, placeholder: "Last Name", class: "form-control" %>
+    </div>
+    <div class="col-lg-3">
+      <%= f.label :suffix, "Suffix" %>
+      <%= f.select :suffix,
+             options_for_select(ProviderPersonalInformation::SUFFIXES, f.object.suffix),
+             { include_blank: 'Select Suffix' },
+             class: "form-control" %>
+
+    </div>
+  </div>
+
+  <div class="row mt-2">
+    <div class="col-lg-3">
+      <%= f.label :start_date, "From" %>
+      <%= f.date_field :start_date, class: "form-control" %>
+    </div>
+    <div class="col-lg-3">
+      <%= f.label :end_date, "To" %>
+      <%= f.date_field :end_date, class: "form-control" %>
+    </div>
+
+    <div class="col-lg-3 mt-3">
+      <label>Maiden Name?</label><br>
+      <%= f.radio_button :other_name_explanation, true %> Yes
+      <%= f.radio_button :other_name_explanation, false %> No
+    </div>
+
+    <div class="col-lg-3 text-end mt-3">
+      <button type="button" class="btn btn-danger remove-other-name">
+        Remove
+      </button>
+    </div>
+  </div>
+</div>
