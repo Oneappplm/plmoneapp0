@@ -287,8 +287,8 @@ class EnrollmentClientsController < ApplicationController
         "License Number",
         "License State",
         "License Type",
+        "NPI",
         "Expiration Date",
-        "Is Expired?",
         "License Status",
         "Adverse Action"
       ]
@@ -326,7 +326,7 @@ class EnrollmentClientsController < ApplicationController
             latest_rva&.adverse_action.presence || "-"
 
           exp_date = lic.license_expiration_date
-          is_expired = exp_date.present? ? (exp_date < as_of_date) : false
+          # is_expired = exp_date.present? ? (exp_date < as_of_date) : false
 
           audit_status =
             lic.audit_status.presence || "Not Requested"
@@ -341,8 +341,8 @@ class EnrollmentClientsController < ApplicationController
             lic.license_number.presence || "-",
             state_name_by_id[lic.state_id].presence || "-",
             lic.license_type.presence || "-",
+            ppi.npi.presence  || "-",
             exp_date || "-",
-            is_expired ? "Yes" : "No",
             audit_status,
             adverse_action_value
           ]
@@ -350,9 +350,6 @@ class EnrollmentClientsController < ApplicationController
       end
     end
   end
-
-
-
 
   # download the DEA monthly report 
 
@@ -382,7 +379,7 @@ class EnrollmentClientsController < ApplicationController
         "DEA States",
         "DEA Expiration Dates",
         "DEA Status",
-        "Any DEA Expired As Of",
+        "NPI",
         "Adverse Action"
       ]
 
@@ -393,7 +390,7 @@ class EnrollmentClientsController < ApplicationController
         dea_states  = provider_deas.map(&:state).compact.uniq
         expirations = provider_deas.map(&:expiration_date).compact
 
-        any_expired = expirations.any? { |d| d < as_of_date }
+        # any_expired = expirations.any? { |d| d < as_of_date }
 
         all_rvas =
           provider_deas.flat_map(&:rva_informations)
@@ -403,9 +400,9 @@ class EnrollmentClientsController < ApplicationController
 
         dea_status =
           if dea_numbers.present?
-              "Exempt"
+              "Active"
           else
-            "-"
+            "Inactive"
           end
 
         adverse_action_value =
@@ -422,15 +419,17 @@ class EnrollmentClientsController < ApplicationController
           ppi.practitioner_type.presence || "-",
           dea_numbers.join(", ").presence || "-",
           dea_states.join(", ").presence || "-",
-          expirations.map(&:to_s).join(", ").presence || "-",
+          expirations
+          .map { |d| d.to_date.strftime("%Y-%m-%d") }
+          .join(", ")
+          .presence || "-",
           dea_status,
-          any_expired ? "Yes" : "No",
+          ppi.npi.presence || "-",
           adverse_action_value
         ]
       end
     end
   end
-
 
   def dea_to_csv
     providers = Provider.includes(:dea_licenses, :group)
