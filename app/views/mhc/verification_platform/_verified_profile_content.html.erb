@@ -75,7 +75,42 @@
       </tbody>
     </table>
   </div>
-  <div class="table-responsive">
+
+  <%# other name section %>
+  <div class="section-title mt-4">Practitioner Other Names</div>
+    <div class="table-responsive mb-3">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="fw-bold text-dark">First Name</th>
+            <th class="fw-bold text-dark">Middle Name</th>
+            <th class="fw-bold text-dark">Last Name</th>
+            <th class="fw-bold text-dark">Suffix</th>
+            <th class="fw-bold text-dark">Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if provider_personal_information.provider_attest&.provider_other_names.present? %>
+            <% provider_personal_information.provider_attest.provider_other_names.each do |other_name| %>
+              <tr>
+                <td><%= other_name.first_name %></td>
+                <td><%= other_name.middle_name %></td>
+                <td><%= other_name.last_name %></td>
+                <td><%= other_name.suffix %></td>
+                <td><%= other_name.name_type %></td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="5" class="text-center text-muted">No other names found</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+
+  <div class="table-responsive mb-3">
     <table class="table table-bordered">
       <tbody>
         <% if provider_personal_information.signature_date.present? %>
