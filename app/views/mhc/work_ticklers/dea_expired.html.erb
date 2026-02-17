@@ -22,21 +22,21 @@
     </thead>
 
     <tbody>
-      <% if @expired_deas.present? %> 
+      <% if @expired_deas.present? %>
         <% @expired_deas.each_with_index do |dea, index| %>
+          <% provider = dea.provider_attest.provider_personal_informations.first %>
+
           <tr>
             <td><%= index + 1 %></td>
-
-            <% provider = dea.provider_attest.provider_personal_informations.first %>
 
             <td>
               <% if provider.present? %>
                 <%= link_to provider.fullname,
-                    mhc_verification_platform_path(
-                      dea.provider_attest.id,
-                      page_tab: 'registration'
-                    ),
-                    class: 'text-primary fw-semibold' %>
+                  mhc_verification_platform_path(
+                    dea.provider_attest.id,
+                    page_tab: 'registration'
+                  ),
+                  class: 'text-primary fw-semibold' %>
               <% else %>
                 N/A
               <% end %>
@@ -44,20 +44,18 @@
 
             <td><%= dea.dea_number %></td>
             <td><%= dea.expiration_date.strftime('%m/%d/%Y') %></td>
-            <td>
-              <%= provider&.fullname || 'N/A' %>
-            </td>
-            <td>
-              <%= provider&.cell_phone_number || 'N/A' %>
-            </td>
-            <td>
-              <%= provider&.fax_number || 'N/A' %>
-            </td>
-            <td></td>
+            <td><%= provider&.fullname || 'N/A' %></td>
+            <td><%= provider&.cell_phone_number || 'N/A' %></td>
+            <td><%= provider&.fax_number || 'N/A' %></td>
+            <td>-</td>
           </tr>
         <% end %>
       <% else %>
-        <p class="text-danger text-center fw-bold">There is no practitioner who matches the condition!</p>
+        <tr>
+          <td colspan="8" class="text-danger text-center fw-bold py-4">
+            There is no practitioner who matches the condition!
+          </td>
+        </tr>
       <% end %>
     </tbody>
   </table>
