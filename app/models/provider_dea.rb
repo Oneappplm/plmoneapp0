@@ -7,21 +7,27 @@ class ProviderDea < ApplicationRecord
 
   validates :provider_attest_id, presence: true
 
-  scope :expired_strict, -> {
-    where("expiration_date < ?", Date.current)
-  }
+  scope :expired_strict, -> {where("expiration_date < ?", Date.current)}
 
-  scope :active, -> {
-    where("expiration_date >= ?", Date.current)
-  }
+  scope :active, -> {where("expiration_date >= ?", Date.current)}
 
-  scope :missing_expiration, -> {
-    where(expiration_date: nil)
-  }
+  scope :missing_expiration, -> {where(expiration_date: nil)}
+
+  scope :shown_on_tickler, -> { where(show_on_tickler: 'Yes') }
+  
+  scope :expired_and_tickler, -> { expired_strict.shown_on_tickler }
 
 
   before_validation :set_provider_attest
+
+  after_initialize :set_defaults, if: :new_record?
+
+
   private
+
+  def set_defaults
+    self.show_on_tickler ||= 'Yes'
+  end
 
   def set_provider_attest
     if caqh_provider_attest_id.present?
