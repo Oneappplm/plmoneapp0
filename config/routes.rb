@@ -163,6 +163,13 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :work_ticklers, only: [:index], path: 'work-ticklers' do
+      collection do
+        get :dea_expired
+        get :dea_expiring
+      end
+    end
+
     get "verification_platform/states", to: "verification_platform#states"
 
     # for DEA file uploadation

@@ -41,16 +41,23 @@
       </div>
 
       <div class="form-row d-flex align-items-center gap-3 mt-2">
-        <label for="show_on_tickler">Show on Tickler?</label>
+        <label>Show on Tickler?</label>
+
         <div class="form-check d-flex align-items-center gap-2">
-          <%= f.radio_button :show_on_tickler, 'Yes', id: 'ticker-radio-yes', class: 'form-check-input' %>
-          <label class="form-check-label" for="ticker-radio-yes">Yes</label>
+          <%= f.radio_button :show_on_tickler, 'Yes',
+                checked: provider_dea.show_on_tickler != 'No',
+                class: 'form-check-input' %>
+          <label class="form-check-label">Yes</label>
         </div>
+
         <div class="form-check d-flex align-items-center gap-2">
-          <%= f.radio_button :show_on_tickler, 'No', id: 'ticker-radio-no', class: 'form-check-input' %>
-          <label class="form-check-label" for="ticker-radio-no">No</label>
+          <%= f.radio_button :show_on_tickler, 'No',
+                checked: provider_dea.show_on_tickler == 'No',
+                class: 'form-check-input' %>
+          <label class="form-check-label">No</label>
         </div>
       </div>
+
       <div class="form-row">
         <label for="DEA-state">State:</label>
         <%= f.collection_select :state, @states, :alpha_code, :name, { prompt: 'State' }, { class: 'form-control' } %>

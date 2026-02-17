@@ -1,0 +1,91 @@
+require 'csv'
+
+class Mhc::WorkTicklersController < ApplicationController
+  PER_PAGE = 10
+  DEA_EXPIRING_YEARS = 5
+
+  def index
+    @q = ProviderPersonalInformation
+           .where.not(cred_status: 'no-application')
+           .or(ProviderPersonalInformation.where(cred_status: nil))
+           .ransack(params[:q])
+  end
+
+  def dea_expired
+    @expired_deas = fetch_deas(:expired)
+
+    respond_to do |format|
+      format.html
+      format.csv { send_dea_csv(@expired_deas, 'dea_expired') }
+    end
+  end
+
+  def dea_expiring
+    @expiring_deas = fetch_deas(:expiring)
+
+    respond_to do |format|
+      format.html
+      format.csv { send_dea_csv(@expiring_deas, 'dea_expiring') }
+    end
+  end
+
+  private
+
+  def fetch_deas(type)
+    scope =
+      ProviderDea
+        .where(show_on_tickler: ['Yes', nil])
+        .includes(provider_attest: :provider_personal_informations)
+        .order(expiration_date: :asc)
+
+    scope =
+      case type
+      when :expired
+        scope.where('expiration_date < ?', Date.current)
+      when :expiring
+        scope.where(expiration_date: Date.current..DEA_EXPIRING_YEARS.years.from_now)
+      end
+
+    scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
+  end
+
+  # CSV Export
+  def send_dea_csv(deas, filename_prefix)
+    send_data generate_dea_csv(deas),
+              filename: "#{filename_prefix}_#{Date.current}.csv"
+  end
+
+  def generate_dea_csv(deas)
+    CSV.generate(headers: true) do |csv|
+      csv << csv_headers
+
+      deas.each_with_index do |dea, index|
+        provider = dea.provider_attest&.provider_personal_informations&.first
+
+        csv << [
+          index + 1,
+          provider&.fullname || 'N/A',
+          dea.dea_number,
+          dea.expiration_date&.strftime('%m/%d/%Y'),
+          provider&.fullname || 'N/A',
+          provider&.cell_phone_number || 'N/A',
+          provider&.fax_number || 'N/A',
+          nil
+        ]
+      end
+    end
+  end
+
+  def csv_headers
+    [
+      'Sr',
+      'Practitioner Name',
+      'DEA Number',
+      'Expiration Date',
+      'Credentials Contact Name',
+      'Credentials Contact Phone',
+      'Credentials Contact Fax',
+      'Department/Division'
+    ]
+  end
+end
