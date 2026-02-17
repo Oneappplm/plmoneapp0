@@ -13,15 +13,15 @@ class ProviderDea < ApplicationRecord
 
   scope :missing_expiration, -> {where(expiration_date: nil)}
 
-  scope :shown_on_tickler, -> { where(show_on_tickler: 'Yes') }
+  scope :shown_on_tickler, -> { where(show_on_tickler: ['Yes', nil]) }
   
   scope :expired_and_tickler, -> { expired_strict.shown_on_tickler }
 
+  scope :expiring_and_tickler, -> {active.shown_on_tickler}
 
   before_validation :set_provider_attest
 
   after_initialize :set_defaults, if: :new_record?
-
 
   private
 
