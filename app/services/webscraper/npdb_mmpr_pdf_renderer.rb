@@ -7,12 +7,12 @@ require "fileutils"
 
 module Webscraper
   class NpdbMmprPdfRenderer
-        PAGE_SIZE     = "LETTER"
+    PAGE_SIZE     = "LETTER"
     LEFT_MARGIN   = 36
     RIGHT_MARGIN  = 36
     BOTTOM_MARGIN = 22
 
-    HEADER_TOP_PAD     = 18
+    HEADER_TOP_PAD     = 0
     HEADER_BOX_H       = 72
     HEADER_RULE_GAP    = 8
     HEADER_NAME_GAP    = 14
@@ -23,7 +23,7 @@ module Webscraper
     FOOTER_H           = 22
     CONTENT_START_PAD  = 0
 
-    TOP_MARGIN    = LEFT_MARGIN + 120
+    TOP_MARGIN    = LEFT_MARGIN + 110
     CONTENT_WIDTH = 540
 
     SECTION_GAP        = 6
@@ -75,30 +75,18 @@ module Webscraper
     # ---------------- BODY ----------------
     # (your existing body/design stays as you have it — no design changes here)
     def self.render_body(pdf, d)
-      pdf.move_down CONTENT_START_PAD
-
       # ---- CENTER SUBJECT/ORG (ONLY PAGE 1) ----
       if pdf.page_number == 1
         name = subject_name(d)
         org  = safe(d[:authorized_org_name])
 
-        block_h = 38
+        block_h = 20
         pdf.bounding_box([0, pdf.cursor], width: CONTENT_WIDTH, height: block_h) do
           pdf.font("Helvetica-Bold")
-          pdf.font_size 11
+          pdf.font_size 12
           pdf.text_box(name, at: [0, block_h - 0], width: CONTENT_WIDTH, height: 16, align: :center, valign: :top)
-
-          band_h = 30
-          band_y = block_h - 20
-          pdf.save_graphics_state
-          pdf.fill_color GREY_BAND
-          pdf.fill_rectangle([0, band_y], CONTENT_WIDTH, band_h)
-          pdf.restore_graphics_state
-
-          pdf.font_size 8.5
-          pdf.text_box(org, at: [0, band_y - 2], width: CONTENT_WIDTH, height: band_h, align: :center, valign: :center)
         end
-        pdf.move_down 6
+        pdf.move_down 2
       end
 
       report_header_block(
@@ -106,8 +94,10 @@ module Webscraper
         "CORRECTION TO MEDICAL MALPRACTICE\nPAYMENT REPORT",
         "Date of Action: #{safe(d[:judgment_date])}",
         d[:payment_result_of],
-        d[:specific_allegation]
+        d[:specific_allegation],
+        safe(d[:authorized_org_name])
       )
+
       pdf.move_down 6
 
       section_sidebar_block(
@@ -257,13 +247,13 @@ module Webscraper
         # Left NPDB block
         pdf.fill_color "000000"
         pdf.font("Helvetica")
-        pdf.font_size 7
+        pdf.font_size 5
         pdf.draw_text "NATIONAL PRACTITIONER DATA BANK", at: [left_x, page_top - 10]
 
-        pdf.font_size 30
-        pdf.draw_text "NPDB", at: [left_x, page_top - 32]
+        pdf.font_size 35
+        pdf.draw_text "NPDB", at: [left_x, page_top - 38]
 
-        pdf.font_size 8
+        pdf.font_size 9
         pdf.draw_text "P.O. Box 10832", at: [left_x, page_top - 48]
         pdf.draw_text "Chantilly, VA 20153-0832", at: [left_x, page_top - 60]
         pdf.draw_text "https://www.npdb.hrsa.gov", at: [left_x, page_top - 85]
@@ -363,7 +353,12 @@ module Webscraper
       start_y = pdf.cursor
 
       # --- top border ---
+      pdf.save_graphics_state
+      pdf.stroke_color "000000"   # BLACK
+      pdf.line_width 1.5
       pdf.stroke_horizontal_line(0, CONTENT_WIDTH, at: start_y)
+      pdf.restore_graphics_state
+
 
       # --- sidebar background (FIXED COLOR BUG) ---
       pdf.save_graphics_state
@@ -428,103 +423,135 @@ module Webscraper
       end
     end
 
-    def self.report_header_block(pdf, title, date_right, initial_value, basis_value)
-      title_h = 34
-      head_h  = 18
+    def self.report_header_block(pdf, title, date_right, initial_value, basis_value, org_name)
+      org_h   = 25
+      title_h = 40
+      head_h  = 19
       value_h = 18
-      total_h = title_h + head_h + value_h
+
+      total_h = org_h + title_h + head_h + value_h
 
       mid_x = CONTENT_WIDTH / 2.0
 
-      outer_stroke = "404040" # light grey border like sample
-      inner_stroke = "C8C8C8" # inner grid like sample
+      outer_stroke = "9E9E9E"   # light gray
+      inner_stroke = "C8C8C8"
 
       y_top = pdf.cursor
 
       pdf.bounding_box([0, y_top], width: CONTENT_WIDTH, height: total_h) do
-        # Outer border
+        # ── OUTER BORDER (single box) ───────────────────
+        # ── OUTER BORDER (FULL BOX) ───────────────────────
         pdf.save_graphics_state
         pdf.stroke_color outer_stroke
         pdf.line_width = 1
         pdf.stroke_rectangle([0, total_h], CONTENT_WIDTH, total_h)
         pdf.restore_graphics_state
 
-        # Title band
-        pdf.save_graphics_state
-        pdf.fill_color "D3D3D3"
-        pdf.fill_rectangle([0, total_h], CONTENT_WIDTH, title_h)
-        pdf.restore_graphics_state
+        cursor_y = total_h
+
+        # ── ORG NAME BAND ──────────────────────────────
+        pdf.fill_color "E6E6E6"
+        pdf.fill_rectangle([0, cursor_y], CONTENT_WIDTH, org_h)
 
         pdf.fill_color "000000"
         pdf.font("Helvetica-Bold")
-        pdf.font_size 11
-
+        pdf.font_size 12
         pdf.text_box(
-          title.to_s,                      # "CORRECTION TO MEDICAL MALPRACTICE\nPAYMENT REPORT"
-          at: [8, total_h - 2],
-          width: 380,
-          height: title_h,
-          leading: 1,
+          org_name.to_s,
+          at: [0, cursor_y - 0],
+          width: CONTENT_WIDTH,
+          height: org_h,
+          align: :center,
           valign: :center
         )
 
-        pdf.font_size 10
+        cursor_y -= org_h
+        pdf.stroke_color inner_stroke
+        pdf.stroke_horizontal_line(0, CONTENT_WIDTH, at: cursor_y)
+
+        # ── TITLE BAND ─────────────────────────────────
+        pdf.fill_color "D9D9D9"
+        pdf.fill_rectangle([0, cursor_y], CONTENT_WIDTH, title_h)
+
+        pdf.fill_color "000000"
+        pdf.font("Helvetica-Bold")
+        pdf.font_size 12
         pdf.text_box(
-          date_right.to_s,                 # "Date of Action: ..."
-          at: [390, total_h - 6],
-          width: 142,
+          title.to_s,
+          at: [8, cursor_y - 2],
+          width: 360,
+          height: title_h,
+          valign: :center,
+          leading: 1
+        )
+
+        pdf.font_size 9
+        pdf.text_box(
+          date_right.to_s,
+          at: [380, cursor_y - 4],
+          width: 150,
           height: title_h,
           align: :right,
           valign: :center
         )
 
-        # line under title
-        pdf.save_graphics_state
-        pdf.stroke_color inner_stroke
-        pdf.line_width = 0.8
-        pdf.stroke_horizontal_line(0, CONTENT_WIDTH, at: total_h - title_h)
-        pdf.restore_graphics_state
+        cursor_y -= title_h
+        pdf.stroke_horizontal_line(0, CONTENT_WIDTH, at: cursor_y)
 
-        # header band
-        header_top = total_h - title_h
-        pdf.save_graphics_state
-        pdf.fill_color GREY_BAND_DARK
-        pdf.fill_rectangle([0, header_top], CONTENT_WIDTH, head_h)
-        pdf.restore_graphics_state
+        # ── HEADER BAND (Initial / Basis) ──────────────
+        pdf.fill_color "CFCFCF"
+        pdf.fill_rectangle([0, cursor_y], CONTENT_WIDTH, head_h)
 
         pdf.fill_color "000000"
         pdf.font("Helvetica-Bold")
-        pdf.font_size 9
-        pdf.text_box("Initial Action", at: [0, header_top - 3], width: mid_x, height: head_h, align: :center, valign: :center)
-        pdf.text_box("Basis for Initial Action", at: [mid_x, header_top - 3], width: mid_x, height: head_h, align: :center, valign: :center)
+        pdf.font_size 12
 
-        # line under header
-        values_top = header_top - head_h
-        pdf.save_graphics_state
-        pdf.stroke_color inner_stroke
-        pdf.line_width = 0.8
-        pdf.stroke_horizontal_line(0, CONTENT_WIDTH, at: values_top)
-        pdf.restore_graphics_state
+        pdf.text_box(
+          "Initial Action",
+          at: [0, cursor_y - 1],
+          width: mid_x,
+          height: head_h,
+          align: :center,
+          valign: :center
+        )
 
-        # vertical divider through header+values
-        pdf.save_graphics_state
-        pdf.stroke_color inner_stroke
-        pdf.line_width = 0.8
-        pdf.stroke_vertical_line(header_top, 0, at: mid_x)
-        pdf.restore_graphics_state
+        pdf.text_box(
+          "Basis for Initial Action",
+          at: [mid_x, cursor_y - 2],
+          width: mid_x,
+          height: head_h,
+          align: :center,
+          valign: :center
+        )
 
-        # values (TOP aligned, not bottom)
-        left_text  = "- #{safe(initial_value)}".strip
-        right_text = "- #{safe(basis_value)}".strip
+        cursor_y -= head_h
+        pdf.stroke_horizontal_line(0, CONTENT_WIDTH, at: cursor_y)
+        pdf.stroke_vertical_line(cursor_y + head_h, cursor_y - value_h, at: mid_x)
 
+        # ── VALUES ROW ─────────────────────────────────
         pdf.font("Helvetica")
         pdf.font_size 9
-        pad_left = 8
-        pad_top  = 2
+        pad = 8
 
-        pdf.text_box(left_text,  at: [pad_left, values_top - pad_top], width: mid_x - (pad_left * 2), height: value_h, valign: :top)
-        pdf.text_box(right_text, at: [mid_x + pad_left, values_top - pad_top], width: mid_x - (pad_left * 2), height: value_h, valign: :top)
+        pdf.text_box(
+          "- #{safe(initial_value)}",
+          at: [pad, cursor_y - 4],
+          width: mid_x - pad * 2,
+          height: value_h,
+          valign: :top
+        )
+
+        pdf.text_box(
+          "- #{safe(basis_value)}",
+          at: [mid_x + pad, cursor_y - 4],
+          width: mid_x - pad * 2,
+          height: value_h,
+          valign: :top
+        )
       end
+
+      # ✅ minimal spacing after block (important)
+      pdf.move_down 6
     end
 
     # -------------------------------------------------------------------
