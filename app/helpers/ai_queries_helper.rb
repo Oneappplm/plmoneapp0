@@ -12,9 +12,7 @@ module AiQueriesHelper
 
   private
 
-  # -----------------------------
   # USER RECORDS
-  # -----------------------------
   def display_user_value(user, column)
     case column
     when :first_name then user.first_name
@@ -26,9 +24,7 @@ module AiQueriesHelper
     end
   end
 
-  # -----------------------------
   # PROVIDER-RELATED RECORDS
-  # -----------------------------
   def display_provider_value(record, column)
     provider =
       record.respond_to?(:provider_attest) ?
@@ -50,6 +46,18 @@ module AiQueriesHelper
 
     when :license_type
       @license_type || "—"
+
+    when :state
+      value = record.state
+
+      case value
+      when State
+        value.alpha_code || value.name
+      when String
+        value.presence || "—"
+      else
+        "—"
+      end
 
     else
       record.respond_to?(column) ? record.public_send(column) : "—"
