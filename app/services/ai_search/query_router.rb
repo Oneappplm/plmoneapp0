@@ -21,7 +21,42 @@ module AiSearch
       end
     end
 
+    def dea_title
+      case @intent[:filter]
+      when :expired
+        "Expired DEA Licenses"
+      when :expiring_soon
+        "DEA Licenses Expiring Soon"
+      else
+        "DEA Licenses"
+      end
+    end
+
+    def state_license_title
+      case @intent[:filter]
+      when :expired
+        "Expired State Licenses"
+      when :expiring_soon
+        "State Licenses Expiring Soon"
+      when :active
+        "Active State Licenses"
+      else
+        "State Licenses"
+      end
+    end
+
     private
+
+    def resolve_state_id
+      return nil if @intent[:state].blank?
+
+      # Normalize "fl" / "FL" / "Florida" → "FL"
+      alpha_code = AiSearch::StateNormalizer.normalize(@intent[:state])
+
+      return nil if alpha_code.blank?
+
+      State.find_by(alpha_code: alpha_code)&.id
+    end
 
     def users_query
       {
@@ -36,11 +71,25 @@ module AiSearch
                   .joins(provider_attest: :provider_personal_informations)
                   .includes(provider_attest: :provider_personal_informations)
 
+      today = Date.current
+
       case @intent[:filter]
       when :expired
-        records = records.where("provider_licensures.license_expiration_date < ?", Date.current)
+        records = records.where(
+          "provider_licensures.license_expiration_date < ?", today
+        )
+
       when :active
-        records = records.where("provider_licensures.license_expiration_date >= ?", Date.current)
+        records = records.where(
+          "provider_licensures.license_expiration_date >= ?", today
+        )
+
+      when :expiring_soon
+        records = records.where(
+          provider_licensures: {
+            license_expiration_date: today..(today + 5.years)
+          }
+        )
       end
 
       if @intent[:year].present?
@@ -50,13 +99,24 @@ module AiSearch
         )
       end
 
+      state_id = resolve_state_id
+      records = records.where(provider_licensures: { state_id: state_id }) if state_id
+
       {
         records: records,
-        columns: %i[provider_name license_number license_expiration_date license_type],
-        title: @intent[:filter] == :expired ? "Expired State Licenses" : "State Licenses",
+        columns: %i[
+          provider_name
+          license_number
+          license_type
+          license_expiration_date
+          state
+        ],
+        title: state_license_title,
         license_type: "State License"
       }
     end
+
+
 
 
     def dea_query
@@ -64,8 +124,18 @@ module AiSearch
                   .joins(provider_attest: :provider_personal_informations)
                   .includes(provider_attest: :provider_personal_informations)
 
-      if @intent[:filter] == :expired
-        records = records.where("provider_deas.expiration_date < ?", Date.current)
+      today = Date.current
+
+      case @intent[:filter]
+      when :expired
+        records = records.where("provider_deas.expiration_date < ?", today)
+
+      when :expiring_soon
+        records = records.where(
+          provider_deas: {
+            expiration_date: today..(today + 5.years)
+          }
+        )
       end
 
       if @intent[:year].present?
@@ -75,13 +145,22 @@ module AiSearch
         )
       end
 
+      if @intent[:state].present?
+        records = records.where(
+          "provider_deas.state = ? OR provider_personal_informations.state = ?",
+          @intent[:state],
+          @intent[:state]
+        )
+      end
+
       {
         records: records,
-        columns: %i[provider_name dea_number expiration_date license_type],
-        title: "DEA Licenses",
+        columns: %i[provider_name dea_number expiration_date license_type state],
+        title: dea_title,
         license_type: "DEA License"
       }
     end
+
 
     def board_query
       records = ProviderSpecialty
