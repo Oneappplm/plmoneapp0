@@ -3,6 +3,7 @@ require 'csv'
 class Mhc::WorkTicklersController < ApplicationController
   PER_PAGE = 10
   DEA_EXPIRING_YEARS = 5
+  SPECIALTY_EXPIRING_YEARS = 5
 
   def index
     @q = ProviderPersonalInformation
@@ -29,6 +30,24 @@ class Mhc::WorkTicklersController < ApplicationController
     end
   end
 
+  def board_cert_expired
+	  @expired_specialties = fetch_specialties(:expired)
+
+	  respond_to do |format|
+	    format.html
+	    format.csv { send_specialty_csv(@expired_specialties, 'specialty_expired') }
+	  end
+	end
+
+	def board_cert_expiring
+	  @expiring_specialties = fetch_specialties(:expiring)
+
+	  respond_to do |format|
+	    format.html
+	    format.csv { send_specialty_csv(@expiring_specialties, 'specialty_expiring') }
+	  end
+	end
+
   private
 
   def fetch_deas(type)
@@ -48,6 +67,24 @@ class Mhc::WorkTicklersController < ApplicationController
 
     scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
   end
+
+  def fetch_specialties(type)
+	  scope =
+	    ProviderSpecialty
+	      .shown_on_tickler
+	      .includes(provider_attest: :provider_personal_informations)
+	      .order(expiration_date: :asc)
+
+	  scope =
+	    case type
+	    when :expired
+	      scope.where('expiration_date < ?', Date.current)
+	    when :expiring
+	      scope.where(expiration_date: Date.current..SPECIALTY_EXPIRING_YEARS.years.from_now)
+	    end
+
+	  scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
+	end
 
   # CSV Export
   def send_dea_csv(deas, filename_prefix)
@@ -88,4 +125,48 @@ class Mhc::WorkTicklersController < ApplicationController
       'Department/Division'
     ]
   end
+
+  # for board certification
+  def send_specialty_csv(records, filename_prefix)
+	  send_data generate_specialty_csv(records),
+	            filename: "#{filename_prefix}_#{Date.current}.csv"
+	end
+
+	def generate_specialty_csv(records)
+	  CSV.generate(headers: true) do |csv|
+	    csv << specialty_csv_headers
+
+	    records.each_with_index do |specialty, index|
+	      provider = specialty.provider_attest&.provider_personal_informations&.first
+
+	      csv << [
+	        index + 1,
+	        provider&.fullname || 'N/A',
+	        specialty.specialty_specialty_name,
+	        specialty.specialty_board_name,
+	        specialty.expiration_date&.strftime('%m/%d/%Y'),
+	        provider&.fullname || 'N/A',
+	        provider&.cell_phone_number || 'N/A',
+	        provider&.fax_number || 'N/A',
+	        nil
+	      ]
+	    end
+	  end
+	end
+
+	def specialty_csv_headers
+	  [
+	    'Sr',
+	    'Practitioner Name',
+	    'Specialty',
+	    'Issuing Board',
+	    'Expiration Date',
+	    'Credentials Contact Name',
+	    'Credentials Contact Phone',
+	    'Credentials Contact Fax',
+	    'Department/Division'
+	  ]
+	end
+
+
 end
