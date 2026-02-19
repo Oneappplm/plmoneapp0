@@ -167,6 +167,8 @@ Rails.application.routes.draw do
       collection do
         get :dea_expired
         get :dea_expiring
+        get :board_cert_expiring
+        get :board_cert_expired
       end
     end
 

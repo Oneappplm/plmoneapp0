@@ -6,6 +6,21 @@ class ProviderSpecialty < ApplicationRecord
 
   validates :provider_attest_id, presence: true
 
+  scope :shown_on_tickler, -> { where(tickler: ['Yes', nil]) }
+  scope :expired_strict,   -> { where('expiration_date < ?', Date.current) }
+  scope :active,           -> { where('expiration_date >= ?', Date.current) }
+
+  scope :expired_and_tickler,  -> { expired_strict.shown_on_tickler }
+  scope :expiring_and_tickler, -> { active.shown_on_tickler }
+
+  after_initialize :set_defaults
+
+  private
+
+  def set_defaults
+    self.tickler ||= 'Yes'
+  end
+
   SPECIALITIES = [
     "Adult Cardiac Anesthesiology",
     "Adult Companion",
