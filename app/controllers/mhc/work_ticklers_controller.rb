@@ -12,6 +12,22 @@ class Mhc::WorkTicklersController < ApplicationController
            .ransack(params[:q])
   end
 
+  def privileges
+  	@q = ProviderPersonalInformation
+           .where.not(cred_status: 'no-application')
+           .or(ProviderPersonalInformation.where(cred_status: nil))
+           .ransack(params[:q])
+    render :privileges_work_tickler
+  end
+
+  def enrollment_work_tickler
+  	@q = ProviderPersonalInformation
+           .where.not(cred_status: 'no-application')
+           .or(ProviderPersonalInformation.where(cred_status: nil))
+           .ransack(params[:q])
+    render :enrollment_work_tickler
+  end
+
   def dea_expired
     @expired_deas = fetch_deas(:expired)
 
@@ -48,6 +64,24 @@ class Mhc::WorkTicklersController < ApplicationController
 	  end
 	end
 
+	def provider_cd_expired
+	  @expired_cds = fetch_provider_cds(:expired)
+
+	  respond_to do |format|
+	    format.html
+	    format.csv { send_provider_cd_csv(@expired_cds, 'provider_cd_expired') }
+	  end
+	end
+
+	def provider_cd_expiring
+	  @expiring_cds = fetch_provider_cds(:expiring)
+
+	  respond_to do |format|
+	    format.html
+	    format.csv { send_provider_cd_csv(@expiring_cds, 'provider_cd_expiring') }
+	  end
+	end
+
   private
 
   def fetch_deas(type)
@@ -81,6 +115,24 @@ class Mhc::WorkTicklersController < ApplicationController
 	      scope.where('expiration_date < ?', Date.current)
 	    when :expiring
 	      scope.where(expiration_date: Date.current..SPECIALTY_EXPIRING_YEARS.years.from_now)
+	    end
+
+	  scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
+	end
+
+	def fetch_provider_cds(type)
+	  scope =
+	    ProviderCd
+	      .shown_on_tickler
+	      .includes(provider_attest: :provider_personal_informations)
+	      .order(expiration_date: :asc)
+
+	  scope =
+	    case type
+	    when :expired
+	      scope.where('expiration_date < ?', Date.current)
+	    when :expiring
+	      scope.where(expiration_date: Date.current..DEA_EXPIRING_YEARS.years.from_now)
 	    end
 
 	  scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
@@ -168,5 +220,42 @@ class Mhc::WorkTicklersController < ApplicationController
 	  ]
 	end
 
+	# for provider_cds 
+	def send_provider_cd_csv(cds, filename_prefix)
+  send_data generate_provider_cd_csv(cds),
+            filename: "#{filename_prefix}_#{Date.current}.csv"
+	end
+
+	def generate_provider_cd_csv(cds)
+	  CSV.generate(headers: true) do |csv|
+	    csv << [
+	      'Sr',
+	      'Practitioner Name',
+	      'CDS Number',
+	      'State',
+	      'Expiration Date',
+	      'Credentials Contact Name',
+	      'Credentials Contact Phone',
+	      'Credentials Contact Fax',
+	      'Department/Division'
+	    ]
+
+	    cds.each_with_index do |cd, index|
+	      provider = cd.provider_attest&.provider_personal_informations&.first
+
+	      csv << [
+	        index + 1,
+	        provider&.fullname || 'N/A',
+	        cd.cds_number,
+	        cd.state,
+	        cd.expiration_date&.strftime('%m/%d/%Y'),
+	        provider&.fullname || 'N/A',
+	        provider&.cell_phone_number || 'N/A',
+	        provider&.fax_number || 'N/A',
+	        nil
+	      ]
+	    end
+	  end
+	end
 
 end

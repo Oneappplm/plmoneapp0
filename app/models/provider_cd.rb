@@ -7,8 +7,22 @@ class ProviderCd < ApplicationRecord
 
   validates :provider_attest_id, presence: true
 
+  scope :shown_on_tickler, -> { where(show_on_tickler: ['Yes', true, nil]) }
+  scope :expired_strict,   -> { where('expiration_date < ?', Date.current) }
+  scope :active,           -> { where('expiration_date >= ?', Date.current) }
+
+  scope :expired_and_tickler,  -> { expired_strict.shown_on_tickler }
+  scope :expiring_and_tickler, -> { active.shown_on_tickler }
+
   before_validation :set_provider_attest
+
+  after_initialize :set_defaults
+
   private
+  
+  def set_defaults
+    self.show_on_tickler ||= 'Yes'
+  end
 
   def set_provider_attest
     return if provider_attest_id.present?
