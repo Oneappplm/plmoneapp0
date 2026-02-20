@@ -4,6 +4,8 @@ class Mhc::WorkTicklersController < ApplicationController
   PER_PAGE = 10
   DEA_EXPIRING_YEARS = 5
   SPECIALTY_EXPIRING_YEARS = 5
+  CDS_EXPIRING_YEARS = 5
+  LICENSE_EXPIRING_YEARS = 5
 
   def index
     @q = ProviderPersonalInformation
@@ -82,6 +84,24 @@ class Mhc::WorkTicklersController < ApplicationController
 	  end
 	end
 
+	def provider_license_expired
+	  @expired_licenses = fetch_provider_licenses(:expired)
+
+	  respond_to do |format|
+	    format.html
+	    format.csv { send_provider_license_csv(@expired_licenses, 'provider_license_expired') }
+	  end
+	end
+
+	def provider_license_expiring
+	  @expiring_licenses = fetch_provider_licenses(:expiring)
+
+	  respond_to do |format|
+	    format.html
+	    format.csv { send_provider_license_csv(@expiring_licenses, 'provider_license_expiring') }
+	  end
+	end
+
   private
 
   def fetch_deas(type)
@@ -132,13 +152,34 @@ class Mhc::WorkTicklersController < ApplicationController
 	    when :expired
 	      scope.where('expiration_date < ?', Date.current)
 	    when :expiring
-	      scope.where(expiration_date: Date.current..DEA_EXPIRING_YEARS.years.from_now)
+	      scope.where(expiration_date: Date.current..CDS_EXPIRING_YEARS.years.from_now)
 	    end
 
 	  scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
 	end
 
-  # CSV Export
+	def fetch_provider_licenses(type)
+	  scope =
+	    ProviderLicensure
+	      .shown_on_tickler
+	      .includes(:state, provider_attest: :provider_personal_informations)
+	      .order(license_expiration_date: :asc)
+
+	  scope =
+	    case type
+	    when :expired
+	      scope.where('license_expiration_date < ?', Date.current)
+	    when :expiring
+	      scope.where(
+	        license_expiration_date: Date.current..LICENSE_EXPIRING_YEARS.years.from_now
+	      )
+	    end
+
+	  scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
+	end
+
+
+  # CSV Export for DEA
   def send_dea_csv(deas, filename_prefix)
     send_data generate_dea_csv(deas),
               filename: "#{filename_prefix}_#{Date.current}.csv"
@@ -178,7 +219,7 @@ class Mhc::WorkTicklersController < ApplicationController
     ]
   end
 
-  # for board certification
+  # CSV Export for board certification
   def send_specialty_csv(records, filename_prefix)
 	  send_data generate_specialty_csv(records),
 	            filename: "#{filename_prefix}_#{Date.current}.csv"
@@ -220,7 +261,7 @@ class Mhc::WorkTicklersController < ApplicationController
 	  ]
 	end
 
-	# for provider_cds 
+	# CSV Export for provider_cds 
 	def send_provider_cd_csv(cds, filename_prefix)
   send_data generate_provider_cd_csv(cds),
             filename: "#{filename_prefix}_#{Date.current}.csv"
@@ -257,5 +298,50 @@ class Mhc::WorkTicklersController < ApplicationController
 	    end
 	  end
 	end
+
+	# CSV Export for provider_licensure
+	def send_provider_license_csv(licenses, filename_prefix)
+	  send_data generate_provider_license_csv(licenses),
+	            filename: "#{filename_prefix}_#{Date.current}.csv"
+	end
+
+	def generate_provider_license_csv(licenses)
+	  CSV.generate(headers: true) do |csv|
+	    csv << provider_license_csv_headers
+
+	    licenses.each_with_index do |license, index|
+	      provider = license.provider_attest&.provider_personal_informations&.first
+
+	      csv << [
+	        index + 1,
+	        provider&.fullname || 'N/A',
+	        license.state&.name,
+	        license.license_number,
+	        license.is_primary_license? ? 'Yes' : 'No',
+	        license.license_expiration_date&.strftime('%m/%d/%Y'),
+	        provider&.fullname || 'N/A',
+	        provider&.cell_phone_number || 'N/A',
+	        provider&.fax_number || 'N/A',
+	        nil
+	      ]
+	    end
+	  end
+	end
+
+	def provider_license_csv_headers
+	  [
+	    'Sr',
+	    'Practitioner Name',
+	    'State',
+	    'License Number',
+	    'Primary License',
+	    'Expiration Date',
+	    'Credentials Contact Name',
+	    'Credentials Contact Phone',
+	    'Credentials Contact Fax',
+	    'Department/Division'
+	  ]
+	end
+
 
 end

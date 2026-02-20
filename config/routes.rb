@@ -173,6 +173,8 @@ Rails.application.routes.draw do
         get :board_cert_expired
         get :provider_cd_expired
         get :provider_cd_expiring
+        get :provider_license_expired
+        get :provider_license_expiring
       end
     end
 
