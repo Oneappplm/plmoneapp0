@@ -1,21 +1,7 @@
 class ProviderLicensure < ApplicationRecord
-  belongs_to :provider_attest
-  has_many :rva_informations, dependent: :destroy
-
-
+  
   PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID','ProviderEducationID']
-  
-  has_many :provider_supervisings, dependent: :destroy, class_name: 'ProviderSupervising'
-  accepts_nested_attributes_for :provider_supervisings, allow_destroy: true, reject_if: :all_blank
-  
-  validates :provider_attest_id, presence: true
-  
-  def state
-    State.find_by(id: self.state_id)
-  rescue
-    nil
-  end
-
+ 
   LICENSE_TYPE = [
     "AC",
     "ACU",
@@ -150,8 +136,38 @@ class ProviderLicensure < ApplicationRecord
     "Fellow"
   ]
 
+  belongs_to :provider_attest
+  belongs_to :state, optional: true
+
+  has_many :rva_informations, dependent: :destroy  
+  has_many :provider_supervisings, dependent: :destroy, class_name: 'ProviderSupervising'
+
+  accepts_nested_attributes_for :provider_supervisings, allow_destroy: true, reject_if: :all_blank
+  
+  validates :provider_attest_id, presence: true
+  
+  scope :shown_on_tickler, -> { where(show_on_tickler: ['Yes', true, nil]) }
+  scope :expired_strict,   -> { where('license_expiration_date < ?', Date.current) }
+  scope :active,           -> { where('license_expiration_date >= ?', Date.current) }
+
+  scope :expired_and_tickler,  -> { expired_strict.shown_on_tickler }
+  scope :expiring_and_tickler, -> { active.shown_on_tickler }
+
   before_validation :set_provider_attest, if: -> { caqh_provider_attest_id.present? }
+  
+  after_initialize :set_defaults
+
+  def state
+    State.find_by(id: self.state_id)
+  rescue
+    nil
+  end
+
   private
+
+  def set_defaults
+    self.show_on_tickler ||= 'Yes'
+  end
 
   def set_provider_attest
     match = ProviderAttest.find_by(caqh_provider_attest_id: caqh_provider_attest_id)
