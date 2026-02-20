@@ -165,10 +165,14 @@ Rails.application.routes.draw do
 
     resources :work_ticklers, only: [:index], path: 'work-ticklers' do
       collection do
+        get :privileges
+        get :enrollment_work_tickler
         get :dea_expired
         get :dea_expiring
         get :board_cert_expiring
         get :board_cert_expired
+        get :provider_cd_expired
+        get :provider_cd_expiring
       end
     end
 
