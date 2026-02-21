@@ -175,6 +175,10 @@ Rails.application.routes.draw do
         get :provider_cd_expiring
         get :provider_license_expired
         get :provider_license_expiring
+        get :other_cert_expired
+        get :other_cert_expiring
+        get :practitioner_record_expired
+        get :practitioner_record_expiring
       end
     end
 
