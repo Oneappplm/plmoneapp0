@@ -1,32 +1,28 @@
 require 'csv'
 
 class Mhc::WorkTicklersController < ApplicationController
+	before_action :load_providers, only: [:index, :privileges, :enrollment_work_tickler]
+
   PER_PAGE = 10
   DEA_EXPIRING_YEARS = 5
   SPECIALTY_EXPIRING_YEARS = 5
   CDS_EXPIRING_YEARS = 5
   LICENSE_EXPIRING_YEARS = 5
 
+  TAB_MAP = {
+	  'Liability'           => 'liability',
+	  'License'             => 'licensure',
+	  'Board Certification' => 'board_cert_info'
+	}.freeze
+
   def index
-    @q = ProviderPersonalInformation
-           .where.not(cred_status: 'no-application')
-           .or(ProviderPersonalInformation.where(cred_status: nil))
-           .ransack(params[:q])
   end
 
   def privileges
-  	@q = ProviderPersonalInformation
-           .where.not(cred_status: 'no-application')
-           .or(ProviderPersonalInformation.where(cred_status: nil))
-           .ransack(params[:q])
     render :privileges_work_tickler
   end
 
   def enrollment_work_tickler
-  	@q = ProviderPersonalInformation
-           .where.not(cred_status: 'no-application')
-           .or(ProviderPersonalInformation.where(cred_status: nil))
-           .ransack(params[:q])
     render :enrollment_work_tickler
   end
 
@@ -102,7 +98,39 @@ class Mhc::WorkTicklersController < ApplicationController
 	  end
 	end
 
+	def practitioner_record_expired
+	  @records = build_unified_records(:expired)
+
+	  respond_to do |format|
+	    format.html
+	    format.csv do
+	      send_data generate_practitioner_records_csv(@records),
+	                filename: "practitioner_records_expired_#{Date.current}.csv"
+	    end
+	  end
+	end
+
+	def practitioner_record_expiring
+	  @records = build_unified_records(:expiring)
+
+	  respond_to do |format|
+	    format.html
+	    format.csv do
+	      send_data generate_practitioner_records_csv(@records),
+	                filename: "practitioner_records_expiring_#{Date.current}.csv"
+	    end
+	  end
+	end
+
   private
+
+  def load_providers
+    @q =
+      ProviderPersonalInformation
+        .where.not(cred_status: 'no-application')
+        .or(ProviderPersonalInformation.where(cred_status: nil))
+        .ransack(params[:q])
+  end
 
   def fetch_deas(type)
     scope =
@@ -176,6 +204,105 @@ class Mhc::WorkTicklersController < ApplicationController
 	    end
 
 	  scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
+	end
+
+	# for board_cert, liability & license
+	def fetch_generic_records(model:, type:, date_column:, years:)
+	  scope =
+	    model
+	      .shown_on_tickler
+	      .includes(provider_attest: :provider_personal_informations)
+	      .order(date_column => :asc)
+
+	  scope =
+	    case type
+	    when :expired
+	      scope.where("#{date_column} < ?", Date.current)
+	    when :expiring
+	      scope.where("#{date_column} BETWEEN ? AND ?",
+	                  Date.current,
+	                  years.years.from_now)
+	    end
+
+	  scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
+	end
+
+	def build_unified_records(type)
+	  records = []
+
+	  specialty_counts =
+	    ProviderSpecialty.group(:provider_attest_id).count
+
+	  insurance_counts =
+	    ProviderInsuranceCoverage.group(:provider_attest_id).count
+
+	  licensure_counts =
+	    ProviderLicensure.group(:provider_attest_id).count
+
+	  # Board Certification
+	  fetch_generic_records(
+	    model: ProviderSpecialty,
+	    type: type,
+	    date_column: :expiration_date,
+	    years: SPECIALTY_EXPIRING_YEARS
+	  ).each do |r|
+	    records << build_row(
+	      r,
+	      'Board Certification',
+	      r.specialty_specialty_name,
+	      r.expiration_date,
+	      specialty_counts[r.provider_attest_id] || 0
+	    )
+	  end
+
+	  # Insurance Coverage
+	  fetch_generic_records(
+	    model: ProviderInsuranceCoverage,
+	    type: type,
+	    date_column: :end_date,
+	    years: 1
+	  ).each do |r|
+	    records << build_row(
+	      r,
+	      'Liability',
+	      r.insurance_carrier_name,
+	      r.end_date,
+	      insurance_counts[r.provider_attest_id] || 0
+	    )
+	  end
+
+	  # Licensure
+	  fetch_generic_records(
+	    model: ProviderLicensure,
+	    type: type,
+	    date_column: :license_expiration_date,
+	    years: LICENSE_EXPIRING_YEARS
+	  ).each do |r|
+	    records << build_row(
+	      r,
+	      'License',
+	      r.license_type,
+	      r.license_expiration_date,
+	      licensure_counts[r.provider_attest_id] || 0
+	    )
+	  end
+
+	  records.sort_by { |r| r[:expiration_date] }
+	end
+
+	def build_row(record, tab_name, record_name, expiration_date, record_count)
+	  provider = record.provider_attest&.provider_personal_informations&.first
+
+	  {
+	    practitioner_name: provider&.fullname || 'N/A',
+	    tab_name: tab_name,
+	    page_tab: TAB_MAP[tab_name],
+	    record_num: record_count,
+	    record_name: record_name,
+	    expiration_date: expiration_date,
+	    department: nil,
+	    provider_attest_id: record.provider_attest_id
+	  }
 	end
 
 
@@ -343,5 +470,34 @@ class Mhc::WorkTicklersController < ApplicationController
 	  ]
 	end
 
+	# CSV Export for board_cert, liability & license
+	def generate_practitioner_records_csv(records)
+	  CSV.generate(headers: true) do |csv|
+	    csv << practitioner_records_csv_headers
 
+	    records.each_with_index do |row, index|
+	      csv << [
+	        index + 1,
+	        row[:practitioner_name],
+	        row[:tab_name],
+	        row[:record_num],
+	        row[:record_name],
+	        row[:expiration_date]&.strftime('%m/%d/%Y'),
+	        row[:department]
+	      ]
+	    end
+	  end
+	end
+
+	def practitioner_records_csv_headers
+	  [
+	    'Sr.',
+	    'Practitioner Name',
+	    'Tab Name',
+	    'Record Count',
+	    'Record Name',
+	    'Expiration Date',
+	    'Department/Division'
+	  ]
+	end
 end

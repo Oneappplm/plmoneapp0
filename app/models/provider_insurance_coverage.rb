@@ -6,9 +6,22 @@ class ProviderInsuranceCoverage < ApplicationRecord
 
   validates :provider_attest_id, presence: true
 
+  scope :shown_on_tickler, -> { where(show_on_tickler: [true, nil]) }
+  scope :expired_strict,   -> { where('expiration_date < ?', Date.current) }
+  scope :active,           -> { where('expiration_date >= ?', Date.current) }
+
+  scope :expired_and_tickler,  -> { expired_strict.shown_on_tickler }
+  scope :expiring_and_tickler, -> { active.shown_on_tickler }
+
   before_validation :set_provider_attest
 
+  after_initialize :set_default_show_on_tickler
+
   private
+
+  def set_default_show_on_tickler
+    self.show_on_tickler ||= 'Yes'
+  end
 
   def set_provider_attest
     return if caqh_provider_attest_id.blank?
