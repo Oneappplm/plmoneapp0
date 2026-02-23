@@ -122,6 +122,30 @@ class Mhc::WorkTicklersController < ApplicationController
 	  end
 	end
 
+	def provider_insurance_expired
+	  @expired_insurances = fetch_provider_insurances(:expired)
+
+	  respond_to do |format|
+	    format.html
+	    format.csv do
+	      send_data generate_provider_insurance_csv(@expired_insurances),
+	                filename: "provider_insurance_expired_#{Date.current}.csv"
+	    end
+	  end
+	end
+
+	def provider_insurance_expiring
+	  @expiring_insurances = fetch_provider_insurances(:expiring)
+
+	  respond_to do |format|
+	    format.html
+	    format.csv do
+	      send_data generate_provider_insurance_csv(@expiring_insurances),
+	                filename: "provider_insurance_expiring_#{Date.current}.csv"
+	    end
+	  end
+	end
+
   private
 
   def load_providers
@@ -201,6 +225,24 @@ class Mhc::WorkTicklersController < ApplicationController
 	      scope.where(
 	        license_expiration_date: Date.current..LICENSE_EXPIRING_YEARS.years.from_now
 	      )
+	    end
+
+	  scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
+	end
+
+	def fetch_provider_insurances(type)
+	  scope =
+	    ProviderInsuranceCoverage
+	      .shown_on_tickler
+	      .includes(provider_attest: :provider_personal_informations)
+	      .order(end_date: :asc)
+
+	  scope =
+	    case type
+	    when :expired
+	      scope.where('end_date < ?', Date.current)
+	    when :expiring
+	      scope.where(end_date: Date.current..5.year.from_now)
 	    end
 
 	  scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
@@ -497,6 +539,42 @@ class Mhc::WorkTicklersController < ApplicationController
 	    'Record Count',
 	    'Record Name',
 	    'Expiration Date',
+	    'Department/Division'
+	  ]
+	end
+
+	# CSV Export for Provider Insurance Coverages
+	def generate_provider_insurance_csv(insurances)
+	  CSV.generate(headers: true) do |csv|
+	    csv << provider_insurance_csv_headers
+
+	    insurances.each_with_index do |insurance, index|
+	      provider =
+	        insurance.provider_attest&.provider_personal_informations&.first
+
+	      csv << [
+	        index + 1,
+	        provider&.fullname || 'N/A',
+	        insurance.insurance_carrier_name,
+	        insurance.end_date&.strftime('%m/%d/%Y'),
+	        provider&.fullname || 'N/A',
+	        provider&.cell_phone_number || 'N/A',
+	        provider&.fax_number || 'N/A',
+	        nil
+	      ]
+	    end
+	  end
+	end
+
+	def provider_insurance_csv_headers
+	  [
+	    'Sr',
+	    'Practitioner Name',
+	    'Policy Number',
+	    'Expiration Date',
+	    'Credentials Contact Name',
+	    'Credentials Contact Phone',
+	    'Credentials Contact Fax',
 	    'Department/Division'
 	  ]
 	end
