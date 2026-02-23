@@ -179,6 +179,8 @@ Rails.application.routes.draw do
         get :other_cert_expiring
         get :practitioner_record_expired
         get :practitioner_record_expiring
+        get :provider_insurance_expired
+        get :provider_insurance_expiring
       end
     end
 
