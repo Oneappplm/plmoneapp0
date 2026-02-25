@@ -86,18 +86,22 @@ class PagesController < ApplicationController
   end
 
 	def dashboard
-			stat = Sys::Filesystem.stat('/')
-			total_size_bytes = stat.blocks * stat.block_size
-			free_size_bytes = stat.blocks_available * stat.block_size
-			used_size_bytes = total_size_bytes - free_size_bytes
+		# stat = Sys::Filesystem.stat('/')
+		# total_size_bytes = stat.blocks * stat.block_size
+		# free_size_bytes = stat.blocks_available * stat.block_size
+		# used_size_bytes = total_size_bytes - free_size_bytes
 
-			@total_size_gb = total_size_bytes/GB_DISIVOR
-			@free_size_gb = free_size_bytes/GB_DISIVOR
-			@used_size_gb = used_size_bytes/GB_DISIVOR
-			@used_size_mb = used_size_bytes/MB_DIVISOR
-			@used_size_percent = ((used_size_bytes.to_f/total_size_bytes.to_f) * 100).to_i
-			@free_size_percent = ((free_size_bytes.to_f/total_size_bytes.to_f) * 100).to_i
-			@state_providers = State.providers_count
+		# @total_size_gb = total_size_bytes/GB_DISIVOR
+		# @free_size_gb = free_size_bytes/GB_DISIVOR
+		# @used_size_gb = used_size_bytes/GB_DISIVOR
+		# @used_size_mb = used_size_bytes/MB_DIVISOR
+		# @used_size_percent = ((used_size_bytes.to_f/total_size_bytes.to_f) * 100).to_i
+		# @free_size_percent = ((free_size_bytes.to_f/total_size_bytes.to_f) * 100).to_i
+		# @state_providers = State.providers_count
+    # 👇 Status counts for top bar
+    @cred_status_counts = ProviderPersonalInformation
+      .group(:cred_status)
+      .count
 	end
 
 	def plm_sales_tool

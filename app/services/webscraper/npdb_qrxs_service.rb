@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# app/services/webscraper/npdb_qrxs_service.rb
 require "savon"
 require "nokogiri"
 require "base64"
@@ -25,12 +24,17 @@ class Webscraper::NpdbQrxsService
       if creds[:env] == "local"
         sample_response_xml!("NPDB_ENV=local")
       else
+        Rails.logger.info("[NPDB] Running REAL QRXS request (env=#{creds[:env]})")
+
         client         = savon_client_for_env(creds[:env])
         submission_xml = build_submission_xml(creds)
-        encoded_pw     = encode_password_or_plain!(client, creds[:password])
+        encoded_pw     = encode_password!(client, creds[:password])
 
         filename = "QUERY_#{@npdb.id}_#{Time.now.utc.strftime('%Y%m%d%H%M%S')}_#{SecureRandom.hex(3)}.xml"
-        send_code, send_msg = send_submission!(client, creds, encoded_pw, filename, submission_xml)
+
+        send_code, send_msg =
+          send_submission!(client, creds, encoded_pw, filename, submission_xml)
+
         raise "NPDB Send failed: #{send_code} #{send_msg}" unless send_code == OK_CODE
 
         files = receive_poll!(client, creds, encoded_pw)
@@ -39,12 +43,9 @@ class Webscraper::NpdbQrxsService
         files.first[:xml]
       end
 
-    # Validate XML looks like NPDB MMPR response
     parsed = Webscraper::NpdbMmprXmlParser.new(response_xml).to_h
-    Rails.logger.info("[NPDB] Parsed response: dcn=#{parsed[:dcn].inspect} process_date=#{parsed[:process_date].inspect}")
-    raise "NPDB response missing DCN (unexpected XML payload)" if parsed[:dcn].to_s.strip.empty?
+    raise "Invalid NPDB response (missing DCN)" if parsed[:dcn].blank?
 
-    # Generate a stable PDF path (overwrite each time for this @npdb.id)
     pdf_path = Rails.root.join("tmp", "npdb_mmpr_#{@npdb.id}.pdf").to_s
     FileUtils.rm_f(pdf_path)
 
@@ -54,10 +55,6 @@ class Webscraper::NpdbQrxsService
       provider_personal_information: @ppi,
       watermark: ""
     )
-
-    # Ensure it is a PDF
-    head = File.binread(pdf_path, 5)
-    raise "Generated file is not a PDF. Head=#{head.inspect} Path=#{pdf_path}" unless head == "%PDF-"
 
     log = NpdbWebcrawlerLog.new(
       provider_npdb: @npdb,
@@ -74,26 +71,29 @@ class Webscraper::NpdbQrxsService
 
   private
 
+  # -------------------- ENV --------------------
+
   def resolved_creds!
-    env = (ENV["NPDB_ENV"].presence || "local").to_s.downcase
+    env = (ENV["NPDB_ENV"].presence || "local").downcase
     dbid = ENV["NPDB_DBID"].to_s
-    user_id = (ENV["NPDB_VENDOR_ID"].presence || ENV["NPDB_USER_ID"].presence).to_s
+    vendor_id = ENV["NPDB_VENDOR_ID"].to_s
     password = ENV["NPDB_PASSWORD"].to_s
 
     if env != "local"
       missing = []
       missing << "NPDB_DBID" if dbid.blank?
-      missing << "NPDB_VENDOR_ID/NPDB_USER_ID" if user_id.blank?
+      missing << "NPDB_VENDOR_ID" if vendor_id.blank?
       missing << "NPDB_PASSWORD" if password.blank?
       raise "Missing NPDB credentials: #{missing.join(', ')}" if missing.any?
     end
 
-    { env: env, dbid: dbid, user_id: user_id, password: password }
+    { env: env, dbid: dbid, vendor_id: vendor_id, password: password }
   end
 
   def savon_client_for_env(env)
     endpoint =
-      if env == "test"
+      case env
+      when "test"
         "https://qa.npdb.hrsa.gov/qrxs/QrxsWebService"
       else
         "https://www.npdb.hrsa.gov/qrxs/QrxsWebService"
@@ -111,6 +111,8 @@ class Webscraper::NpdbQrxsService
     )
   end
 
+  # -------------------- XML --------------------
+
   def build_submission_xml(creds)
     Nokogiri::XML::Builder.new(encoding: "UTF-8") do |x|
       x.querySubmission do
@@ -127,96 +129,76 @@ class Webscraper::NpdbQrxsService
             x.suffix @ppi.suffix.to_s.upcase if @ppi.respond_to?(:suffix) && @ppi.suffix.present?
           end
 
-          x.sex(@ppi.sex.to_s.upcase) if @ppi.respond_to?(:sex) && @ppi.sex.present?
-          x.birthdate(@ppi.birth_date.strftime("%Y-%m-%d")) if @ppi.respond_to?(:birth_date) && @ppi.birth_date.present?
-          x.npi(@ppi.npi.to_s) if @ppi.respond_to?(:npi) && @ppi.npi.present?
-          x.ssn(@ppi.ssn.to_s) if @ppi.respond_to?(:ssn) && @ppi.ssn.present?
+          # SEX → derived from gender description
+          if @ppi.gender_gender_description.present?
+            sex =
+              case @ppi.gender_gender_description.to_s.downcase
+              when "male"   then "M"
+              when "female" then "F"
+              else "U"
+              end
+            x.sex sex
+          end
+
+          # Birthdate
+          x.birthdate(@ppi.birth_date.strftime("%Y-%m-%d")) if @ppi.birth_date.present?
+
+          # Optional identifiers
+          x.npi(@ppi.npi.to_s) if @ppi.npi.present?
+          x.ssn(@ppi.ssn.to_s) if @ppi.ssn.present?
         end
       end
     end.to_xml
   end
 
-  def encode_password_or_plain!(client, plain_pw)
+  # -------------------- SOAP --------------------
+
+  def encode_password!(client, plain_pw)
     resp = client.call(:encode_password, message: { "UnencodedPassword" => plain_pw })
-    body = resp.body[:encode_password_response] || resp.body.values.first || {}
-    tx   = body[:password_transaction_response] || body["PasswordTransactionResponse"] || body.values.first || {}
+    tx = resp.body.values.first.values.first
 
-    code = (tx[:status_code] || tx["StatusCode"]).to_s
-    msg  = (tx[:status_message] || tx["StatusMessage"]).to_s
-    raise "EncodePassword failed: #{code} #{msg}" unless code == OK_CODE
-
-    encoded = tx[:encoded_password] || tx["EncodedPassword"]
-    encoded.present? ? encoded.to_s : plain_pw
+    raise "EncodePassword failed" unless tx[:status_code] == OK_CODE
+    tx[:encoded_password]
   end
 
   def send_submission!(client, creds, pw, filename, xml)
-    file_b64 = Base64.strict_encode64(xml)
-
     resp = client.call(:send, message: {
-      "DataBankID" => creds[:dbid].to_s,
-      "UserID"     => creds[:user_id].to_s,
-      "Password"   => pw.to_s,
+      "DataBankID" => creds[:dbid],
+      "UserID"     => creds[:vendor_id],
+      "Password"   => pw,
       "SubmissionFiles" => {
-        "SubmissionFile" => [{ "FileName" => filename, "FileData" => file_b64 }]
+        "SubmissionFile" => [{ "FileName" => filename, "FileData" => Base64.strict_encode64(xml) }]
       }
     })
 
-    body = resp.body[:send_response] || resp.body.values.first || {}
-    tx   = body[:xml_transaction_response] || body["XMLTransactionResponse"] || body.values.first || {}
-
-    code = (tx[:status_code] || tx["StatusCode"]).to_s
-    msg  = (tx[:status_message] || tx["StatusMessage"]).to_s
-    Rails.logger.info("[NPDB] Send status: #{code} #{msg}")
-    [code, msg]
+    tx = resp.body.values.first.values.first
+    [tx[:status_code], tx[:status_message]]
   end
 
   def receive_poll!(client, creds, pw)
-    files = []
-    attempts = 6
-    sleep_s  = 3
-
-    attempts.times do |i|
+    6.times.flat_map do |i|
       resp = client.call(:receive, message: {
-        "DataBankID" => creds[:dbid].to_s,
-        "UserID"     => creds[:user_id].to_s,
-        "Password"   => pw.to_s
+        "DataBankID" => creds[:dbid],
+        "UserID"     => creds[:vendor_id],
+        "Password"   => pw
       })
 
-      body = resp.body[:receive_response] || resp.body.values.first || {}
-      tx   = body[:xml_transaction_response] || body["XMLTransactionResponse"] || body.values.first || {}
+      tx = resp.body.values.first
+      raise "Receive failed" unless tx[:xml_transaction_response][:status_code] == OK_CODE
 
-      code = (tx[:status_code] || tx["StatusCode"]).to_s
-      msg  = (tx[:status_message] || tx["StatusMessage"]).to_s
-      raise "Receive failed: #{code} #{msg}" unless code == OK_CODE
-
-      batch = extract_receive_files(body)
-      files.concat(batch)
-
-      Rails.logger.info("[NPDB] Receive attempt #{i + 1}/#{attempts}: files=#{batch.size}")
-
-      break if files.any?
-      sleep sleep_s
+      extract_receive_files(tx)
     end
-
-    files
   end
 
-  def extract_receive_files(body_hash)
-    rf   = body_hash[:response_files] || body_hash["ResponseFiles"] || {}
-    list = rf[:response_file] || rf["ResponseFile"] || []
-    list = [list] if list.is_a?(Hash)
-
-    list.filter_map do |f|
-      name = f[:file_name] || f["FileName"]
-      data = f[:file_data] || f["FileData"]
-      next if data.blank?
-      { name: name.to_s, xml: Base64.decode64(data.to_s) }
+  def extract_receive_files(body)
+    files = body[:response_files]&.dig(:response_file) || []
+    Array(files).map do |f|
+      { name: f[:file_name], xml: Base64.decode64(f[:file_data]) }
     end
   end
 
   def sample_response_xml!(reason)
-    Rails.logger.warn("[NPDB] Using sample XML fallback: #{reason}")
-    raise "Missing sample response XML at #{SAMPLE_XML_PATH}" unless File.exist?(SAMPLE_XML_PATH)
+    Rails.logger.warn("[NPDB] SAMPLE XML used (#{reason})")
     File.read(SAMPLE_XML_PATH)
   end
 end
