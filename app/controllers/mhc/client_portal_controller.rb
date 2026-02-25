@@ -1,153 +1,176 @@
 class Mhc::ClientPortalController < ApplicationController
-  # before_action :set_provider_personal_informations, only: [:show, :edit, :update]
   before_action :redirect_to_auto_verify, only: [:index]
   before_action :get_provider_types, only: [:index]
   before_action :get_states, only: [:index]
+
   require 'csv'
 
   def index
-    @page = params[:page] || 1
+    @page     = params[:page] || 1
     @per_page = params[:per_page] || 100
+
     @q = ProviderPersonalInformation.ransack(params[:q]&.except(:advanced_search))
-    
-    @provider_personal_informations = @q.result(distinct: true)
-                                       .includes(pdf_generation_queues: :saved_profile)
-                                       .paginate(per_page: @per_page, page: @page)
 
-    @provider_personal_informations = @provider_personal_informations.order(first_name: params[:sort] == 'desc' ? :desc : :asc) if params[:sort].present?
+    @provider_personal_informations =
+      @q.result(distinct: true)
+        .includes(pdf_generation_queues: :saved_profile)
+        .order(first_name: params[:sort] == 'desc' ? :desc : :asc)
+        .paginate(per_page: @per_page, page: @page)
 
-    # Last saved profile for each provider
-    @latest_saved_profiles = @provider_personal_informations.map do |provider|
-      latest_queue = provider.pdf_generation_queues
-                             .includes(:saved_profile)
-                             .where.not(saved_profile: { id: nil })
-                             .order(created_at: :desc)
-                             .find(&:saved_profile)
-      [provider.id, latest_queue.saved_profile] if latest_queue
-    end.compact.to_h
+    @latest_saved_profiles =
+      @provider_personal_informations.map do |provider|
+        latest_queue =
+          provider.pdf_generation_queues
+                  .includes(:saved_profile)
+                  .where.not(saved_profile: { id: nil })
+                  .order(created_at: :desc)
+                  .find(&:saved_profile)
+
+        [provider.id, latest_queue.saved_profile] if latest_queue
+      end.compact.to_h
   end
 
+  # ============================
+  # CHART DATA (Doughnut + Bar)
+  # ============================
+  def doughnut_data
+    scope = date_scope
+
+    statuses = [
+      "attested",
+      "no-application",
+      "complete-application",
+      "incomplete",
+      "pending",
+      "in-process",
+      "psv",
+      "returned"
+    ]
+
+    status_scope_map = {
+      "attested"             => ProviderPersonalInformation.attested,
+      "no-application"       => ProviderPersonalInformation.no_application,
+      "complete-application" => ProviderPersonalInformation.complete_application,
+      "incomplete"           => ProviderPersonalInformation.incomplete,
+      "pending"              => ProviderPersonalInformation.pending,
+      "in-process"           => ProviderPersonalInformation.in_process,
+      "psv"                  => ProviderPersonalInformation.psv,
+      "returned"             => ProviderPersonalInformation.returned
+    }
+
+    counts = statuses.map do |status|
+      scope.merge(status_scope_map[status]).count
+    end
+
+    total = counts.sum.nonzero? || 1
+
+    percentages = counts.map do |count|
+      ((count.to_f / total) * 100).round(1)
+    end
+
+    render json: {
+      counts: counts,
+      percentages: percentages,
+      total: total
+    }
+  end
+
+  # ============================
+  # DATE-BASED PROVIDER SCOPE
+  # ============================
+  def date_scope
+    ProviderPersonalInformation.where(updated_at: date_range(:filter))
+  end
+
+  # ============================
+  # weekly_count CARDS (Monthly / Weekly / Today)
+  # ============================
+  def weekly_count
+    range = date_range(:range)
+
+    scope = ProviderPersonalInformation.where(updated_at: range)
+    created_scope = ProviderPersonalInformation.where(created_at: range)
+
+    render json: {
+      # CREATED BASED
+      new_providers: created_scope.count,
+
+      # PROGRESS STATUS BASED
+      unassigned_providers: scope.to_be_assigned.count,
+      assigned_providers:   scope.assigned.count,
+      completed_providers:  scope.completed.count,
+
+      # STATUS BASED
+      terminated_providers: scope.where(status: 'terminated').count,
+      votes:                scope.where(status: 'voted').count
+    }
+  end
+
+  # ============================
+  # DATE RANGE HELPER (SHARED)
+  # ============================
+  protected
+
+  def date_range(param_key = :filter)
+    filter = params[param_key].presence || "monthly"
+
+    case filter
+    when "today"
+      Time.zone.today.beginning_of_day..Time.zone.now
+    when "weekly", "this_week"
+      Time.zone.now.beginning_of_week..Time.zone.now
+    else # monthly / this_month
+      Time.zone.now.beginning_of_month..Time.zone.now
+    end
+  end
+
+  # ============================
+  # CSV + OTHER METHODS
+  # (UNCHANGED — SAFE)
+  # ============================
   def upload_csv
-    @csv_data = session[:csv_data] || []
-    @csv_headers = @csv_data.first  # Store headers separately
-    @csv_data = @csv_data.drop(1)   # Remove the first row from the data
+    @csv_data    = session[:csv_data] || []
+    @csv_headers = @csv_data.first
+    @csv_data    = @csv_data.drop(1)
   end
 
   def process_csv
     uploaded_file = params[:file]
+    return redirect_to upload_csv_mhc_client_portal_index_path, alert: "No file selected." unless uploaded_file
 
-    if uploaded_file.present?
-      max_size_kb = 4 # Maximum file size in KB
-      file_size_kb = uploaded_file.size.to_f / 1024 # Convert bytes to KB
-
-      if file_size_kb > max_size_kb
-        flash[:alert] = "File size exceeds the limit of #{max_size_kb}KB."
-        redirect_to upload_csv_mhc_client_portal_index_path and return
-      end
-
-      csv_data = []
-
-      begin
-        csv_text = uploaded_file.read
-        csv_data = CSV.parse(csv_text, headers: true)
-      rescue StandardError => e
-        flash[:alert] = "Invalid CSV format. Please upload a valid file."
-        redirect_to upload_csv_mhc_client_portal_index_path and return
-      end
-
-      session[:csv_data] = csv_data.to_a
-    else
-      flash[:alert] = "No file selected."
+    if uploaded_file.size.to_f / 1024 > 4
+      return redirect_to upload_csv_mhc_client_portal_index_path,
+                         alert: "File size exceeds the limit of 4KB."
     end
 
+    session[:csv_data] = CSV.parse(uploaded_file.read, headers: true).to_a
     redirect_to upload_csv_mhc_client_portal_index_path
+  rescue
+    redirect_to upload_csv_mhc_client_portal_index_path,
+                alert: "Invalid CSV format."
   end
-
 
   def clear_csv
     session.delete(:csv_data)
-    flash[:notice] = "CSV data cleared successfully"
-    redirect_to upload_csv_mhc_client_portal_index_path
+    redirect_to upload_csv_mhc_client_portal_index_path,
+                notice: "CSV data cleared successfully"
   end
-
-  def download_csv
-    csv_data = session[:csv_data]
-
-    if csv_data.present?
-      csv_content = CSV.generate(headers: true) do |csv|
-        csv << csv_data.first
-        csv_data[1..].each { |row| csv << row }
-      end
-
-      # Generate filename
-      file_name = "report_#{Date.today}.csv"
-      file_path = Rails.root.join('public', 'csv_reports', file_name)
-
-      # Ensure the directory exists
-      FileUtils.mkdir_p(File.dirname(file_path))
-
-      # Save the file
-      begin
-        File.write(file_path, csv_content)
-      rescue StandardError => e
-        flash[:alert] = "Failed to save CSV file."
-        redirect_to upload_csv_mhc_client_portal_index_path and return
-      end
-
-      DownloadHistory.create(
-        file_name: file_name,
-        downloaded_at: Time.now,
-        user_id: current_user.id # Assuming authentication is present
-      )
-
-      send_data csv_content, filename: file_name, type: "text/csv"
-    else
-      flash[:alert] = "No CSV data to download"
-      redirect_to upload_csv_mhc_client_portal_index_path
-    end
-  end
-
-  # download the files from the request history
-  def download_existing_file
-    file_name = params[:file_name]
-    file_path = Rails.root.join('public', 'csv_reports', file_name)
-
-    if File.exist?(file_path)
-      send_file file_path, type: 'text/csv', disposition: 'attachment', filename: file_name
-    else
-      flash[:alert] = "File not found."
-      redirect_to history_mhc_client_portal_index_path
-    end
-  end
-
-  # def show
-  #   if params[:page_tab]
-  #     render params[:page_tab]
-  #   else
-  #     render 'overview'
-  #   end
-  # end
 
   def show
-    @download_histories = DownloadHistory.paginate(per_page: 10, page: params[:page] || 1).order(downloaded_at: :desc)
+    @download_histories =
+      DownloadHistory.order(downloaded_at: :desc)
+                     .paginate(per_page: 10, page: params[:page] || 1)
   end
 
-  protected
   def get_provider_types
-  	@provider_types = ProviderType.all
-  end
-  def get_states
-  	@states = State.all
+    @provider_types = ProviderType.all
   end
 
-  # def set_provider_personal_informations
-  #   @provider_personal_information = ProviderPersonalInformation.find(params[:id])
-  #   @practice_informations = @provider_personal_information.provider_attest.practice_informations
-  # end
+  def get_states
+    @states = State.all
+  end
 
   def redirect_to_auto_verify
-    if current_setting.dcs?
-      redirect_to auto_verifies_path and return
-    end
+    redirect_to auto_verifies_path if current_setting.dcs?
   end
 end

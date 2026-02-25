@@ -12,9 +12,7 @@
             <div class="card p-2 rounded-15 pale-green ps-3 pb-0" style="min-height: 112px;" >
                <h5>New Providers</h5>
                <div class="w-100 d-flex d-flex align-items-end">
-                  <h1 id="new_providers" style="font-size: 40px;" class="text-black mt-2">
-                     <%= EnrollmentProvider.this_month.count %>
-                  </h1>
+                  <h1 id="new_providers" style="font-size: 40px;" class="text-black mt-2"></h1>
                </div>
             </div>
          </div>
@@ -22,9 +20,7 @@
             <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;" >
                <h5>Assigned Providers</h5>
                <div class="w-100 d-flex d-flex align-items-end">
-                  <h1 id="assigned_providers" style="font-size: 40px;" class="text-black mt-2">
-                     <%= EnrollmentProvider.this_month.assigned.count %>
-                  </h1>
+                  <h1 id="assigned_providers" style="font-size: 40px;" class="text-black mt-2"></h1>
                </div>
             </div>
          </div>
@@ -32,9 +28,7 @@
             <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
                <h5>Completed Providers</h5>
                <div class="w-100 d-flex d-flex align-items-end">
-                  <h1 id="completed_providers" style="font-size: 40px;" class="text-black mt-2">
-                     <%= EnrollmentProvider.this_month.completed.count %>
-                  </h1>
+                  <h1 id="completed_providers" style="font-size: 40px;" class="text-black mt-2"></h1>
                </div>
             </div>
          </div>
@@ -44,8 +38,7 @@
             <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
                <h5>Votes</h5>
                <div class="w-100 d-flex d-flex align-items-end">
-                  <h1 id="completed_providers" style="font-size: 40px;" class="text-black mt-2">
-                     0
+                  <h1 id="votes" style="font-size: 40px;" class="text-black mt-2">
                   </h1>
                </div>
             </div>
@@ -54,9 +47,7 @@
             <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
                <h5>Terminated</h5>
                <div class="w-100 d-flex d-flex align-items-end">
-                  <h1 id="terminated_providers" style="font-size: 40px;" class="text-black mt-2">
-                     <%= EnrollmentProvider.this_month.terminated.count %>
-                  </h1>
+                  <h1 id="terminated_providers" style="font-size: 40px;" class="text-black mt-2"></h1>
                </div>
             </div>
          </div>
@@ -64,12 +55,32 @@
             <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
                <h5>Unassigned Providers</h5>
                <div class="w-100 d-flex d-flex align-items-end">
-                  <h1 id="unassigned_providers" style="font-size: 40px;" class="text-black mt-2">
-                     <%= EnrollmentProvider.this_month.unassigned.count %>
-                  </h1>
+                  <h1 id="unassigned_providers" style="font-size: 40px;" class="text-black mt-2"></h1>
                </div>
             </div>
          </div>
       </div>
    </div>
 </div>
+<script>
+  function loadProviderStats() {
+    const range = $(".provider-range-selector").val() || "this_month";
+
+    $.ajax({
+      url: "/mhc/client_portal/weekly_count",
+      method: "GET",
+      data: { range: range },
+      success: function (data) {
+        $("#new_providers").text(data.new_providers || 0);
+        $("#unassigned_providers").text(data.unassigned_providers || 0);
+        $("#assigned_providers").text(data.assigned_providers || 0);
+        $("#completed_providers").text(data.completed_providers || 0);
+        $("#terminated_providers").text(data.terminated_providers || 0);
+        $("#votes").text(data.votes || 0);
+      }
+    });
+  }
+
+  $(document).ready(loadProviderStats);
+  $(document).on("change", ".provider-range-selector", loadProviderStats);
+</script>

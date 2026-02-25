@@ -114,7 +114,9 @@ Rails.application.routes.draw do
   post '/delete_vrc_documents/:id', to: 'pages#delete_vrc_documents', as: :delete_vrc_document
 
   get 'view_summary/download_pdf', to: 'view_summary#download_pdf', as: :download_application_pdf
-
+  get 'mhc/client_portal/doughnut_data',
+    to: 'mhc/client_portal#doughnut_data'
+  get "mhc/client_portal/weekly_count", to: "mhc/client_portal#weekly_count"
   resources :manage_client
 
   resources :provider_sources do

@@ -16,6 +16,14 @@ class ProviderPersonalInformation < ApplicationRecord
     to_be_assigned: 'to_be_assigned'
   }
 
+  scope :attested, -> { where(cred_status: 'attested') }
+  scope :no_application, -> { where(cred_status: 'no-application') }
+  scope :incomplete, -> { where(cred_status: 'incomplete') }
+  scope :complete_application, -> { where(cred_status: 'complete-application') }
+  scope :pending, -> { where(cred_status: 'pending') }
+  scope :in_process, -> { where(cred_status: 'in-process') }
+  scope :psv, -> { where(cred_status: 'psv') }
+  scope :returned, -> { where(cred_status: 'returned') }
 
 
   PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID','ProviderID']
