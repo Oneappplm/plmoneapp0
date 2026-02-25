@@ -61,7 +61,7 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def dashboard
-    if current_user.can_access_all_groups? || current_user.super_administrator?
+    if current_user.can_access_all_groups? || current_user.super_administrator? || current_user.demo?
       @providers_with_missing_details ||= Provider.with_missing_required_fields.count
       @providers_with_missing_documents ||= Provider.with_missing_required_docs.count
     else
@@ -71,7 +71,7 @@ class EnrollmentClientsController < ApplicationController
   end
 
   def groups
-    if current_user.can_access_all_groups? || current_user.super_administrator?
+    if current_user.can_access_all_groups? || current_user.super_administrator? || current_user.demo?
       @enrollment_groups = EnrollmentGroup.search_by_params(params)
     else
       @enrollment_groups = current_user.enrollment_groups.search_by_params(params)

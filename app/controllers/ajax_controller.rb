@@ -73,7 +73,7 @@ class AjaxController < ApplicationController
     group = EnrollmentGroup.find_by(id: id) if params[:group_id] != 'all'
     group_dcos = ( params[:group_id] != 'all' ? group.dcos : GroupDco )
     providers = ( params[:group_id] != 'all' ? group.providers : Provider )
-    if current_user.can_access_all_groups? || current_user&.super_administrator?
+    if current_user.can_access_all_groups? || current_user&.super_administrator? || current_user&.demo?
       group_dco_count =  group_dcos.count
       provider_count = providers.count
     else
