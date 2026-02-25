@@ -29,7 +29,7 @@ class ProvidersController < ApplicationController
 			end
 		end
 
-		if !current_user.can_access_all_groups? && !current_user.super_administrator? && !current_user.provider?
+		if !current_user.can_access_all_groups? && !current_user.super_administrator? && !current_user.provider? && !current_user.demo?
 			@providers = @providers.where(enrollment_group_id: current_user.enrollment_groups.pluck(:id))
 		end
 
@@ -240,7 +240,7 @@ class ProvidersController < ApplicationController
 
 
   def set_overview_details
-    if current_user.can_access_all_groups? || current_user.super_administrator?
+    if current_user.can_access_all_groups? || current_user.super_administrator? || current_user.demo?
       @providers_with_missing_details ||= Provider.with_missing_required_fields.count
       @providers_with_missing_documents ||= Provider.with_missing_required_docs.count
     else
