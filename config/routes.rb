@@ -283,6 +283,8 @@ Rails.application.routes.draw do
         post :process_csv
         get :clear_csv
         get :download_csv
+        get  :provider_receipt_report
+        post :download_provider_receipt_report
       end
     end
 
