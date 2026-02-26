@@ -132,6 +132,69 @@ class Mhc::ClientPortalController < ApplicationController
     @download_histories = DownloadHistory.paginate(per_page: 10, page: params[:page] || 1).order(downloaded_at: :desc)
   end
 
+  def provider_receipt_report
+    # renders filter page
+  end
+
+  def download_provider_receipt_report
+    return unless params[:from_date].present? && params[:to_date].present?
+
+    from_date = params[:from_date].to_date.beginning_of_day
+    to_date   = params[:to_date].to_date.end_of_day
+
+    providers = ProviderPersonalInformation
+      .left_joins(:provider_personal_information_app_trackings)
+      .where(
+        "provider_personal_information_app_trackings.application_receipt_date BETWEEN ? AND ?
+         OR provider_personal_information_app_trackings.application_receipt_date IS NULL",
+        from_date, to_date
+      )
+      .select(
+        "provider_personal_informations.*,
+         MIN(provider_personal_information_app_trackings.application_receipt_date) AS receipt_date,
+         MIN(provider_personal_information_app_trackings.application_type) AS app_type"
+      )
+      .group("provider_personal_informations.id")
+
+    respond_to do |format|
+      format.csv do
+        send_data generate_csv(providers),
+                  filename: "provider_receipt_report_#{from_date.to_date}_to_#{to_date.to_date}.csv",
+                  type: "text/csv"
+      end
+    end
+  end
+
+  private
+
+  def generate_csv(providers)
+    CSV.generate(headers: true) do |csv|
+      csv << [
+        "Provider ID",
+        "First Name",
+        "Middle Name",
+        "Last Name",
+        "NPI",
+        "Cred Status",
+        "Application Receipt Date",
+        "Application Type"
+      ]
+
+      providers.find_each do |provider|
+        csv << [
+          provider.caqh_provider_attest_id,
+          provider.first_name,
+          provider.middle_name,
+          provider.last_name,
+          provider.npi.presence || "-",
+          provider.cred_status.present? ? provider.cred_status.upcase : "-",
+          provider.receipt_date.present? ? provider.receipt_date.strftime("%m/%d/%Y") : "-",
+          provider.app_type.present? ? provider.app_type.upcase : "-"
+        ]
+      end
+    end
+  end
+
   protected
   def get_provider_types
   	@provider_types = ProviderType.all
