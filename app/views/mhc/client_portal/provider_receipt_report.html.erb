@@ -1,0 +1,68 @@
+<div class="container mt-3">
+	<div class="card shadow">
+		<div class="row card-header">
+			<div class="col-lg-10">
+				<h2>Provider / Practitioner Report</h2>
+			</div>
+			<div class="col-lg-2 text-end">
+				<%= link_to "<- Back", mhc_client_portal_index_path, class: 'btn btn-primary' %>
+			</div>
+		</div>
+		<div class="card-body">
+			<% client_name =
+			     if current_setting.docgo?
+			       "DOCGO"
+			     elsif current_setting.mhc?
+			       "MHC"
+			     else
+			       "-"
+			     end
+			%>
+
+			<p class="fs-3 text-dark fw-bold">Client Name : <%= client_name %></p>
+
+			<hr>
+
+		  <%= form_with url: download_provider_receipt_report_mhc_client_portal_index_path(format: :csv),
+		              method: :post,
+		              local: true,
+		              data: { turbo: false },
+		              html: { id: "provider-receipt-report-form", class: "no-loader mb-5" } do %>
+
+		    <div class="row align-items-end g-3">
+
+		      <div class="col-md-4">
+		        <%= label_tag :from_date, "From Date", class: "form-label" %>
+		        <%= date_field_tag :from_date, nil, required: true, class: "form-control border-dark" %>
+		      </div>
+
+		      <div class="col-md-4">
+		        <%= label_tag :to_date, "To Date", class: "form-label" %>
+		        <%= date_field_tag :to_date, nil, required: true, class: "form-control border-dark" %>
+		      </div>
+
+		      <div class="col-md-4">
+		        <%= submit_tag "Download Report", class: "btn btn-primary w-100" %>
+		      </div>
+
+		    </div>
+
+		  <% end %>
+		</div>
+	</div>
+</div>
+
+<script>
+  $(document).on("submit", "#provider-receipt-report-form", function () {
+
+    // hide loader
+    setTimeout(function () {
+      $(".loader").hide();
+    }, 50);
+
+    // refresh page after download trigger
+    setTimeout(function () {
+      window.location.reload();
+    }, 1500);
+  });
+</script>
