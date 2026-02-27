@@ -4,10 +4,6 @@ class Mhc::WorkTicklersController < ApplicationController
 	before_action :load_providers, only: [:index, :privileges, :enrollment_work_tickler]
 
   PER_PAGE = 10
-  DEA_EXPIRING_YEARS = 5
-  SPECIALTY_EXPIRING_YEARS = 5
-  CDS_EXPIRING_YEARS = 5
-  LICENSE_EXPIRING_YEARS = 5
 
   TAB_MAP = {
 	  'Liability'           => 'liability',
@@ -27,22 +23,32 @@ class Mhc::WorkTicklersController < ApplicationController
   end
 
   def dea_expired
-    @expired_deas = fetch_deas(:expired)
+	  @expired_deas =
+	    ProviderDea
+	      .expired_and_tickler
+	      .includes(provider_attest: :provider_personal_informations)
+	      .order(expiration_date: :asc)
+	      .paginate(per_page: PER_PAGE, page: params[:page] || 1)
 
-    respond_to do |format|
-      format.html
-      format.csv { send_dea_csv(@expired_deas, 'dea_expired') }
-    end
-  end
+	  respond_to do |format|
+	    format.html
+	    format.csv { send_dea_csv(@expired_deas, 'dea_expired') }
+	  end
+	end
 
-  def dea_expiring
-    @expiring_deas = fetch_deas(:expiring)
+	def dea_expiring
+	  @expiring_deas =
+	    ProviderDea
+	      .expiring_and_tickler
+	      .includes(provider_attest: :provider_personal_informations)
+	      .order(expiration_date: :asc)
+	      .paginate(per_page: PER_PAGE, page: params[:page] || 1)
 
-    respond_to do |format|
-      format.html
-      format.csv { send_dea_csv(@expiring_deas, 'dea_expiring') }
-    end
-  end
+	  respond_to do |format|
+	    format.html
+	    format.csv { send_dea_csv(@expiring_deas, 'dea_expiring') }
+	  end
+	end
 
   def board_cert_expired
 	  @expired_specialties = fetch_specialties(:expired)
@@ -63,7 +69,12 @@ class Mhc::WorkTicklersController < ApplicationController
 	end
 
 	def provider_cd_expired
-	  @expired_cds = fetch_provider_cds(:expired)
+	  @expired_cds =
+	    ProviderCd
+	      .expired_and_tickler
+	      .includes(provider_attest: :provider_personal_informations)
+	      .order(expiration_date: :asc)
+	      .paginate(per_page: PER_PAGE, page: params[:page] || 1)
 
 	  respond_to do |format|
 	    format.html
@@ -72,7 +83,12 @@ class Mhc::WorkTicklersController < ApplicationController
 	end
 
 	def provider_cd_expiring
-	  @expiring_cds = fetch_provider_cds(:expiring)
+	  @expiring_cds =
+	    ProviderCd
+	      .expiring_and_tickler
+	      .includes(provider_attest: :provider_personal_informations)
+	      .order(expiration_date: :asc)
+	      .paginate(per_page: PER_PAGE, page: params[:page] || 1)
 
 	  respond_to do |format|
 	    format.html
@@ -81,7 +97,12 @@ class Mhc::WorkTicklersController < ApplicationController
 	end
 
 	def provider_license_expired
-	  @expired_licenses = fetch_provider_licenses(:expired)
+	  @expired_licenses =
+	    ProviderLicensure
+	      .expired_and_tickler
+	      .includes(:state, provider_attest: :provider_personal_informations)
+	      .order(license_expiration_date: :asc)
+	      .paginate(per_page: PER_PAGE, page: params[:page] || 1)
 
 	  respond_to do |format|
 	    format.html
@@ -90,7 +111,12 @@ class Mhc::WorkTicklersController < ApplicationController
 	end
 
 	def provider_license_expiring
-	  @expiring_licenses = fetch_provider_licenses(:expiring)
+	  @expiring_licenses =
+	    ProviderLicensure
+	      .expiring_and_tickler
+	      .includes(:state, provider_attest: :provider_personal_informations)
+	      .order(license_expiration_date: :asc)
+	      .paginate(per_page: PER_PAGE, page: params[:page] || 1)
 
 	  respond_to do |format|
 	    format.html
@@ -98,6 +124,7 @@ class Mhc::WorkTicklersController < ApplicationController
 	  end
 	end
 
+	# for board_cert, liability & license
 	def practitioner_record_expired
 	  @records = build_unified_records(:expired)
 
@@ -123,7 +150,12 @@ class Mhc::WorkTicklersController < ApplicationController
 	end
 
 	def provider_insurance_expired
-	  @expired_insurances = fetch_provider_insurances(:expired)
+	  @expired_insurances =
+	    ProviderInsuranceCoverage
+	      .expired_and_tickler
+	      .includes(provider_attest: :provider_personal_informations)
+	      .order(end_date: :asc)
+	      .paginate(per_page: PER_PAGE, page: params[:page] || 1)
 
 	  respond_to do |format|
 	    format.html
@@ -135,7 +167,12 @@ class Mhc::WorkTicklersController < ApplicationController
 	end
 
 	def provider_insurance_expiring
-	  @expiring_insurances = fetch_provider_insurances(:expiring)
+	  @expiring_insurances =
+	    ProviderInsuranceCoverage
+	      .expiring_and_tickler
+	      .includes(provider_attest: :provider_personal_informations)
+	      .order(end_date: :asc)
+	      .paginate(per_page: PER_PAGE, page: params[:page] || 1)
 
 	  respond_to do |format|
 	    format.html
@@ -168,7 +205,7 @@ class Mhc::WorkTicklersController < ApplicationController
       when :expired
         scope.where('expiration_date < ?', Date.current)
       when :expiring
-        scope.where(expiration_date: Date.current..DEA_EXPIRING_YEARS.years.from_now)
+        scope.where(expiration_date: Date.current..30.days.years.from_now)
       end
 
     scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
@@ -178,6 +215,7 @@ class Mhc::WorkTicklersController < ApplicationController
 	  scope =
 	    ProviderSpecialty
 	      .shown_on_tickler
+	      .not_skipped_rva
 	      .includes(provider_attest: :provider_personal_informations)
 	      .order(expiration_date: :asc)
 
@@ -186,7 +224,7 @@ class Mhc::WorkTicklersController < ApplicationController
 	    when :expired
 	      scope.where('expiration_date < ?', Date.current)
 	    when :expiring
-	      scope.where(expiration_date: Date.current..SPECIALTY_EXPIRING_YEARS.years.from_now)
+	      scope.where(expiration_date: Date.current..30.days.from_now)
 	    end
 
 	  scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
@@ -204,7 +242,7 @@ class Mhc::WorkTicklersController < ApplicationController
 	    when :expired
 	      scope.where('expiration_date < ?', Date.current)
 	    when :expiring
-	      scope.where(expiration_date: Date.current..CDS_EXPIRING_YEARS.years.from_now)
+	      scope.where(expiration_date: Date.current..30.days.years.from_now)
 	    end
 
 	  scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
@@ -223,11 +261,97 @@ class Mhc::WorkTicklersController < ApplicationController
 	      scope.where('license_expiration_date < ?', Date.current)
 	    when :expiring
 	      scope.where(
-	        license_expiration_date: Date.current..LICENSE_EXPIRING_YEARS.years.from_now
+	        license_expiration_date: Date.current..30.days.from_now
 	      )
 	    end
 
 	  scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
+	end
+
+	# for board_cert, liability & license
+	def build_unified_records(type)
+	  records = []
+
+	  specialty_counts  = ProviderSpecialty.group(:provider_attest_id).count
+	  insurance_counts  = ProviderInsuranceCoverage.group(:provider_attest_id).count
+	  licensure_counts  = ProviderLicensure.group(:provider_attest_id).count
+
+	  # Board Certification
+	  specialty_scope =
+	    type == :expired ?
+	      ProviderSpecialty.expired_and_tickler :
+	      ProviderSpecialty.expiring_and_tickler
+
+	  specialty_scope
+	    .includes(provider_attest: :provider_personal_informations)
+	    .order(:expiration_date)
+	    .paginate(per_page: PER_PAGE, page: params[:page] || 1)
+	    .each do |r|
+	      records << build_row(
+	        r,
+	        'Board Certification',
+	        r.specialty_specialty_name,
+	        r.expiration_date,
+	        specialty_counts[r.provider_attest_id] || 0
+	      )
+	    end
+
+	  # Liability (Insurance)
+	  insurance_scope =
+	    type == :expired ?
+	      ProviderInsuranceCoverage.expired_and_tickler :
+	      ProviderInsuranceCoverage.expiring_and_tickler
+
+	  insurance_scope
+	    .includes(provider_attest: :provider_personal_informations)
+	    .order(:end_date)
+	    .paginate(per_page: PER_PAGE, page: params[:page] || 1)
+	    .each do |r|
+	      records << build_row(
+	        r,
+	        'Liability',
+	        r.insurance_carrier_name,
+	        r.end_date,
+	        insurance_counts[r.provider_attest_id] || 0
+	      )
+	    end
+
+	  # Licensure
+	  licensure_scope =
+	    type == :expired ?
+	      ProviderLicensure.expired_and_tickler :
+	      ProviderLicensure.expiring_and_tickler
+
+	  licensure_scope
+	    .includes(:state, provider_attest: :provider_personal_informations)
+	    .order(:license_expiration_date)
+	    .paginate(per_page: PER_PAGE, page: params[:page] || 1)
+	    .each do |r|
+	      records << build_row(
+	        r,
+	        'License',
+	        r.license_type,
+	        r.license_expiration_date,
+	        licensure_counts[r.provider_attest_id] || 0
+	      )
+	    end
+
+	  records.sort_by { |r| r[:expiration_date] }
+	end
+
+	def build_row(record, tab_name, record_name, expiration_date, record_count)
+	  provider = record.provider_attest&.provider_personal_informations&.first
+
+	  {
+	    practitioner_name: provider&.fullname || 'N/A',
+	    tab_name: tab_name,
+	    page_tab: TAB_MAP[tab_name],
+	    record_num: record_count,
+	    record_name: record_name,
+	    expiration_date: expiration_date,
+	    department: nil,
+	    provider_attest_id: record.provider_attest_id
+	  }
 	end
 
 	def fetch_provider_insurances(type)
@@ -246,105 +370,6 @@ class Mhc::WorkTicklersController < ApplicationController
 	    end
 
 	  scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
-	end
-
-	# for board_cert, liability & license
-	def fetch_generic_records(model:, type:, date_column:, years:)
-	  scope =
-	    model
-	      .shown_on_tickler
-	      .includes(provider_attest: :provider_personal_informations)
-	      .order(date_column => :asc)
-
-	  scope =
-	    case type
-	    when :expired
-	      scope.where("#{date_column} < ?", Date.current)
-	    when :expiring
-	      scope.where("#{date_column} BETWEEN ? AND ?",
-	                  Date.current,
-	                  years.years.from_now)
-	    end
-
-	  scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
-	end
-
-	def build_unified_records(type)
-	  records = []
-
-	  specialty_counts =
-	    ProviderSpecialty.group(:provider_attest_id).count
-
-	  insurance_counts =
-	    ProviderInsuranceCoverage.group(:provider_attest_id).count
-
-	  licensure_counts =
-	    ProviderLicensure.group(:provider_attest_id).count
-
-	  # Board Certification
-	  fetch_generic_records(
-	    model: ProviderSpecialty,
-	    type: type,
-	    date_column: :expiration_date,
-	    years: SPECIALTY_EXPIRING_YEARS
-	  ).each do |r|
-	    records << build_row(
-	      r,
-	      'Board Certification',
-	      r.specialty_specialty_name,
-	      r.expiration_date,
-	      specialty_counts[r.provider_attest_id] || 0
-	    )
-	  end
-
-	  # Insurance Coverage
-	  fetch_generic_records(
-	    model: ProviderInsuranceCoverage,
-	    type: type,
-	    date_column: :end_date,
-	    years: 1
-	  ).each do |r|
-	    records << build_row(
-	      r,
-	      'Liability',
-	      r.insurance_carrier_name,
-	      r.end_date,
-	      insurance_counts[r.provider_attest_id] || 0
-	    )
-	  end
-
-	  # Licensure
-	  fetch_generic_records(
-	    model: ProviderLicensure,
-	    type: type,
-	    date_column: :license_expiration_date,
-	    years: LICENSE_EXPIRING_YEARS
-	  ).each do |r|
-	    records << build_row(
-	      r,
-	      'License',
-	      r.license_type,
-	      r.license_expiration_date,
-	      licensure_counts[r.provider_attest_id] || 0
-	    )
-	  end
-
-	  records.sort_by { |r| r[:expiration_date] }
-	end
-
-	def build_row(record, tab_name, record_name, expiration_date, record_count)
-	  provider = record.provider_attest&.provider_personal_informations&.first
-
-	  {
-	    practitioner_name: provider&.fullname || 'N/A',
-	    tab_name: tab_name,
-	    page_tab: TAB_MAP[tab_name],
-	    record_num: record_count,
-	    record_name: record_name,
-	    expiration_date: expiration_date,
-	    department: nil,
-	    provider_attest_id: record.provider_attest_id
-	  }
 	end
 
 
@@ -432,7 +457,7 @@ class Mhc::WorkTicklersController < ApplicationController
 
 	# CSV Export for provider_cds 
 	def send_provider_cd_csv(cds, filename_prefix)
-  send_data generate_provider_cd_csv(cds),
+  	send_data generate_provider_cd_csv(cds),
             filename: "#{filename_prefix}_#{Date.current}.csv"
 	end
 
