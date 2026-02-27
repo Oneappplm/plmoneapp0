@@ -6,12 +6,15 @@ class ProviderSpecialty < ApplicationRecord
 
   validates :provider_attest_id, presence: true
 
+  scope :not_skipped_rva, -> { where(audit_status: ["SkipRVA", "Quality Audited", nil]) }
   scope :shown_on_tickler, -> { where(tickler: ['Yes', nil]) }
   scope :expired_strict,   -> { where('expiration_date < ?', Date.current) }
   scope :active,           -> { where('expiration_date >= ?', Date.current) }
 
-  scope :expired_and_tickler,  -> { expired_strict.shown_on_tickler }
-  scope :expiring_and_tickler, -> { active.shown_on_tickler }
+  scope :expiring_30_days, -> { where(expiration_date: Date.current..30.days.from_now) }
+
+  scope :expired_and_tickler,  -> { expired_strict.shown_on_tickler.not_skipped_rva }
+  scope :expiring_and_tickler, -> { expiring_30_days.shown_on_tickler.not_skipped_rva }
 
   after_initialize :set_defaults
 

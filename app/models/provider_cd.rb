@@ -9,10 +9,13 @@ class ProviderCd < ApplicationRecord
 
   scope :shown_on_tickler, -> { where(show_on_tickler: ['Yes', true, nil]) }
   scope :expired_strict,   -> { where('expiration_date < ?', Date.current) }
+
+  scope :expiring_30_days, -> { where(expiration_date: Date.current..30.days.from_now) }
+
   scope :active,           -> { where('expiration_date >= ?', Date.current) }
 
   scope :expired_and_tickler,  -> { expired_strict.shown_on_tickler }
-  scope :expiring_and_tickler, -> { active.shown_on_tickler }
+  scope :expiring_and_tickler, -> { expiring_30_days.shown_on_tickler }
 
   before_validation :set_provider_attest
 
