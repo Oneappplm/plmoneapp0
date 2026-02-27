@@ -75,33 +75,27 @@ class Webscraper::NpdbQrxsService
 
   def resolved_creds!
     env = (ENV["NPDB_ENV"].presence || "local").downcase
-    dbid = ENV["NPDB_DBID"].to_s
-    vendor_id = ENV["NPDB_VENDOR_ID"].to_s
-    password = ENV["NPDB_PASSWORD"].to_s
 
-    if env != "local"
-      missing = []
-      missing << "NPDB_DBID" if dbid.blank?
-      missing << "NPDB_VENDOR_ID" if vendor_id.blank?
-      missing << "NPDB_PASSWORD" if password.blank?
-      raise "Missing NPDB credentials: #{missing.join(', ')}" if missing.any?
+    {
+      env: env,
+      dbid: ENV["NPDB_DBID"].to_s,
+      agent_dbid: ENV["NPDB_AGENT_DBID"].to_s,
+      vendor_id: ENV["NPDB_VENDOR_ID"].to_s,
+      password: ENV["NPDB_PASSWORD"].to_s
+    }.tap do |c|
+      if env != "local"
+        missing = []
+        %i[dbid agent_dbid vendor_id password].each do |k|
+          missing << k if c[k].blank?
+        end
+        raise "Missing NPDB credentials: #{missing.join(', ')}" if missing.any?
+      end
     end
-
-    { env: env, dbid: dbid, vendor_id: vendor_id, password: password }
   end
 
-  def savon_client_for_env(env)
-    endpoint =
-      case env
-      when "test"
-        "https://qa.npdb.hrsa.gov/qrxs/QrxsWebService"
-      else
-        "https://www.npdb.hrsa.gov/qrxs/QrxsWebService"
-      end
-
+  def savon_client_for_env(_env)
     Savon.client(
       wsdl: WSDL,
-      endpoint: endpoint,
       soap_version: 2,
       open_timeout: 30,
       read_timeout: 120,
@@ -114,38 +108,27 @@ class Webscraper::NpdbQrxsService
   # -------------------- XML --------------------
 
   def build_submission_xml(creds)
-    Nokogiri::XML::Builder.new(encoding: "UTF-8") do |x|
-      x.querySubmission do
-        x.submitter do
-          x.entityDBID creds[:dbid].to_s
-          x.vendorID  creds[:user_id].to_s
+  Nokogiri::XML::Builder.new(encoding: "UTF-8") do |x|
+      x.QRXS_Submission do
+        x.Submitter do
+          x.EntityDBID creds[:dbid]
+          x.AgentDBID  creds[:agent_dbid]
+          x.UserID     creds[:vendor_id]
         end
 
-        x.individual do
-          x.name do
-            x.last   @ppi.last_name.to_s.upcase
-            x.first  @ppi.first_name.to_s.upcase
-            x.middle @ppi.middle_name.to_s.upcase if @ppi.middle_name.present?
-            x.suffix @ppi.suffix.to_s.upcase if @ppi.respond_to?(:suffix) && @ppi.suffix.present?
+        x.Query do
+          x.Individual do
+            x.Name do
+              x.LastName  @ppi.last_name.to_s.upcase
+              x.FirstName @ppi.first_name.to_s.upcase
+              x.MiddleName @ppi.middle_name.to_s.upcase if @ppi.middle_name.present?
+            end
+
+            x.SSN @ppi.ssn if @ppi.ssn.present?
+            x.NPI @ppi.npi if @ppi.npi.present?
+            x.BirthDate @ppi.birth_date.strftime("%Y-%m-%d") if @ppi.birth_date.present?
+            x.Sex @ppi.gender_gender_description.to_s.first.upcase if @ppi.gender_gender_description.present?
           end
-
-          # SEX → derived from gender description
-          if @ppi.gender_gender_description.present?
-            sex =
-              case @ppi.gender_gender_description.to_s.downcase
-              when "male"   then "M"
-              when "female" then "F"
-              else "U"
-              end
-            x.sex sex
-          end
-
-          # Birthdate
-          x.birthdate(@ppi.birth_date.strftime("%Y-%m-%d")) if @ppi.birth_date.present?
-
-          # Optional identifiers
-          x.npi(@ppi.npi.to_s) if @ppi.npi.present?
-          x.ssn(@ppi.ssn.to_s) if @ppi.ssn.present?
         end
       end
     end.to_xml
@@ -166,12 +149,15 @@ class Webscraper::NpdbQrxsService
       "DataBankID" => creds[:dbid],
       "UserID"     => creds[:vendor_id],
       "Password"   => pw,
-      "SubmissionFiles" => {
-        "SubmissionFile" => [{ "FileName" => filename, "FileData" => Base64.strict_encode64(xml) }]
-      }
+      "SubmissionFiles" => [
+        {
+          "FileName" => filename,
+          "XmlFileData" => Base64.strict_encode64(xml)
+        }
+      ]
     })
 
-    tx = resp.body.values.first.values.first
+    tx = resp.body[:send_response][:xml_transaction_response]
     [tx[:status_code], tx[:status_message]]
   end
 
@@ -191,9 +177,12 @@ class Webscraper::NpdbQrxsService
   end
 
   def extract_receive_files(body)
-    files = body[:response_files]&.dig(:response_file) || []
+    files = body[:xml_transaction_response][:response_files] || []
     Array(files).map do |f|
-      { name: f[:file_name], xml: Base64.decode64(f[:file_data]) }
+      {
+        name: f[:file_name],
+        xml: Base64.decode64(f[:xml_file_data])
+      }
     end
   end
 
