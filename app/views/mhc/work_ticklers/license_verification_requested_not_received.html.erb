@@ -4,7 +4,7 @@
   <div class="d-flex justify-content-end mb-2">
     <% if @licenses.present? %>
       <%= link_to 'Print',
-          license_verification_not_requested_mhc_work_ticklers_path(format: :csv),
+          license_verification_requested_not_received_mhc_work_ticklers_path(format: :csv),
           class: 'btn btn-primary btn-sm text-end' %>
     <% end %>
   </div>
@@ -19,8 +19,11 @@
         <th class="text-white">License Number</th>
         <th class="text-white">Primary License</th>
         <th class="text-white">State Board Contact Information</th>
+        <th class="text-white">Dates Requested</th>
         <th class="text-white">Committee Date</th>
         <th class="text-white">Department/Division</th>
+        <th class="text-white">Comments</th>
+        <th class="text-white">Next Contact Date</th>
       </tr>
     </thead>
 
@@ -50,11 +53,12 @@
             <td><%= license.state&.name %></td>
             <td><%= license.license_number %></td>
             <td><%= license.is_primary_license ? "Yes" : "No" %></td>
-
+            <td>-</td>
             <td>-</td>
             <td><%= provider.committee_date&.strftime("%m/%d/%Y") %></td>
             <td>-</td>
-
+            <td>-</td>
+            <td>-</td>
           </tr>
 
         <% end %>
