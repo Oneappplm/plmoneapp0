@@ -183,6 +183,19 @@ class Mhc::WorkTicklersController < ApplicationController
 	  end
 	end
 
+	# for provider licensure verification not requested
+	def license_verification_not_requested
+	  @licenses = fetch_license_verification_not_requested
+
+	  respond_to do |format|
+	    format.html
+	    format.csv do
+	      send_data generate_license_verification_not_requested_csv(@licenses),
+	                filename: "license_not_requested_#{Date.current}.csv"
+	    end
+	  end
+	end
+
   private
 
   def load_providers
@@ -372,6 +385,18 @@ class Mhc::WorkTicklersController < ApplicationController
 	  scope.paginate(per_page: PER_PAGE, page: params[:page] || 1)
 	end
 
+	# for provider licensure verification not requested
+	def fetch_license_verification_not_requested
+	  ProviderLicensure
+	    .joins(provider_attest: :provider_personal_informations)
+	    .left_joins(:rva_informations)
+	    .includes(:state, provider_attest: [:provider_personal_informations, :provider_other_names])
+	    .where(provider_licensures: { audit_status: ['SkipRVA', 'Quality Audited', nil] })
+	    .where("provider_licensures.show_on_tickler IN ('Yes', TRUE) OR provider_licensures.show_on_tickler IS NULL")
+	    .where("rva_informations.send_request IS NULL")
+	    .distinct
+	    .paginate(page: params[:page] || 1, per_page: PER_PAGE)
+	end
 
   # CSV Export for DEA
   def send_dea_csv(deas, filename_prefix)
@@ -600,6 +625,42 @@ class Mhc::WorkTicklersController < ApplicationController
 	    'Credentials Contact Name',
 	    'Credentials Contact Phone',
 	    'Credentials Contact Fax',
+	    'Department/Division'
+	  ]
+	end
+
+	# CSV Export for provider licensure verification not requested
+	def generate_license_verification_not_requested_csv(licenses)
+	  CSV.generate(headers: true) do |csv|
+	    csv << license_verification_not_requested_headers
+
+	    licenses.each_with_index do |license, index|
+	      provider =
+	        license.provider_attest&.provider_personal_informations&.first
+
+	      csv << [
+	        index + 1,
+	        provider&.fullname || 'N/A',
+	        license.license_type,
+	        license.license_number,
+	        license.state&.name,
+	        license.license_expiration_date&.strftime('%m/%d/%Y'),
+	        'Verification Not Requested'
+	      ]
+	    end
+	  end
+	end
+
+	def license_verification_not_requested_headers
+	  [
+	    'Sr',
+	    'Practitioner Name',
+	    'Other Names Used',
+	    'State',
+	    'License Number',
+	    'Primary License',
+	    'State Board Contact Information',
+	    'Committee Date',
 	    'Department/Division'
 	  ]
 	end

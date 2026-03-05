@@ -147,7 +147,7 @@ class ProviderLicensure < ApplicationRecord
   validates :provider_attest_id, presence: true
   
   scope :shown_on_tickler, -> { where(show_on_tickler: ['Yes', true, nil]) }
-  scope :not_skipped_rva, -> { where(audit_status: ['SkipRVA', "Quality Audited",  nil])}
+  scope :not_skipped_rva, -> { where(audit_status: ['SkipRVA', "Quality Audited", 'Not Requested',  nil])}
   scope :expired_strict,   -> { where('license_expiration_date < ?', Date.current) }
   scope :expiring_30_days, -> { where(license_expiration_date: Date.current..30.days.from_now) }
   

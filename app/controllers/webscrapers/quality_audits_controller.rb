@@ -423,7 +423,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
     rva_infos = RvaInformation.where(provider_licensure_id: params[:licensure_id])
 
     if rva_infos.any?
-      rva_infos.update(restart_audit: true)
+      rva_infos.update(restart_audit: true, send_request: nil)
       ProviderLicensure.find(params[:licensure_id]).update(audit_status: 'Not Requested')
       render json: { message: 'All related RVA information deleted successfully' }, status: :ok
     else

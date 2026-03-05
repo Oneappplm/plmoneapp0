@@ -6,6 +6,11 @@ class ProviderOtherName < ApplicationRecord
   validates :provider_attest_id, presence: true
 
   before_validation :set_provider_attest, if: -> { provider_attest_id.blank? }
+
+  def full_name
+    "#{first_name} #{middle_name} #{last_name}"  
+  end
+
   private
 
 
