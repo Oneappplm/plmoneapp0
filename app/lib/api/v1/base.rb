@@ -69,7 +69,7 @@ module Api
       mount Api::V1::GroupDcoOldLocationAddresses
       mount Api::V1::GroupDcoProviderOutreachInformations
       mount Api::V1::GroupEngageProviders
-      mount Api::V1::HvhsData
+      # mount Api::V1::HvhsData
       mount Api::V1::ProviderCdsLicenses
       mount Api::V1::ProviderCnpLicenses
       mount Api::V1::ProviderInsPolicies
