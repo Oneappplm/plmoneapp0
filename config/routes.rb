@@ -184,6 +184,7 @@ Rails.application.routes.draw do
         get :provider_insurance_expired
         get :provider_insurance_expiring
         get :license_verification_not_requested
+        get :license_verification_requested_not_received
       end
     end
 
