@@ -1,5 +1,6 @@
 class Api::V1::BaseController < ActionController::Base
 	protect_from_forgery with: :null_session
+	before_action :doorkeeper_authorize!
 	before_action :validate_token
 
 	protected
@@ -10,6 +11,10 @@ class Api::V1::BaseController < ActionController::Base
 		rescue
 			nil
 		end
+
+		def current_resource_owner
+	    User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token
+	  end
 
 		def validate_token
 			if bearer_token.nil? || (bearer_token.present? && User.find_by_token(bearer_token).nil?)
