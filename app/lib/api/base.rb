@@ -25,13 +25,26 @@ module Api
         contact_email: 'admin@plmhealthoneapp.com'
       },
       security_definitions: {
-        api_key: {
-          type: 'apiKey',
-          name: 'X-Api-Key',
-          in: 'header'
+        # api_key: {
+        #   type: 'apiKey',
+        #   name: 'X-Api-Key',
+        #   in: 'header'
+        # },
+        oauth2: {
+          type: 'oauth2',
+          flow: 'password',
+          tokenUrl: '/oauth/token',
+          scopes: {
+            public: 'read data',
+            write: 'create data',
+            update: 'update data',
+            delete: 'delete data'
+          }
         }
       },
-      security: [{ api_key: [] }]
+      security: [
+        { oauth2: [] }
+      ]
     )
   end
 end
