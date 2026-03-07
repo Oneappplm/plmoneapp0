@@ -209,6 +209,26 @@ class Mhc::WorkTicklersController < ApplicationController
 	  end
 	end
 
+	# for License Verification Received and Not Verified
+	def license_verification_received_not_verified
+	  respond_to do |format|
+
+	    format.html do
+	      @licenses = fetch_license_verification_received_not_verified.paginate(
+	        page: params[:page] || 1,
+	        per_page: PER_PAGE
+	      )
+	    end
+
+	    format.csv do
+	      licenses = fetch_license_verification_received_not_verified
+	      send_data generate_license_verification_received_not_verified_csv(licenses),
+	                filename: "license_received_not_verified_#{Date.current}.csv"
+	    end
+
+	  end
+	end
+
   private
 
   def load_providers
@@ -423,6 +443,19 @@ class Mhc::WorkTicklersController < ApplicationController
 	    .where("provider_licensures.show_on_tickler IN ('Yes', TRUE) OR provider_licensures.show_on_tickler IS NULL")
 	    .distinct
 	    .paginate(page: params[:page] || 1, per_page: PER_PAGE)
+	end
+
+	# for License Verification Received and Not Verified
+	def fetch_license_verification_received_not_verified
+	  ProviderLicensure
+	    .joins(:rva_informations)
+	    .joins(provider_attest: :provider_personal_informations)
+	    .includes(:state, provider_attest: [:provider_personal_informations, :provider_other_names])
+	    .where(rva_informations: { send_request: 'SENT', received_status: true })
+	    .where("rva_informations.verification_status IS NULL OR rva_informations.verification_status != ?", "Verified")
+	    .where(provider_licensures: { audit_status: ['SkipRVA', 'Quality Audited', nil] })
+	    .where("provider_licensures.show_on_tickler IN ('Yes', TRUE) OR provider_licensures.show_on_tickler IS NULL")
+	    .distinct
 	end
 
   # CSV Export for DEA
@@ -695,7 +728,7 @@ class Mhc::WorkTicklersController < ApplicationController
 	end
 
 
-	# CSV Export for provider licensure verification received and not requested
+	# CSV Export for licensure verification received and not requested
 	def generate_license_verification_requested_not_received_csv(licenses)
 	  CSV.generate(headers: true) do |csv|
 	    csv << license_verification_requested_not_received_headers
@@ -739,5 +772,38 @@ class Mhc::WorkTicklersController < ApplicationController
 	  ]
 	end
 
+	# CSV Export for License Verification Received and Not Verified
+	def generate_license_verification_received_not_verified_csv(licenses)
+	  CSV.generate(headers: true) do |csv|
+	    csv << license_verification_received_not_verified_headers
 
+	    licenses.each_with_index do |license, index|
+	      provider = license.provider_attest&.provider_personal_informations&.first
+
+	      csv << [
+	        index + 1,
+	        provider&.fullname || 'N/A',
+	        license.provider_attest.provider_other_names.first&.full_name || "N/A",
+	        license.state&.alpha_code,
+	        license.license_number,
+	        license.is_primary_license ? "Yes" : "No",
+	        provider.committee_date&.strftime("%m/%d/%Y"),
+	        nil
+	      ]
+	    end
+	  end
+	end
+
+	def license_verification_received_not_verified_headers
+	  [
+	    'Sr',
+	    'Practitioner Name',
+	    'Other Names Used',
+	    'State',
+	    'License Number',
+	    'Primary License',
+	    'Committee Date',
+	    'Department/Division'
+	  ]
+	end
 end
