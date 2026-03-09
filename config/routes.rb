@@ -186,6 +186,7 @@ Rails.application.routes.draw do
         get :license_verification_not_requested
         get :license_verification_requested_not_received
         get :license_verification_received_not_verified
+        get :license_verification_webcrawler_discrepancy
       end
     end
 
