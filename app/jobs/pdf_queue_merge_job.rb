@@ -45,7 +45,10 @@ class PdfQueueMergeJob < ApplicationJob
     )
 
     # ✅ Update provider credential status to PSV
-    provider.update_column(:cred_status, 'psv')
+    provider.update_columns(
+      cred_status: "psv",
+      progress_status: "to_be_assigned"
+    )
     
     Rails.logger.info "✅ [PDF MERGE] Completed queue=#{queue.id}"
   rescue => e
