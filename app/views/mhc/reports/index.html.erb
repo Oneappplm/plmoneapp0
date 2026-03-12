@@ -1,0 +1,103 @@
+<div class="container mt-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3>Reports</h3>
+
+    <%= link_to "Back",
+        request.referer.presence || "/mhc/verification_platform",
+        class: "btn btn-secondary" %>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped align-middle">
+      <thead>
+        <tr>
+          <th width="25%" class="text-white">Report Type</th>
+          <th width="25%" class="text-white">Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td class="fs-5">DEA Report</td>
+          <td>
+
+            <button
+              type="button"
+              id="generate-dea-bulk-report-btn"
+              class="btn btn-primary btn-sm">
+              Generate DEA Report
+            </button>
+
+            <a
+              href="#"
+              id="download-dea-bulk-report-btn"
+              class="btn btn-success btn-sm d-none ms-2"
+              target="_blank"
+              rel="noopener">
+              Download CSV
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const button = document.getElementById("generate-dea-bulk-report-btn");
+  const downloadBtn = document.getElementById("download-dea-bulk-report-btn");
+
+  if (!button) return;
+
+  button.addEventListener("click", async function () {
+
+    button.disabled = true;
+    const originalText = button.innerText;
+    button.innerText = "Generating...";
+
+    try {
+
+      const response = await fetch("<%= generate_dea_bulk_report_webscrapers_quality_audits_path %>", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({})
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Failed to generate DEA bulk report.");
+      }
+
+      downloadBtn.href = data.download_url;
+      downloadBtn.classList.remove("d-none");
+
+      alert(`${data.message} Total rows: ${data.total_rows}`);
+
+    } catch (error) {
+      alert(error.message);
+    } finally {
+
+      button.disabled = false;
+      button.innerText = originalText;
+
+    }
+
+  });
+
+  downloadBtn.addEventListener("click", function () {
+    setTimeout(function () {
+      window.location.reload();
+    }, 2000); // wait 2 seconds so download starts
+  });
+
+});
+</script>

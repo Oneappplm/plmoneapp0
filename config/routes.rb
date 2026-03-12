@@ -561,10 +561,24 @@ Rails.application.routes.draw do
         get :clear
       end
     end
+
+    resources :quality_audits, only: [] do
+      collection do
+        post :generate_dea_bulk_report
+        get  :download_dea_report
+      end
+    end
+
   end
+
+  namespace :mhc do
+    get "verification_platform/reports", to: "reports#index"
+  end
+
   namespace :enrollment_trackings do
     root to: 'overviews#index'
   end
+  
   resources :auto_verifies, only: [:index], path: 'auto-verify' do
     collection do
       get :download_as_pdf
@@ -640,7 +654,7 @@ Rails.application.routes.draw do
 
 
   # for generating the report on client home
-  get '/generate_report', to: 'mhc/verification_platform#generate_report', defaults: { format: :csv }
+  get '/generate_report', to: 'mhc/mhc#generate_report', defaults: { format: :csv }
   get 'download_existing_file', to: 'mhc/verification_platform#download_existing_file', as: 'download_existing_file'
 
 
