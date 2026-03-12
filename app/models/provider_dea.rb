@@ -25,6 +25,25 @@ class ProviderDea < ApplicationRecord
 
   after_initialize :set_defaults, if: :new_record?
 
+  def latest_registration_rva_information(provider_personal_information_id = nil)
+    scope = rva_informations.where(tab: "Registration")
+    scope = scope.where(provider_personal_information_id: provider_personal_information_id) if provider_personal_information_id.present?
+    scope.order(created_at: :desc).first
+  end
+
+  def latest_completed_dea_webcrawler_log(provider_personal_information_id = nil)
+    scope = DeaWebcrawlerLog
+              .joins(:rva_information)
+              .where(rva_informations: { provider_dea_id: id, tab: "Registration" })
+              .where(status: "completed")
+
+    if provider_personal_information_id.present?
+      scope = scope.where(rva_informations: { provider_personal_information_id: provider_personal_information_id })
+    end
+
+    scope.order(created_at: :desc).first
+  end
+
   private
 
   def set_defaults

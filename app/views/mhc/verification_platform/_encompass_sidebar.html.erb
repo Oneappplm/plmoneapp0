@@ -22,6 +22,33 @@
          </div>
 
          <div class="enc-sidebar-content-heading">
+            <h6>
+              <%= link_to mhc_verification_platform_reports_path, class: "text-dark fs-5" do %>
+                <i class="bi bi-bar-chart-fill me-2"></i>
+                  REPORTS
+              <% end %>
+            </h6>
+        </div>
+
+         <%# <div>
+          <button
+            type="button"
+            id="generate-dea-bulk-report-btn"
+            class="btn btn-primary">
+            Generate Report
+          </button>
+
+          <a
+            href="#"
+            id="download-dea-bulk-report-btn"
+            class="btn btn-success d-none"
+            target="_blank"
+            rel="noopener">
+            Download CSV
+          </a>
+        </div> %>
+
+         <div class="enc-sidebar-content-heading">
            <% if @client_organizations.present? %>
              <ul class="list-unstyled">
                <% @client_organizations.each do |client_organization| %>
@@ -42,3 +69,45 @@
       </div>
    </div>
 </div>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const button = document.getElementById("generate-dea-bulk-report-btn");
+    const downloadBtn = document.getElementById("download-dea-bulk-report-btn");
+
+    if (!button) return;
+
+    button.addEventListener("click", async function () {
+      button.disabled = true;
+      const originalText = button.innerText;
+      button.innerText = "Generating...";
+
+      try {
+        const response = await fetch("/webscrapers/quality_audits/generate_dea_bulk_report", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+          }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Failed to generate DEA bulk report.");
+        }
+
+        downloadBtn.href = data.download_url;
+        downloadBtn.classList.remove("d-none");
+
+        alert(`${data.message} Total rows: ${data.total_rows}`);
+      } catch (error) {
+        alert(error.message);
+      } finally {
+        button.disabled = false;
+        button.innerText = originalText;
+      }
+    });
+  });
+</script>
