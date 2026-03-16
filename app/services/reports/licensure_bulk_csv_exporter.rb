@@ -2,19 +2,19 @@ require "csv"
 require "fileutils"
 
 module Reports
-  class DeaBulkCsvExporter
+  class LicensureBulkCsvExporter
     HEADERS = [
-      "PractID",
-      "NPI",
-      "Lastname",
+      "PracID",
+      "Npi",
+      "Source Date",
+      "LastName",
       "FirstName",
       "PractitionerType",
-      "State",
-      "DeaNumber",
+      "LicenseNumber",
+      "LicenseState",
       "ExpirationDate",
-      "VerificationStatus",
-      "DrugSchedule",
-      "SourceDate",
+      "LicenseStatus",
+      "AdverseAction",
       "GeneratedAt"
     ].freeze
 
@@ -26,9 +26,9 @@ module Reports
       reports_dir = Rails.root.join("tmp", "reports")
       FileUtils.mkdir_p(reports_dir)
 
-      filename = "dea_report_#{Time.current.to_i}.csv"
+      filename = "licensure_report_#{Time.current.to_i}.csv"
       path = reports_dir.join(filename)
-      
+
       generated_at = Time.current.strftime("%m/%d/%Y")
 
       CSV.open(path, "wb", write_headers: true, headers: HEADERS) do |csv|
@@ -42,6 +42,7 @@ module Reports
           end
         end
       end
+
       path.to_s
     end
   end
