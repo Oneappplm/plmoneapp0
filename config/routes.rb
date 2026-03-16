@@ -146,6 +146,13 @@ Rails.application.routes.draw do
   resources :missing_field_submissions
 
   namespace :mhc do
+   get  :reports, to: "reports#index"
+
+    # Generate all CSV reports
+    post :generate_all_reports, to: "reports#generate_all_reports"
+
+    # Download generated CSV
+    get  :download_report, to: "reports#download_report"
     resources :manage_clients, path: 'manage-clients' do
       collection do
         get 'edit_provider_personal_information'
@@ -569,10 +576,6 @@ Rails.application.routes.draw do
       end
     end
 
-  end
-
-  namespace :mhc do
-    get "verification_platform/reports", to: "reports#index"
   end
 
   namespace :enrollment_trackings do
