@@ -1,0 +1,77 @@
+<div class="container mt-3">
+  <h3 class="text-center mb-3">DEA Expiring</h3>
+
+  <div class="d-flex justify-content-end mb-2">
+    <% if @expiring_deas.present? %>
+      <%= link_to 'Print',
+          dea_expiring_mhc_work_ticklers_path(format: :csv),
+          class: 'btn btn-primary btn-sm text-end' %>
+    <% end %>
+  </div>
+
+  <table class="table table-bordered mt-3">
+    <thead>
+      <tr>
+        <th class="text-white">Sr.</th>
+        <th class="text-white">Practitioner Name</th>
+        <th class="text-white">DEA Number</th>
+        <th class="text-white">Expiration Date</th>
+        <th class="text-white">Credentials Contact Name</th>
+        <th class="text-white">Credentials Contact Phone</th>
+        <th class="text-white">Credentials Contact Fax</th>
+        <th class="text-white">Department/Division</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if @expiring_deas.present? %>
+        <% @expiring_deas.each_with_index do |dea, index| %>
+          <% provider = dea.provider_attest.provider_personal_informations.first %>
+
+          <tr>
+            <td><%= index + 1 %></td>
+
+            <td>
+              <% if provider.present? %>
+                <%= link_to provider.fullname,
+                  mhc_verification_platform_path(
+                    dea.provider_attest.id,
+                    page_tab: 'registration'
+                  ),
+                  class: 'text-primary fw-semibold' %>
+              <% else %>
+                N/A
+              <% end %>
+            </td>
+
+            <td><%= dea.dea_number %></td>
+            <td><%= dea.expiration_date.strftime('%m/%d/%Y') %></td>
+            <td><%= provider&.fullname || 'N/A' %></td>
+            <td><%= provider&.cell_phone_number || 'N/A' %></td>
+            <td><%= provider&.fax_number || 'N/A' %></td>
+            <td>-</td>
+          </tr>
+        <% end %>
+      <% else %>
+        <tr>
+          <td colspan="8" class="text-danger text-center fw-bold py-4">
+            There is no practitioner who matches the condition!
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if @expiring_deas %>
+    <div class="col-lg-12 mt-3 mb-3">
+      <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+        <div class="page_info ms-3 text-black">
+          <%= page_entries_info @expiring_deas %>
+        </div>
+        <% if params[:per_page ].present? %>
+          <%= will_paginate @expiring_deas, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+        <% else %>
+          <%= will_paginate @expiring_deas, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -383,6 +383,47 @@
                     <%= f.text_field :correspondence_address_type_correspondence_address_type_descrip,  placeholder: 'Type here...', class: 'form-control border border-dark' %>
                 </div>
             </div>
+
+            <div class="mt-4 border border-dark p-3 rounded">
+
+              <label class="fw-bold">
+                Are there any other names under which you have been known?
+              </label>
+
+              <div class="mt-2">
+                <%= f.radio_button :other_name_flag, true, id: "other_name_yes" %>
+                <%= f.label :other_name_flag, "Yes", for: "other_name_yes" %>
+
+                <%= f.radio_button :other_name_flag, false, id: "other_name_no" %>
+                <%= f.label :other_name_flag, "No", for: "other_name_no" %>
+              </div>
+
+              <%= f.fields_for :provider_attest do |pa| %>
+
+                <%= hidden_field_tag :id, @provider_personal_information&.provider_attest_id %>
+
+                <div id="other-names-wrapper">
+                  <%= pa.fields_for :provider_other_names do |on| %>
+                    <%= render "providers/provider_other_name_fields", f: on %>
+                  <% end %>
+                </div>
+
+                <div id="other-name-template" style="display:none;">
+                  <%= pa.fields_for :provider_other_names,
+                                    ProviderOtherName.new,
+                                    child_index: "NEW_RECORD" do |on| %>
+                    <%= render "providers/provider_other_name_fields", f: on %>
+                  <% end %>
+                </div>
+
+                <button type="button" id="add-other-name" class="btn btn-primary mt-3">
+                  Add Other Name
+                </button>
+
+              <% end %>
+            </div>
+
+
             <div class="row-mb-5">
                 <div class="col-lg-12 mb-2">
                     <h3 class="mt-5 mb-2">Credentialing Contact</h3>
@@ -661,3 +702,81 @@
         </div>
     </div>
 <% end %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+  const yes = document.getElementById("other_name_yes");
+  const no  = document.getElementById("other_name_no");
+  const container = document.getElementById("other-names-wrapper");
+
+  function showOtherNames() {
+    container.style.display = "block";
+
+    // If previously marked for destroy, undo it
+    container.querySelectorAll(".other-name-fields").forEach(block => {
+      const destroyField = block.querySelector("input[name*='[_destroy]']");
+      if (destroyField) destroyField.value = "0";
+      block.style.display = "block";
+    });
+  }
+
+  function hideAndDestroyOtherNames() {
+    container.style.display = "none";
+
+    container.querySelectorAll(".other-name-fields").forEach(block => {
+      const destroyField = block.querySelector("input[name*='[_destroy]']");
+      const idField = block.querySelector("input[name*='[id]']");
+
+      if (idField && idField.value !== "") {
+        // existing record → mark for destroy
+        destroyField.value = "1";
+      } else {
+        // new unsaved record → remove
+        block.remove();
+      }
+    });
+  }
+ 
+  yes?.addEventListener("change", showOtherNames);
+  no?.addEventListener("change", hideAndDestroyOtherNames);
+
+  // Add new other name
+  document.getElementById("add-other-name")?.addEventListener("click", () => {
+    const template = document.querySelector("#other-name-template");
+    if (!template) return;
+
+    const content = template.innerHTML.replace(
+      /NEW_RECORD/g,
+      new Date().getTime()
+    );
+
+    container.insertAdjacentHTML("beforeend", content);
+  });
+
+  // Remove single other name
+  document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("remove-other-name")) {
+      e.preventDefault();
+
+      const wrapper = e.target.closest(".other-name-fields");
+      const destroyField = wrapper.querySelector("input[name*='[_destroy]']");
+      const idField = wrapper.querySelector("input[name*='[id]']");
+
+      if (idField && idField.value !== "") {
+        destroyField.value = "1";
+        wrapper.style.display = "none";
+      } else {
+        wrapper.remove();
+      }
+    }
+  });
+
+  // Initial state on page load
+  if (no?.checked) {
+    hideAndDestroyOtherNames();
+  } else if (yes?.checked) {
+    showOtherNames();
+  }
+});
+
+</script>

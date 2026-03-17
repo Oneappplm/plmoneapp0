@@ -1,15 +1,58 @@
 <% display_columns = [] %>
+<%
+  license_columns =
+    case @license_type
+    when "DEA License"
+      %i[
+        first_name
+        last_name
+        dea_number
+        dea_expiration_date
+      ]
+    when "State License"
+      %i[
+        first_name
+        last_name
+        license_number
+        license_expiration_date
+      ]
+    when "Board Certification"
+      %i[
+        first_name
+        last_name
+        bc_expiration_date
+      ]
+    else
+      nil
+    end
+%>
+
 <% if @records.present? && @records.first.present? %>
   <% if @display_specific_license_column.present? %>
     <% display_columns = @records.first.class.displayable_attributes.dup %>
     <% display_columns << @display_specific_license_column %>
     <% display_columns.uniq! %>
   <% else %>
-    <% display_columns = @records.first.class.respond_to?(:displayable_attributes) ? @records.first.class.displayable_attributes : [] %>
+    <%# display_columns = @records.first.class.respond_to?(:displayable_attributes) ? @records.first.class.displayable_attributes : [] %>
+    <%
+      display_columns =
+        if license_columns.present?
+          license_columns
+        elsif @records.first.class.respond_to?(:displayable_attributes) &&
+              @records.first.class.displayable_attributes.present?
+          @records.first.class.displayable_attributes.dup
+        else
+          @records.first.attributes.keys.map(&:to_sym) -
+            [:created_at, :updated_at]
+        end
+    %>
   <% end %>
 
+  <% display_columns << :license_type unless display_columns.include?(:license_type) %>
+
   <div class="">
-    <h4 class="mb-3 text-secondary">Results: <%= @records.first.class.name.pluralize %></h4>
+    <h4 class="mb-3 text-secondary">Results: <%= @records.first.class.name.pluralize %> (<%= @records.count %>)
+    </h4>
 
     <div class="table-responsive rounded border">
       <table class="table table-hover align-middle mb-0">
@@ -25,14 +68,26 @@
             <tr>
               <% display_columns.each do |column| %>
                 <td class="text-break" style="max-width: 250px;">
-                  <% if column.to_s.ends_with?('_expiration_date') || column.to_s.ends_with?('_effective_date') %>
-                    <%= record.send(column) if record.respond_to?(column) %>
+                  <% if column == :dea_number %>
+                    <%= record.provider_attest&.provider_deas&.first&.dea_number %>
+
+                  <% elsif column == :dea_expiration_date %>
+                    <%= record.provider_attest&.provider_deas&.first&.expiration_date %>
+
                   <% elsif column == :bc_expiration_date && record.respond_to?(:board_certifications) %>
-                    <%= record.board_certifications.first.try(:bc_expiration_date) %>
+                    <%= record.board_certifications.first&.bc_expiration_date %>
+
                   <% elsif column == :bc_effective_date && record.respond_to?(:board_certifications) %>
-                    <%= record.board_certifications.first.try(:bc_effective_date) %>
+                    <%= record.board_certifications.first&.bc_effective_date %>
+
+                  <% elsif column == :license_type %>
+                    <%= @license_type %>
+
+                  <% elsif column.to_s.ends_with?('_expiration_date') || column.to_s.ends_with?('_effective_date') %>
+                    <%= record.send(column) if record.respond_to?(column) %>
+
                   <% else %>
-                    <%= record.send(column) %>
+                    <%= record.send(column) if record.respond_to?(column) %>
                   <% end %>
                 </td>
               <% end %>
@@ -42,14 +97,7 @@
       </table>
     </div>
 
-    <div class="mt-1 mb-2 py-2 d-flex justify-content-between align-items-center">
-      <div class="">
-        <%= page_entries_info @records %>
-      </div>
-      <div>
-        <%= will_paginate @records, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-      </div>
-    </div>
+    
   </div>
 <% elsif @input.present? %>
   <p class="alert alert-warning mt-2">No results found for "<%= @input %>". Please try a different query.</p>

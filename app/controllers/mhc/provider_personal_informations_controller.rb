@@ -6,27 +6,21 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
   def update
     @provider_personal_information.assign_attributes(provider_personal_information_params)
 
-    # decide which tab to return to
-    page_tab = if params[:provider_personal_information][:signature_date].present?
-                 'agreement' # or whatever tab name you use for signature
-               elsif params[:page_tab].present?
-                 params[:page_tab]
-               else
-                 'practitioner_info'
-               end
+    page_tab = params[:page_tab].presence || 'practitioner_info'
 
     if @provider_personal_information.save
       redirect_to mhc_verification_platform_path(
-                    page_tab: page_tab,
-                    id: params[:provider_personal_information][:provider_attest_id]
-                  ), notice: 'Practice information saved successfully.'
+        page_tab: page_tab,
+        id: @provider_personal_information.provider_attest_id
+      ), notice: 'Practice information saved successfully.'
     else
       redirect_to mhc_verification_platform_path(
-                    page_tab: page_tab,
-                    id: params[:provider_personal_information][:provider_attest_id]
-                  ), alert: 'Failed to save practice information.'
+        page_tab: page_tab,
+        id: @provider_personal_information.provider_attest_id
+      ), alert: 'Failed to save practice information.'
     end
   end
+
 
   def update_audit_date
     provider = @provider_personal_information
@@ -193,11 +187,37 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
       :nid_country_country_name, :attest_date, :plan_provider_id, :last_recredential_date, :next_recredential_date,
       :npi_verification_status, :npi_source_date,
       :specialty_name_1, :specialty_name_2, :specialty_name_3, :specialty_name_4, :specialty_name_5,
+
+      provider_attest_attributes: [
+        :id,
+        provider_other_names_attributes: [
+          :id,
+          :_destroy,
+          :first_name,
+          :middle_name,
+          :last_name,
+          :suffix,
+          :start_date,
+          :end_date,
+          :other_name_explanation
+        ]
+      ],
       provider_personal_information_credentialing_contact_attributes: [:id, :contact_method,
       :firstname, :middlename, :lastname, :title, :address, :suffix, :phone_number, :fax, :email, :suite, :address2,
       :city, :county, :state, :zip, :country],
       provider_personal_information_confidential_contact_attributes: [:id, :contact_method,
       :firstname, :middlename, :lastname, :title, :address, :suffix, :phone_number, :fax, :email, :suite, :address2,
-      :city, :county, :state, :zip, :country])
+      :city, :county, :state, :zip, :country],
+      provider_other_names_attributes: [
+        :id,
+        :first_name,
+        :middle_name,
+        :last_name,
+        :suffix,
+        :start_date,
+        :end_date,
+        :other_name_explanation,
+        :_destroy
+      ])
   end
 end

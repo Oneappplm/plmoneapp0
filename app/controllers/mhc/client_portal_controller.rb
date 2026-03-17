@@ -27,6 +27,73 @@ class Mhc::ClientPortalController < ApplicationController
     end.compact.to_h
   end
 
+  def doughnut_data
+    scope = date_scope
+
+    statuses = [
+      "attested",
+      "no-application",
+      "complete-application",
+      "incomplete",
+      "pending",
+      "in-process",
+      "psv",
+      "returned"
+    ]
+
+    status_scope_map = {
+      "attested"             => ProviderPersonalInformation.attested,
+      "no-application"       => ProviderPersonalInformation.no_application,
+      "complete-application" => ProviderPersonalInformation.complete_application,
+      "incomplete"           => ProviderPersonalInformation.incomplete,
+      "pending"              => ProviderPersonalInformation.pending,
+      "in-process"           => ProviderPersonalInformation.in_process,
+      "psv"                  => ProviderPersonalInformation.psv,
+      "returned"             => ProviderPersonalInformation.returned
+    }
+
+    counts = statuses.map do |status|
+      scope.merge(status_scope_map[status]).count
+    end
+
+    total = counts.sum.nonzero? || 1
+
+    percentages = counts.map do |count|
+      ((count.to_f / total) * 100).round(1)
+    end
+
+    render json: {
+      counts: counts,
+      percentages: percentages,
+      total: total
+    }
+  end
+
+  def date_scope
+    ProviderPersonalInformation.where(updated_at: date_range(:filter))
+  end
+
+  def weekly_count
+    range = date_range(:range)
+
+    scope = ProviderPersonalInformation.where(updated_at: range)
+    created_scope = ProviderPersonalInformation.where(created_at: range)
+
+    render json: {
+      # CREATED BASED
+      new_providers: created_scope.count,
+
+      # PROGRESS STATUS BASED
+      unassigned_providers: scope.to_be_assigned.count,
+      assigned_providers:   scope.assigned.count,
+      completed_providers:  scope.completed.count,
+
+      # STATUS BASED
+      terminated_providers: scope.where(status: 'terminated').count,
+      votes:                scope.where(status: 'voted').count
+    }
+  end
+
   def upload_csv
     @csv_data = session[:csv_data] || []
     @csv_headers = @csv_data.first  # Store headers separately
@@ -132,7 +199,84 @@ class Mhc::ClientPortalController < ApplicationController
     @download_histories = DownloadHistory.paginate(per_page: 10, page: params[:page] || 1).order(downloaded_at: :desc)
   end
 
+  def provider_receipt_report
+    # renders filter page
+  end
+
+  def download_provider_receipt_report
+    return unless params[:from_date].present? && params[:to_date].present?
+
+    from_date = params[:from_date].to_date.beginning_of_day
+    to_date   = params[:to_date].to_date.end_of_day
+
+    providers = ProviderPersonalInformation
+      .left_joins(:provider_personal_information_app_trackings)
+      .where(
+        "provider_personal_information_app_trackings.application_receipt_date BETWEEN ? AND ?
+         OR provider_personal_information_app_trackings.application_receipt_date IS NULL",
+        from_date, to_date
+      )
+      .select(
+        "provider_personal_informations.*,
+         MIN(provider_personal_information_app_trackings.application_receipt_date) AS receipt_date,
+         MIN(provider_personal_information_app_trackings.application_type) AS app_type"
+      )
+      .group("provider_personal_informations.id")
+
+    respond_to do |format|
+      format.csv do
+        send_data generate_csv(providers),
+                  filename: "provider_receipt_report_#{from_date.to_date}_to_#{to_date.to_date}.csv",
+                  type: "text/csv"
+      end
+    end
+  end
+
+  private
+
+  def generate_csv(providers)
+    CSV.generate(headers: true) do |csv|
+      csv << [
+        "Provider ID",
+        "First Name",
+        "Middle Name",
+        "Last Name",
+        "NPI",
+        "Cred Status",
+        "Application Receipt Date",
+        "Application Type"
+      ]
+
+      providers.find_each do |provider|
+        csv << [
+          provider.caqh_provider_attest_id,
+          provider.first_name,
+          provider.middle_name,
+          provider.last_name,
+          provider.npi.presence || "-",
+          provider.cred_status.present? ? provider.cred_status.upcase : "-",
+          provider.receipt_date.present? ? provider.receipt_date.strftime("%m/%d/%Y") : "-",
+          provider.app_type.present? ? provider.app_type.upcase : "-"
+        ]
+      end
+    end
+  end
+
   protected
+
+  def date_range(param_key = :filter)
+    filter = params[param_key].presence || "monthly"
+
+    case filter
+    when "today"
+      Time.zone.today.beginning_of_day..Time.zone.now
+    when "weekly", "this_week"
+      Time.zone.now.beginning_of_week..Time.zone.now
+    else # monthly / this_month
+      Time.zone.now.beginning_of_month..Time.zone.now
+    end
+  end
+  
   def get_provider_types
   	@provider_types = ProviderType.all
   end

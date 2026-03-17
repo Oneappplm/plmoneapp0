@@ -16,11 +16,20 @@ class ProviderPersonalInformation < ApplicationRecord
     to_be_assigned: 'to_be_assigned'
   }
 
+  scope :attested, -> { where(cred_status: 'attested') }
+  scope :no_application, -> { where(cred_status: 'no-application') }
+  scope :incomplete, -> { where(cred_status: 'incomplete') }
+  scope :complete_application, -> { where(cred_status: 'complete-application') }
+  scope :pending, -> { where(cred_status: 'pending') }
+  scope :in_process, -> { where(cred_status: 'in-process') }
+  scope :psv, -> { where(cred_status: 'psv') }
+  scope :returned, -> { where(cred_status: 'returned') }
 
 
   PRIMARY_KEY_ROW_NAMES = ['ProviderAttestID','ProviderID']
 
   belongs_to :provider_attest
+  accepts_nested_attributes_for :provider_attest
 
   has_many :director_providers
   has_many :users, through: :director_providers
@@ -70,7 +79,6 @@ class ProviderPersonalInformation < ApplicationRecord
   accepts_nested_attributes_for :provider_personal_information_credentialing_contact, allow_destroy: false, update_only: true
   accepts_nested_attributes_for :provider_personal_information_confidential_contact, allow_destroy: false, update_only: true
 
-
   def fullname = "#{last_name} #{first_name} #{middle_name}"
   def correspondence_address_type_correspondence_address_type_descripion = correspondence_address_type_correspondence_address_type_descrip
 
@@ -80,12 +88,19 @@ class ProviderPersonalInformation < ApplicationRecord
     name = [first_name, middle_name.presence, last_name, suffix.presence].compact.join(" ").squish
     practitioner_type.present? ? "#{name}, #{practitioner_type}" : name
   end
+
+  SUFFIXES = ['Jr.', 'Sr.', 'II', 'III', 'IV', 'V', 'VI', 'VII'].freeze
   
   private
 
   def set_provider_attest
-    self.provider_attest = ProviderAttest.where(caqh_provider_attest_id: self.caqh_provider_attest_id).last
+    if self.provider_attest.nil? && self.caqh_provider_attest_id.present?
+      self.provider_attest = ProviderAttest.where(
+        caqh_provider_attest_id: caqh_provider_attest_id
+      ).last
+    end
   end
+
   
   FLAT_FIELD_MAP = {
     # ---- Name ----
