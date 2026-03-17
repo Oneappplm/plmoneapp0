@@ -114,7 +114,9 @@ Rails.application.routes.draw do
   post '/delete_vrc_documents/:id', to: 'pages#delete_vrc_documents', as: :delete_vrc_document
 
   get 'view_summary/download_pdf', to: 'view_summary#download_pdf', as: :download_application_pdf
-
+  get 'mhc/client_portal/doughnut_data',
+    to: 'mhc/client_portal#doughnut_data'
+  get "mhc/client_portal/weekly_count", to: "mhc/client_portal#weekly_count"
   resources :manage_client
 
   resources :provider_sources do
@@ -144,6 +146,13 @@ Rails.application.routes.draw do
   resources :missing_field_submissions
 
   namespace :mhc do
+   get  :reports, to: "reports#index"
+
+    # Generate all CSV reports
+    post :generate_all_reports, to: "reports#generate_all_reports"
+
+    # Download generated CSV
+    get  :download_report, to: "reports#download_report"
     resources :manage_clients, path: 'manage-clients' do
       collection do
         get 'edit_provider_personal_information'
@@ -160,6 +169,31 @@ Rails.application.routes.draw do
         patch 'update_provider_personal_information'
         get :show_uploaded_doc
         patch :update_uploaded_doc
+      end
+    end
+
+    resources :work_ticklers, only: [:index], path: 'work-ticklers' do
+      collection do
+        get :privileges
+        get :enrollment_work_tickler
+        get :dea_expired
+        get :dea_expiring
+        get :board_cert_expiring
+        get :board_cert_expired
+        get :provider_cd_expired
+        get :provider_cd_expiring
+        get :provider_license_expired
+        get :provider_license_expiring
+        get :other_cert_expired
+        get :other_cert_expiring
+        get :practitioner_record_expired
+        get :practitioner_record_expiring
+        get :provider_insurance_expired
+        get :provider_insurance_expiring
+        get :license_verification_not_requested
+        get :license_verification_requested_not_received
+        get :license_verification_received_not_verified
+        get :license_verification_webcrawler_discrepancy
       end
     end
 
@@ -260,6 +294,8 @@ Rails.application.routes.draw do
         post :process_csv
         get :clear_csv
         get :download_csv
+        get  :provider_receipt_report
+        post :download_provider_receipt_report
       end
     end
 
@@ -476,6 +512,7 @@ Rails.application.routes.draw do
   namespace :webscrapers do
     root to: 'logs#index'
     post '/run_oig_webcrawler', to: 'quality_audits#run_oig_webcrawler'
+    post '/run_npdb_demo_webcrawler', to: 'quality_audits#run_npdb_demo_webcrawler'
     post '/run_registration_webcrawler', to: 'quality_audits#run_registration_webcrawler'
     post '/send_oig_request', to: 'quality_audits#send_oig_request'
     post '/run_licensure_webcrawler', to: 'quality_audits#run_licensure_webcrawler'
@@ -531,10 +568,20 @@ Rails.application.routes.draw do
         get :clear
       end
     end
+
+    resources :quality_audits, only: [] do
+      collection do
+        post :generate_dea_bulk_report
+        get  :download_dea_report
+      end
+    end
+
   end
+
   namespace :enrollment_trackings do
     root to: 'overviews#index'
   end
+  
   resources :auto_verifies, only: [:index], path: 'auto-verify' do
     collection do
       get :download_as_pdf
@@ -610,7 +657,7 @@ Rails.application.routes.draw do
 
 
   # for generating the report on client home
-  get '/generate_report', to: 'mhc/verification_platform#generate_report', defaults: { format: :csv }
+  get '/generate_report', to: 'mhc/mhc#generate_report', defaults: { format: :csv }
   get 'download_existing_file', to: 'mhc/verification_platform#download_existing_file', as: 'download_existing_file'
 
 
@@ -637,15 +684,6 @@ Rails.application.routes.draw do
   get "hippocrates/download_expired_license", to: "hippocrates#download_expired_license"
   get "hippocrates/download_pdf", to: "hippocrates#download_pdf"
   post 'hippocrates/bulk_download_expired_licenses', to: 'hippocrates#bulk_download_expired_licenses'
-
-  namespace :mhc do
-    get "verification_platform/states", to: "verification_platform#states"
-
-    # for DEA file uploadation
-    resources :dea_files, only: [:new, :create]
-    get "dea_import_progress/:job_id", to: "dea_import_progress#show"
-    get "mhc/dea_import_stream/:job_id", to: "mhc/dea_import_progress#stream"
-  end
 
   #------for solana routes start here------
   resources :orders do

@@ -162,7 +162,7 @@
                                     </button>
                                 </div>
                                 <div class="col-12 m-2">
-                                    <button class="btn btn-primary btn-audit btn-sm" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>">
+                                    <button class="btn btn-primary btn-audit btn-sm" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>"  data-npdb-id ="<%= @provider_npdb.id %>" >
                                         Quality Audit
                                     </button>
                                 </div>
@@ -323,7 +323,7 @@
 
                         <%= hidden_field_tag :id, @last_rva_information&.id %>
                         <%= hidden_field_tag :personal_info_id %>
-                        <%= hidden_field_tag :provider_npdb %>
+                        <%= hidden_field_tag :provider_npdb, @provider_npdb.id %>
 
                         <%= hidden_field_tag :first_name %>
                         <%= hidden_field_tag :last_name %>
@@ -477,6 +477,32 @@
                                     Restart Request
                                   </button>
                                 </div>
+                                <div class="row">
+                                  <div class="col-md-3">
+                                    <button class="btn btn-primary py-1" id="run-npdb-webcrawler-btn" type="button">Run Webcrawler</button>
+                                  </div>
+                                  <div class="col-md-9">
+                                    <div class="row justify-content-end" id="crawler-link">
+                                      <% @npdb_webcrawler_logs&.each do |crawler_log| %>
+                                        <div class="col-md-6">
+                                          <div class="text-decoration-underline">
+                                              <% file_url = crawler_log.filepath.url %>
+                                              <% file_name = File.basename(file_url.split('?').first) %>
+
+                                              <%= link_to file_name, file_url, target: '_blank' %>
+                                          </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                          <div class="date-time d-flex">
+                                            <span><%= crawler_log.created_at.strftime('%Y/%m/%d') %></span>
+                                            <span class="ms-2"><%= crawler_log.created_at.strftime('%H:%M') %></span>
+                                          </div>
+                                        </div>
+                                      <% end %>
+                                    </div>
+                                  </div>
+                                </div>
+                                <hr class="form-hr">
 
                                 <hr class="form-hr">
 
@@ -1066,6 +1092,92 @@ $(document).ready(function() {
             }
           });
         });
+        $('#run-npdb-webcrawler-btn').click(function (e) {
+          e.preventDefault();
+
+          var personalInfoId = $('input[name="personal_info_id"]').val();
+          var npdbId = $('#provider_npdb').val(); // add hidden field
+
+          if (!npdbId) { alert("Missing NPDB id"); return; }
+          if (!personalInfoId) { alert("Missing personal info id"); return; }
+
+          $('.loading-overlay').show();
+
+          $.ajax({
+            url: '/webscrapers/run_npdb_demo_webcrawler',
+            method: 'POST',
+            headers: { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') },
+            data: {
+              npdb_id: npdbId,
+              info_id: personalInfoId
+            },
+            success: function (response) {
+              // Prefer top-level pdf_url if you add it, otherwise fall back to nested structure
+              const url =
+                response?.pdf_url ||
+                response?.webscraper_log?.filepath?.url ||
+                response?.webscraper_log?.filepath?.file?.url; // extra-safe fallback if serializer differs
+
+              const createdAt =
+                response?.webscraper_log?.created_at ||
+                response?.webscraper_log?.createdAt ||
+                response?.created_at;
+
+              // Always stop loader first
+              $('.loading-overlay').hide();
+
+              if (!url) return;
+
+              // Build filename safely
+              const fileName = decodeURIComponent(
+                (url.split('?')[0].split('/').pop() || 'npdb_mmpr.pdf')
+              );
+
+              // Parse date (fallback to "now" if not provided)
+              const createdDate = createdAt ? new Date(createdAt) : new Date();
+
+              // Format date/time in local timezone (avoids ISO UTC confusion)
+              const dateStr = createdDate.toLocaleDateString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' });
+              const timeStr = createdDate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false });
+
+              // Remove old link block to prevent duplicates
+              const container = document.getElementById('crawler-link');
+              if (!container) return;
+
+              // Option A: replace the whole container content
+              // Option B: remove only previously inserted rows (safer if container has other stuff)
+              container.querySelectorAll('.crawler-link-row').forEach(el => el.remove());
+
+              const crawlerLinkHTML = `
+                <div class="row justify-content-end crawler-link-row">
+                  <div class="col-md-6">
+                    <div class="text-decoration-underline">
+                      <a href="${url}" target="_blank" rel="noopener noreferrer">
+                        ${fileName}
+                      </a>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="date-time d-flex">
+                      <span>${dateStr}</span>
+                      <span class="ms-2">${timeStr}</span>
+                    </div>
+                  </div>
+                </div>`;
+
+              container.insertAdjacentHTML('afterbegin', crawlerLinkHTML);
+
+              // If you're using a modal, ensure it is visible + DOM updated
+              // (Optional) $('#yourModalId').modal('show');
+            },
+
+            error: function (xhr) {
+              alert(xhr?.responseJSON?.error || 'NPDB demo failed');
+              $('.loading-overlay').hide();
+            }
+          });
+        });
+
         $('#audit-btn').click(function(e) {
           e.preventDefault(); // Prevent default form submission
            // Check if an audit status is selected

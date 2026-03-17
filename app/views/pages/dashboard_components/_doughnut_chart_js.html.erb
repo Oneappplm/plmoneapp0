@@ -1,52 +1,90 @@
+var clientData = [];
+var clientPercentage = [];
+var barPercentages = [];
+var doughnutChart = null;
+var barChart = null;
 function getClientDataForDoughnutGraph() {
-   $.ajax({
-      url: '<%= doughnut_data_path %>',
-      method: "GET",
-      data: {
-         authenticity_token: csrfToken
-      },
-      success: function (data) {
-         clientData = data['clients'];
-         clientPercentage = data['percentages'];
-         createBarGraph();
-         createDoughnutGraph();
+  $.ajax({
+    url: '<%= mhc_client_portal_doughnut_data_path %>',
+    method: "GET",
+    success: function (data) {
 
-         var order_of_status = ["attested", "no-application", "complete-application", "incomplete-application", "pending-data-entry", "in-process", "psv", "returned"]
+      // ✅ FIXED KEYS
+      clientData = data.counts || [];
+      clientPercentage = data.percentages || [];
+      barPercentages = clientPercentage;
 
-         for (var i = 0; i < clientPercentage.length; i++) {
-            $('.col-' + order_of_status[i]).html(clientPercentage[i] + '%');
-            $('.col-' + order_of_status[i]).addClass('text-right');
-         }
+      createDoughnutGraph();
+      createBarGraph();
+
+      var order_of_status = [
+        "attested",
+        "no-application",
+        "complete-application",
+        "incomplete-application",
+        "pending-data-entry",
+        "in-process",
+        "psv",
+        "returned"
+      ];
+
+      for (var i = 0; i < clientPercentage.length; i++) {
+        $('.col-' + order_of_status[i])
+          .html(clientPercentage[i] + '%')
+          .addClass('text-right');
       }
-   })
+    }
+  });
 }
 
 function createDoughnutGraph() {
-   new Chart(document.getElementById("chartjs-doughnut"), {
-      type: "doughnut",
-      data: {
-         labels: ["Attested", "No Application", "Complete Application", "Incomplete Application", "Pending Data Entry", "In Process", "PSV", "Returned"],
-         datasets: [{
-            data: clientData,
-            backgroundColor: [
-               "#00a2ff",
-               "#8f00ff",
-               "#7bb31a",
-               "#ff0032",
-               "#ffc107",
-               "#ff9800",
-               "#000000",
-               "#b74200"
-            ],
-            borderColor: "transparent"
-         }]
+  var ctx = document.getElementById("chartjs-doughnut");
+  if (!ctx) return;
+
+  if (doughnutChart) doughnutChart.destroy();
+
+  doughnutChart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: [
+        "Attested",
+        "No Application",
+        "Complete Application",
+        "Incomplete Application",
+        "Pending Data Entry",
+        "In Process",
+        "PSV",
+        "Returned"
+      ],
+      datasets: [{
+        data: clientData,
+        backgroundColor: [
+          "#00a2ff",
+          "#8f00ff",
+          "#7bb31a",
+          "#ff0032",
+          "#ffc107",
+          "#ff9800",
+          "#000000",
+          "#b74200"
+        ],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutoutPercentage: 30,   // 🔥 same thin ring
+      legend: {
+        display: false        // 🔥 REMOVE legend (key fix)
       },
-      options: {
-         maintainAspectRatio: false,
-         cutoutPercentage: 30,
-         legend: {
-            display: false
-         }
+      tooltips: {
+        enabled: false        // 🔥 same as before
       }
-   });
+    }
+  });
 }
+
+$(document).ready(function () {
+   getClientDataForDoughnutGraph();
+});

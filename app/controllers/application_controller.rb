@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
 	before_action :authenticate_user!, except: %i[terms privacy_policy]
 	before_action :configure_permitted_parameters, if: :devise_controller?
   # exceptions for track_event are mostly ajax requests
-	before_action :track_event
+	before_action :track_event, unless: :skip_ahoy_tracking?
 	before_action { filter_params params }
 
   # before_action :force_logout_on_close_if_expired, except: [:logout_on_close] # TODO: uncomment this line
@@ -80,6 +80,10 @@ class ApplicationController < ActionController::Base
 		end
 
   private
+
+  def skip_ahoy_tracking?
+    controller_path == "mhc/dea_import_progress" # or add other polling endpoints
+  end
 
   def visit_properties
     user_agent = request.user_agent

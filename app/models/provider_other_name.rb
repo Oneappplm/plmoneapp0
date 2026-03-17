@@ -5,10 +5,20 @@ class ProviderOtherName < ApplicationRecord
 
   validates :provider_attest_id, presence: true
 
-  before_validation :set_provider_attest
+  before_validation :set_provider_attest, if: -> { provider_attest_id.blank? }
+
+  def full_name
+    "#{first_name} #{middle_name} #{last_name}"  
+  end
+
   private
 
+
   def set_provider_attest
-    self.provider_attest = ProviderAttest.where(caqh_provider_attest_id: self.caqh_provider_attest_id).last
+    # Do nothing if association already set (nested attributes handles it)
+    return if provider_attest.present?
+
+    # Only fallback logic if absolutely required
+    self.provider_attest = ProviderAttest.find_by(id: provider_attest_id) if provider_attest_id.present?
   end
 end

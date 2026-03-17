@@ -228,14 +228,25 @@ class Mhc::VerificationPlatformController < ApplicationController
   end
 
   def get_data
-
     if params[:page_tab] == 'practitioner_info'
-      @provider_personal_information_credentialing_contact = @provider_personal_information.provider_personal_information_credentialing_contact
-      @provider_personal_information_credentialing_contact ||= @provider_personal_information.build_provider_personal_information_credentialing_contact.save
+      @provider_personal_information_credentialing_contact =
+        @provider_personal_information.provider_personal_information_credentialing_contact ||
+        @provider_personal_information.build_provider_personal_information_credentialing_contact
 
-      @provider_personal_information_confidential_contact = @provider_personal_information.provider_personal_information_confidential_contact
-      @provider_personal_information_confidential_contact ||= @provider_personal_information.build_provider_personal_information_confidential_contact.save
+      @provider_personal_information_confidential_contact =
+        @provider_personal_information.provider_personal_information_confidential_contact ||
+        @provider_personal_information.build_provider_personal_information_confidential_contact
+
+      # 🔥 IMPORTANT FIX
+      unless @provider_personal_information.provider_attest
+        @provider_personal_information.build_provider_attest
+      end
+
+      if @provider_personal_information.provider_attest.provider_other_names.blank?
+        @provider_personal_information.provider_attest.provider_other_names.build
+      end
     end
+
 
     if params[:page_tab] == 'education_record'
       @provider_personal_information_comment = ProviderPersonalInformationComment.new

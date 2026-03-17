@@ -63,64 +63,55 @@ class Webscrapers::QualityAuditsController < ApplicationController
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
-  # def run_registration_webcrawler
-  #   dea_number = params[:dea_number]
-  #   last_name = params[:last_name]
-  #   first_name = params[:first_name]
-  #   provider_personal_info = ProviderPersonalInformation.find(params[:info_id])
+  def run_npdb_demo_webcrawler
+    npdb = ProviderNpdb.find(params[:npdb_id])
+    provider_personal_info = ProviderPersonalInformation.find(params[:info_id])
 
-  #   provider_dea = ProviderDea.find(params[:provider_dea_id])
-  
-  #   # Create RVA information for Registration when running webcrawler
-  #   rva_information = RvaInformation.create!(
-  #     tab: 'Registration',
-  #     send_request: 'SENT',
-  #     requested_by: 'SYSTEM',
-  #     requested_date: Date.today,
-  #     requested_method: 'Letter',
-  #     required_fee_amount: 0,
-  #     check_generated: false,
-  #     received_status: true,
-  #     provider_personal_information_id: provider_personal_info.id,
-  #     comments: 'Webcrawler',
-  #     received_by: 'SYSTEM',
-  #     provider_dea_id: provider_dea.id,
-  #     received_date: Date.today
-  #   )
-  
-  #   # Create the service instance and call it with parameters
-  #   reference_html = 'dea_template.html'
-  #   service = Webscraper::DeaService.new(dea_number, reference_html)
-  #   service.call
-  
-  #   # Define source file path
-  #   source_file = Rails.root.join('public', 'screenshots', 'dea_screenshot.pdf')
-  
-  #   # Generate unique filename
-  #   timestamp = Time.now.strftime('%Y-%m-%dT%H-%M-%S')
-  #   random_string = SecureRandom.hex(4)
-  #   filename = "DEA_#{last_name.upcase}_#{first_name.upcase}_#{timestamp}_#{random_string}_M.pdf"
-  
-  #   # Copy the file to a temporary directory for uploading
-  #   tmp_file_path = Rails.root.join('tmp', filename)
-  #   FileUtils.cp(source_file, tmp_file_path)
-  
-  #   # Save the file in WebscraperLog using CarrierWave
-  #   webscraper_log = DeaWebcrawlerLog.new(status: 'completed',rva_information_id: rva_information.id, filetype: 'PDF')
-  #   webscraper_log.filepath = File.open(tmp_file_path) # Attach the file using CarrierWave
-  #   webscraper_log.save!
-  
-  #   # Remove the temporary file after saving
-  #   File.delete(tmp_file_path) if File.exist?(tmp_file_path)
-  
-  #   if params[:info_id].present?
-  #     provider_personal_info.update(verification_status: 'Processing')
-  #   end
-  
-  #   render json: { message: 'Registration Webcrawler completed successfully', rva_information: rva_information, webscraper_log: webscraper_log }, status: :ok
-  # rescue => e
-  #   render json: { error: e.message }, status: :unprocessable_entity
-  # end 
+    rva_information = RvaInformation.create!(
+      tab: 'NPDB',
+      send_request: 'SENT',
+      requested_by: 'SYSTEM',
+      requested_date: Date.today,
+      requested_method: 'Website',
+      required_fee_amount: 0,
+      check_generated: false,
+      received_status: true,
+      comments: 'NPDB Demo Webcrawler',
+      received_by: 'SYSTEM',
+      provider_personal_information_id: provider_personal_info.id,
+      provider_npdb_id: npdb.id,
+      received_date: Date.today
+    )
+
+    log = Webscraper::NpdbQrxsService.new(
+      provider_npdb: npdb,
+      provider_personal_information: provider_personal_info,
+      rva_information: rva_information
+    ).call
+
+    # if you want these updates, keep them (you said you need save/update now)
+    npdb.update!(
+      status: "COMPLETED(DEMO)",
+      submit_date: npdb.submit_date || Date.current,
+      response_date: Date.current,
+      comments: "DEMO: PDF generated & uploaded."
+    )
+
+    provider_personal_info.update!(verification_status: 'Processing')
+
+    render json: {
+      message: 'NPDB demo completed successfully',
+      rva_information_id: rva_information.id,
+      webscraper_log_id: log.id,
+      pdf_url: log.filepath.url # CarrierWave
+    }, status: :ok
+
+  rescue => e
+    Rails.logger.error "NPDB demo failed: #{e.class} - #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
 
   def run_registration_webcrawler
     dea_number = params[:dea_number]
@@ -190,23 +181,21 @@ class Webscrapers::QualityAuditsController < ApplicationController
     updated_html_path = Rails.root.join("tmp", "updated_page.html")
     updated_html = File.exist?(updated_html_path) ? File.read(updated_html_path) : ""
 
-    # Return JSON
     render json: {
       success: true,
       message: "Webcrawler completed successfully.",
+      pdf_url: log.filepath.url,
       webscraper_log: {
+        id: log.id,
         filepath: { url: log.filepath.url },
         created_at: log.created_at
       },
       rva_information: rva_info,
       updated_html: updated_html
     }, status: :ok
-
   rescue => e
     render json: { success: false, message: e.message }, status: :unprocessable_entity
   end
-
-
 
 
   def send_oig_request
@@ -432,7 +421,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
     rva_infos = RvaInformation.where(provider_licensure_id: params[:licensure_id])
 
     if rva_infos.any?
-      rva_infos.update(restart_audit: true)
+      rva_infos.update(restart_audit: true, send_request: nil)
       ProviderLicensure.find(params[:licensure_id]).update(audit_status: 'Not Requested')
       render json: { message: 'All related RVA information deleted successfully' }, status: :ok
     else
@@ -629,7 +618,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
     @provider_dea_id = params[:provider_dea_id]
   end
 
-  def create_rva_information(tab, comments, provider_dea_id: nil, education_id: nil, licensure_id: nil, employment_id: nil, liability_id: nil, board_id: nil, training_id: nil, npdb_id: nil, certification_id: nil, peer_id: nil, facility_id: nil, provider_cd_id: nil, skip_rva: false)
+  def create_rva_information(tab, comments, provider_dea_id: nil, education_id: nil, licensure_id: nil, employment_id: nil, liability_id: nil, board_id: nil, training_id: nil, npdb_id: nil, certification_id: nil, peer_id: nil, facility_id: nil, provider_cd_id: nil, skip_rva: false, provider_npdb_id: nil)
     rva_params = {
       tab: tab,
       send_request: 'SENT',
@@ -652,6 +641,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
       provider_education_id: training_id,
       certification_id: certification_id,
       provider_cd_id: provider_cd_id,
+      provider_npdb_id: provider_npdb_id,
       provider_personal_information_peer_ref_id: peer_id,
       provider_personal_information_facility_id: facility_id,
       liability_coverage: params[:liability_section].eql?('liability_coverage'),

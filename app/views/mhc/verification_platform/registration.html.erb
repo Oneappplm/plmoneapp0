@@ -2084,21 +2084,30 @@
       });
     });
 
-    $('#run-webcrawler-btn').click(function (e) {
+    $('#run-webcrawler-btn').on('click', function (e) {
       e.preventDefault();
-      var deaNumber = this.dataset.deaNumber;
-      var firstName = $('#firstname').html().trim();
-      var lastName = $('#lastname').html().trim();
-      var personalInfoId = $('input[name="personal_info_id"]').val();
-      var providerDeaId = $('input[name="provider_dea_id"]').val();
+
+
+      const safeVal = (selector) => {
+        const el = document.querySelector(selector);
+        return el?.value || '';
+      };
+
+      // ---------- Safe reads ----------
+      const deaNumber = this?.dataset?.deaNumber || '';
+      const firstName = document.querySelector('[name="first_name"]').value;
+      const lastName  =  document.querySelector('[name="last_name"]').value;
+      const personalInfoId = safeVal('input[name="personal_info_id"]');
+      const providerDeaId  = safeVal('input[name="provider_dea_id"]');
 
       if (!firstName || !lastName) {
-        $('#qaModalMessage').text('Crawling failed due to some error: First name or last name is missing.');
+        $('#qaModalMessage').text(
+          'Crawling failed: First name or last name is missing.'
+        );
         return;
       }
 
       $('.loading-overlay').show();
-
       $.ajax({
         url: '/webscrapers/run_registration_webcrawler',
         method: 'POST',
@@ -2107,71 +2116,84 @@
         },
         data: {
           dea_number: deaNumber,
-          first_name: firstName, 
+          first_name: firstName,
           last_name: lastName,
           info_id: personalInfoId,
           provider_dea_id: providerDeaId,
         },
-        success: function (response) {
-          // set the values
+        success: function (response = {}) {
+          // ---------- Webcrawler log ----------
           const crawlerData = response.webscraper_log;
 
-          // Ensure crawlerData and its properties are defined before proceeding
-          if (crawlerData && crawlerData.filepath && crawlerData.filepath.url && crawlerData.created_at) {
-              const createdDate = new Date(crawlerData.created_at); // Convert to a Date object if it's a string
+          if (
+            crawlerData?.filepath?.url &&
+            crawlerData?.created_at
+          ) {
+            const createdDate = new Date(crawlerData.created_at);
+            const fileName = crawlerData.filepath.url
+              .split('?')[0]
+              .split('/')
+              .pop();
 
-              // Construct HTML dynamically
-              const crawlerLinkHTML = `
-                    <div class="col-md-6">
-                        <div class="text-decoration-underline">
-                            <a href="${crawlerData.filepath.url}" target="_blank">
-                                ${crawlerData.filepath.url.split('?')[0].split('/').pop()}
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="date-time d-flex">
-                            <span>${createdDate.toISOString().split('T')[0]}</span> <!-- YYYY-MM-DD -->
-                            <span class="ms-2">${createdDate.toTimeString().slice(0, 5)}</span> <!-- HH:MM -->
-                        </div>
-                    </div>`;
-
-              // Inject the HTML into the #crawler-link element
-              document.getElementById('crawler-link').innerHTML = crawlerLinkHTML;
+            $('#crawler-link').html(`
+              <div class="col-md-6">
+                <div class="text-decoration-underline">
+                  <a href="${crawlerData.filepath.url}" target="_blank">${fileName}</a>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="date-time d-flex">
+                  <span>${createdDate.toISOString().split('T')[0]}</span>
+                  <span class="ms-2">${createdDate.toTimeString().slice(0, 5)}</span>
+                </div>
+              </div>
+            `);
           } else {
-              console.error('Crawler data is missing or incomplete.');
+            console.warn('Crawler data missing or incomplete:', crawlerData);
           }
-          $('#rva_information_source_date').removeAttr('disabled');
+
+          // ---------- RVA Information ----------
           const data = response.rva_information;
-          document.querySelector('[name="id"]').value = data.id;
-          $('#send-request-btn').attr('disabled', 'false');
-          $('#send-request-btn')[0].classList.remove('btn');
-          $('.sent-request')[0].innerHTML = data.send_request;
-          $('.requested-by')[0].innerHTML = data.requested_by;
-          $('.requested-date')[0].innerHTML = data.requested_date;
-          $(`#method-${data.requested_method}`).checked = true;
-          $('.req-fee-amount')[0].value = data.required_fee_amount;
-          $('input[name="check_generated"]').value = data.required_fee_amount;
-          $('.received-by')[0].innerHTML = data.received_by;
-          $('.received-date')[0].innerHTML = data.received_date;
-          $('input[name="received_status"]').value = data.received_status;
-          $('.request-comment')[0].value = data.comments;
+          if (!data) return $('.loading-overlay').hide();
+
+          $('#rva_information_source_date').prop('disabled', false);
+
+          document.querySelector('[name="id"]')?.setAttribute('value', data.id || '');
+
+          $('#send-request-btn')
+            .prop('disabled', false)
+            .removeClass('btn');
+
+          $('.sent-request')[0] && ($('.sent-request')[0].innerHTML = data.send_request || '');
+          $('.requested-by')[0] && ($('.requested-by')[0].innerHTML = data.requested_by || '');
+          $('.requested-date')[0] && ($('.requested-date')[0].innerHTML = data.requested_date || '');
+
+          const methodInput = document.getElementById(`method-${data.requested_method}`);
+          if (methodInput) methodInput.checked = true;
+
+          $('.req-fee-amount')[0] && ($('.req-fee-amount')[0].value = data.required_fee_amount || '');
+          $('input[name="check_generated"]').val(data.required_fee_amount || '');
+
+          $('.received-by')[0] && ($('.received-by')[0].innerHTML = data.received_by || '');
+          $('.received-date')[0] && ($('.received-date')[0].innerHTML = data.received_date || '');
+          $('input[name="received_status"]').val(data.received_status || '');
+          $('.request-comment')[0] && ($('.request-comment')[0].value = data.comments || '');
+
           $('.loading-overlay').hide();
         },
+
         error: function (xhr) {
           $('.loading-overlay').hide();
-
           try {
-            const response = JSON.parse(xhr.responseText);
-
-            // Show backend message
-            alert(response.message || "Webcrawler failed.");
-          } catch (e) {
-            alert("Webcrawler failed due to an unknown error.");
+            const res = JSON.parse(xhr.responseText);
+            alert(res.message || 'Webcrawler failed.');
+          } catch {
+            alert('Webcrawler failed due to an unknown error.');
           }
         }
       });
     });
+
     $('#verification-btn').click(function(e) {
       e.preventDefault(); // Prevent default form submission
 
@@ -2301,7 +2323,6 @@
   document.addEventListener('DOMContentLoaded', function() {
     const qualityAuditModal = document.getElementById('QAModal');
     qualityAuditModal.addEventListener('show.bs.modal', function (event) {
-      
       const button = event.relatedTarget; 
       const FirstName = button.getAttribute('data-first-name');
       const deaNumber = button.getAttribute('data-dea-number');

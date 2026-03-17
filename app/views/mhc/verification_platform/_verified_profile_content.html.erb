@@ -75,7 +75,42 @@
       </tbody>
     </table>
   </div>
-  <div class="table-responsive">
+
+  <%# other name section %>
+  <div class="section-title mt-4">Practitioner Other Names</div>
+    <div class="table-responsive mb-3">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="fw-bold text-dark">First Name</th>
+            <th class="fw-bold text-dark">Middle Name</th>
+            <th class="fw-bold text-dark">Last Name</th>
+            <th class="fw-bold text-dark">Suffix</th>
+            <th class="fw-bold text-dark">Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if provider_personal_information.provider_attest&.provider_other_names.present? %>
+            <% provider_personal_information.provider_attest.provider_other_names.each do |other_name| %>
+              <tr>
+                <td><%= other_name.first_name %></td>
+                <td><%= other_name.middle_name %></td>
+                <td><%= other_name.last_name %></td>
+                <td><%= other_name.suffix %></td>
+                <td><%= other_name.name_type %></td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="5" class="text-center text-muted">No other names found</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+
+  <div class="table-responsive mb-3">
     <table class="table table-bordered">
       <tbody>
         <% if provider_personal_information.signature_date.present? %>
@@ -419,10 +454,10 @@
                 <p><strong>State:</strong> <%= cds.state %></p>
                 <p><strong>Expiration Date:</strong> <%= cds.expiration_date&.strftime('%m/%d/%Y') %></p>
                 <p><strong>Verifier:</strong> <%= cds_details&.verifier %></p>
-                <p><strong>Verification Date:</strong> <%= dea_details&.verification_date&.strftime('%m/%d/%Y') %></p>
+                <p><strong>Verification Date:</strong> <%= cds_details&.verification_date&.strftime('%m/%d/%Y') %></p>
               </div>
               <div class="col-12">
-                <p><strong>Comments:</strong> <%= dea_details&.verification_comments %></p>
+                <p><strong>Comments:</strong> <%= cds_details&.verification_comments %></p>
               </div>
             </div>
             <hr>
@@ -518,7 +553,7 @@
             <p>
               <strong>Source Date:</strong>
               <%= provider_personal_information
-                    &.npi_source_date
+                    &.updated_at
                     &.in_time_zone('Pacific Time (US & Canada)')
                     &.strftime("%m/%d/%Y") %>
             </p>
@@ -567,12 +602,12 @@
         <% if provider_personal_information.rva_informations.where(tab: 'OIG').last %>
           <div class="row">
             <div class="col-6">
-              <p><strong>Search Result:</strong> <%= provider_personal_information.rva_informations.last&.status %></p>
+              <p><strong>Search Result:</strong> <%= provider_personal_information.rva_informations.where(tab: 'OIG').last&.status %></p>
               <p><strong>Finding:</strong> None</p>
               <p><strong>Verified By:</strong> <%#= provider_personal_information.rva_informations.last&.tab %>
                 OIG
               </p>
-              <p><strong>Verifier:</strong> <%= provider_personal_information.rva_informations.last&.verifier %></p>
+              <p><strong>Verifier:</strong> <%= provider_personal_information.rva_informations.where(tab: 'OIG').last&.verifier %></p>
               <p><strong>Comments:</strong> <%= provider_personal_information.rva_informations.where(tab: 'OIG').last&.verification_comments %></p>
             </div>
             <div class="col-6">

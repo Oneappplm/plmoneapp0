@@ -1,0 +1,59 @@
+<div class="container mt-3">
+  <h3 class="text-center mb-3">Practitioner records expiring</h3>
+
+  <div class="d-flex justify-content-end mb-2">
+    <% if @records.present? %>
+      <%= link_to 'Print',
+          practitioner_record_expiring_mhc_work_ticklers_path(format: :csv),
+          class: 'btn btn-primary btn-sm text-end' %>
+    <% end %>
+  </div>
+
+  <table class="table table-bordered mt-3">
+    <thead>
+      <tr>
+        <th class="text-white">Sr.</th>
+        <th class="text-white">Practitioner Name</th>
+        <th class="text-white">Tab Name</th>
+        <th class="text-white">RecordNum</th>
+        <th class="text-white">RecordName</th>
+        <th class="text-white">Expiration Date</th>
+        <th class="text-white">Department/Division</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% if @records.present? %>
+        <% @records.each_with_index do |row, index| %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td>
+              <% if row[:provider_attest_id].present? %>
+                <%= link_to row[:practitioner_name],
+                    mhc_verification_platform_path(
+                      row[:provider_attest_id],
+                      page_tab: row[:page_tab] 
+                    ),
+                    class: 'text-primary fw-semibold' %>
+              <% else %>
+                N/A
+              <% end %>
+            </td>
+            <td><%= row[:tab_name] %></td>
+            <td><%= row[:record_num] %></td>
+            <td><%= row[:record_name] %></td>
+            <td><%= row[:expiration_date]&.strftime('%m/%d/%Y') %></td>
+            <td><%= row[:department] || '-' %></td>
+          </tr>
+        <% end %>
+      <% else %>
+        <tr>
+          <td colspan="8" class="text-danger text-center fw-bold py-4">
+            There is no practitioner who matches the condition!
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+ 
+</div>
