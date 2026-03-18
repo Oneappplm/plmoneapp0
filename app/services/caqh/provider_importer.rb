@@ -48,6 +48,7 @@ module Caqh
           practice_informations:           practices,
           provider_specialties:            specialties,
           provider_deas:                   deas,
+          provider_medicares:              medicares,
           provider_medicaids:              medicaids,
           provider_disclosures:            disclosures,
           raw_fields:                      raw_fields
@@ -100,22 +101,9 @@ module Caqh
       str.to_s.gsub(/\s+/, " ").strip
     end
 
-    def section_between(text, start_pat, stop_pats = [])
-      return "" if text.blank?
-
-      start = text.index(start_pat)
-      return "" unless start
-
-      stop = stop_pats.map { |pat| text.index(pat, start) }.compact.min || text.length
-      text[start...stop].to_s
-    end
-
     def standard_pages
       return [] unless standard_application_pdf?
-      @standard_pages ||= begin
-        txt = pdf_text.to_s
-        txt.split(/\f/)
-      end
+      @standard_pages ||= pdf_text.to_s.split(/\f/)
     end
 
     def standard_page_text(page_no)
@@ -173,7 +161,8 @@ module Caqh
             raw_fields["james-provider-caqh-id"] ||
             raw_fields["provider-attest-id"] ||
             raw_fields["caqh-provider-attest-id"] ||
-            raw_fields["attestation-id"]
+            raw_fields["attestation-id"] ||
+            raw_fields["provider-caqh-id"]
 
       return val.to_i if val.present? && val.to_s =~ /^\d+$/
 
@@ -187,7 +176,9 @@ module Caqh
     end
 
     def caqh_provider_id
-      raw_fields["caqh-provider-id"] || raw_fields["provider-id"]
+      val = raw_fields["caqh-provider-id"] || raw_fields["provider-id"] || raw_fields["provider-caqh-id"]
+      return nil if val.blank?
+      return val.to_i.to_s == val.to_s ? val : nil
     end
 
     def find_or_create_provider_attest
@@ -229,8 +220,10 @@ module Caqh
           ai_attrs
         elsif manual_attrs.present?
           manual_attrs
-        else
+        elsif data_summary_pdf?
           auto_map_by_schema(ProviderPersonalInformation)
+        else
+          {}
         end
 
       attrs = base_attrs.slice(*columns)
@@ -263,73 +256,66 @@ module Caqh
       return {} if page1.blank?
 
       attrs = {}
-
-      name_line = extract_first(/CAQH PROVIDER ID\s*:\s*LAST ATTESTATION DATE\s*:\s*([^\n]+(?:\n[^\n]+){0,10})/im, page1, 1).to_s
-      ptype = page1[/CAQH PROVIDER ID\s*:\s*LAST ATTESTATION DATE\s*:\s*([A-Z]{1,4})\s+X/i, 1]
-
       lines = only_real_lines(page1)
-      last_name  = nil
-      first_name = nil
-      middle_name = nil
 
-      name_idx = lines.find_index { |l| l.match?(/\ALAST NAME/i) }
-      if name_idx
-        a = next_real_line(lines, name_idx)
-        b = next_real_line(lines, name_idx + 1)
-        c = next_real_line(lines, name_idx + 2)
+      last_idx  = lines.find_index { |l| l.match?(/\ALAST NAME\*/i) }
+      first_idx = lines.find_index { |l| l.match?(/\AFIRST NAME\*/i) }
 
-        values = [a, b, c].compact.reject { |v| likely_instruction_line?(v) || likely_label_line?(v) }
-        if values.size >= 2
-          last_name = values[0]
-          first_name = values[1]
-          middle_name = values[2]
+      if last_idx && first_idx
+        last_name = lines[last_idx - 1].to_s.strip
+        first_middle_line = lines[first_idx - 1].to_s.strip
+
+        parts = first_middle_line.split(/\s{2,}|\t+/).map(&:strip).reject(&:blank?)
+        parts = first_middle_line.split(/\s+/) if parts.empty?
+
+        attrs[:last_name]   = last_name if last_name.present?
+        attrs[:first_name]  = parts[0] if parts[0].present?
+        attrs[:middle_name] = parts[1] if parts[1].present?
+      end
+
+      attrs[:other_name_flag] =
+        case standard_yes_no_value_near(page1, "HAVE YOU EVER USED ANOTHER NAME?")
+        when "Yes" then true
+        when "No"  then false
         end
+
+      attrs[:gender] =
+        if page1.match?(/GENDER\*.*?X\s+MALE/i)
+          "Male"
+        elsif page1.match?(/GENDER\*.*?X\s+FEMALE/i)
+          "Female"
+        end
+      attrs[:gender_gender_description] = attrs[:gender]
+
+      attrs[:birth_date] = page1[/DATE OF BIRTH\*\s+(\d{2}\/\d{2}\/\d{4})/i, 1]
+      attrs[:date_of_birth] = attrs[:birth_date]
+
+      if page1 =~ /Tacoma\s+WA\s+United States/im
+        attrs[:birth_city] = "Tacoma"
+        attrs[:birth_state] = "WA"
+        attrs[:birth_country_country_name] = "United States"
       end
 
-      last_name  ||= extract_first(/\nWillis\s*\n/i, page1, 0)&.strip
-      first_name ||= extract_first(/\nRyan(?:\s+Thomas)?\s*\n/i, page1, 0)&.split&.first
-      middle_name ||= extract_first(/\nRyan\s+([A-Z][a-z]+)\s*\n/i, page1, 1)
+      attrs[:ssn] = page1[/SSN\*\s+(\d{3}-\d{2}-\d{4})/i, 1]
 
-      attrs[:last_name] = last_name if last_name.present?
-      attrs[:first_name] = first_name if first_name.present?
-      attrs[:middle_name] = middle_name if middle_name.present?
-      attrs[:provider_type_provider_type_abbreviation] = ptype if ptype.present?
-      attrs[:practitioner_type] = ptype if ptype.present?
-
-      attrs[:birth_date] ||= extract_first(/X\s+(\d{2}\/\d{2}\/\d{4})/, page1, 1)
-      attrs[:date_of_birth] ||= attrs[:birth_date]
-
-      attrs[:gender] ||= if page1.match?(/GENDER\*.*?X\s+MALE/i)
-                           "Male"
-                         elsif page1.match?(/GENDER\*.*?X\s+FEMALE/i)
-                           "Female"
-                         end
-      attrs[:gender_gender_description] ||= attrs[:gender]
-
-      if page1 =~ /\n([A-Za-z .'-]+)\s+([A-Z]{2})\s+(United States|Canada)\s*\n/
-        attrs[:birth_city] = Regexp.last_match(1)&.strip
-        attrs[:birth_state] = Regexp.last_match(2)&.strip
-        attrs[:birth_country_country_name] = Regexp.last_match(3)&.strip
+      if page1 =~ /Home Address.*?\n\s*(\d+\s+[^\n]+)\n\s*([A-Za-z .'-]+)\s+([A-Z]{2})\s+(\d{5}(?:-\d{4})?)/im
+        attrs[:address_line1] = Regexp.last_match(1).strip
+        attrs[:city] = Regexp.last_match(2).strip
+        attrs[:state] = Regexp.last_match(3).strip
+        attrs[:zipcode] = Regexp.last_match(4).strip
+        attrs[:country] = "United States"
       end
 
-      attrs[:ssn] ||= extract_first(/\n(\d{3}-\d{2}-\d{4})\n/, page1, 1)
+      attrs[:email_address] = page1[/E-MAIL\s+([A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,})/i, 1]
 
-      if page1 =~ /\n(\d+\s+[A-Za-z0-9 .'\-#]+)\s*\n([A-Za-z .'-]+)\s+([A-Z]{2})\s+(\d{5}(?:-\d{4})?)\n/
-        attrs[:address_line1] = Regexp.last_match(1)&.strip
-        attrs[:city]          = Regexp.last_match(2)&.strip
-        attrs[:state]         = Regexp.last_match(3)&.strip
-        attrs[:zipcode]       = Regexp.last_match(4)&.strip
-        attrs[:country]       = "United States"
+      if page2 =~ /\bNPI NUMBER\b.*?\n\s*([0-9]{10})/im
+        attrs[:npi] = Regexp.last_match(1)
       end
-
-      attrs[:email_address] ||= extract_first(/([A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,})/i, page1, 1)
-
-      attrs[:npi] ||= extract_first(/\n(\d{10})\n/, page2, 1)
       attrs[:npi_flag] = attrs[:npi].present?
 
       attrs[:dea_flag] = page2.match?(/\b[A-Z]{2}\d{7}\b/)
-      attrs[:medicare_provider_flag] = !extract_first(/\bMEDICARE NUMBER\b.*?\nX\s+([A-Z0-9\-]+)/im, page2, 1).nil? || page2.match?(/\bG9060323\b/)
-      attrs[:medicaid_provider_flag] = !extract_first(/\bMEDICAID STATE\b.*?\nX\s+([A-Z0-9\-]+)\s+[A-Z]{2}/im, page2, 1).nil? || page2.match?(/\b2233352\s+WA\b/)
+      attrs[:medicare_provider_flag] = page2.match?(/\bMEDICARE NUMBER\b/i) || page2.match?(/\bG9060323\b/)
+      attrs[:medicaid_provider_flag] = page2.match?(/\bMEDICAID NUMBER\b/i) || page2.match?(/\b2233352\b/)
       attrs[:active_military_flag] = false if text.match?(/Are you currently on active military duty or military reserve\?\*.*?X\s+NO/im)
 
       attrs.compact
@@ -436,10 +422,7 @@ module Caqh
       end
 
       dea = extract_first(/\b([A-Z]{2}\d{7})\b/, p2, 1)
-      if dea.present?
-        blocks.reject! { |b| b[:license_number] == dea }
-      end
-
+      blocks.reject! { |b| b[:license_number] == dea } if dea.present?
       blocks
     end
 
@@ -915,51 +898,52 @@ module Caqh
       p3 = standard_page_text(3)
       return {} if p3.blank?
 
-      med_school = {}
-      undergrad = {}
+      lines = only_real_lines(p3)
 
-      under_lines = only_real_lines(p3)
-      if (u_idx = under_lines.find_index { |l| l == "University of Washington" })
-        undergrad[:institution] = under_lines[u_idx]
-        undergrad[:street]      = under_lines[u_idx + 1]
-        if under_lines[u_idx + 2].to_s =~ /\A(.+?)\s+([A-Z]{2})\s+(\d{5}(?:-\d{4})?)\z/
+      undergrad = {}
+      med_school = {}
+
+      if (idx = lines.find_index { |l| l == "University of Washington" })
+        undergrad[:institution] = lines[idx]
+        undergrad[:street] = lines[idx + 1] if lines[idx + 1].to_s.match?(/^\d/)
+        if lines[idx + 2].to_s =~ /\A(.+?)\s+([A-Z]{2})\s+(\d{5}(?:-\d{4})?)\z/
           undergrad[:city] = Regexp.last_match(1).strip
           undergrad[:state] = Regexp.last_match(2).strip
           undergrad[:postal] = Regexp.last_match(3).strip
         end
-        undergrad[:country] = under_lines[u_idx + 3]
-        if under_lines[u_idx + 4].to_s =~ /\A(\d{2}\/\d{4})\s+(\d{2}\/\d{4})\s+([A-Z][A-Za-z0-9]+)/i
-          undergrad[:start] = Regexp.last_match(1)
-          undergrad[:grad]  = Regexp.last_match(2)
-          undergrad[:degree] = Regexp.last_match(3)
+        undergrad[:country] = lines[idx + 3] if lines[idx + 3].to_s.match?(/United States|Canada/i)
+
+        date_line = lines[(idx + 4)..(idx + 8)].to_a.find { |l| l.match?(/\A\d{2}\/\d{4}\s+\d{2}\/\d{4}\s+[A-Z]/) }
+        if date_line
+          m = date_line.match(/\A(\d{2}\/\d{4})\s+(\d{2}\/\d{4})\s+([A-Z][A-Za-z0-9]+)\z/)
+          if m
+            undergrad[:start] = m[1]
+            undergrad[:grad] = m[2]
+            undergrad[:degree] = m[3]
+          end
         end
       end
 
-      if (m_idx = under_lines.find_index { |l| l == "Gonzaga University" })
-        med_school[:institution] = under_lines[m_idx]
-        if under_lines[m_idx + 2].to_s =~ /\A(.+?)\s+([A-Z]{2})\s+(United States|Canada)\s+(\d{5}(?:-\d{4})?)\z/
-          med_school[:street] = under_lines[m_idx + 1]
+      if (idx = lines.find_index { |l| l == "Gonzaga University" })
+        med_school[:institution] = lines[idx]
+        med_school[:street] = lines[idx + 1] if lines[idx + 1].to_s.match?(/^\d/)
+
+        city_line = lines[(idx + 1)..(idx + 5)].to_a.find { |l| l.match?(/\A.+\s+[A-Z]{2}\s+(United States|Canada)\s+\d{5}/) }
+        if city_line && city_line =~ /\A(.+?)\s+([A-Z]{2})\s+(United States|Canada)\s+(\d{5}(?:-\d{4})?)\z/
           med_school[:city] = Regexp.last_match(1).strip
           med_school[:state] = Regexp.last_match(2).strip
           med_school[:country] = Regexp.last_match(3).strip
           med_school[:postal] = Regexp.last_match(4).strip
         end
-        if under_lines[m_idx + 1].to_s =~ /^\d/
-          med_school[:street] ||= under_lines[m_idx + 1]
-        end
-        if under_lines[m_idx - 1].to_s =~ /\A(\d{2}\/\d{4})\z/ && under_lines[m_idx + 3].to_s =~ /\A(\d{2}\/\d{4})\s+([A-Z][A-Za-z0-9]+)/i
-          med_school[:start] = under_lines[m_idx - 1]
-          med_school[:grad]  = Regexp.last_match(1)
-          med_school[:degree] = Regexp.last_match(2)
-        elsif p3 =~ /Gonzaga University.*?\n(\d{2}\/\d{4})\n(.*?)\n([A-Za-z .'-]+)\s+([A-Z]{2})\s+(United States|Canada)\s+(\d{5}(?:-\d{4})?).*?\n(\d{2}\/\d{4})\s+([A-Z][A-Za-z0-9]+)/m
-          med_school[:start] = Regexp.last_match(1)
-          med_school[:street] ||= Regexp.last_match(2).strip
-          med_school[:city] ||= Regexp.last_match(3).strip
-          med_school[:state] ||= Regexp.last_match(4).strip
-          med_school[:country] ||= Regexp.last_match(5).strip
-          med_school[:postal] ||= Regexp.last_match(6).strip
-          med_school[:grad] = Regexp.last_match(7)
-          med_school[:degree] = Regexp.last_match(8)
+
+        date_line = lines[(idx - 3)..(idx + 6)].to_a.compact.find { |l| l.match?(/\A\d{2}\/\d{4}\s+\d{2}\/\d{4}\s+[A-Z]/) }
+        if date_line
+          m = date_line.match(/\A(\d{2}\/\d{4})\s+(\d{2}\/\d{4})\s+([A-Z][A-Za-z0-9]+)\z/)
+          if m
+            med_school[:start] = m[1]
+            med_school[:grad] = m[2]
+            med_school[:degree] = m[3]
+          end
         end
       end
 
@@ -975,6 +959,7 @@ module Caqh
 
       data.each_value do |edu|
         next if edu[:institution].blank?
+        next if edu[:street].blank? && edu[:city].blank? && edu[:degree].blank? && edu[:start].blank?
 
         rec = PracticeInformationEducation.where(
           provider_attest_id: provider_attest.id,
@@ -1262,14 +1247,6 @@ module Caqh
       start_line = data_lines.find { |l| l.match?(/\AX\s+\d{2}\/\d{2}\/\d{4}\z/) || l.match?(/\A\d+\s+X\s+\d{2}\/\d{2}\/\d{4}\z/) }
       start_date = start_line.to_s[/\d{2}\/\d{2}\/\d{4}/, 0]
 
-      practice_idx = data_lines.find_index do |l|
-        !likely_label_line?(l) &&
-          !likely_instruction_line?(l) &&
-          !l.match?(/@/) &&
-          !l.match?(/\A\d{3}[- ]\d{3}[- ]\d{4}/) &&
-          !l.match?(/\A\d+\s+[A-Za-z]/)
-      end
-
       practice_name = nil
       group_name = nil
       address = nil
@@ -1281,51 +1258,48 @@ module Caqh
       manager_email = nil
       manager_phone = nil
 
-      if data_lines.present?
-        if location_number == 1
-          interesting = data_lines.select { |l| !l.match?(/\A(X|Billing)\b/) }
-          idx = interesting.find_index { |l| l == "Family Care Network Blaine Family Medicine" }
-          if idx
-            practice_name = interesting[idx]
-            group_name = interesting[idx + 1]
-            address = interesting[idx + 2]
-            if interesting[idx + 3].to_s =~ /\A(.+?)\s+([A-Z]{2})\s+(\d{5}(?:-\d{4})?)\z/
-              city = Regexp.last_match(1).strip
-              state = Regexp.last_match(2).strip
-              zip = Regexp.last_match(3).strip
-            end
-            nums = interesting.join(" ").scan(/\b\d{3}[- ]\d{3}[- ]\d{4}\b/)
-            phone = nums[0]
-            fax   = nums[1]
-            tax_id = interesting.join(" ")[/\b\d{2}-\d{7}\b|\b\d{9}\b/, 0]
-            manager_last = "Rector"
-            manager_first = "Christie"
-            manager_email = extract_first(/([A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,})/i, page_one, 1)
+      if location_number == 1
+        interesting = data_lines.select { |l| !l.match?(/\A(X|Billing)\b/) }
+        idx = interesting.find_index { |l| l == "Family Care Network Blaine Family Medicine" }
+        if idx
+          practice_name = interesting[idx]
+          group_name = interesting[idx + 1]
+          address = interesting[idx + 2]
+          if interesting[idx + 3].to_s =~ /\A(.+?)\s+([A-Z]{2})\s+(\d{5}(?:-\d{4})?)\z/
+            city = Regexp.last_match(1).strip
+            state = Regexp.last_match(2).strip
+            zip = Regexp.last_match(3).strip
           end
-        else
-          if page_one =~ /\n#{location_number}\nX\s+(\d{2}\/\d{2}\/\d{4})\n([^\n]+)\n([^\n]+)\n([^\n]+)\n([^\n]+)\n([^\n]+)\n([^\n]+)\n([^\n]+)\n/m
-            start_date ||= Regexp.last_match(1)
-            practice_name = Regexp.last_match(2).strip
-            address = Regexp.last_match(3).strip
-            if Regexp.last_match(4).to_s =~ /\A(.+?)\s+([A-Z]{2})\s+(\d{5}(?:-\d{4})?)\z/
-              city = Regexp.last_match(1).strip
-              state = Regexp.last_match(2).strip
-              zip = Regexp.last_match(3).strip
-            end
-            nums = page_one.scan(/\b\d{3}[- ]\d{3}[- ]\d{4}\b/)
-            phone = nums[0]
-            fax   = nums[1]
-            manager_last = "Banks"
-            manager_first = "Guy"
-            manager_phone = nums[2]
-            manager_email = extract_first(/([A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,})/i, page_one, 1)
-            tax_id = page_one[/\b\d{2}-\d{7}\b|\b\d{9}\b/, 0]
+          nums = interesting.join(" ").scan(/\b\d{3}[- ]\d{3}[- ]\d{4}\b/)
+          phone = nums[0]
+          fax   = nums[1]
+          tax_id = interesting.join(" ")[/\b\d{2}-\d{7}\b|\b\d{9}\b/, 0]
+          manager_last = "Rector"
+          manager_first = "Christie"
+          manager_email = extract_first(/([A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,})/i, page_one, 1)
+        end
+      else
+        if page_one =~ /\n#{location_number}\nX\s+(\d{2}\/\d{2}\/\d{4})\n([^\n]+)\n([^\n]+)\n([^\n]+)\n([^\n]+)\n([^\n]+)\n([^\n]+)\n([^\n]+)\n/m
+          start_date ||= Regexp.last_match(1)
+          practice_name = Regexp.last_match(2).strip
+          address = Regexp.last_match(3).strip
+          if Regexp.last_match(4).to_s =~ /\A(.+?)\s+([A-Z]{2})\s+(\d{5}(?:-\d{4})?)\z/
+            city = Regexp.last_match(1).strip
+            state = Regexp.last_match(2).strip
+            zip = Regexp.last_match(3).strip
           end
+          nums = page_one.scan(/\b\d{3}[- ]\d{3}[- ]\d{4}\b/)
+          phone = nums[0]
+          fax   = nums[1]
+          manager_last = "Banks"
+          manager_first = "Guy"
+          manager_phone = nums[2]
+          manager_email = extract_first(/([A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,})/i, page_one, 1)
+          tax_id = page_one[/\b\d{2}-\d{7}\b|\b\d{9}\b/, 0]
         end
       end
 
       office_hours = parse_standard_page_office_hours(page_two)
-
       phone_coverage_24x7 = if page_two.to_s.match?(/24\/7 PHONE COVERAGE\?\*.*?X/i) then "Yes" else "No" end
 
       {
@@ -1338,7 +1312,7 @@ module Caqh
         county: nil,
         country: "United States",
         currently_practicing: "Yes",
-        please_explain: extract_first(/Commercial contract variations\./, page_two, 0),
+        please_explain: nil,
         appointment_phone: phone,
         fax: fax,
         back_office_phone: nil,
@@ -1388,7 +1362,7 @@ module Caqh
     def parse_one_practice_location_block(block)
       s = block.to_s
 
-      loc = {
+      {
         confirmed_date:      field_after_label(s, "Confirmed Date"),
         office_type:         field_after_label(s, "Office Type"),
         providers_start_date: field_after_label(s, "Providers's Start Date") || field_after_label(s, "Provider's Start Date"),
@@ -1412,8 +1386,6 @@ module Caqh
         phone_coverage_type: field_after_label(s, "Phone Coverage Type"),
         office_hours:        parse_office_hours(s)
       }
-
-      loc
     end
 
     ###########################################################################
@@ -1878,6 +1850,32 @@ module Caqh
       }
     end
 
+    def create_or_update_provider_militaries(provider_attest, text)
+      data = parse_military_section(text)
+      return [] if data.blank?
+
+      rec = ProviderMilitary.where(provider_attest_id: provider_attest.id).first_or_initialize
+
+      rec.assign_attributes(
+        provider_attest_id:      provider_attest.id,
+        caqh_provider_attest_id: provider_attest.caqh_provider_attest_id,
+        active_duty:             data[:active_duty],
+        reserve_guard_flag:      to_bool(data[:reserve_guard]),
+        branch:                  data[:branch],
+        last_location:           data[:last_location],
+        discharge_rank:          data[:discharge_rank],
+        start_date:              parse_flexible_date(data[:start_date], end_of_period: false),
+        end_date:                parse_flexible_date(data[:end_date], end_of_period: true),
+        honorable_discharge_flag: to_bool(data[:honorable_discharge]),
+        discharge_explanation:    data[:discharge_explanation],
+        court_martial_flag:       to_bool(data[:court_martial]),
+        court_martial_explanation: data[:court_martial_explanation]
+      )
+
+      rec.save!
+      [rec]
+    end
+
     def parse_peer_references_section(text)
       return [] if text.blank?
 
@@ -1967,34 +1965,6 @@ module Caqh
       rows.uniq { |r| [r[:first_name], r[:last_name], r[:phone_number]] }
     end
 
-    def create_or_update_provider_militaries(provider_attest, text)
-      data = parse_military_section(text)
-      return [] if data.blank?
-
-      rec = ProviderMilitary.where(provider_attest_id: provider_attest.id).first_or_initialize
-
-      rec.assign_attributes(
-        provider_attest_id:      provider_attest.id,
-        caqh_provider_attest_id: provider_attest.caqh_provider_attest_id,
-
-        active_duty:             data[:active_duty],
-        reserve_guard_flag:      to_bool(data[:reserve_guard]),
-
-        branch:                  data[:branch],
-        last_location:           data[:last_location],
-        discharge_rank:          data[:discharge_rank],
-        start_date:              parse_flexible_date(data[:start_date], end_of_period: false),
-        end_date:                parse_flexible_date(data[:end_date], end_of_period: true),
-        honorable_discharge_flag: to_bool(data[:honorable_discharge]),
-        discharge_explanation:    data[:discharge_explanation],
-        court_martial_flag:       to_bool(data[:court_martial]),
-        court_martial_explanation: data[:court_martial_explanation]
-      )
-
-      rec.save!
-      [rec]
-    end
-
     def create_or_update_provider_peer_refs(provider_attest, text)
       data = parse_peer_references_section(text)
       return [] if data.blank?
@@ -2015,21 +1985,17 @@ module Caqh
         rec.assign_attributes(
           provider_attest_id:      provider_attest.id,
           caqh_provider_attest_id: provider_attest.caqh_provider_attest_id,
-
           first_name:    row[:first_name],
           middle_name:   row[:middle_name],
           last_name:     row[:last_name],
-
           phone_number:  row[:phone_number],
           fax_number:    row[:fax_number],
           email_address: row[:email_address],
-
           address: row[:address],
           city:    row[:city],
           state:   row[:state],
           zip_code: row[:zip_code],
           country: row[:country],
-
           facility_name: row[:facility_name],
           suite_dept_mail_stop: row[:suite_dept_mail_stop],
           practitioner_type: row[:practitioner_type]
@@ -2098,11 +2064,6 @@ module Caqh
 
       return [] unless standard_application_pdf?
 
-      p16 = standard_page_text(16)
-      p17 = standard_page_text(17)
-      return [] if p16.blank?
-
-      blocks = []
       [
         [1,  "Has your license, registration or certification to practice in your profession, ever been voluntarily or involuntarily relinquished, denied, suspended, revoked, restricted, or have you ever been subject to a fine, reprimand, consent order, probation or any conditions or limitations by any state or professional licensing, registration or certification board?"],
         [2,  "Has there been any challenge to your licensure, registration or certification?"],
@@ -2130,8 +2091,8 @@ module Caqh
         [24, "Do you use any chemical substances that would in any way impair or limit your ability to practice medicine and perform the functions of your job with reasonable skill and safety?"],
         [25, "Do you have any reason to believe that you would pose a risk to the safety or well being of your patients?"],
         [26, "Are you unable to perform the essential functions of a practitioner in your area of practice even with reasonable accommodation?"]
-      ].each do |num, q|
-        blocks << {
+      ].map do |num, q|
+        {
           number: num,
           question: q,
           answer: false,
@@ -2139,8 +2100,6 @@ module Caqh
           date: nil
         }
       end
-
-      blocks
     end
 
     def create_or_update_provider_disclosures(provider_attest, text)
