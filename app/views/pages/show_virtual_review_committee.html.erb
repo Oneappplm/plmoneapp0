@@ -102,7 +102,12 @@
 								</td>
 								<td>
 									<strong for="">PSV Date:</strong> <br>
-									<%= @provider&.attest_date&.strftime('%m/%d/%Y') %>
+									<% case @provider.cred_status %>
+										<% when "psv" %>
+										<% if @psv_pdf.present? %>
+											<%= @psv_pdf.created_at.strftime('%m/%d/%Y') %>
+										<% end %>
+									<% end %>
 								</td>
 								<td>
 									<strong for="">Cred Cycle Cred:</strong> <br>
@@ -122,7 +127,7 @@
 								  <% dea_record = ProviderDea.find_by(provider_attest_id: @provider&.provider_attest_id) %>
 
 								  <% if dea_record&.expiration_date.present? %>
-								    <span class="badge bg-danger text-white">Unclean</span>
+								    <span class="badge bg-danger text-white p-1 mt-2">Unclean</span>
 								  <% else %>
 								    <span id="review-level"><%= @provider&.review_level %></span>
 								  <% end %>

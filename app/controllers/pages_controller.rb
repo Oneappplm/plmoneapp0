@@ -367,7 +367,7 @@ class PagesController < ApplicationController
       @provider = ProviderPersonalInformation.find(params[:id])
       @provider_personal_informations = [@provider]
       @review_level_changes = @provider.review_level_changes.order(created_at: :desc)
-      @psv_pdf = SavedProfile.last
+      @psv_pdf = @provider.pdf_generation_queues.last.saved_profile
     else
       @provider_personal_informations = ProviderPersonalInformation.all
       @provider = @provider_personal_informations.first
