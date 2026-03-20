@@ -3,7 +3,7 @@
 		<div class="col-lg-9">
 
 			<div class="row">
-				<div class="col-lg-10">
+				<div class="col-lg-10 d-flex gap-2 align-items-center flex-wrap">
 					<%= link_to virtual_review_committee_path, class: 'btn btn-sm btn-danger d-inline-flex align-items-center' do %>
 					  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 16px; margin-right: 0.5rem;">
 					    <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
@@ -25,7 +25,7 @@
 					</button>
 				</div>
 				<div class="col-lg-2">
-					<div style="float: right">
+					<div class="d-flex justify-content-end">
 						<% case @provider.cred_status %>
               <% when "psv" %>
                 <% if @psv_pdf.present? %>
@@ -47,7 +47,7 @@
 			<div class="row">
 				<div class="col-lg-12">
 					
-					<table id="show-vrc-table" class="mt-4 table border">
+					<table id="show-vrc-table" class="mt-4 table table-bordered align-middle">
 						<thead style="background-color: #377dff; color: #fff;">
 							<tr>
 								<th width="20%" style="text-align: center;">Provider Name</th>
@@ -70,14 +70,14 @@
 											</h5>
 										</td>
 										<td style="word-break: break-word; max-width: 200px; white-space: normal;">
-											<%= provider.cell_phone_number %> <br>
+											<%= provider.cell_phone_number %> / 
 											<%= provider.email_address%>
 										</td>
 										<td><%= provider.birth_date.strftime('%m/%d/%Y') %></td>
 										<td><%= provider.ssn %></td>
 										<td><%= provider.npi %></td>
 										<td> NA </td>
-										<td><%= provider.medicare_provider_flag %></td>
+										<td><%= provider.medicare_provider_flag ? "Yes" : "No" %></td>
 										<td>NA</td>
 									</tr>
 								<% end %>
@@ -90,62 +90,110 @@
 					</table>
 					<hr style="margin: 0;">
 					<table class="table border">
+						<thead>
+				        <tr>
+				          <th class="fw-bold text-white">Received Date</th>
+				          <th class="fw-bold text-white">Completed Date</th>
+				          <th class="fw-bold text-white">PSV Date</th>
+				          <th class="fw-bold text-white">Cred Cycle Cred</th>
+				          <th class="fw-bold text-white">Recred Due Date</th>
+				        </tr>
+				      </thead>
 						<tbody>
 							<tr>
 								<td>
-									<strong for="">Received Date:</strong> <br>
-									02/10/2016
+									<%= @provider.provider_personal_information_app_trackings.first&.application_receipt_date&.strftime('%m/%d/%Y') || "NA" %>
 								</td>
 								<td>
-									<strong for="">Completed Date:</strong> <br>
-									02/10/2016
+									<%= @provider.provider_personal_information_app_trackings.first
+                              &.application_submitted_date
+                              &.in_time_zone('Pacific Time (US & Canada)')
+                              &.strftime('%m/%d/%Y') || "NA" %>
 								</td>
 								<td>
-									<strong for="">PSV Date:</strong> <br>
-									<% case @provider.cred_status %>
-										<% when "psv" %>
-										<% if @psv_pdf.present? %>
+									<%# case  %>
+										<%# when "psv" %>
+										<% if @provider.cred_status.present? || @psv_pdf.present? %>
 											<%= @psv_pdf.created_at.strftime('%m/%d/%Y') %>
 										<% end %>
-									<% end %>
+									<%# end %>
 								</td>
-								<td>
-									<strong for="">Cred Cycle Cred:</strong> <br>
-									<%= @provider&.cred_cycle %>
-								</td>
-								<td>
-									<strong for="">Recred Due Date:</strong> <br>
-								</td>
-								<td></td>
-								<td></td>
-								<td></td>
+								
+								<td><%= @provider&.cred_cycle || "NA" %></td>
+								<td><%= @provider&.recred_due_date || "NA" %></td>
 							</tr>
-							<tr>
-								<td>
-								  <strong>Level of Review:</strong> <br>
+							<%# <tr> %>
+								<%# <td>
+								  <strong>Level of Review:</strong> <br> %>
 
-								  <% dea_record = ProviderDea.find_by(provider_attest_id: @provider&.provider_attest_id) %>
+								  <%# dea_record = ProviderDea.find_by(provider_attest_id: @provider&.provider_attest_id) %>
 
-								  <% if dea_record&.expiration_date.present? %>
-								    <span class="badge bg-danger text-white p-1 mt-2">Unclean</span>
-								  <% else %>
-								    <span id="review-level"><%= @provider&.review_level %></span>
-								  <% end %>
-								</td>
+								  <%# if dea_record&.expiration_date.present? %>
+								    <%# <span class="badge bg-danger px-2 py-2 mt-2">Unclean</span> %>
+								  <%# else %>
+								    <%# <span id="review-level"><%= @provider&.review_level</span> %> 
+								  <%# end %>
+								<%# </td> %>
 
-								<td>
-									<strong for="">Review Details:</strong> <br>
-									<%= @provider.review_details %>
-								</td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-							</tr>
+								<%# <td>
+									<strong for="">Review Details:</strong> <br> %>
+									<%#= @provider.review_details %>
+								<%# </td> %>
+							<%# </tr> %>
 						</tbody>
 					</table>
+
+					<div class="table-responsive">
+				    <table class="table table-bordered">
+				      <thead>
+				        <tr>
+				          <th class="fw-bold text-white">Level of Review</th>
+				          <th class="fw-bold text-white">Review Details (File Issue Reason)</th>
+				          <th class="fw-bold text-white">Review Details (File Review Reason)</th>
+				        </tr>
+				      </thead>
+				      <tbody>
+				        <% @provider.provider_personal_information_app_trackings.each do |app_tracking| %>
+				          <tr>
+				            <td>
+				              <% if app_tracking.master_issues.compact_blank.any? || app_tracking.master_reviews.compact_blank.any? %>
+				                Unclean
+				              <% else %>
+				                Clean
+				                <%#= app_tracking.file_status.present? ? app_tracking.file_status.upcase : "CLEAN" %>
+				              <% end %>
+				            </td>
+				                        
+				            <!-- File Issue Reason -->
+				            <td>
+				              <% if app_tracking.master_issues.compact_blank.any? %>
+				                <ul class="mb-0 ps-3">
+				                  <% app_tracking.master_issues.each do |issue| %>
+				                    <li><%= issue %></li>
+				                  <% end %>
+				                </ul>
+				              <% else %>
+				                None
+				              <% end %>
+				            </td>
+
+				            <!-- File Review Reason -->
+				            <td>
+				              <% if app_tracking.master_reviews.compact_blank.any? %>
+				                <ul class="mb-0 ps-3">
+				                  <% app_tracking.master_reviews.each do |review| %>
+				                    <li><%= review %></li>
+				                  <% end %>
+				                </ul>
+				              <% else %>
+				                None
+				              <% end %>
+				            </td>
+				          </tr>
+				        <% end %>
+				      </tbody>
+				    </table>
+				  </div>
 				</div>
 				<% if @provider&.progress_status == "completed" %>
 					<div class="content-box mt-2">
@@ -171,12 +219,12 @@
 					          <tr class="alt-row">
 					            <td><%= lic.license_number %></td>
 					            <td>Licensure - <%= lic.license_type %></td>
-					            <td><%= State.find_by(id: lic.state_id)&.alpha_code || "N/A" %></td>
-					            <td style="text-align:center;"><%= lic.license_issue_date&.strftime('%m/%d/%Y') %></td>
-					            <td style="text-align:center;"><%= lic.license_expiration_date&.strftime('%m/%d/%Y') %></td>
+					            <td><%= State.find_by(id: lic.state_id)&.alpha_code || "NA" %></td>
+					            <td style="text-align:center;"><%= lic.license_issue_date&.strftime('%m/%d/%Y') || "NA" %></td>
+					            <td style="text-align:center;"><%= lic.license_expiration_date&.strftime('%m/%d/%Y') || "NA" %></td>
 					           <%#  <td style="text-align:center;">State Board</td>
 					            <td style="text-align:center;">ACTIVE</td> %>
-					            <td style="text-align:center;"><%= lic.updated_at&.strftime('%m/%d/%Y') %></td>
+					            <td style="text-align:center;"><%= lic.updated_at&.strftime('%m/%d/%Y') || "NA" %></td>
 					          </tr>
 					        <% end %>
 
@@ -218,14 +266,14 @@
 			              <td>03/23/2022</td>
 			              <td>DemoDirector Test</td>
 			              <td>VRC Director</td>
-			              <td></td>
+			              <td>NA</td>
 			              <td>Approved</td>
 			            </tr>
 			            <tr>
 			              <td>03/23/2022</td>
 			              <td>DemoMember Test</td>
 			              <td>VRC Member</td>
-			              <td></td>
+			              <td>NA</td>
 			              <td>Approved</td>
 			            </tr>
 			          </tbody>
@@ -252,16 +300,26 @@
 			          <tbody>
 			            <tr class="alt-row">
 			              <td clas><%= @provider&.caqh_provider_attest_id || @provider&.provider_attest_id %></td>
-			              <td clas><%= @provider&.id %></td>
-			              <td clas>
-			              	<% dea_record = ProviderDea.find_by(provider_attest_id: @provider&.provider_attest_id) %>
+			              <td clas><%= @provider&.caqh_provider_attest_id || @provider&.provider_attest_id %></td>
+			              <%# <td> %>
+			              	<%# dea_record = ProviderDea.find_by(provider_attest_id: @provider&.provider_attest_id) %>
 			              	
-										  <% if dea_record&.expiration_date.present? %>
-										    <span class="badge bg-danger text-white">Unclean</span>
-										  <% else %>
-										    <span id="review-level"><%= @provider&.review_level %></span>
-										  <% end %>
-			              </td>
+										  <%# if dea_record&.expiration_date.present? %>
+										    <%# <span class="badge bg-danger text-white">Unclean</span> %>
+										  <%# else %>
+										    <%# <span id="review-level"><%= @provider&.review_level</span> %>
+										  <%# end %>
+			              <%# </td> %>
+			              <% @provider&.provider_personal_information_app_trackings.each do |app_tracking| %>
+	                    <td>
+	                      <% if app_tracking.master_issues.compact_blank.any? || app_tracking.master_reviews.compact_blank.any? %>
+	                        Unclean
+	                      <% else %>
+	                        Clean
+	                        <%#= app_tracking.file_status.present? ? app_tracking.file_status.upcase : "CLEAN" %>
+	                      <% end %>
+	                    </td>
+	                <% end %>
 			              <td clas></td>
 			              <td clas></td>
 			            </tr>
