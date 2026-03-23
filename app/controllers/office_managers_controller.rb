@@ -4,8 +4,8 @@ class OfficeManagersController < ApplicationController
   before_action :set_client_organizations, only: [:show]
 
   def index
-    clean_empty_providers
-
+    # clean_empty_providers
+    
     if params[:practice_location_id].blank? || params[:practice_location_id] == 'All Location'
       # Display all providers if no practice_location_id is provided or if "All Location" is selected
       @providers = ProviderSource.unscoped.order(created_at: :asc).paginate(page: params[:page], per_page: 12)
@@ -48,13 +48,16 @@ class OfficeManagersController < ApplicationController
     @client_organization = ClientOrganization.find(params[:id])
   end
 
-  def clean_empty_providers
-    ProviderSource.unscoped.each do |provider|
-      if !provider.full_name.present?
-        provider.destroy
-      end
-    end
-  end
+  # def clean_empty_providers
+  #   ProviderSource.find_each do |ps|
+  #     first_name = ps.finder('first_name')
+  #     last_name  = ps.finder('last_name')
+
+  #     if first_name.blank? && last_name.blank?
+  #       ps.destroy
+  #     end
+  #   end
+  # end
 
   def update_provider_associations
     practice_location_id = params[:practice_location_id]
