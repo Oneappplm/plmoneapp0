@@ -5,6 +5,7 @@ class GroupEngageProvidersController < ApplicationController
 		@group_engage_provider = GroupEngageProvider.new(group_engage_provider_params)
 
 		if @group_engage_provider.save
+			run_post_create_services(@group_engage_provider)
 			render json: {
 				group_engage_provider: @group_engage_provider.decorate,
 				message: 'New provider has been successfully created.'
@@ -79,5 +80,10 @@ class GroupEngageProvidersController < ApplicationController
 
 	def set_group_engage_provider
 		@group_engage_provider = GroupEngageProvider.find(params[:id])
+	end
+
+	def run_post_create_services(provider)
+	  GroupEngageProvider::CreateUserService.call(provider, current_user)
+	  GroupEngageProvider::CreateProviderSourceService.call(provider, current_user)
 	end
 end
