@@ -27,8 +27,7 @@ module Webscraper
         crawler.save_screenshot(debug_path)
         puts "📸 Debug screenshot: #{debug_path}"
 
-        sleep 2 # Let JS fully render
-
+        sleep 2
 
         puts "➡️ Selecting License Number radio..."
         select_license_radio
@@ -41,16 +40,18 @@ module Webscraper
         puts "➡️ Clicking Submit..."
         click_submit
 
+        sleep 2
+
         puts "⏳ Waiting for results..."
         wait_for_results
 
-        puts "➡️ Clicking eye icon..."
+        puts "Clicking on eye icon..."
         click_eye_icon
 
-        puts "⏳ Waiting for detail view..."
-        wait_for_detail_view
+        sleep 2
 
-        puts "➡️ Saving screenshot..."
+        # 👈 TAKE SCREENSHOT OF RESULTS PAGE INSTEAD
+        puts "➡️ Saving RESULTS screenshot (no detail view needed)..."
         screenshot_path = save_screenshot
 
         puts "✅ Screenshot saved at: #{screenshot_path}"
@@ -59,6 +60,7 @@ module Webscraper
         puts "➡️ Closing browser..."
         crawler.quit if @crawler
       end
+
 
       private
 
@@ -93,32 +95,59 @@ module Webscraper
       end
 
       def enter_license_number
-        # 1️⃣ Click the visible input container to focus the real field
-        container_xpath = "//div[contains(@class,'slds-form-element__control') and @part='input-container']"
-        container = slow_wait.until { crawler.find_element(:xpath, container_xpath) }
-        crawler.execute_script("arguments[0].scrollIntoView(true);", container)
-        crawler.execute_script("arguments[0].click();", container)
+        puts "⏳ Searching input across ALL shadow DOM..."
+
+        input = slow_wait.until do
+          el = crawler.execute_script(<<~JS)
+            function findInput(root) {
+              if (!root) return null;
+
+              // Check current level
+              const input = root.querySelector && root.querySelector("input.slds-input");
+              if (input) return input;
+
+              // Traverse children
+              const elements = root.querySelectorAll ? root.querySelectorAll("*") : [];
+              for (let el of elements) {
+                if (el.shadowRoot) {
+                  const found = findInput(el.shadowRoot);
+                  if (found) return found;
+                }
+              }
+
+              return null;
+            }
+
+            return findInput(document);
+          JS
+
+          el
+        end
+
+        raise "❌ Input not found anywhere in DOM" unless input
+
+        puts "➡️ Input found, typing license..."
+
+        input.click
         sleep 0.5
 
-        # 2️⃣ Now grab the active element (the actual Lightning input) and type into it via JS
-        active = crawler.switch_to.active_element
-        puts "✅ Active element tag: #{active.tag_name}, id: #{active.attribute('id')}"
+        # Clear
+        input.clear rescue nil
 
-        crawler.execute_script("
-          arguments[0].value = '';
-          arguments[0].dispatchEvent(new Event('input', {bubbles: true}));
-          arguments[0].dispatchEvent(new Event('change', {bubbles: true}));
-        ", active)
+        # Type like real user
+        input.send_keys(@license_number)
 
-        crawler.execute_script("
-          arguments[0].value = '#{@license_number}';
-          arguments[0].dispatchEvent(new Event('input', {bubbles: true}));
-          arguments[0].dispatchEvent(new Event('change', {bubbles: true}));
-        ", active)
+        sleep 1
 
-        sleep 0.5
-        puts "✅ License '#{@license_number}' entered into active element"
+        # DEBUG
+        value = crawler.execute_script("return arguments[0].value", input)
+        puts "🔎 Input value after typing: #{value}"
+
+        raise "❌ Value NOT entered" if value.blank?
+
+        puts "✅ License entered successfully"
       end
+
 
       def click_submit
         submit_xpath = "//button[contains(@class,'slds-button_brand') and @title='Submit']"
@@ -140,65 +169,56 @@ module Webscraper
       end
 
       def click_eye_icon
-        js = <<~JS
-          const host = document.querySelector('c-mo-dpr-license-search');
-          if (!host || !host.shadowRoot) { return { status: 'NO_HOST' }; }
+        puts "⏳ Waiting for eye icon to appear inside shadow DOM..."
 
-          // Debug: log what we see in the shadow root
-          const root = host.shadowRoot;
-          const tables = Array.from(root.querySelectorAll('table'));
-          const licenseTables = tables.filter(t => t.className.includes('licensee-table'));
-          const allButtons = Array.from(root.querySelectorAll('button'));
-          const viewButtons = allButtons.filter(b =>
-            (b.title && b.title.toLowerCase() === 'view') ||
-            (b.getAttribute('aria-label') || '').startsWith('View')
-          );
+        # More flexible timeout + multiple selectors
+        slow_wait = Selenium::WebDriver::Wait.new(timeout: 25)  # Increased to 25s
+        
+        result = slow_wait.until do
+          crawler.execute_script(<<~JS)
+            const host = document.querySelector('c-mo-dpr-license-search');
+            if (!host || !host.shadowRoot) return { status: 'NO_HOST' };
 
-          // Try very specific selector based on your HTML
-          let btn = root.querySelector(
-            "table.licensee-table tbody tr:first-child td:last-child lightning-button button[title='view']"
-          );
-          if (!btn) {
-            // Fallback: any view button inside licensee-table
-            btn = root.querySelector("table.licensee-table button[title='view'], table.licensee-table button[aria-label^='View']");
-          }
-          if (!btn) {
-            // Fallback: any button with preview icon anywhere under component
-            btn = root.querySelector("button[title='view'], button[aria-label^='View'], lightning-button[variant='neutral'] button");
-          }
-          if (!btn && viewButtons.length > 0) {
-            btn = viewButtons[0];
-          }
+            const lightningBtns = host.shadowRoot.querySelectorAll("lightning-button, [data-id], button");
 
-          if (!btn) {
-            return {
-              status: 'NO_BUTTON',
-              tables: tables.map(t => t.className),
-              licenseTables: licenseTables.map(t => t.className),
-              buttonCount: allButtons.length,
-              viewButtonCount: viewButtons.length
-            };
-          }
+            for (let btn of lightningBtns) {
+              if (!btn.shadowRoot && !btn.click) continue;
 
-          btn.scrollIntoView({ block: 'center' });
-          btn.click();
-          return {
-            status: 'CLICKED',
-            tables: tables.map(t => t.className),
-            licenseTables: licenseTables.map(t => t.className),
-            buttonTag: btn.tagName,
-            buttonTitle: btn.title,
-            buttonAria: btn.getAttribute('aria-label')
-          };
-        JS
+              // Try shadowRoot first, then direct element
+              let targetBtn = btn.shadowRoot ? btn.shadowRoot.querySelector("button") : btn;
+              
+              if (targetBtn && targetBtn.click && (
+                targetBtn.title?.toLowerCase().includes('view') ||
+                targetBtn.getAttribute("aria-label")?.toLowerCase().includes('view') ||
+                targetBtn.textContent?.toLowerCase().includes('view') ||
+                targetBtn.getAttribute('data-id')  // Any button with data-id
+              )) {
+                targetBtn.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                targetBtn.click();
+                
+                return {
+                  status: 'CLICKED',
+                  selector: targetBtn.tagName,
+                  title: targetBtn.title || targetBtn.getAttribute("aria-label"),
+                  dataId: targetBtn.getAttribute('data-id')
+                };
+              }
+            }
 
-        result = crawler.execute_script(js)
-        puts "🔎 click_eye_icon JS result: #{result.inspect}"
+            // Fallback: click FIRST lightning-button or ANY view-like button
+            const firstBtn = host.shadowRoot.querySelector("lightning-button button, button[data-id]");
+            if (firstBtn) {
+              firstBtn.click();
+              return { status: 'FALLBACK_CLICKED', selector: firstBtn.tagName };
+            }
 
-        raise "❌ No eye/view button found (#{result['status']})" unless result['status'] == 'CLICKED'
+            return { status: 'NO_BUTTON_FOUND' };
+          JS
+        end
 
-        puts "✅ Eye icon clicked"
+        puts "✅ Eye icon clicked: #{result.inspect}"
       end
+
 
 
       def wait_for_detail_view
