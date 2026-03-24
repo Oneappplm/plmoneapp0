@@ -70,6 +70,10 @@ class MultiSelectDataController < ApplicationController
 		send_result	PrivilegeStatus.all.map{|privilege| { label: privilege.name, value: privilege.name} }
 	end
 
+	def ada_accessibility
+	  send_result PracticeLocation::ADA_ACCESSIBILITY.map { |item| { label: item, value: item } }
+	end
+
 	def providers
 		enrollment_provider_id = params[:enrollment_provider_id]
 		enrollment_provider = EnrollmentProvider.find_by(id: enrollment_provider_id)
