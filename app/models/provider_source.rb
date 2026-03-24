@@ -933,9 +933,26 @@ class ProviderSource < ApplicationRecord
     return 100 if values.blank? || values.first == 'no'
 
     fields = work_history_employment_fields
-    fetched = fetch_many(fields)&.pluck(:data_value) || []
 
-    # Only count fields that actually exist in fetched results
+    fetched_data = fetch_many(fields)
+    fetched = fetched_data&.pluck(:data_value) || []
+
+    # ✅ NEW: Check if "Present" is selected
+    present_value = fetch_many(['until_present'])&.pluck(:data_value)&.first
+
+    if present_value.to_s.strip.downcase == 'true' || present_value.to_s.strip.downcase == 'yes'
+      # ❌ Remove end date from calculation
+      if ['true', 'yes', '1', 'on'].include?(present_value.to_s.strip.downcase)
+        fields = fields - ['edc-end-date']
+
+        fetched_data = fetched_data.reject do |record|
+          record.data_key == 'edc-end-date'
+        end
+
+        fetched = fetched_data.map(&:data_value)
+      end
+    end
+
     total_fields = fetched.size
     answered_count = fetched.reject { |v| v.nil? || v.to_s.strip.empty? }.count
 
@@ -985,7 +1002,7 @@ class ProviderSource < ApplicationRecord
     percentage = 0
     fields_no_prerequisites = [
       'rf-first-name', 'rf-last-name', 'rf-degree', 'rf-address-line1',
-      'rf-city', 'rf-state', 'rf-zipcode', 'rf-fax', 'rf-email-address', 'rf-association-start-date', 'rf-association-end-date'
+      'rf-city', 'rf-state', 'rf-zipcode', 'rf-email-address', 'rf-association-start-date', 'rf-association-end-date'
     ]
 
     filled_up_fields = fetch_many(fields_no_prerequisites)&.pluck(:data_value).compact.reject(&:empty?).count
