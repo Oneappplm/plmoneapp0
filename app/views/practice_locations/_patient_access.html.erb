@@ -17,7 +17,16 @@
 		</div>
 		<%#= f.hidden_field :ada_wrp_status %>
 		<%#= text_area_tag :ada_wrp_status_display, "#{@practice_location&.ada_wrp_status&.join(',')}", class: 'form-control mt-2', id: 'ada_wrp_list_display', readonly: true %>
-		<%= f.select :ada_wrp_status, PracticeLocation::ADA_ACCESSIBILITY, { prompt: true }, {class: 'form-select mt-2'}  %>
+		<%#= f.select :ada_wrp_status, PracticeLocation::ADA_ACCESSIBILITY, { prompt: true }, {class: 'form-select mt-2'}  %>
+		<%#= HtmlUtils::dropdown(
+      name: 'practice_location[ada_wrp_status]',
+      label: '',
+      multiple: true,
+      class: 'ada-wrp-status-dropdown multi-select'
+    ) %>
+    <%= HtmlUtils.multi_select_dropdown name: "practice_location[ada_wrp_status]", id: 'practice_location_ada_wrp_status', classes: 'multi-ada-wrp-status' %>
+
+    <%# <input type="hidden" name="practice_location[ada_wrp_status][]" id="ada_wrp_status_hidden"> %>
 	</div>
 </div>
 <div class="form-row row">
@@ -46,11 +55,43 @@
 	<div class="col-xl-10 mt-2 mb-2">
 		<label for="">If Yes, please select from the following:</label>
 		<div class="d-flex gap-2">
-		  <%#= text_field_tag :public_transportation_wrp, '', class: 'form-control w-75', id: 'public_transportation_input' %>
-		  <%#= button_tag "Add to List", type: "button", class: "btn btn-primary btn-sm w-25", id: "add_to_list_public_transportation_wrp" %>
-		</div>
-		<%#= f.hidden_field :public_transportation_wrp_status %>
-		<%#= text_area_tag :public_transportation_wrp_status_display, "#{@practice_location.public_transportation_wrp_status.join(',')}", class: 'form-control mt-2', id: 'public_transportation_wrp_status_display', readonly: true %>
 		<%= f.select :public_transportation_wrp, PracticeLocation::PUBLIC_TRANSPORTATION, { prompt: true }, {class: 'form-select mt-2'}  %>
 	</div>
 </div>
+<script>
+	$(document).ready(function () {
+
+  const selector = '#practice_location_ada_wrp_status';
+
+  $.get('/multi-select-data/ada_accessibility', function (data) {
+
+    // 🔥 Initialize VirtualSelect
+    VirtualSelect.init({
+      ele: selector,
+      options: data.result,
+      multiple: true,
+      search: true
+    });
+
+    // 🔥 Sync values to hidden field
+    document.querySelector(selector).addEventListener('change', function () {
+      const values = this.value || [];
+      $('#ada_wrp_status_hidden').val(values);
+    });
+
+  });
+
+});
+</script>
+<style>
+	.multi-ada-wrp-status {
+	  border: none !important;
+	  padding: 0 !important;
+	  background: transparent !important;
+	}
+
+	.multi-ada-wrp-status .vscomp-ele-wrapper {
+	  border: 1px solid #ced4da; /* bootstrap-like */
+	  border-radius: 6px;
+	}
+</style>

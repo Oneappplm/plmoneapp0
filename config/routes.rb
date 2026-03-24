@@ -610,6 +610,7 @@ Rails.application.routes.draw do
       get :group_states, path: 'group-states'
       get :serviced_populations
       get :method_resolutions
+      get :ada_accessibility
       # add more here
     end
   end
