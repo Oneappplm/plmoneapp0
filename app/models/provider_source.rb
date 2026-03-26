@@ -262,16 +262,34 @@ class ProviderSource < ApplicationRecord
 
   def personal_info_progress
     percentage = 0
+
     fields_no_prerequisites = [
       'ps-gender', 'ps-dob', 'ps-citizenship', 'reside-on-us', 'work-on-us',
       'permanent-work-permit', 'languages-you-speak', 'languages-you-write',
       'ethnicity', 'social-security-number'
     ]
-    filled_up_fields = fetch_many(fields_no_prerequisites)&.pluck(:data_value).compact.reject(&:empty?).count
+
+    # ✅ Handle SSN condition
+    ssn_value = fetch_many(['ps-ssn'])&.pluck(:data_value)&.first
+
+    if ssn_value.to_s.strip.downcase == 'no'
+      fields_no_prerequisites = fields_no_prerequisites - ['social-security-number']
+    end
+
+    # ✅ Fetch data properly
+    records = fetch_many(fields_no_prerequisites) || []
+
+    # ✅ Count UNIQUE filled fields only (prevents >100%)
+    filled_keys = records.select { |r| r.data_value.present? }
+                         .map(&:data_key)
+                         .uniq
+
+    filled_up_fields = filled_keys.count
 
     if filled_up_fields != 0
-        percentage = ((filled_up_fields.to_f/fields_no_prerequisites.count.to_f) * 100).to_f
+      percentage = ((filled_up_fields.to_f / fields_no_prerequisites.count.to_f) * 100).to_f
     end
+
     percentage.to_i
   end
 
@@ -998,20 +1016,34 @@ class ProviderSource < ApplicationRecord
     ]
   end
 
-  def professional_references_progress
-    percentage = 0
-    fields_no_prerequisites = [
-      'rf-first-name', 'rf-last-name', 'rf-degree', 'rf-address-line1',
-      'rf-city', 'rf-state', 'rf-zipcode', 'rf-email-address', 'rf-association-start-date', 'rf-association-end-date'
-    ]
+ def professional_references_progress
+  percentage = 0
 
-    filled_up_fields = fetch_many(fields_no_prerequisites)&.pluck(:data_value).compact.reject(&:empty?).count
+  fields_no_prerequisites = [
+    'rf-first-name', 'rf-last-name', 'rf-degree', 'rf-address-line1',
+    'rf-city', 'rf-state', 'rf-zipcode', 'rf-email-address',
+    'rf-association-start-date', 'rf-association-end-date'
+  ]
 
-    if filled_up_fields != 0
-        percentage = ((filled_up_fields.to_f/fields_no_prerequisites.count.to_f) * 100).to_f
-    end
-    percentage.to_i
+  # ✅ NEW: check "Present"
+  present_value = fetch_many(['rf-association-until-present'])&.pluck(:data_value)&.first
+
+  if ['true', 'yes', '1', 'on'].include?(present_value.to_s.strip.downcase)
+    fields_no_prerequisites = fields_no_prerequisites - ['rf-association-end-date']
   end
+
+  filled_up_fields = fetch_many(fields_no_prerequisites)
+                        &.pluck(:data_value)
+                        .compact
+                        .reject { |v| v.to_s.strip.empty? }
+                        .count
+
+  if filled_up_fields != 0
+    percentage = ((filled_up_fields.to_f / fields_no_prerequisites.count.to_f) * 100).to_f
+  end
+
+  percentage.to_i
+end
 
   def professional_organization_progress
     percentage = 0
