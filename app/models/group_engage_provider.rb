@@ -1,29 +1,31 @@
 class GroupEngageProvider < ApplicationRecord
-	include PgSearch::Model
-	pg_search_scope :search,
-                  against: self.column_names,
-                  using: {
-                    tsearch: {any_word: true}
-                  }
+  include PgSearch::Model
 
-	belongs_to :practice_location, optional: true
-	belongs_to :user, optional: true
-	has_one :provider_source
-	has_many	:provider_sources,	dependent: :destroy
+  pg_search_scope :search,
+    against: self.column_names,
+    using: { tsearch: { any_word: true } }
 
-	validates_presence_of :first_name, :last_name, :email_address, :ssn
-	validates_uniqueness_of :email_address, :ssn
+  belongs_to :practice_location, optional: true
+  belongs_to :user, optional: true
+  has_one :provider_source
+  has_many :provider_sources, dependent: :destroy
 
-	after_create	:create_provider_source
-	after_create :create_user
+  validates_presence_of :first_name, :last_name, :email_address, :ssn
+  validates_uniqueness_of :email_address, :ssn
 
-	def full_name = [first_name, middle_name, last_name].compact.join(' ')
+  after_create :create_provider_source
+  after_create :create_user
 
-	def create_provider_source
-		GroupEngageProvider::CreateProviderSourceService.call(self)
-	end
 
-	def create_user
-		GroupEngageProvider::CreateUserService.call(self)
-	end
+  def full_name = [first_name, middle_name, last_name].compact.join(' ')
+
+  private
+
+  def create_provider_source
+    GroupEngageProvider::CreateProviderSourceService.call(self)
+  end
+
+  def create_user
+    GroupEngageProvider::CreateUserService.call(self)
+  end
 end

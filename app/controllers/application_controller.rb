@@ -5,6 +5,11 @@ class ApplicationController < ActionController::Base
   # exceptions for track_event are mostly ajax requests
 	before_action :track_event
 	before_action { filter_params params }
+  before_action do
+    Current.user = current_user
+    Current.source = "controller:#{controller_name}##{action_name}"
+  end
+
 
   # before_action :force_logout_on_close_if_expired, except: [:logout_on_close] # TODO: uncomment this line
 

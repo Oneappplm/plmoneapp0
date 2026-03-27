@@ -1,0 +1,187 @@
+<%= form_with(model: @provider_licensure, url: @url) do |f| %>
+<%= f.hidden_field :caqh_provider_attest_id %>
+<%= f.hidden_field :provider_attest_id %>
+<%= f.hidden_field :id, value: f.object.id %>
+<div class="form-row row mt-3">
+	<div class="col-xl-4">
+		<label for="state">State</label>
+		<%= f.collection_select :state_id, State.all, :id, :name, { include_blank: "Select State" }, class: "form-select form-select-lg" %>
+	</div>
+	<div class="col-xl-4">
+		<label for="type">Type</label>
+		<%= f.select :license_type, ProviderLicensure::LICENSE_TYPE, { prompt: true }, { class: "form-select" } %>
+	</div>
+	<div class="col-xl-4">
+		<label for="license-number">License Number</label>
+		<%= f.text_field :license_number, placeholder:"Type here...", id:"license-number", class:"form-control"%>
+	</div>
+</div>
+<div class="form-row row">
+	<div class="col-xl-6">
+		<label for="issuedate">Issue Date</label>
+		<%= f.date_field :license_issue_date, placeholder:"Type here...", id:"issue-date", class:"form-control"%>
+	</div>
+	<div class="col-xl-6">
+		<label for="expirationdate">Expiration Date</label>
+		<%= f.date_field :license_expiration_date, placeholder:"Type here...", id:"expiration-date", class:"form-control"%>
+	</div>
+</div>
+<div class="form-row row mt-3">
+	<div class="col-xl-6">
+	  <div class="d-flex align-items-center gap-3">
+	    <%= f.label :currently_practice_under_this, "Do you currently practice under this license/certificate?" %>
+	    <div class="form-check">
+	      <%= f.radio_button :currently_practice_under_this, true, class: "form-check-input", id: "prac-yes", checked: true %>
+	      <%= f.label :currently_practice_under_this, "Yes", class: "form-check-label", for: "prac-yes" %>
+	    </div>
+	    <div class="form-check">
+	      <%= f.radio_button :currently_practice_under_this, false, class: "form-check-input", id: "prac-no" %>
+	      <%= f.label :currently_practice_under_this, "No", class: "form-check-label", for: "prac-no" %>
+	    </div>
+	  </div>
+	</div>
+
+	<div class="col-xl-6">
+	  <div class="d-flex align-items-center gap-3">
+	    <%= f.label :is_primary_license, "Is this your primary license?" %>
+	    <div class="form-check">
+	      <%= f.radio_button :is_primary_license, true, class: "form-check-input", id: "primary-yes", checked: true %>
+	      <%= f.label :is_primary_license, "Yes", class: "form-check-label", for: "primary-yes" %>
+	    </div>
+	    <div class="form-check">
+	      <%= f.radio_button :is_primary_license, false, class: "form-check-input", id: "primary-no" %>
+	      <%= f.label :is_primary_license, "No", class: "form-check-label", for: "primary-no" %>
+	    </div>
+	  </div>
+	</div>
+</div>
+<div class="form-row row mt-3">
+	<div class="col-xl-6">
+    <div class="d-flex align-items-center gap-3">
+      <%= f.label :level_require_supervision, "Does your license/certification level require supervision?" %>
+      <div class="form-check">
+        <%= f.radio_button :level_require_supervision, true, class: "form-check-input", id: "level-yes", checked: true %>
+        <%= f.label :level_require_supervision, "Yes", class: "form-check-label", for: "level-yes" %>
+      </div>
+      <div class="form-check">
+        <%= f.radio_button :level_require_supervision, false, class: "form-check-input", id: "level-no" %>
+        <%= f.label :level_require_supervision, "No", class: "form-check-label", for: "level-no" %>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-6">
+    <div class="d-flex align-items-center gap-3">
+      <%= f.label :failed_state_license_exam, "Have you ever failed a state license exam?" %>
+      <div class="form-check">
+        <%= f.radio_button :failed_state_license_exam, true, class: "form-check-input", id: "failed-yes", checked: true %>
+        <%= f.label :failed_state_license_exam, "Yes", class: "form-check-label", for: "failed-yes" %>
+      </div>
+      <div class="form-check">
+        <%= f.radio_button :failed_state_license_exam, false, class: "form-check-input", id: "failed-no" %>
+        <%= f.label :failed_state_license_exam, "No", class: "form-check-label", for: "failed-no" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="form-row row mt-3">
+	<div class="col-xl-12 right-pane">
+		<div class="form-row row">
+			<div class="row field mb-3 p-2">
+				<div class="collapsible">
+					<div id="provider_supervisings">
+						<div class="fields field mb-3">
+							<%= f.fields_for :provider_supervisings do |provider_supervising_fields| %>
+							<%= render 'mhc/verification_platform/provider_supervising_fields', f: provider_supervising_fields %>
+							<% end %>
+						</div>
+						<div class="links mt-2 text-center">
+							<button type="button" class="add_association btn btn-xs btn-primary m-auto" id="add-supervising">Add Other Practitioner/Group</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="form-row row mt-3">
+	<div class="col-xl-6">
+		<div class="d-flex align-items-center gap-3">
+			<%= f.label :license_person_type, "License Person Type" %>
+			<%= f.select :license_person_type, ProviderLicensure::LICENSE_PERSON_TYPE, { prompt: true }, { class: "form-select" } %>
+		</div>
+	</div>
+</div>
+
+<div class="form-row row mt-3">
+	<div class="col-xl-25">
+		<label for="add-license-comment">Please List any comments</label>
+		<%= f.text_area :license_comment, id: "add-license-comment", placeholder:"Type here...", class:"form-control" %>
+	</div>
+</div>
+
+<div class="form-row row mt-3">
+	<div class="col-xl-6">
+		<div class="d-flex align-items-center gap-3">
+			<%= f.label :show_on_tickler, "Show on tickler?" %>
+			<div class="form-check">
+				<%= f.radio_button :show_on_tickler, true, class: "form-check-input", id: "inter-yes", checked: true %>
+				<%= f.label :show_on_tickler, "Yes", class: "form-check-label", for: "prac-yes" %>
+			</div>
+			<div class="form-check">
+				<%= f.radio_button :show_on_tickler, false, class: "form-check-input", id: "inter-no" %>
+				<%= f.label :show_on_tickler, "No", class: "form-check-label", for: "prac-no" %>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="form-row mt-1 d-flex justify-content-end">
+	<%= f.submit class: "btn btn-primary  btn-sm btn-license-save" %>
+</div>        
+<% end %>
+<script>
+  $("#add-supervising").click(function() {
+		var providerSupervisingsFields = $("#provider_supervisings .field .row");
+		var newProviderSupervising = providerSupervisingsFields.last().clone();
+		console.log($(newProviderSupervising).find("input"))
+		var newId = new Date().getTime();
+		newProviderSupervising.html(newProviderSupervising.html().replace(/provider_supervisings_attributes\]\[\d+\]/g, "provider_supervisings_attributes][" + newId + "]"));
+		$("#provider_supervisings .fields").append(newProviderSupervising);
+
+		$(newProviderSupervising).find("select").each(function() {
+			$(this).find("option[selected]").first().removeAttr("selected")
+		});
+
+		$(newProviderSupervising).find("input").each(function() {
+			$(this).val("")
+		});
+
+		newProviderSupervising.find('.remove-dynamic-fields').attr('data-id', newId);
+		newProviderSupervising.attr('data-id', newId);
+		$("#provider_supervisings .fields").append(newProviderSupervising);
+	});
+
+	$("#provider_supervisings").on("click", ".remove-dynamic-fields", function() {
+		var field = document.getElementsByClassName("provider_supervising_container");
+		providerSupervisingField = $(this).attr("data-id");
+
+		var providerSupervisingsField = $('.providerSupervisingsFields-fields[data-id='+providerSupervisingField+']');
+		if(field.length > 1) {
+			var id = $(this).data('id');
+    	var model = $(this).data('model');
+			deleteDynamicAttr(id,model,$(this));
+		}
+	});
+	function deleteDynamicAttr(id,model,button) {
+		$.ajax({
+			url: '<%= delete_record_path %>',
+			method: 'POST',
+			data: { authenticity_token: csrfToken, id: id, model: model },
+			success: function(data) {
+							button.parent().parent().remove();
+			}
+		});
+	}
+</script>

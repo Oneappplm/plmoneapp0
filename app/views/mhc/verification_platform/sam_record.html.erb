@@ -1,0 +1,82 @@
+<div class="enc-content">
+    <div class="container">
+        <%= render "top_nav_buttons"%>
+        <div class="mt-4">
+            <div class="d-flex align-items-center gap-3">
+                <a href="<%= mhc_verification_platform_path(page_tab: 'sam')%>" class="link-back">
+                    <i class='bx bx-left-arrow-alt'></i>
+                </a>
+                <h4 class="page-heading">SAM Record</h4>
+            </div>
+        </div>
+        <div class="bg-light row p-2 text-black">
+            <div class="col-12">
+                <strong>Name Type:</strong>    <%= @provider_personal_information_sam_record.is_primary ? "Primary Name" : "Not Primary" %>
+            </div>
+            <div class="col-12">
+                <strong>Last Name:</strong>    <%= @provider_personal_information_sam_record.last_name %>
+            </div>
+            <div class="col-12">
+                <strong>First Name:</strong>  <%= @provider_personal_information_sam_record.first_name %>
+            </div>
+            <div class="col-12">
+                <strong>Middle Name:</strong> <%= @provider_personal_information_sam_record.middle_name %>
+            </div>
+            <div class="col-12">
+                <strong>Suffix:</strong>      <%= @provider_personal_information_sam_record.suffix %>
+            </div>
+            <div class="border border-black p-2">
+                <h4 class="page-heading">RVA Information</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered practice-table mt-3 page-applicable ">
+                        <thead>
+                            <tr>
+                                <th class="text-white" scope="col">Search Results</th>
+                                <th class="text-white">Finding</th>
+                                <th class="text-white">Verifier</th>
+                                <th class="text-white">Source Date</th>
+                                <th class="text-white">Verification Date</th>
+                                <th class="text-white">Exclusion Type</th>
+                                <th class="text-white">View Image</th>
+                                <th class="text-white">Modify</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% @provider_personal_information_sam_record.provider_personal_information_sam_rva_records.each do |provider_personal_information_sam_rva_record| %>
+                                <tr>
+                                    <td><%= verification_search_results.to_h.key(provider_personal_information_sam_rva_record.search_result) %></td>
+                                    <td><%= provider_personal_information_sam_rva_record.verification_sanctions %></td>
+                                    <td><%=  %></td>
+                                    <td><%= provider_personal_information_sam_rva_record.source_date&.strftime('%b %d, %Y') %></td>
+                                    <td><%= provider_personal_information_sam_rva_record.verification_date&.strftime('%b %d, %Y') %></td>
+                                    <td><%= provider_personal_information_sam_rva_record.exclusion_type %></td>
+                                    <% if provider_personal_information_sam_rva_record.supporting_documentation.present? && provider_personal_information_sam_rva_record.supporting_documentation.present? %>
+                                        <td><%= link_to provider_personal_information_sam_rva_record.supporting_documentation.identifier, provider_personal_information_sam_rva_record.supporting_documentation.url, target: '_blank' %></td>
+                                    <% else %>
+                                        <td>TBD</td>
+                                    <% end %>
+                                    <td><a href="<%= mhc_verification_platform_path(page_tab: 'show_sam_record', provider_personal_information_sam_record_id: @provider_personal_information_sam_record.id, provider_personal_information_sam_rva_record_id: provider_personal_information_sam_rva_record.id)%>" id="OigDisplayGeneral"
+                                            class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none">Modify</a></td>
+                                </tr>
+                            <% end %>
+                        </tbody>
+                    </table>
+                </div>
+                <a href="<%= mhc_verification_platform_path(page_tab: 'show_sam_record', provider_personal_information_sam_record_id: @provider_personal_information_sam_record.id)%>" id="OigDisplayGeneral"
+                    class="btn enc-btn-nav btn-sm btn-primary active">Manually Create RVA Record</a>
+                <a href="<%= auto_create_mhc_provider_personal_information_sam_rva_record_path(page_tab: 'show_sam_record', provider_personal_information_sam_record_id: @provider_personal_information_sam_record.id)%>" id="OigDisplayGeneral"
+                    class="btn enc-btn-nav btn-sm btn-primary active">Auto Create RVA Record</a>
+            </div>
+            <% if @provider_personal_information_sam_record.persisted? %>
+                <div class="col-12 text-left" style="margin-top: 10px;">
+                    <%= button_to 'Delete', 
+                        mhc_provider_personal_information_sam_record_path(@provider_personal_information_sam_record), 
+                        method: :delete, 
+                        data: { confirm: 'Are you sure you want to delete this sam detail?' }, 
+                        class: 'btn btn-danger', 
+                        style: 'width: 200px;' %>
+                </div>
+            <% end %>
+        </div>
+    </div>
+</div>

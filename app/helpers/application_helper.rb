@@ -5,7 +5,22 @@ module ApplicationHelper
 	def current_client_organization
 		current_client_organization = ClientOrganization.take || ClientOrganization.new
 	end
-
+  
+	def us_states_list
+    [
+      'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
+      'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
+      'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
+      'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
+      'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri',
+      'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
+      'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
+      'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
+      'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
+      'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+    ]
+  end
+	
 	def active_menu cname, aname = nil
 		if aname.present?
 			cname.split(',').include?(controller_name) && aname.split(',').include?(action_name) ? 'ph-active fw-semibold' : ''
@@ -20,6 +35,10 @@ module ApplicationHelper
 		else
 			cname.split(',').include?(controller_name) ? 'active' : ''
 		end
+	end
+
+	def all_information_completed?(provider)
+	  provider&.general_info_completed? && provider&.disclosure_progress_v2 == 100 && provider.practice_information_completed? && provider&.work_history_completed? && provider&.professional_liability_completed? && provider&.affiliation_info_completed? && provider&.education_and_training_completed? && provider&.speacialties_completed? && provider&.health_plans_completed? && provider&.professional_ids_completed?
 	end
 
 	def current_provider_source
@@ -190,6 +209,14 @@ module ApplicationHelper
     ]
   end
 
+	def verification_search_results
+    [["Match", "match"],
+			["Possible match", "possible_match"],
+			["No match", "no_match"],
+			["Unable to verify", "unable_to_verify"]
+		]
+  end
+
   # not sure why but for some reason this has different options
   def enrollment_status
     [
@@ -348,6 +375,19 @@ module ApplicationHelper
       ['Aetna','aetna'],
       ['Amerihealth','amerihealth'],
       ['Priority Health','priority_health']
+    ]
+  end
+
+	def suffix
+    [
+      ['Sr.','sr'],
+      ['Jr.','jr'],
+      ['II','ii'],
+      ['III','iii'],
+      ['IV','iv'],
+      ['V','v'],
+      ['VI','vi'],
+      ['VII','vii']
     ]
   end
 
@@ -682,7 +722,7 @@ module ApplicationHelper
 				},
 				verification_platform: {
 					client_home: {
-						controller: 'verification_platform',
+						controller: 'mhc/verification_platform',
 						action: 'index'
 					},
 					manage_client: {

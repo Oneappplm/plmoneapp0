@@ -38,39 +38,20 @@ class EnrollmentProvidersController < ApplicationController
 	end
 
 	def update
-		detail_params = enrollment_provider_params[:details_attributes].values.first
-	  detail = @enrollment_provider.details.find(detail_params[:id])
-
-	   # Capture the old status before changes
-	  old_status = detail.enrollment_status
-
-	  # Assign the new attributes to the provider
-  	@enrollment_provider.assign_attributes(enrollment_provider_params)
-
-		@enrollment_provider.remove_upload_payor_files! # remove upload payor files if not present, for handling all files deletion
-
-		if @enrollment_provider.save(validate: false)
-
-			new_status = detail_params[:enrollment_status]
-
-			 # Send the email if the status has changed
-	    if old_status != new_status
-	      provider_name = @enrollment_provider.full_name
-	      payer = detail.enrollment_payer
-
-	      EnrollmentProviderMailer.status_changed(provider_name, payer, old_status, new_status, current_user.email).deliver_later
-	    end
-
-			@enrollment_provider.update_columns(
-				provider_id: params[:provider_id],
-				outreach_type:	params[:outreach_type],
-				updated_by: current_user&.full_name
-			)
-			redirect_url = current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path
-			redirect_to redirect_url, notice: "Enrollment #{@enrollment_provider.full_name} has been successfully updated."
-		else
-			render 'edit'
-		end
+	  @enrollment_provider.assign_attributes(enrollment_provider_params)
+	  if @enrollment_provider.save
+	  	@enrollment_provider.update_columns(
+	      provider_id: params[:provider_id],
+	      outreach_type: params[:outreach_type],
+	      updated_by: current_user&.full_name
+	    )
+	    redirect_to(
+	      current_setting.qualifacts? ? client_provider_enrollments_path : enrollment_providers_path,
+	      notice: "Enrollment #{@enrollment_provider.full_name} has been successfully updated."
+	    )
+	  else
+	    render :edit
+	  end
 	end
 
 	def download_all_pdfs
@@ -185,15 +166,20 @@ class EnrollmentProvidersController < ApplicationController
 			:suffix,
 			:telephone_number,
 			:email_address,
-      details_attributes: [:id, :start_date, :due_date,
-                           :enrollment_payer, :enrollment_type, :enrollment_status, :payer_state,
-                           :approved_date, :revalidation_date, :revalidation_due_date, :denied_date,
-                           :comment, :ptan_number, :provider_ptan, :group_ptan,
-                           :enrollment_tracking_id, :enrollment_effective_date,
-                           :association_start_date, :business_end_date, :association_end_date,
-                           :line_of_business, :revalidation_status, :cpt_code, :descriptor,
-                           :provider_id, :tax_id, :location, :group_id, :upload_payor_file, :processing_date, :terminated_date, :payor_email, :payor_phone, :payor_username, :payor_password, :_destroy, {upload_payor_file: []}, questions_attributes: [:id, :question, :answer, :_destroy] ],
-
+      details_attributes: [
+	      :id, :start_date, :due_date,
+	      :enrollment_payer, :enrollment_type, :enrollment_status, :payer_state,
+	      :approved_date, :revalidation_date, :revalidation_due_date, :denied_date,
+	      :comment, :ptan_number, :provider_ptan, :group_ptan,
+	      :enrollment_tracking_id, :enrollment_effective_date,
+	      :association_start_date, :business_end_date, :association_end_date,
+	      :line_of_business, :revalidation_status, :cpt_code, :descriptor,
+	      :provider_id, :tax_id, :location, :group_id,
+	      :processing_date, :terminated_date, :payor_email, :payor_phone,
+	      :payor_username, :payor_password, :_destroy,
+	      { upload_payor_file: [] },
+	      questions_attributes: [:id, :question, :answer, :_destroy]
+	    ]
 		)
 	end
 

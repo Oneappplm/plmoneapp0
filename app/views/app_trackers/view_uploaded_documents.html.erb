@@ -1,0 +1,68 @@
+<%= render 'user_restriction', locals: { access_key: 'App Tracker' } do %>
+<div class="content container-fluid">
+ <div class="row">
+			<div class="col-lg-12">
+				<h3 class="my-4">Uploaded Documents</h3>
+				<table class="table table table-striped table-bordered table-responsive">
+					<thead>
+						<tr>
+							<th scope="col" class="bg-primary text-white">
+								<div class="form-check">
+										<div class="align-items-center">
+												<input class="form-check-input" type="checkbox" value="" onclick="checkAll();" id="checkAllCbs">
+										</div>
+								</div>
+							</th>
+							<th scope="col" class="bg-primary text-white">Image Classification</th>
+							<th scope="col" class="bg-primary text-white">Sub Section</th>
+							<th scope="col" class="bg-primary text-white">File</th>
+							<th scope="col" class="bg-primary text-white">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% @provider.uploaded_documents.each do |doc| %>
+						<% next unless doc.persisted? %>
+						<tr>
+							<td>
+								<div class="form-check">
+										<div class="align-items-center">
+												<input class="form-check-input user-cbs" type="checkbox" value=""  >
+										</div>
+								</div>
+							</td>
+							<td><%= doc.image_classification %></td>
+							<td><%= doc.sub_section %></td>
+							<td>
+								<%= link_to doc.file_upload.identifier, doc.file_upload.url, target: '_blank' %>
+							</td>
+							<td>
+								<%= button_to delete_uploaded_document_app_tracker_path(@provider, doc_id: doc), class: 'text-dark-grey delete-button', method: :delete, data: { confirm: 'Are you sure you want to delete?' }, class: 'btn btn-xs btn-danger' do %>
+								<i class="bi bi-trash"></i>
+							<% end %>
+							</td>
+						</tr>
+						<% end %>
+					</tbody>
+				</table>
+			</div>
+	</div>
+</div>
+<% end %>
+
+<% content_for :js do %>
+<script>
+ function checkAll() {
+  var checkBox = document.getElementById("checkAllCbs");
+  (checkBox.checked == true) ? updateCbs(true) : updateCbs(false);
+}
+
+function updateCbs(status) {
+	var cbs = document.querySelectorAll('.user-cbs');
+	for (var i = cbs.length - 1; i >= 0; i--) {
+		if(cbs[i].type == "checkbox") {
+			cbs[i].checked = status;
+		}
+	}
+}
+</script>
+<% end %>

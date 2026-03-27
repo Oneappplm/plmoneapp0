@@ -1,6 +1,6 @@
 class EnrollmentProvidersDetail < ApplicationRecord
 	 audited
-  belongs_to :enrollment_provider, optional: true
+  belongs_to :enrollment_provider, inverse_of: :details
   mount_uploaders :upload_payor_file, DocumentUploader
 
   scope :submitted, -> { where(enrollment_status: 'application-submitted') }
@@ -20,7 +20,6 @@ class EnrollmentProvidersDetail < ApplicationRecord
   scope :priority_health, -> {where(enrollment_payer: 'priority_health')}
   scope :medicaid, -> {where(enrollment_payer: 'medicaid')}
 
-  belongs_to :enrollment_provider
   has_many :application_status_logs, class_name: 'EpdLog', dependent: :destroy
   has_many :questions, class_name: 'EpdQuestion', dependent: :destroy
 
@@ -31,7 +30,11 @@ class EnrollmentProvidersDetail < ApplicationRecord
 
   protected
   def create_application_status_log
-    self.application_status_logs.create(status: self.enrollment_status)
+    self.application_status_logs.create(
+      status: self.enrollment_status,
+      updated_by: Current.user&.id,
+      source: Current.source
+    )
   end
 
   # return back to previous value if the new value is nil

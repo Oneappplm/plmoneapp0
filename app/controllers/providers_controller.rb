@@ -160,12 +160,14 @@ class ProvidersController < ApplicationController
 
 	    changed_attributes
 
-		users = User.includes(:users_enrollment_groups).where(users_enrollment_groups: { id: @provider.enrollment_group_id })
-
-		EnrollmentChangesNotification.with(changed_attributes_array: changed_attributes, provider_full_name: old_data.fullname).deliver(users)
+	   EnrollmentChangesNotification.with(changed_attributes_array: changed_attributes, provider_full_name: old_data.fullname).deliver(User.all)
 	end
 	def destroy
 		if @provider.destroy
+
+			# delete related ppi record 
+			ppi_info = ProviderPersonalInformation.find_by(caqh_provider_id: @provider.id)
+			ppi_info.destroy!
 			PlmMailer.with(
 				email: Setting.take.t('system_notification_email'),
 				subject: "Delete Provider",
@@ -314,6 +316,7 @@ class ProvidersController < ApplicationController
 	# @provider.ins_policies.build if @provider.ins_policies.blank?
 	# @provider.np_licenses.build if @provider.np_licenses.blank?
 	@provider.dea_licenses.build if @provider.dea_licenses.blank?
+	@provider.provider_enrollment_groups.build if @provider.provider_enrollment_groups.blank?
 	@provider.licenses.build if @provider.licenses.blank?
 	@provider.rn_licenses.build if @provider.rn_licenses.blank?
 	@provider.service_locations.build if @provider.service_locations.blank?
@@ -323,7 +326,7 @@ class ProvidersController < ApplicationController
 	@provider.board_certifications.build if @provider.board_certifications.blank?
 	payer_login = @provider.payer_logins.build if @provider.payer_logins.blank?
 	payer_login.questions.build if payer_login
-	@provider.work_history_providers.build if @provider.work_history_providers.blank?
+	# @provider.work_history_providers.build if @provider.work_history_providers.blank?
 end
 
 
@@ -338,7 +341,7 @@ end
   end
 
 	def provider_params
-			params.require(:provider).permit(
+		permitted = params.require(:provider).permit(
 					:admin_id,
 					:first_name,
 					:middle_name,
@@ -443,6 +446,44 @@ end
 					:supervising_name,
 					:supervising_npi,
 					:primary_location,
+					:fax,
+					:provider_type,
+					:cred_cycle,
+					:encompass_id,
+					:provider_status,
+					:attested_date,
+					:file_due_date,
+					:application_complete_date,
+					:application_reviewed,
+					:batch_description,
+					:contact_method,
+					:attempt_status,
+					:contact_date,
+					:application_date, :release_date, :disclosure_questions_explanation_date,
+		      :face_sheet_date, :employment_gap_date, :practice_information_date,
+		      :npdb_findings_explanation_date, :training_date, :education_date,
+		      :professional_resource_network_date, :dea_date, :pa_sponsor_request_form_date,
+		      :collaborative_agreement_date,
+		      :application_received_flag, :release_received_flag,
+		      :disclosure_questions_explanation_received_flag, :face_sheet_received_flag,
+		      :employment_gap_received_flag, :practice_information_received_flag,
+		      :npdb_findings_explanation_received_flag, :training_received_flag,
+		      :education_received_flag, :professional_resource_network_received_flag,
+		      :dea_received_flag, :pa_sponsor_request_form_received_flag,
+		      :collaborative_agreement_received_flag,
+		      :application_received_incomplete_flag, :release_received_incomplete_flag,
+		      :disclosure_questions_explanation_received_incomplete_flag, :face_sheet_received_incomplete_flag,
+		      :employment_gap_received_incomplete_flag, :practice_information_received_incomplete_flag,
+		      :npdb_findings_explanation_received_incomplete_flag, :training_received_incomplete_flag,
+		      :education_received_incomplete_flag, :professional_resource_network_received_incomplete_flag,
+		      :dea_received_incomplete_flag, :pa_sponsor_request_form_received_incomplete_flag,
+		      :collaborative_agreement_received_incomplete_flag,
+		      :application_comments, :release_comments,
+		      :disclosure_questions_explanation_comments, :face_sheet_comments,
+		      :employment_gap_comments, :practice_information_comments,
+		      :npdb_findings_explanation_comments, :training_comments,
+		      :education_comments, :professional_resource_network_comments,
+		      :dea_comments, :pa_sponsor_request_form_comments, :collaborative_agreement_comments,
 					:welcome_letter_status, :welcome_letter_subject, :welcome_letter_message, :check_welcome_letter, :check_co_caqh, :check_mn_caqh_state_release_form, :check_mn_caqh_authorization_form, :check_caqh_standard_authorization,
 					{ welcome_letter_attachments: [], state_license_copies: [], dea_copies: [], w9_form_copies: [], certificate_insurance_copies: [], driver_license_copies: [], board_certification_copies: [], caqh_app_copies: [], cv_copies: [], telehealth_license_copies: [] },
 					#taxonomies_attributes: [:id, :taxonomy_code, :specialty, :_destroy],
@@ -465,7 +506,20 @@ end
 					cnp_licenses_attributes: [:id, :cnp_license_number, :state_id, :effective_date, :expiration_date, :cnp_license_renewal_effective_date, :no_cnp_license, :_destroy],
 					board_certifications_attributes: [:id, :bc_certification_number, :bc_board_name, :bc_effective_date, :bc_expiration_date, :bc_recertification_date, :bc_specialty_type, :_destroy],
 					ins_policies_attributes: [:id, :ins_policy_number, :effective_date, :expiration_date, :_destroy],
+					 provider_enrollment_groups_attributes: [
+				      :id, :group_id, :_destroy,
+				      { primary_location: [], additional_locations: [] }
+				    ],
 					payer_logins_attributes: [:id, :enrollment_payer, :username, :password, :state_id, :notes, :cred_current_reattest_date, :cred_reattest_date, :_destroy, questions_attributes: [:id, :question, :answer]]
 			)
+    # Reject blank values from primary and additional locations
+	  if permitted[:provider_enrollment_groups_attributes]
+	    permitted[:provider_enrollment_groups_attributes].each do |_, group_attrs|
+	      group_attrs[:primary_location]&.reject!(&:blank?)
+	      group_attrs[:additional_locations]&.reject!(&:blank?)
+	    end
+	  end
+
+	  permitted
 	end
 end

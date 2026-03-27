@@ -29,6 +29,12 @@ class RoleBasedAccess < ApplicationRecord
     "Dashboard",
     "Data Access",
     "Decision Point",
+    "Scheduler",
+    "Work Tickler",
+    "Documents",
+    "Reports",
+    "Minutes",
+    "Issue",
     "Provider Engage",
     "Group Engage",
     "Manage Provider",
@@ -104,7 +110,15 @@ class RoleBasedAccess < ApplicationRecord
     "Edit Access",
     "Delete Role",
     "Associate Location",
-	  "Settings"
+	"Settings",
+	"App Tracker",
+    "Help Codes",
+    "Pdf Populator",
+    "Hippocrates",
+    "Verification Products",
+    "Activity Logs",
+    "DEA File Uplodation",
+    "State License"
 	]
 
 	default_scope { order(:id) }
