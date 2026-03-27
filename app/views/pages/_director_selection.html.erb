@@ -14,7 +14,11 @@
           <% if current_user.full_name == director.full_name %>
             <%= link_to assigned_record.provider_name, show_virtual_review_committee_path(assigned_record.id), id:"target-name" %>
           <% else %>
-            <%= assigned_record.fullname %>
+            <%#= assigned_record.fullname %>
+            <%= link_to(
+              "#{assigned_record.fullname} #{assigned_record.provider_type_provider_type_abbreviation}",
+              show_virtual_review_committee_path(assigned_record.id)
+            ) %>
           <% end %>
         <% end %>  
       </td>
