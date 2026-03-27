@@ -29,10 +29,10 @@
       <select name="director"
               id="directors"
               class="custom-select form-select border-dark">
-        <option value="All" selected>All</option>
+        <option value="All" <%= 'selected' if params[:director] == 'All' || params[:director].blank? %>>All</option>
         <% @vrc_directors.each do |vrc_director| %>
-          <option value="<%= vrc_director.id %>">
-            <%= vrc_director.full_name %>
+          <option value="<%= vrc_director.id %>" <%= 'selected' if params[:director].to_s == vrc_director.id.to_s %>>
+            <%= vrc_director.full_name %> (<%= vrc_director.role %>) 
           </option>
         <% end %>
       </select>
@@ -75,7 +75,12 @@
                      </td>
                      <td class="text-start">
                         <i class="bi bi-file-earmark-check-fill" style="font-size: 1rem; color: #1CC775;"></i>
-                     <%= selected_committee_date.fullname %>
+                     <%#= selected_committee_date.fullname %>
+                     <%= link_to(
+                        "#{selected_committee_date.fullname} #{selected_committee_date.provider_type_provider_type_abbreviation}",
+                        show_virtual_review_committee_path(selected_committee_date.id)
+                      ) %>
+
                    </td>
                      <td>
                         <%#= selected_committee_date&.practitioner_type %>

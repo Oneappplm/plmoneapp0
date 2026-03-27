@@ -1101,6 +1101,9 @@ end
   def practice_location_progress_v2
     fields_to_fill_up = ['all_practice_location']
 
+    toggle_value = fetch_many(['all_practice_location'])&.pluck(:data_value)&.first
+    return 100 if toggle_value.to_s.strip.downcase == 'yes'
+
     fields_to_fill_up += practice_location_general_information_fields if practice_location_general_info_started?
     fields_to_fill_up += practice_location_contacts_fields if practice_location_contacts_started?
     fields_to_fill_up += practice_location_midlevel_practitioner_fields if practice_location_midlevel_practitioner_started?
