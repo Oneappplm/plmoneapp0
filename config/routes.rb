@@ -487,6 +487,8 @@ Rails.application.routes.draw do
   end
 
 
+  get 'practice_locations/:id/view', to: 'pages#view_practice_location', as: :view_practice_location
+  delete '/practice_locations/:id/destroy_location', to: 'pages#destroy_location'
 
   resources :view_summary
 
