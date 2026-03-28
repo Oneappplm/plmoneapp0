@@ -1,4 +1,5 @@
 class PagesController < ApplicationController
+  skip_before_action :verify_authenticity_token, only: [:destroy_location]
   include Sys
 	before_action :set_global_search, only: [:virtual_review_committee]
 	before_action :set_clients, only: %i[client_portal show_client_details data_access]
@@ -26,7 +27,24 @@ class PagesController < ApplicationController
   MB_DIVISOR = 1_048_576
 
 	def provider_source
-    @practice_locations = PracticeLocation.all
+    @locations = if params[:search].present?
+      PracticeLocation.search(params[:search])
+    else
+      PracticeLocation.order(created_at: :desc)
+    end.paginate(
+      page: params[:page_no],   # ✅ change this
+      per_page: (params[:per_page] || 10)
+    )
+
+     @non_associated_providers = ProviderSource.where(practice_location_id: nil)
+     @providers = ProviderSource.unscoped.where(practice_location_id: params[:practice_location_id])
+     .order(created_at: :asc)
+
+     response_data = {
+      non_associated_providers: @non_associated_providers.map { |provider| { id: provider.id, full_name: provider.full_name } },
+      providers: @providers.map { |provider| { id: provider.id, full_name: provider.full_name } }
+    }
+
 		@provider_sources = ProviderSource.all
 		@provider = current_user.provider_source_lookup
     build_initial_associations
@@ -47,6 +65,27 @@ class PagesController < ApplicationController
 			render layout: 'provider_source'
 		end
 	end
+
+  def view_practice_location
+    @practice_location = PracticeLocation.find(params[:id])
+    @practice_types = PracticeType.all
+    @profiles = PractitionerProfile.all
+
+    html = render_to_string(
+      partial: 'pages/provider_source/view_practice_location_modal',
+      formats: [:html],
+      layout: false
+    )
+
+    render json: { html: html }
+  end
+
+  def destroy_location
+    practice_location = PracticeLocation.find(params[:id])
+    practice_location.destroy
+
+    render json: { success: true }
+  end
 
   def update_review_committee_dates
     if params[:vrc_directors].present?
