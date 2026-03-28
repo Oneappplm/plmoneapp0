@@ -26,6 +26,7 @@ class PagesController < ApplicationController
   MB_DIVISOR = 1_048_576
 
 	def provider_source
+    @practice_locations = PracticeLocation.all
 		@provider_sources = ProviderSource.all
 		@provider = current_user.provider_source_lookup
     build_initial_associations
