@@ -46,7 +46,14 @@ class PagesController < ApplicationController
     }
 
 		@provider_sources = ProviderSource.all
-		@provider = current_user.provider_source_lookup
+		target_user =
+      if current_user.super_admin? && params[:user_id].present?
+        User.find(params[:user_id])
+      else
+        current_user
+      end
+
+    @provider = current_user.provider_source_lookup(target_user,  params[:provider_source_id])
     build_initial_associations
     @provider_source_documents = ProviderSourceDocument.where(provider_source_id: @provider.id)
 		HtmlUtils.set_current_provider_source(@provider)
@@ -658,13 +665,12 @@ class PagesController < ApplicationController
   end
 
   def set_provider
-			if !ProviderSource.current.present?
-				ProviderSource.last.update_columns current_provider_source: true, created_by_user: current_user.id
-			end
+    target_user = params[:user_id].present? ? User.find(params[:user_id]) : current_user
 
-			@provider = ProviderSource.current.is_a?(Array) ? ProviderSource.current_provider_source_by_current_user.last : ProviderSource.current_provider_source_by_current_user
-		rescue
-			nil
+    @provider_source = current_user.provider_source_lookup(
+      target_user,
+      params[:provider_source_id]
+    )
   end
 
   def has_incomplete_tabs

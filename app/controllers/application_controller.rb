@@ -4,10 +4,33 @@ class ApplicationController < ActionController::Base
   # exceptions for track_event are mostly ajax requests
 	before_action :track_event, unless: :skip_ahoy_tracking?
 	before_action { filter_params params }
+	before_action :store_editing_provider_source
+	include ApplicationHelper
+	helper_method :editing_provider_source
+
+	def store_editing_provider_source
+    if params[:provider_source_id].present?
+      session[:editing_provider_source_id] = params[:provider_source_id].to_i
+    end
+  end
+
+	def editing_provider_source
+		Rails.logger.warn "editing_provider_source => params[:provider_source_id]=#{params[:provider_source_id].inspect}, session=#{session[:editing_provider_source_id].inspect}, resolved=#{@editing_provider_source&.id}"
+	  @editing_provider_source ||= begin
+	    if params[:provider_source_id].present?
+	      ProviderSource.find_by(id: params[:provider_source_id])
+	    elsif session[:editing_provider_source_id].present?
+	      ProviderSource.find_by(id: session[:editing_provider_source_id])
+	    elsif params[:id].present? && controller_name == "provider_sources"
+	      ProviderSource.find_by(id: params[:id])
+	    else
+	      current_user.provider_source_lookup
+	    end
+	  end
+	end
 
   # before_action :force_logout_on_close_if_expired, except: [:logout_on_close] # TODO: uncomment this line
 
-	include ApplicationHelper
 
 	protected
 
