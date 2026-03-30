@@ -313,12 +313,34 @@ class User < ApplicationRecord
     )
   end
 
-  def provider_source_lookup
-    if group_engage_provider.present? && group_engage_provider.provider_source.present?
-			group_engage_provider.provider_source
-		else
-			ProviderSource.find_or_create_by(current_provider_source: true, created_by_user: self.id)
-		end
+  def provider_source_lookup(target_user = self, selected_provider_source_id = nil)
+    # ✅ ALWAYS single GEP
+    gep = GroupEngageProvider.find_or_create_by!(user_id: target_user.id)
+
+    # ✅ PRIORITY 1: selected record (admin click)
+    if selected_provider_source_id.present?
+      provider_source = gep.provider_sources.find_by(id: selected_provider_source_id)
+      return provider_source if provider_source.present?
+    end
+
+    # ✅ PRIORITY 2: current
+    provider_source = gep.provider_sources
+                         .where(current_provider_source: true)
+                         .order(updated_at: :desc)
+                         .first
+
+    # ✅ PRIORITY 3: existing user record
+    provider_source ||= gep.provider_sources
+                            .order(updated_at: :desc)
+                            .first
+
+    # ✅ PRIORITY 4: create ONLY if none exists
+    provider_source ||= gep.provider_sources.create!(
+      current_provider_source: true,
+      created_by_user: target_user.id
+    )
+
+    provider_source
   end
 
   def send_invite_and_reset_password_instructions params = {}
