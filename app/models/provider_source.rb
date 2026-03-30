@@ -37,7 +37,7 @@ class ProviderSource < ApplicationRecord
   # this will make it so that every user will have a different current provider source on the provider engage page
   scope :current_provider_source_by_current_user, ->(user_id) { find_by(created_by_user: user_id, current_provider_source: true) }
   default_scope { order(current_provider_source: :desc) }
-  belongs_to :provider_personal_information
+  belongs_to :provider_personal_information, optional: true
   
   delegate :first_name, :last_name, :middle_name, :suffix,
          to: :provider_personal_information,

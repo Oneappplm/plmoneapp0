@@ -7,11 +7,20 @@ class GroupEngageProvider < ApplicationRecord
 
   belongs_to :practice_location, optional: true
   belongs_to :user, optional: true
-  has_one :provider_source
+  # has_one :provider_source
   has_many :provider_sources, dependent: :destroy
 
-  validates_presence_of :first_name, :last_name, :email_address, :ssn
-  validates_uniqueness_of :email_address, :ssn
+
+  with_options unless: :system_generated? do
+    validates :first_name, presence: true
+    validates :last_name, presence: true
+    validates :email_address, presence: true
+    validates :ssn, presence: true
+  end
+
+  def system_generated?
+    user_id.present? && first_name.blank?
+  end
 
   # after_create :create_provider_source
   # after_create :create_user
