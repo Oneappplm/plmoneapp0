@@ -27,33 +27,13 @@ class PagesController < ApplicationController
   MB_DIVISOR = 1_048_576
 
 	def provider_source
-    @locations = if params[:search].present?
-      PracticeLocation.search(params[:search])
-    else
-      PracticeLocation.order(created_at: :desc)
-    end.paginate(
-      page: params[:page_no],   # ✅ change this
-      per_page: (params[:per_page] || 10)
-    )
-
-     @non_associated_providers = ProviderSource.where(practice_location_id: nil)
-     @providers = ProviderSource.unscoped.where(practice_location_id: params[:practice_location_id])
-     .order(created_at: :asc)
-
-     response_data = {
-      non_associated_providers: @non_associated_providers.map { |provider| { id: provider.id, full_name: provider.full_name } },
-      providers: @providers.map { |provider| { id: provider.id, full_name: provider.full_name } }
-    }
-
 		@provider_sources = ProviderSource.all
-		target_user =
-      if current_user.super_admin? && params[:user_id].present?
-        User.find(params[:user_id])
-      else
-        current_user
-      end
-
-    @provider = current_user.provider_source_lookup(target_user,  params[:provider_source_id])
+		@provider = editing_provider_source
+    if @provider.practice_location_id.present?
+      @locations = PracticeLocation.where(id: @provider.practice_location_id)
+    else
+      @locations = PracticeLocation.none
+    end
     build_initial_associations
     @provider_source_documents = ProviderSourceDocument.where(provider_source_id: @provider.id)
 		HtmlUtils.set_current_provider_source(@provider)
@@ -666,12 +646,13 @@ class PagesController < ApplicationController
   end
 
   def set_provider
-    target_user = params[:user_id].present? ? User.find(params[:user_id]) : current_user
+			if !ProviderSource.current.present?
+				ProviderSource.last.update_columns current_provider_source: true, created_by_user: current_user.id
+			end
 
-    @provider_source = current_user.provider_source_lookup(
-      target_user,
-      params[:provider_source_id]
-    )
+			@provider = ProviderSource.current.is_a?(Array) ? ProviderSource.current_provider_source_by_current_user.last : ProviderSource.current_provider_source_by_current_user
+		rescue
+			nil
   end
 
   def has_incomplete_tabs
