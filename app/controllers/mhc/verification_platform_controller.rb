@@ -209,12 +209,14 @@ class Mhc::VerificationPlatformController < ApplicationController
       redirect_to mhc_verification_platform_index_path and return
     end
     @provider_npdb_tab_details = @provider_personal_information.rva_informations.where(tab: 'NPDB')
+
     @user = current_user
     @queues = @provider_personal_information.pdf_generation_queues.order(created_at: :desc)
     @psv_pdfs = SavedProfile.joins(:pdf_generation_queue)
                        .where(pdf_generation_queues: { deleted: true, provider_personal_information_id: @provider_personal_information.id })
     @grouped_disclosures = @provider_personal_information.provider_disclosures.where(disclosure_answer_flag: true).where.not(disclosure_explanation: [nil, ""]).group_by { |d| QUESTIONS_DISCLOSURE.find { |_h, qs| qs.include?(d.disclosure_question_disclosure_summary) }&.first }   
     @provider_personal_information_sam_rva_records = @provider_personal_information.provider_personal_information_sam_records.flat_map(&:provider_personal_information_sam_rva_records)
+    @provider_oig_tab_details = @provider_personal_information.rva_informations.where(tab: 'OIG').where(restart_audit: [false, nil]).last
   end
 
   def application_page
