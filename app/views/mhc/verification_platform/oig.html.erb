@@ -975,9 +975,12 @@
 
       $('#run-webcrawler-btn').click(function (e) {
         e.preventDefault();
-        var firstName = $('#firstname').html().trim();
-        var lastName = $('#lastname').html().trim();
-        var middleName = $('#middlename').html().trim();
+        var fullName = $('#firstname').text().trim();
+        var nameParts = fullName.split(' ');
+
+        var firstName = nameParts[0] || '';
+        var lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+        var middleName = nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : '';
         var personalInfoId = $('input[name="personal_info_id"]').val();
 
         if (!firstName && !lastName && !middleName) {
