@@ -30,9 +30,9 @@ class PagesController < ApplicationController
 		@provider_sources = ProviderSource.all
 		@provider = editing_provider_source
     if @provider.practice_location_id.present?
-      @locations = PracticeLocation.where(id: @provider.practice_location_id)
+      @locations = PracticeLocation.where(id: @provider.practice_location_id).paginate(page: params[:page_no], per_page: 10)
     else
-      @locations = PracticeLocation.none
+      @locations = PracticeLocation.none.paginate(page: params[:page_no], per_page: 10)
     end
     build_initial_associations
     @provider_source_documents = ProviderSourceDocument.where(provider_source_id: @provider.id)
