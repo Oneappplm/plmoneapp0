@@ -27,7 +27,8 @@ class PagesController < ApplicationController
   MB_DIVISOR = 1_048_576
 
 	def provider_source
-		@provider_sources = ProviderSource.all
+		@provider_sources = ProviderSource.where(created_by_user: current_user.id)
+    
 		@provider = editing_provider_source
     if @provider.practice_location_id.present?
       @locations = PracticeLocation.where(id: @provider.practice_location_id).paginate(page: params[:page_no], per_page: 10)
