@@ -46,6 +46,11 @@ class PagesController < ApplicationController
     if params[:remove_record].present?
       delete_association_record(params[:remove_record], params[:id])
     end
+    if params[:page] == 'reattest_application'
+      @attestations = ProviderSourceAttestation
+                        .where(provider_source_id: @provider.id)
+                        .order(created_at: :desc)
+    end
 
 		if params[:page].present?
 			render "pages/provider_source/#{params[:page]}", layout: 'provider_source'
