@@ -218,7 +218,24 @@ class ProviderSourcesController < ApplicationController
             end
 
           personal_info[mapped_attribute] = value_to_store
-          personal_info.cred_status = "attested" if mapped_attribute.to_s == "attest_date"
+
+          if mapped_attribute.to_s == "attest_date"
+            personal_info.cred_status = "attested"
+
+            last_attestation = ProviderSourceAttestation
+                                 .where(provider_source_id: ps.id)
+                                 .order(created_at: :desc)
+                                 .first
+
+            if last_attestation.nil? || last_attestation.signature_date.to_s != value_to_store.to_s
+              ProviderSourceAttestation.create!(
+                provider_source_id: ps.id,
+                signature_date: value_to_store,
+                attested_by: current_user.id
+              )
+            end
+          end
+
           personal_info.save(validate: false)
         end
       end
