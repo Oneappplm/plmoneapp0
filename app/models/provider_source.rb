@@ -29,6 +29,7 @@ class ProviderSource < ApplicationRecord
   accepts_nested_attributes_for :deas, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :cds, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :registrations, allow_destroy: true, reject_if: :all_blank
+  has_many :provider_source_attestations, dependent: :destroy
 
 
   belongs_to :practice_location, optional: true

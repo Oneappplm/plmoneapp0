@@ -21,28 +21,39 @@
 						</tr>
 					</thead>
 					<tbody>
-					  <% @provider_sources.each do |provider_source| %>
-					    <tr class="bg-medium-grey">
-					      <td class="fw-bold text-black">SPA</td>
+					  <% if @attestations.present? %>
+						  <% @attestations.each do |attestation| %>
+						    <tr class="bg-medium-grey">
+						      <td class="fw-bold text-black">SPA</td>
 
-					      <td class="fw-bold text-black">
-					        <%= provider_source.fetch(:signature_date) %>
-					      </td>
+						      <td class="fw-bold text-black">
+						        <%= attestation.signature_date %>
+						      </td>
 
-					      <td class="fw-bold text-black">
-					        <%= provider_source.full_name %>
-					      </td>
+						      <td class="fw-bold text-black">
+						        <%= attestation.provider_source.full_name %>
+						      </td>
 
-					      <td class="fw-bold text-black">
-					        <%= link_to 'Application PDF',
-					              download_application_pdf_path(provider_source_id: provider_source.id, format: :pdf) %>
+						      <td class="fw-bold text-black">
+						        <%= link_to 'Application PDF',
+						              download_application_pdf_path(
+						                provider_source_id: attestation.provider_source_id,
+						                format: :pdf
+						              ) %>
 
-					        <button class="btn-back-to-top">
-					          <i class="fa-solid fa-arrow-up"></i>
-					        </button>
-					      </td>
-					    </tr>
-					  <% end %>
+						        <button class="btn-back-to-top">
+						          <i class="fa-solid fa-arrow-up"></i>
+						        </button>
+						      </td>
+						    </tr>
+						  <% end %>
+						<% else %>
+						  <tr>
+						    <td colspan="4" class="text-center text-muted">
+						      No attestation history found
+						    </td>
+						  </tr>
+						<% end %>
 					</tbody>
 				</table>
 			</div>
