@@ -25,8 +25,6 @@ class ViewSummaryController < ApplicationController
   private
 
   def set_current_provider_source
-    @current_provider_source = ProviderSource
-      .includes(:data)
-      .find_by(id: params[:provider_source_id], created_by_user: current_user.id)
+    @current_provider_source = editing_provider_source
   end
 end
