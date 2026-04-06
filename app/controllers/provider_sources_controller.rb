@@ -221,19 +221,6 @@ class ProviderSourcesController < ApplicationController
 
           if mapped_attribute.to_s == "attest_date"
             personal_info.cred_status = "attested"
-
-            last_attestation = ProviderSourceAttestation
-                                 .where(provider_source_id: ps.id)
-                                 .order(created_at: :desc)
-                                 .first
-
-            if last_attestation.nil? || last_attestation.signature_date.to_s != value_to_store.to_s
-              ProviderSourceAttestation.create!(
-                provider_source_id: ps.id,
-                signature_date: value_to_store,
-                attested_by: current_user.id
-              )
-            end
           end
 
           personal_info.save(validate: false)
@@ -255,6 +242,10 @@ class ProviderSourcesController < ApplicationController
       else
         render json: { error: "Failed to save field data", details: data_record.errors.full_messages }, status: :unprocessable_entity
       end
+
+      # 👇 ADD HERE (outside all blocks)
+      # ================= ATTESTATION =================
+      handle_attestation(ps)
     end
   end
 
@@ -487,6 +478,25 @@ class ProviderSourcesController < ApplicationController
     else
       render json: { message: "Saved successfully!", id: result[:id] }, status: :ok
     end
+  end
+  def handle_attestation(ps)
+    signature_date = nil
+
+    # ✅ Case 1: date field autosave
+    if params[:field_name] == 'signature_date' && params[:value].present?
+      signature_date = params[:value]
+
+    # ✅ Case 2: signature autosave (ignore params[:value])
+    elsif params[:field_name] == 'signature' && params[:signature_date].present?
+      signature_date = params[:signature_date]
+    end
+
+    return unless signature_date.present?
+
+    ps.provider_source_attestations.create(
+      signature_date: signature_date,
+      attested_by: current_user.id
+    )
   end
 
   def handle_hospital_privilege_autosave(provider_source = editing_provider_source)

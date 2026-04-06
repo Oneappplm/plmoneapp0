@@ -105,6 +105,9 @@
 		function saveSignature() {
 			var signatureData = signaturePad.isEmpty() ? '' : signaturePad.toDataURL();
 			signatureInput.val(signatureData);
+			// ✅ set date input field (adjust ID if needed)
+      var signatureDate = $('[name="signature_date"]').val();
+
 			
       // Send AJAX request to autosave signature data
 			$.ajax({
@@ -114,7 +117,8 @@
 				data: {
 					authenticity_token: csrfToken,
           field_name: 'signature', // Adjust as per your parameter naming convention
-          value: signatureData
+          value: signatureData,
+          signature_date: signatureDate
         },
         success: function(response) {
         	console.log('Signature autosaved:', response);
