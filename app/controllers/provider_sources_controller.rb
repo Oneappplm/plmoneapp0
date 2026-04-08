@@ -204,12 +204,27 @@ class ProviderSourcesController < ApplicationController
     else
       mapped_attribute = ProviderPersonalInformation::FIELD_MAP[field_name]
 
-      if mapped_attribute.present?
-        personal_info = ps.provider_personal_information || ps.build_provider_personal_information
 
+      if mapped_attribute.present?
+
+        # ✅ STEP 1: Get or create PPI safely
+        personal_info =
+          if ps.provider_personal_information_id.present?
+            ProviderPersonalInformation.find(ps.provider_personal_information_id)
+          else
+            ProviderPersonalInformation.new(
+              created_by: 'autosave',
+              cred_status: 'incomplete'
+            )
+          end
+
+        is_new_record = personal_info.new_record?
+
+        # ✅ STEP 2: Assign dynamic attribute
         if personal_info.respond_to?(mapped_attribute)
           value_to_store =
-            if personal_info.has_attribute?(mapped_attribute) && personal_info.column_for_attribute(mapped_attribute).type == :boolean
+            if personal_info.has_attribute?(mapped_attribute) &&
+               personal_info.column_for_attribute(mapped_attribute).type == :boolean
               normalize_boolean.call(value)
             elsif value.is_a?(Array)
               value.join(",")
@@ -222,11 +237,31 @@ class ProviderSourcesController < ApplicationController
           if mapped_attribute.to_s == "attest_date"
             personal_info.cred_status = "attested"
           end
+        end
 
-          personal_info.save(validate: false)
+        # ✅ STEP 3: Generate IDs ONLY when creating new record
+        if is_new_record
+          personal_info.caqh_provider_id        ||= rand(10**8).to_s.rjust(8, '5')
+          personal_info.provider_attest_id     ||= rand(10**8).to_s.rjust(8, '5')
+          personal_info.caqh_provider_attest_id ||= rand(10**8).to_s.rjust(8, '5')
+        end
+
+        # ✅ STEP 4: Save PPI
+        personal_info.save(validate: false)
+
+        # ✅ STEP 5: Link to ProviderSource (ONLY first time)
+        if is_new_record
+          ps.update_column(:provider_personal_information_id, personal_info.id)
+        end
+
+        # ✅ STEP 6: Create ProviderAttest using SAME IDs
+        if is_new_record
+          ProviderAttest.create!(
+            id: personal_info.provider_attest_id, # 👈 same ID
+            caqh_provider_attest_id: personal_info.caqh_provider_attest_id
+          )
         end
       end
-
       field_key = field_name.parameterize(separator: "_")
       data_record = ps.data.find_or_initialize_by(data_key: field_key)
 
@@ -479,24 +514,44 @@ class ProviderSourcesController < ApplicationController
       render json: { message: "Saved successfully!", id: result[:id] }, status: :ok
     end
   end
+
   def handle_attestation(ps)
     signature_date = nil
 
-    # ✅ Case 1: date field autosave
+    # ✅ Determine signature_date based on request type
     if params[:field_name] == 'signature_date' && params[:value].present?
       signature_date = params[:value]
 
-    # ✅ Case 2: signature autosave (ignore params[:value])
     elsif params[:field_name] == 'signature' && params[:signature_date].present?
       signature_date = params[:signature_date]
     end
 
     return unless signature_date.present?
 
-    ps.provider_source_attestations.create(
-      signature_date: signature_date,
-      attested_by: current_user.id
-    )
+    # ✅ Decide create vs update
+    if params[:is_new_signature].to_s == "true"
+      # 🔹 CREATE NEW RECORD
+      ps.provider_source_attestations.create(
+        signature_date: signature_date,
+        attested_by: current_user.id
+      )
+    else
+      # 🔹 UPDATE LAST RECORD (same flow)
+      last_attestation = ps.provider_source_attestations.order(created_at: :desc).first
+
+      if last_attestation.present?
+        last_attestation.update(
+          signature_date: signature_date,
+          attested_by: current_user.id
+        )
+      else
+        # fallback (safety) → create if none exists
+        ps.provider_source_attestations.create(
+          signature_date: signature_date,
+          attested_by: current_user.id
+        )
+      end
+    end
   end
 
   def handle_hospital_privilege_autosave(provider_source = editing_provider_source)
