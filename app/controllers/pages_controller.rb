@@ -383,7 +383,7 @@ class PagesController < ApplicationController
           ppi.recred_due_date&.strftime('%Y-%m-%d'),
           ppi.review_date&.strftime('%Y-%m-%d'),
           ppi.committee_date&.strftime('%Y-%m-%d'),
-          ppi.progress_status
+          ppi&.status
         ]
       end
     end
