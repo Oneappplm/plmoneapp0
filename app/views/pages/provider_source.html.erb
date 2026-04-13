@@ -137,7 +137,7 @@
 				              <!-- Render initial blank entry (index 0) if none exist -->
 				              <%= render partial: 'pages/provider_source/other_name_form', locals: { index: 0, other_name: OtherName.new } %>
 				            <% else %>
-									    <% current_provider_source.other_names.each_with_index do |other_name, index| %>
+									    <% @provider.other_names.each_with_index do |other_name, index| %>
 									      <%= render partial: 'pages/provider_source/other_name_form', locals: { index: index, other_name: other_name } %>
 									    <% end %>
 									  <% end %>
@@ -503,22 +503,41 @@
 	  });
 
 	  function toggleOtherNameSection() {
-	    const selected = $('input[name="other_name"]:checked').val();
-	    const $otherNameSection = $('#other_name_section'); // fixed ID
+		  const selected = document.querySelector('input[name="other_name"]:checked')?.value;
 
-	    if (!$otherNameSection.length) return;
+		  const $section = $('#other_name_section');
+		  const $addBtn = $('#add_other_name_wrapper');
 
-	    if (selected === "yes") {
-	      $otherNameSection.show();
-	      $otherNameSection.removeClass('d-none');
-	    } else {
-	      $otherNameSection.hide();
-	      $otherNameSection.addClass('d-none');
-	    }
-	  }
+		  if (!$section.length) return;
+
+		  if (selected === "yes") {
+		    $section.removeClass('d-none').show();
+
+		    // ✅ Always show Add button when YES
+		    if ($addBtn.length) {
+		      $addBtn.show();
+		    }
+
+		    // ✅ If no entries exist → ensure at least one form
+		    if ($("#other_names_container .other-names-entry").length === 0) {
+		      $("#add_other_name").trigger("click");
+		    }
+
+		  } else {
+		    $section.addClass('d-none').hide();
+
+		    if ($addBtn.length) {
+		      $addBtn.hide();
+		    }
+		  }
+		}
 
 	  // Run once on page load
-	  toggleOtherNameSection();
+	  document.addEventListener("turbo:load", function () {
+		  setTimeout(function () {
+		    toggleOtherNameSection();
+		  }, 100);
+		});
 
 	  // Use event delegation in case radio buttons render later
 	  $(document).on("change", 'input[name="other_name"]', toggleOtherNameSection);

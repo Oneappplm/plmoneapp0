@@ -104,6 +104,8 @@ module ProviderSources
       "lf-not-insured-unlimited-coverage-amount" => :unlimited_coverage_flag,
       "lf-not-insured-email-aggregate-coverage" => :coverage_amount_aggregate,
       "lf-not-insured-unlimited-aggregate-coverage" => :unlimited_coverage_flag, # same field used twice
+      "lf-self-insured-policy-number" => :policy_number,
+      "lf-self-insured-policy-name" => :policy_holder,
       "lf-not-insured-original-effective-date" => :original_start_date,
       "lf-not-insured-effective-date" => :effective_date,
       "lf-not-insured-original-expiration-date" => :end_date,
@@ -413,7 +415,12 @@ module ProviderSources
       return { error: "Invalid field name: #{@field_name}" } unless attribute
 
       if model_class.name != 'PracticeLocation' || model_class.name != 'PracticeAssociate' || model_class.name != 'CoveringPractitioner'
-        record = model_class.find_or_initialize_by(foreign_key => @model_id)
+        record =
+          if model_class == ProviderInsuranceCoverage
+            model_class.find_or_initialize_by(provider_attest_id: attest.id)
+          else
+            model_class.find_or_initialize_by(foreign_key => @model_id)
+          end
 
         if record.has_attribute?(:provider_attest_id)
           record.provider_attest_id ||= attest.id
@@ -467,7 +474,7 @@ module ProviderSources
                return { error: "Unknown model #{@model}" }
              end
           record.assign_attributes(attribute => @value)
-
+        
           if record.save(validate: false)
             return { status: "updated", id: record.id }
           else

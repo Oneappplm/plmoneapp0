@@ -21,8 +21,13 @@ class ProviderCd < ApplicationRecord
 
   after_initialize :set_defaults
 
+  def state_record
+    State.find(state)
+  rescue
+    nil
+  end
+
   private
-  
   def set_defaults
     self.show_on_tickler ||= 'Yes'
   end
