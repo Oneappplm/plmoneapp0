@@ -102,6 +102,47 @@ class ProviderSourcesController < ApplicationController
     model         = params[:model]
     nested_form   = ActiveModel::Type::Boolean.new.cast(params[:nested_form])
 
+    # 🔥 DEA cleanup logic
+    if field_name == "has_dea_registration_number" && value.to_s.downcase == "no"
+      personal_info = ps.provider_personal_information
+      ps.deas.destroy_all
+
+      if personal_info.present?
+        attest = personal_info.provider_attest
+
+        if attest.present?
+          attest.provider_deas.destroy_all
+          Rails.logger.info "✅ DEA records deleted because user selected NO"
+        end
+      end
+    end
+
+    if field_name == "other_name" && value.to_s.downcase == "no"
+      personal_info = ps.provider_personal_information
+      ps.other_names.destroy_all
+      if personal_info.present?
+        attest = personal_info.provider_attest
+        
+        if attest.present?
+          attest.provider_other_names.destroy_all
+          Rails.logger.info "✅ DEA records deleted because user selected NO"
+        end
+      end
+    end
+
+    if field_name == "other_name" && value.to_s.downcase == "no"
+      personal_info = ps.provider_personal_information
+      ps.other_names.destroy_all
+      if personal_info.present?
+        attest = personal_info.provider_attest
+        
+        if attest.present?
+          attest.provider_other_names.destroy_all
+          Rails.logger.info "✅ DEA records deleted because user selected NO"
+        end
+      end
+    end
+
     unless field_name.present?
       return render json: { error: "Missing field name" }, status: :bad_request
     end
