@@ -362,27 +362,76 @@ class PagesController < ApplicationController
 
     csv_data = CSV.generate(headers: true) do |csv|
       csv << [
-        'Encompass ID','Assigned','Provider Name', 'Provider Type', 'Cred Cycle', 'PSV Completed Date',
-        'Review Level', 'Recred Due Date', 'Review Date', 'Committee Date',
-        'Status'
+        'Encompass ID',
+        'Assigned',
+        'Provider Name',
+        'Provider Type',
+        'Cred Cycle',
+        'PSV Completed Date',
+        'Review Level',
+        'Recred Due Date',
+        'Review Date',
+        'Committee Date',
+        'Vote Date',
+        'Status',
+        'NPI'
       ]
 
       @provider_personal_informations.each do |ppi|
+        
+        # Assigned
+        assigned =
+          if ppi.progress_status == "to_be_assigned"
+            "❌ Unassigned"
+          else
+            ppi.progress_status.to_s.tr('_', ' ').titleize
+          end
+
+        # PSV date
+        psv_date = ppi&.pdf_generation_queues&.last&.saved_profile&.created_at
+
+        # Clean / Unclean
+        app_tracking = ppi.provider_personal_information_app_trackings.last
+
         review_level =
-          dea_map[ppi.provider_attest_id].present? ? "Unclean" : ppi.review_level
+          if app_tracking.present? && (app_tracking.master_issues.compact_blank.any? || app_tracking.master_reviews.compact_blank.any?)
+            "Unclean"
+          else
+            "Clean"
+          end
+
+        # Recred date
+        recred_date =
+          if ppi.cred_cycle&.downcase == 'cred'
+            (ppi.recred_due_date || (Date.today + 2.years))
+          end
+
+        # Status
+        status =
+          unless ppi.progress_status == "assigned"
+            ppi.status
+          end
+
+        # Vote date
+        vote_date =
+          if ppi.progress_status == "completed"
+            ppi.vote_date
+          end
 
         csv << [
           ppi.caqh_provider_attest_id || ppi.provider_attest_id,
-          ppi.progress_status,
+          assigned,
           ppi.fullname,
-          ppi.provider_type_provider_type_abbreviation,
-          ppi.cred_cycle,
-          ppi.attest_date&.strftime('%Y-%m-%d'),
+          ppi.practitioner_type,
+          ppi.cred_cycle&.titleize,
+          psv_date&.strftime('%m/%d/%Y'),
           review_level,
-          ppi.recred_due_date&.strftime('%Y-%m-%d'),
-          ppi.review_date&.strftime('%Y-%m-%d'),
-          ppi.committee_date&.strftime('%Y-%m-%d'),
-          ppi&.status
+          recred_date&.strftime('%m/%d/%Y'),
+          (ppi.review_date unless ppi.progress_status == "to_be_assigned")&.strftime('%m/%d/%Y'),
+          (ppi.committee_date unless ppi.progress_status == "to_be_assigned")&.strftime('%m/%d/%Y'),
+          vote_date&.strftime('%m/%d/%Y'),
+          status,
+          ppi.npi
         ]
       end
     end
