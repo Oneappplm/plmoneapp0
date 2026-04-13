@@ -2,13 +2,14 @@
 module ProviderSources
   class OtherNameAutosaveService
     FIELD_MAP = {
-      "date_started" => "start_date",
-      "date_stopped" => "end_date",
-      "first_name"   => "first_name",
-      "last_name"    => "last_name",
-      "middle_name"  => "middle_name",
-      "name_type"    => "name_type",
-      "in_use" => "in_use"
+      'date_started' => 'start_date',
+      'date_stopped' => 'end_date',
+      'first_name'   => 'first_name',
+      'last_name'    => 'last_name',
+      'middle_name'  => 'middle_name',
+      'name_type'    => 'name_type',
+      'in_use' => 'in_use',
+      'suffix' => 'suffix'
     }.freeze
 
     def initialize(source:, field_name:, value:, other_name_id:)
@@ -20,14 +21,14 @@ module ProviderSources
 
     def perform
       index, attribute = extract_index_and_attribute(@field_name)
-      return { error: "Invalid field name" } unless attribute
+      return { error: 'Invalid field name' } unless attribute
 
       other_name = find_or_initialize_other_name
       other_name.assign_attributes(attribute => @value)
 
       if other_name.save(validate: false)
         sync_to_provider_other_name(other_name, attribute, @value)
-        { status: "saved", id: other_name.id }
+        { status: 'saved', id: other_name.id }
       else
         { error: other_name.errors.full_messages }
       end
@@ -60,7 +61,7 @@ module ProviderSources
         else
           attest.provider_other_names.build(provider_attest_id: attest.id, caqh_provider_other_name_id: other_name.id)
         end
-
+    
       db_field = FIELD_MAP[attribute]
       return unless db_field.present? && provider_other_name.respond_to?("#{db_field}=")
 
