@@ -28,32 +28,34 @@ class Mhc::ClientPortalController < ApplicationController
   end
 
   def doughnut_data
-    scope = date_scope
+    scope = ProviderPersonalInformation.all
 
-    statuses = [
+    # ✅ define keys (VERY IMPORTANT for frontend sync)
+    labels = [
       "attested",
-      "no-application",
-      "complete-application",
+      "no_application",
+      "complete_application",
       "incomplete",
       "pending",
-      "in-process",
+      "in_process",
       "psv",
       "returned"
     ]
 
     status_scope_map = {
-      "attested"             => ProviderPersonalInformation.attested,
-      "no-application"       => ProviderPersonalInformation.no_application,
-      "complete-application" => ProviderPersonalInformation.complete_application,
-      "incomplete"           => ProviderPersonalInformation.incomplete,
-      "pending"              => ProviderPersonalInformation.pending,
-      "in-process"           => ProviderPersonalInformation.in_process,
-      "psv"                  => ProviderPersonalInformation.psv,
-      "returned"             => ProviderPersonalInformation.returned
+      "attested"               => ProviderPersonalInformation.attested,
+      "no_application"         => ProviderPersonalInformation.no_application,
+      "complete_application"   => ProviderPersonalInformation.complete_application,
+      "incomplete"             => ProviderPersonalInformation.incomplete,
+      "pending"                => ProviderPersonalInformation.pending,
+      "in_process"             => ProviderPersonalInformation.in_process,
+      "psv"                    => ProviderPersonalInformation.psv,
+      "returned"               => ProviderPersonalInformation.returned
     }
 
-    counts = statuses.map do |status|
-      scope.merge(status_scope_map[status]).count
+    # ✅ counts in FIXED ORDER
+    counts = labels.map do |key|
+      scope.merge(status_scope_map[key]).count
     end
 
     total = counts.sum.nonzero? || 1
@@ -63,6 +65,7 @@ class Mhc::ClientPortalController < ApplicationController
     end
 
     render json: {
+      labels: labels,         # ✅ ADD THIS (important)
       counts: counts,
       percentages: percentages,
       total: total

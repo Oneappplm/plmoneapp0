@@ -1,38 +1,33 @@
 var clientData = [];
 var clientPercentage = [];
-var barPercentages = [];
 var doughnutChart = null;
 var barChart = null;
+
 function getClientDataForDoughnutGraph() {
   $.ajax({
     url: '<%= mhc_client_portal_doughnut_data_path %>',
     method: "GET",
     success: function (data) {
 
-      // ✅ FIXED KEYS
       clientData = data.counts || [];
       clientPercentage = data.percentages || [];
-      barPercentages = clientPercentage;
 
       createDoughnutGraph();
       createBarGraph();
 
-      var order_of_status = [
-        "attested",
-        "no-application",
-        "complete-application",
-        "incomplete-application",
-        "pending-data-entry",
-        "in-process",
-        "psv",
-        "returned"
-      ];
+      // ✅ USE BACKEND LABELS (NO HARDCODING)
+      var order_of_status = data.labels || [];
 
-      for (var i = 0; i < clientPercentage.length; i++) {
-        $('.col-' + order_of_status[i])
-          .html(clientPercentage[i] + '%')
+      order_of_status.forEach(function(status, index) {
+        var percent = clientPercentage[index] || 0;
+
+        $('.col-' + status)
+          .html(percent + '%')
           .addClass('text-right');
-      }
+      });
+
+      console.log("Counts:", clientData);
+      console.log("Percentages:", clientPercentage);
     }
   });
 }
@@ -50,8 +45,8 @@ function createDoughnutGraph() {
         "Attested",
         "No Application",
         "Complete Application",
-        "Incomplete Application",
-        "Pending Data Entry",
+        "Incomplete",
+        "Pending",
         "In Process",
         "PSV",
         "Returned"
@@ -74,13 +69,9 @@ function createDoughnutGraph() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutoutPercentage: 30,   // 🔥 same thin ring
-      legend: {
-        display: false        // 🔥 REMOVE legend (key fix)
-      },
-      tooltips: {
-        enabled: false        // 🔥 same as before
-      }
+      cutoutPercentage: 30,
+      legend: { display: false },
+      tooltips: { enabled: false }
     }
   });
 }
