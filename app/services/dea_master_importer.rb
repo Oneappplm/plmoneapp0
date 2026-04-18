@@ -1,18 +1,31 @@
 # app/services/dea_master_importer.rb
 class DeaMasterImporter
   BATCH_SIZE = 2000
+  BYTES_PROGRESS_EVERY = 2 * 1024 * 1024
 
-  # update progress frequently by bytes (so UI moves on huge file)
-  BYTES_PROGRESS_EVERY = 2 * 1024 * 1024 # 2MB
+  FIELD_MAP = {
+    dea_number: 0..10,
+    schedules: 11..27,
+    expiration_raw: 28..35,
+    business_activity: 36..71,
+    name: 72..107,
+    address1: 108..143,
+    address2: 144..179,
+    city: 180..215,
+    state: 216..217,
+    zip: 218..226,
+    status: 227..236,
+    state_license_number: 237..270
+  }.freeze
 
   def initialize(file_path, job_id)
     @file_path = file_path
-    @job_id    = job_id
+    @job_id = job_id
   end
 
   def import!
     redis = $redis
-    key   = "dea_import:#{@job_id}"
+    key = "dea_import:#{@job_id}"
 
     total_bytes = File.size(@file_path).to_i
     redis.hset(key, "total_bytes", total_bytes)
@@ -20,7 +33,6 @@ class DeaMasterImporter
     processed = 0
     bytes_read = 0
     next_progress_at = BYTES_PROGRESS_EVERY
-
     buffer = []
     now = Time.current
 
@@ -44,10 +56,8 @@ class DeaMasterImporter
           buffer.clear
         end
 
-        # ✅ frequent bytes progress
         if bytes_read >= next_progress_at
-          # estimate total lines using average bytes/line so far
-          avg = (bytes_read.to_f / processed)
+          avg = bytes_read.to_f / processed
           est_total = avg > 0 ? (total_bytes / avg).to_i : 0
 
           redis.pipelined do |r|
@@ -74,22 +84,6 @@ class DeaMasterImporter
   end
 
   private
-
-  # ---- your existing field map/extract helpers go here ----
-  FIELD_MAP = {
-    dea_number: 0..10,
-    schedules: 11..27,
-    expiration_raw: 28..35,
-    business_activity: 36..71,
-    name: 72..107,
-    address1: 108..143,
-    address2: 144..179,
-    city: 180..215,
-    state: 216..217,
-    zip: 218..226,
-    status: 227..236,
-    state_license_number: 237..270
-  }.freeze
 
   def flush!(rows)
     DeaMasterRecord.upsert_all(rows, unique_by: :index_dea_master_records_on_dea_number)
@@ -135,3 +129,4 @@ class DeaMasterImporter
     nil
   end
 end
+
