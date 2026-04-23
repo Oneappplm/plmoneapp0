@@ -1,4 +1,3 @@
-# app/services/dea_master_importer.rb
 class DeaMasterImporter
   BATCH_SIZE = 2000
   BYTES_PROGRESS_EVERY = 2 * 1024 * 1024
@@ -17,18 +16,17 @@ class DeaMasterImporter
     status: 227..236,
     state_license_number: 237..270
   }.freeze
-  
 
-  def import!
-    import_chunk!
-  end
-  
   def initialize(file_path, job_id)
     @file_path = file_path
     @job_id = job_id
   end
 
   def import!
+    import_chunk!
+  end
+
+  def import_chunk!
     redis = $redis
     key = "dea_import:#{@job_id}"
 
@@ -68,7 +66,7 @@ class DeaMasterImporter
           redis.pipelined do |r|
             r.hset(key, "processed", processed)
             r.hset(key, "bytes_read", bytes_read)
-            r.hset(key, "total", est_total) if est_total > 0
+            r.hset(key, "total", est_total > 0 ? est_total : processed)
             r.hset(key, "status", "running")
             r.hset(key, "last_update", Time.current.to_i)
           end
@@ -83,6 +81,7 @@ class DeaMasterImporter
     redis.pipelined do |r|
       r.hset(key, "processed", processed)
       r.hset(key, "bytes_read", total_bytes)
+      r.hset(key, "total", processed)
       r.hset(key, "status", "finished")
       r.hset(key, "last_update", Time.current.to_i)
     end
@@ -134,4 +133,3 @@ class DeaMasterImporter
     nil
   end
 end
-

@@ -200,11 +200,15 @@ Rails.application.routes.draw do
     get "verification_platform/states", to: "verification_platform#states"
 
     # for DEA file uploadation
-    resources :dea_files, only: [:new, :create]
+    resources :dea_files, only: [:new, :create] do
+      collection do
+        post :start_import
+      end
+    end
+
     get "dea_import_progress/:job_id", to: "dea_import_progress#show"
     get "mhc/dea_import_stream/:job_id", to: "mhc/dea_import_progress#stream"
     post "dea_uploads/presign", to: "dea_uploads#presign"
-    
     get 'verify_npi/:number', to: 'provider_personal_informations#verify_npi'
 
     resources :states, only: %i[index edit update]
