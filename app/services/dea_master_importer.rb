@@ -17,7 +17,12 @@ class DeaMasterImporter
     status: 227..236,
     state_license_number: 237..270
   }.freeze
+  
 
+  def import!
+    import_chunk!
+  end
+  
   def initialize(file_path, job_id)
     @file_path = file_path
     @job_id = job_id
