@@ -43,7 +43,7 @@ module Webscraper
     # ✅ Replace previous temp PDF instead of accumulating lots of files
     # - We write to tmp/npdb_mmpr_latest.pdf (overwrites each time)
     # - We return a REAL Tempfile containing the bytes (safe for uploader + cleanup)
-    def self.render_to_file!(output_path:, response_xml:, provider_personal_information:, watermark: "")
+    def self.render_to_file!(output_path:, response_xml:, provider_personal_information:, watermark: "", errors: [])
       FileUtils.mkdir_p(File.dirname(output_path))
       FileUtils.rm_f(output_path)
 
