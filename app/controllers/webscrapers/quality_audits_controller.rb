@@ -89,29 +89,41 @@ class Webscrapers::QualityAuditsController < ApplicationController
       rva_information: rva_information
     ).call
 
-    # if you want these updates, keep them (you said you need save/update now)
-    npdb.update!(
-      status: "COMPLETED(DEMO)",
-      submit_date: npdb.submit_date || Date.current,
-      response_date: Date.current,
-      comments: "DEMO: PDF generated & uploaded."
-    )
+    # ✅ Use real status from service
+    if log.status == "completed"
+      npdb.update!(
+        status: "COMPLETED(DEMO)",
+        submit_date: npdb.submit_date || Date.current,
+        response_date: Date.current,
+        comments: "DEMO: PDF generated & uploaded."
+      )
+    else
+      npdb.update!(
+        status: "FAILED(DEMO)",
+        comments: "DEMO FAILED: Check PDF/log for details"
+      )
+    end
 
     provider_personal_info.update!(verification_status: 'Processing')
 
     render json: {
-      message: 'NPDB demo completed successfully',
+      success: log.status == "completed",
+      message: log.status == "completed" ? "NPDB completed" : "NPDB failed (see PDF)",
       rva_information_id: rva_information.id,
       webscraper_log_id: log.id,
-      pdf_url: log.filepath.url # CarrierWave
+      status: log.status,
+      pdf_url: log.filepath.url
     }, status: :ok
 
   rescue => e
     Rails.logger.error "NPDB demo failed: #{e.class} - #{e.message}"
     Rails.logger.error e.backtrace.join("\n")
-    render json: { error: e.message }, status: :unprocessable_entity
-  end
 
+    render json: {
+      success: false,
+      error: e.message
+    }, status: :unprocessable_entity
+  end
 
   def run_registration_webcrawler
     dea_number = params[:dea_number]
