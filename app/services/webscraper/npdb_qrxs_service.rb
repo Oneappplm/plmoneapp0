@@ -147,6 +147,7 @@ class Webscraper::NpdbQrxsService
 
         <submitter>
           <entityDBID>#{ENV["NPDB_DBID"]}</entityDBID>
+          <agentDBID>#{ENV["NPDB_AGENT_DBID"]}</agentDBID>
           <vendorID>#{ENV["NPDB_VENDOR_ID"]}</vendorID>
         </submitter>
 
