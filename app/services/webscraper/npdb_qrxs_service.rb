@@ -104,12 +104,21 @@ class Webscraper::NpdbQrxsService
   # =========================================================
 
   def build_submission_xml
-    street = @ppi.address_line1.to_s.upcase.presence || "UNKNOWN STREET"
-    city   = @ppi.city.to_s.upcase.presence || "UNKNOWN"
-    state  = @ppi.state.to_s.upcase.presence || "NY"
+    street =
+      @ppi.address_line1.to_s.upcase.presence ||
+      "UNKNOWN STREET"
+
+    city =
+      @ppi.city.to_s.upcase.presence ||
+      "UNKNOWN"
+
+    state =
+      @ppi.state.to_s.upcase.presence ||
+      "NY"
 
     zip =
-      @ppi.zipcode.to_s.gsub(/[^0-9]/, "")[0..4]
+      @ppi.zipcode.to_s.gsub(/[^0-9\-]/, "").presence ||
+      "11733-1968"
 
     ssn =
       @ppi.ssn.to_s.gsub(/[^0-9]/, "")
@@ -123,7 +132,8 @@ class Webscraper::NpdbQrxsService
       ].compact.join(" ").upcase
 
     cert_title =
-      ENV["NPDB_CERT_TITLE"].presence || "PHYSICIAN"
+      ENV["NPDB_CERT_TITLE"].presence ||
+      "PHYSICIAN"
 
     cert_phone =
       ENV["NPDB_CERT_PHONE"].to_s.gsub(/[^0-9]/, "").presence ||
@@ -134,6 +144,13 @@ class Webscraper::NpdbQrxsService
 
     birth_date =
       @ppi.birth_date || @ppi.date_of_birth
+
+    license_number =
+      selected_license&.license_number.to_s.upcase
+
+    Rails.logger.info(
+      "NPDB SELECTED LICENSE => #{license_number} (#{selected_license_state})"
+    )
 
     <<~XML
       <?xml version="1.0" encoding="UTF-8"?>
@@ -206,8 +223,8 @@ class Webscraper::NpdbQrxsService
 
           <occupationAndLicensure>
             <field>#{field}</field>
-            <state>#{state}</state>
-            <licenseNumber>123456</licenseNumber>
+            <state>#{selected_license_state}</state>
+            <licenseNumber>#{license_number}</licenseNumber>
           </occupationAndLicensure>
 
         </individual>
@@ -236,6 +253,33 @@ class Webscraper::NpdbQrxsService
 
   def gender_value
     @ppi.gender.to_s.upcase.start_with?("F") ? "F" : "M"
+  end
+
+  # =========================================================
+  # LICENSE HELPERS
+  # =========================================================
+
+  def selected_license
+    @selected_license ||= begin
+      licenses = @ppi.provider_licensures
+
+      licenses.find_by(
+        is_primary_license: true,
+        currently_practice_under_this: true
+      ) ||
+      licenses.find_by(is_primary_license: true) ||
+      licenses.first
+    end
+  end
+
+  def selected_license_state
+    return "NY" unless selected_license.present?
+
+    State.find_by(id: selected_license.state_id)
+         &.abbreviation
+         .to_s
+         .upcase
+         .presence || "NY"
   end
 
   # =========================================================
