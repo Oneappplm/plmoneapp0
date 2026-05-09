@@ -259,7 +259,7 @@ class Webscraper::NpdbQrxsService
 
           <qrx:Send>
 
-            <qrx:DataBankID>#{creds[:dbid]}</qrx:DataBankID>
+            <qrx:DataBankID>#{creds[:agent_dbid]}</qrx:DataBankID>
 
             <qrx:Password>#{password}</qrx:Password>
 
@@ -355,7 +355,7 @@ class Webscraper::NpdbQrxsService
 
             <qrx:Receive>
 
-              <qrx:DataBankID>#{creds[:dbid]}</qrx:DataBankID>
+              <qrx:DataBankID>#{creds[:agent_dbid]}</qrx:DataBankID>
 
               <qrx:UserID>#{creds[:user_id]}</qrx:UserID>
 
