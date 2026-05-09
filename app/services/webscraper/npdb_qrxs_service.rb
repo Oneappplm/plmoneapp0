@@ -276,7 +276,7 @@ class Webscraper::NpdbQrxsService
     return "NY" unless selected_license.present?
 
     State.find_by(id: selected_license.state_id)
-         &.abbreviation
+         &.alpha_code
          .to_s
          .upcase
          .presence || "NY"
