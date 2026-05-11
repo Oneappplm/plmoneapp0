@@ -270,15 +270,29 @@ class Webscraper::NpdbQrxsService
     @selected_license ||= begin
       licenses = @ppi.provider_licensures
 
-      licenses.find_by(
-        is_primary_license: true,
-        currently_practice_under_this: true
-      ) ||
-      licenses.find_by(is_primary_license: true) ||
+      provider_state =
+        @ppi.state.to_s.upcase
+
+      state_record =
+        State.find_by(alpha_code: provider_state)
+
+      licenses.find do |license|
+        license.license_type.to_s.upcase == "MD" &&
+        license.state_id == state_record&.id
+      end ||
+
+      licenses.find do |license|
+        license.license_type.to_s.upcase == "MD" &&
+        license.is_primary_license == true
+      end ||
+
+      licenses.find do |license|
+        license.license_type.to_s.upcase == "MD"
+      end ||
+
       licenses.first
     end
   end
-
   def selected_license_state
     return "NY" unless selected_license.present?
 
