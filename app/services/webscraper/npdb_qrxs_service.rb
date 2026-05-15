@@ -110,15 +110,20 @@ class Webscraper::NpdbQrxsService
 
     city =
       @ppi.city.to_s.upcase.strip.presence ||
-      "SETAUKET"
+      "EAST SETAUKET"
 
     state =
       @ppi.state.to_s.upcase.strip.presence ||
       "NY"
 
-    zip =
-      @ppi.zipcode.to_s.gsub(/[^0-9\-]/, "").presence ||
-      "11733-1968"
+    raw_zip =
+      @ppi.zipcode.to_s.gsub(/[^0-9]/, "")
+
+    zip5 =
+      raw_zip.first(5)
+
+    zip4 =
+      raw_zip.length >= 9 ? raw_zip[5, 4] : nil
 
     ssn =
       @ppi.ssn.to_s.gsub(/[^0-9]/, "")
@@ -139,9 +144,6 @@ class Webscraper::NpdbQrxsService
       ENV["NPDB_CERT_PHONE"].to_s.gsub(/[^0-9]/, "").presence ||
       "1234567890"
 
-    field =
-      map_field(@ppi.provider_type_provider_type_abbreviation)
-
     birth_date =
       @ppi.birth_date || @ppi.date_of_birth
 
@@ -149,10 +151,16 @@ class Webscraper::NpdbQrxsService
       selected_license
 
     license_number =
-      license&.license_number.to_s.upcase.gsub(/\s+/, "")
+      license&.license_number
+              .to_s
+              .upcase
+              .gsub(/[^A-Z0-9]/, "")
 
     license_state =
       selected_license_state
+
+    occupation_code =
+      map_field_code(@ppi.provider_type_provider_type_abbreviation)
 
     Rails.logger.info(
       "NPDB SELECTED LICENSE => #{license_number} (#{license_state})"
@@ -176,8 +184,8 @@ class Webscraper::NpdbQrxsService
 
         <payment>
           <creditCard>
-            <number>4111111111111111</number>
-            <expirationDate>2030-01-01</expirationDate>
+            <number>#{ENV["NPDB_CC_NUMBER"]}</number>
+            <expirationDate>#{ENV["NPDB_CC_EXPIRATION"]}</expirationDate>
 
             <cardholderName>#{cert_name}</cardholderName>
 
@@ -185,7 +193,8 @@ class Webscraper::NpdbQrxsService
               <address>#{street}</address>
               <city>#{city}</city>
               <state>#{state}</state>
-              <zipCode>#{zip}</zipCode>
+              <zip>#{zip5}</zip>
+              #{zip4.present? ? "<zip4>#{zip4}</zip4>" : ""}
             </cardholderAddress>
           </creditCard>
         </payment>
@@ -225,13 +234,14 @@ class Webscraper::NpdbQrxsService
             <address>#{street}</address>
             <city>#{city}</city>
             <state>#{state}</state>
-            <zip>#{zip}</zip>
+            <zip>#{zip5}</zip>
+            #{zip4.present? ? "<zip4>#{zip4}</zip4>" : ""}
           </workAddress>
 
           <occupationAndLicensure>
             <number>#{license_number}</number>
             <state>#{license_state}</state>
-            <field>#{field}</field>
+            <field>#{occupation_code}</field>
           </occupationAndLicensure>
 
         </individual>
@@ -306,6 +316,17 @@ class Webscraper::NpdbQrxsService
   # =========================================================
   # SEND
   # =========================================================
+
+  def map_field_code(value)
+    case value.to_s.downcase
+    when /medical doctor/, /\bmd\b/
+      "010"
+    when /dentist/, /\bdds\b/
+      "120"
+    else
+      "010"
+    end
+  end
 
   def send_submission!(creds, password, filename, xml)
     uri = URI(endpoint)
