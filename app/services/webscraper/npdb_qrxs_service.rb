@@ -22,7 +22,6 @@ class Webscraper::NpdbQrxsService
 
   def call
     creds = resolved_creds!
-    password = creds[:password]
 
     submission_xml = build_submission_xml
 
@@ -30,7 +29,12 @@ class Webscraper::NpdbQrxsService
       "QUERY_#{@npdb.id}_#{Time.current.utc.strftime('%Y%m%d%H%M%S')}.xml"
 
     send_code, send_message =
-      send_submission!(creds, password, filename, submission_xml)
+      send_submission!(
+        creds,
+        creds[:password],
+        filename,
+        submission_xml
+      )
 
     failed = send_code != OK_CODE
 
@@ -38,7 +42,7 @@ class Webscraper::NpdbQrxsService
 
     unless failed
       begin
-        files = receive_poll!(creds, password)
+        files = receive_poll!(creds, creds[:password])
       rescue => e
         Rails.logger.error("NPDB RECEIVE ERROR: #{e.message}")
 
@@ -105,28 +109,27 @@ class Webscraper::NpdbQrxsService
 
   def build_submission_xml
     street =
-      @ppi.address_line1.to_s.upcase.strip.presence ||
-      "60 BUCCANEER LN"
+      normalize_address(
+        @ppi.address_line1.presence || "60 BUCCANEER LANE"
+      )
 
     city =
-      @ppi.city.to_s.upcase.strip.presence ||
-      "EAST SETAUKET"
+      normalize_city(
+        @ppi.city.presence || "EAST SETAUKET"
+      )
 
     state =
-      @ppi.state.to_s.upcase.strip.presence ||
-      "NY"
+      normalize_state(
+        @ppi.state.presence || "NY"
+      )
 
-    raw_zip =
-      @ppi.zipcode.to_s.gsub(/[^0-9]/, "")
-
-    zip5 =
-      raw_zip.first(5)
-
-    zip4 =
-      raw_zip.length >= 9 ? raw_zip[5, 4] : nil
+    zip5, zip4 =
+      normalized_zip_parts(
+        @ppi.zipcode.presence || "117331968"
+      )
 
     ssn =
-      @ppi.ssn.to_s.gsub(/[^0-9]/, "")
+      @ppi.ssn.to_s.gsub(/\D/, "")
 
     cert_name =
       ENV["NPDB_CERT_NAME"].presence ||
@@ -141,8 +144,10 @@ class Webscraper::NpdbQrxsService
       "PHYSICIAN"
 
     cert_phone =
-      ENV["NPDB_CERT_PHONE"].to_s.gsub(/[^0-9]/, "").presence ||
-      "1234567890"
+      ENV["NPDB_CERT_PHONE"]
+        .to_s
+        .gsub(/\D/, "")
+        .presence || "1234567890"
 
     birth_date =
       @ppi.birth_date || @ppi.date_of_birth
@@ -160,7 +165,9 @@ class Webscraper::NpdbQrxsService
       selected_license_state
 
     occupation_code =
-      map_field_code(@ppi.provider_type_provider_type_abbreviation)
+      map_field_code(
+        @ppi.provider_type_provider_type_abbreviation
+      )
 
     Rails.logger.info(
       "NPDB SELECTED LICENSE => #{license_number} (#{license_state})"
@@ -220,7 +227,6 @@ class Webscraper::NpdbQrxsService
             <first>#{@ppi.first_name.to_s.upcase}</first>
 
             #{middle_name_xml}
-
             #{suffix_xml}
           </name>
 
@@ -250,6 +256,41 @@ class Webscraper::NpdbQrxsService
     XML
   end
 
+  # =========================================================
+  # NORMALIZERS
+  # =========================================================
+
+  def normalize_address(value)
+    value.to_s
+         .upcase
+         .strip
+         .gsub(/\bLN\b/, "LANE")
+         .gsub(/\bST\b/, "STREET")
+         .gsub(/\bRD\b/, "ROAD")
+  end
+
+  def normalize_city(value)
+    value.to_s.upcase.strip
+  end
+
+  def normalize_state(value)
+    value.to_s.upcase.strip
+  end
+
+  def normalized_zip_parts(value)
+    digits =
+      value.to_s.gsub(/\D/, "")
+
+    zip5 = digits.first(5)
+    zip4 = digits.length >= 9 ? digits[5, 4] : nil
+
+    [zip5, zip4]
+  end
+
+  # =========================================================
+  # XML HELPERS
+  # =========================================================
+
   def middle_name_xml
     return "" if @ppi.middle_name.blank?
 
@@ -273,36 +314,18 @@ class Webscraper::NpdbQrxsService
   end
 
   # =========================================================
-  # LICENSE HELPERS
+  # LICENSE
   # =========================================================
 
   def selected_license
     @selected_license ||= begin
       licenses = @ppi.provider_licensures
 
-      provider_state =
-        @ppi.state.to_s.upcase
-
-      state_record =
-        State.find_by(alpha_code: provider_state)
-
-      licenses.find do |license|
-        license.license_type.to_s.upcase == "MD" &&
-        license.state_id == state_record&.id
-      end ||
-
-      licenses.find do |license|
-        license.license_type.to_s.upcase == "MD" &&
-        license.is_primary_license == true
-      end ||
-
-      licenses.find do |license|
-        license.license_type.to_s.upcase == "MD"
-      end ||
-
+      licenses.find(&:is_primary_license) ||
       licenses.first
     end
   end
+
   def selected_license_state
     return "NY" unless selected_license.present?
 
@@ -314,19 +337,23 @@ class Webscraper::NpdbQrxsService
   end
 
   # =========================================================
-  # SEND
+  # OCCUPATION CODE
   # =========================================================
 
   def map_field_code(value)
     case value.to_s.downcase
     when /medical doctor/, /\bmd\b/
-      "010"
+      "114"
     when /dentist/, /\bdds\b/
-      "120"
+      "122"
     else
-      "010"
+      "114"
     end
   end
+
+  # =========================================================
+  # SEND
+  # =========================================================
 
   def send_submission!(creds, password, filename, xml)
     uri = URI(endpoint)
@@ -396,15 +423,10 @@ class Webscraper::NpdbQrxsService
     request["MIME-Version"] = "1.0"
 
     request["Content-Type"] =
-      "multipart/related; " \
-      "type=\"application/xop+xml\"; " \
-      "start=\"<rootpart>\"; " \
-      "start-info=\"application/soap+xml\"; " \
-      "boundary=\"#{boundary}\""
+      "multipart/related; type=\"application/xop+xml\"; start=\"<rootpart>\"; start-info=\"application/soap+xml\"; boundary=\"#{boundary}\""
 
     request.body = body
 
-    Rails.logger.info("NPDB SEND URL: #{endpoint}")
     Rails.logger.info("NPDB REQUEST:\n#{body}")
 
     response = http.request(request)
@@ -413,13 +435,10 @@ class Webscraper::NpdbQrxsService
 
     doc = Nokogiri::XML(response.body)
 
-    code =
-      doc.at_xpath("//*[local-name()='StatusCode']")&.text
-
-    message =
+    [
+      doc.at_xpath("//*[local-name()='StatusCode']")&.text,
       doc.at_xpath("//*[local-name()='StatusMessage']")&.text
-
-    [code, message]
+    ]
   end
 
   # =========================================================
@@ -473,10 +492,7 @@ class Webscraper::NpdbQrxsService
       status_code =
         doc.at_xpath("//*[local-name()='StatusCode']")&.text
 
-      status_message =
-        doc.at_xpath("//*[local-name()='StatusMessage']")&.text
-
-      raise(status_message.presence || "Receive failed") unless status_code == OK_CODE
+      raise "Receive failed" unless status_code == OK_CODE
 
       doc.xpath("//*[local-name()='responseFile']").each do |file|
         encoded =
@@ -520,17 +536,6 @@ class Webscraper::NpdbQrxsService
       user_id: ENV["NPDB_USER_ID"],
       password: ENV["NPDB_PASSWORD"]
     }
-  end
-
-  def map_field(value)
-    case value.to_s.downcase
-    when /medical doctor/, /\(md\)/
-      "MD"
-    when /dentist/
-      "DDS"
-    else
-      "MD"
-    end
   end
 
   def build_error_xml(code, message)
