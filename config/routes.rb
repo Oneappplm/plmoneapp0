@@ -405,6 +405,7 @@ Rails.application.routes.draw do
       get "overview"
       get :document_deleted_logs
       post :delete_document
+      post :import_excel
     end
   end
   resources :enrollments do
