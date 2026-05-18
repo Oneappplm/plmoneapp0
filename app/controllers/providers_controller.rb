@@ -91,6 +91,35 @@ class ProvidersController < ApplicationController
     redirect_to enrollment_client_path(@provider, mode: 'notifications'), notice: 'Provider was successfully updated.'
   end
 
+  def import_excel
+	  if params[:file].blank?
+	    redirect_back fallback_location: providers_path,
+	                  alert: "Please select an Excel file."
+	    return
+	  end
+
+	  result = ProviderExcelImportService.new(
+	    file: params[:file],
+	    enrollment_group_id: nil,
+	    admin_id: current_user&.id
+	  ).call
+
+	  if result[:errors].present?
+	    Rails.logger.info "Provider import errors: #{result[:errors].inspect}"
+
+	    redirect_back fallback_location: providers_path,
+	                  alert: "Imported #{result[:success_count]} providers with #{result[:errors].count} errors."
+	  else
+	    redirect_to providers_path, notice: "Successfully imported #{result[:success_count]} providers."
+	  end
+	rescue => e
+	  Rails.logger.error "Provider import failed: #{e.message}"
+	  Rails.logger.error e.backtrace.join("\n")
+
+	  redirect_back fallback_location: providers_path,
+	                alert: "Import failed: #{e.message}"
+	end
+
 	def update
 		@provider.assign_attributes(provider_params)
 		@provider.remove_state_license_copies

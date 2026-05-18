@@ -426,10 +426,18 @@ class Provider < ApplicationRecord
     ''
   end
 
-  def caqh_state_name
-    State.find_by(id: self.caqh_state)&.name
-  rescue
-    ''
+  def find_state(value)
+    return nil if value.blank?
+
+    State.find_by(id: value.to_i) || State.find_by(alpha_code: value.to_s.upcase)
+  end
+
+  def state
+    find_state(state_id)
+  end
+
+  def caqh_state_record
+    find_state(caqh_state)
   end
 
   def pending_submitted_documents

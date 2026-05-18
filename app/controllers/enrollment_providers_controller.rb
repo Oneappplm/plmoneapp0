@@ -40,7 +40,7 @@ class EnrollmentProvidersController < ApplicationController
 	  @old_enrollment_data = EnrollmentProvider.find(params[:id])
 	  @new_enrollment_data = @enrollment_provider
 
-    if note_comparison(@old_enrollment_data.details.first.comment,@new_enrollment_data.details.first.comment)
+    if note_comparison(@old_enrollment_data&.details&.first&.comment,@new_enrollment_data.details.first.comment)
 
     elsif enrollment_changes(@old_enrollment_data,@new_enrollment_data)
 

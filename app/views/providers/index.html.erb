@@ -3,7 +3,39 @@
 </div>
 <%= render 'user_restriction', locals: { access_key: 'Providers' } do %>
 	<div class="content container-fluid">
-		<div class="row mb-3">
+		
+		<% if params[:tab] == "bulk_import" %>
+		  <div class="row">
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Bulk Import Providers</h5>
+            </div>
+
+            <div class="card-body">
+              <%= form_with url: import_excel_providers_path,
+                            multipart: true,
+                            method: :post,
+                            local: true do |f| %>
+
+                <div class="mb-3">
+                  <%= f.label :file, "Upload Excel File", class: "form-label" %>
+                  <%= f.file_field :file,
+                      accept: ".xlsx,.xls",
+                      class: "form-control",
+                      required: true %>
+                </div>
+
+                <%= f.hidden_field :enrollment_group_id, value: @enrollment_group&.id %>
+
+                <%= f.submit "Import Providers", class: "btn btn-primary" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+		<% else %>
+		  <div class="row mb-3">
 			<div class="col-lg-6">
 				<form class="form_search_with_icon">
 				<div class="">
@@ -54,6 +86,7 @@
 			<div id="show-provider-container">
 
 			</div>
-		</div>
+		</div>  
+		<% end %>
 	</div>
 <% end %>

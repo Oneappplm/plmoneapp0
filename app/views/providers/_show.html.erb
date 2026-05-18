@@ -32,7 +32,7 @@
         <p class="mb-1"><strong>SSN:</strong> <%= @provider.ssn %></p>
         <p class="mb-1"><strong>Date of Birth:</strong> <%= @provider.birth_date&.strftime('%m/%d/%Y') rescue nil %></p>
         <p class="mb-1"><strong>Birth City:</strong> <%= @provider&.birth_city %></p>
-        <p class="mb-1"><strong>Birth State:</strong> <%= State.find_by(id: @provider&.birth_state.to_i)&.name rescue nil %></p>
+        <p class="mb-1"><strong>Birth State:</strong> <%= @provider&.state&.name %></p>
 
         <h5 class="mt-2 text-center">Home Address</h5>
         <p class="mb-1"><strong>Address 1:</strong> <%= @provider&.address_line_1 %></p>
@@ -94,7 +94,7 @@
       <%= render partial: "global_components/collapsible_sidebar_header", locals: {title: 'CAQH', collapse_name: 'caqh_fields'}%>
       <div class="collapsible" style="<%= current_user&.is_card_open?('caqh_fields') ? '' : 'display: none;' %>">
         <p class="mb-1"><strong>CAQH ID:</strong> <%= @provider.caqhid %></p>
-        <p class="mb-1"><strong>CAQH State:</strong> <%= State.find_by(id: @provider&.caqh_state.to_i)&.name rescue nil %></p>
+        <p class="mb-1"><strong>CAQH State:</strong> <%= @provider&.caqh_state_record&.name %></p>
         <p class="mb-1"><strong>CAQH Username:</strong> <%= @provider&.caqh_username %></p>
         <p class="mb-1"><strong>CAQH Password:</strong> <%= @provider&.caqh_password %></p>
         <p class="mb-1"><strong>Current Re-Attestation:</strong> <%= @provider&.caqh_current_reattestation_date&.strftime('%m/%d/%Y') rescue nil %></p>
