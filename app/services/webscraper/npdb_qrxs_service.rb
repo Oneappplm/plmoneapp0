@@ -109,24 +109,16 @@ class Webscraper::NpdbQrxsService
 
   def build_submission_xml
     street =
-      normalize_address(
-        @ppi.address_line1.presence || "60 BUCCANEER LANE"
-      )
+      normalize_address(@ppi.address_line1)
 
     city =
-      normalize_city(
-        @ppi.city.presence || "EAST SETAUKET"
-      )
+      normalize_city(@ppi.city)
 
     state =
-      normalize_state(
-        @ppi.state.presence || "NY"
-      )
+      normalize_state(@ppi.state)
 
-    zip5, zip4 =
-      normalized_zip_parts(
-        @ppi.zipcode.presence || "117331968"
-      )
+    zip5, _zip4 =
+      normalized_zip_parts(@ppi.zipcode)
 
     ssn =
       @ppi.ssn.to_s.gsub(/\D/, "")
@@ -201,7 +193,6 @@ class Webscraper::NpdbQrxsService
               <city>#{city}</city>
               <state>#{state}</state>
               <zip>#{zip5}</zip>
-              #{zip4.present? ? "<zip4>#{zip4}</zip4>" : ""}
             </cardholderAddress>
           </creditCard>
         </payment>
@@ -241,7 +232,6 @@ class Webscraper::NpdbQrxsService
             <city>#{city}</city>
             <state>#{state}</state>
             <zip>#{zip5}</zip>
-            #{zip4.present? ? "<zip4>#{zip4}</zip4>" : ""}
           </workAddress>
 
           <occupationAndLicensure>
@@ -264,27 +254,32 @@ class Webscraper::NpdbQrxsService
     value.to_s
          .upcase
          .strip
-         .gsub(/\bLN\b/, "LANE")
-         .gsub(/\bST\b/, "STREET")
-         .gsub(/\bRD\b/, "ROAD")
+         .gsub(/\s+/, " ")
   end
+
 
   def normalize_city(value)
-    value.to_s.upcase.strip
+    value.to_s
+         .upcase
+         .strip
   end
 
+
   def normalize_state(value)
-    value.to_s.upcase.strip
+    value.to_s
+         .upcase
+         .strip
   end
+
 
   def normalized_zip_parts(value)
     digits =
       value.to_s.gsub(/\D/, "")
 
-    zip5 = digits.first(5)
-    zip4 = digits.length >= 9 ? digits[5, 4] : nil
+    zip5 =
+      digits.first(5)
 
-    [zip5, zip4]
+    [zip5, nil]
   end
 
   # =========================================================
@@ -326,14 +321,14 @@ class Webscraper::NpdbQrxsService
     end
   end
 
+
   def selected_license_state
-    return "NY" unless selected_license.present?
+    return "" unless selected_license.present?
 
     State.find_by(id: selected_license.state_id)
          &.alpha_code
          .to_s
          .upcase
-         .presence || "NY"
   end
 
   # =========================================================
@@ -343,11 +338,11 @@ class Webscraper::NpdbQrxsService
   def map_field_code(value)
     case value.to_s.downcase
     when /medical doctor/, /\bmd\b/
-      "114"
+      "010"
     when /dentist/, /\bdds\b/
-      "122"
+      "120"
     else
-      "114"
+      "010"
     end
   end
 
