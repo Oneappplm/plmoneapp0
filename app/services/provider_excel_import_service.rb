@@ -210,7 +210,6 @@ class ProviderExcelImportService
       practice_location_name: pick(row, "practice_location_name", "facility_name", "primary_service_location_apps"),
 
       enrollment_group_id: group.id,
-      admin_id: @admin_id,
       status: pick(row, "status").presence || "active"
     }.compact
   end
@@ -308,14 +307,11 @@ class ProviderExcelImportService
 
     name = parse_full_name(provider_name)
 
-    Provider.find_by(
-      first_name: name[:first_name],
-      middle_name: name[:middle_name],
-      last_name: name[:last_name]
-    ) || Provider.find_by(
-      first_name: name[:first_name],
-      last_name: name[:last_name]
-    )
+    Provider.where(
+      "LOWER(first_name) = ? AND LOWER(last_name) = ?",
+      name[:first_name].to_s.downcase,
+      name[:last_name].to_s.downcase
+    ).first
   end
 
   def create_enrollment_provider!(provider, row)
