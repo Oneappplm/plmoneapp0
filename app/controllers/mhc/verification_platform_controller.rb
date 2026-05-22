@@ -7,6 +7,12 @@ class Mhc::VerificationPlatformController < ApplicationController
        ProviderPersonalInformation.where(cred_status: nil)
      ).ransack(params[:q])
     @provider_personal_informations = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
+    
+    if params[:client_name].present?
+      @provider_personal_informations =
+        @provider_personal_informations.where(legacy_client_name: params[:client_name])
+    end
+
     @client_organizations = ClientOrganization.all
   end
 

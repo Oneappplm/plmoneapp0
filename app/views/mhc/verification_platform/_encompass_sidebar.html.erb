@@ -16,10 +16,30 @@
       </div>
       <div class="form-row mt-3">
 
-         <div class="enc-sidebar-content-heading">
+         <% if current_setting.docgo? %> 
+           <div class="enc-sidebar-content-heading">
             <i class='bx bx-buildings' ></i>
             <h6 class="fs-5"><%= current_setting.client_name.upcase %></h6>
-         </div>
+           </div>
+         <% else %>
+           <div class="enc-sidebar-content-heading">
+            <ul class="client-tree-list list-unstyled mb-0">
+              <li>
+                <i class='bx bx-buildings' ></i>
+                <%= link_to "CUAN",
+                    mhc_verification_platform_index_path(client_name: "CUAN"),
+                    class: "client-tree-link" %>
+              </li>
+
+              <li>
+                <i class='bx bx-buildings' ></i>
+                <%= link_to "PRIMARY PARTNERSCARE",
+                    mhc_verification_platform_index_path(client_name: "Primary PartnersCare"),
+                    class: "client-tree-link" %>
+              </li>
+            </ul>
+          </div>
+         <% end %>
 
          <div class="enc-sidebar-content-heading">
             <h6>
@@ -111,3 +131,22 @@
     });
   });
 </script>
+
+<style>
+  .client-tree-list li {
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .client-tree-list li::before {
+    position: absolute;
+    left: -14px;
+    color: #0d6efd;
+  }
+
+  .client-tree-link {
+    text-decoration: none;
+    color: #212529;
+    font-size: 14px;
+  }
+</style>
