@@ -4,6 +4,7 @@ class ProviderPersonalInformation < ApplicationRecord
       CONCAT_WS(' ',
         COALESCE(first_name, ''),
         COALESCE(last_name, ''),
+        COALESCE(encompass_id_text, ''),
         COALESCE(caqh_provider_attest_id::text, ''),
         COALESCE(provider_attest_id::text, '')
       )
