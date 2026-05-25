@@ -9,11 +9,11 @@ namespace :legacy do
       ppi = ProviderPersonalInformation.find_by(encompass_id_text: row["PracID"])
       next unless ppi
 
-      next if ppi.provider_attest_id.blank?
-      next unless ProviderAttest.exists?(id: ppi.provider_attest_id)
+      provider_attest = ProviderAttest.find_by(id: ppi.provider_attest_id)
+      next unless provider_attest
 
       ProviderDea.find_or_create_by!(
-        provider_attest_id: ppi.provider_attest_id,
+        provider_attest: provider_attest,
         caqh_provider_attest_id: ppi.caqh_provider_attest_id,
         dea_number: row["DEARegisNum"]
       ) do |dea|
