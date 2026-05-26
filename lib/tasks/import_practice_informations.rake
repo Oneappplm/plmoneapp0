@@ -26,7 +26,7 @@ namespace :legacy do
       )
 
       practice.address2 = row["OfficeSuite"]
-      practice.additional_address = row["OfficeAdditionalAddress"]
+      practice.mail_stop = row["OfficeAdditionalAddress"]
       practice.city = row["OfficeCity"]
       practice.state = row["OfficeState"]
       practice.zip = row["OfficeZip"]
