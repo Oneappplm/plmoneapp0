@@ -3,20 +3,15 @@ class Mhc::VerificationPlatformController < ApplicationController
   before_action :redirect_to_auto_verify, only: [:index]
 
   def index
-    base_scope = ProviderPersonalInformation.where.not(cred_status: 'no-application').or(
-      ProviderPersonalInformation.where(cred_status: nil)
-    )
-
+    @q = ProviderPersonalInformation.where.not(cred_status: 'no-application').or(
+       ProviderPersonalInformation.where(cred_status: nil)
+     ).ransack(params[:q])
+    @provider_personal_informations = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
+    
     if params[:client_name].present?
-      base_scope = base_scope.where(legacy_client_name: params[:client_name])
-    else
-      base_scope = base_scope.none
+      @provider_personal_informations =
+        @provider_personal_informations.where(legacy_client_name: params[:client_name])
     end
-
-    @q = base_scope.ransack(params[:q])
-
-    @provider_personal_informations =
-      @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
 
     @client_organizations = ClientOrganization.all
   end
