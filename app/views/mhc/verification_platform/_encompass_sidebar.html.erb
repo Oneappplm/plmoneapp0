@@ -5,6 +5,8 @@
    <div class="enc-sidebar-content">
       <div>
          <%= search_form_for @q, url: mhc_manage_clients_path, method: :get, html: { class: 'form_search_with_icon' } do |f| %>
+            <%= hidden_field_tag :client_name, params[:client_name] %>
+
             <div class="input-group mb-3">
               <%= f.text_field :name_or_attest_id_cont, 
                   value: "#{params.dig(:q, :name_or_attest_id_cont)}", 
@@ -17,9 +19,29 @@
       <div class="form-row mt-3">
 
          <div class="enc-sidebar-content-heading">
-            <i class='bx bx-buildings' ></i>
-            <h6 class="fs-5"><%= current_setting.client_name.upcase %></h6>
-         </div>
+            <ul class="client-tree-list list-unstyled mb-0">
+              <li>
+                <i class='bx bx-buildings' ></i>
+                <%= link_to "CUAN",
+                    mhc_verification_platform_index_path(client_name: "CUAN"),
+                    class: "client-tree-link" %>
+              </li>
+
+              <li>
+                <i class='bx bx-buildings' ></i>
+                <%= link_to "PRIMARY PARTNERSCARE",
+                    mhc_verification_platform_index_path(client_name: "Primary PartnersCare"),
+                    class: "client-tree-link" %>
+              </li>
+
+              <li>
+                <i class='bx bx-buildings'></i>
+                <%= link_to "BROWARD HEALTH",
+                    mhc_verification_platform_index_path(client_name: "Broward Health"),
+                    class: "client-tree-link" %>
+              </li>
+            </ul>
+          </div>
 
          <div class="enc-sidebar-content-heading">
             <h6>
@@ -29,24 +51,6 @@
               <% end %>
             </h6>
         </div>
-
-         <%# <div>
-          <button
-            type="button"
-            id="generate-dea-bulk-report-btn"
-            class="btn btn-primary">
-            Generate Report
-          </button>
-
-          <a
-            href="#"
-            id="download-dea-bulk-report-btn"
-            class="btn btn-success d-none"
-            target="_blank"
-            rel="noopener">
-            Download CSV
-          </a>
-        </div> %>
 
          <div class="enc-sidebar-content-heading">
            <% if @client_organizations.present? %>
@@ -111,3 +115,22 @@
     });
   });
 </script>
+
+<style>
+  .client-tree-list li {
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .client-tree-list li::before {
+    position: absolute;
+    left: -14px;
+    color: #0d6efd;
+  }
+
+  .client-tree-link {
+    text-decoration: none;
+    color: #212529;
+    font-size: 14px;
+  }
+</style>
