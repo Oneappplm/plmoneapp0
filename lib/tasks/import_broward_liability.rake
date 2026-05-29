@@ -4,6 +4,15 @@ namespace :broward do
   desc 'Import Broward liability records'
   task import_liability: :environment do
     file = ENV.fetch('FILE')
+    provider_file = ENV.fetch('PROVIDER_FILE', '/tmp/broward_health_providers_253_export.csv')
+
+    guid_to_encid = {}
+
+    CSV.foreach(provider_file, headers: true) do |row|
+      guid = row['PractitionerGUID'].to_s.strip.downcase
+      encid = row['ENCID'].to_s.strip
+      guid_to_encid[guid] = encid if guid.present? && encid.present?
+    end
 
     imported = 0
     updated = 0
@@ -11,17 +20,17 @@ namespace :broward do
 
     CSV.foreach(file, headers: true) do |row|
       begin
-        encid = row['ENCID'].to_s.strip
+        guid = row['PractitionerGUID'].to_s.strip.downcase
+        encid = guid_to_encid[guid]
 
-        provider =
-          ProviderPersonalInformation.find_by(
-            encompass_id_text: encid,
-            legacy_client_name: 'Broward Health'
-          )
+        provider = ProviderPersonalInformation.find_by(
+          encompass_id_text: encid,
+          legacy_client_name: 'Broward Health'
+        )
 
         unless provider
           skipped += 1
-          puts "Provider not found: #{encid}"
+          puts "Provider not found: GUID=#{guid}, ENCID=#{encid}"
           next
         end
 
@@ -32,7 +41,15 @@ namespace :broward do
 
         liability.assign_attributes(
           caqh_provider_attest_id: provider.caqh_provider_attest_id,
-          insurance_carrier_name: row['CarrierName'],
+          insurance_carrier_name: row['InsuranceCarrierName'],
+          address: row['Address'],
+          address2: row['Address2'],
+          city: row['City'],
+          state: row['State'],
+          postal_code: row['Zip'],
+          phone_number: row['Phone'],
+          fax_number: row['FAX'],
+          email_address: row['Email'],
           policy_holder: row['PolicyHolder'],
           policy_number: row['PolicyNumber'],
           original_start_date: row['OriginalEffectiveDate'],
@@ -44,6 +61,8 @@ namespace :broward do
           self_insured_flag: row['SelfInsured'],
           show_on_tickler: row['ShowOnTickler'],
           prof_liability_does_not_expire: row['NotExpire'],
+          claims_history_audit: row['ClaimsHistoryQualityAuditComplete'],
+          audit_status: row['LiabCoverageQualityAuditComplete'].to_s == '1' ? 'Quality Audited' : nil,
           form_type: 'main'
         )
 
@@ -54,10 +73,9 @@ namespace :broward do
         end
 
         liability.save!(validate: false)
-
       rescue => e
         skipped += 1
-        puts "ERROR #{encid}: #{e.message}"
+        puts "ERROR GUID=#{row['PractitionerGUID']}: #{e.message}"
       end
     end
 
