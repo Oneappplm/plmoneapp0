@@ -17,6 +17,7 @@ class ProviderInsuranceCoverage < ApplicationRecord
   scope :expiring_and_tickler, -> { expiring_30_days.shown_on_tickler.not_skipped_rva }
 
   before_validation :set_provider_attest
+  before_validation :sanitize_amounts
 
   after_initialize :set_default_show_on_tickler
 
@@ -24,6 +25,10 @@ class ProviderInsuranceCoverage < ApplicationRecord
 
   def set_default_show_on_tickler
     self.show_on_tickler ||= 'Yes'
+  end
+
+  def sanitize_amounts
+    self.coverage_amount_aggregate = coverage_amount_aggregate.to_s.delete(",")
   end
 
   def set_provider_attest
