@@ -35,8 +35,6 @@ class Mhc::ProviderInsuranceCoveragesController < ApplicationController
         page_tab: 'liability',
         id: @provider_insurance_coverage.provider_attest_id), 
         notice: 'liability detail updated successfully.'
-    else
-      render :edit, status: :unprocessable_entity
     end
   end
 
