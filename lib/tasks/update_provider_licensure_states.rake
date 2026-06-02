@@ -55,7 +55,7 @@ namespace :provider_licensure do
         end
 
         state =
-          State.find_by(abbreviation: states.first)
+          State.find_by(alpha_code: states.first)
 
         unless state
           puts "No matching state found for #{prac_id}: #{states.first}"
@@ -63,15 +63,15 @@ namespace :provider_licensure do
           next
         end
 
-        puts "Processing #{prac_id} -> #{state.abbreviation}"
+        puts "Processing #{prac_id} -> #{state.alpha_code}"
 
         licensures.find_each do |licensure|
           old_state =
-            State.find_by(id: licensure.state_id)&.abbreviation
+            State.find_by(id: licensure.state_id)&.alpha_code
 
           licensure.update!(state_id: state.id)
 
-          puts "  Updated Licensure ##{licensure.id}: #{old_state} -> #{state.abbreviation}"
+          puts "  Updated Licensure ##{licensure.id}: #{old_state} -> #{state.alpha_code}"
 
           updated += 1
         end
