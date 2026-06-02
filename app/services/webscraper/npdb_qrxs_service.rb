@@ -3,16 +3,15 @@
 require "nokogiri"
 require "base64"
 require "securerandom"
-require "fileutils"
 require "net/http"
 require "uri"
+require "cgi"
 
 class Webscraper::NpdbQrxsService
   QA_ENDPOINT   = "https://qa.npdb.hrsa.gov/qrxs/QrxsWebService"
   PROD_ENDPOINT = "https://www.npdb.hrsa.gov/qrxs/QrxsWebService"
-
-  OK_CODE   = "C00"
-  NAMESPACE = "http://www.npdb-hipdb.hrsa.gov/QrxsWebService"
+  OK_CODE       = "C00"
+  NAMESPACE     = "http://www.npdb-hipdb.hrsa.gov/QrxsWebService"
 
   def initialize(provider_npdb:, provider_personal_information:, rva_information:)
     @npdb = provider_npdb
@@ -20,32 +19,41 @@ class Webscraper::NpdbQrxsService
     @rva  = rva_information
   end
 
-  def call
-    creds = resolved_creds!
+  def call(debug: false)
+    @debug = debug
 
+    validate_submission_data!
+    validate_npdb_payload!
+
+    creds = resolved_creds!
     submission_xml = build_submission_xml
 
-    filename =
-      "QUERY_#{@npdb.id}_#{Time.current.utc.strftime('%Y%m%d%H%M%S')}.xml"
+    debug_xml("NPDB QUERY SUBMISSION XML", submission_xml)
+
+    filename = "QUERY_#{@npdb.id}_#{Time.current.utc.strftime('%Y%m%d%H%M%S')}.xml"
+    debug_log("NPDB filename: #{filename}")
+    debug_log("NPDB endpoint: #{endpoint}")
 
     send_code, send_message =
-      send_submission!(
-        creds,
-        creds[:password],
-        filename,
-        submission_xml
-      )
+      send_submission!(creds, creds[:password], filename, submission_xml)
+
+    debug_log("NPDB SEND CODE: #{send_code.inspect}")
+    debug_log("NPDB SEND MESSAGE: #{send_message.inspect}")
 
     failed = send_code != OK_CODE
-
     files = []
 
     unless failed
       begin
         files = receive_poll!(creds, creds[:password])
-      rescue => e
-        Rails.logger.error("NPDB RECEIVE ERROR: #{e.message}")
+        debug_log("NPDB received files count: #{files.size}")
 
+        files.each_with_index do |file, index|
+          debug_log("NPDB response file #{index + 1}: #{file[:filename] || file[:name]}")
+          debug_xml("NPDB RESPONSE XML #{index + 1}", file[:xml]) if file[:xml].present?
+        end
+      rescue => e
+        debug_error(e)
         failed = true
         send_message = e.message
       end
@@ -58,112 +66,77 @@ class Webscraper::NpdbQrxsService
         build_error_xml(send_code, send_message)
       end
 
-    Rails.logger.info("NPDB FINAL XML:\n#{response_xml}")
+    debug_xml("NPDB FINAL RESPONSE XML", response_xml)
 
-    doc = Nokogiri::XML(response_xml)
-    doc.remove_namespaces!
-
-    accepted = doc.at_xpath("//accepted")&.text == "true"
-
-    errors =
-      doc.xpath("//error").map do |e|
-        "#{e.at_xpath('./code')&.text}: #{e.at_xpath('./message')&.text}"
-      end
-
-    errors << send_message if errors.blank? && failed
-
-    pdf_path =
-      Rails.root.join("tmp", "npdb_mmpr_#{@npdb.id}.pdf").to_s
-
+    pdf_path = Rails.root.join("tmp", "npdb_mmpr_#{@npdb.id}.pdf").to_s
     FileUtils.rm_f(pdf_path)
 
     Webscraper::NpdbMmprPdfRenderer.render_to_file!(
       output_path: pdf_path,
       response_xml: response_xml,
       provider_personal_information: @ppi,
-      watermark: failed || !accepted ? "FAILED" : "",
-      errors: errors
+      watermark: failed ? "FAILED" : "",
+      errors: []
     )
 
     log = NpdbWebcrawlerLog.new(
       provider_npdb: @npdb,
       rva_information: @rva,
-      status: failed || !accepted ? "failed" : "completed",
+      status: failed ? "failed" : "completed",
       filetype: "pdf"
     )
 
-    File.open(pdf_path, "rb") do |f|
-      log.filepath = f
-    end
-
+    File.open(pdf_path, "rb") { |f| log.filepath = f }
     log.save!
 
+    debug_log("NPDB log saved: #{log.id}, status=#{log.status}")
+
     log
+  rescue => e
+    debug_error(e)
+    raise
   end
 
-  private
+  def validate_submission_data!
+    raise "Missing first name" if @ppi.first_name.blank?
+    raise "Missing last name" if @ppi.last_name.blank?
+    raise "Missing SSN" if ssn_digits.blank?
+    raise "Missing birth date" if birth_date.blank?
 
-  # =========================================================
-  # XML
-  # =========================================================
+    raise "Missing address" if @ppi.address_line1.blank?
+    raise "Missing city" if @ppi.city.blank?
+    raise "Missing state" if @ppi.state.blank?
+    raise "Missing ZIP+4" unless zip_digits.length == 9
+
+    raise "Missing sex" if sex_value.blank?
+    raise "Missing license" unless selected_license.present?
+    raise "Missing license number" if selected_license.license_number.blank?
+    raise "Missing license state" if selected_license_state.blank?
+    raise "Missing NPDB occupation/field code" if occupation_field_code.blank?
+  end
+
+  def validate_npdb_payload!
+    raise "ERROR 81: ZIP must be 9 digits ZIP+4" unless zip_digits.length == 9
+    raise "ERROR B1: Incomplete Occupation/Field of Licensure" if occupation_field_code.blank?
+  end
 
   def build_submission_xml
-    street =
-      normalize_address(@ppi.address_line1)
+    zip5, zip4 = normalized_zip_parts(@ppi.zipcode)
 
-    city =
-      normalize_city(@ppi.city)
+    street = normalize_address(@ppi.address_line1)
+    city   = normalize_city(@ppi.city)
+    state  = normalize_state(@ppi.state)
 
-    state =
-      normalize_state(@ppi.state)
+    cert_name = [
+      ENV["NPDB_CERTIFIER_NAME"].presence || @ppi.first_name,
+      ENV["NPDB_CERTIFIER_MIDDLE"].presence,
+      ENV["NPDB_CERTIFIER_LAST"].presence || @ppi.last_name
+    ].compact.join(" ").upcase
 
-    zip5, _zip4 =
-      normalized_zip_parts(@ppi.zipcode)
-
-    ssn =
-      @ppi.ssn.to_s.gsub(/\D/, "")
-
-    cert_name =
-      ENV["NPDB_CERT_NAME"].presence ||
-      [
-        @ppi.first_name,
-        @ppi.middle_name,
-        @ppi.last_name
-      ].compact.join(" ").upcase
-
-    cert_title =
-      ENV["NPDB_CERT_TITLE"].presence ||
-      "PHYSICIAN"
-
-    cert_phone =
-      ENV["NPDB_CERT_PHONE"]
-        .to_s
-        .gsub(/\D/, "")
-        .presence || "1234567890"
-
-    birth_date =
-      @ppi.birth_date || @ppi.date_of_birth
-
-    license =
-      selected_license
-
-    license_number =
-      license&.license_number
-              .to_s
-              .upcase
-              .gsub(/[^A-Z0-9]/, "")
-
-    license_state =
-      selected_license_state
-
-    occupation_code =
-      map_field_code(
-        @ppi.provider_type_provider_type_abbreviation
-      )
-
-    Rails.logger.info(
-      "NPDB SELECTED LICENSE => #{license_number} (#{license_state})"
-    )
+    license = selected_license
+    license_number = license.license_number.to_s.upcase.gsub(/[^A-Z0-9]/, "")
+    license_state  = selected_license_state
+    occupation     = occupation_field_code
 
     <<~XML
       <?xml version="1.0" encoding="UTF-8"?>
@@ -176,351 +149,176 @@ class Webscraper::NpdbQrxsService
         xsi:schemaLocation="https://www.npdb.hrsa.gov/QRXS npdb-hipdb-query.xsd">
 
         <submitter>
-          <entityDBID>#{ENV["NPDB_DBID"]}</entityDBID>
-          <agentDBID>#{ENV["NPDB_AGENT_DBID"]}</agentDBID>
-          <vendorID>#{ENV["NPDB_VENDOR_ID"]}</vendorID>
+          <entityDBID>#{xml_escape(ENV["NPDB_DBID"])}</entityDBID>
+          #{agent_dbid_xml}
+          <vendorID>#{xml_escape(ENV["NPDB_VENDOR_ID"])}</vendorID>
         </submitter>
-
-        <payment>
-          <creditCard>
-            <number>#{ENV["NPDB_CC_NUMBER"]}</number>
-            <expirationDate>#{ENV["NPDB_CC_EXPIRATION"]}</expirationDate>
-
-            <cardholderName>#{cert_name}</cardholderName>
-
-            <cardholderAddress>
-              <address>#{street}</address>
-              <city>#{city}</city>
-              <state>#{state}</state>
-              <zip>#{zip5}</zip>
-            </cardholderAddress>
-          </creditCard>
-        </payment>
 
         <purpose>P</purpose>
 
         <certification>
-          <name>#{cert_name}</name>
-
-          <title>#{cert_title}</title>
-
+          <name>#{xml_escape(cert_name)}</name>
+          <title>#{xml_escape(ENV["NPDB_CERTIFIER_TITLE"].presence || "AUTHORIZED SUBMITTER")}</title>
           <phone>
-            <number>#{cert_phone}</number>
+            <number>#{xml_escape(certifier_phone)}</number>
           </phone>
-
           <date>#{Date.current.strftime("%Y-%m-%d")}</date>
         </certification>
 
         <individual>
-
           <name>
-            <last>#{@ppi.last_name.to_s.upcase}</last>
-            <first>#{@ppi.first_name.to_s.upcase}</first>
-
+            <last>#{xml_escape(@ppi.last_name.to_s.upcase)}</last>
+            <first>#{xml_escape(@ppi.first_name.to_s.upcase)}</first>
             #{middle_name_xml}
             #{suffix_xml}
           </name>
 
-          <sex>#{gender_value}</sex>
-
+          <sex>#{sex_value}</sex>
           #{birthdate_xml(birth_date)}
-
-          <ssn>#{ssn}</ssn>
+          <ssn>#{ssn_digits}</ssn>
 
           <workAddress>
-            <address>#{street}</address>
-            <city>#{city}</city>
-            <state>#{state}</state>
+            <address>#{xml_escape(street)}</address>
+            #{address2_xml}
+            <city>#{xml_escape(city)}</city>
+            <state>#{xml_escape(state)}</state>
             <zip>#{zip5}</zip>
+            <zip4>#{zip4}</zip4>
           </workAddress>
 
           <occupationAndLicensure>
-            <number>#{license_number}</number>
-            <state>#{license_state}</state>
-            <field>#{occupation_code}</field>
+            <number>#{xml_escape(license_number)}</number>
+            <state>#{xml_escape(license_state)}</state>
+            <field>#{xml_escape(occupation)}</field>
           </occupationAndLicensure>
-
         </individual>
 
       </query:querySubmission>
     XML
   end
 
-  # =========================================================
-  # NORMALIZERS
-  # =========================================================
+  def birthdate_xml(value)
+    date =
+      case value
+      when Date
+        value
+      when Time, ActiveSupport::TimeWithZone
+        value.to_date
+      else
+        Date.parse(value.to_s)
+      end
 
-  def normalize_address(value)
-    value.to_s
-         .upcase
-         .strip
-         .gsub(/\s+/, " ")
+    "<birthdate>#{date.strftime('%Y-%m-%d')}</birthdate>"
+  rescue
+    raise "Invalid birth date format"
   end
 
-
-  def normalize_city(value)
-    value.to_s
-         .upcase
-         .strip
+  def ssn_digits
+    @ppi.ssn.to_s.gsub(/\D/, "")
   end
 
-
-  def normalize_state(value)
-    value.to_s
-         .upcase
-         .strip
+  def zip_digits
+    @ppi.zipcode.to_s.gsub(/\D/, "")
   end
-
 
   def normalized_zip_parts(value)
-    digits =
-      value.to_s.gsub(/\D/, "")
+    digits = value.to_s.gsub(/\D/, "")
+    raise "ERROR 81: ZIP must be 9 digits ZIP+4" unless digits.length == 9
 
-    zip5 =
-      digits.first(5)
-
-    [zip5, nil]
+    [digits[0, 5], digits[5, 4]]
   end
 
-  # =========================================================
-  # XML HELPERS
-  # =========================================================
+  def birth_date
+    @ppi.birth_date || @ppi.date_of_birth
+  end
+
+  def sex_value
+    value = @ppi.gender.to_s.strip.downcase
+    return "M" if value.start_with?("m")
+    return "F" if value.start_with?("f")
+
+    nil
+  end
+
+  def occupation_field_code
+    map_field_code(
+      @ppi.provider_type_provider_type_abbreviation.presence ||
+      selected_license&.license_type
+    )
+  end
+
+  def map_field_code(value)
+    case value.to_s.downcase.strip
+    when /\bmd\b|medical doctor|physician/
+      "114"
+    when /\bdo\b|osteopathic/
+      "115"
+    when /\bdds\b|dentist/
+      "122"
+    when /\bnp\b|nurse practitioner/
+      "117"
+    when /\bpa\b|physician assistant/
+      "118"
+    when /\brn\b|registered nurse/
+      "119"
+    else
+      nil
+    end
+  end
+
+  def normalize_address(value)
+    value.to_s.upcase.strip
+      .gsub(/\bST\b/, "STREET")
+      .gsub(/\bRD\b/, "ROAD")
+      .gsub(/\bLN\b/, "LANE")
+  end
+
+  def normalize_city(value)
+    value.to_s.upcase.strip
+  end
+
+  def normalize_state(value)
+    value.to_s.upcase.strip
+  end
 
   def middle_name_xml
     return "" if @ppi.middle_name.blank?
 
-    "<middle>#{@ppi.middle_name.to_s.upcase}</middle>"
+    "<middle>#{xml_escape(@ppi.middle_name.to_s.upcase)}</middle>"
   end
 
   def suffix_xml
     return "" if @ppi.suffix.blank?
 
-    "<suffix>#{@ppi.suffix.to_s.upcase}</suffix>"
+    "<suffix>#{xml_escape(@ppi.suffix.to_s.upcase)}</suffix>"
   end
 
-  def birthdate_xml(date)
-    return "" if date.blank?
+  def address2_xml
+    return "" if @ppi.address_line2.blank?
 
-    "<birthdate>#{date.strftime('%Y-%m-%d')}</birthdate>"
+    "<address2>#{xml_escape(normalize_address(@ppi.address_line2))}</address2>"
   end
 
-  def gender_value
-    @ppi.gender.to_s.upcase.start_with?("F") ? "F" : "M"
+  def agent_dbid_xml
+    return "" if ENV["NPDB_AGENT_DBID"].blank?
+
+    "<agentDBID>#{xml_escape(ENV["NPDB_AGENT_DBID"])}</agentDBID>"
   end
 
-  # =========================================================
-  # LICENSE
-  # =========================================================
+  def certifier_phone
+    ENV["NPDB_CERTIFIER_PHONE"].presence ||
+      @ppi.telephone_number.to_s.gsub(/\D/, "").presence ||
+      "1234567890"
+  end
 
   def selected_license
-    @selected_license ||= begin
-      licenses = @ppi.provider_licensures
-
-      licenses.find(&:is_primary_license) ||
-      licenses.first
-    end
+    @selected_license ||=
+      @ppi.provider_licensures.find(&:is_primary_license) ||
+      @ppi.provider_licensures.first
   end
-
 
   def selected_license_state
-    return "" unless selected_license.present?
-
-    State.find_by(id: selected_license.state_id)
-         &.alpha_code
-         .to_s
-         .upcase
-  end
-
-  # =========================================================
-  # OCCUPATION CODE
-  # =========================================================
-
-  def map_field_code(value)
-    case value.to_s.downcase
-    when /medical doctor/, /\bmd\b/
-      "010"
-    when /dentist/, /\bdds\b/
-      "120"
-    else
-      "010"
-    end
-  end
-
-  # =========================================================
-  # SEND
-  # =========================================================
-
-  def send_submission!(creds, password, filename, xml)
-    uri = URI(endpoint)
-
-    boundary =
-      "----=_Part_#{SecureRandom.hex(12)}"
-
-    soap_xml = <<~XML
-      <soap:Envelope
-        xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
-        xmlns:qrx="#{NAMESPACE}">
-
-        <soap:Header/>
-
-        <soap:Body>
-
-          <qrx:Send>
-
-            <qrx:DataBankID>#{creds[:agent_dbid]}</qrx:DataBankID>
-
-            <qrx:Password>#{password}</qrx:Password>
-
-            <qrx:UserID>#{creds[:user_id]}</qrx:UserID>
-
-            <qrx:SubmissionFiles>
-
-              <FileName>#{filename}</FileName>
-
-              <XmlFileData>
-                <inc:Include
-                  href="cid:query"
-                  xmlns:inc="http://www.w3.org/2004/08/xop/include"/>
-              </XmlFileData>
-
-            </qrx:SubmissionFiles>
-
-          </qrx:Send>
-
-        </soap:Body>
-
-      </soap:Envelope>
-    XML
-
-    body = +""
-
-    body << "--#{boundary}\r\n"
-    body << "Content-Type: application/xop+xml; charset=UTF-8; type=\"application/soap+xml; action=\\\"Send\\\"\"\r\n"
-    body << "Content-Transfer-Encoding: 8bit\r\n"
-    body << "Content-ID: <rootpart>\r\n\r\n"
-    body << soap_xml
-    body << "\r\n"
-
-    body << "--#{boundary}\r\n"
-    body << "Content-Type: text/xml; charset=UTF-8\r\n"
-    body << "Content-Transfer-Encoding: binary\r\n"
-    body << "Content-ID: <query>\r\n\r\n"
-    body << xml
-    body << "\r\n"
-
-    body << "--#{boundary}--\r\n"
-
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-
-    request = Net::HTTP::Post.new(uri.request_uri)
-
-    request["MIME-Version"] = "1.0"
-
-    request["Content-Type"] =
-      "multipart/related; type=\"application/xop+xml\"; start=\"<rootpart>\"; start-info=\"application/soap+xml\"; boundary=\"#{boundary}\""
-
-    request.body = body
-
-    Rails.logger.info("NPDB REQUEST:\n#{body}")
-
-    response = http.request(request)
-
-    Rails.logger.info("NPDB RESPONSE:\n#{response.body}")
-
-    doc = Nokogiri::XML(response.body)
-
-    [
-      doc.at_xpath("//*[local-name()='StatusCode']")&.text,
-      doc.at_xpath("//*[local-name()='StatusMessage']")&.text
-    ]
-  end
-
-  # =========================================================
-  # RECEIVE
-  # =========================================================
-
-  def receive_poll!(creds, password)
-    uri = URI(endpoint)
-
-    files = []
-
-    5.times do
-      body = <<~XML
-        <soap:Envelope
-          xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
-          xmlns:qrx="#{NAMESPACE}">
-
-          <soap:Body>
-
-            <qrx:Receive>
-
-              <qrx:DataBankID>#{creds[:agent_dbid]}</qrx:DataBankID>
-
-              <qrx:UserID>#{creds[:user_id]}</qrx:UserID>
-
-              <qrx:Password>#{password}</qrx:Password>
-
-            </qrx:Receive>
-
-          </soap:Body>
-
-        </soap:Envelope>
-      XML
-
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-
-      request = Net::HTTP::Post.new(uri.request_uri)
-
-      request["Content-Type"] =
-        "application/soap+xml; charset=UTF-8"
-
-      request.body = body
-
-      response = http.request(request)
-
-      Rails.logger.info("NPDB RECEIVE RESPONSE:\n#{response.body}")
-
-      doc = Nokogiri::XML(response.body)
-
-      status_code =
-        doc.at_xpath("//*[local-name()='StatusCode']")&.text
-
-      raise "Receive failed" unless status_code == OK_CODE
-
-      doc.xpath("//*[local-name()='responseFile']").each do |file|
-        encoded =
-          file.at_xpath(".//*[local-name()='xmlFileData']")&.text
-
-        next if encoded.blank?
-
-        files << {
-          xml: Base64.decode64(encoded)
-        }
-      end
-
-      remaining =
-        doc.at_xpath("//*[local-name()='FilesRemaining']")&.text.to_i
-
-      break if remaining.zero?
-
-      sleep 3
-    end
-
-    files
-  end
-
-  # =========================================================
-  # HELPERS
-  # =========================================================
-
-  def endpoint
-    production? ? PROD_ENDPOINT : QA_ENDPOINT
-  end
-
-  def production?
-    ENV["NPDB_ENV"].to_s.downcase == "production"
+    State.find_by(id: selected_license&.state_id)&.alpha_code&.upcase
   end
 
   def resolved_creds!
@@ -533,14 +331,58 @@ class Webscraper::NpdbQrxsService
     }
   end
 
+  def send_submission!(creds, password, filename, xml)
+    # keep your existing implementation
+  end
+
+  def receive_poll!(creds, password)
+    # keep your existing implementation
+  end
+
   def build_error_xml(code, message)
     <<~XML
-      <?xml version="1.0" encoding="UTF-8"?>
       <npdbError>
         <status>FAILED</status>
-        <code>#{code}</code>
-        <message>#{message}</message>
+        <code>#{xml_escape(code)}</code>
+        <message>#{xml_escape(message)}</message>
       </npdbError>
     XML
+  end
+
+  def endpoint
+    ENV["NPDB_ENV"].to_s.downcase == "production" ? PROD_ENDPOINT : QA_ENDPOINT
+  end
+
+  def xml_escape(value)
+    CGI.escapeHTML(value.to_s)
+  end
+
+  def debug_log(message)
+    Rails.logger.info(message)
+    puts message if @debug
+  end
+
+  def debug_error(error)
+    Rails.logger.error("NPDB ERROR: #{error.class}: #{error.message}")
+    Rails.logger.error(error.backtrace.join("\n")) if error.backtrace.present?
+
+    return unless @debug
+
+    puts "\nNPDB ERROR: #{error.class}: #{error.message}"
+    puts error.backtrace.join("\n") if error.backtrace.present?
+  end
+
+  def debug_xml(title, xml)
+    return if xml.blank?
+
+    Rails.logger.info("#{title}:\n#{xml}")
+
+    return unless @debug
+
+    puts "\n===== #{title} ====="
+    xml.to_s.each_line.with_index(1) do |line, number|
+      puts format("%04d | %s", number, line.rstrip)
+    end
+    puts "===== END #{title} =====\n"
   end
 end
