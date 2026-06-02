@@ -32,9 +32,12 @@ class ProviderInsuranceCoverage < ApplicationRecord
   end
 
   def set_provider_attest
-    return if caqh_provider_attest_id.blank?
+    if caqh_provider_attest_id.present?
+      self.provider_attest = ProviderAttest.where(caqh_provider_attest_id: self.caqh_provider_attest_id).last
+    end
 
-    self.provider_attest = ProviderAttest.find_by(caqh_provider_attest_id: caqh_provider_attest_id)
-    Rails.logger.info "ProviderAttest set to: #{self.provider_attest.inspect}"
+    unless self.provider_attest
+      errors.add(:provider_attest, "must be associated with a valid ProviderAttest")
+    end
   end
 end
