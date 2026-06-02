@@ -11,7 +11,7 @@ namespace :provider_licensure do
     unless csv_path.present? && File.exist?(csv_path)
       puts "CSV_PATH missing or file does not exist"
       puts "Usage:"
-      puts "bundle exec rake provider_licensure:update_states CSV_PATH=tmp/provider_states.csv"
+      puts "bundle exec rake provider_licensure:update_states CSV_PATH=/tmp/provider_states.csv"
       exit
     end
 
@@ -22,10 +22,26 @@ namespace :provider_licensure do
     CSV.foreach(csv_path, headers: true) do |row|
       begin
         prac_id = row['PracID']&.strip
-        states  = row['States']&.split(',')&.map(&:strip)
 
-        next if prac_id.blank?
-        next if states.blank?
+        state_value = row['States'] || row['State']
+
+        states =
+          state_value.to_s
+                     .split(',')
+                     .map(&:strip)
+                     .reject(&:blank?)
+                     .reject { |state| state.upcase == 'NULL' }
+
+        if prac_id.blank?
+          skipped += 1
+          next
+        end
+
+        if states.blank?
+          puts "Skipping #{prac_id} - no valid state found"
+          skipped += 1
+          next
+        end
 
         attest_id = prac_id.gsub('ENC', '').to_i
 
@@ -38,23 +54,28 @@ namespace :provider_licensure do
           next
         end
 
-        state_ids =
-          State.where(abbreviation: states).pluck(:id)
+        state =
+          State.find_by(abbreviation: states.first)
 
-        if state_ids.blank?
-          puts "No matching states found for #{prac_id}: #{states.join(',')}"
+        unless state
+          puts "No matching state found for #{prac_id}: #{states.first}"
           skipped += 1
           next
         end
 
-        licensures.find_each do |licensure|
-          licensure.update!(
-            state_id: state_ids.first
-          )
+        puts "Processing #{prac_id} -> #{state.abbreviation}"
 
-          puts "Updated #{prac_id} -> #{states.first}"
+        licensures.find_each do |licensure|
+          old_state =
+            State.find_by(id: licensure.state_id)&.abbreviation
+
+          licensure.update!(state_id: state.id)
+
+          puts "  Updated Licensure ##{licensure.id}: #{old_state} -> #{state.abbreviation}"
+
           updated += 1
         end
+
       rescue => e
         puts "ERROR #{prac_id}: #{e.message}"
         errors += 1
