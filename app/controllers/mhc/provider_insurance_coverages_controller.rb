@@ -31,10 +31,7 @@ class Mhc::ProviderInsuranceCoveragesController < ApplicationController
   def update
     @provider_insurance_coverage = ProviderInsuranceCoverage.find(params[:id])
     if @provider_insurance_coverage.update(provider_insurance_coverages_params)
-      redirect_to mhc_verification_platform_path(
-        page_tab: 'liability',
-        id: @provider_insurance_coverage.provider_attest_id), 
-        notice: 'liability detail updated successfully.'
+      redirect_to mhc_verification_platform_path(page_tab: 'liability',id: params[:provider_insurance_coverage][:provider_attest_id]), notice: 'liability detail updated successfully.'
     end
   end
 
