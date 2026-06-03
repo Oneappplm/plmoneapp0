@@ -1,8 +1,19 @@
 class Mhc::ManageClientsController < ApplicationController
 
   def index
-    @q = ProviderPersonalInformation.ransack(params[:q])
-    @provider_personal_informations = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
+    base_scope = ProviderPersonalInformation.all
+
+    if params[:client_name].present?
+      base_scope = base_scope.where(legacy_client_name: params[:client_name])
+    else
+      base_scope = base_scope.none
+    end
+
+    @q = base_scope.ransack(params[:q])
+
+    @provider_personal_informations =
+    @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
+
     @document = ProviderPersonalUploadedDoc.new
     @client_organizations = ClientOrganization.all
   end
@@ -105,9 +116,11 @@ class Mhc::ManageClientsController < ApplicationController
           provider_attest_id: provider_info.provider_attest_id
         )
       )
+       Rails.logger.info "Before save"
 
       if @document.save
-        render json: {
+       	Rails.logger.info "After save"
+	 render json: {
           success: true,
           document_id: @document.id,
           file_name:  @document.file_upload.identifier,
@@ -115,6 +128,7 @@ class Mhc::ManageClientsController < ApplicationController
           uploaded_at: @document.created_at.strftime("%d-%m-%Y %H:%M")
         }
       else
+	Rails.logger.info @document.errors.full_messages
         render json: { success: false, errors: @document.errors.full_messages },
                status: :unprocessable_entity
       end
