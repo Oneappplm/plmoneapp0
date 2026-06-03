@@ -106,17 +106,35 @@ class Mhc::ManageClientsController < ApplicationController
         )
       )
 
+      Rails.logger.info doc_params.inspect
+      Rails.logger.info @document.attributes.inspect
+
       if @document.save
-        render json: {
-          success: true,
-          document_id: @document.id,
-          file_name:  @document.file_upload.identifier,
-          file_url:   @document.file_upload.url,
-          uploaded_at: @document.created_at.strftime("%d-%m-%Y %H:%M")
-        }
+        Rails.logger.info "Document saved successfully: #{@document.id}"
+
+        begin
+          render json: {
+            success: true,
+            document_id: @document.id,
+            file_name: @document.file_upload.identifier,
+            file_url: @document.file_upload.url,
+            uploaded_at: @document.created_at.strftime("%d-%m-%Y %H:%M")
+          }
+        rescue => e
+          Rails.logger.error "JSON RESPONSE ERROR: #{e.class} - #{e.message}"
+          Rails.logger.error e.backtrace.first(20).join("\n")
+
+          render json: {
+            success: false,
+            error: e.message
+          }, status: :unprocessable_entity
+        end
       else
-        render json: { success: false, errors: @document.errors.full_messages },
-               status: :unprocessable_entity
+        Rails.logger.error @document.errors.full_messages
+        render json: {
+          success: false,
+          errors: @document.errors.full_messages
+        }, status: :unprocessable_entity
       end
     end
   end
