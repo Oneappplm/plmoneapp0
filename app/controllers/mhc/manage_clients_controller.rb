@@ -97,7 +97,7 @@ class Mhc::ManageClientsController < ApplicationController
                status: :unprocessable_entity
       end
     else
-      # create new record
+      # ✅ create new record
       @document = ProviderPersonalUploadedDoc.new(
         doc_params.merge(
           provider_personal_information_id: provider_info.id,
@@ -106,49 +106,17 @@ class Mhc::ManageClientsController < ApplicationController
         )
       )
 
-      Rails.logger.info "================ DOCUMENT DEBUG START ================"
-      Rails.logger.info "doc_params => #{doc_params.inspect}"
-      Rails.logger.info "attributes => #{@document.attributes.inspect}"
-
-      if doc_params[:file_upload].present?
-        Rails.logger.info "FILE CLASS => #{doc_params[:file_upload].class}"
-        Rails.logger.info "ORIGINAL FILENAME => #{doc_params[:file_upload].original_filename}"
-        Rails.logger.info "CONTENT TYPE => #{doc_params[:file_upload].content_type}"
-      end
-
-      Rails.logger.info "IMAGE CLASSIFICATION => #{@document.image_classification.inspect}"
-      Rails.logger.info "SUB SECTION => #{@document.sub_section.inspect}"
-
-      Rails.logger.info "VALID? => #{@document.valid?}"
-      Rails.logger.info "VALIDATION ERRORS => #{@document.errors.full_messages.inspect}"
-
-      begin
-        @document.save!
-
-        Rails.logger.info "SAVE SUCCEEDED"
-        Rails.logger.info "DOCUMENT ID => #{@document.id}"
-        Rails.logger.info "FILE IDENTIFIER => #{@document.file_upload.identifier}"
-        Rails.logger.info "FILE URL => #{@document.file_upload.url}"
-
+      if @document.save
         render json: {
           success: true,
           document_id: @document.id,
-          file_name: @document.file_upload.identifier,
-          file_url: @document.file_upload.url,
+          file_name:  @document.file_upload.identifier,
+          file_url:   @document.file_upload.url,
           uploaded_at: @document.created_at.strftime("%d-%m-%Y %H:%M")
         }
-
-      rescue => e
-        Rails.logger.error "================ SAVE ERROR ================"
-        Rails.logger.error "ERROR CLASS => #{e.class}"
-        Rails.logger.error "ERROR MESSAGE => #{e.message}"
-        Rails.logger.error e.full_message
-        Rails.logger.error "===================================================="
-
-        render json: {
-          success: false,
-          error: e.message
-        }, status: :unprocessable_entity
+      else
+        render json: { success: false, errors: @document.errors.full_messages },
+               status: :unprocessable_entity
       end
     end
   end
