@@ -52,12 +52,15 @@ namespace :broward do
           start_date: row['DateAttendedFrom'],
           end_date: row['DateAttendedto'],
           program_completed_flag: row['CompletedOrNot'],
-          degree_abbreviation: row['DegreeCertificate'],
+          degree_degree_abbreviation: row['DegreeCertificate'],
           education_type_name: 'Education',
-          specialty_name: row['ProgramTitle'],
+          program_title: row['ProgramTitle'],
           certificate_awarded: row['IfOtherFill'],
-          comment: row['Comments'],
-          audit_status: row['QualityAuditComplete'].to_s == '1' ? 'Quality Audited' : nil
+          comments: row['Comments'],
+          suite: row['Suite'],
+          show_on_tickler: row['ShowOnTickler'],
+          apa_approved_flag: row['APAApproved'],
+          audit_status: row['QualityAuditComplete'].to_s == '1' ? 'Quality Audited' : nil,
         )
 
         education.new_record? ? imported += 1 : updated += 1
