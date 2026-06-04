@@ -34,13 +34,14 @@ namespace :broward do
           next
         end
 
-        education = ProviderEducation.find_or_initialize_by(
+        education = PracticeInformationEducation.find_or_initialize_by(
           provider_attest_id: provider.provider_attest_id,
-          caqh_provider_education_id: row['tbl_IV_ID']
+          caqh_practice_information_education_id: row['tbl_IV_ID']
         )
 
         education.assign_attributes(
           caqh_provider_attest_id: provider.caqh_provider_attest_id,
+
           institution_name: row['SchoolName'],
           address: row['Address'],
           address2: row['Address2'],
@@ -49,18 +50,25 @@ namespace :broward do
           postal_code: row['Zip'],
           phone_number: row['Phone'],
           fax_number: row['FAX'],
+          email_address: row['Email'],
+
+          program_title: row['ProgramTitle'],
+          degree_degree_abbreviation: row['DegreeCertificate'],
+
           start_date: row['DateAttendedFrom'],
           end_date: row['DateAttendedto'],
+
           program_completed_flag: row['CompletedOrNot'],
-          degree_degree_abbreviation: row['DegreeCertificate'],
-          education_type_name: 'Education',
-          program_title: row['ProgramTitle'],
-          certificate_awarded: row['IfOtherFill'],
+          incomplete_explanation: row['Explanation'],
+
+          suite_dept_mail_stop: row['Suite'],
+          if_other_list: row['IfOtherFill'],
           comments: row['Comments'],
-          suite: row['Suite'],
+
           show_on_tickler: row['ShowOnTickler'],
-          apa_approved_flag: row['APAApproved'],
-          audit_status: row['QualityAuditComplete'].to_s == '1' ? 'Quality Audited' : nil,
+
+          verification_status:
+            row['QualityAuditComplete'].to_s == '1' ? 'verified' : 'pending',
         )
 
         education.new_record? ? imported += 1 : updated += 1
