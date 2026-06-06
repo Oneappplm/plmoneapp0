@@ -36,7 +36,7 @@ namespace :broward do
 
         employment = ProviderEmployment.find_or_initialize_by(
           provider_attest_id: provider.provider_attest_id,
-          caqh_provider_employment_id: row['tbl_III_ID']
+          caqh_provider_employment_id: row['caqh_provider_employment_id']
         )
 
         employment.assign_attributes(
