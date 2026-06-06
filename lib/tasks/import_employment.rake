@@ -11,7 +11,6 @@ namespace :broward do
     CSV.foreach(provider_file, headers: true) do |row|
       guid = row['PractitionerGUID'].to_s.strip.downcase
       encid = row['ENCID'].to_s.strip
-
       guid_to_encid[guid] = encid if guid.present? && encid.present?
     end
 
@@ -65,8 +64,6 @@ namespace :broward do
           audit_status: row['QualityAuditComplete'].to_s == '1' ? 'Quality Audited' : nil
         )
 
-        employment.provider_attest_id ||= provider.provider_attest_id
-
         if employment.new_record?
           imported += 1
         else
@@ -85,8 +82,12 @@ namespace :broward do
     puts "Skipped : #{skipped}"
 
     if skipped == 0
-      File.delete(file) if File.exist?(file)
-      puts "Deleted import file: #{file}"
+      begin
+        File.delete(file) if File.exist?(file)
+        puts "Deleted import file: #{file}"
+      rescue => e
+        puts "Could not delete import file: #{file} - #{e.message}"
+      end
     end
   end
 end
