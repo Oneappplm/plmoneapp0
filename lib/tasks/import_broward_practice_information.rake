@@ -39,8 +39,14 @@ namespace :broward do
           caqh_provider_practice_id: row['caqh_provider_practice_id']
         )
 
+        practice_name =
+          row['practice_name'].presence ||
+          [row['address'], row['city']].compact_blank.join(', ').presence ||
+          'Practice Location'
+
         practice.assign_attributes(
           caqh_provider_attest_id: provider.caqh_provider_attest_id,
+          practice_name: practice_name,
           npi: row['npi'],
           tin_number: row['tin_number'],
           address: row['address'],
