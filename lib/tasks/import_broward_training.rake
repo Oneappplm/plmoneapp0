@@ -65,8 +65,7 @@ namespace :broward do
           comments: row['Comments'],
           suite: row['Suite'],
           show_on_tickler: row['ShowOnTickler'],
-          audit_status: row['QualityAuditComplete'].to_s == '1' ? 'Quality Audited' : nil,
-          form_type: 'main'
+          audit_status: row['QualityAuditComplete'].to_s == '1' ? 'Quality Audited' : nil
         )
 
         education.new_record? ? imported += 1 : updated += 1
