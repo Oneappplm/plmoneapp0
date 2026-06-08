@@ -1,0 +1,144 @@
+<%
+  saved_value =
+    @facility_provider_type.provider_practice_answer_text.to_s
+
+  selected_provider_type =
+    if saved_value.start_with?("Other Provider Type")
+      "Other Provider Type"
+    else
+      saved_value
+    end
+
+  other_provider_type =
+    if saved_value.start_with?("Other Provider Type:")
+      saved_value.sub("Other Provider Type:", "").strip
+    else
+      ""
+    end
+
+  provider_types = [
+    "Child Caring Institution",
+    "Partial Hospitalization – free standing",
+    "Comprehensive Outpatient Provider",
+    "Specialized Residential Provider",
+    "Crisis Residential",
+    "Partial Hospitalization – hospital based",
+    "General Hospital with Psychiatric Unit",
+    "Psychiatric Hospital",
+    "Intensive Crisis Stabilization",
+    "Vocational Training",
+    "Semi-Independent Living",
+    "Other Provider Type",
+    "Staffing Agency"
+  ]
+%>
+
+<div class="facility-form-box">
+  <h3>Provider Type</h3>
+
+  <p class="provider-type-instruction">
+    Please check response that best describes your organization at this facility.
+  </p>
+
+  <div class="provider-type-options">
+    <% provider_types.each do |provider_type| %>
+      <label class="provider-type-option">
+        <%= radio_button_tag(
+              "facility_provider_type[provider_type]",
+              provider_type,
+              selected_provider_type == provider_type,
+              required: true,
+              class: "provider-type-radio"
+            ) %>
+
+        <span><%= provider_type %></span>
+      </label>
+    <% end %>
+  </div>
+
+  <div
+    id="other-provider-type-section"
+    style="<%= selected_provider_type == 'Other Provider Type' ? '' : 'display:none;' %>"
+  >
+    <%= text_field_tag(
+          "facility_provider_type[other_provider_type]",
+          other_provider_type,
+          id: "other-provider-type-input",
+          class: "form-control other-provider-type-input",
+          placeholder: "Other"
+        ) %>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const providerTypeRadios =
+    document.querySelectorAll(".provider-type-radio")
+
+  const otherSection =
+    document.getElementById("other-provider-type-section")
+
+  const otherInput =
+    document.getElementById("other-provider-type-input")
+
+  if (!otherSection || !otherInput) return
+
+  function toggleOtherProviderType() {
+    const selected =
+      document.querySelector(".provider-type-radio:checked")?.value
+
+    if (selected === "Other Provider Type") {
+      otherSection.style.display = "block"
+      otherInput.required = true
+      otherInput.focus()
+    } else {
+      otherSection.style.display = "none"
+      otherInput.required = false
+      otherInput.value = ""
+    }
+  }
+
+  providerTypeRadios.forEach(function (radio) {
+    radio.addEventListener("change", toggleOtherProviderType)
+  })
+
+  toggleOtherProviderType()
+})
+</script>
+
+<style>
+.provider-type-instruction {
+  margin-top: 35px;
+  margin-bottom: 28px;
+  font-size: 13px;
+}
+
+.provider-type-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 65px;
+  row-gap: 18px;
+  max-width: 760px;
+}
+
+.provider-type-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: normal;
+  margin: 0;
+}
+
+.other-provider-type-input {
+  width: 100%;
+  margin-top: 30px;
+  height: 32px;
+}
+
+@media (max-width: 800px) {
+  .provider-type-options {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

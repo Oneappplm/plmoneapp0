@@ -1,0 +1,76 @@
+<%= hidden_field_tag "practice_location[id]", @practice_location.id unless params[:new_practice].present? %>
+
+<div class="form-row two-col">
+  <div class="field-group">
+    <%= label_tag "practice_location[location]" do %>
+      Practice Name <span class="required">*</span>
+    <% end %>
+    <%= text_field_tag "practice_location[location]", @practice_location.location, class: "form-control", required: true %>
+  </div>
+</div>
+
+<div class="form-row two-col">
+  <div class="field-group">
+    <%= label_tag "practice_location[address1]" do %>
+      Address Line 1 <span class="required">*</span>
+    <% end %>
+    <%= text_field_tag "practice_location[address1]", @practice_location.address1, class: "form-control", required: true %>
+  </div>
+
+  <div class="field-group">
+    <%= label_tag "practice_location[address2]", "Address Line 2" %>
+    <%= text_field_tag "practice_location[address2]", @practice_location.address2, class: "form-control" %>
+  </div>
+</div>
+
+<div class="form-row two-col">
+  <div class="field-group">
+    <%= label_tag "practice_location[city]" do %>
+      City <span class="required">*</span>
+    <% end %>
+    <%= text_field_tag "practice_location[city]", @practice_location.city, class: "form-control", required: true %>
+  </div>
+
+  <div class="field-group">
+    <%= label_tag "practice_location[state_id]" do %>
+      State <span class="required">*</span>
+    <% end %>
+
+    <select name="practice_location[state_id]" class="form-control" required>
+      <option value="">Select State</option>
+      <% State.order(:name).each do |state| %>
+        <option value="<%= state.alpha_code %>" <%= "selected" if @practice_location.state_id.to_s == state.alpha_code.to_s %>>
+          <%= state.name %>
+        </option>
+      <% end %>
+    </select>
+  </div>
+</div>
+
+<div class="form-row two-col">
+  <div class="field-group">
+    <%= label_tag "practice_location[zip_code]" do %>
+      Zip <span class="required">*</span>
+    <% end %>
+    <%= text_field_tag "practice_location[zip_code]", @practice_location.zip_code, class: "form-control", required: true %>
+  </div>
+
+  <div class="field-group">
+    <%= label_tag "practice_location[fax_number]", "Fax" %>
+    <%= text_field_tag "practice_location[fax_number]", @practice_location.fax_number, class: "form-control" %>
+  </div>
+</div>
+
+<div class="form-row two-col">
+  <div class="field-group">
+    <%= label_tag "practice_location[phone_number]" do %>
+      Phone <span class="required">*</span>
+    <% end %>
+    <%= text_field_tag "practice_location[phone_number]", @practice_location.phone_number, class: "form-control", required: true %>
+  </div>
+
+  <div class="field-group">
+    <%= label_tag "practice_location[email]", "Email" %>
+    <%= email_field_tag "practice_location[email]", @practice_location.email, class: "form-control" %>
+  </div>
+</div>

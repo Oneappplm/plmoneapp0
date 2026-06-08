@@ -1,0 +1,153 @@
+<h3>Corporate Information</h3>
+
+<p>
+  <strong>Please complete the brief form below to get started:</strong><br>
+  <small>
+    If doing business in Wayne County, your certificate of conducting business under an assumed name or
+    certificate of co-partnership must be filed with the Wayne County Clerk’s Office in person or through the mail.
+  </small>
+</p>
+
+<div class="corporate-form">
+  <div class="form-row two-col">
+    <div class="field-group">
+      <%= label_tag "practice_information[legal_business_name]" do %>
+        Legal Business Name <span class="required">*</span>
+      <% end %>
+      <%= text_field_tag "practice_information[legal_business_name]",
+          @practice_information.practice_name,
+          class: "form-control",
+          required: true %>
+    </div>
+
+    <div class="field-group">
+      <%= label_tag "practice_information[dba_name]", "Doing Business As (DBA) Name" %>
+      <%= text_field_tag "practice_information[dba_name]",
+          @practice_information.group_name,
+          class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-row two-col">
+    <div class="field-group">
+      <%= label_tag "practice_information[npi]", "National Provider Identifier (NPI)" %>
+      <%= text_field_tag "practice_information[npi]",
+          @practice_information.npi,
+          class: "form-control" %>
+    </div>
+
+    <div class="field-group">
+      <%= label_tag "practice_information[no_npi_reason]", "No NPI? Please specify reason." %>
+      <%= text_area_tag "practice_information[no_npi_reason]",
+          @practice_information.any_comments,
+          class: "form-control small-textarea" %>
+    </div>
+  </div>
+
+  <div class="form-row two-col">
+    <div class="field-group">
+      <%= label_tag "practice_information[federal_tax_id]" do %>
+        Federal Tax Identification Number (TIN) <span class="required">*</span>
+      <% end %>
+      <%= text_field_tag "practice_information[federal_tax_id]",
+          @practice_information.federal_tax_id,
+          class: "form-control",
+          required: true %>
+    </div>
+
+    <div class="field-group">
+      <%= label_tag "practice_information[incorporated_state]" do %>
+        In what state are you incorporated? <span class="required">*</span>
+      <% end %>
+      <%= select_tag "practice_information[incorporated_state]",
+          options_for_select(
+            [
+              "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado",
+              "Connecticut", "Delaware", "Florida", "Georgia", "Michigan", "New York",
+              "Ohio", "Texas"
+            ],
+            @practice_information.state
+          ),
+          class: "form-control",
+          required: true %>
+    </div>
+  </div>
+
+  <div class="form-row two-col">
+    <div class="field-group">
+      <%= label_tag "practice_information[counties_served]", "Counties served by this Organization" %>
+      <%= text_field_tag "practice_information[counties_served]",
+          @practice_information.county,
+          class: "form-control" %>
+    </div>
+
+    <div class="field-group radio-field">
+      <label>
+        Does your organization submit claims electronically?
+        <span class="required">*</span>
+      </label>
+
+      <div>
+        <%= radio_button_tag "practice_information[submit_claims_electronically]",
+            "true",
+            @practice_information.electronic_billing_flag == true,
+            required: true %>
+        Yes
+
+        <%= radio_button_tag "practice_information[submit_claims_electronically]",
+            "false",
+            @practice_information.electronic_billing_flag == false,
+            required: true %>
+        No
+      </div>
+    </div>
+  </div>
+
+  <h4>Name of President/Chief Executive Officer:</h4>
+
+  <% ceo_name = @practice_information.office_manager.to_s.split(" ") %>
+
+  <div class="form-row two-col">
+    <div class="field-group">
+      <%= label_tag "practice_information[ceo_first_name]" do %>
+        First Name <span class="required">*</span>
+      <% end %>
+      <%= text_field_tag "practice_information[ceo_first_name]",
+          ceo_name[0],
+          class: "form-control",
+          required: true %>
+    </div>
+
+    <div class="field-group">
+      <%= label_tag "practice_information[ceo_middle_name]", "Middle Name" %>
+      <%= text_field_tag "practice_information[ceo_middle_name]",
+          ceo_name.length > 2 ? ceo_name[1] : nil,
+          class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-row two-col">
+    <div class="field-group">
+      <%= label_tag "practice_information[ceo_last_name]" do %>
+        Last Name <span class="required">*</span>
+      <% end %>
+      <%= text_field_tag "practice_information[ceo_last_name]",
+          ceo_name.length > 1 ? ceo_name[-1] : nil,
+          class: "form-control",
+          required: true %>
+    </div>
+
+    <div class="field-group">
+      <%= label_tag "practice_information[type_and_ownership]" do %>
+        Type and Ownership <span class="required">*</span>
+      <% end %>
+      <%= select_tag "practice_information[type_and_ownership]",
+          options_for_select(
+            ["Federal", "Privately Owned", "Publicly Owned", "Non-Profit", "Other"],
+            @practice_information.ownership_description
+          ),
+          class: "form-control",
+          required: true %>
+    </div>
+  </div>
+</div>

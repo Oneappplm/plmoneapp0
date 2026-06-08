@@ -407,6 +407,14 @@ Rails.application.routes.draw do
       post :delete_document
     end
   end
+  
+  resources :provider_facilities, only: [:edit, :update] do
+    member do
+      patch :autosave
+      delete :delete_facility_document
+    end
+  end
+
   resources :enrollments do
     collection do
       get :new_user, path: 'new-user'

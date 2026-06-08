@@ -1,0 +1,234 @@
+<%
+  treatment_record =
+    @facility_service_type_records[:sud_treatment_provider]
+
+  prevention_record =
+    @facility_service_type_records[:sud_prevention_provider]
+
+  services_record =
+    @facility_service_type_records[:selected_services]
+
+  selected_services =
+    services_record
+      .provider_practice_answer_text
+      .to_s
+      .split(",")
+      .map(&:strip)
+      .reject(&:blank?)
+%>
+
+<div class="facility-form-box">
+  <h3>Service Type</h3>
+
+  <p class="service-type-description">
+    Please check all services you are currently providing and requesting to be
+    impaneled at this location.
+  </p>
+
+  <p class="service-type-note">
+    * Please include Letter of Enrollment by MDHHS for this service type.
+  </p>
+
+  <div class="service-type-question">
+    <label>
+      Are you a SUD Treatment Provider?
+      <span class="required">*</span>
+    </label>
+
+    <div class="service-type-radio-options">
+      <label>
+        <%= radio_button_tag(
+              "facility_service_type[sud_treatment_provider]",
+              "yes",
+              treatment_record.provider_practice_answer_flag == true,
+              required: true
+            ) %>
+        Yes
+      </label>
+
+      <label>
+        <%= radio_button_tag(
+              "facility_service_type[sud_treatment_provider]",
+              "no",
+              treatment_record.provider_practice_answer_flag == false,
+              required: true
+            ) %>
+        No
+      </label>
+    </div>
+  </div>
+
+  <div class="service-type-question">
+    <label>
+      Are you a SUD Prevention Provider?
+      <span class="required">*</span>
+    </label>
+
+    <div class="service-type-radio-options">
+      <label>
+        <%= radio_button_tag(
+              "facility_service_type[sud_prevention_provider]",
+              "yes",
+              prevention_record.provider_practice_answer_flag == true,
+              required: true
+            ) %>
+        Yes
+      </label>
+
+      <label>
+        <%= radio_button_tag(
+              "facility_service_type[sud_prevention_provider]",
+              "no",
+              prevention_record.provider_practice_answer_flag == false,
+              required: true
+            ) %>
+        No
+      </label>
+    </div>
+  </div>
+
+  <div class="service-types-grid">
+    <% PracticeLocation::LOCATION_SERVICES.each do |service| %>
+      <label class="service-type-option">
+        <%= check_box_tag(
+              "facility_service_type[selected_services][]",
+              service,
+              selected_services.include?(service),
+              id: "service_type_#{service.parameterize}"
+            ) %>
+
+        <span><%= service %></span>
+      </label>
+    <% end %>
+  </div>
+
+  <div id="service-type-validation-message"
+       class="service-type-validation-message"
+       style="display:none;">
+    Please select at least one service type.
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("provider-facility-form")
+
+  if (!form) return
+
+  form.addEventListener("submit", function (event) {
+    const currentTab =
+      document.getElementById("current-facility-tab")?.value
+
+    if (currentTab !== "service_type") return
+
+    const checkedServices =
+      document.querySelectorAll(
+        "input[name='facility_service_type[selected_services][]']:checked"
+      )
+
+    const validationMessage =
+      document.getElementById("service-type-validation-message")
+
+    if (checkedServices.length === 0) {
+      event.preventDefault()
+
+      if (validationMessage) {
+        validationMessage.style.display = "block"
+      }
+
+      const firstService =
+        document.querySelector(
+          "input[name='facility_service_type[selected_services][]']"
+        )
+
+      firstService?.focus()
+    } else if (validationMessage) {
+      validationMessage.style.display = "none"
+    }
+  })
+})
+</script>
+
+<style>
+.service-type-description {
+  margin-top: 30px;
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+
+.service-type-note {
+  margin-bottom: 30px;
+  font-size: 12px;
+}
+
+.service-type-question {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  align-items: center;
+  max-width: 650px;
+  margin-bottom: 28px;
+  font-size: 12px;
+}
+
+.service-type-question > label {
+  margin: 0;
+  font-weight: normal;
+}
+
+.service-type-radio-options {
+  display: flex;
+  gap: 28px;
+}
+
+.service-type-radio-options label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: normal;
+  margin: 0;
+}
+
+.service-types-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 65px;
+  row-gap: 15px;
+  max-width: 900px;
+  margin-top: 35px;
+}
+
+.service-type-option {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  align-items: start;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: normal;
+  margin: 0;
+}
+
+.service-type-option input {
+  margin-top: 2px;
+}
+
+.service-type-validation-message {
+  color: #d9534f;
+  margin-top: 18px;
+  font-size: 12px;
+}
+
+.required {
+  color: red;
+}
+
+@media (max-width: 800px) {
+  .service-type-question {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .service-types-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

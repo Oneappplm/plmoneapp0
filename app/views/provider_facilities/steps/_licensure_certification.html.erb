@@ -1,0 +1,217 @@
+<h3>Licensure / Certification</h3>
+
+<% states_options_html = State.order(:name).map do |state| %>
+  <% "<option value='#{state.id}'>#{j(state.name)}</option>" %>
+<% end.join.html_safe %>
+
+<div class="mb-3">
+  <label>
+    Do any of the locations under this organization have state licenses or certifications?
+    <span class="required">*</span>
+  </label>
+
+  <%= radio_button_tag "has_state_license", "yes", true %> Yes
+  <%= radio_button_tag "has_state_license", "no", false %> No
+</div>
+
+<div id="licenses-wrapper">
+  <% @provider_licensures.each_with_index do |license, index| %>
+    <div class="license-box">
+      <%= hidden_field_tag "provider_licensures[#{index}][id]", license.id %>
+
+      <div class="form-row two-col">
+        <div class="field-group">
+          <%= label_tag "provider_licensures[#{index}][license_number]" do %>
+            License Number <span class="required">*</span>
+          <% end %>
+          <%= text_field_tag "provider_licensures[#{index}][license_number]", license.license_number, class: "form-control", required: true %>
+        </div>
+
+        <div class="field-group">
+          <%= label_tag "provider_licensures[#{index}][state_id]" do %>
+            Registration State <span class="required">*</span>
+          <% end %>
+
+          <select name="provider_licensures[<%= index %>][state_id]" class="form-select border-dark" required>
+            <option value="">Select State</option>
+            <% State.order(:name).each do |state| %>
+              <option value="<%= state.id %>" <%= "selected" if license&.state_id.to_i == state.id %>>
+                <%= state.name %>
+              </option>
+            <% end %>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row two-col">
+        <div class="field-group">
+          <%= label_tag "provider_licensures[#{index}][license_issue_date]" do %>
+            Issue Date <span class="required">*</span>
+          <% end %>
+          <%= date_field_tag "provider_licensures[#{index}][license_issue_date]", license.license_issue_date, class: "form-control", required: true %>
+        </div>
+
+        <div class="field-group">
+          <%= label_tag "provider_licensures[#{index}][license_expiration_date]", "Expiration Date" %>
+          <%= date_field_tag "provider_licensures[#{index}][license_expiration_date]", license.license_expiration_date, class: "form-control" %>
+        </div>
+      </div>
+
+      <div class="form-row two-col">
+        <div class="field-group">
+          <%= label_tag "provider_licensures[#{index}][license_type]" do %>
+            Type of Licensure/Certification <span class="required">*</span>
+          <% end %>
+          <%= text_field_tag "provider_licensures[#{index}][license_type]", license.license_type, class: "form-control", required: true %>
+        </div>
+
+        <div class="field-group">
+          <%= label_tag "provider_licensures[#{index}][license_person_type]", "License Person Type" %>
+          <%= text_field_tag "provider_licensures[#{index}][license_person_type]", license.license_person_type, class: "form-control" %>
+        </div>
+      </div>
+
+      <div class="form-row two-col">
+        <div class="field-group">
+          <%= check_box_tag "provider_licensures[#{index}][currently_practice_under_this]", "1", license.currently_practice_under_this %>
+          Currently Practice Under This License
+        </div>
+
+        <div class="field-group">
+          <%= check_box_tag "provider_licensures[#{index}][is_primary_license]", "1", license.is_primary_license %>
+          Primary License
+        </div>
+      </div>
+
+      <div class="form-row two-col">
+        <div class="field-group">
+          <%= check_box_tag "provider_licensures[#{index}][level_require_supervision]", "1", license.level_require_supervision %>
+          Level Requires Supervision
+        </div>
+
+        <div class="field-group">
+          <%= label_tag "provider_licensures[#{index}][license_comment]", "Comments" %>
+          <%= text_area_tag "provider_licensures[#{index}][license_comment]", license.license_comment, class: "form-control" %>
+        </div>
+      </div>
+
+      <%= hidden_field_tag "provider_licensures[#{index}][_destroy]", "0", class: "destroy-license-field" %>
+
+      <button type="button" class="btn btn-danger remove-license-btn">
+        Remove License
+      </button>
+    </div>
+  <% end %>
+</div>
+
+<button type="button" id="add-license-btn" class="btn btn-success mt-3">
+  Add New License
+</button>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const wrapper = document.getElementById("licenses-wrapper")
+  const addButton = document.getElementById("add-license-btn")
+
+  if (!wrapper || !addButton) return
+
+  const stateOptions = `<%= j(states_options_html) %>`
+
+  addButton.addEventListener("click", function () {
+    const index = wrapper.querySelectorAll(".license-box").length
+
+    const html = `
+      <div class="license-box">
+        <div class="form-row two-col">
+          <div class="field-group">
+            <label>License Number <span class="required">*</span></label>
+            <input type="text" name="provider_licensures[${index}][license_number]" class="form-control" required>
+          </div>
+
+          <div class="field-group">
+            <label>Registration State <span class="required">*</span></label>
+            <select name="provider_licensures[${index}][state_id]" class="form-select border-dark" required>
+              <option value="">Select State</option>
+              ${stateOptions}
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row two-col">
+          <div class="field-group">
+            <label>Issue Date <span class="required">*</span></label>
+            <input type="date" name="provider_licensures[${index}][license_issue_date]" class="form-control" required>
+          </div>
+
+          <div class="field-group">
+            <label>Expiration Date</label>
+            <input type="date" name="provider_licensures[${index}][license_expiration_date]" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-row two-col">
+          <div class="field-group">
+            <label>Type of Licensure/Certification <span class="required">*</span></label>
+            <input type="text" name="provider_licensures[${index}][license_type]" class="form-control" required>
+          </div>
+
+          <div class="field-group">
+            <label>License Person Type</label>
+            <input type="text" name="provider_licensures[${index}][license_person_type]" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-row two-col">
+          <div class="field-group">
+            <input type="checkbox" name="provider_licensures[${index}][currently_practice_under_this]" value="1">
+            Currently Practice Under This License
+          </div>
+
+          <div class="field-group">
+            <input type="checkbox" name="provider_licensures[${index}][is_primary_license]" value="1">
+            Primary License
+          </div>
+        </div>
+
+        <div class="form-row two-col">
+          <div class="field-group">
+            <input type="checkbox" name="provider_licensures[${index}][level_require_supervision]" value="1">
+            Level Requires Supervision
+          </div>
+
+          <div class="field-group">
+            <label>Comments</label>
+            <textarea name="provider_licensures[${index}][license_comment]" class="form-control"></textarea>
+          </div>
+        </div>
+
+        <input type="hidden" name="provider_licensures[${index}][_destroy]" value="0" class="destroy-license-field">
+
+        <button type="button" class="btn btn-danger remove-license-btn">
+          Remove License
+        </button>
+      </div>
+    `
+
+    wrapper.insertAdjacentHTML("beforeend", html)
+  })
+
+  wrapper.addEventListener("click", function(event) {
+    if (!event.target.classList.contains("remove-license-btn")) return
+
+    const box = event.target.closest(".license-box")
+    const destroyField = box.querySelector(".destroy-license-field")
+
+    box.querySelectorAll("input, select, textarea").forEach(field => {
+      field.required = false
+    })
+
+    if (destroyField) {
+      destroyField.value = "1"
+      box.style.display = "none"
+    } else {
+      box.remove()
+    }
+  })
+})
+</script>

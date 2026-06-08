@@ -1,0 +1,228 @@
+<div class="provider-step-section attestation-section">
+  <h2 class="step-title">Attestation</h2>
+
+  <p class="step-description">
+    Please complete this section in its entirety. If a question does not
+    apply to your facility, select Not Applicable (N/A). If the answer is
+    Yes, provide a brief explanation and any other relevant information.
+  </p>
+
+  <% if @attestation_errors.present? %>
+    <div class="facility-error-summary">
+      Please provide an answer for all disclosure questions and an
+      explanation for every question answered Yes.
+    </div>
+  <% end %>
+
+  <div class="attestation-table-wrapper">
+    <table class="attestation-table">
+      <thead>
+			  <tr>
+			    <th style="width:4%">#</th>
+			    <th style="width:58%">Answer all questions</th>
+			    <th style="width:15%">Answer</th>
+			    <th style="width:23%">Explanation</th>
+			  </tr>
+			</thead>
+
+      <tbody>
+        <% @attestation_questions.each_with_index do |question, index| %>
+          <% disclosure = @attestation_disclosures[index] %>
+
+          <% submitted_answer =
+               params.dig(
+                 :attestation_answers,
+                 index.to_s,
+                 :answer
+               ) %>
+
+          <% current_answer =
+               if submitted_answer.present?
+                 submitted_answer
+               elsif disclosure.persisted?
+                 if disclosure.disclosure_answer_flag == true
+                   "yes"
+                 elsif disclosure.disclosure_answer_flag == false
+                   "no"
+                 else
+                   "na"
+                 end
+               end %>
+
+          <% explanation =
+               params.dig(
+                 :attestation_answers,
+                 index.to_s,
+                 :explanation
+               ) || disclosure.disclosure_explanation %>
+
+          <tr class="<%= 'question-error' if @attestation_errors&.key?(index) %>">
+            <td class="question-number">
+              <%= index + 1 %>.
+            </td>
+
+            <td class="question-text">
+              <span class="required-marker">*</span>
+              <%= question %>
+
+              <%= hidden_field_tag(
+                    "attestation_answers[#{index}][question]",
+                    question
+                  ) %>
+
+              <% if @attestation_errors&.key?(index) %>
+                <div class="field-error-message">
+                  <%= @attestation_errors[index] %>
+                </div>
+              <% end %>
+            </td>
+
+            <td class="question-options">
+              <label>
+                <%= radio_button_tag(
+                      "attestation_answers[#{index}][answer]",
+                      "yes",
+                      current_answer == "yes",
+                      class: "attestation-answer",
+                      data: { question_index: index }
+                    ) %>
+                Yes
+              </label>
+
+              <label>
+                <%= radio_button_tag(
+                      "attestation_answers[#{index}][answer]",
+                      "no",
+                      current_answer == "no",
+                      class: "attestation-answer",
+                      data: { question_index: index }
+                    ) %>
+                No
+              </label>
+
+              <label>
+                <%= radio_button_tag(
+                      "attestation_answers[#{index}][answer]",
+                      "na",
+                      current_answer == "na",
+                      class: "attestation-answer",
+                      data: { question_index: index }
+                    ) %>
+                N/A
+              </label>
+            </td>
+
+            <td class="question-explanation">
+              <%= text_area_tag(
+                    "attestation_answers[#{index}][explanation]",
+                    explanation,
+                    rows: 2,
+                    id: "attestation-explanation-#{index}",
+                    class: "form-control attestation-explanation",
+                    placeholder: "If Yes, please provide explanation.",
+                    disabled: current_answer != "yes"
+                  ) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+	$(document)
+  .off("change.attestation", ".attestation-answer")
+  .on("change.attestation", ".attestation-answer", function () {
+    const questionIndex = $(this).data("question-index");
+    const selectedValue = $(this).val();
+    const explanationField =
+      $("#attestation-explanation-" + questionIndex);
+
+    if (selectedValue === "yes") {
+      explanationField.prop("disabled", false);
+    } else {
+      explanationField
+        .val("")
+        .prop("disabled", true);
+
+      explanationField
+        .closest("tr")
+        .removeClass("question-error");
+
+      explanationField
+        .closest("td")
+        .find(".field-error-message")
+        .remove();
+    }
+  });
+</script>
+<style>
+	.attestation-table{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+    font-size:14px;
+}
+
+.attestation-table th{
+    background:#f5f5f5;
+    border:1px solid #ddd;
+    padding:12px;
+    text-align:left;
+}
+
+.attestation-table td{
+    border:1px solid #ddd;
+    padding:12px;
+    vertical-align:top;
+}
+
+.question-number{
+    width:40px;
+    font-weight:bold;
+}
+
+.question-text{
+    line-height:1.6;
+    color:#444;
+}
+
+.answer-cell{
+    text-align:left;
+}
+
+.answer-options{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.answer-options label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-weight:400;
+    margin:0;
+}
+
+.explanation-box{
+    width:100%;
+    min-height:70px;
+    resize:vertical;
+}
+
+.required-marker{
+    color:red;
+    font-weight:bold;
+}
+
+.question-error{
+    background:#fff6f6;
+}
+
+.field-error-message{
+    color:#d9534f;
+    font-size:12px;
+    margin-top:6px;
+}
+</style>
