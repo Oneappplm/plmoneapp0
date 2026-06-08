@@ -1,0 +1,339 @@
+<h3>Facility Profile</h3>
+
+<div class="mb-3">
+  <label>
+    <span class="required">*</span>
+    Do you operate the physical location where you provide services?
+  </label>
+
+  <span class="float-end">
+    <%= radio_button_tag "operate_physical_location", "yes", true %> Yes
+    <%= radio_button_tag "operate_physical_location", "no", false %> No
+
+  <p>
+    <em>
+      Please provide information on all the 6 tabs, from Practice Location to Service Type,
+      before entering data for another Facility.
+    </em>
+  </p>
+</div>
+
+<table class="facility-table mb-5">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Practice Name</th>
+      <th>Address</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @practice_locations.select(&:persisted?).each do |location| %>
+      <tr id="practice-location-row-<%= location.id %>">
+        <td>
+          <%= link_to "VIEW/EDIT",
+              edit_provider_facility_path(@provider, step: "facility_profile", practice_location_id: location.id) %>
+        </td>
+
+        <td><%= location.location %></td>
+
+        <td>
+          <%= [location.address1, location.address2, location.city, location.zip_code].compact.reject(&:blank?).join(", ") %>
+        </td>
+
+        <td>
+          <%= link_to "❌ Delete",
+            "#",
+            class: "delete-link",
+            data: {
+              id: location.id
+            } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<div id="add-new-practice-wrapper">
+  <%= link_to "Add New Practice",
+    edit_provider_facility_path(
+      @provider,
+      step: "facility_profile",
+      facility_tab: "practice_location",
+      new_practice_location: "1"
+    ),
+    class: "add-practice-btn" %>
+</div>
+<% if @practice_location.present? %>
+  <div id="practice-location-details">
+    <div class="facility-tabs mt-4">
+      <%= link_to "Practice Location",
+        edit_provider_facility_path(
+          @provider,
+          step: "facility_profile",
+          facility_tab: "practice_location",
+          practice_location_id: @practice_location&.id
+        ),
+        class: "facility-tab #{'active-tab' if @facility_tab == 'practice_location'}",
+        data: {
+          facility_tab_link: true,
+          target_tab: "practice_location"
+        } %>
+
+      <%= link_to "Program Staff",
+          edit_provider_facility_path(
+            @provider,
+            step: "facility_profile",
+            facility_tab: "program_staff",
+            practice_location_id: @practice_location&.id
+          ),
+          class: "facility-tab #{'active-tab' if @facility_tab == 'program_staff'}",
+          data: {
+            facility_tab_link: true,
+            target_tab: "program_staff"
+          } %>
+
+      <%= link_to "Facility Profile 1",
+          edit_provider_facility_path(
+            @provider,
+            step: "facility_profile",
+            facility_tab: "facility_profile_1",
+            practice_location_id: @practice_location&.id
+          ),
+          class: "facility-tab #{'active-tab' if @facility_tab == 'facility_profile_1'}",
+          data: {
+            facility_tab_link: true,
+            target_tab: "facility_profile_1"
+          } %>
+
+      <%= link_to "Facility Profile 2",
+          edit_provider_facility_path(
+            @provider,
+            step: "facility_profile",
+            facility_tab: "facility_profile_2",
+            practice_location_id: @practice_location&.id
+          ),
+          class: "facility-tab #{'active-tab' if @facility_tab == 'facility_profile_2'}",
+          data: {
+            facility_tab_link: true,
+            target_tab: "facility_profile_2"
+          } %>
+
+      <%= link_to "Provider Type",
+        edit_provider_facility_path(
+          @provider,
+          step: "facility_profile",
+          facility_tab: "provider_type_tab",
+          practice_location_id: @practice_location&.id
+        ),
+        class: "facility-tab #{'active-tab' if @facility_tab == 'provider_type_tab'}",
+        data: {
+          facility_tab_link: true,
+          target_tab: "provider_type_tab"
+        } %>
+
+      <%= link_to "Service Type",
+        edit_provider_facility_path(
+          @provider,
+          step: "facility_profile",
+          facility_tab: "service_type",
+          practice_location_id: @practice_location&.id
+        ),
+        class: "facility-tab #{'active-tab' if @facility_tab == 'service_type'}",
+        data: {
+          facility_tab_link: true,
+          target_tab: "service_type"
+        } %>
+    </div>
+
+    <% case @facility_tab %>
+    <% when "practice_location" %>
+      <%= render "practice_location" %>
+
+    <% when "program_staff" %>
+      <%= render "program_staff" %>
+
+    <% when "facility_profile_1" %>
+      <%= render "facility_profile_1" %>
+
+    <% when "facility_profile_2" %>
+      <%= render "facility_profile_2" %>
+
+    <% when "provider_type_tab" %>
+      <%= render "facility_provider_type" %>
+
+    <% when "service_type" %>
+      <%= render "facility_service_type" %>
+    <% end %>
+  </div>  
+<% end %>  
+
+<style>
+.facility-table {
+  width: 100%;
+  margin-top: 25px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.facility-table th {
+  background: #4f7ed6;
+  color: #fff;
+  padding: 10px;
+}
+
+.facility-table td {
+  padding: 12px 10px;
+  background: #eef3ff;
+}
+
+.add-practice-btn {
+  background: #36a900;
+  color: #fff;
+  margin-top: 25px;
+  padding: 8px 30px;
+}
+
+.facility-tab {
+  display: inline-block;
+  border: 1px solid #999;
+  border-bottom: none;
+  padding: 4px 8px;
+  font-size: 12px;
+  background: #e5e5e5;
+  color: #333;
+  text-decoration: none;
+}
+
+.facility-tab:hover {
+  text-decoration: none;
+  background: #fff;
+}
+
+.facility-tab.active-tab {
+  background: #fff;
+  border-top: 2px solid orange;
+}
+
+.facility-tabs span {
+  display: inline-block;
+  border: 1px solid #999;
+  border-bottom: none;
+  padding: 4px 8px;
+  font-size: 12px;
+  background: #e5e5e5;
+}
+
+.facility-tabs .active-tab {
+  background: #fff;
+  border-top: 2px solid orange;
+}
+
+.facility-form-box {
+  border: 1px solid #999;
+  padding: 20px;
+}
+
+.required {
+  color: red;
+}
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("provider-facility-form")
+  const currentTabField = document.getElementById("current-facility-tab")
+  const redirectTabField = document.getElementById("redirect-facility-tab")
+  const saveOnTabChangeField = document.getElementById("save-on-tab-change")
+
+  if (!form) return
+
+  document
+    .querySelectorAll("[data-facility-tab-link='true']")
+    .forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        const currentTab = currentTabField?.value
+        const targetTab = this.dataset.targetTab
+
+        if (!targetTab || targetTab === currentTab) return
+
+        // Program Staff saves through Insert/Update/Delete,
+        // so it does not need a tab-change save.
+        if (currentTab === "program_staff") {
+          return
+        }
+
+        event.preventDefault()
+
+        if (!form.checkValidity()) {
+          form.reportValidity()
+          return
+        }
+
+        redirectTabField.value = targetTab
+        saveOnTabChangeField.value = "1"
+
+        form.requestSubmit()
+      })
+    })
+})
+document.addEventListener("DOMContentLoaded", function () {
+  const yesRadio = document.getElementById("operate_physical_location_yes");
+  const noRadio = document.getElementById("operate_physical_location_no");
+  const addPractice = document.getElementById("add-new-practice-wrapper");
+
+  if (!yesRadio || !noRadio || !addPractice) return;
+
+  function toggleAddPractice() {
+    addPractice.style.display = noRadio.checked ? "none" : "block";
+  }
+
+  yesRadio.addEventListener("change", toggleAddPractice);
+  noRadio.addEventListener("change", toggleAddPractice);
+
+  toggleAddPractice();
+});
+$(document)
+  .off("click.deletePractice", ".delete-link")
+  .on("click.deletePractice", ".delete-link", function (event) {
+  event.preventDefault();
+
+  const id = $(this).data("id");
+
+  if (!id || !confirm("Are you sure you want to delete this practice location?")) {
+    return;
+  }
+
+  $.ajax({
+    url: "<%= provider_facility_path(@provider) %>",
+    method: "PATCH",
+    dataType: "json",
+    headers: {
+      "X-CSRF-Token": $('meta[name="csrf-token"]').attr("content")
+    },
+    data: {
+      step: "facility_profile",
+      facility_tab: "practice_location",
+      facility_action: "delete",
+      practice_location_id: id
+    },
+    success: function () {
+      $("#practice-location-row-" + id).remove();
+
+      const selectedId = $("#practice_location_id").val();
+
+      if (String(selectedId) === String(id)) {
+        $("#practice-location-details").remove();
+        $("#practice_location_id").val("");
+      }
+    },
+    error: function (xhr) {
+      const message =
+        xhr.responseJSON?.message ||
+        "Unable to delete the practice location.";
+
+      alert(message);
+    }
+  });
+});
+</script>

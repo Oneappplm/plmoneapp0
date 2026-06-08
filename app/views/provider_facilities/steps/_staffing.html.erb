@@ -1,0 +1,145 @@
+<h3>Staffing</h3>
+
+<div class="staffing-form">
+  <div class="staffing-question">
+    <label>
+      Does this organization validate employee credentials?
+      <span class="required">*</span>
+    </label>
+
+    <div class="staffing-radio-options">
+      <label>
+        <%= radio_button_tag "practice_other_question[provider_practice_answer_flag]",
+            "yes",
+            @staffing_question.provider_practice_answer_flag == true,
+            required: true,
+            class: "staffing-main-radio" %>
+        Yes
+      </label>
+
+      <label>
+        <%= radio_button_tag "practice_other_question[provider_practice_answer_flag]",
+            "no",
+            @staffing_question.provider_practice_answer_flag == false,
+            required: true,
+            class: "staffing-main-radio" %>
+        No
+      </label>
+
+      <label>
+        <%= radio_button_tag "practice_other_question[provider_practice_answer_flag]",
+            "na",
+            @staffing_question.provider_practice_answer_flag.nil?,
+            required: true,
+            class: "staffing-main-radio" %>
+        N/A
+      </label>
+    </div>
+  </div>
+
+  <% selected_process = @staffing_question.provider_practice_answer_text.to_s %>
+
+  <div id="credentialing-process-section" style="<%= @staffing_question.provider_practice_answer_flag == true ? '' : 'display:none;' %>">
+    <div class="staffing-specify">
+      <label>
+        Please indicate how the organization conducts the credentialing process for each practitioner:
+        <span class="required">*</span>
+      </label>
+
+      <div class="credentialing-options">
+        <label>
+          <%= radio_button_tag "practice_other_question[provider_practice_answer_text]",
+              "Credentialing procedures are performed internally",
+              selected_process == "Credentialing procedures are performed internally",
+              class: "credentialing-process-radio" %>
+          Credentialing procedures are performed internally
+        </label>
+
+        <label>
+          <%= radio_button_tag "practice_other_question[provider_practice_answer_text]",
+              "Credentialing procedures are outsourced/delegated to:",
+              selected_process.start_with?("Credentialing procedures are outsourced/delegated to:"),
+              class: "credentialing-process-radio" %>
+          Credentialing procedures are outsourced/delegated to:
+        </label>
+
+        <label>
+          <%= radio_button_tag "practice_other_question[provider_practice_answer_text]",
+              "Other",
+              selected_process.start_with?("Other"),
+              class: "credentialing-process-radio" %>
+          Other
+        </label>
+      </div>
+
+      <div id="credentialing-extra-text"
+           style="<%= selected_process.start_with?('Credentialing procedures are outsourced/delegated to:') || selected_process.start_with?('Other') ? '' : 'display:none;' %>">
+        <label>Please specify <span class="required">*</span></label>
+        <%= text_area_tag "practice_other_question[provider_practice_answer_extra]",
+            selected_process.sub("Credentialing procedures are outsourced/delegated to:", "").sub("Other:", "").strip,
+            class: "form-control staffing-textarea",
+            placeholder: "Please specify" %>
+      </div>
+    </div>
+  </div>
+
+  <div id="staffing-no-section" style="<%= @staffing_question.provider_practice_answer_flag == false ? '' : 'display:none;' %>">
+    <div class="staffing-specify">
+      <label>
+        Please specify
+        <span class="required">*</span>
+      </label>
+
+      <%= text_area_tag "practice_other_question[no_explanation]",
+          @staffing_question.provider_practice_answer_text,
+          class: "form-control staffing-textarea",
+          placeholder: "Please specify" %>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const mainRadios = document.querySelectorAll(".staffing-main-radio")
+  const yesSection = document.getElementById("credentialing-process-section")
+  const noSection = document.getElementById("staffing-no-section")
+  const processRadios = document.querySelectorAll(".credentialing-process-radio")
+  const extraText = document.getElementById("credentialing-extra-text")
+
+  function toggleStaffingSections() {
+    const selected = document.querySelector(".staffing-main-radio:checked")?.value
+
+    if (selected === "yes") {
+      yesSection.style.display = "block"
+      noSection.style.display = "none"
+    } else if (selected === "no") {
+      yesSection.style.display = "none"
+      noSection.style.display = "block"
+    } else {
+      yesSection.style.display = "none"
+      noSection.style.display = "none"
+    }
+  }
+
+  function toggleExtraText() {
+    const selected = document.querySelector(".credentialing-process-radio:checked")?.value || ""
+
+    if (selected.includes("outsourced") || selected === "Other") {
+      extraText.style.display = "block"
+    } else {
+      extraText.style.display = "none"
+    }
+  }
+
+  mainRadios.forEach(radio => {
+    radio.addEventListener("change", toggleStaffingSections)
+  })
+
+  processRadios.forEach(radio => {
+    radio.addEventListener("change", toggleExtraText)
+  })
+
+  toggleStaffingSections()
+  toggleExtraText()
+})
+</script>

@@ -1,0 +1,127 @@
+<h3>Accreditation</h3>
+
+<p><strong>Please check all that apply. Or, if not applicable, please check N/A</strong></p>
+
+<% selected_accreditations = @practice_certification.certification_description.to_s.split(",").map(&:strip) %>
+
+<div class="accreditation-form">
+  <% [
+    "JCAHO - The Joint Commission",
+    "CARF - Commission on Accreditation of Rehabilitation Facilities",
+    "COA - Council on Accreditation",
+    "AOA - American Osteopathic Association",
+    "NCQA - National Committee for Quality Assurance",
+    "AAAHC - Accreditation Association for Ambulatory Health Care",
+    "N/A",
+    "Other"
+  ].each do |name| %>
+    <div class="checkbox-row">
+      <%= check_box_tag "practice_certification[accreditation_names][]",
+                        name,
+                        selected_accreditations.include?(name),
+                        id: "accreditation_#{name.parameterize}" %>
+
+      <%= label_tag "accreditation_#{name.parameterize}", name %>
+    </div>
+  <% end %>
+
+  <div class="other-accreditation-row">
+    <%= label_tag "practice_certification[other_accreditation_name]",
+        'Please provide Accreditation name if "Other" is selected' %>
+
+    <%= text_field_tag "practice_certification[other_accreditation_name]",
+        @practice_certification.other_certification_explanation,
+        class: "form-control accreditation-small-input" %>
+  </div>
+
+  <div class="question-row">
+    <label>
+      Has facility been approved or certified for Medicaid?
+      <span class="required">*</span>
+    </label>
+
+    <div>
+      <%= radio_button_tag "practice_certification[medicaid_certified]", "yes", @practice_certification.certification_flag == true, required: true %> Yes
+      <%= radio_button_tag "practice_certification[medicaid_certified]", "no", @practice_certification.certification_flag == false, required: true %> No
+      <%= radio_button_tag "practice_certification[medicaid_certified]", "na", @practice_certification.certification_flag.nil?, required: true %> N/A
+    </div>
+  </div>
+
+  <div class="question-row">
+    <label>
+      Has the facility been approved or certified for Medicare?
+      <span class="required">*</span>
+    </label>
+
+    <div>
+      <%= radio_button_tag "practice_certification[medicare_certified]", "yes", @practice_certification.staff_certified_flag == true, required: true %> Yes
+      <%= radio_button_tag "practice_certification[medicare_certified]", "no", @practice_certification.staff_certified_flag == false, required: true %> No
+    </div>
+  </div>
+
+  <div class="question-row">
+    <label>
+      Is your organization registered with System for Award Management?
+      <span class="required">*</span>
+    </label>
+
+    <div>
+      <%= radio_button_tag "practice_certification[sam_registered]", "yes", @practice_certification.provider_certified_flag == true, required: true %> Yes
+      <%= radio_button_tag "practice_certification[sam_registered]", "no", @practice_certification.provider_certified_flag == false, required: true %> No
+    </div>
+  </div>
+
+  <p class="sam-note">
+    If no, your organization must register to complete the impaneling process.
+    To register, please visit www.sam.gov, it's free.
+  </p>
+</div>
+
+<style>
+.accreditation-form {
+  margin-top: 25px;
+  max-width: 900px;
+}
+
+.checkbox-row {
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+
+.other-accreditation-row {
+  margin: 18px 0 30px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.accreditation-small-input {
+  width: 240px;
+  height: 28px;
+}
+
+.question-row {
+  display: grid;
+  grid-template-columns: 1fr 230px;
+  align-items: center;
+  margin-bottom: 28px;
+  font-size: 13px;
+}
+
+.question-row div {
+  display: flex;
+  gap: 16px;
+}
+
+.required {
+  color: red;
+}
+
+.sam-note {
+  color: red;
+  font-style: italic;
+  font-size: 13px;
+  margin-top: 10px;
+}
+</style>

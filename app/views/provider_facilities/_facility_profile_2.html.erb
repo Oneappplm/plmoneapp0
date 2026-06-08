@@ -1,0 +1,309 @@
+<%
+  training_record = @facility_profile_2_records[:training_experience]
+  gender_record = @facility_profile_2_records[:genders_served]
+  snp_record = @facility_profile_2_records[:michiide_snp]
+  age_record = @facility_profile_2_records[:age_groups]
+  population_record = @facility_profile_2_records[:populations_treated]
+  language_record = @facility_profile_2_records[:treatment_languages]
+  beds_record = @facility_profile_2_records[:total_beds]
+  capacity_record = @facility_profile_2_records[:maximum_capacity]
+
+  selected_training =
+    training_record.provider_practice_answer_text.to_s.split(",").map(&:strip)
+
+  selected_genders =
+    gender_record.provider_practice_answer_text.to_s.split(",").map(&:strip)
+
+  selected_ages =
+    age_record.provider_practice_answer_text.to_s.split(",").map(&:strip)
+
+  selected_populations =
+    population_record.provider_practice_answer_text.to_s.split(",").map(&:strip)
+%>
+
+<div class="facility-form-box">
+  <h3>Facility Profile 2</h3>
+
+  <div class="facility-profile-2-section">
+    <label class="section-label">
+      <span class="required">*</span>
+      Please indicate if you have any training and experience with the following.
+      Check all that apply.
+    </label>
+
+    <div class="checkbox-options">
+      <% [
+        "Hearing Impaired",
+        "Visually Impaired",
+        "Speech Impaired",
+        "None"
+      ].each do |option| %>
+        <label>
+          <%= check_box_tag(
+                "facility_profile_2[training_experience][]",
+                option,
+                selected_training.include?(option),
+                id: "training_#{option.parameterize}"
+              ) %>
+          <%= option %>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="facility-profile-2-section">
+    <label class="section-label">
+      <span class="required">*</span>
+      What gender do you serve?
+    </label>
+
+    <div class="checkbox-options">
+      <% ["Male", "Female", "Non-Binary"].each do |option| %>
+        <label>
+          <%= check_box_tag(
+                "facility_profile_2[genders_served][]",
+                option,
+                selected_genders.include?(option),
+                id: "gender_#{option.parameterize}"
+              ) %>
+          <%= option %>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="facility-profile-2-section">
+    <label class="section-label">
+      Do you have MICHIIDE SNP?
+    </label>
+
+    <div class="vertical-radio-options">
+      <label>
+        <%= radio_button_tag(
+              "facility_profile_2[michiide_snp]",
+              "yes",
+              snp_record.provider_practice_answer_flag == true,
+              required: true
+            ) %>
+        Yes
+      </label>
+
+      <label>
+        <%= radio_button_tag(
+              "facility_profile_2[michiide_snp]",
+              "no",
+              snp_record.provider_practice_answer_flag == false,
+              required: true
+            ) %>
+        No
+      </label>
+    </div>
+  </div>
+
+  <div class="facility-profile-2-section">
+    <label class="section-label">
+      <span class="required">*</span>
+      Please select your age group.
+    </label>
+
+    <div class="checkbox-grid age-grid">
+      <% ["0-5", "6-12", "13-17", "18-64", "65-UP"].each do |option| %>
+        <label>
+          <%= check_box_tag(
+                "facility_profile_2[age_groups][]",
+                option,
+                selected_ages.include?(option),
+                id: "age_#{option.parameterize}"
+              ) %>
+          <%= option %>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="facility-profile-2-section">
+    <label class="section-label">
+      <span class="required">*</span>
+      Please identify the population for which this program provides treatment.
+    </label>
+
+    <div class="checkbox-grid population-grid">
+      <% ["SMI", "SED", "SUD", "I/DD"].each do |option| %>
+        <label>
+          <%= check_box_tag(
+                "facility_profile_2[populations_treated][]",
+                option,
+                selected_populations.include?(option),
+                id: "population_#{option.parameterize}"
+              ) %>
+          <%= option %>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="facility-profile-2-section">
+    <%= label_tag "facility_profile_2[treatment_languages]",
+        class: "section-label" do %>
+      <span class="required">*</span>
+      In addition to English, please identify other languages in which each
+      program conducts treatment.
+    <% end %>
+
+    <%= text_field_tag(
+          "facility_profile_2[treatment_languages]",
+          language_record.provider_practice_answer_text,
+          class: "form-control language-field",
+          required: true
+        ) %>
+  </div>
+
+  <hr>
+
+  <h4>Capacity Information</h4>
+
+  <div class="capacity-row">
+    <%= label_tag "facility_profile_2[total_beds]" do %>
+      <span class="required">*</span>
+      Total number of beds for this program
+      <span class="numeric-note">
+        (Numeric value only; please put 0 instead of N/A)
+      </span>
+    <% end %>
+
+    <%= number_field_tag(
+          "facility_profile_2[total_beds]",
+          beds_record.provider_practice_answer_text.presence || 0,
+          class: "form-control capacity-field",
+          min: 0,
+          step: 1,
+          required: true
+        ) %>
+  </div>
+
+  <div class="capacity-row">
+    <%= label_tag "facility_profile_2[maximum_capacity]" do %>
+      <span class="required">*</span>
+      Maximum number of people for this program
+      <span class="numeric-note">
+        (Numeric value only; please put 0 instead of N/A)
+      </span>
+    <% end %>
+
+    <%= number_field_tag(
+          "facility_profile_2[maximum_capacity]",
+          capacity_record.provider_practice_answer_text.presence || 0,
+          class: "form-control capacity-field",
+          min: 0,
+          step: 1,
+          required: true
+        ) %>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const trainingCheckboxes = document.querySelectorAll(
+    "input[name='facility_profile_2[training_experience][]']"
+  )
+
+  trainingCheckboxes.forEach(function (checkbox) {
+    checkbox.addEventListener("change", function () {
+      if (this.value === "None" && this.checked) {
+        trainingCheckboxes.forEach(function (item) {
+          if (item.value !== "None") item.checked = false
+        })
+      } else if (this.checked) {
+        const noneCheckbox = Array.from(trainingCheckboxes).find(function (item) {
+          return item.value === "None"
+        })
+
+        if (noneCheckbox) noneCheckbox.checked = false
+      }
+    })
+  })
+})
+</script>
+
+<style>
+.facility-profile-2-section {
+  margin: 28px 0;
+  font-size: 12px;
+}
+
+.section-label {
+  display: block;
+  margin-bottom: 14px;
+  font-weight: normal;
+}
+
+.checkbox-options {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.checkbox-options label,
+.checkbox-grid label,
+.vertical-radio-options label {
+  font-weight: normal;
+}
+
+.checkbox-grid {
+  display: grid;
+  row-gap: 18px;
+  max-width: 500px;
+}
+
+.age-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.population-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.vertical-radio-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.language-field {
+  width: 220px;
+  height: 30px;
+}
+
+.capacity-row {
+  display: grid;
+  grid-template-columns: minmax(500px, 1fr) 180px;
+  align-items: center;
+  gap: 25px;
+  margin: 25px 0;
+  font-size: 12px;
+}
+
+.capacity-field {
+  height: 30px;
+}
+
+.numeric-note {
+  color: red;
+  font-style: italic;
+}
+
+.required {
+  color: red;
+}
+
+@media (max-width: 850px) {
+  .capacity-row {
+    grid-template-columns: 1fr;
+  }
+
+  .age-grid,
+  .population-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+</style>

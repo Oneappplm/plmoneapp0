@@ -1,0 +1,132 @@
+<div class="provider-step-section confirmation-step">
+  <div class="confirmation-card">
+
+    <% if @show_submission_success %>
+
+      <div class="submission-success-content">
+        <p class="submission-success-message">
+          Please be advised as a member of the DWIHN Provider Panel your
+          organization is recognized as a preferred provider, and is eligible
+          to provide services as a direct contractor with DWIHN. A contract is
+          required for services performed for DWIHN. Membership on the DWIHN
+          Provider Panel does not guarantee a contract.
+        </p>
+      </div>
+
+    <% else %>
+
+      <h2>Submit your Application</h2>
+
+      <% if @last_submitted_date.present? %>
+        <p class="application-submitted-date">
+          This application was last submitted on
+          <%= @last_submitted_date.strftime("%m/%d/%Y") %>.
+        </p>
+      <% end %>
+
+      <div class="submission-information mt-5">
+        <span class="information-icon">i</span>
+
+        <span>
+          Before submitting your application, please review the data entered
+          and documents uploaded. Errors in entries may cause inaccuracies in
+          online and printed provider directories.
+        </span>
+      </div>
+
+      <div class="submit-application-wrapper">
+        <%= hidden_field_tag :application_action, "submit_application" %>
+
+        <%= button_tag "Submit Application",
+              type: "submit",
+              name: "application_action",
+              value: "submit_application",
+              class: "btn btn-success submit-my-application-button",
+              title: "Saves data on the page and Re-Submits the application for processing" %>
+      </div>
+
+    <% end %>
+
+    
+
+  </div>
+</div>
+
+<style>
+  .confirmation-step {
+    width: 100%;
+    color: #334155;
+  }
+
+  .confirmation-card {
+    min-height: 210px;
+    padding: 22px 16px 18px;
+    border: 1px solid #d7e0ea;
+    border-radius: 4px;
+    background: #ffffff;
+  }
+
+  .confirmation-card h2 {
+    margin: 0 0 18px;
+    color: #111827;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .application-submitted-date {
+    margin: 0 0 16px;
+    color: #ef4444;
+    font-size: 13px;
+  }
+
+  .submission-information {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0 0 24px;
+    color: #64748b;
+    font-size: 11px;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  .information-icon {
+    display: inline-flex;
+    width: 15px;
+    height: 15px;
+    flex: 0 0 15px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+    border-radius: 50%;
+    background: #60a5fa;
+    color: #ffffff;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  .submission-success-content {
+    padding: 24px 0;
+  }
+
+  .submission-success-message {
+    max-width: 920px;
+    margin: 0;
+    color: #0ea5e9;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .submit-application-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 35px;
+  }
+
+  .submit-my-application-button {
+    min-width: 220px;
+    height: 42px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+</style>

@@ -1,0 +1,43 @@
+<h3>Pre-Application</h3>
+
+<p><strong>Please answer the following pre-application disclosure questions</strong></p>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Answer all questions</th>
+      <th>Yes / No</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% ProviderFacilitiesController::PRE_APPLICATION_QUESTIONS.each_with_index do |question, index| %>
+      <% disclosure = @provider_attest.provider_disclosures.find { |d| d.disclosure_question_disclosure_summary == question } %>
+
+      <tr>
+        <td><%= index + 1 %>.</td>
+
+        <td>
+          <span class="text-danger">*</span>
+          <%= question %>
+          <%= hidden_field_tag "provider_disclosures[#{index}][question]", question %>
+        </td>
+
+        <td>
+          <%= radio_button_tag "provider_disclosures[#{index}][answer]",
+                               "yes",
+                               disclosure&.disclosure_answer_flag == true,
+                               required: true %>
+          Yes
+
+          <%= radio_button_tag "provider_disclosures[#{index}][answer]",
+                               "no",
+                               disclosure&.disclosure_answer_flag == false,
+                               required: true %>
+          No
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -1,0 +1,191 @@
+<div class="enc-content">
+  <div class="container">
+    <%= render "mhc/verification_platform/top_nav_buttons"%>
+    <div class="provider-facility-wrapper">
+      <%= render "left_steps" %>
+
+      <div class="provider-facility-content">
+        <%= form_with(
+              url: provider_facility_path(@provider),
+              method: :patch,
+              multipart: true,
+              id: "provider-facility-form",
+              data: { controller: "autosave" }
+            ) do %>
+
+          <%= hidden_field_tag :step, @step %>
+
+          <% if @step == "facility_profile" %>
+            <%= hidden_field_tag(
+                  :facility_tab,
+                  @facility_tab.presence || "practice_location",
+                  id: "current-facility-tab"
+                ) %>
+
+            <%= hidden_field_tag(
+                  :practice_location_id,
+                  @practice_location&.persisted? ? @practice_location.id : nil
+                ) %>
+
+            <%= hidden_field_tag(
+                  :redirect_facility_tab,
+                  nil,
+                  id: "redirect-facility-tab"
+                ) %>
+
+            <%= hidden_field_tag(
+                  :save_on_tab_change,
+                  "0",
+                  id: "save-on-tab-change"
+                ) %>
+          <% end %>
+
+          <%= render "provider_facilities/steps/#{@step}" %>
+
+          <div class="form-actions">
+            <%= link_to "Cancel",
+                        root_path,
+                        class: "btn btn-warning provider-cancel-button" %>
+
+            <% unless @step == ProviderFacilitiesController::STEPS.first %>
+              <%= link_to "Previous",
+                          edit_provider_facility_path(
+                            @provider,
+                            step: previous_step
+                          ),
+                          class: "btn btn-secondary" %>
+            <% end %>
+
+            <% unless @step == "confirmation" %>
+              <%= submit_tag "Save",
+                             name: "commit",
+                             value: "Save",
+                             class: "btn btn-primary" %>
+
+              <% unless @step == ProviderFacilitiesController::STEPS.last %>
+                <%= submit_tag "Save & Next",
+                               name: "commit",
+                               value: "Save & Next",
+                               class: "btn btn-primary" %>
+              <% end %>
+            <% end %>
+
+            <% if @step != "confirmation" &&
+                  @application_previously_submitted %>
+
+              <%= button_tag "I'm Done! Submit My App",
+                             type: "submit",
+                             name: "application_action",
+                             value: "submit_application",
+                             class: "btn btn-success submit-my-application-button",
+                             title: "Saves data on the page and Re-Submits the application for processing" %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>  
+
+
+<script>
+  $(document)
+    .off("click.submitApplication", ".submit-my-application-button")
+    .on(
+      "click.submitApplication",
+      ".submit-my-application-button",
+      function (event) {
+        const button = this;
+
+        if (button.dataset.submissionInProgress === "true") {
+          event.preventDefault();
+          return false;
+        }
+
+        const confirmed = window.confirm(
+          "Are you sure you want to submit this application?"
+        );
+
+        if (!confirmed) {
+          event.preventDefault();
+          return false;
+        }
+
+        button.dataset.submissionInProgress = "true";
+
+        return true;
+      }
+    );
+</script>
+
+<style>
+  .provider-facility-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .provider-facility-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+    background: #ffffff;
+    border: 1px solid #dcdfe6;
+    border-radius: 6px;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+
+  .form-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .provider-cancel-button {
+    background: #ff9800;
+    border-color: #ff9800;
+    color: #ffffff;
+  }
+
+  .provider-cancel-button:hover {
+    background: #e68900;
+    border-color: #e68900;
+    color: #ffffff;
+  }
+
+  .submit-my-application-button {
+    background: #55c900;
+    border-color: #55c900;
+    color: #ffffff;
+  }
+
+  .submit-my-application-button:hover {
+    background: #46ad00;
+    border-color: #46ad00;
+    color: #ffffff;
+  }
+
+  @media (max-width: 900px) {
+    .provider-facility-wrapper {
+      flex-direction: column;
+    }
+
+    .provider-facility-sidebar {
+      width: 100%;
+      min-width: 100%;
+      max-width: 100%;
+      flex-basis: auto;
+      height: auto;
+    }
+
+    .provider-facility-content {
+      width: 100%;
+    }
+  }
+</style>

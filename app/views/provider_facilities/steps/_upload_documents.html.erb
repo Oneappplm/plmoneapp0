@@ -1,0 +1,780 @@
+<div class="provider-step-section upload-documents-step">
+  <div class="upload-documents-header">
+    <h2>Manage Documents</h2>
+
+    <p class="upload-documents-description">
+      Upload the required forms and supporting documentation for this
+      facility application.
+    </p>
+  </div>
+
+  <div class="upload-document-instructions">
+    <h4>Instructions</h4>
+
+    <ul>
+      <li>Download forms and documentation, where available.</li>
+      <li>Maximum file size is 10 MB.</li>
+      <li>Supported formats: PDF, DOC, DOCX, JPG, JPEG, and PNG.</li>
+      <li>
+        Select one or more files, then click
+        <strong>Upload Documents</strong>.
+      </li>
+    </ul>
+  </div>
+  <div class="upload-document-card">
+    <div class="upload-document-card-header">
+      Required and Supporting Documents
+    </div>
+
+    <div class="upload-document-table-wrapper">
+      <table class="upload-document-table">
+        <thead>
+          <tr>
+            <th class="document-number-column">#</th>
+            <th class="document-name-column">
+              Document Type
+            </th>
+            <th class="document-action-column">
+              Select File
+            </th>
+            <th class="document-count-column">
+              Uploaded
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @facility_documents.each_with_index do |document, index| %>
+            <% document_title = document[:title] %>
+            <% document_count = @uploaded_document_counts[document_title].to_i %>
+            <% document_error = @upload_document_errors[document_title] %>
+
+            <tr class="<%= 'document-row-error' if document_error.present? %>">
+              <td class="document-number">
+                <%= index + 1 %>
+              </td>
+
+              <td class="document-name">
+                <div class="document-title">
+                  <% if document[:required] %>
+                    <span class="required-marker">*</span>
+                  <% end %>
+
+                  <%= document_title %>
+                </div>
+
+              </td>
+
+              <td class="document-action">
+							  <%= hidden_field_tag(
+							        "facility_documents[#{document[:key]}][record_item]",
+							        document_title
+							      ) %>
+
+							  <label class="custom-file-upload">
+							    <span class="custom-file-button">
+							      Choose File
+							    </span>
+
+							    <span class="custom-file-name">
+							      No file selected
+							    </span>
+
+							    <%= file_field_tag(
+							          "facility_documents[#{document[:key]}][file_upload]",
+							          accept: ".pdf,.doc,.docx,.jpg,.jpeg,.png",
+							          class: "facility-document-file",
+							          data: {
+							            document_name: document_title,
+							            max_size: 10.megabytes
+							          }
+							        ) %>
+							  </label>
+
+							  <div class="file-input-error client-file-error"></div>
+
+							  <% if document_error.present? %>
+							    <div class="file-input-error server-file-error">
+							      <%= document_error %>
+							    </div>
+							  <% end %>
+							</td>
+
+              <td
+                class="document-count"
+                data-document-name="<%= document_title %>"
+              >
+                <span
+                  id="facility-document-count-<%= document[:key] %>"
+                  class="document-count-badge"
+                  data-document-name="<%= document_title %>"
+                >
+                  <%= document_count %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="upload-documents-action">
+      <%= submit_tag(
+            "Upload Documents",
+            name: "commit",
+            value: "Upload Documents",
+            class: "upload-documents-button"
+          ) %>
+    </div>
+  </div>
+
+  <div class="uploaded-documents-review">
+	  <div class="uploaded-documents-heading">
+	    <h3>Please review your documents for accuracy</h3>
+	  </div>
+
+	  <div
+	    id="facility-document-delete-message"
+	    class="facility-document-message"
+	    role="alert"
+	    aria-live="polite"
+	  ></div>
+
+	  <div class="uploaded-documents-table-wrapper">
+	    <table class="uploaded-documents-table">
+	      <thead>
+	        <tr>
+	          <th class="uploaded-action-column">Action</th>
+	          <th>Document Type</th>
+	          <th>Document</th>
+	          <th class="uploaded-date-column">Upload Date</th>
+	        </tr>
+	      </thead>
+
+	      <tbody id="uploaded-documents-table-body">
+	        <% @uploaded_documents.each do |document| %>
+	          <% document_definition = @facility_documents.find { |item| item[:title] == document.record_item } %>
+	          <% document_key = document_definition&.dig(:key) || document.record_item.to_s.parameterize(separator: "_") %>
+
+	          <tr
+	            id="facility-document-row-<%= document.id %>"
+	            class="uploaded-facility-document-row"
+	            data-document-name="<%= document.record_item %>"
+	            data-document-key="<%= document_key %>"
+	          >
+	            <td>
+	              <%= link_to(
+	                    "Delete",
+	                    "#",
+	                    class: "delete-facility-document",
+	                    data: {
+	                      id: document.id,
+	                      document_name: document.record_item,
+	                      document_key: document_key,
+	                      delete_url: delete_facility_document_provider_facility_path(
+	                        @provider.id,
+	                        document_id: document.id
+	                      )
+	                    }
+	                  ) %>
+	            </td>
+
+	            <td>
+	              <%= document.record_item %>
+	            </td>
+
+	            <td>
+	              <% if document.file_upload.present? %>
+	                <%= link_to(
+	                      File.basename(document.file_upload.url.to_s),
+	                      document.file_upload.url,
+	                      target: "_blank",
+	                      rel: "noopener",
+	                      class: "uploaded-document-link"
+	                    ) %>
+	              <% else %>
+	                <span class="uploaded-document-unavailable">
+	                  File unavailable
+	                </span>
+	              <% end %>
+	            </td>
+
+	            <td>
+	              <%= document.created_at.strftime("%m/%d/%Y") %>
+	            </td>
+	          </tr>
+	        <% end %>
+
+	        <tr
+	          id="no-uploaded-documents-row"
+	          class="<%= 'is-hidden' if @uploaded_documents.present? %>"
+	        >
+	          <td colspan="4" class="empty-documents-message">
+	            No documents have been uploaded yet.
+	          </td>
+	        </tr>
+	      </tbody>
+	    </table>
+	  </div>
+	</div>
+</div>
+<style>
+  .upload-documents-step {
+	  width: 100%;
+	  color: #334155;
+	}
+
+	.upload-documents-header {
+	  margin-bottom: 18px;
+	}
+
+	.upload-documents-header h2 {
+	  margin: 0 0 6px;
+	  color: #1e293b;
+	  font-size: 22px;
+	  font-weight: 700;
+	}
+
+	.upload-documents-description {
+	  margin: 0;
+	  color: #64748b;
+	  font-size: 13px;
+	  line-height: 1.5;
+	}
+
+	.upload-document-instructions {
+	  margin-bottom: 20px;
+	  padding: 14px 16px;
+	  border: 1px solid #dbe4ee;
+	  border-radius: 6px;
+	  background: #f8fafc;
+	}
+
+	.upload-document-instructions h4 {
+	  margin: 0 0 7px;
+	  color: #334155;
+	  font-size: 14px;
+	  font-weight: 700;
+	}
+
+	.upload-document-instructions ul {
+	  margin: 0;
+	  padding-left: 20px;
+	  color: #64748b;
+	  font-size: 12px;
+	  line-height: 1.7;
+	}
+
+	.upload-document-card {
+	  overflow: hidden;
+	  margin-bottom: 26px;
+	  border: 1px solid #d7e0ea;
+	  border-radius: 7px;
+	  background: #ffffff;
+	}
+
+	.upload-document-card-header {
+	  padding: 12px 16px;
+	  border-bottom: 1px solid #d7e0ea;
+	  background: #f4f7fb;
+	  color: #334155;
+	  font-size: 14px;
+	  font-weight: 700;
+	}
+
+	.upload-document-table-wrapper,
+	.uploaded-documents-table-wrapper {
+	  width: 100%;
+	  overflow-x: auto;
+	}
+
+	.upload-document-table,
+	.uploaded-documents-table {
+	  width: 100%;
+	  border-collapse: collapse;
+	  table-layout: fixed;
+	}
+
+	.upload-document-table th,
+	.uploaded-documents-table th {
+	  padding: 11px 12px;
+	  border-bottom: 1px solid #d7e0ea;
+	  background: #f8fafc;
+	  color: #526581;
+	  font-size: 12px;
+	  font-weight: 700;
+	  text-align: left;
+	}
+
+	.upload-document-table td,
+	.uploaded-documents-table td {
+	  padding: 12px;
+	  border-bottom: 1px solid #e6edf4;
+	  color: #526581;
+	  font-size: 13px;
+	  vertical-align: middle;
+	}
+
+	.upload-document-table tbody tr:last-child td,
+	.uploaded-documents-table tbody tr:last-child td {
+	  border-bottom: 0;
+	}
+
+	.upload-document-table tbody tr:hover,
+	.uploaded-documents-table tbody tr:hover {
+	  background: #fbfdff;
+	}
+
+	.document-number-column {
+	  width: 6%;
+	}
+
+	.document-name-column {
+	  width: 46%;
+	}
+
+	.document-action-column {
+	  width: 38%;
+	}
+
+	.document-count-column {
+	  width: 10%;
+	  text-align: center !important;
+	}
+
+	.document-number,
+	.document-count {
+	  text-align: center;
+	}
+
+	.document-title {
+	  color: #425674;
+	  font-weight: 600;
+	  line-height: 1.4;
+	}
+
+	.required-marker {
+	  margin-right: 3px;
+	  color: #ef4444;
+	  font-weight: 700;
+	}
+
+	.required-document-label,
+	.optional-document-label {
+	  display: inline-block;
+	  margin-top: 4px;
+	  padding: 2px 7px;
+	  border-radius: 10px;
+	  font-size: 10px;
+	  font-weight: 600;
+	}
+
+	.required-document-label {
+	  background: #fff1f2;
+	  color: #be123c;
+	}
+
+	.optional-document-label {
+	  background: #f1f5f9;
+	  color: #64748b;
+	}
+
+	.custom-file-upload {
+	  display: flex;
+	  width: 100%;
+	  min-height: 38px;
+	  align-items: center;
+	  overflow: hidden;
+	  border: 1px solid #cbd5e1;
+	  border-radius: 5px;
+	  background: #ffffff;
+	  cursor: pointer;
+	}
+
+	.custom-file-button {
+	  flex: 0 0 auto;
+	  padding: 10px 13px;
+	  border-right: 1px solid #cbd5e1;
+	  background: #f1f5f9;
+	  color: #334155;
+	  font-size: 12px;
+	  font-weight: 600;
+	}
+
+	.custom-file-name {
+	  min-width: 0;
+	  padding: 9px 12px;
+	  overflow: hidden;
+	  color: #64748b;
+	  font-size: 12px;
+	  text-overflow: ellipsis;
+	  white-space: nowrap;
+	}
+
+	.facility-document-file {
+	  position: absolute;
+	  width: 1px;
+	  height: 1px;
+	  opacity: 0;
+	  pointer-events: none;
+	}
+
+	.document-count-badge {
+	  display: inline-flex;
+	  min-width: 27px;
+	  height: 27px;
+	  align-items: center;
+	  justify-content: center;
+	  border-radius: 50%;
+	  background: #eaf2ff;
+	  color: #2563eb;
+	  font-size: 12px;
+	  font-weight: 700;
+	}
+
+	.upload-documents-action {
+	  display: flex;
+	  justify-content: flex-end;
+	  padding: 14px 16px;
+	  border-top: 1px solid #d7e0ea;
+	  background: #fafcff;
+	}
+
+	.upload-documents-button {
+	  padding: 9px 18px;
+	  border: 0;
+	  border-radius: 5px;
+	  background: #3478f6;
+	  color: #ffffff;
+	  font-size: 13px;
+	  font-weight: 600;
+	  cursor: pointer;
+	}
+
+	.upload-documents-button:hover {
+	  background: #2563eb;
+	}
+
+	.uploaded-documents-review {
+	  overflow: hidden;
+	  border: 1px solid #d7e0ea;
+	  border-radius: 7px;
+	  background: #ffffff;
+	}
+
+	.uploaded-documents-heading {
+	  padding: 13px 16px;
+	  border-bottom: 1px solid #d7e0ea;
+	  background: #f4f7fb;
+	}
+
+	.uploaded-documents-heading h3 {
+	  margin: 0 0 4px;
+	  color: #334155;
+	  font-size: 15px;
+	  font-weight: 700;
+	}
+
+	.uploaded-documents-heading p {
+	  margin: 0;
+	  color: #74839a;
+	  font-size: 12px;
+	}
+
+	.uploaded-action-column {
+	  width: 100px;
+	}
+
+	.uploaded-date-column {
+	  width: 130px;
+	}
+
+	.uploaded-document-link {
+	  color: #2563eb;
+	  font-weight: 500;
+	  text-decoration: none;
+	}
+
+	.uploaded-document-link:hover {
+	  text-decoration: underline;
+	}
+
+	.delete-facility-document {
+	  display: inline-block;
+	  padding: 5px 9px;
+	  border: 1px solid #fecaca;
+	  border-radius: 4px;
+	  background: #fff5f5;
+	  color: #dc2626;
+	  font-size: 11px;
+	  font-weight: 600;
+	  text-decoration: none;
+	}
+
+	.delete-facility-document:hover {
+	  background: #fee2e2;
+	  color: #b91c1c;
+	}
+
+	.document-row-error {
+	  background: #fff7f7;
+	}
+
+	.field-error-message,
+	.file-input-error {
+	  margin-top: 6px;
+	  color: #dc2626;
+	  font-size: 11px;
+	  font-weight: 500;
+	}
+
+	.facility-error-summary {
+	  margin-bottom: 16px;
+	  padding: 12px 15px;
+	  border: 1px solid #fecaca;
+	  border-radius: 5px;
+	  background: #fff5f5;
+	  color: #b91c1c;
+	  font-size: 12px;
+	}
+
+	.facility-error-summary ul {
+	  margin: 7px 0 0;
+	  padding-left: 18px;
+	}
+
+	.empty-documents-message {
+	  padding: 24px !important;
+	  color: #94a3b8 !important;
+	  text-align: center;
+	}
+
+	.is-hidden {
+	  display: none;
+	}
+
+	.facility-document-message {
+	  display: none;
+	  margin: 14px 16px 0;
+	  padding: 10px 12px;
+	  border: 1px solid transparent;
+	  border-radius: 5px;
+	  font-size: 12px;
+	  font-weight: 600;
+	}
+
+	.facility-document-message.is-visible {
+	  display: block;
+	}
+
+	.facility-document-message.is-success {
+	  border-color: #bbf7d0;
+	  background: #f0fdf4;
+	  color: #15803d;
+	}
+
+	.facility-document-message.is-error {
+	  border-color: #fecaca;
+	  background: #fff5f5;
+	  color: #b91c1c;
+	}
+
+	.delete-facility-document.is-disabled {
+	  cursor: not-allowed;
+	  opacity: 0.65;
+	  pointer-events: none;
+	}
+
+	.uploaded-document-unavailable {
+	  color: #94a3b8;
+	  font-style: italic;
+	}
+	.custom-file-upload {
+	  position: relative;
+	  display: flex;
+	  width: 100%;
+	  min-height: 38px;
+	  align-items: center;
+	  overflow: hidden;
+	  border: 1px solid #cbd5e1;
+	  border-radius: 5px;
+	  background: #ffffff;
+	  cursor: pointer;
+	}
+
+	.facility-document-file {
+	  position: absolute;
+	  width: 1px;
+	  height: 1px;
+	  overflow: hidden;
+	  opacity: 0;
+	}
+</style>
+<script>
+  (function () {
+    function showFacilityDocumentMessage(message, type) {
+      const messageElement = $("#facility-document-delete-message");
+
+      messageElement
+        .removeClass("is-success is-error")
+        .addClass(`is-visible ${type === "success" ? "is-success" : "is-error"}`)
+        .text(message);
+    }
+
+    function updateFacilityDocumentCount(documentKey, remainingCount) {
+      const normalizedCount = Number.parseInt(remainingCount, 10) || 0;
+
+      $(`#facility-document-count-${documentKey}`).text(normalizedCount);
+    }
+
+    function updateUploadedDocumentsEmptyState() {
+      const uploadedDocumentCount = $(
+        "#uploaded-documents-table-body .uploaded-facility-document-row"
+      ).length;
+
+      $("#no-uploaded-documents-row").toggleClass(
+        "is-hidden",
+        uploadedDocumentCount > 0
+      );
+    }
+
+    $(document)
+      .off("change.uploadDocumentName", ".facility-document-file")
+      .on(
+        "change.uploadDocumentName",
+        ".facility-document-file",
+        function () {
+          const input = this;
+          const wrapper = $(input).closest(".custom-file-upload");
+          const fileNameElement = wrapper.find(".custom-file-name");
+          const errorElement = $(input)
+            .closest(".document-action")
+            .find(".client-file-error");
+          const selectedFile = input.files && input.files[0];
+          const maximumSize = Number($(input).data("max-size"));
+          const allowedExtensions = [
+            "pdf",
+            "doc",
+            "docx",
+            "jpg",
+            "jpeg",
+            "png"
+          ];
+
+          errorElement.text("");
+
+          if (!selectedFile) {
+            fileNameElement.text("No file selected");
+            return;
+          }
+
+          fileNameElement.text(selectedFile.name);
+
+          const extension = selectedFile.name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+          if (!allowedExtensions.includes(extension)) {
+            errorElement.text(
+              "Supported formats are PDF, DOC, DOCX, JPG, JPEG, and PNG."
+            );
+
+            input.value = "";
+            fileNameElement.text("No file selected");
+            return;
+          }
+
+          if (maximumSize && selectedFile.size > maximumSize) {
+            errorElement.text("Maximum file size is 10 MB.");
+            input.value = "";
+            fileNameElement.text("No file selected");
+          }
+        }
+      );
+
+    $(document)
+      .off("click.deleteFacilityDocument", ".delete-facility-document")
+      .on(
+        "click.deleteFacilityDocument",
+        ".delete-facility-document",
+        function (event) {
+          event.preventDefault();
+
+          const deleteLink = $(this);
+          const documentId = deleteLink.data("id");
+          const documentName = deleteLink.data("document-name");
+          const documentKey = deleteLink.data("document-key");
+          const deleteUrl = deleteLink.data("delete-url");
+
+          if (!deleteUrl || !documentId) {
+            showFacilityDocumentMessage(
+              "Unable to identify the selected document.",
+              "error"
+            );
+            return;
+          }
+
+          if (!window.confirm(`Are you sure you want to delete "${documentName}"?`)) {
+            return;
+          }
+
+          deleteLink
+            .addClass("is-disabled")
+            .attr("aria-disabled", "true")
+            .text("Deleting...");
+
+          $.ajax({
+            url: deleteUrl,
+            type: "DELETE",
+            dataType: "json",
+            headers: {
+              "X-CSRF-Token": $(
+                'meta[name="csrf-token"]'
+              ).attr("content")
+            },
+            success: function (response) {
+              if (!response.success) {
+                showFacilityDocumentMessage(
+                  response.message || "Unable to delete the document.",
+                  "error"
+                );
+
+                deleteLink
+                  .removeClass("is-disabled")
+                  .removeAttr("aria-disabled")
+                  .text("Delete");
+                return;
+              }
+
+              $(`#facility-document-row-${documentId}`).remove();
+
+              updateFacilityDocumentCount(
+                documentKey,
+                response.remaining_count
+              );
+
+              updateUploadedDocumentsEmptyState();
+
+              showFacilityDocumentMessage(
+                response.message || "Document deleted successfully.",
+                "success"
+              );
+            },
+            error: function (xhr) {
+              const message =
+                xhr.responseJSON?.message ||
+                "The document could not be deleted. Please try again.";
+
+              showFacilityDocumentMessage(message, "error");
+
+              deleteLink
+                .removeClass("is-disabled")
+                .removeAttr("aria-disabled")
+                .text("Delete");
+            }
+          });
+        }
+      );
+  })();
+</script>

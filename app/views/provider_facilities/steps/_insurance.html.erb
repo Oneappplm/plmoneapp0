@@ -1,0 +1,110 @@
+<h3>Insurance</h3>
+
+<p>
+  Complete this section and attach a copy of the organization's insurance certificate(s)
+  General Liability, Professional Liability, Workers Compensation.
+</p>
+
+<p>
+  <strong>
+    The Detroit Wayne Integrated Health Network must be listed as an additional named insured.
+  </strong>
+</p>
+
+<div class="insurance-form">
+  <div class="insurance-question">
+    <p>
+      1. Is this organization covered by Commercial General Liability insurance in the amount of
+      $1 million per occurrence and $3 million aggregate?
+      <span class="required">*</span>
+    </p>
+
+    <label>
+      <%= radio_button_tag "provider_insurance_coverage[commercial_general_liability]",
+          "yes",
+          @insurance_coverage.insurance_type_insurance_type_description == "yes",
+          required: true %>
+      Yes
+    </label>
+
+    <label>
+      <%= radio_button_tag "provider_insurance_coverage[commercial_general_liability]",
+          "no",
+          @insurance_coverage.insurance_type_insurance_type_description == "no",
+          required: true %>
+      No - Please obtain the above amount of required coverage before submitting application.
+    </label>
+  </div>
+
+  <div class="insurance-question">
+    <p>
+      2. Is this organization covered by Professional liability insurance in the amount of
+      $1 million per occurrence and $3 million aggregate? Must be an organizational policy,
+      not Individual-only, policy.
+      <span class="required">*</span>
+    </p>
+
+    <label>
+      <%= radio_button_tag "provider_insurance_coverage[professional_liability]",
+          "yes",
+          @insurance_coverage.type_of_policy == "yes",
+          required: true %>
+      Yes
+    </label>
+
+    <label>
+      <%= radio_button_tag "provider_insurance_coverage[professional_liability]",
+          "no",
+          @insurance_coverage.type_of_policy == "no",
+          required: true %>
+      No - Please obtain the above amount of required coverage before submitting application.
+    </label>
+  </div>
+
+  <div class="insurance-question">
+    <p>
+      3. Is this organization covered by Workers Compensation insurance?
+      If no, is there an exemption?
+      <span class="required">*</span>
+    </p>
+
+    <label>
+      <%= radio_button_tag "provider_insurance_coverage[workers_compensation]",
+          "yes",
+          @insurance_coverage.insurance_coverage_type_insurance_coverage_type_description == "yes",
+          required: true %>
+      Yes
+    </label>
+
+    <label>
+      <%= radio_button_tag "provider_insurance_coverage[workers_compensation]",
+          "no",
+          @insurance_coverage.insurance_coverage_type_insurance_coverage_type_description == "no",
+          required: true %>
+      No - Please attach copy of exemption.
+    </label>
+  </div>
+</div>
+<style>
+.insurance-form {
+  margin-top: 35px;
+  font-size: 13px;
+}
+
+.insurance-question {
+  margin-bottom: 42px;
+}
+
+.insurance-question p {
+  margin-bottom: 14px;
+}
+
+.insurance-question label {
+  margin-right: 18px;
+  font-weight: normal;
+}
+
+.required {
+  color: red;
+}
+</style>
