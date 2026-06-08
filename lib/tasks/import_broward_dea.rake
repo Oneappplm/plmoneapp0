@@ -39,12 +39,15 @@ namespace :broward do
           caqh_provider_deaid: row['caqh_provider_deaid']
         )
 
+        schedule_value = row['schedules_held'].to_s.strip
+        schedule_array = schedule_value.split(/\s+/).reject(&:blank?)
+
         dea.assign_attributes(
           caqh_provider_attest_id: provider.caqh_provider_attest_id,
           dea_number: row['dea_number'],
           expiration_date: row['expiration_date'],
-          schedules_held: row['schedules_held'],
-          full_schedule: row['schedules_held'],
+          schedules_held: schedule_array,
+          full_schedule: schedule_array,
           dea_license_limitation_explanation: row['dea_status']
         )
 
