@@ -54,10 +54,10 @@ class Webscraper::NpdbQrxsService
     response_xml =
       if files.present?
         files.first[:xml]
-      elsif @send_confirmation_xml.present?
+      elsif @send_confirmation_xml.present? && confirmation_failed?(@send_confirmation_xml)
         @send_confirmation_xml
       else
-        build_error_xml(send_code, send_message)
+        build_error_xml("PENDING", "NPDB query accepted. Final response/report is not available yet.")
       end
 
     Rails.logger.info("NPDB FINAL XML:\n#{response_xml}")
@@ -106,6 +106,16 @@ class Webscraper::NpdbQrxsService
   end
 
   private
+
+  def confirmation_failed?(xml)
+    doc = Nokogiri::XML(xml)
+    doc.remove_namespaces!
+
+    accepted = doc.at_xpath("//accepted")&.text
+    errors = doc.xpath("//error")
+
+    accepted == "false" || errors.present?
+  end
 
   def build_submission_xml
     street =
