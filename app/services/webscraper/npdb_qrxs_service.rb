@@ -415,10 +415,13 @@ class Webscraper::NpdbQrxsService
   end
 
   def extract_query_confirmation_xml(body)
-    body.to_s
-        .scan(/<\?xml[\s\S]*?(?=\r?\n--uuid:|\r?\n------=_Part_|$)/)
-        .map(&:strip)
-        .find { |xml| xml.include?("<queryConfirmation") }
+    text = body.to_s
+
+    match = text.match(
+      /<\?xml[^>]*\?>\s*<queryConfirmation[\s\S]*?<\/queryConfirmation>/
+    )
+
+    match&.[](0)&.strip
   end
 
   def receive_poll!(creds, password)
