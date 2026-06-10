@@ -217,8 +217,6 @@ class Webscraper::NpdbQrxsService
 
           #{birthdate_xml(birth_date)}
 
-          <ssn>#{ssn}</ssn>
-
           <workAddress>
             <address>#{street}</address>
             <city>#{city}</city>
@@ -226,6 +224,8 @@ class Webscraper::NpdbQrxsService
             <zip>#{zip5}</zip>
             #{zip4.present? ? "<zip4>#{zip4}</zip4>" : ""}
           </workAddress>
+
+          <ssn>#{ssn}</ssn>
 
           <occupationAndLicensure>
             <number>#{license_number}</number>
