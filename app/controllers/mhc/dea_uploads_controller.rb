@@ -4,8 +4,8 @@ class Mhc::DeaUploadsController < ApplicationController
   def presign
     require "aws-sdk-s3"
 
-    bucket = ENV.fetch("AWS_S3_BUCKET", "plmhealthoneapp-hvhs")
-    region = ENV.fetch("AWS_REGION", "us-east-1")
+    bucket = ENV.fetch("AWS_S3_BUCKET", "docgotest-bucket")
+    region = ENV.fetch("AWS_REGION", "ap-south-1")
 
     creds = Aws::Credentials.new(
       ENV.fetch("AWS_ACCESS_KEY_ID"),
