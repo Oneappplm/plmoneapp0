@@ -11,12 +11,19 @@ class WebscraperService < ApplicationService
 			crawl!
 			success!
 		rescue => exception
-			if crawler
-				save_screenshot
-			 crawler.quit()
-			end
+		  begin
+		    save_screenshot if @crawler
+		  rescue => e
+		    Rails.logger.error("Screenshot failed: #{e.message}")
+		  end
 
-			error!(exception)
+		  begin
+		    @crawler&.quit
+		  rescue => e
+		    Rails.logger.error("Browser quit failed: #{e.message}")
+		  end
+
+		  error!(exception)
 		end
 	end
 
@@ -41,12 +48,32 @@ class WebscraperService < ApplicationService
 		end
 
 		# uncomment the following line to run headless else comment it out to run in browser
-		options.add_argument('--headless')
+		options.add_argument('--headless=new')
 
 		options.add_argument('--disable-gpu')
 		options.add_argument('--no-sandbox')
+		options.add_argument('--disable-dev-shm-usage')
+		options.add_argument('--disable-extensions')
+		options.add_argument('--disable-setuid-sandbox')
+		options.add_argument('--disable-background-networking')
+		options.add_argument('--window-size=1920,1080')
+		options.add_argument('--remote-debugging-port=9222')
 
-		@crawler ||= Selenium::WebDriver.for :chrome, options: options
+		http_client = Selenium::WebDriver::Remote::Http::Default.new
+		http_client.read_timeout = 300
+		http_client.open_timeout = 120
+
+		service =
+		  Selenium::WebDriver::Service.chrome(
+		    path: '/usr/local/bin/chromedriver'
+		  )
+
+		@crawler ||= Selenium::WebDriver.for(
+		  :chrome,
+		  options: options,
+		  service: service,
+		  http_client: http_client
+		)
 	end
 
 	def crawl!
