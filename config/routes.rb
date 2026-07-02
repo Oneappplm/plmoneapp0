@@ -147,6 +147,7 @@ Rails.application.routes.draw do
 
   namespace :mhc do
     resources :provider_personal_information_omigs, only: [:create, :update]
+    resources :provider_personal_information_opmcs, only: [:create, :update]
     
    get  :reports, to: "reports#index"
 
