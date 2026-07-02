@@ -239,9 +239,11 @@ class Mhc::VerificationPlatformController < ApplicationController
 
     @provider_omig =
       @provider_personal_information.provider_personal_information_omig ||
-      @provider_personal_information.build_provider_personal_information_omig(
-        search_result: 'No Match'
-      )
+      @provider_personal_information.build_provider_personal_information_omig
+
+    @provider_opmc =
+      @provider_personal_information.provider_opmc ||
+      @provider_personal_information.build_provider_opmc
 
     if params[:page_tab] == 'practitioner_info'
       @provider_personal_information_credentialing_contact =
