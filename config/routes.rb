@@ -146,6 +146,8 @@ Rails.application.routes.draw do
   resources :missing_field_submissions
 
   namespace :mhc do
+    resources :provider_personal_information_omigs, only: [:create, :update]
+    
    get  :reports, to: "reports#index"
 
     # Generate all CSV reports

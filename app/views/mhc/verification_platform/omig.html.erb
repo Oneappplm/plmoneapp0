@@ -1,0 +1,74 @@
+<div class="enc-content">
+  <div class="container">
+    <%= render "top_nav_buttons" %>
+
+    <div class="mt-4">
+      <h4 class="page-heading">(Office of Medicaid Inspector General)</h4>
+      <%#= link_to "OMIG", "https://apps.omig.ny.gov/exclusions/ex_search.aspx", class: "text-primary", target: "_blank" %>
+    </div>
+
+    <div class="mt-4">
+      <div class="fw-bold">RVA Information</div>
+
+      <%= form_with model: @provider_omig,
+          url: @provider_omig.persisted? ? mhc_provider_personal_information_omig_path(@provider_omig, provider_personal_information_id: @provider_personal_information.id) : mhc_provider_personal_information_omigs_path(provider_personal_information_id: @provider_personal_information.id),
+          method: @provider_omig.persisted? ? :put : :post,
+          local: true,
+          multipart: true do |f| %>
+
+        <%= hidden_field_tag :provider_personal_information_id, @provider_personal_information.id %>
+
+        <div class="">
+          <div class="row">
+            <div class="col-lg-6 mt-2">
+              <%= f.label :source_date, "Source Date:" %>
+              <%= f.date_field :source_date, class: "form-control mt-1" %>
+            </div>
+
+            <div class="col-lg-6 mt-2">
+              <%= f.label :verification_date, "Verification Date:" %>
+              <%= f.date_field :verification_date, class: "form-control mt-1" %>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-6 mt-2">
+              <%= f.label :search_result, "Search Results:" %>
+              <%= f.select :search_result,
+                  ProviderPersonalInformationOmig::SEARCH_RESULTS,
+                  {},
+                  class: "form-control mt-1" %>
+            </div>
+
+            <div class="col-lg-6 mt-2">
+              <%= f.label :effective_date, "Effective Date:" %>
+              <%= f.date_field :effective_date, class: "form-control mt-1" %>
+            </div>
+          </div>
+
+          <div class="mt-2">
+            <%= f.label :supporting_document, "Supporting Documentation:" %>
+            <%= f.file_field :supporting_document, class: "form-control mt-1 border border-dark" %>
+            <%= f.submit "Upload", class: "btn btn-sm btn-secondary mt-2" %>
+          </div>
+
+          <% if @provider_omig.supporting_document.present? %>
+            <div class="omig-row">
+              <label></label>
+              <%= link_to File.basename(@provider_omig.supporting_document.url),
+                  @provider_omig.supporting_document.url,
+                  target: "_blank" %>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="mt-4">
+          <%= f.submit "Save", class: "btn btn-primary" %>
+          <%= link_to "Cancel",
+              mhc_verification_platform_path(@provider_personal_information),
+              class: "btn btn-light" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
