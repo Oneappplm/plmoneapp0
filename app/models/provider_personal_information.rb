@@ -76,6 +76,9 @@ class ProviderPersonalInformation < ApplicationRecord
    has_many :npi_webcrawler_logs, class_name: "NpiWebcrawlerLog", dependent: :destroy
 
   has_one :provider_personal_information_omig, dependent: :destroy
+  has_one :provider_opmc,
+        class_name: "ProviderPersonalInformationOpmc",
+        dependent: :destroy
 
   validates :provider_attest_id, presence: true
 
