@@ -1,8 +1,19 @@
 class Mhc::ManageClientsController < ApplicationController
 
   def index
-    @q = ProviderPersonalInformation.ransack(params[:q])
-    @provider_personal_informations = @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
+    base_scope = ProviderPersonalInformation.all
+
+    if params[:client_name].present?
+      base_scope = base_scope.where(legacy_client_name: params[:client_name])
+    else
+      base_scope = base_scope.none
+    end
+
+    @q = base_scope.ransack(params[:q])
+
+    @provider_personal_informations =
+      @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
+
     @document = ProviderPersonalUploadedDoc.new
     @client_organizations = ClientOrganization.all
   end
