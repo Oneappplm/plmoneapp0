@@ -503,33 +503,44 @@
                       <% end %>
 
                       <%# ✅ DEA Logs %>
-                      <% if (dea_log = @provider_personal_information.rva_informations
-                        .select { |rva| rva.tab == "Registration" }
-                        .flat_map(&:dea_webcrawler_logs)
-                        .last
-                      ) %>
+                      <% dea_log = @provider_personal_information.rva_informations
+                                    .where(tab: "Registration")
+                                    .includes(:dea_webcrawler_logs)
+                                    .flat_map(&:dea_webcrawler_logs)
+                                    .last %>
+
+                      <% if dea_log.present? %>
+                        <% dea_file_url = begin
+                            dea_log.filepath&.url
+                          rescue
+                            nil
+                          end %>
+
                         <tr>
                           <td>
                             <input type="checkbox"
                                    id="dea-log-<%= dea_log.id %>"
                                    value="DEA Log"
-                                   data-url="<%= dea_log.filepath.url %>"
+                                   data-url="<%= dea_file_url %>"
                                    data-type="dea_log"
                                    data-provider-id="<%= @provider_personal_information.id %>"
                                    class="link-checkbox">
                           </td>
+
                           <td>DEA</td>
+
                           <td>
-                            <% if dea_log.filepath.present? %>
-                              <a href="<%= dea_log.filepath.url %>" target="_blank">
-                                <%= File.basename(URI.parse(dea_log.filepath.url).path) %>
+                            <% if dea_file_url.present? %>
+                              <a href="<%= dea_file_url %>" target="_blank">
+                                <%= File.basename(URI.parse(dea_file_url).path) %>
                               </a>
                             <% else %>
                               No file
                             <% end %>
                           </td>
-                          <td><%= dea_log.created_at.strftime("%m/%d/%Y") %></td>
-                          <td><%= dea_log.filetype || "unknown" %></td>
+
+                          <td><%= dea_log.created_at&.strftime("%m/%d/%Y") %></td>
+                          <td><%= dea_log.filetype.presence || "unknown" %></td>
                         </tr>
                       <% end %>
 
