@@ -245,6 +245,10 @@ class Mhc::VerificationPlatformController < ApplicationController
       @provider_personal_information.provider_opmc ||
       @provider_personal_information.build_provider_opmc
 
+    @provider_ofac =
+      @provider_personal_information.provider_ofac ||
+      @provider_personal_information.build_provider_ofac
+
     if params[:page_tab] == 'practitioner_info'
       @provider_personal_information_credentialing_contact =
         @provider_personal_information.provider_personal_information_credentialing_contact ||

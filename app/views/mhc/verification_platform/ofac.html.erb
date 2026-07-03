@@ -1,0 +1,76 @@
+<div class="enc-content">
+  <div class="container">
+    <%= render "top_nav_buttons" %>
+
+    <div class="mt-4">
+      <h4 class="page-heading">(Office of Foreign Assets Control)</h4>
+      <%= link_to "OFAC", "#", class: "text-primary" %>
+    </div>
+
+    <div class="mt-4">
+      <div class="fw-bold">RVA Information</div>
+
+      <%= form_with model: @provider_ofac,
+          url: @provider_ofac.persisted? ?
+            mhc_provider_personal_information_ofac_path(
+              @provider_ofac,
+              provider_personal_information_id: @provider_personal_information.id
+            ) :
+            mhc_provider_personal_information_ofacs_path(
+              provider_personal_information_id: @provider_personal_information.id
+            ),
+          method: @provider_ofac.persisted? ? :put : :post,
+          multipart: true,
+          local: true do |f| %>
+
+        <div class="row">
+          <div class="col-lg-6 mt-2">
+            <%= f.label :source_date, "Source Date:" %>
+            <%= f.date_field :source_date, class: "form-control mt-1" %>
+          </div>
+
+          <div class="col-lg-6 mt-2">
+            <%= f.label :verification_date, "Verification Date:" %>
+            <%= f.date_field :verification_date, class: "form-control mt-1" %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-6 mt-2">
+            <%= f.label :search_result, "Search Results:" %>
+            <%= f.select :search_result,
+                ProviderPersonalInformationOfac::SEARCH_RESULTS,
+                {},
+                class: "form-control mt-1" %>
+          </div>
+
+          <div class="col-lg-6 mt-2">
+            <%= f.label :effective_date, "Effective Date:" %>
+            <%= f.date_field :effective_date, class: "form-control mt-1" %>
+          </div>
+        </div>
+
+        <div class="mt-2">
+          <%= f.label :supporting_document, "Supporting Documentation:" %>
+          <%= f.file_field :supporting_document, class: "form-control mt-1 border border-dark" %>
+          <%= f.submit "Upload", class: "btn btn-sm btn-secondary mt-2" %>
+        </div>
+
+        <% if @provider_ofac.supporting_document.present? %>
+          <div class="mt-2">
+            <%= link_to File.basename(@provider_ofac.supporting_document.url),
+                @provider_ofac.supporting_document.url,
+                target: "_blank" %>
+          </div>
+        <% end %>
+
+        <div class="mt-4">
+          <%= f.submit "Save", class: "btn btn-primary" %>
+          <%= link_to "Cancel",
+              mhc_verification_platform_path(@provider_personal_information.provider_attest_id),
+              class: "btn btn-light" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
