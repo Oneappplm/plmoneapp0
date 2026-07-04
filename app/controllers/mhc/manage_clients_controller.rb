@@ -5,14 +5,15 @@ class Mhc::ManageClientsController < ApplicationController
 
     if params[:client_name].present?
       base_scope = base_scope.where(legacy_client_name: params[:client_name])
-    else
+    elsif params.dig(:q, :name_or_attest_id_cont).blank?
       base_scope = base_scope.none
     end
 
     @q = base_scope.ransack(params[:q])
 
     @provider_personal_informations =
-      @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
+      @q.result(distinct: true)
+        .paginate(per_page: 10, page: params[:page] || 1)
 
     @document = ProviderPersonalUploadedDoc.new
     @client_organizations = ClientOrganization.all

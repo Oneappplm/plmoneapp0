@@ -3,20 +3,22 @@ class Mhc::VerificationPlatformController < ApplicationController
   before_action :redirect_to_auto_verify, only: [:index]
 
   def index
-    base_scope = ProviderPersonalInformation.where.not(cred_status: 'no-application').or(
-      ProviderPersonalInformation.where(cred_status: nil)
-    )
+    base_scope = ProviderPersonalInformation
+                   .where.not(cred_status: "no-application")
+                   .or(ProviderPersonalInformation.where(cred_status: nil))
 
     if params[:client_name].present?
       base_scope = base_scope.where(legacy_client_name: params[:client_name])
-    else
+    elsif params.dig(:q, :name_or_attest_id_cont).blank?
+      # Only hide records when no client and no search
       base_scope = base_scope.none
     end
 
     @q = base_scope.ransack(params[:q])
 
     @provider_personal_informations =
-      @q.result(distinct: true).paginate(per_page: 10, page: params[:page] || 1)
+      @q.result(distinct: true)
+        .paginate(page: params[:page], per_page: 10)
 
     @client_organizations = ClientOrganization.all
   end
