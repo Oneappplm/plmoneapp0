@@ -627,58 +627,78 @@
     </div>
   <% end %>
 
-  <% omig_details = provider_personal_information.provider_personal_information_omig %>
-  <% opmc_details = provider_personal_information.provider_opmc %>
-  <% ofac_details = provider_personal_information.provider_ofac %>
+  <% if @provider_personal_information.present? &&
+      @provider_personal_information.legacy_client_name == "Primary PartnersCare" %>
 
-  <% if omig_details.present? %>
-    <div class="section mt-4">
-      <div class="section-title">OMIG Exclusions</div>
-      <div class="section-content">
-        <div class="row">
-          <div class="col-6">
-            <p><strong>Search Result:</strong> <%= omig_details.search_result.presence || 'Not Available' %></p>
-            <p><strong>Verified By:</strong> <%= current_user.full_name %></p>
-          </div>
-          <div class="col-6">
-            <p><strong>Source Date:</strong> <%= omig_details.source_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
-            <p><strong>Verification Date:</strong> <%= omig_details.verification_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
+    <% omig_details = provider_personal_information.provider_personal_information_omig %>
+    <% opmc_details = provider_personal_information.provider_opmc %>
+    <% ofac_details = provider_personal_information.provider_ofac %>
+
+    <% if omig_details.present? %>
+      <div class="section mt-4">
+        <div class="section-title">OMIG Exclusions</div>
+        <div class="section-content">
+          <div class="row">
+            <div class="col-6">
+              <p><strong>Search Result:</strong> <%= omig_details.search_result.presence || 'Not Available' %></p>
+              <p><strong>Verified By:</strong> <%= current_user.full_name %></p>
+            </div>
+            <div class="col-6">
+              <p><strong>Source Date:</strong> <%= omig_details.source_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
+              <p><strong>Verification Date:</strong> <%= omig_details.verification_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  <% end %>
+    <% end %>
 
-  <% if opmc_details.present? %>
-    <div class="section mt-4">
-      <div class="section-title">OPMC Exclusions</div>
-      <div class="section-content">
-        <div class="row">
-          <div class="col-6">
-            <p><strong>Search Result:</strong> <%= opmc_details.search_result.presence || 'Not Available' %></p>
-            <p><strong>Verified By:</strong> <%= current_user.full_name %></p>
-          </div>
-          <div class="col-6">
-            <p><strong>Source Date:</strong> <%= opmc_details.source_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
-            <p><strong>Verification Date:</strong> <%= opmc_details.verification_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
+    <% if opmc_details.present? %>
+      <div class="section mt-4">
+        <div class="section-title">OPMC Exclusions</div>
+        <div class="section-content">
+          <div class="row">
+            <div class="col-6">
+              <p><strong>Search Result:</strong> <%= opmc_details.search_result.presence || 'Not Available' %></p>
+              <p><strong>Verified By:</strong> <%= current_user.full_name %></p>
+            </div>
+            <div class="col-6">
+              <p><strong>Source Date:</strong> <%= opmc_details.source_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
+              <p><strong>Verification Date:</strong> <%= opmc_details.verification_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  <% end %>
+    <% end %>
 
-  <% if ofac_details.present? %>
+    <% if ofac_details.present? %>
+      <div class="section mt-4">
+        <div class="section-title">OFAC Exclusions</div>
+        <div class="section-content">
+          <div class="row">
+            <div class="col-6">
+              <p><strong>Search Result:</strong> <%= ofac_details.search_result.presence || 'Not Available' %></p>
+              <p><strong>Verified By:</strong> <%= current_user.full_name %></p>
+            </div>
+            <div class="col-6">
+              <p><strong>Source Date:</strong> <%= ofac_details.source_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
+              <p><strong>Verification Date:</strong> <%= ofac_details.verification_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
     <div class="section mt-4">
-      <div class="section-title">OFAC Exclusions</div>
+      <div class="section-title">MMIS</div>
       <div class="section-content">
         <div class="row">
           <div class="col-6">
-            <p><strong>Search Result:</strong> <%= ofac_details.search_result.presence || 'Not Available' %></p>
+            <p><strong>Search Result:</strong> <%#= ofac_details.search_result.presence || 'Not Available' %></p>
             <p><strong>Verified By:</strong> <%= current_user.full_name %></p>
           </div>
           <div class="col-6">
-            <p><strong>Source Date:</strong> <%= ofac_details.source_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
-            <p><strong>Verification Date:</strong> <%= ofac_details.verification_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
+            <p><strong>Source Date:</strong> <%#= ofac_details.source_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
+            <p><strong>Verification Date:</strong> <%#= ofac_details.verification_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
           </div>
         </div>
       </div>
