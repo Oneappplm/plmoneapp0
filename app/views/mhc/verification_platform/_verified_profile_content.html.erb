@@ -581,7 +581,7 @@
           <% provider_medicares.each do |medicare| %>
             <div class="row mb-3">
               <div class="col-6">
-                <p><strong>Medicare PIN:</strong> <%= medicare.medicare_number.presence || 'Not Available' %></p>
+                <%# <p><strong>Medicare PIN:</strong> <%#= medicare.medicare_number.presence || 'Not Available'</p> %>
                 <p><strong>State:</strong> <%= medicare.state.presence || 'Not Available' %></p>
                 <p><strong>On Opt Out List:</strong> <%= medicare.medicare_opt_out? ? 'Yes' : 'No' %></p>
                 <p><strong>End Date:</strong> <%= medicare.effective_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
@@ -627,6 +627,14 @@
     </div>
   <% end %>
 
+  <% current_provider = local_assigns[:provider_personal_information] || @provider_personal_information %>
+
+  <% latest_tracking =
+       current_provider
+         &.provider_personal_information_app_trackings
+         &.order(created_at: :desc)
+         &.first %>
+
   <% if @provider_personal_information.present? &&
       @provider_personal_information.legacy_client_name == "Primary PartnersCare" %>
 
@@ -634,9 +642,10 @@
     <% opmc_details = provider_personal_information.provider_opmc %>
     <% ofac_details = provider_personal_information.provider_ofac %>
 
+
     <% if omig_details.present? %>
       <div class="section mt-4">
-        <div class="section-title">OMIG Exclusions</div>
+        <div class="section-title">Medicaid Exclusions</div>
         <div class="section-content">
           <div class="row">
             <div class="col-6">
@@ -654,7 +663,7 @@
 
     <% if opmc_details.present? %>
       <div class="section mt-4">
-        <div class="section-title">OPMC Exclusions</div>
+        <div class="section-title">Professional Conduct</div>
         <div class="section-content">
           <div class="row">
             <div class="col-6">
@@ -672,7 +681,7 @@
 
     <% if ofac_details.present? %>
       <div class="section mt-4">
-        <div class="section-title">OFAC Exclusions</div>
+        <div class="section-title">Sanction SDN</div>
         <div class="section-content">
           <div class="row">
             <div class="col-6">
@@ -698,16 +707,10 @@
           </div>
           <div class="col-6">
             <p><strong>Source Date:</strong> 
-              <%= @latest_tracking
-                              &.application_submitted_date
-                              &.in_time_zone('Pacific Time (US & Canada)')
-                              &.strftime('%m/%d/%Y') %>
+              <%= latest_tracking&.application_submitted_date &.in_time_zone('Pacific Time (US & Canada)') &.strftime('%m/%d/%Y') %>
             </p>
             <p><strong>Verification Date:</strong> 
-              <%= @latest_tracking
-                              &.application_submitted_date
-                              &.in_time_zone('Pacific Time (US & Canada)')
-                              &.strftime('%m/%d/%Y') %>
+              <%= latest_tracking&.application_submitted_date &.in_time_zone('Pacific Time (US & Canada)') &.strftime('%m/%d/%Y') %>
             </p>
           </div>
         </div>
