@@ -697,8 +697,18 @@
             <p><strong>Verified By:</strong> <%= current_user.full_name %></p>
           </div>
           <div class="col-6">
-            <p><strong>Source Date:</strong> <%#= ofac_details.source_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
-            <p><strong>Verification Date:</strong> <%#= ofac_details.verification_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
+            <p><strong>Source Date:</strong> 
+              <%= @latest_tracking
+                              &.application_submitted_date
+                              &.in_time_zone('Pacific Time (US & Canada)')
+                              &.strftime('%m/%d/%Y') %>
+            </p>
+            <p><strong>Verification Date:</strong> 
+              <%= @latest_tracking
+                              &.application_submitted_date
+                              &.in_time_zone('Pacific Time (US & Canada)')
+                              &.strftime('%m/%d/%Y') %>
+            </p>
           </div>
         </div>
       </div>
