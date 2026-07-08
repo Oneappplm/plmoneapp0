@@ -12,7 +12,7 @@
                               All Provider
                           </span>
                           <div class="card-counter">
-                              <h3 class="text-white"><%= ProviderSource.count %></h3>
+                            <h3 class="text-white"><%= @visible_providers.size %></h3>
                           </div>
                       </div>
                   </div>
@@ -68,8 +68,7 @@
           <!-- Cards -->
           <div class="card-wpr">
           <div class="row">
-              <% @providers.each do |provider| %>
-              <% next unless provider.full_name.present? || provider.email_address.present? %>
+              <% @visible_providers.each do |provider| %>
               <div class="col-xl-3 mb-2">
                   <div class="border p-4 rounded shadow h-100">
                   <div class="d-flex justify-content-between">
@@ -133,7 +132,7 @@
                   <div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
                   <div class="page_info ms-3 text-black">
                       <%#= page_entries_info @providers, entry_name: 'Providers' %>
-                      <h5 class="mt-1">Result: <%= @providers.count %> records</h5>
+                      <h5 class="mt-1">Result: <%= @visible_providers.size %> records</h5>
                   </div>
                   <% if params[:per_page ].present? %>
                       <%= will_paginate @providers, :params =>  {per_page: params[:page] }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>

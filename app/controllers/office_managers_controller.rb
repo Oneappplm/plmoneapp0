@@ -5,20 +5,22 @@ class OfficeManagersController < ApplicationController
 
   def index
     # clean_empty_providers
-    
+
     if params[:practice_location_id].blank? || params[:practice_location_id] == 'All Location'
-      # Display all providers if no practice_location_id is provided or if "All Location" is selected
-      @providers = ProviderSource.unscoped.order(created_at: :asc).paginate(page: params[:page], per_page: 12)
+      @providers = ProviderSource.unscoped
+                                 .order(created_at: :asc)
+                                 .paginate(page: params[:page], per_page: 12)
     else
-      # Display providers filtered by practice_location_id
       @providers = ProviderSource.unscoped
                                  .where(practice_location_id: params[:practice_location_id])
                                  .order(created_at: :asc)
                                  .paginate(page: params[:page], per_page: 12)
     end
+
+    @visible_providers = @providers.select do |provider|
+      provider.full_name.present? || provider.email_address.present?
+    end
   end
-
-
 
   def manage_practice_locations
     @locations = if params[:search].present?
