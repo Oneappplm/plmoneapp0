@@ -30,6 +30,8 @@ class Webscraper::NpdbQrxsService
     files = safe_receive_poll(creds)
 
     if files.present?
+      Rails.logger.info("NPDB RECEIVE FILE FOUND: #{files.first[:filename]}")
+
       return render_and_save_log!(
         response_xml: files.first[:xml],
         status: "completed",
@@ -74,7 +76,10 @@ class Webscraper::NpdbQrxsService
       elsif @send_confirmation_xml.present? && confirmation_failed?(@send_confirmation_xml)
         @send_confirmation_xml
       else
-        build_error_xml("PENDING", "NPDB query accepted. Final response/report is not available yet.")
+        build_error_xml(
+          "PENDING",
+          "NPDB query accepted. Final response/report is not available yet."
+        )
       end
 
     Rails.logger.info("NPDB FINAL XML:\n#{response_xml}")
@@ -115,6 +120,7 @@ class Webscraper::NpdbQrxsService
   def existing_completed_log
     NpdbWebcrawlerLog
       .where(provider_npdb: @npdb, status: "completed", filetype: "pdf")
+      .where.not(filepath: [nil, ""])
       .order(created_at: :desc)
       .first
   end
@@ -122,6 +128,7 @@ class Webscraper::NpdbQrxsService
   def existing_pending_log
     NpdbWebcrawlerLog
       .where(provider_npdb: @npdb, status: "pending", filetype: "pdf")
+      .where.not(filepath: [nil, ""])
       .order(created_at: :desc)
       .first
   end
@@ -157,6 +164,8 @@ class Webscraper::NpdbQrxsService
     File.open(pdf_path, "rb") { |f| log.filepath = f }
     log.save!
 
+    Rails.logger.info("NPDB log saved: #{log.id}, status=#{log.status}")
+
     log
   end
 
@@ -190,6 +199,7 @@ class Webscraper::NpdbQrxsService
       ENV["NPDB_CERT_PHONE"].to_s.gsub(/\D/, "").presence || "1234567890"
 
     birth_date = @ppi.birth_date || @ppi.date_of_birth
+
     license = selected_license
 
     license_number =
