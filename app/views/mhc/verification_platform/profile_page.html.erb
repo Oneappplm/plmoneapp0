@@ -544,6 +544,51 @@
                         </tr>
                       <% end %>
 
+                      <%# OMIG, OPMC, OFAC %>
+                      <% if @provider_personal_information.present? &&
+                            @provider_personal_information.legacy_client_name == "Primary PartnersCare" %>
+                        <% [
+                            ["OMIG", @provider_personal_information.provider_personal_information_omig, "omig_document"],
+                            ["OPMC", @provider_personal_information.provider_opmc, "opmc_document"],
+                            ["OFAC", @provider_personal_information.provider_ofac, "ofac_document"]
+                          ].each do |label, record, data_type| %>
+
+                            <% next unless record.present? %>
+
+                            <% file_url = begin
+                                record.supporting_document&.url
+                              rescue
+                                nil
+                              end %>
+
+                            <% next unless file_url.present? %>
+
+                            <tr>
+                              <td>
+                                <input type="checkbox"
+                                       id="<%= data_type %>-<%= record.id %>"
+                                       value="<%= label %> Document"
+                                       data-url="<%= file_url %>"
+                                       data-type="<%= data_type %>"
+                                       data-provider-id="<%= @provider_personal_information.id %>"
+                                       class="link-checkbox">
+                              </td>
+
+                              <td><%= label %></td>
+
+                              <td>
+                                <a href="<%= file_url %>" target="_blank">
+                                  <%= File.basename(URI.parse(file_url).path) %>
+                                </a>
+                              </td>
+
+                              <td><%= record.created_at&.strftime("%m/%d/%Y") %></td>
+
+                              <td><%= File.extname(URI.parse(file_url).path).delete(".").presence&.upcase || "unknown" %></td>
+                            </tr>
+                        <% end %>
+                      <% end %>
+
                       <%# ✅ Licensure Logs %>
                       <% if (lic_log = @provider_personal_information.rva_informations.map(&:licensure_webcrawler_logs).flatten.last) %>
                         <tr>
