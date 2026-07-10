@@ -3,7 +3,7 @@
         <div class="container">
             <%= render "top_nav_buttons"%>
 
-            <div class="row mt-3">
+            <div class="row mt-3 mb-3">
                 <div class="col-xl-12 d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center gap-3">
                         <h4 class="page-heading">Certification Record 1</h4>
@@ -11,230 +11,250 @@
                             Edit
                         </button>
                         <div class="d-flex align-items-center gap-3">
-                            <button type="button" class="btn btn-cancel" id="prac-info-btn-cancel">
+                            <button type="button" class="btn btn-light py-1 px-5" id="prac-info-btn-cancel">
                                 Cancel
                             </button>
                         </div>
+                        <% if @certification&.persisted? %>
+                          <div class="ms-auto">
+                            <%= button_to mhc_certification_path(@certification, provider_attest_id: @certification.provider_attest_id),
+                                method: :delete,
+                                data: { confirm: 'Are you sure you want to delete this certification?' },
+                                class: 'btn btn-danger d-flex align-items-center gap-2 py-1 px-5',
+                                form: { "data-turbo-confirm" => "Are you sure?" } do %>
+                              <i class='bx bx-trash'></i>
+                              Delete Record
+                            <% end %>
+                          </div>
+                        <% end %>
                     </div>
-                      <% if @certification&.persisted? %>
-                        <div class="ms-auto">
-                          <%= button_to mhc_certification_path(@certification, provider_attest_id: @certification.provider_attest_id),
-                              method: :delete,
-                              data: { confirm: 'Are you sure you want to delete this certification?' },
-                              class: 'btn btn-danger d-flex align-items-center gap-2',
-                              form: { "data-turbo-confirm" => "Are you sure?" } do %>
-                            <i class='bx bx-trash'></i>
-                            Delete Record
-                          <% end %>
-                        </div>
-                      <% end %>
                 </div>
             </div>
-            <% if @certification.persisted? %>
-                <div class="col-xl-4 p-2 text-center">
-                    <div class="row">
-                        <div class="col-12 m-2">
-                              <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" data-bs-toggle="modal" data-bs-target="#verificationModal">
-                                  Verification Letter
-                              </button>
-                        </div>
-                        <div class="modal fade" id="verificationModal" tabindex="-1" aria-labelledby="verificationModalLabel" aria-hidden="true">
-                          <div class="modal-dialog modal-dialog-centered modal-md">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="verificationModalLabel">Training </h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                              </div>
-                              
-                              <div class="modal-body">
-                                <form>
-                                  <!-- Preview Letter -->
-                                  <fieldset class="mb-4 p-3 border rounded shadow-sm">
-                                    <legend class="fs-6 fw-bold mb-3 text-primary">📄 Preview Letter</legend>
-                                    <button type="button" class="btn btn-primary btn-sm w-100">Preview Letter</button>
-                                  </fieldset>
+            <div class="row mt-5">
+              <div class="col-lg-8">
+                <%= form_with model: @certification, url: @url, method: :patch do |f| %>
+                  <!-- Type -->
+                        <%= f.hidden_field :caqh_provider_attest_id %>
+                        <%= f.hidden_field :provider_attest_id %>
+                  <div class="mb-3 row align-items-center">
+                    <%= f.label :certification_type, class: "col-sm-3 col-form-label fw-bold" %>
+                    <div class="col-sm-9">
+                      <%= f.text_field :certification_type, class: "form-control form-control-sm" %>
+                    </div>
+                  </div>
 
-                                  <!-- Send Fax -->
-                                  <fieldset class="mb-4 p-3 border rounded shadow-sm">
-                                    <legend class="fs-6 fw-bold mb-3 text-secondary">📠 Send Fax</legend>
-                                    <div class="mb-3">
-                                      <label for="faxEmail" class="form-label">Fax2Mail Email Address</label>
-                                      <input type="text" id="faxEmail" name="faxEmail" class="form-control form-control-sm" value="1234456677.Medversant.1234456677@fax2mail.com">
-                                    </div>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm w-100">Send Fax</button>
-                                  </fieldset>
+                  <!-- Issuing Agency -->
+                  <div class="mb-3 row align-items-center">
+                    <%= f.label :issuing_agency, class: "col-sm-3 col-form-label fw-bold" %>
+                    <div class="col-sm-9">
+                      <%= f.text_field :issuing_agency, class: "form-control form-control-sm" %>
+                    </div>
+                  </div>
 
-                                  <!-- Send Email -->
-                                  <fieldset class="mb-4 p-3 border rounded shadow-sm">
-                                    <legend class="fs-6 fw-bold mb-3 text-success">📧 Send Email</legend>
-                                    <div class="mb-3">
-                                      <label for="emailTo" class="form-label">Email Address To</label>
-                                      <input type="text" id="emailTo" name="emailTo" class="form-control form-control-sm" disabled>
-                                    </div>
-                                    <div class="mb-3">
-                                      <label for="emailCc" class="form-label">Email Address Cc</label>
-                                      <input type="text" id="emailCc" name="emailCc" class="form-control form-control-sm" disabled>
-                                    </div>
-                                    <button type="button" class="btn btn-outline-success btn-sm w-100">Send Email</button>
-                                  </fieldset>
-                                </form>
-                              </div>
+                  <!-- Certification Status -->
+                  <div class="mb-3 row align-items-center">
+                    <%= f.label :certification_status, "Certification Status", class: "col-sm-3 col-form-label fw-bold" %>
+                    <div class="col-sm-9">
+                      <%= f.text_field :certification_status, class: "form-control form-control-sm" %>
+                    </div>
+                  </div>
 
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                              </div>
-                            </div>
+                  <!-- Certification Number -->
+                  <div class="mb-3 row align-items-center">
+                    <%= f.label :certification_number, class: "col-sm-3 col-form-label fw-bold" %>
+                    <div class="col-sm-9">
+                      <%= f.text_field :certification_number, class: "form-control form-control-sm", placeholder: "Enter number" %>
+                    </div>
+                  </div>
+
+                  <!-- Initial Certification Date -->
+                  <div class="mb-3 row align-items-center">
+                    <%= f.label :initial_certification_date, "Initial Certification Date", class: "col-sm-3 col-form-label fw-bold" %>
+                    <div class="col-sm-9">
+                      <%= f.date_select :initial_certification_date, { start_year: 1950, end_year: Date.today.year }, { class: "form-select form-select-sm d-inline w-auto me-1" } %>
+                    </div>
+                  </div>
+
+                  <!-- Recertification Dates -->
+                  <div class="card border-dark mb-3">
+                    <div class="card-header fw-bold py-2"
+                         style="border-bottom:1px solid #000; border-top-left-radius:12px; border-top-right-radius:12px;">
+                      Recertification Dates
+                    </div>
+                    <div class="card-body">
+                      <div class="row mb-2 align-items-center">
+                        <%= f.label :recertification_dates, "Recertification Date", class: "col-sm-3 col-form-label fw-bold" %>
+                        <div class="col-md-9">
+                          <div class="d-flex align-items-center">
+                            <%= f.date_select :recertification_dates, { start_year: 1950, end_year: Date.today.year }, { class: "form-select form-select-sm d-inline w-auto me-2" } %>
+                          </div>
+                          <div class="mt-2">
+                            <%#= button_tag "Add Other Date",
+                                  type: "button",
+                                  class: "btn btn-light btn-sm border" %>
                           </div>
                         </div>
-                        <div class="col-12 m-2">
-                            <button  type="button" class="btn btn-primary btn-sm" id="asdf" style="min-width: 100px; font-size: 12px" data-bs-toggle="modal" data-bs-target="#send_contact_template">
-                                Send Contact
-                            </button>
-                        </div>
+                      </div>
                     </div>
-                    <div class="card other-name-card">
-                        <div class="card-body">
-                            <h2 class="">RVA Information</h2>
-                            <div class="mt-3 row">
-                                <div class="col-12 m-2">
-                                    <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
-                                        Request
-                                    </button>
-                                </div>
-                                <div class="col-12 m-2">
-                                    <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
-                                        Verification
-                                    </button>
-                                </div>
-                                <div class="col-12 m-2">
-                                    <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
-                                        Audit
-                                    </button>
-                                </div>
-                                 <div class="col-12 m-2">
-                                    <button class="btn btn-primary btn-audit btn-sm" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" data-certificate-id = "<%= @certification.id %>">
-                                          Quality Audit
-                                    </button>
-                                </div>
-                                <div class="col-12 m-2">
-                                    <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
-                                          Skip RVA
-                                    </button>
-                                </div>
-                                <!--
-                                  <div class="col-12 m-2">
-                                    <button class="btn text-danger <%= @training_rva_information_completed.present? ? '' : 'd-none' %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" id="re-rva">
-                                      Need ReRVA
-                                    </button>
+                  </div>
+
+
+                  <!-- Certification Expiration Date -->
+                  <div class="mb-3 row align-items-center">
+                    <%= f.label :certification_expiration_date, "Certification Expiration Date", class: "col-sm-3 col-form-label fw-bold" %>
+                    <div class="col-sm-9">
+                      <div class="form-check form-check-inline">
+                        <%= f.radio_button :does_not_expire, true, id: "doesNotExpire", class: "form-check-input border border-dark" %>
+                        <%= f.label :does_not_expire, "Does Not Expire", class: "form-check-label", for: "doesNotExpire" %>
+                      </div>
+                      <div class="d-flex gap-2 mt-2">
+                        <%= f.date_select :certification_expiration_date, { start_year: 1950, end_year: Date.today.year }, { class: "form-select form-select-sm w-auto" } %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Comments -->
+                  <div class="mb-3">
+                    <%= f.label :comments, "Please list any comments:", class: "form-label fw-bold text-purple" %>
+                    <%= f.text_area :comments, class: "form-control border border-dark", rows: 3, maxlength: 250 %>
+                    <small class="form-text text-muted text-center">[ Less than 250 characters ]</small>
+                  </div>
+
+                  <!-- Show On Tickler -->
+                  <div class="mb-3 row align-items-center">
+                    <%= f.label :show_on_tickler, "Show On Tickler?", class: "col-sm-3 col-form-label fw-bold text-success" %>
+                    <div class="col-sm-9 d-flex gap-3">
+                      <div class="form-check">
+                        <%= f.radio_button :show_on_tickler, true, id: "ticklerYes", class: "form-check-input border border-dark" %>
+                        <%= f.label :show_on_tickler, "Yes", class: "form-check-label", for: "ticklerYes" %>
+                      </div>
+                      <div class="form-check">
+                        <%= f.radio_button :show_on_tickler, false, id: "ticklerNo", class: "form-check-input border border-dark" %>
+                        <%= f.label :show_on_tickler, "No", class: "form-check-label", for: "ticklerNo" %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Submit Button -->
+                  <div class="text-end">
+                    <%= f.submit class: "btn btn-primary" %>
+                  </div>
+                <% end %>
+              </div>
+              <div class="col-lg-4">
+                <% if @certification.persisted? %>
+                    <div class="p-2 text-center">
+                        <div class="row">
+                            <div class="col-12 m-2">
+                                  <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" data-bs-toggle="modal" data-bs-target="#verificationModal">
+                                      Verification Letter
+                                  </button>
+                            </div>
+                            <div class="modal fade" id="verificationModal" tabindex="-1" aria-labelledby="verificationModalLabel" aria-hidden="true">
+                              <div class="modal-dialog modal-dialog-centered modal-md">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="verificationModalLabel">Training </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                   </div>
-                                -->
+                                  
+                                  <div class="modal-body">
+                                    <form>
+                                      <!-- Preview Letter -->
+                                      <fieldset class="mb-4 p-3 border rounded shadow-sm">
+                                        <legend class="fs-6 fw-bold mb-3 text-primary">📄 Preview Letter</legend>
+                                        <button type="button" class="btn btn-primary btn-sm w-100">Preview Letter</button>
+                                      </fieldset>
+
+                                      <!-- Send Fax -->
+                                      <fieldset class="mb-4 p-3 border rounded shadow-sm">
+                                        <legend class="fs-6 fw-bold mb-3 text-secondary">📠 Send Fax</legend>
+                                        <div class="mb-3">
+                                          <label for="faxEmail" class="form-label">Fax2Mail Email Address</label>
+                                          <input type="text" id="faxEmail" name="faxEmail" class="form-control form-control-sm" value="1234456677.Medversant.1234456677@fax2mail.com">
+                                        </div>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm w-100">Send Fax</button>
+                                      </fieldset>
+
+                                      <!-- Send Email -->
+                                      <fieldset class="mb-4 p-3 border rounded shadow-sm">
+                                        <legend class="fs-6 fw-bold mb-3 text-success">📧 Send Email</legend>
+                                        <div class="mb-3">
+                                          <label for="emailTo" class="form-label">Email Address To</label>
+                                          <input type="text" id="emailTo" name="emailTo" class="form-control form-control-sm" disabled>
+                                        </div>
+                                        <div class="mb-3">
+                                          <label for="emailCc" class="form-label">Email Address Cc</label>
+                                          <input type="text" id="emailCc" name="emailCc" class="form-control form-control-sm" disabled>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-success btn-sm w-100">Send Email</button>
+                                      </fieldset>
+                                    </form>
+                                  </div>
+
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-12 m-2">
+                                <button  type="button" class="btn btn-primary btn-sm" id="asdf" style="min-width: 100px; font-size: 12px" data-bs-toggle="modal" data-bs-target="#send_contact_template">
+                                    Send Contact
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card other-name-card">
+                            <div class="card-body">
+                                <h2 class="">RVA Information</h2>
+                                <div class="mt-3 row">
+                                    <div class="col-12 m-2">
+                                        <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
+                                            Request
+                                        </button>
+                                    </div>
+                                    <div class="col-12 m-2">
+                                        <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
+                                            Verification
+                                        </button>
+                                    </div>
+                                    <div class="col-12 m-2">
+                                        <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
+                                            Audit
+                                        </button>
+                                    </div>
+                                     <div class="col-12 m-2">
+                                        <button class="btn btn-primary btn-audit btn-sm" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" data-certificate-id = "<%= @certification.id %>">
+                                              Quality Audit
+                                        </button>
+                                    </div>
+                                    <div class="col-12 m-2">
+                                        <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
+                                              Skip RVA
+                                        </button>
+                                    </div>
+                                    <!--
+                                      <div class="col-12 m-2">
+                                        <button class="btn text-danger <%= @training_rva_information_completed.present? ? '' : 'd-none' %>" data-bs-toggle="modal" data-bs-target="#QAModal" data-information-id="<%= @last_rva_information&.id %>" data-first-name="<%= @provider_personal_information&.first_name %>" data-last-name="<%= @provider_personal_information&.last_name %>" data-personal-information-id="<%= @provider_personal_information&.id %>" id="re-rva">
+                                          Need ReRVA
+                                        </button>
+                                      </div>
+                                    -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 m-2">
+                                <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
+                                    View Scanned Images
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-12 m-2">
-                            <button class="btn btn-primary btn-sm" style="min-width: 100px; font-size: 12px" disabled>
-                                View Scanned Images
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            <% end %>
-            <%= form_with model: @certification, url: @url, method: :patch do |f| %>
-              <!-- Type -->
-                    <%= f.hidden_field :caqh_provider_attest_id %>
-                    <%= f.hidden_field :provider_attest_id %>
-              <div class="mb-3 row align-items-center">
-                <%= f.label :certification_type, class: "col-sm-3 col-form-label fw-bold" %>
-                <div class="col-sm-9">
-                  <%= f.text_field :certification_type, class: "form-control form-control-sm" %>
-                </div>
+                <% end %>
               </div>
-
-              <!-- Issuing Agency -->
-              <div class="mb-3 row align-items-center">
-                <%= f.label :issuing_agency, class: "col-sm-3 col-form-label fw-bold" %>
-                <div class="col-sm-9">
-                  <%= f.text_field :issuing_agency, class: "form-control form-control-sm" %>
-                </div>
-              </div>
-
-              <!-- Certification Status -->
-              <div class="mb-3 row align-items-center">
-                <%= f.label :certification_status, "Certification Status", class: "col-sm-3 col-form-label fw-bold" %>
-                <div class="col-sm-9">
-                  <%= f.text_field :certification_status, class: "form-control form-control-sm" %>
-                </div>
-              </div>
-
-              <!-- Certification Number -->
-              <div class="mb-3 row align-items-center">
-                <%= f.label :certification_number, class: "col-sm-3 col-form-label fw-bold" %>
-                <div class="col-sm-9">
-                  <%= f.text_field :certification_number, class: "form-control form-control-sm", placeholder: "Enter number" %>
-                </div>
-              </div>
-
-              <!-- Initial Certification Date -->
-              <div class="mb-3 row align-items-center">
-                <%= f.label :initial_certification_date, "Initial Certification Date", class: "col-sm-3 col-form-label fw-bold" %>
-                <div class="col-sm-9">
-                  <%= f.date_select :initial_certification_date, { start_year: 1950, end_year: Date.today.year }, { class: "form-select form-select-sm d-inline w-auto me-1" } %>
-                </div>
-              </div>
-
-              <!-- Recertification Dates -->
-              <div class="mb-3 p-3 bg-white border rounded">
-                <div class="fw-bold mb-2">Recertification Dates</div>
-                <div class="row align-items-center">
-                  <%= f.label :recertification_dates, "Recertification Date", class: "col-sm-3 col-form-label fw-bold" %>
-                  <div class="col-sm-9 d-flex gap-2 align-items-center">
-                    <%= f.date_select :recertification_dates, { start_year: 1950, end_year: Date.today.year }, { class: "form-select form-select-sm w-auto" } %>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Certification Expiration Date -->
-              <div class="mb-3 row align-items-center">
-                <%= f.label :certification_expiration_date, "Certification Expiration Date", class: "col-sm-3 col-form-label fw-bold" %>
-                <div class="col-sm-9">
-                  <div class="form-check form-check-inline">
-                    <%= f.radio_button :does_not_expire, true, id: "doesNotExpire", class: "form-check-input" %>
-                    <%= f.label :does_not_expire, "Does Not Expire", class: "form-check-label", for: "doesNotExpire" %>
-                  </div>
-                  <div class="d-flex gap-2 mt-2">
-                    <%= f.date_select :certification_expiration_date, { start_year: 1950, end_year: Date.today.year }, { class: "form-select form-select-sm w-auto" } %>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Comments -->
-              <div class="mb-3">
-                <%= f.label :comments, "Please list any comments:", class: "form-label fw-bold text-purple" %>
-                <%= f.text_area :comments, class: "form-control", rows: 3, maxlength: 250 %>
-                <small class="form-text text-muted text-center">[ Less than 250 characters ]</small>
-              </div>
-
-              <!-- Show On Tickler -->
-              <div class="mb-3 row align-items-center">
-                <%= f.label :show_on_tickler, "Show On Tickler?", class: "col-sm-3 col-form-label fw-bold text-success" %>
-                <div class="col-sm-9 d-flex gap-3">
-                  <div class="form-check">
-                    <%= f.radio_button :show_on_tickler, true, id: "ticklerYes", class: "form-check-input" %>
-                    <%= f.label :show_on_tickler, "Yes", class: "form-check-label", for: "ticklerYes" %>
-                  </div>
-                  <div class="form-check">
-                    <%= f.radio_button :show_on_tickler, false, id: "ticklerNo", class: "form-check-input" %>
-                    <%= f.label :show_on_tickler, "No", class: "form-check-label", for: "ticklerNo" %>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Submit Button -->
-              <div class="text-end">
-                <%= f.submit "Save", class: "btn btn-primary" %>
-              </div>
-            <% end %>
+            </div>
+            
         </div>
     </div>
   <div class="modal fade" id="QAModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -800,15 +820,9 @@
         
         $('#audit-btn').click(function(e) {
           e.preventDefault(); // Prevent default form submission
-					  // Check if an audit status is selected
-						if (!$('input[name="rva_information[audit_status]"]:checked').val()) {
-							alert("Please select an Audit Status before saving.");
-							return;
-						}
 
           // Serialize the form data from #audit-form
           const auditFormData = $('#audit-form').serialize();
-					var practiceInfoEducationId = $('input[name="certification_id"]').val();
 
           // Combine the form data and additional data into a single object
           $.ajax({
@@ -817,14 +831,16 @@
             headers: {
               'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
             },
-						data: `${auditFormData}&section=audit&certification_id=${practiceInfoEducationId}`, // Combine serialized data
+            data: `${auditFormData}&section=audit`, // Combine serialized data
             success: function(response) {
               const data = response.rva_information;
-              $('input[name="rva_information[audit_status]"]').value = data.audit_status;
-              $('#rva_information_audit_date')[0].innerHTML = data.audit_date;
-              $('#rva_information_auditor')[0].innerHTML = data.auditor;
-              $('#rva_information_audit_comments')[0].value = data.audit_comments;
-              $('#re-rva')[0].classList.remove('d-none');
+              $('input[name="rva_information[audit_status]"]').val(data.audit_status);
+              $('#rva_information_audit_date').text(data.audit_date);
+              $('#rva_information_auditor').text(data.auditor);
+              $('#rva_information_audit_comments').val(data.audit_comments);
+              $('#re-rva').removeClass('d-none');
+
+              window.location.reload();
             },
             error: function(xhr, status, error) {
               console.error('Error:', error);
