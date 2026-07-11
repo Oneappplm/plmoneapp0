@@ -101,15 +101,29 @@
 
                   <!-- Certification Expiration Date -->
                   <div class="mb-3 row align-items-center">
-                    <%= f.label :certification_expiration_date, "Certification Expiration Date", class: "col-sm-3 col-form-label fw-bold" %>
+                    <%= f.label :certification_expiration_date,
+                        "Certification Expiration Date",
+                        class: "col-sm-3 col-form-label fw-bold" %>
+
                     <div class="col-sm-9">
-                      <div class="form-check form-check-inline">
-                        <%= f.radio_button :does_not_expire, true, id: "doesNotExpire", class: "form-check-input border border-dark" %>
-                        <%= f.label :does_not_expire, "Does Not Expire", class: "form-check-label", for: "doesNotExpire" %>
-                      </div>
-                      <div class="d-flex gap-2 mt-2">
-                        <%= f.date_select :certification_expiration_date, { start_year: 1950, end_year: Date.today.year }, { class: "form-select form-select-sm w-auto" } %>
-                      </div>
+                      <% if @certification.does_not_expire? %>
+                        <div class="form-check form-check-inline">
+                          <%= f.check_box :does_not_expire,
+                                class: "form-check-input border border-dark",
+                                id: "doesNotExpire" %>
+
+                          <%= f.label :does_not_expire,
+                                "Does Not Expire",
+                                class: "form-check-label",
+                                for: "doesNotExpire" %>
+                        </div>
+                      <% else %>
+                        <div class="d-flex gap-2 mt-2">
+                          <%= f.date_select :certification_expiration_date,
+                                { start_year: 1950, end_year: Date.today.year },
+                                { class: "form-select form-select-sm w-auto expiration-date-select" } %>
+                        </div>
+                      <% end %>
                     </div>
                   </div>
 
@@ -440,6 +454,10 @@
                         <div class="col-md-6">  
                           <%= f.select :source_name, options_for_select([
                             ['AACK', 'AACK'],
+                            ['ANCC', 'ANCC'],
+                            ['AANP', 'AANP'],
+                            ['ANCC', 'ANCC'],
+                            ['AMCB', 'AMCB'],
                             ['PANI', 'PANI'],
                             ['AMCI', 'AMCI'],
                             ['AMCT', 'AMCT'],
@@ -448,6 +466,8 @@
                             ['CCI', 'CCI'],
                             ['CUR', 'CUR'],
                             ['NBCOT', 'NBCOT'],
+                            ['NBCRNA', 'NBCRNA'],
+                            ['NPCB', 'NPCB'],
                             ['NDCCN', 'NDCCN'],
                             ['NDCRNA', 'NDCRNA'],
                             ['NCC', 'NCC'],
@@ -868,5 +888,20 @@
       document.querySelector('[name="personal_info_id"]').value = personalInfoId;
 	  document.querySelector('[name="certification_id"]').value = practiceInfoEducationId;
     });
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const checkbox = document.getElementById("doesNotExpire");
+    const selects = document.querySelectorAll(".expiration-date-select");
+
+    function toggleExpirationDate() {
+      selects.forEach(select => {
+        select.disabled = checkbox.checked;
+      });
+    }
+
+    toggleExpirationDate();
+
+    checkbox.addEventListener("change", toggleExpirationDate);
   });
 </script>
