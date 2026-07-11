@@ -7,6 +7,8 @@ class Mhc::CertificationsController < ApplicationController
 
   def create
     @certification = Certification.new(certification_params)
+
+    clear_expiration_date
     
     if @certification.save
       redirect_to mhc_verification_platform_path(page_tab: 'certifications', id: params[:certification][:provider_attest_id]), notice: 'Certification saved successfully.'
@@ -17,6 +19,8 @@ class Mhc::CertificationsController < ApplicationController
 
   def update
     @certification.assign_attributes(certification_params)
+
+    clear_expiration_date
 
     if @certification.save
       redirect_to mhc_verification_platform_path(page_tab: 'certifications', id: @certification.provider_attest_id), notice: 'Certification updated successfully.'
@@ -34,6 +38,10 @@ class Mhc::CertificationsController < ApplicationController
   end
 
   private
+
+  def clear_expiration_date
+    @certification.certification_expiration_date = nil if @certification.does_not_expire?
+  end
 
   def set_certification
     @certification = Certification.find(params[:id])
