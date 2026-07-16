@@ -22,17 +22,18 @@ class DeaMasterImporter
   #
   FIELD_MAP = {
     dea_number: 0..9,
-    schedules: 13..25,
+    schedules: 13..23,
     expiration_raw: 26..33,
-    business_activity: 34..69,
-    name: 70..105,
-    address1: 106..141,
-    address2: 142..193,
-    city: 194..225,
+    name: 34..69,
+    business_activity: 70..113,
+    address1: 114..149,
+    address2: 150..193,
+    city: 194..226,
     state: 227..228,
     zip: 229..234,
     status: 236..242,
-    state_license_number: 255..263
+    degree: 245..246,
+    state_license_number: 255..294
   }.freeze
 
   def initialize(file_path, job_id)
@@ -204,25 +205,26 @@ class DeaMasterImporter
   end
 
   def extract_attributes(line)
-    raw_values = FIELD_MAP.each_with_object({}) do |(field, range), values|
-      values[field] = field_value(line, range)
+    raw_vals = {}
+
+    FIELD_MAP.each do |field, range|
+      raw_vals[field] = sanitize(safe_slice(line, range)).strip
     end
 
     {
-      dea_number: normalize_dea_number(raw_values[:dea_number]),
-      schedules: normalize_schedules(raw_values[:schedules]),
-      expiration_date: parse_date(raw_values[:expiration_raw]),
-      business_activity: normalized_text(raw_values[:business_activity]),
-      name: normalized_text(raw_values[:name]),
-      address1: normalized_text(raw_values[:address1]),
-      address2: normalized_text(raw_values[:address2]),
-      city: normalized_text(raw_values[:city]),
-      state: normalize_state(raw_values[:state]),
-      zip: normalize_zip(raw_values[:zip]),
-      status: normalized_text(raw_values[:status]),
-      state_license_number: normalized_text(
-        raw_values[:state_license_number]
-      )
+      dea_number: normalize_dea_number(raw_vals[:dea_number]),
+      schedules: normalize_schedules(raw_vals[:schedules]),
+      expiration_date: parse_date(raw_vals[:expiration_raw]),
+      business_activity: normalized_text(raw_vals[:business_activity]),
+      name: normalized_text(raw_vals[:name]),
+      address1: normalized_text(raw_vals[:address1]),
+      address2: normalized_text(raw_vals[:address2]),
+      city: normalized_text(raw_vals[:city]),
+      state: normalize_state(raw_vals[:state]),
+      zip: normalize_zip(raw_vals[:zip]),
+      status: normalized_text(raw_vals[:status]),
+      degree: normalized_text(raw_vals[:degree]),
+      state_license_number: normalized_text(raw_vals[:state_license_number])
     }
   end
 
@@ -261,7 +263,7 @@ class DeaMasterImporter
   def normalize_schedules(value)
     value.to_s
          .upcase
-         .scan(/2N|3N|[1-5]/)
+         .scan(/2N|3N|2|3|4|5/)
          .uniq
          .join(",")
   end
@@ -273,11 +275,7 @@ class DeaMasterImporter
 
   def normalize_zip(value)
     digits = value.to_s.gsub(/\D/, "")
-
-    return nil if digits.blank?
-
-    # Preserve ZIP+4 where available.
-    digits[0, 9]
+    digits.present? ? digits.first(5) : nil
   end
 
   def normalized_text(value)
