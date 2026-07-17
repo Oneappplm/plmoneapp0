@@ -59,36 +59,54 @@ class Webscraper::DeaService < WebscraperService
     master = DeaMasterRecord.find_by(dea_number: @dea)
     provider_dea = ProviderDea.find_by(dea_number: @dea)
 
-    # Resolve final state name ONCE
     final_state_name = resolve_state_name(master, provider_dea)
 
     doc.at_css('#provider_dea_state')&.content = final_state_name
 
     return unless master
 
-    doc.at_css('#validationForm\\:busAct')&.content = master.business_activity.to_s
-    doc.at_css('#validationForm\\:busAddr1')&.content = master.address1.to_s
-    doc.at_css('#validationForm\\:busAddr2')&.content = master.address2.to_s
+    doc.at_css('#validationForm\\:busAct')&.content =
+      master.business_activity.to_s
+
+    doc.at_css('#validationForm\\:busAddr1')&.content =
+      master.address1.to_s
+
+    doc.at_css('#validationForm\\:busAddr2')&.content =
+      master.address2.to_s
 
     doc.at_css('#validationForm\\:busAddr3')&.content =
       master.state_license_number.presence || master.address2.to_s
 
-    doc.at_css('#provider_city')&.content = master.city.to_s
-    doc.at_css('#validationForm\\:zip')&.content = master.zip.to_s
-    doc.at_css('#provider_dea_schedules')&.content = master.schedules.to_s
+    doc.at_css('#provider_city')&.content =
+      master.city.to_s
 
-    if master.expiration_date.present?
-      doc.at_css('#dea_expiration_date')&.content =
-        master.expiration_date.strftime('%m/%d/%Y')
-    end
+    doc.at_css('#validationForm\\:zip')&.content =
+      master.zip.to_s
+
+    final_schedules =
+      Array(provider_dea&.schedules_held)
+        .reject(&:blank?)
+        .presence ||
+      master.schedules.to_s.split(',')
+
+    doc.at_css('#provider_dea_schedules')&.content =
+      Array(final_schedules).join(' ')
+
+    final_expiration_date =
+      provider_dea&.expiration_date.presence ||
+      master.expiration_date
+
+    doc.at_css('#dea_expiration_date')&.content =
+      final_expiration_date&.strftime('%m/%d/%Y').to_s
+
     doc.at_css('#fee_status')&.content = 'Exempt'
   end
 
   # Resolve State Name (IMPORTANT)
   def resolve_state_name(master, provider_dea)
     state_code =
-      master&.state.presence ||
-      provider_dea&.state.presence
+      provider_dea&.state.presence ||
+      master&.state.presence
 
     return nil if state_code.blank?
 
