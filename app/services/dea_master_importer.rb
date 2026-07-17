@@ -24,8 +24,7 @@ class DeaMasterImporter
     dea_number: 0..9,
     schedules: 13..23,
     expiration_raw: 26..33,
-    name: 34..69,
-    business_activity: 70..113,
+    name: 34..113,
     address1: 114..149,
     address2: 150..193,
     city: 194..226,
@@ -211,12 +210,14 @@ class DeaMasterImporter
       raw_vals[field] = sanitize(safe_slice(line, range)).strip
     end
 
+    provider_name = normalized_text(raw_vals[:name])
+
     {
       dea_number: normalize_dea_number(raw_vals[:dea_number]),
       schedules: normalize_schedules(raw_vals[:schedules]),
       expiration_date: parse_date(raw_vals[:expiration_raw]),
-      business_activity: normalized_text(raw_vals[:business_activity]),
-      name: normalized_text(raw_vals[:name]),
+      business_activity: provider_name,
+      name: provider_name,
       address1: normalized_text(raw_vals[:address1]),
       address2: normalized_text(raw_vals[:address2]),
       city: normalized_text(raw_vals[:city]),
@@ -261,11 +262,18 @@ class DeaMasterImporter
   end
 
   def normalize_schedules(value)
-    value.to_s
-         .upcase
-         .scan(/2N|3N|2|3|4|5/)
-         .uniq
-         .join(",")
+    raw = value.to_s.upcase.squish
+
+    schedules = []
+
+    schedules << "2"  if raw.include?("22N") || raw.match?(/(?:^|\s)2(?:\s|$)/)
+    schedules << "2N" if raw.include?("2N")
+    schedules << "3"  if raw.include?("33N") || raw.match?(/(?:^|\s)3(?:\s|$)/)
+    schedules << "3N" if raw.include?("3N")
+    schedules << "4"  if raw.match?(/(?:^|\s)4(?:\s|$)/)
+    schedules << "5"  if raw.match?(/(?:^|\s)5(?:\s|$)/)
+
+    schedules.uniq.join(",")
   end
 
   def normalize_state(value)
