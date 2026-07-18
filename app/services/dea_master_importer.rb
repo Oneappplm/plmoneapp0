@@ -2,16 +2,14 @@ class DeaMasterImporter
   BATCH_SIZE = 2_000
   BYTES_PROGRESS_EVERY = 2 * 1024 * 1024
 
-  # The uploaded DEA file is fixed-width, not comma-separated CSV.
+  # Fixed-width DEA master layout:
   #
-  # Layout based on the supplied DEA file:
-  #
-  # DEA Number             0..9
+  # Master DEA Value       0..9
   # Reserved              10..12
   # Schedules             13..23
   # Expiration Date       26..33
   # Provider Name         34..73
-  # Business Activity     74..113
+  # Organization Name     74..113
   # Address 1            114..149
   # Address 2            150..193
   # City                 194..226
@@ -21,15 +19,15 @@ class DeaMasterImporter
   # Degree               245..246
   # State License        255..294
   #
-  # Business Activity is NOT stored in the file.
-  # It is derived from the last character of the DEA number.
+  # The first 9 characters are the provider DEA number.
+  # The 10th character is the Business Activity code.
 
   FIELD_MAP = {
     dea_number: 0..9,
     schedules: 13..23,
     expiration_raw: 26..33,
     name: 34..73,
-    business_activity: 74..113,
+    organization_name: 74..113,
     address1: 114..149,
     address2: 150..193,
     city: 194..226,
@@ -40,18 +38,9 @@ class DeaMasterImporter
     state_license_number: 255..294
   }.freeze
 
-  def initialize(
-    dea,
-    reference_html,
-    master_record: nil,
-    provider_dea: nil,
-    provider_info: nil
-  )
-    @dea = dea.to_s.upcase.gsub(/[^A-Z0-9]/, "")
-    @reference_html = reference_html
-    @master = master_record
-    @provider_dea = provider_dea
-    @provider_info = provider_info
+  def initialize(file_path, job_id)
+    @file_path = file_path
+    @job_id = job_id
   end
 
   def import!
@@ -224,10 +213,13 @@ class DeaMasterImporter
       raw_vals[field] = sanitize(safe_slice(line, range)).strip
     end
 
-    master_dea_number = normalize_dea_number(raw_vals[:dea_number])
+    master_dea_number =
+      normalize_dea_number(raw_vals[:dea_number])
 
     business_activity_code =
-      master_dea_number.length >= 10 ? master_dea_number.last : nil
+      if master_dea_number.length == 10
+        master_dea_number.last
+      end
 
     {
       dea_number: master_dea_number,
@@ -273,9 +265,7 @@ class DeaMasterImporter
   def valid_dea_number?(value)
     normalized = normalize_dea_number(value)
 
-    # Your file examples contain 10-character identifiers such as:
-    # A90777889A and AA0077227B.
-    normalized.match?(/\A[A-Z0-9]{9,10}\z/)
+    normalized.match?(/\A[A-Z0-9]{10}\z/)
   end
 
   def normalize_schedules(value)
