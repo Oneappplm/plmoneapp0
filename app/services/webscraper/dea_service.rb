@@ -46,15 +46,22 @@ class Webscraper::DeaService < WebscraperService
     value.to_s.upcase.gsub(/[^A-Z0-9]/, "")
   end
 
-  # Insert the 10-character master DEA identifier.
+  def standard_dea_number(value)
+    normalize_dea_number(value).first(9)
+  end
+
   def insert_dea(doc)
+    displayed_dea_number =
+      @provider_dea&.dea_number.presence ||
+      standard_dea_number(@dea)
+
     doc.at_css("input#dea_input_field")&.[]=(
       "value",
-      @master&.dea_number.presence || @dea
+      displayed_dea_number
     )
 
     doc.at_css("#dea_value")&.content =
-      @master&.dea_number.presence || @dea
+      displayed_dea_number
   end
 
   # Insert provider-facing data.
@@ -146,22 +153,21 @@ class Webscraper::DeaService < WebscraperService
     exact = DeaMasterRecord.find_by(dea_number: @dea)
     return @master = exact if exact.present?
 
-    base_dea = @dea.first(9)
+    standard_number = standard_dea_number(@dea)
 
     @master = DeaMasterRecord.where(
       "dea_number LIKE ?",
-      "#{ActiveRecord::Base.sanitize_sql_like(base_dea)}_"
+      "#{ActiveRecord::Base.sanitize_sql_like(standard_number)}_"
     ).first
   end
 
   def resolved_provider_dea
     return @provider_dea if @provider_dea.present?
 
-    exact = ProviderDea.find_by(dea_number: @dea)
-    return @provider_dea = exact if exact.present?
+    standard_number = standard_dea_number(@dea)
 
     @provider_dea = ProviderDea.find_by(
-      dea_number: @dea.first(9)
+      dea_number: standard_number
     )
   end
 

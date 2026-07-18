@@ -224,13 +224,18 @@ class DeaMasterImporter
       raw_vals[field] = sanitize(safe_slice(line, range)).strip
     end
 
+    master_dea_number = normalize_dea_number(raw_vals[:dea_number])
+
+    business_activity_code =
+      master_dea_number.length >= 10 ? master_dea_number.last : nil
+
     {
-      dea_number: normalize_dea_number(raw_vals[:dea_number]),
+      dea_number: master_dea_number,
       schedules: normalize_schedules(raw_vals[:schedules]),
       expiration_date: parse_date(raw_vals[:expiration_raw]),
 
       name: normalized_text(raw_vals[:name]),
-      business_activity: normalized_text(raw_vals[:business_activity]),
+      business_activity: business_activity_code,
 
       address1: normalized_text(raw_vals[:address1]),
       address2: normalized_text(raw_vals[:address2]),
