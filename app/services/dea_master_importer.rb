@@ -6,20 +6,23 @@ class DeaMasterImporter
   #
   # Layout based on the supplied DEA file:
   #
-  # DEA Number            0..9
-  # Spacing              10..12
-  # Schedules            13..25
-  # Expiration Date      26..33
-  # Business Activity    34..69
-  # Name                 70..105
-  # Address 1           106..141
-  # Address 2           142..177
-  # City                178..209
-  # State               210..211
-  # Zip                 212..220
-  # Status              221..230
-  # State License       231..264
+  # DEA Number             0..9
+  # Reserved               10..12
+  # Schedules             13..23
+  # Expiration Date       26..33
+  # Provider Name         34..113
+  # Address 1            114..149
+  # Address 2            150..193
+  # City                 194..226
+  # State                227..228
+  # ZIP                  229..234
+  # Status               236..242
+  # Degree               245..246
+  # State License        255..294
   #
+  # Business Activity is NOT stored in the file.
+  # It is derived from the last character of the DEA number.
+
   FIELD_MAP = {
     dea_number: 0..9,
     schedules: 13..23,
@@ -210,14 +213,19 @@ class DeaMasterImporter
       raw_vals[field] = sanitize(safe_slice(line, range)).strip
     end
 
+    dea_number = normalize_dea_number(raw_vals[:dea_number])
+    business_activity = dea_number.present? ? dea_number[-1] : nil
     provider_name = normalized_text(raw_vals[:name])
 
     {
-      dea_number: normalize_dea_number(raw_vals[:dea_number]),
+      dea_number: dea_number,
       schedules: normalize_schedules(raw_vals[:schedules]),
       expiration_date: parse_date(raw_vals[:expiration_raw]),
-      business_activity: provider_name,
+
+      business_activity: business_activity,
+
       name: provider_name,
+
       address1: normalized_text(raw_vals[:address1]),
       address2: normalized_text(raw_vals[:address2]),
       city: normalized_text(raw_vals[:city]),
