@@ -7,10 +7,11 @@ class DeaMasterImporter
   # Layout based on the supplied DEA file:
   #
   # DEA Number             0..9
-  # Reserved               10..12
+  # Reserved              10..12
   # Schedules             13..23
   # Expiration Date       26..33
-  # Provider Name         34..113
+  # Provider Name         34..73
+  # Business Activity     74..113
   # Address 1            114..149
   # Address 2            150..193
   # City                 194..226
@@ -27,7 +28,8 @@ class DeaMasterImporter
     dea_number: 0..9,
     schedules: 13..23,
     expiration_raw: 26..33,
-    name: 34..113,
+    name: 34..73,
+    business_activity: 74..113,
     address1: 114..149,
     address2: 150..193,
     city: 194..226,
@@ -38,9 +40,18 @@ class DeaMasterImporter
     state_license_number: 255..294
   }.freeze
 
-  def initialize(file_path, job_id)
-    @file_path = file_path
-    @job_id = job_id
+  def initialize(
+    dea,
+    reference_html,
+    master_record: nil,
+    provider_dea: nil,
+    provider_info: nil
+  )
+    @dea = dea.to_s.upcase.gsub(/[^A-Z0-9]/, "")
+    @reference_html = reference_html
+    @master = master_record
+    @provider_dea = provider_dea
+    @provider_info = provider_info
   end
 
   def import!
@@ -213,18 +224,13 @@ class DeaMasterImporter
       raw_vals[field] = sanitize(safe_slice(line, range)).strip
     end
 
-    dea_number = normalize_dea_number(raw_vals[:dea_number])
-    business_activity = dea_number.present? ? dea_number[-1] : nil
-    provider_name = normalized_text(raw_vals[:name])
-
     {
-      dea_number: dea_number,
+      dea_number: normalize_dea_number(raw_vals[:dea_number]),
       schedules: normalize_schedules(raw_vals[:schedules]),
       expiration_date: parse_date(raw_vals[:expiration_raw]),
 
-      business_activity: business_activity,
-
-      name: provider_name,
+      name: normalized_text(raw_vals[:name]),
+      business_activity: normalized_text(raw_vals[:business_activity]),
 
       address1: normalized_text(raw_vals[:address1]),
       address2: normalized_text(raw_vals[:address2]),
@@ -233,7 +239,9 @@ class DeaMasterImporter
       zip: normalize_zip(raw_vals[:zip]),
       status: normalized_text(raw_vals[:status]),
       degree: normalized_text(raw_vals[:degree]),
-      state_license_number: normalized_text(raw_vals[:state_license_number])
+      state_license_number: normalized_text(
+        raw_vals[:state_license_number]
+      )
     }
   end
 

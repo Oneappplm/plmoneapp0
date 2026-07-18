@@ -187,7 +187,10 @@ class Webscrapers::QualityAuditsController < ApplicationController
     # Run the service (updates the HTML and generates PDF)
     service = Webscraper::DeaService.new(
       master.dea_number,
-      reference_html
+      reference_html,
+      master_record: master,
+      provider_dea: provider_dea,
+      provider_info: provider_info
     )
     wicked_pdf_path = service.call
 
