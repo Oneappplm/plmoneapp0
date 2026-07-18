@@ -237,10 +237,6 @@ class DeaMasterImporter
     }
   end
 
-  def field_value(line, range)
-    sanitize(safe_slice(line, range)).strip
-  end
-
   def safe_slice(line, range)
     return "" if line.blank? || range.blank?
     return "" if line.length <= range.begin

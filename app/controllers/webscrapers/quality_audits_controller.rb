@@ -134,13 +134,34 @@ class Webscrapers::QualityAuditsController < ApplicationController
     provider_dea  = ProviderDea.find(params[:provider_dea_id])
 
     # Validate DEA #
-    unless dea_number =~ /\A[A-Z0-9]{10}\z/
-      return render json: { success: false, message: "Invalid DEA format." }, status: :unprocessable_entity
+    dea_number = dea_number.to_s.upcase.gsub(/[^A-Z0-9]/, "")
+
+    # Accept either:
+    # BN9446231      (9 chars)
+    # BN9446231C     (10 chars from DEA master file)
+    unless dea_number.match?(/\A[A-Z]{2}\d{7}[A-Z]?\z/)
+      return render json: {
+        success: false,
+        message: "Invalid DEA format."
+      }, status: :unprocessable_entity
     end
 
-    master = DeaMasterRecord.find_by(dea_number: dea_number)
+    master =
+      DeaMasterRecord.find_by(dea_number: dea_number)
+
+    if master.blank? && dea_number.length == 9
+      master =
+        DeaMasterRecord.where(
+          "dea_number LIKE ?",
+          "#{ActiveRecord::Base.sanitize_sql_like(dea_number)}_"
+        ).first
+    end
+
     if master.blank?
-      return render json: { success: false, message: "DEA Number not found in Master Database." }, status: :unprocessable_entity
+      return render json: {
+        success: false,
+        message: "DEA Number not found in Master Database."
+      }, status: :unprocessable_entity
     end
 
     # Create RVA
@@ -164,7 +185,10 @@ class Webscrapers::QualityAuditsController < ApplicationController
     reference_html = Rails.root.join("public", "dea_template.html").to_s
 
     # Run the service (updates the HTML and generates PDF)
-    service = Webscraper::DeaService.new(dea_number, reference_html)
+    service = Webscraper::DeaService.new(
+      master.dea_number,
+      reference_html
+    )
     wicked_pdf_path = service.call
 
     unless wicked_pdf_path && File.exist?(wicked_pdf_path)
