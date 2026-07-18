@@ -141,28 +141,28 @@ class Webscraper::DeaService < WebscraperService
   end
 
   def resolved_master
-    @master ||= begin
-      exact = DeaMasterRecord.find_by(dea_number: @dea)
-      next exact if exact.present?
+    return @master if @master.present?
 
-      base_dea = @dea.first(9)
+    exact = DeaMasterRecord.find_by(dea_number: @dea)
+    return @master = exact if exact.present?
 
-      DeaMasterRecord.where(
-        "dea_number LIKE ?",
-        "#{ActiveRecord::Base.sanitize_sql_like(base_dea)}_"
-      ).first
-    end
+    base_dea = @dea.first(9)
+
+    @master = DeaMasterRecord.where(
+      "dea_number LIKE ?",
+      "#{ActiveRecord::Base.sanitize_sql_like(base_dea)}_"
+    ).first
   end
 
   def resolved_provider_dea
-    @provider_dea ||= begin
-      exact = ProviderDea.find_by(dea_number: @dea)
-      next exact if exact.present?
+    return @provider_dea if @provider_dea.present?
 
-      # The provider table stores the standard 9-character number,
-      # while the master table stores an additional final character.
-      ProviderDea.find_by(dea_number: @dea.first(9))
-    end
+    exact = ProviderDea.find_by(dea_number: @dea)
+    return @provider_dea = exact if exact.present?
+
+    @provider_dea = ProviderDea.find_by(
+      dea_number: @dea.first(9)
+    )
   end
 
   def resolved_provider_info(provider_dea)
