@@ -186,7 +186,7 @@ class Webscrapers::QualityAuditsController < ApplicationController
 
     # Run the service (updates the HTML and generates PDF)
     service = Webscraper::DeaService.new(
-      master.dea_number,
+      dea_number,
       reference_html,
       master_record: master,
       provider_dea: provider_dea,
