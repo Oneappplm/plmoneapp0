@@ -320,7 +320,7 @@
                 <p><strong>License Type:</strong> <%= licensure.license_type %></p>
                 <p><strong>State:</strong> <%= licensure.state.name %></p>
                 <p><strong>Expiration Date:</strong> <%= licensure.license_expiration_date&.strftime('%m/%d/%Y') %></p>
-                <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
+                <p><strong>Verifier:</strong> <%= current_user.full_name || 'N/A' %></p>
                 <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
               </div>
             </div>
@@ -368,7 +368,7 @@
                 <p><strong>License Type:</strong> <%= licensure.license_type %></p>
                 <p><strong>State:</strong> <%= licensure.state.name %></p>
                 <p><strong>Expiration Date:</strong> <%= licensure.license_expiration_date&.strftime('%m/%d/%Y') %></p>
-                <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
+                <p><strong>Verifier:</strong> <%= current_user.full_name || 'N/A' %></p>
                 <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
               </div>
             </div>
@@ -749,7 +749,7 @@
                 <p><strong>Expiration Date:</strong> 
                   <%= certification&.board_certification_expires_flag? ? "Does Not Expire" : (certification&.expiration_date.present? ? certification.expiration_date.strftime("%m/%d/%Y") : "") %>
                 </p>
-                <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
+                <p><strong>Verifier:</strong> <%= current_user.full_name || 'N/A' %></p>
                 <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
               </div>
             </div>
@@ -860,7 +860,7 @@
               <div class="col-6">
                 <p><strong>Peer:</strong> <%= ref.practitioner_name %></p>
                 <p><strong>Verified By:</strong> Peer </p>
-                <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
+                <p><strong>Verifier:</strong> <%= current_user.full_name || 'N/A' %></p>
                 <p><strong>In Good Standing?:</strong> <%= details&.in_good_standing ? "Yes" : "No" %></p>
                 <p><strong>Comments:</strong> <%= details.comments %></p>
                 <p><strong>Adverse Action:</strong> <%= details.adverse_action %></p>
@@ -909,7 +909,7 @@
               <div class="col-6">
                 <p><strong>Specialty:</strong> <%= training.specialty_specialty_name %></p>
                 <p><strong>Completed?:</strong> <%= training.program_completed_flag ? 'Yes' : 'No' %></p>
-                <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
+                <p><strong>Verifier:</strong> <%= current_user.full_name || 'N/A' %></p>
                 <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
               </div>
             </div>
@@ -951,7 +951,7 @@
               <div class="col-6">
                 <p><strong>Degree/Certificate:</strong> <%= education.degree_degree_abbreviation %></p>
                 <p><strong>Completed?:</strong> <%= education.program_completed_flag ? 'Yes' : 'No' %></p>
-                <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
+                <p><strong>Verifier:</strong> <%= current_user.full_name || 'N/A' %></p>
                 <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
               </div>
             </div>
@@ -1001,7 +1001,7 @@
                   <%= employment.from_date&.strftime('%m/%d/%Y') %> -
                   <%= employment.to_date.present? ? employment.to_date.strftime('%m/%d/%Y') : 'Present' %>
                 </p>
-                <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
+                <p><strong>Verifier:</strong> <%= current_user.full_name || 'N/A' %></p>
                 <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
               </div>
             </div>
@@ -1042,7 +1042,7 @@
                 <!-- <p><strong>Claims History:</strong> Claims History</p> -->
                 <p><strong>Expiration Date:</strong> 
                    <%= liability.end_date.present? ? liability.end_date.strftime('%m/%d/%Y') : "Does Not Expire" %></p>
-                <p><strong>Verifier:</strong> <%= details.verifier.presence || 'N/A' %></p>
+                <p><strong>Verifier:</strong> <%= current_user.full_name || 'N/A' %></p>
                 <p><strong>Verification Date:</strong> <%= details.verification_date&.strftime('%m/%d/%Y') %></p>
                 <p><strong>Comments:</strong> <%= details.verification_comments.presence || 'N/A' %></p>
               </div>
