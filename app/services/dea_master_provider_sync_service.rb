@@ -113,37 +113,14 @@ class DeaMasterProviderSyncService
   end
 
   def find_master_record(normalized_dea)
-    # First select the new correct nine-character record.
-    exact_record =
-      DeaMasterRecord.find_by(
-        dea_number: normalized_dea
+    DeaMasterRecord
+      .matching_dea(normalized_dea)
+      .order(
+        Arel.sql(
+          "CASE WHEN LENGTH(dea_number) = 9 THEN 0 ELSE 1 END"
+        )
       )
-
-    return exact_record if exact_record.present?
-
-    # Temporary backward compatibility for old imports where the
-    # business activity character was stored after the DEA number,
-    # for example MG6295643M.
-    DeaMasterRecord.where(
-      <<~SQL.squish,
-        LEFT(
-          UPPER(
-            REGEXP_REPLACE(
-              COALESCE(dea_number, ''),
-              '[^A-Za-z0-9]',
-              '',
-              'g'
-            )
-          ),
-          9
-        ) = ?
-      SQL
-      normalized_dea
-    ).order(
-      Arel.sql(
-        "CASE WHEN LENGTH(dea_number) = 9 THEN 0 ELSE 1 END"
-      )
-    ).first
+      .first
   end
 
   def normalize_dea_number(value)
