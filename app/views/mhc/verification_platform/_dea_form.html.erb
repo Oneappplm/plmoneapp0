@@ -1,120 +1,274 @@
-    <%= form_with model: [:mhc, provider_dea], id: "provider_dea_#{provider_dea.id || index}" do |f| %>
-      <%= f.hidden_field :provider_attest_id, value: params[:id] %>
-      <div class="form-row">
-        <label for="">DEA Registration Number:</label>
-        <%#= f.text_field :dea_number, placeholder: 'Type here...', class: 'form-control border border-dark dea-registration-input' %>
-        <%= f.text_field :dea_number, placeholder: 'Type here...', class: 'form-control border border-dark' %>
-        <small class="dea-validation-message text-danger" style="display: none;">
-          DEA must be 2 uppercase letters followed by 7 digits (e.g., CS1234567)
-        </small>
-      </div>
-      <div class="form-row">
-        <label for="">Issue Date:</label>
-        <%= f.date_field :application_date, placeholder: 'Type here...', class: 'form-control border border-dark' %>
-      </div>
-      <div class="form-row d-flex align-items-center gap-3 mt-2">
-        <label for="full_schedule">Full Schedule?</label>
-        <div class="form-check d-flex align-items-center gap-2">
-          <%= f.radio_button :full_schedule, 'Yes', id: 'full-sched-radio-yes', class: 'form-check-input' %>
-          <label class="form-check-label" for="full-sched-radio-yes">Yes</label>
-        </div>
-        <div class="form-check d-flex align-items-center gap-2">
-          <%= f.radio_button :full_schedule, 'No', id: 'full-sched-radio-no', class: 'form-check-input' %>
-          <label class="form-check-label" for="full-sched-radio-no">No</label>
-        </div>
-      </div>
+<%= form_with(
+      model: [:mhc, provider_dea],
+      id: "provider_dea_#{provider_dea.id || index}"
+    ) do |f| %>
 
-      <div class="schedule_field">
-        <div class="col-lg-12 mt-3">
-          <% scheds = ['2', '2N', '3', '3N', '4', '5'] %>
-          <label>If no ,Please indicate all scheduled held</label>
-          <div class="d-flex gap-2">
-            <% selected_schedules = (params.dig(:provider_dea, :schedules_held) || provider_dea&.schedules_held || []).map(&:to_s) %>
-            <% scheds.each do |sched| %>
-              <label class="text-dark-grey">
-                <%= check_box_tag 'provider_dea[schedules_held][]', sched, selected_schedules.include?(sched), class: 'multi-field', data: { schedule: sched } %>
-                <strong><%= sched %></strong>
-              </label>
-            <% end %>
-          </div>
-        </div>
-      </div>
+  <%= f.hidden_field(
+        :provider_attest_id,
+        value: params[:id]
+      ) %>
 
-      <div class="form-row d-flex align-items-center gap-3 mt-2">
-        <label>Show on Tickler?</label>
+  <% form_suffix = provider_dea.id || index %>
 
-        <div class="form-check d-flex align-items-center gap-2">
-          <%= f.radio_button :show_on_tickler, 'Yes',
-                checked: provider_dea.show_on_tickler != 'No',
-                class: 'form-check-input' %>
-          <label class="form-check-label">Yes</label>
-        </div>
+  <div class="form-row">
+    <label>DEA Registration Number:</label>
 
-        <div class="form-check d-flex align-items-center gap-2">
-          <%= f.radio_button :show_on_tickler, 'No',
-                checked: provider_dea.show_on_tickler == 'No',
-                class: 'form-check-input' %>
-          <label class="form-check-label">No</label>
-        </div>
-      </div>
+    <%= f.text_field(
+          :dea_number,
+          placeholder: "Type here...",
+          class: "form-control border border-dark"
+        ) %>
 
-      <div class="form-row">
-        <label for="DEA-state">State:</label>
-        <%= f.collection_select :state, @states, :alpha_code, :name, { prompt: 'State' }, { class: 'form-control' } %>
+    <small
+      class="dea-validation-message text-danger"
+      style="display: none;"
+    >
+      DEA must be 2 uppercase letters followed by 7 digits
+      (e.g., CS1234567)
+    </small>
+  </div>
+
+  <div class="form-row">
+    <label>Issue Date:</label>
+
+    <%= f.date_field(
+          :application_date,
+          class: "form-control border border-dark"
+        ) %>
+  </div>
+
+  <div class="form-row d-flex align-items-center gap-3 mt-2">
+    <label>Full Schedule?</label>
+
+    <div class="form-check d-flex align-items-center gap-2">
+      <%= f.radio_button(
+            :full_schedule,
+            "Yes",
+            id: "full-sched-radio-yes-#{form_suffix}",
+            class: "form-check-input full-schedule-yes"
+          ) %>
+
+      <%= label_tag(
+            "full-sched-radio-yes-#{form_suffix}",
+            "Yes",
+            class: "form-check-label"
+          ) %>
+    </div>
+
+    <div class="form-check d-flex align-items-center gap-2">
+      <%= f.radio_button(
+            :full_schedule,
+            "No",
+            id: "full-sched-radio-no-#{form_suffix}",
+            class: "form-check-input full-schedule-no"
+          ) %>
+
+      <%= label_tag(
+            "full-sched-radio-no-#{form_suffix}",
+            "No",
+            class: "form-check-label"
+          ) %>
+    </div>
+  </div>
+
+  <div class="schedule_field">
+    <div class="col-lg-12 mt-3">
+      <% schedules = %w[2 2N 3 3N 4 5] %>
+
+      <% selected_schedules =
+           (
+             params.dig(
+               :provider_dea,
+               :schedules_held
+             ) ||
+             provider_dea.schedules_held ||
+             []
+           ).map(&:to_s) %>
+
+      <label>
+        If no, please indicate all schedules held
+      </label>
+
+      <div class="d-flex gap-2">
+        <% schedules.each do |schedule| %>
+          <label class="text-dark-grey">
+            <%= check_box_tag(
+                  "provider_dea[schedules_held][]",
+                  schedule,
+                  selected_schedules.include?(schedule),
+                  class: "multi-field",
+                  data: {
+                    schedule: schedule,
+                    form_suffix: form_suffix
+                  }
+                ) %>
+
+            <strong><%= schedule %></strong>
+          </label>
+        <% end %>
       </div>
-      <div class="form-row">
-        <label for="">Expiration Date:</label>
-        <%= f.date_field :expiration_date, placeholder: 'Type here...', class: 'form-control border border-dark' %>
-      </div>
-      <div class="form-row d-flex align-items-center gap-3 mt-2">
-        <label for="dea_license_limitation_flag">Limited or Restricted?</label>
-        <div class="form-check d-flex align-items-center gap-2">
-          <%= f.radio_button :dea_license_limitation_flag, true, id: 'dea-license-yes', class: 'form-check-input' %>
-          <%= f.label :dea_license_limitation_flag, 'Yes', for: 'dea-license-yes', class: 'form-check-label' %>
-        </div>
-        <div class="form-check d-flex align-items-center gap-2">
-          <%= f.radio_button :dea_license_limitation_flag, false, id: 'dea-license-no', class: 'form-check-input' %>
-          <%= f.label :dea_license_limitation_flag, 'No', for: 'dea-license-no', class: 'form-check-label' %>
-        </div>
-      </div>
-      <div class="form-row limited-wrp">
-        <label for="">If Yes, please explain:</label>
-        <%= f.text_area :dea_license_limitation_explanation, placeholder: 'Type here...', class: 'form-control border border-dark' %>
-      </div>
-      <div class="col-xl-6 d-flex p-2 justify-content-end">
-        <div class="">
-          <input type="submit" value="Save" class="btn btn-primary" form=<%= "provider_dea_#{provider_dea.id || index}" %>>
-        </div>
-      </div>
-    <% end %>                              
-    <%= button_to "Remove", mhc_provider_dea_path(page_tab: 'register', provider_dea_id: provider_dea.id, provider_attest_id: provider_dea.provider_attest_id), { :method => :delete, class: "btn btn-danger", form_class: ""}%>
+    </div>
+  </div>
+
+  <div class="form-row d-flex align-items-center gap-3 mt-2">
+    <label>Show on Tickler?</label>
+
+    <div class="form-check d-flex align-items-center gap-2">
+      <%= f.radio_button(
+            :show_on_tickler,
+            "Yes",
+            checked:
+              provider_dea.show_on_tickler != "No",
+            id: "show-on-tickler-yes-#{form_suffix}",
+            class: "form-check-input"
+          ) %>
+
+      <%= label_tag(
+            "show-on-tickler-yes-#{form_suffix}",
+            "Yes",
+            class: "form-check-label"
+          ) %>
+    </div>
+
+    <div class="form-check d-flex align-items-center gap-2">
+      <%= f.radio_button(
+            :show_on_tickler,
+            "No",
+            checked:
+              provider_dea.show_on_tickler == "No",
+            id: "show-on-tickler-no-#{form_suffix}",
+            class: "form-check-input"
+          ) %>
+
+      <%= label_tag(
+            "show-on-tickler-no-#{form_suffix}",
+            "No",
+            class: "form-check-label"
+          ) %>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <label>State:</label>
+
+    <%= f.collection_select(
+          :state,
+          @states,
+          :alpha_code,
+          :name,
+          {
+            prompt: "State"
+          },
+          {
+            class: "form-control"
+          }
+        ) %>
+  </div>
+
+  <div class="form-row">
+    <label>Expiration Date:</label>
+
+    <%= f.date_field(
+          :expiration_date,
+          class: "form-control border border-dark"
+        ) %>
+  </div>
+
+  <div class="form-row d-flex align-items-center gap-3 mt-2">
+    <label>Limited or Restricted?</label>
+
+    <div class="form-check d-flex align-items-center gap-2">
+      <%= f.radio_button(
+            :dea_license_limitation_flag,
+            true,
+            id: "dea-license-yes-#{form_suffix}",
+            class: "form-check-input"
+          ) %>
+
+      <%= label_tag(
+            "dea-license-yes-#{form_suffix}",
+            "Yes",
+            class: "form-check-label"
+          ) %>
+    </div>
+
+    <div class="form-check d-flex align-items-center gap-2">
+      <%= f.radio_button(
+            :dea_license_limitation_flag,
+            false,
+            id: "dea-license-no-#{form_suffix}",
+            class: "form-check-input"
+          ) %>
+
+      <%= label_tag(
+            "dea-license-no-#{form_suffix}",
+            "No",
+            class: "form-check-label"
+          ) %>
+    </div>
+  </div>
+
+  <div class="form-row limited-wrp">
+    <label>If Yes, please explain:</label>
+
+    <%= f.text_area(
+          :dea_license_limitation_explanation,
+          placeholder: "Type here...",
+          class: "form-control border border-dark"
+        ) %>
+  </div>
+
+  <div class="col-xl-6 d-flex p-2 justify-content-end">
+    <input
+      type="submit"
+      value="Save"
+      class="btn btn-primary"
+      form="<%= "provider_dea_#{provider_dea.id || index}" %>"
+    >
+  </div>
+<% end %>
+
+<% if provider_dea.persisted? %>
+  <%= button_to(
+        "Remove",
+        mhc_provider_dea_path(
+          page_tab: "register",
+          provider_dea_id: provider_dea.id,
+          provider_attest_id:
+            provider_dea.provider_attest_id
+        ),
+        method: :delete,
+        class: "btn btn-danger",
+        form_class: ""
+      ) %>
+<% end %>
+
 <script>
+  document.addEventListener("change", function (event) {
+    const form = event.target.closest("form");
 
-// Full schedule radio button behavior
-document.addEventListener("DOMContentLoaded", function () {
-  const fullScheduleYes = document.getElementById("full-sched-radio-yes");
-  const fullScheduleNo = document.getElementById("full-sched-radio-no");
-  const checkboxes = document.querySelectorAll(".multi-field");
+    if (!form) {
+      return;
+    }
 
-  if (fullScheduleYes && fullScheduleNo) {
-    fullScheduleYes.addEventListener("change", function () {
-      if (this.checked) {
-        checkboxes.forEach((checkbox) => {
-          checkbox.checked = true; // visually and form-wise checked
-          checkbox.setAttribute("checked", "true");
+    const checkboxes = form.querySelectorAll(".multi-field");
+
+    if (event.target.classList.contains("full-schedule-yes")) {
+      if (event.target.checked) {
+        checkboxes.forEach(function (checkbox) {
+          checkbox.checked = true;
         });
       }
-    });
 
-    fullScheduleNo.addEventListener("change", function () {
-      if (this.checked) {
-        checkboxes.forEach((checkbox) => {
-          checkbox.checked = false; // visually and form-wise unchecked
-          checkbox.removeAttribute("checked");
+      return;
+    }
+
+    if (event.target.classList.contains("full-schedule-no")) {
+      if (event.target.checked) {
+        checkboxes.forEach(function (checkbox) {
+          checkbox.checked = false;
         });
       }
-    });
-  }
-});
-
+    }
+  });
 </script>
