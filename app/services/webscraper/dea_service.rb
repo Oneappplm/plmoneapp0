@@ -268,42 +268,19 @@ class Webscraper::DeaService < WebscraperService
   def resolved_master
     return @master if @master.present?
 
-    normalized_dea =
-      standard_dea_number(@dea)
+    normalized_dea = standard_dea_number(@dea)
 
     return nil if normalized_dea.blank?
 
-    # New correctly imported record.
-    exact_record =
-      DeaMasterRecord.find_by(
-        dea_number: normalized_dea
-      )
-
-    return @master = exact_record if exact_record.present?
-
-    # Temporary support for legacy records stored with the
-    # business activity character appended.
     @master =
-      DeaMasterRecord.where(
-        <<~SQL.squish,
-          LEFT(
-            UPPER(
-              REGEXP_REPLACE(
-                COALESCE(dea_number, ''),
-                '[^A-Za-z0-9]',
-                '',
-                'g'
-              )
-            ),
-            9
-          ) = ?
-        SQL
-        normalized_dea
-      ).order(
-        Arel.sql(
-          "CASE WHEN LENGTH(dea_number) = 9 THEN 0 ELSE 1 END"
+      DeaMasterRecord
+        .matching_dea(normalized_dea)
+        .order(
+          Arel.sql(
+            "CASE WHEN LENGTH(dea_number) = 9 THEN 0 ELSE 1 END"
+          )
         )
-      ).first
+        .first
   end
 
   def resolved_provider_dea
