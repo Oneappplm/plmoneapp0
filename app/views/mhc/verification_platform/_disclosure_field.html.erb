@@ -1,0 +1,48 @@
+<%= f.fields_for :provider_disclosures, disclosure do |field| %>
+  <%= field.hidden_field :id if disclosure.persisted? %>
+
+  <%= field.hidden_field(
+        :disclosure_question_disclosure_summary,
+        value: question
+      ) %>
+
+  <div class="row mb-3 disclosure-item">
+    <div class="col-md-2">
+      <%= field.select(
+            :disclosure_answer_flag,
+            [
+              ["-- Select --", ""],
+              ["Yes", "true"],
+              ["No", "false"]
+            ],
+            {},
+            {
+              id: "disclosure-select-#{counter}",
+              class: "form-select disclosure-select",
+              data: {
+                target: "#explain#{counter}"
+              }
+            }
+          ) %>
+    </div>
+
+    <div class="col-md-10">
+      <label for="disclosure-select-<%= counter %>">
+        <span class="text-danger">*</span>
+        <%= "#{counter}. #{question}" %>
+      </label>
+
+      <%= field.text_area(
+            :disclosure_explanation,
+            id: "explain#{counter}",
+            class: [
+              "form-control",
+              "mt-2",
+              ("d-none" unless field.object.disclosure_answer_flag == true)
+            ].compact.join(" "),
+            rows: 3,
+            placeholder: "Please explain..."
+          ) %>
+    </div>
+  </div>
+<% end %>

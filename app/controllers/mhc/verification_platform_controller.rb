@@ -232,9 +232,15 @@ class Mhc::VerificationPlatformController < ApplicationController
   protected
   
   def set_provider_personal_informations
-    @provider_personal_information = ProviderPersonalInformation.find_by(provider_attest_id: params[:id])
-  end
+    @provider_personal_information =
+      ProviderPersonalInformation.find_by(
+        "id = :value OR provider_attest_id = :value",
+        value: params[:id]
+      )
 
+    raise ActiveRecord::RecordNotFound, "Provider not found" unless @provider_personal_information
+  end
+  
   def get_data
     if params[:page_tab] == 'practitioner_info'
       @provider_personal_information_credentialing_contact =
