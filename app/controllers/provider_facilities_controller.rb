@@ -383,6 +383,9 @@ class ProviderFacilitiesController < ApplicationController
 
   def set_provider
     @provider = ProviderPersonalInformation.find(params[:id])
+
+    # Required by the shared MHC top navigation partial
+    @provider_personal_information = @provider
   end
 
   def set_provider_attest

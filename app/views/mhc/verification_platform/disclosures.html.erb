@@ -51,11 +51,47 @@
           </div>
           </div> -->
       </div>
-      <%= form_with model: @provider_attest,
-              url: mhc_provider_disclosures_path(id: @provider_personal_information.id),
-              method: :post,
-              local: true,
-              id: "disclosure-form-1" do |f| %>
+      <%
+        saved_disclosures =
+          @provider_attest
+            .provider_disclosures
+            .reload
+            .to_a
+
+        saved_disclosures_by_question =
+          saved_disclosures.index_by do |disclosure|
+            disclosure
+              .disclosure_question_disclosure_summary
+              .to_s
+              .strip
+          end
+
+        constant_questions =
+          QUESTIONS_DISCLOSURE.values.flatten.map do |question|
+            question.to_s.strip
+          end
+
+        additional_saved_disclosures =
+          saved_disclosures.reject do |disclosure|
+            question =
+              disclosure
+                .disclosure_question_disclosure_summary
+                .to_s
+                .strip
+
+            constant_questions.include?(question)
+          end
+      %>
+
+      <%= form_with(
+            model: @provider_attest,
+            url: mhc_provider_disclosures_path(
+              id: @provider_personal_information.id
+            ),
+            method: :post,
+            local: true,
+            id: "disclosure-form-1"
+          ) do |f| %>
 
         <% counter = 0 %>
 
@@ -65,42 +101,59 @@
               <div class="card p-3">
                 <h6 class="fw-bold mb-4"><%= heading %></h6>
 
-                <% questions.each do |q| %>
+                <% questions.each do |question| %>
                   <% counter += 1 %>
-                  <% disclosure = @provider_attest.provider_disclosures
-                                      .find { |d| d.disclosure_question_disclosure_summary == q } ||
-                                  @provider_attest.provider_disclosures.build(
-                                    disclosure_question_disclosure_summary: q
-                                  ) %>
 
-                  <%= f.fields_for :provider_disclosures, disclosure do |d| %>
-                    <%= d.hidden_field :disclosure_question_disclosure_summary %>
+                  <%
+                    normalized_question = question.to_s.strip
 
-                    <div class="row mb-3 disclosure-item">
-                      <div class="col-md-2">
-                        <%= d.select :disclosure_answer_flag,
-                              [["-- Select --", ""], ["Yes", true], ["No", false]],
-                              {},
-                              {
-                                id:    "disclosure-select-#{counter}",
-                                class: "form-select disclosure-select",
-                                data:  { target: "#explain#{counter}" }
-                              } %>
-                      </div>
+                    disclosure =
+                      saved_disclosures_by_question[normalized_question] ||
+                      @provider_attest.provider_disclosures.build(
+                        disclosure_question_disclosure_summary:
+                          normalized_question
+                      )
+                  %>
 
-                      <div class="col-md-10">
-                        <label>
-                          <span class="text-danger">*</span>
-                          <%= "#{counter}. #{q}" %>
-                        </label>
-                        <%= d.text_area :disclosure_explanation,
-                              id:    "explain#{counter}",
-                              class: "form-control mt-2 #{'d-none' unless d.object.disclosure_answer_flag}",
-                              rows: 3,
-                              placeholder: "Please explain..." %>
-                      </div>
-                    </div>
-                  <% end %>
+                  <%= render(
+                        "mhc/verification_platform/disclosure_field",
+                        f: f,
+                        disclosure: disclosure,
+                        question: normalized_question,
+                        counter: counter
+                      ) %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <% if additional_saved_disclosures.present? %>
+          <div class="form-row row mt-4 page-applicable">
+            <div class="col-xl-12">
+              <div class="card p-3">
+                <h6 class="fw-bold mb-4">
+                  Additional Provider Disclosures
+                </h6>
+
+                <% additional_saved_disclosures.each do |disclosure| %>
+                  <% counter += 1 %>
+
+                  <%
+                    question =
+                      disclosure
+                        .disclosure_question_disclosure_summary
+                        .to_s
+                        .strip
+                  %>
+
+                  <%= render(
+                        "mhc/verification_platform/disclosure_field",
+                        f: f,
+                        disclosure: disclosure,
+                        question: question,
+                        counter: counter
+                      ) %>
                 <% end %>
               </div>
             </div>
@@ -191,25 +244,26 @@
   </div>
 </div>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.disclosure-select').forEach(select => {
-      select.addEventListener('change', e => {
-        const id    = select.id;     // e.g. "disclosure-select-3"
-        const value = select.value;  // "true" | "false" | ""
-        console.log(`Changed: ${id} => ${value}`);
+document.addEventListener("DOMContentLoaded", function () {
+  document
+    .querySelectorAll(".disclosure-select")
+    .forEach(function (select) {
+      function toggleExplanation() {
+        const explanation =
+          document.querySelector(select.dataset.target)
 
-        const target = document.querySelector(select.dataset.target);
-        if (!target) return;
+        if (!explanation) return
 
-        if (value === 'true') {
-          target.classList.remove('d-none');
+        if (select.value === "true") {
+          explanation.classList.remove("d-none")
         } else {
-          target.classList.add('d-none');
-          target.value = '';
+          explanation.classList.add("d-none")
+          explanation.value = ""
         }
-      });
-    });
-  });
+      }
 
-
+      select.addEventListener("change", toggleExplanation)
+      toggleExplanation()
+    })
+})
 </script>
