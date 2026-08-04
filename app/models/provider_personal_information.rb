@@ -83,6 +83,9 @@ class ProviderPersonalInformation < ApplicationRecord
         class_name: "ProviderPersonalInformationOfac",
         dependent: :destroy
 
+  has_many :provider_ssn_verifications,
+         dependent: :destroy
+
   validates :provider_attest_id, presence: true
 
   accepts_nested_attributes_for :provider_personal_information_credentialing_contact, allow_destroy: false, update_only: true

@@ -625,6 +625,18 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :webscrapers do
+    resources :ssn_verifications, only: [] do
+      collection do
+        post :auto_verify
+      end
+
+      member do
+        get :report
+      end
+    end
+  end
+
   resources :enrollment_payers do
     collection do
       post :add_payer

@@ -131,3 +131,6 @@ gem 'caxlsx_rails'
 gem 'pdf-reader'
 gem "open-uri"
 gem "savon", "~> 2.14"
+
+gem "tiny_tds"
+gem "activerecord-sqlserver-adapter", "~> 7.0"
