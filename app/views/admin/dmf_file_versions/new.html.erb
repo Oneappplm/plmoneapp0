@@ -1,0 +1,81 @@
+<div class="container mt-4">
+  <h3>Register SSA Death Master Artifact</h3>
+
+  <p class="text-muted">
+    Register the compressed Death Master artifact extracted
+    from the SQL Server backup and stored in object storage.
+  </p>
+
+  <%= form_with(
+        model: [:admin, @dmf_file_version],
+        local: true
+      ) do |form| %>
+
+    <% if @dmf_file_version.errors.any? %>
+      <div class="alert alert-danger">
+        <ul class="mb-0">
+          <% @dmf_file_version.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="mb-3">
+      <%= form.label :source_filename,
+                     "Original Backup Filename" %>
+
+      <%= form.text_field(
+            :source_filename,
+            class: "form-control",
+            placeholder: "DeathMaster.bak",
+            required: true
+          ) %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :publication_date,
+                     "DMF Publication Date" %>
+
+      <%= form.date_field(
+            :publication_date,
+            class: "form-control"
+          ) %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :artifact_key,
+                     "IDrive Artifact Key" %>
+
+      <%= form.text_field(
+            :artifact_key,
+            class: "form-control",
+            placeholder:
+              "dmf-artifacts/2026-07-01/death_master.tsv.gz",
+            required: true
+          ) %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :sha256,
+                     "SHA256 Checksum" %>
+
+      <%= form.text_field(
+            :sha256,
+            class: "form-control",
+            required: true
+          ) %>
+    </div>
+
+    <%= form.submit(
+          "Register DMF",
+          class: "btn btn-primary"
+        ) %>
+
+    <%= link_to(
+          "Cancel",
+          admin_dmf_file_versions_path,
+          class: "btn btn-secondary"
+        ) %>
+  <% end %>
+</div>

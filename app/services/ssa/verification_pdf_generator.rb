@@ -23,17 +23,13 @@ module Ssa
       ) do |file|
         generate_pdf(file.path)
 
-        file.rewind
-
-        @verification.report_pdf.attach(
-          io: File.open(file.path, "rb"),
-          filename: pdf_filename,
-          content_type: "application/pdf",
-          identify: false
-        )
+        File.open(file.path, "rb") do |pdf_file|
+          @verification.report_pdf = pdf_file
+          @verification.save!
+        end
       end
 
-      @verification
+      @verification.reload
     rescue StandardError => error
       Rails.logger.error(
         "[SSA PDF] " \
@@ -63,6 +59,7 @@ module Ssa
         render_provider_information(pdf)
         render_match_information(pdf)
         render_death_master_information(pdf)
+        render_dmf_information(pdf)
         render_disclaimer(pdf)
         render_footer(pdf)
       end
@@ -167,6 +164,40 @@ module Ssa
       pdf.move_down 18
     end
 
+    def render_dmf_information(pdf)
+      version = @verification.dmf_file_version
+
+      return if version.blank?
+
+      section_heading(pdf, "Death Master File Source")
+
+      rows = [
+        [
+          "Publication Date",
+          format_date(version.publication_date)
+        ],
+        [
+          "DMF Version",
+          version.id.to_s
+        ],
+        [
+          "Imported At",
+          format_datetime(version.import_completed_at)
+        ],
+        [
+          "Record Count",
+          version.row_count.to_s
+        ],
+        [
+          "Source File",
+          version.source_filename.to_s
+        ]
+      ]
+
+      render_table(pdf, rows)
+      pdf.move_down 18
+    end
+
     def render_disclaimer(pdf)
       pdf.stroke_horizontal_rule
       pdf.move_down 10
@@ -226,9 +257,9 @@ module Ssa
     def result_heading
       case @verification.status
       when "matched"
-        "MATCHED"
+        "DEATH MASTER MATCH FOUND"
       when "not_matched"
-        "NOT MATCHED"
+        "NO DEATH MASTER MATCH FOUND"
       when "review_required"
         "REVIEW REQUIRED"
       else
@@ -239,11 +270,11 @@ module Ssa
     def result_description
       case @verification.status
       when "matched"
-        "A matching record was located in the SSA Death Master database."
+        "The provider SSN and available identity fields matched a record in the SSA Death Master File."
       when "not_matched"
-        "No record was located for the provider SSN."
+        "No record was found for the provider SSN in the active SSA Death Master File."
       when "review_required"
-        "A record was located, but one or more identity fields did not match."
+        "A Death Master record was found, but one or more identity fields require manual review."
       else
         @verification.error_message.presence ||
           "The verification could not be completed."
@@ -262,16 +293,34 @@ module Ssa
     end
 
     def provider_middle_name
-      return @provider.middle_name if @provider.respond_to?(:middle_name)
-      return @provider.middle_initial if @provider.respond_to?(:middle_initial)
+      if @provider.respond_to?(:middle_name) &&
+         @provider.middle_name.present?
+        return @provider.middle_name
+      end
+
+      if @provider.respond_to?(:middle_initial) &&
+         @provider.middle_initial.present?
+        return @provider.middle_initial
+      end
 
       nil
     end
 
     def provider_date_of_birth
-      return @provider.date_of_birth if @provider.respond_to?(:date_of_birth)
-      return @provider.dob if @provider.respond_to?(:dob)
-      return @provider.birth_date if @provider.respond_to?(:birth_date)
+      if @provider.respond_to?(:birth_date) &&
+         @provider.birth_date.present?
+        return @provider.birth_date
+      end
+
+      if @provider.respond_to?(:date_of_birth) &&
+         @provider.date_of_birth.present?
+        return @provider.date_of_birth
+      end
+
+      if @provider.respond_to?(:dob) &&
+         @provider.dob.present?
+        return @provider.dob
+      end
 
       nil
     end

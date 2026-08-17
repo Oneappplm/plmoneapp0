@@ -48,6 +48,11 @@ module Ssa
     end
 
     def validate_provider!
+      unless DmfFileVersion.current
+        raise VerificationError,
+              "No active SSA Death Master file is available."
+      end
+  
       unless normalized_ssn.match?(/\A\d{9}\z/)
         raise VerificationError,
               "Provider SSN must contain exactly 9 digits."
@@ -66,6 +71,8 @@ module Ssa
         @provider.provider_ssn_verifications.create!(
           provider_attest_id: provider_attest_id,
           verified_by: @verified_by,
+          dmf_file_version: DmfFileVersion.current,
+
           status: result.status,
           ssn_last_four: normalized_ssn.last(4),
           ssn_matched: result.ssn_matched,
@@ -90,7 +97,7 @@ module Ssa
     def generate_pdf!(verification)
       Ssa::VerificationPdfGenerator.new(verification).call
 
-      unless verification.report_pdf.attached?
+      unless verification.reload.report_pdf.present?
         raise VerificationError,
               "SSA verification completed, but the PDF was not generated."
       end
@@ -109,6 +116,8 @@ module Ssa
       @provider.provider_ssn_verifications.create!(
         provider_attest_id: provider_attest_id,
         verified_by: @verified_by,
+        dmf_file_version: DmfFileVersion.current,
+
         status: "error",
         ssn_last_four: normalized_ssn.last(4),
         ssn_matched: false,
@@ -153,16 +162,34 @@ module Ssa
     end
 
     def provider_middle_name
-      return @provider.middle_name if @provider.respond_to?(:middle_name)
-      return @provider.middle_initial if @provider.respond_to?(:middle_initial)
+      if @provider.respond_to?(:middle_name) &&
+         @provider.middle_name.present?
+        return @provider.middle_name
+      end
+
+      if @provider.respond_to?(:middle_initial) &&
+         @provider.middle_initial.present?
+        return @provider.middle_initial
+      end
 
       nil
     end
 
     def provider_date_of_birth
-      return @provider.date_of_birth if @provider.respond_to?(:date_of_birth)
-      return @provider.dob if @provider.respond_to?(:dob)
-      return @provider.birth_date if @provider.respond_to?(:birth_date)
+      if @provider.respond_to?(:birth_date) &&
+         @provider.birth_date.present?
+        return @provider.birth_date
+      end
+
+      if @provider.respond_to?(:date_of_birth) &&
+         @provider.date_of_birth.present?
+        return @provider.date_of_birth
+      end
+
+      if @provider.respond_to?(:dob) &&
+         @provider.dob.present?
+        return @provider.dob
+      end
 
       nil
     end

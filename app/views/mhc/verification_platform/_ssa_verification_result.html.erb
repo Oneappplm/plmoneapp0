@@ -1,0 +1,152 @@
+<% if verification.present? %>
+  <div class="card border mt-3">
+    <div class="card-body">
+      <% case verification.status %>
+      <% when "matched" %>
+        <div class="alert alert-danger">
+          <strong>Death Master Match Found</strong>
+          <div class="mt-1">
+            A matching record was found in the SSA Death Master File.
+          </div>
+        </div>
+
+      <% when "not_matched" %>
+        <div class="alert alert-success">
+          <strong>No Death Master Match Found</strong>
+          <div class="mt-1">
+            No matching Death Master record was found for this provider.
+          </div>
+        </div>
+
+      <% when "review_required" %>
+        <div class="alert alert-warning">
+          <strong>Manual Review Required</strong>
+          <div class="mt-1">
+            A Death Master record was found, but one or more provider
+            identity fields did not match.
+          </div>
+        </div>
+
+      <% when "error" %>
+        <div class="alert alert-danger">
+          <strong>SSA Verification Error</strong>
+
+          <% if verification.error_message.present? %>
+            <div class="mt-1">
+              <%= verification.error_message %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% unless verification.error? %>
+        <table class="table table-sm table-bordered mt-3">
+          <tbody>
+            <tr>
+              <th style="width: 40%;">SSN</th>
+              <td>
+                <%= verification.ssn_matched? ? "Matched" : "Not Matched" %>
+              </td>
+            </tr>
+
+            <tr>
+              <th>First Name</th>
+              <td>
+                <% if verification.first_name_matched.nil? %>
+                  Not Available
+                <% elsif verification.first_name_matched? %>
+                  Matched
+                <% else %>
+                  Not Matched
+                <% end %>
+              </td>
+            </tr>
+
+            <tr>
+              <th>Middle Name</th>
+              <td>
+                <% if verification.middle_name_matched.nil? %>
+                  Not Available
+                <% elsif verification.middle_name_matched? %>
+                  Matched
+                <% else %>
+                  Not Matched
+                <% end %>
+              </td>
+            </tr>
+
+            <tr>
+              <th>Last Name</th>
+              <td>
+                <% if verification.last_name_matched.nil? %>
+                  Not Available
+                <% elsif verification.last_name_matched? %>
+                  Matched
+                <% else %>
+                  Not Matched
+                <% end %>
+              </td>
+            </tr>
+
+            <tr>
+              <th>Date of Birth</th>
+              <td>
+                <% if verification.date_of_birth_matched.nil? %>
+                  Not Available
+                <% elsif verification.date_of_birth_matched? %>
+                  Matched
+                <% else %>
+                  Not Matched
+                <% end %>
+              </td>
+            </tr>
+
+            <tr>
+              <th>Death Date</th>
+              <td>
+                <%= verification.death_date.present? ?
+                      verification.death_date.strftime("%m/%d/%Y") :
+                      "Not Available" %>
+              </td>
+            </tr>
+
+            <tr>
+              <th>Records Found</th>
+              <td>
+                <%= verification.matched_record_count %>
+              </td>
+            </tr>
+
+            <% if verification.dmf_file_version.present? %>
+              <tr>
+                <th>DMF Publication Date</th>
+                <td>
+                  <%= verification.dmf_file_version.publication_date.present? ?
+                        verification.dmf_file_version.publication_date.strftime("%m/%d/%Y") :
+                        "Version ##{verification.dmf_file_version.id}" %>
+                </td>
+              </tr>
+            <% end %>
+
+            <tr>
+              <th>Verified At</th>
+              <td>
+                <%= verification.verified_at&.strftime("%m/%d/%Y %I:%M %p") %>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <% if verification.report_pdf.present? %>
+          <%= link_to(
+                "View Verification PDF",
+                report_webscrapers_ssn_verification_path(verification),
+                target: "_blank",
+                rel: "noopener",
+                class: "btn btn-outline-primary btn-sm"
+              ) %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

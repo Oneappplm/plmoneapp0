@@ -10,6 +10,8 @@ class ProviderSsnVerification < ApplicationRecord
 
   belongs_to :provider_personal_information
 
+  belongs_to :dmf_file_version, optional: true
+
   belongs_to :provider_attest,
              optional: true
 
@@ -17,7 +19,9 @@ class ProviderSsnVerification < ApplicationRecord
              class_name: "User",
              optional: true
 
-  has_one_attached :report_pdf
+  mount_uploader :report_pdf, SsaVerificationPdfUploader
+
+  # has_one_attached :report_pdf
 
   validates :status,
             presence: true,
