@@ -1,0 +1,130 @@
+<div class="enc-content">
+  <div class="container">
+    <%= render "top_nav_buttons" %>
+
+    <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <h4 class="page-heading">Social Security Administration</h4>
+      </div>
+    </div>
+
+    <div class="mt-2 page-applicable">
+      <span class="page-note">
+        <i class='bx bx-error-circle font-red'></i>
+        <span>Please use the Practitioner Info tab to edit SSN.</span>
+      </span>
+    </div>
+
+    <form action="">
+      <%= hidden_field_tag :personal_info_id, @provider_personal_information&.id %>
+
+      <div class="form-row row mt-2">
+        <div class="col-xl-6">
+          <div class="form-row">
+            <label for="ssn">Social Security Number:</label>
+            <input
+              type="text"
+              name="ssn"
+              id="ssn"
+              class="form-control"
+              value="<%= @provider_personal_information&.ssn %>"
+              readonly>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="ssa-verification-section"
+        data-provider-id="<%= @provider_personal_information.id %>"
+      >
+        <button
+          type="button"
+          id="ssa-auto-verify-button"
+          class="btn btn-primary"
+        >
+          Auto Verify
+        </button>
+
+        <div id="ssa-verification-result" class="mt-3"></div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("turbo:load", () => {
+    const button = document.getElementById("ssa-auto-verify-button");
+    if (!button) return;
+
+    button.addEventListener("click", async () => {
+      const section = document.getElementById(
+        "ssa-verification-section"
+      );
+
+      const resultBox = document.getElementById(
+        "ssa-verification-result"
+      );
+
+      const providerId = section.dataset.providerId;
+      const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute("content");
+
+      button.disabled = true;
+      button.textContent = "Verifying...";
+
+      try {
+        const response = await fetch(
+          "/webscrapers/ssn_verifications/auto_verify",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+              "X-CSRF-Token": csrfToken
+            },
+            body: JSON.stringify({
+              provider_personal_information_id: providerId
+            })
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.message || "SSA verification failed."
+          );
+        }
+
+        resultBox.innerHTML = `
+          <div class="alert alert-info">
+            <strong>
+              ${data.status.replaceAll("_", " ").toUpperCase()}
+            </strong>
+
+            <div>${data.message}</div>
+
+            <a
+              href="${data.pdf_url}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn btn-sm btn-outline-primary mt-2"
+            >
+              Open Verification PDF
+            </a>
+          </div>
+        `;
+      } catch (error) {
+        resultBox.innerHTML = `
+          <div class="alert alert-danger">
+            ${error.message}
+          </div>
+        `;
+      } finally {
+        button.disabled = false;
+        button.textContent = "Auto Verify";
+      }
+    });
+  });
+</script>

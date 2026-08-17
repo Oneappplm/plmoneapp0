@@ -1,0 +1,72 @@
+<div
+  class="container mt-4"
+  id="dmf-import"
+  data-version-id="<%= @dmf_file_version.id %>"
+>
+  <h3>
+    SSA Death Master Import
+    #<%= @dmf_file_version.id %>
+  </h3>
+
+  <table class="table table-bordered mt-4">
+    <tbody>
+      <tr>
+        <th>Source File</th>
+        <td>
+          <%= @dmf_file_version.source_filename %>
+        </td>
+      </tr>
+
+      <tr>
+        <th>Publication Date</th>
+        <td>
+          <%= @dmf_file_version.publication_date %>
+        </td>
+      </tr>
+
+      <tr>
+        <th>Artifact</th>
+        <td>
+          <%= @dmf_file_version.artifact_key %>
+        </td>
+      </tr>
+
+      <tr>
+        <th>Status</th>
+        <td id="dmf-status">
+          <%= @dmf_file_version.status.humanize %>
+        </td>
+      </tr>
+
+      <tr>
+        <th>Rows</th>
+        <td id="dmf-row-count">
+          <%= @dmf_file_version.row_count || "-" %>
+        </td>
+      </tr>
+
+      <tr>
+        <th>Active</th>
+        <td id="dmf-active">
+          <%= @dmf_file_version.active? ? "Yes" : "No" %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <% if @dmf_file_version.status == "pending" %>
+    <%= button_to(
+          "Start PostgreSQL Import",
+          start_import_admin_dmf_file_version_path(
+            @dmf_file_version
+          ),
+          method: :post,
+          class: "btn btn-success"
+        ) %>
+  <% end %>
+
+  <div
+    id="dmf-error"
+    class="alert alert-danger mt-3 d-none"
+  ></div>
+</div>

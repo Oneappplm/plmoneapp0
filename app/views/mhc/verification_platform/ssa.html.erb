@@ -1,7 +1,6 @@
 <div class="enc-content">
   <div class="container">
     <%= render "top_nav_buttons" %>
-
     <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
       <div class="d-flex align-items-center gap-3">
         <h4 class="page-heading">Social Security Administration</h4>
@@ -22,6 +21,7 @@
         <div class="col-xl-6">
           <div class="form-row">
             <label for="ssn">Social Security Number:</label>
+
             <input
               type="text"
               name="ssn"
@@ -32,10 +32,332 @@
           </div>
         </div>
       </div>
-
-      <div class="form-row mt-2 d-flex justify-content-end">
-        <button type="button" class="btn btn-primary py-1">Queue Auto RVA</button>
-      </div>
     </form>
+
+    <%
+      active_dmf = DmfFileVersion.current
+
+      latest_verification =
+        @provider_personal_information
+          &.provider_ssn_verifications
+          &.latest_first
+          &.first
+    %>
+
+    <div
+      id="ssa-verification-section"
+      data-provider-id="<%= @provider_personal_information&.id %>"
+      class="mt-4"
+    >
+      <div class="card">
+        <div class="card-header">
+          <strong>SSA Death Master Verification</strong>
+        </div>
+
+        <div class="card-body">
+          <% if active_dmf.present? %>
+            <div class="mb-3">
+              <div>
+                <strong>Death Master File Status:</strong>
+                <span class="badge bg-success">Ready</span>
+              </div>
+
+              <div class="text-muted small mt-1">
+                Active DMF:
+
+                <% if active_dmf.publication_date.present? %>
+                  <%= active_dmf.publication_date.strftime("%m/%d/%Y") %>
+                <% else %>
+                  Version #<%= active_dmf.id %>
+                <% end %>
+
+                <% if active_dmf.row_count.present? %>
+                  |
+                  <%= number_with_delimiter(active_dmf.row_count) %>
+                  records
+                <% end %>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              id="ssa-auto-verify-button"
+              class="btn btn-primary"
+              <%= "disabled" if @provider_personal_information.blank? %>
+            >
+              Auto Verify
+            </button>
+
+          <% else %>
+
+            <div class="alert alert-warning mb-3">
+              No active SSA Death Master File is currently available.
+              Auto Verification will become available after the DMF import
+              has been completed.
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-secondary"
+              disabled
+            >
+              Auto Verify
+            </button>
+
+          <% end %>
+
+          <div
+            id="ssa-verification-result"
+            class="mt-3"
+          >
+            <% if active_dmf.present? &&
+                  latest_verification.present? &&
+                  latest_verification.dmf_file_version_id == active_dmf.id %>
+
+              <%= render(
+                    partial: "mhc/verification_platform/ssa_verification_result",
+                    locals: {
+                      verification: latest_verification
+                    }
+                  ) %>
+
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+    
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    initializeSsaAutoVerification();
+  });
+
+  document.addEventListener("turbo:load", function () {
+    initializeSsaAutoVerification();
+  });
+
+  function initializeSsaAutoVerification() {
+    const button =
+      document.getElementById("ssa-auto-verify-button");
+
+    if (!button || button.dataset.initialized === "true") {
+      return;
+    }
+
+    button.dataset.initialized = "true";
+
+    button.addEventListener("click", async function () {
+      const section =
+        document.getElementById("ssa-verification-section");
+
+      const resultBox =
+        document.getElementById("ssa-verification-result");
+
+      const providerId =
+        section?.dataset?.providerId;
+
+      if (!providerId) {
+        resultBox.innerHTML = `
+          <div class="alert alert-danger">
+            Provider information is not available.
+          </div>
+        `;
+        return;
+      }
+
+      const csrfToken =
+        document
+          .querySelector('meta[name="csrf-token"]')
+          ?.getAttribute("content");
+
+      button.disabled = true;
+      button.textContent = "Verifying...";
+
+      resultBox.innerHTML = `
+        <div class="alert alert-info">
+          Checking provider against the SSA Death Master File...
+        </div>
+      `;
+
+      try {
+        const response = await fetch(
+          "/webscrapers/ssn_verifications/auto_verify",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+              "X-CSRF-Token": csrfToken
+            },
+
+            body: JSON.stringify({
+              provider_personal_information_id: providerId
+            })
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(
+            data.message || "SSA verification failed."
+          );
+        }
+
+        renderSsaVerificationResult(
+          resultBox,
+          data
+        );
+      } catch (error) {
+        resultBox.innerHTML = `
+          <div class="alert alert-danger">
+            <strong>SSA Verification Error</strong>
+
+            <div class="mt-1">
+              ${escapeSsaHtml(error.message)}
+            </div>
+          </div>
+        `;
+      } finally {
+        button.disabled = false;
+        button.textContent = "Auto Verify";
+      }
+    });
+  }
+
+  function renderSsaVerificationResult(box, data) {
+    let alertClass = "alert-info";
+    let heading = "SSA Verification";
+
+    switch (data.status) {
+      case "matched":
+        alertClass = "alert-danger";
+        heading = "Death Master Match Found";
+        break;
+
+      case "not_matched":
+        alertClass = "alert-success";
+        heading = "No Death Master Match Found";
+        break;
+
+      case "review_required":
+        alertClass = "alert-warning";
+        heading = "Manual Review Required";
+        break;
+    }
+
+    const pdfButton = data.pdf_url
+      ? `
+        <a
+          href="${escapeSsaHtml(data.pdf_url)}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-outline-primary btn-sm mt-3"
+        >
+          View Verification PDF
+        </a>
+      `
+      : "";
+
+    box.innerHTML = `
+      <div class="card border mt-3">
+        <div class="card-body">
+
+          <div class="alert ${alertClass}">
+            <strong>${heading}</strong>
+
+            <div class="mt-1">
+              ${escapeSsaHtml(data.message)}
+            </div>
+          </div>
+
+          <table class="table table-sm table-bordered">
+            <tbody>
+
+              <tr>
+                <th style="width:40%">SSN</th>
+                <td>${ssaMatchLabel(data.ssn_matched)}</td>
+              </tr>
+
+              <tr>
+                <th>First Name</th>
+                <td>${ssaMatchLabel(data.first_name_matched)}</td>
+              </tr>
+
+              <tr>
+                <th>Middle Name</th>
+                <td>${ssaMatchLabel(data.middle_name_matched)}</td>
+              </tr>
+
+              <tr>
+                <th>Last Name</th>
+                <td>${ssaMatchLabel(data.last_name_matched)}</td>
+              </tr>
+
+              <tr>
+                <th>Date of Birth</th>
+                <td>${ssaMatchLabel(data.date_of_birth_matched)}</td>
+              </tr>
+
+              <tr>
+                <th>Death Date</th>
+                <td>
+                  ${escapeSsaHtml(
+                    data.death_date || "Not Available"
+                  )}
+                </td>
+              </tr>
+
+              <tr>
+                <th>Records Found</th>
+                <td>
+                  ${escapeSsaHtml(
+                    String(data.matched_record_count ?? 0)
+                  )}
+                </td>
+              </tr>
+
+              <tr>
+                <th>DMF Version</th>
+                <td>
+                  ${escapeSsaHtml(
+                    data.dmf_publication_date ||
+                    (
+                      data.dmf_version
+                        ? `Version #${data.dmf_version}`
+                        : "Not Available"
+                    )
+                  )}
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+
+          ${pdfButton}
+
+        </div>
+      </div>
+    `;
+  }
+
+  function ssaMatchLabel(value) {
+    if (value === null || value === undefined) {
+      return "Not Available";
+    }
+
+    return value ? "Matched" : "Not Matched";
+  }
+
+  function escapeSsaHtml(value) {
+    const div = document.createElement("div");
+    div.textContent =
+      value == null ? "" : String(value);
+
+    return div.innerHTML;
+  }
+</script>

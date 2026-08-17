@@ -152,6 +152,12 @@ Rails.application.routes.draw do
     
    get  :reports, to: "reports#index"
 
+   get "credentialing/tasks", to: "credentialing_tasks#index", as: :credentialing_tasks
+   
+   resources :enrollment_providers do
+    resources :follow_ups, only: [:new, :create, :index]
+   end
+
     # Generate all CSV reports
     post :generate_all_reports, to: "reports#generate_all_reports"
 
@@ -739,6 +745,14 @@ Rails.application.routes.draw do
       member do
         post :mark_verified
         post :mark_failed
+      end
+    end
+
+    resources :dmf_file_versions,
+          only: %i[index new create show] do
+      member do
+        post :start_import
+        get :status
       end
     end
   end

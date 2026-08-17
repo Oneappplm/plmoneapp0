@@ -81,22 +81,29 @@ module Ssa
     private
 
     def fetch_records
-      escaped_ssn = @ssn.gsub("'", "''")
+      version = DmfFileVersion.current
 
-      sql = <<~SQL
-        SELECT DISTINCT
-          SSN,
-          FirstName,
-          MiddleName,
-          LastName,
-          BirthDate,
-          DeathDate,
-          SourceDate
-        FROM dbo.DeathMasterInfo
-        WHERE SSN = '#{escaped_ssn}';
-      SQL
+      unless version
+        raise StandardError,
+              "No active SSA Death Master file is available."
+      end
 
-      Ssa::SqlServerClient.new.execute(sql)
+      DmfRecord
+        .where(
+          dmf_file_version_id: version.id,
+          ssn: @ssn
+        )
+        .map do |record|
+          {
+            SSN: record.ssn,
+            FirstName: record.first_name,
+            MiddleName: record.middle_name,
+            LastName: record.last_name,
+            BirthDate: record.birth_date,
+            DeathDate: record.death_date,
+            SourceDate: record.source_date
+          }
+        end
     end
 
     def validate_ssn!

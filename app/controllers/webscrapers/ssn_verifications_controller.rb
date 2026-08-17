@@ -28,6 +28,20 @@ module Webscrapers
         status: verification.status,
         message: verification_message(verification),
         verification_id: verification.id,
+
+        ssn_matched: verification.ssn_matched,
+        first_name_matched: verification.first_name_matched,
+        middle_name_matched: verification.middle_name_matched,
+        last_name_matched: verification.last_name_matched,
+        date_of_birth_matched: verification.date_of_birth_matched,
+
+        death_date: verification.death_date,
+        matched_record_count: verification.matched_record_count,
+
+        dmf_version: verification.dmf_file_version&.id,
+        dmf_publication_date:
+          verification.dmf_file_version&.publication_date,
+
         pdf_url: report_webscrapers_ssn_verification_path(
           verification
         )
@@ -35,17 +49,14 @@ module Webscrapers
     end
 
     def report
-      unless @verification.report_pdf.attached?
+      if @verification.report_pdf.blank?
         render plain: "SSA verification report is not available.",
                status: :not_found
         return
       end
 
       redirect_to(
-        rails_blob_url(
-          @verification.report_pdf,
-          disposition: "inline"
-        ),
+        @verification.report_pdf.url,
         allow_other_host: true
       )
     end
@@ -65,9 +76,9 @@ module Webscrapers
     def verification_message(verification)
       case verification.status
       when "matched"
-        "SSA Death Master record matched."
+        "Death Master match found for this provider."
       when "not_matched"
-        "No SSA Death Master record was found."
+        "No Death Master match was found for this provider."
       when "review_required"
         "A Death Master record was found, but manual review is required."
       else
