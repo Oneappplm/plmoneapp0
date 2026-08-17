@@ -1,0 +1,21 @@
+<div class="container mt-4">
+	<% @follow_ups.each do |follow_up| %>
+	  <div class="card mb-2">
+	    <div class="card-body">
+	      <p><%= follow_up.notes %></p>
+
+	      <small>
+	        Followed up:
+	        <%= follow_up.followed_up_at&.strftime("%d %b %Y %I:%M %p") %>
+	      </small>
+
+	      <% if follow_up.next_follow_up_date.present? %>
+	        <div>
+	          Next Follow-up:
+	          <%= follow_up.next_follow_up_date.strftime("%d %b %Y") %>
+	        </div>
+	      <% end %>
+	    </div>
+	  </div>
+	<% end %>
+</div>

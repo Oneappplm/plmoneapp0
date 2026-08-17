@@ -1,0 +1,78 @@
+<div class="container mt-4">
+  <h1>Today’s Task</h1>
+
+  <div class="row mb-4">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h3><%= @overdue.count %></h3>
+          <span>Overdue</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h3><%= @due_today.count %></h3>
+          <span>Due Today</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h4 class="text-danger">
+    Overdue Follow-ups
+  </h4>
+
+  <% @overdue.each do |enrollment| %>
+    <div class="card border-danger mb-2">
+      <div class="card-body">
+
+        <strong>
+          <%= enrollment.provider.name %>
+        </strong>
+
+        <span>
+          <%= enrollment.payer_name %>
+        </span>
+
+        <span class="badge bg-danger">
+          <%= (Date.current - enrollment.next_follow_up_date).to_i %>
+          days overdue
+        </span>
+
+        <%= link_to "Follow Up",
+                    new_mhc_enrollment_provider_follow_up_path(enrollment),
+                    class: "btn btn-primary btn-sm" %>
+
+      </div>
+    </div>
+  <% end %>
+
+  <h4 class="mt-4">
+    Follow-ups Due Today
+  </h4>
+
+  <% @due_today.each do |enrollment| %>
+
+    <div class="card mb-2">
+      <div class="card-body">
+
+        <strong>
+          <%= enrollment.provider.fullname %>
+        </strong>
+
+        -
+
+        <%= enrollment.full_name.titleize %>
+
+        <%= link_to "Follow Up",
+                    new_mhc_enrollment_provider_follow_up_path(enrollment),
+                    class: "btn btn-primary btn-sm float-end" %>
+
+      </div>
+    </div>
+
+  <% end %>
+</div>
