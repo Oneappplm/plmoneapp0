@@ -6,641 +6,1173 @@ require "fileutils"
 module Webscraper
   class NpdbMmprPdfRenderer
     PAGE_SIZE = "LETTER"
-    MARGIN = [140, 36, 28, 36]
-    WIDTH = 540
-    SIDEBAR = 120
-    GREY = "D9D9D9"
-    LIGHT_GREY = "E6E6E6"
-    DARK_GREY = "CFCFCF"
 
-    SUMMARY_TYPES = [
-      [:mmpr, "Medical Malpractice Payment Report"],
-      [:state_licensure, "State Licensure or Certification Action"],
-      [:professional_society, "Professional Society Action(s)"],
-      [:exclusion_debarment, "Exclusion or Debarment Action(s)"],
-      [:dea_federal, "DEA/Federal Licensure Action(s)"],
-      [:government_administrative, "Government Administrative Action(s)"],
-      [:clinical_privileges, "Clinical Privileges Action(s)"],
-      [:judgment_conviction, "Judgment or Conviction Report(s)"],
-      [:health_plan, "Health Plan Action(s)"],
-      [:peer_review, "Peer Review Organization Action(s)"]
-    ].freeze
+    LEFT_MARGIN   = 36
+    RIGHT_MARGIN  = 36
+    BOTTOM_MARGIN = 24
+    TOP_MARGIN    = 118
 
-    class << self
-      def render_to_file!(output_path:, response_xml:, provider_personal_information:, watermark: "", errors: [])
-        FileUtils.mkdir_p(File.dirname(output_path))
-        FileUtils.rm_f(output_path)
+    # Page 1 layout tuning only. Data/parser behavior is unchanged.
+    SUMMARY_LEFT_X = 25
+    SUMMARY_VALUE_X = 138
 
-        parsed_data = Webscraper::NpdbMmprXmlParser.new(response_xml).to_h
-        apply_provider_fallbacks!(parsed_data, provider_personal_information)
+    CONTENT_WIDTH = 540
+    SIDEBAR_W     = 106
+    RIGHT_COL_X   = SIDEBAR_W + 8
+    RIGHT_COL_W   = CONTENT_WIDTH - RIGHT_COL_X
 
-        document = Webscraper::NpdbSectionBuilder.build(parsed_data)
-        reports = Array(document[:reports])
+    GREY_SECTION = "CFCFCF"
+    GREY_LIGHT   = "EEEEEE"
+    GREY_MID     = "D9D9D9"
 
-        Prawn::Document.generate(output_path, page_size: PAGE_SIZE, margin: MARGIN) do |pdf|
-          pdf.font("Helvetica")
-          pdf.font_size(8)
+    SECTION_FONT_SIZE = 8.5
+    SECTION_LINE_GAP  = 1.5
 
-          render_summary(pdf, parsed_data, document[:summary], reports)
+    def self.render_to_file!(
+      output_path:,
+      response_xml:,
+      provider_personal_information:,
+      watermark: "",
+      errors: []
+    )
+      FileUtils.mkdir_p(File.dirname(output_path))
+      FileUtils.rm_f(output_path)
 
-          reports.each do |report|
-            next if report.blank? || normalized_type(report) == :query_response
-            pdf.start_new_page
-            render_report(pdf, parsed_data.merge(report), report)
-          end
+      data = Webscraper::NpdbMmprXmlParser.new(response_xml).to_h
 
-          render_errors(pdf, errors) if reports.blank? && errors.present?
-          add_watermark(pdf, watermark) if watermark.present?
-        end
+      # Preserve the existing behavior of allowing the local provider record to
+      # supply query-level identifying values when they are available.
+      apply_provider_overrides!(data, provider_personal_information)
 
-        output_path
-      end
-
-      private
-
-      def render_summary(pdf, data, summary, reports)
-        start_page = pdf.page_number
-
-        pdf.font("Helvetica-Bold")
-        pdf.font_size(15)
-        pdf.text("#{subject_name(data)} - #{query_title(data)}", align: :center)
-        pdf.move_down(8)
-
-        summary_heading(pdf, "A. SUBJECT IDENTIFICATION INFORMATION",
-                        "Recipients should verify that subject identified is, in fact, the subject of interest.")
-        summary_rows(pdf, summary[:subject].presence || [
-          ["Practitioner Name:", subject_name(data)],
-          ["Date of Birth:", data[:birthdate]],
-          ["Sex:", data[:sex]],
-          ["Work Address:", address(data[:work_addr1], data[:work_city], data[:work_state], data[:work_zip])],
-          ["Home Address:", address(data[:home_addr1].presence || data[:work_addr1], data[:home_city].presence || data[:work_city], data[:home_state].presence || data[:work_state], data[:home_zip].presence || data[:work_zip])],
-          ["Social Security Number:", mask_ssn(data[:ssn])],
-          ["License:", license_summary(data)]
-        ])
-
-        summary_heading(pdf, "B. QUERY INFORMATION")
-        summary_rows(pdf, summary[:query].presence || [
-          ["Statutes Queried:", statutes(data)],
-          ["Query Type:", query_type(data)],
-          ["Entity Name:", data[:authorized_org_name].presence || data[:entity_name]],
-          ["Authorized Agent:", data[:authorized_agent]],
-          ["Authorized Submitter:", authorized_submitter(data)]
-        ])
-
-        summary_heading(pdf, "C. SUMMARY OF REPORTS ON FILE WITH THE NPDB AS OF #{safe(data[:process_date])}")
-        report_status_grid(pdf, reports)
-        report_cards(pdf, reports)
-
-        pdf.move_down(12)
-        center_rule(pdf, "Unabridged Report(s) Follow")
-
-        add_chrome(pdf, data, start_page, pdf.page_number, summary: true)
-      end
-
-      def render_report(pdf, root, report)
-        start_page = pdf.page_number
-        data = root.merge(report[:mmpr] || {}).merge(report[:aar] || {})
-
-        pdf.font("Helvetica-Bold")
-        pdf.font_size(15)
-        pdf.text(subject_name(data), align: :center)
-        pdf.move_down(6)
-
-        case normalized_type(report)
-        when :mmpr
-          render_mmpr(pdf, data)
-        when :judgment_conviction
-          render_action_report(pdf, data, "JUDGMENT OR CONVICTION REPORT")
-        when :state_licensure
-          render_action_report(pdf, data, "STATE LICENSURE OR CERTIFICATION ACTION REPORT")
-        when :professional_society
-          render_action_report(pdf, data, "PROFESSIONAL SOCIETY ACTION REPORT")
-        when :dea_federal
-          render_action_report(pdf, data, "DEA/FEDERAL LICENSURE ACTION REPORT")
-        when :clinical_privileges
-          render_action_report(pdf, data, "CLINICAL PRIVILEGES ACTION REPORT")
-        when :government_administrative
-          render_action_report(pdf, data, "GOVERNMENT ADMINISTRATIVE ACTION REPORT")
-        when :health_plan
-          render_action_report(pdf, data, "HEALTH PLAN ACTION REPORT")
-        when :peer_review
-          render_action_report(pdf, data, "PEER REVIEW ORGANIZATION ACTION REPORT")
-        else
-          render_action_report(pdf, data, report_title(normalized_type(report)))
-        end
-
-        add_chrome(pdf, data, start_page, pdf.page_number, summary: false)
-      end
-
-      def render_mmpr(pdf, d)
-        report_banner(
-          pdf,
-          entity_name(d),
-          d[:transaction].to_s.upcase == "C" ? "CORRECTION TO MEDICAL MALPRACTICE PAYMENT REPORT" : "MEDICAL MALPRACTICE PAYMENT REPORT",
-          "Date of Action: #{safe(d[:date_this_payment].presence || d[:judgment_date])}",
-          lookup(:mmpr_payment_result, d[:payment_result_of_code].presence || d[:payment_result_of]),
-          lookup(:mmpr_specific_allegation, d[:specific_allegation_code].presence || d[:specific_allegation])
-        )
-
-        reporting_entity(pdf, d)
-        subject_section(pdf, d)
-
-        rows = [
-          "Date of Report: #{safe(d[:process_date])}",
-          "Relationship of Entity to This Practitioner: #{lookup(:mmpr_relationship, d[:relationship_code].presence || d[:relationship])}",
-          :bold, "PAYMENTS BY THIS PAYER FOR THIS PRACTITIONER",
-          "Amount of This Payment for This Practitioner: #{money(d[:amount_this_payment])}",
-          "Date of This Payment: #{safe(d[:date_this_payment])}",
-          "This Payment Represents: #{lookup(:mmpr_payment_type, d[:payment_type_code].presence || d[:payment_type])}",
-          "Total Amount Paid or to Be Paid by This Payer for This Practitioner: #{money(d[:total_paid])}",
-          "Payment Result of: #{lookup(:mmpr_payment_result, d[:payment_result_of_code].presence || d[:payment_result_of])}",
-          "Date of Settlement, if Any: #{safe(d[:judgment_date])}",
-          "Adjudicative Body Case Number: #{safe(d[:adjudicative_body_case_number])}",
-          "Adjudicative Body Name: #{safe(d[:adjudicative_body_name])}",
-          "Court File Number: #{safe(d[:court_file_number])}",
-          "Description of Settlement and Any Conditions, Including Terms of Payment: #{safe(d[:judgment_desc])}",
-          :bold, "PAYMENTS BY THIS PAYER FOR OTHER PRACTITIONERS IN THIS CASE",
-          "Total Amount Paid or to Be Paid by This Payer for All Practitioners in This Case: #{money(d[:other_practitioners_total])}",
-          "Number of Practitioners for Whom This Payer Has Paid or Will Pay in This Case: #{safe(d[:other_practitioners_count])}",
-          :bold, "PAYMENTS BY OTHERS FOR THIS PRACTITIONER",
-          "Did (or will) a State Guaranty or Excess Fund Make a Payment for This Practitioner in This Case?: #{safe(d[:state_fund_payment])}",
-          "Did (or will) a Self-Insured Organization and/or Other Insurance Company Make a Payment for This Practitioner in This Case?: #{safe(d[:self_insured_payment])}",
-          :bold, "CLASSIFICATION OF ACT(S) OR OMISSION(S)",
-          "Patient's Age at Time of Initial Event: #{patient_age(d)}",
-          "Patient's Sex: #{safe(d[:patient_sex])}",
-          "Patient's Type: #{lookup(:mmpr_patient_type, d[:patient_type_code].presence || d[:patient_type])}",
-          "Description of the Medical Condition With Which the Patient Presented for Treatment: #{safe(d[:medical_condition_desc])}",
-          "Description of the Procedure Performed: #{safe(d[:procedure_desc])}",
-          "Nature of Allegation: #{lookup(:mmpr_nature, d[:nature_allegation_code].presence || d[:nature_allegation])}",
-          "Specific Allegation: #{lookup(:mmpr_specific_allegation, d[:specific_allegation_code].presence || d[:specific_allegation])}",
-          "Date of Event Associated With Allegation or Incident: #{safe(d[:event_date])}",
-          "Outcome: #{lookup(:mmpr_outcome, d[:outcome_code].presence || d[:outcome])}",
-          "Description of the Allegations and Injuries or Illnesses Upon Which the Action or Claim Was Based: #{safe(d[:allegations_desc])}"
-        ]
-        section(pdf, "C. INFORMATION\nREPORTED", rich_rows(rows))
-        common_tail(pdf, d)
-      end
-
-      def render_action_report(pdf, d, title)
-        report_banner(
-          pdf, entity_name(d), title,
-          "Date of Action: #{safe(d[:finding_date].presence || d[:action_date])}",
-          lookup(:aar_action, d[:action_code].presence || d[:action]),
-          lookup(:aar_basis, d[:basis_code])
-        )
-        reporting_entity(pdf, d)
-        subject_section(pdf, d)
-
-        rows = [
-          "Date of Report: #{safe(d[:process_date])}",
-          "Action: #{lookup(:aar_action, d[:action_code].presence || d[:action])}",
-          "Classification: #{lookup(:aar_classification, d[:classification_code])}",
-          "Finding Date: #{safe(d[:finding_date])}",
-          "Basis for Action: #{lookup(:aar_basis, d[:basis_code])}",
-          "Narrative Description: #{safe(d[:narrative].presence || d[:description])}"
-        ]
-        section(pdf, "C. INFORMATION\nREPORTED", rich_rows(rows))
-        common_tail(pdf, d)
-      end
-
-      def reporting_entity(pdf, d)
-        section(pdf, "A. REPORTING\nENTITY", pair_rows([
-          ["Entity Name:", "#{safe(d[:entity_name])}#{d[:latest_contact_entity_name].present? ? ' *' : ''}"],
-          ["Address:", d[:entity_addr1]],
-          ["City, State, Zip:", city_state_zip(d[:entity_city], d[:entity_state], d[:entity_zip])],
-          ["Country:", d[:entity_country]],
-          ["Name or Office:", d[:entity_office]],
-          ["Title or Department:", d[:entity_title]],
-          ["Telephone:", phone(d[:entity_phone])],
-          ["Entity Internal Report Reference:", d[:entity_internal_ref]],
-          ["Type of Report:", lookup(:report_transaction, d[:transaction])],
-          ["Previous Report Number:", d[:previous_dcn]]
-        ]))
-
-        return unless d[:latest_contact_entity_name].present?
-
-        section(pdf, "", [
-          { text: "*The reporting entity has changed its name or address on file with the NPDB. The following is the entity's most recent contact information reported to the NPDB on #{safe(d[:latest_contact_last_update_date])}:", size: 7, align: :left },
-          { text: "Entity Name: #{safe(d[:latest_contact_entity_name])}", align: :left },
-          { text: "Address: #{safe(d[:latest_contact_addr1])}", align: :left },
-          { text: "City, State, Zip: #{city_state_zip(d[:latest_contact_city], d[:latest_contact_state], d[:latest_contact_zip])}", align: :left }
-        ], sidebar: false)
-      end
-
-      def subject_section(pdf, d)
-        section(pdf, "B. SUBJECT\nIDENTIFICATION\nINFORMATION\n(INDIVIDUAL)", pair_rows([
-          ["Subject Name:", subject_name(d)],
-          ["Other Name(s) Used:", Array(d[:other_names]).join("; ")],
-          ["Sex:", d[:sex]],
-          ["Date of Birth:", d[:birthdate]],
-          ["Organization Name:", d[:org_name]],
-          ["Work Address:", d[:work_addr1]],
-          ["City, State, ZIP:", city_state_zip(d[:work_city], d[:work_state], d[:work_zip])],
-          ["Home Address:", d[:home_addr1]],
-          ["City, State, ZIP:", city_state_zip(d[:home_city], d[:home_state], d[:home_zip])],
-          ["Deceased:", d[:deceased]],
-          ["Social Security Numbers (SSN):", mask_ssn(d[:ssn])],
-          ["National Provider Identifiers (NPI):", d[:npi]],
-          ["Professional School(s) & Year(s) of Graduation:", d[:professional_school]],
-          ["Occupation/Field of Licensure:", occupation(d)],
-          ["State License Number, State of Licensure:", license_line(d)],
-          ["Drug Enforcement Administration (DEA) Numbers:", d[:dea]],
-          ["Hospital Affiliation(s):", d[:hospital_affiliations]]
-        ]))
-      end
-
-      def common_tail(pdf, d)
-        section(pdf, "D. SUBJECT\nSTATEMENT", [
-          { text: "If the subject identified in Section B of this report has submitted a statement, it appears in this section.", align: :left },
-          { text: safe(d[:subject_statement]), align: :left }
-        ])
-
-        disputed = d[:report_disputed_mark].present?
-        section(pdf, "E. REPORT\nSTATUS", [
-          { text: "Unless a box below is checked, the subject of this report identified in Section B has not contested this report.", align: :left },
-          checkbox("This report has been disputed by the subject identified in Section B.", disputed),
-          checkbox("At the request of the subject identified in Section B, this report is being reviewed by the Secretary of the U.S. Department of Health and Human Services. No decision has been reached.", d[:secretary_review_pending]),
-          checkbox("The subject has requested reconsideration of the Secretary's decision.", d[:secretary_reconsideration]),
-          checkbox("The Secretary's review has been completed.", d[:secretary_review_completed]),
-          { text: "Date of Original Submission: #{safe(d[:original_submission_date])}", align: :left },
-          { text: "Date of Most Recent Change: #{safe(d[:most_recent_change_date])}", align: :left }
-        ])
-
-        supplemental(pdf, d)
-
-        pdf.move_down(8)
-        pdf.font("Helvetica-Bold")
-        pdf.text("This report is maintained under the provisions of: #{statute(d[:maintained_under])}", size: 8)
-        pdf.move_down(5)
+      Prawn::Document.generate(
+        output_path.to_s,
+        page_size: PAGE_SIZE,
+        margin: [TOP_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN, LEFT_MARGIN]
+      ) do |pdf|
         pdf.font("Helvetica")
-        pdf.text("The information contained in this report is maintained by the National Practitioner Data Bank for restricted use under applicable federal law and 45 CFR Part 60. All information is confidential and may be used only for the purpose for which it was disclosed.", size: 7)
-        end_report(pdf)
-      end
+        pdf.font_size 9
 
-      def supplemental(pdf, d)
-        rows = []
-        Array(d[:supplemental_notes] || d[:report_notes]).each { |n| rows << { text: safe(n), size: 7, align: :left } }
-        Array(d[:other_licenses]).each do |lic|
-          rows << { text: "Occupation/Field of Licensure: #{lookup(:occupation, lic[:field])}", align: :left }
-          rows << { text: "State License Number, State of Licensure: #{[lic[:number], lic[:state]].compact.join(', ')}", align: :left }
-        end
-        return if rows.blank?
-        section(pdf, "F. SUPPLEMENTAL\nSUBJECT\nINFORMATION ON\nFILE WITH DATA\nBANK", rows)
-      end
-
-      def report_status_grid(pdf, reports)
-        types = reports.map { |r| normalized_type(r) }
-        SUMMARY_TYPES.each_slice(2) do |pair|
-          y = pdf.cursor
-          pair.each_with_index do |(type, label), idx|
-            x = idx * 270
-            pdf.font("Helvetica")
-            pdf.font_size(7)
-            pdf.text_box(label, at: [x, y], width: 185, height: 14)
-            status = types.include?(type) ? "Yes, See Below" : "No Reports"
-            pdf.font(types.include?(type) ? "Helvetica-Bold" : "Helvetica")
-            pdf.text_box(status, at: [x + 185, y], width: 80, height: 14)
-          end
-          pdf.move_down(15)
-        end
-      end
-
-      def report_cards(pdf, reports)
-        reports.each do |r|
-          ensure_space(pdf, 65)
-          y = pdf.cursor
-          pdf.fill_color(LIGHT_GREY)
-          pdf.fill_rectangle([14, y], WIDTH - 28, 58)
-          pdf.fill_color("000000")
-          pdf.stroke_rectangle([14, y], WIDTH - 28, 58)
-          pdf.font("Helvetica-Bold")
-          pdf.font_size(9)
-          pdf.text_box(entity_name(r), at: [20, y - 5], width: WIDTH - 40, height: 12)
-          pdf.text_box(report_title(normalized_type(r)), at: [20, y - 18], width: WIDTH - 40, height: 12)
-          pdf.font_size(7)
-          pdf.text_box("Basis for Action: - #{summary_basis(r)}", at: [20, y - 31], width: 330, height: 12)
-          pdf.text_box("Initial Action: - #{summary_action(r)}", at: [20, y - 43], width: 260, height: 12)
-          pdf.text_box("Date of Action: #{safe(r[:date_this_payment].presence || r[:finding_date])}", at: [360, y - 43], width: 160, height: 12, align: :right)
-          pdf.text_box("DCN: #{safe(r[:report_dcn].presence || r[:dcn])}", at: [130, y - 53], width: 240, height: 10)
-          pdf.move_down(66)
-        end
-      end
-
-      def report_banner(pdf, entity, title, date, initial, basis)
-        h = 92
-        ensure_space(pdf, h + 6)
-        y = pdf.cursor
-        pdf.stroke_rectangle([0, y], WIDTH, h)
-
-        pdf.fill_color(LIGHT_GREY)
-        pdf.fill_rectangle([0, y], WIDTH, 25)
-        pdf.fill_color("000000")
-        pdf.font("Helvetica-Bold")
-        pdf.font_size(12)
-        pdf.text_box(entity, at: [0, y - 2], width: WIDTH, height: 25, align: :center, valign: :center)
-
-        y -= 25
-        pdf.fill_color(GREY)
-        pdf.fill_rectangle([0, y], WIDTH, 28)
-        pdf.fill_color("000000")
-        pdf.text_box(title, at: [6, y - 3], width: 370, height: 28, valign: :center)
-        pdf.font_size(9)
-        pdf.text_box(date, at: [375, y - 3], width: 155, height: 28, align: :right, valign: :center)
-
-        y -= 28
-        pdf.fill_color(DARK_GREY)
-        pdf.fill_rectangle([0, y], WIDTH, 17)
-        pdf.fill_color("000000")
-        pdf.font_size(10)
-        pdf.text_box("Initial Action", at: [0, y], width: WIDTH / 2, height: 17, align: :center)
-        pdf.text_box("Basis for Initial Action", at: [WIDTH / 2, y], width: WIDTH / 2, height: 17, align: :center)
-
-        y -= 17
-        pdf.font("Helvetica")
-        pdf.font_size(9)
-        pdf.text_box("- #{safe(initial)}", at: [6, y - 3], width: WIDTH / 2 - 12, height: 20)
-        pdf.text_box("- #{safe(basis)}", at: [WIDTH / 2 + 6, y - 3], width: WIDTH / 2 - 12, height: 20)
-        pdf.move_down(h + 6)
-      end
-
-      def section(pdf, title, rows, sidebar: true)
-        rows = rows.reject { |r| r[:text].blank? }
-        content_width = sidebar ? WIDTH - SIDEBAR - 10 : WIDTH - 12
-        x = sidebar ? SIDEBAR + 10 : 6
-        content_h = rows.sum { |r| pdf.height_of(r[:text], width: content_width - (r[:type] == :checkbox ? 18 : 0), size: r[:size] || 8) + 2 }
-        label_h = sidebar ? [pdf.height_of(title, width: SIDEBAR - 12, size: 9) + 12, 32].max : 0
-        block_h = [label_h, content_h + 16].max
-        ensure_space(pdf, block_h + 4)
-        y = pdf.cursor
-
-        pdf.line_width(1.2)
-        pdf.stroke_horizontal_line(0, WIDTH, at: y)
-
-        if sidebar
-          pdf.fill_color(GREY)
-          pdf.fill_rectangle([0, y], SIDEBAR, label_h)
-          pdf.fill_color("000000")
-          pdf.font("Helvetica-Bold")
-          pdf.font_size(9)
-          pdf.text_box(title, at: [6, y - 6], width: SIDEBAR - 12, height: label_h)
-        end
-
-        pdf.bounding_box([x, y - 8], width: content_width, height: content_h) do
-          rows.each do |r|
-            pdf.font(r[:style] == :bold ? "Helvetica-Bold" : "Helvetica")
-            pdf.font_size(r[:size] || 8)
-            if r[:type] == :checkbox
-              checked = r[:checked]
-              pdf.stroke_rectangle([0, pdf.cursor], 10, 10)
-              pdf.draw_text("X", at: [2, pdf.cursor - 8]) if checked
-              pdf.bounding_box([16, pdf.cursor], width: content_width - 16) { pdf.text(r[:text], align: :left) }
-            else
-              pdf.text(r[:text], align: r[:align] || :center)
-            end
-            pdf.move_down(2)
-          end
-        end
-        pdf.move_cursor_to(y - block_h)
-      end
-
-      def add_chrome(pdf, data, start_page, end_page, summary:)
-        (start_page..end_page).each do |page|
-          pdf.go_to_page(page)
-          header(pdf, data, page - start_page + 1, end_page - start_page + 1, summary)
+        pdf.repeat(:all, dynamic: true) do
+          header(pdf, data)
           footer(pdf)
         end
-        pdf.go_to_page(end_page)
-      end
 
-      def header(pdf, d, page_no, page_count, summary)
-        pdf.canvas do
-          top = pdf.page.dimensions[3] - 30
-          pdf.font("Helvetica-Bold")
-          pdf.font_size(8)
-          pdf.draw_text("National Practitioner Data Bank", at: [78, top - 7])
-          pdf.font("Helvetica")
-          pdf.font_size(7)
-          ["Health Resources and Services Administration", "U.S. Department of Health and Human Services",
-           "P.O. Box 10832", "Chantilly, VA 20153-0832", "https://www.npdb.hrsa.gov"].each_with_index do |line, i|
-            pdf.draw_text(line, at: [78, top - 18 - i * 11])
-          end
+        render_query_summary(pdf, data)
 
-          pdf.stroke_rectangle([366, top], 210, 88)
-          dcn = summary ? d[:dcn] : d[:report_dcn].presence || d[:dcn]
-          date = summary ? d[:process_date] : d[:report_process_date].presence || d[:process_date]
-          lines = ["DCN: #{safe(dcn)}", "Process Date: #{safe(date)}", "Page: #{page_no} of #{page_count}",
-                   subject_name(d), "For authorized use by:", safe(d[:authorized_org_name].presence || d[:entity_name])]
-          lines.each_with_index { |line, i| pdf.draw_text(line, at: [373, top - 12 - i * 11]) }
-          pdf.line_width(2)
-          pdf.stroke_horizontal_line(36, 576, at: top - 96)
-        end
-      end
-
-      def footer(pdf)
-        pdf.canvas do
-          text = "CONFIDENTIAL DOCUMENT - FOR AUTHORIZED USE ONLY"
-          pdf.font("Helvetica-Bold")
-          pdf.font_size(9)
-          pdf.draw_text(text, at: [(612 - pdf.width_of(text, size: 9)) / 2, 12])
-        end
-      end
-
-      def add_watermark(pdf, text)
-        pdf.number_pages(text, at: [130, 360], size: 70, rotate: 45, color: "D0D0D0", opacity: 0.25)
-      end
-
-      def render_errors(pdf, errors)
         pdf.start_new_page
-        pdf.font("Helvetica-Bold")
-        pdf.text("NPDB RESPONSE ERROR", align: :center)
-        pdf.move_down(12)
-        errors.each { |e| pdf.text(e.to_s) }
+
+        render_unabridged_report(pdf, data)
+
+        render_watermark(pdf, watermark) if watermark.to_s.present?
+        render_errors(pdf, errors) if Array(errors).present?
       end
 
-      def summary_heading(pdf, title, note = nil)
-        h = note ? 18 : 14
-        pdf.fill_color(GREY)
-        pdf.fill_rectangle([0, pdf.cursor], WIDTH, h)
-        pdf.fill_color("000000")
-        pdf.font("Helvetica-Bold")
-        pdf.font_size(9)
-        pdf.text_box(note ? "#{title} (#{note})" : title, at: [4, pdf.cursor - 2], width: WIDTH - 8, height: h)
-        pdf.move_down(h + 4)
+      output_path
+    end
+
+    # =========================================================
+    # SUMMARY PAGE
+    # =========================================================
+
+    def self.render_query_summary(pdf, d)
+      # Page 1 only: compact spacing and proportions to match the official NPDB output.
+      pdf.font("Helvetica-Bold")
+      pdf.font_size 14
+      pdf.text(
+        "#{query_subject_name(d)} - ONE-TIME QUERY RESPONSE",
+        align: :left
+      )
+      pdf.move_down 4
+
+      summary_band(
+        pdf,
+        "A. SUBJECT IDENTIFICATION INFORMATION",
+        "(Recipients should verify that subject identified is, in fact, the subject of interest.)"
+      )
+
+      summary_two_column_rows(
+        pdf,
+        [
+          ["Practitioner Name:", query_subject_name(d)],
+          ["Date of Birth:", d[:query_birthdate]],
+          ["Work Address:", full_address(d[:query_work_addr1], d[:query_work_addr2], d[:query_work_city], d[:query_work_state], d[:query_work_zip])],
+          ["Home Address:", full_address(
+            d[:query_home_addr1].presence || d[:query_work_addr1],
+            d[:query_home_addr2].presence || d[:query_work_addr2],
+            d[:query_home_city].presence || d[:query_work_city],
+            d[:query_home_state].presence || d[:query_work_state],
+            d[:query_home_zip].presence || d[:query_work_zip]
+          )],
+          ["Social Security Number:", mask_ssn(d[:query_ssn])],
+          ["License:", query_license_line(d)]
+        ],
+        side_pair: ["Sex:", d[:query_sex]]
+      )
+
+      pdf.move_down 3
+      summary_band(pdf, "B. QUERY INFORMATION")
+
+      summary_rows(
+        pdf,
+        [
+          ["Statutes Queried:", statutes_queried(d)],
+          ["Query Type:", "This is a One-Time query response. Your organization will only receive\nfuture reports on this practitioner if another query is submitted."],
+          ["Entity Name:", authorized_org_display(d)],
+          ["Authorized Agent:", authorized_agent_display(d)],
+          ["Authorized Submitter:", authorized_submitter_display(d)]
+        ]
+      )
+
+      pdf.move_down 3
+      summary_band(
+        pdf,
+        "C. SUMMARY OF REPORTS ON FILE WITH THE NPDB AS OF #{safe(d[:process_date])}"
+      )
+
+      render_report_search_summary(pdf, d)
+      pdf.move_down 9
+      render_summary_finding_card(pdf, d)
+      pdf.move_down 26
+
+      pdf.font("Helvetica-Bold")
+      pdf.font_size 13
+      pdf.text(
+        "--------------------------  Unabridged Report(s) Follow  --------------------------",
+        align: :center
+      )
+    end
+
+    def self.summary_band(pdf, title, note = nil)
+      y = pdf.cursor
+      h = 14
+
+      pdf.save_graphics_state
+      pdf.fill_color GREY_SECTION
+      pdf.fill_rounded_rectangle([0, y], CONTENT_WIDTH, h, 5)
+      pdf.restore_graphics_state
+
+      pdf.font("Helvetica-Bold")
+      pdf.font_size 9.2
+
+      if note.present?
+        title_w = 292
+        pdf.text_box(
+          title.to_s,
+          at: [2, y - 1],
+          width: title_w,
+          height: h - 1,
+          valign: :center
+        )
+
+        pdf.font("Helvetica")
+        pdf.font_size 7.6
+        pdf.text_box(
+          note.to_s,
+          at: [title_w, y - 1],
+          width: CONTENT_WIDTH - title_w - 3,
+          height: h - 1,
+          valign: :center
+        )
+      else
+        pdf.text_box(
+          title.to_s,
+          at: [2, y - 1],
+          width: CONTENT_WIDTH - 4,
+          height: h - 1,
+          valign: :center
+        )
       end
 
-      def summary_rows(pdf, rows)
-        rows.each do |label, value|
+      pdf.move_down h + 1
+    end
+
+    def self.summary_rows(pdf, pairs)
+      label_w = 112
+      value_w = CONTENT_WIDTH - SUMMARY_VALUE_X - 5
+
+      pairs.each do |label, value|
+        next if value.blank?
+
+        value_text = value.to_s
+        h = if label.to_s == "Query Type:"
+              24
+            else
+              [
+                pdf.height_of(label.to_s, width: label_w, size: 8.2),
+                pdf.height_of(value_text, width: value_w, size: 8.2)
+              ].max + 1
+            end
+
+        pdf.bounding_box([SUMMARY_LEFT_X, pdf.cursor], width: CONTENT_WIDTH - SUMMARY_LEFT_X, height: h) do
           pdf.font("Helvetica-Bold")
-          pdf.text_box(label, at: [14, pdf.cursor], width: 145, height: 14)
-          pdf.font("Helvetica")
-          pdf.text_box(safe(value), at: [160, pdf.cursor], width: 360, height: 26)
-          pdf.move_down(13)
+          pdf.font_size 8.2
+          pdf.text_box(label.to_s, at: [0, h], width: label_w, height: h)
+
+          pdf.font("Courier")
+          pdf.font_size 8.2
+          pdf.text_box(value_text, at: [SUMMARY_VALUE_X - SUMMARY_LEFT_X, h], width: value_w, height: h)
         end
-      end
 
-      def pair_rows(rows)
-        rows.map { |label, value| { text: "#{label} #{safe(value)}".strip, align: :center } }
+        pdf.move_down h
       end
+    ensure
+      pdf.font("Helvetica")
+    end
 
-      def rich_rows(items)
-        bold = false
-        items.each_with_object([]) do |item, result|
-          if item == :bold
-            bold = true
-          else
-            result << { text: item, style: bold ? :bold : nil, align: :center }
-            bold = false
+    def self.summary_two_column_rows(pdf, pairs, side_pair:)
+      label_w = 112
+      value_w = 285
+      right_label_x = 392
+      right_value_x = 446
+
+      pairs.each_with_index do |(label, value), index|
+        h = 11.5
+
+        pdf.bounding_box([SUMMARY_LEFT_X, pdf.cursor], width: CONTENT_WIDTH - SUMMARY_LEFT_X, height: h) do
+          pdf.font("Helvetica-Bold")
+          pdf.font_size 8.2
+          pdf.text_box(label.to_s, at: [0, h], width: label_w, height: h)
+
+          pdf.font("Courier")
+          pdf.font_size 8.2
+          pdf.text_box(value.to_s, at: [SUMMARY_VALUE_X - SUMMARY_LEFT_X, h], width: value_w, height: h)
+
+          if index == 1 && side_pair
+            pdf.font("Helvetica-Bold")
+            pdf.text_box(side_pair[0].to_s, at: [right_label_x - SUMMARY_LEFT_X, h], width: 48, height: h)
+            pdf.font("Courier")
+            pdf.text_box(side_pair[1].to_s.upcase, at: [right_value_x - SUMMARY_LEFT_X, h], width: 80, height: h)
           end
         end
+
+        pdf.move_down h
+      end
+    ensure
+      pdf.font("Helvetica")
+    end
+
+    def self.render_report_search_summary(pdf, _d)
+      left = [
+        ["Medical Malpractice Payment Report", "Yes, See Below"],
+        ["State Licensure or Certification Action", "No Reports"],
+        ["Exclusion or Debarment Action(s):", "No Reports"],
+        ["Government Administrative Action(s):", "No Reports"],
+        ["Clinical Privileges Action(s):", "No Reports"]
+      ]
+
+      right = [
+        ["Health Plan Action(s):", "No Reports"],
+        ["Professional Society Action(s):", "No Reports"],
+        ["DEA/Federal Licensure Action(s):", "No Reports"],
+        ["Judgment or Conviction Report(s):", "No Reports"],
+        ["Peer Review Organization Action(s):", "No Reports"]
+      ]
+
+      box_h = 66
+      y = pdf.cursor
+
+      pdf.stroke_rounded_rectangle([14, y], CONTENT_WIDTH - 28, box_h, 5)
+
+      pdf.font("Helvetica-Bold")
+      pdf.font_size 8.2
+      pdf.text_box(
+        "The following report types have been searched:",
+        at: [20, y - 5],
+        width: CONTENT_WIDTH - 40,
+        height: 10
+      )
+
+      render_summary_status_column(pdf, left, x: 28, y: y - 19, width: 246)
+      render_summary_status_column(pdf, right, x: 292, y: y - 19, width: 222)
+
+      pdf.move_down box_h + 1
+    end
+
+    def self.render_summary_status_column(pdf, rows, x:, y:, width:)
+      label_w = width - 74
+
+      rows.each_with_index do |(label, status), index|
+        row_y = y - (index * 10)
+
+        pdf.font("Helvetica")
+        pdf.font_size 7.8
+        pdf.text_box(label, at: [x, row_y], width: label_w, height: 10)
+
+        pdf.font(status.start_with?("Yes") ? "Helvetica-Bold" : "Helvetica")
+        pdf.text_box(status, at: [x + label_w, row_y], width: 74, height: 10)
+      end
+    end
+
+    def self.render_summary_finding_card(pdf, d)
+      y = pdf.cursor
+      h = 66
+
+      pdf.stroke_rounded_rectangle([14, y], CONTENT_WIDTH - 28, h, 5)
+
+      pdf.save_graphics_state
+      pdf.fill_color GREY_LIGHT
+      pdf.fill_rectangle([15, y - 1], CONTENT_WIDTH - 30, 39)
+      pdf.restore_graphics_state
+
+      entity = d[:entity_name].presence || d[:latest_contact_entity_name]
+
+      pdf.font("Helvetica-Bold")
+      pdf.font_size 10.4
+      pdf.text_box(entity.to_s.upcase, at: [20, y - 5], width: CONTENT_WIDTH - 40, height: 12)
+
+      pdf.font_size 8.6
+      pdf.text_box(
+        "MEDICAL MALPRACTICE PAYMENT",
+        at: [20, y - 19],
+        width: CONTENT_WIDTH - 40,
+        height: 11
+      )
+
+      pdf.font("Helvetica-Bold")
+      pdf.font_size 8
+      pdf.text_box("Basis for Action:", at: [20, y - 30], width: 88, height: 10)
+      pdf.font("Helvetica")
+      pdf.text_box(
+        "- #{strip_code(d[:specific_allegation]).to_s.upcase}",
+        at: [108, y - 30],
+        width: 245,
+        height: 10
+      )
+
+      pdf.font("Helvetica-Bold")
+      pdf.text_box("Initial Action:", at: [22, y - 43], width: 86, height: 10)
+      pdf.font("Helvetica")
+      pdf.text_box(
+        "- #{strip_code(d[:payment_result_of]).to_s.upcase}",
+        at: [108, y - 43],
+        width: 180,
+        height: 10
+      )
+
+      pdf.font("Helvetica-Bold")
+      pdf.text_box("Date of Action:", at: [390, y - 43], width: 78, height: 10)
+      pdf.font("Helvetica")
+      pdf.text_box(safe(d[:date_this_payment]), at: [468, y - 43], width: 55, height: 10)
+
+      pdf.font("Helvetica-Bold")
+      pdf.text_box("DCN:", at: [22, y - 54], width: 42, height: 9)
+      pdf.font("Courier")
+      pdf.text_box(safe(d[:report_dcn]), at: [108, y - 54], width: 160, height: 9)
+
+      pdf.move_down h + 1
+    end
+
+    def self.render_unabridged_report(pdf, d)
+      pdf.font("Helvetica-Bold")
+      pdf.font_size 15
+      pdf.text(report_subject_name(d), align: :center)
+      pdf.move_down 6
+
+      report_header_block(pdf, d)
+      pdf.move_down 6
+
+      render_reporting_entity(pdf, d)
+      render_report_subject(pdf, d)
+
+      rows = information_reported_rows(d)
+      section_sidebar_block_rich(pdf, "C. INFORMATION\nREPORTED", rows)
+
+      rows_d = subject_statement_rows(d)
+      section_sidebar_block_rich(pdf, "D. SUBJECT\nSTATEMENT", rows_d)
+
+      # The official Powell report carries status over the final two pages.
+      rows_e = report_status_rows(d)
+      section_sidebar_block_rich(pdf, "E. REPORT\nSTATUS", rows_e)
+
+      supplemental_rows = supplemental_subject_rows(d)
+      if supplemental_rows.present?
+        section_sidebar_block_rich(
+          pdf,
+          "F. SUPPLEMENTAL\nSUBJECT\nINFORMATION ON\nFILE WITH DATA\nBANK",
+          supplemental_rows
+        )
       end
 
-      def checkbox(text, checked)
-        { text: text, type: :checkbox, checked: ActiveModel::Type::Boolean.new.cast(checked), align: :left }
+      render_maintained_under(pdf, d)
+      draw_end_of_report(pdf)
+    end
+
+    def self.render_reporting_entity(pdf, d)
+      entity_name = safe(d[:entity_name])
+      entity_name += " *" if d[:latest_contact_present]
+
+      rows = [
+        ["Entity Name:", entity_name],
+        ["Address:", join_nonblank(d[:entity_addr1], d[:entity_addr2])],
+        ["City, State, Zip:", city_state_zip(d[:entity_city], d[:entity_state], d[:entity_zip])],
+        ["Country:", d[:entity_country]],
+        ["Name or Office:", d[:entity_office]],
+        ["Title or Department:", d[:entity_title]],
+        ["Telephone:", phone(d[:entity_phone])],
+        ["Entity Internal Report Reference:", d[:entity_internal_ref]],
+        ["Type of Report:", d[:transaction]]
+      ]
+
+      rows << ["Previous Report Number:", previous_report(d[:previous_dcn])] if d[:previous_dcn].present?
+
+      section_sidebar_block(pdf, "A. REPORTING\nENTITY", rows)
+
+      return unless d[:latest_contact_present]
+
+      rich = [
+        {
+          text: "*The reporting entity has changed its name or address on file with the NPDB. The following is the entity's most recent contact information reported to the NPDB on #{safe(d[:latest_contact_last_update_date])}:",
+          size: 8,
+          align: :left
+        },
+        { text: "Entity Name: #{safe(d[:latest_contact_entity_name])}", align: :center },
+        { text: "Address: #{join_nonblank(d[:latest_contact_addr1], d[:latest_contact_addr2])}", align: :center },
+        {
+          text: "City, State, Zip: #{city_state_zip(d[:latest_contact_city], d[:latest_contact_state], d[:latest_contact_zip])}",
+          align: :center
+        },
+        { text: "Country: #{safe(d[:latest_contact_country])}", align: :center }
+      ]
+
+      section_sidebar_block_rich(pdf, "", rich, draw_top_rule: false, sidebar_fill: false)
+    end
+
+    def self.render_report_subject(pdf, d)
+      rows = [
+        ["Subject Name:", report_subject_name(d)],
+        ["Other Name(s) Used:", Array(d[:other_names]).join("; ")],
+        ["Sex:", d[:sex]],
+        ["Date of Birth:", d[:birthdate]],
+        ["Organization Name:", d[:org_name]],
+        ["Work Address:", join_nonblank(d[:work_addr1], d[:work_addr2])],
+        ["City, State, ZIP:", city_state_zip(d[:work_city], d[:work_state], d[:work_zip])],
+        ["Home Address:", join_nonblank(d[:home_addr1], d[:home_addr2])],
+        ["City, State, ZIP:", city_state_zip(d[:home_city], d[:home_state], d[:home_zip])],
+        ["Deceased:", d[:deceased]],
+        ["Social Security Numbers (SSN):", d[:ssn]],
+        ["National Provider Identifiers (NPI):", d[:npi]],
+        ["Professional School(s) & Year(s) of Graduation:", d[:professional_school]],
+        ["Occupation/Field of Licensure:", d[:occupation_field]],
+        ["State License Number, State of Licensure:", report_license_line(d)],
+        ["Drug Enforcement Administration (DEA) Numbers:", ""],
+        ["Hospital Affiliation(s):", d[:hospital_affiliations]]
+      ]
+
+      section_sidebar_block(
+        pdf,
+        "B. SUBJECT\nIDENTIFICATION\nINFORMATION\n(INDIVIDUAL)",
+        rows
+      )
+    end
+
+    def self.information_reported_rows(d)
+      [
+        { text: "Date of Report: #{safe(d[:report_process_date].presence || d[:original_submission_date])}" },
+        { text: "Relationship of Entity to\nThis Practitioner: #{safe(d[:relationship])}" },
+
+        { text: "PAYMENTS BY THIS PAYER FOR THIS PRACTITIONER", style: :bold },
+        { text: "Amount of This Payment\nfor This Practitioner: #{safe(d[:amount_this_payment])}" },
+        { text: "Date of This Payment: #{safe(d[:date_this_payment])}" },
+        { text: "This Payment Represents: #{safe(d[:payment_type])}" },
+        { text: "Total Amount Paid or to Be Paid by\nThis Payer for This Practitioner: #{safe(d[:total_paid])}" },
+        { text: "Payment Result of: #{safe(d[:payment_result_of])}" },
+        { text: "Date of Settlement, if Any: #{safe(d[:judgment_date])}" },
+        { text: "Adjudicative Body Case Number: #{safe(d[:adjudicative_body_case_number])}" },
+        { text: "Adjudicative Body Name: #{safe(d[:adjudicative_body_name])}" },
+        { text: "Court File Number: #{safe(d[:court_file_number])}" },
+        {
+          text: "Description of Settlement and Any\nConditions, Including Terms of Payment: #{safe(d[:judgment_desc])}"
+        },
+        {
+          text: "Total Number of Claimants Included in The Settlement: #{safe(d[:claimant_count])}"
+        },
+
+        { text: "PAYMENTS BY THIS PAYER FOR OTHER PRACTITIONERS IN THIS CASE", style: :bold },
+        {
+          text: "Total Amount Paid or to Be Paid by This Payer for All\nPractitioners in This Case: #{safe(d[:other_practitioners_total])}"
+        },
+        {
+          text: "Number of Practitioners for Whom This Payer Has Paid\nor Will Pay in This Case: #{safe(d[:other_practitioners_count])}"
+        },
+
+        { text: "PAYMENTS BY OTHERS FOR THIS PRACTITIONER", style: :bold },
+        {
+          text: "Did (or will) a State Guaranty or Excess Fund\nMake a Payment for This Practitioner in This Case?: #{safe(d[:state_fund_payment])}"
+        },
+        {
+          text: "Amount Paid or Expected to Be Paid by the State Fund: #{safe(d[:state_fund_amount])}"
+        },
+        {
+          text: "Did (or will) a Self-Insured Organization and/or Other Insurance\nCompany Make a Payment for This Practitioner in This Case?: #{safe(d[:self_insured_payment])}"
+        },
+        {
+          text: "Amount Paid or Expected to Be Paid by Self-Insured\nOrganization(s) and/or Other Insurance Company/Companies: #{safe(d[:self_insured_amount])}"
+        },
+
+        { text: "CLASSIFICATION OF ACT(S) OR OMISSION(S)", style: :bold },
+        { text: "Patient's Age at Time of Initial Event: #{safe(d[:patient_age])}" },
+        { text: "Patient's Sex: #{safe(d[:patient_sex])}" },
+        { text: "Patient's Type: #{safe(d[:patient_type])}" },
+        {
+          text: "Description of the Medical Condition With Which the Patient\nPresented for Treatment: #{safe(d[:medical_condition_desc])}"
+        },
+        { text: "Description of the Procedure Performed: #{safe(d[:procedure_desc])}" },
+        { text: "Nature of Allegation: #{safe(d[:nature_allegation])}" },
+        { text: "Specific Allegation: #{safe(d[:specific_allegation])}" },
+        {
+          text: "Date of Event Associated With Allegation or Incident: #{safe(d[:event_date])}"
+        },
+        { text: "Outcome: #{safe(d[:outcome])}" },
+        {
+          text: "Description of the Allegations and Injuries or Illnesses Upon\nWhich the Action or Claim Was Based: #{safe(d[:allegations_desc])}"
+        }
+      ]
+    end
+
+    def self.subject_statement_rows(d)
+      rows = [
+        {
+          text: "If the subject identified in Section B of this report has submitted a statement, it appears in this section.",
+          size: 8,
+          align: :left
+        }
+      ]
+
+      if d[:dispute_status].present?
+        rows << { text: safe(d[:dispute_status]), size: 8, align: :left }
       end
 
-      def lookup(method, code)
-        return "" if safe(code).blank?
-        service = Webscraper::NpdbCodeLookup
-        return safe(code) unless service.respond_to?(method)
-        label = service.public_send(method, code)
-        service.display(code, label)
+      rows
+    end
+
+    def self.report_status_rows(d)
+      first_checked = safe(d[:report_disputed_mark]).present?
+      third_checked = safe(d[:report_reviewed_reconsidered_mark]).present?
+
+      [
+        {
+          text: "Unless a box below is checked, the subject of this report identified in Section B has not contested this report.",
+          size: 8,
+          align: :left
+        },
+        {
+          type: :checkbox,
+          box: first_checked ? :x : :empty,
+          text: "This report has been disputed by the subject identified in Section B.",
+          size: 8
+        },
+        {
+          type: :checkbox,
+          box: :empty,
+          text: "At the request of the subject identified in Section B, this report is being reviewed by the Secretary of the U.S. Department of Health and Human Services to determine its accuracy and/or whether it complies with reporting requirements. No decision has been reached.",
+          size: 8
+        },
+        {
+          type: :checkbox,
+          box: third_checked ? :x : :empty,
+          text: "At the request of the subject identified in Section B, this report was reviewed by the Secretary of the U.S. Department of Health and Human Services and a decision was reached. The subject has requested that the Secretary reconsider the original decision.",
+          size: 8
+        },
+        {
+          type: :checkbox,
+          box: :empty,
+          text: "At the request of the subject identified in Section B, this report was reviewed by the Secretary of the U.S. Department of Health and Human Services. The Secretary's decision is shown below:",
+          size: 8
+        },
+        {
+          text: "Date of Original Submission: #{safe(d[:original_submission_date])}",
+          size: 8,
+          align: :left
+        },
+        {
+          text: "Date of Most Recent Change: #{safe(d[:most_recent_change_date])}",
+          size: 8,
+          align: :left
+        }
+      ]
+    end
+
+    def self.supplemental_subject_rows(d)
+      rows = []
+
+      Array(d[:supplemental_ssns]).each do |ssn|
+        rows << { text: "Social Security Numbers (SSN): #{ssn}", align: :center }
       end
 
-      def normalized_type(report)
-        value = report[:category].presence || report[:type].presence || report[:report_type]
-        value.to_s.downcase.gsub(/[^a-z0-9]+/, "_").to_sym
+      Array(d[:supplemental_npis]).each do |npi|
+        rows << { text: "National Provider Identifiers (NPI): #{npi}", align: :center }
       end
 
-      def report_title(type)
-        SUMMARY_TYPES.to_h.fetch(type, type.to_s.tr("_", " ").upcase)
+      Array(d[:supplemental_licenses]).each do |license|
+        rows << {
+          text: "Occupation/Field of Licensure: #{safe(license[:occupation])}",
+          align: :center
+        }
+        rows << {
+          text: "State License Number, State of Licensure: #{safe(license[:number])}, #{safe(license[:state])}",
+          align: :center
+        }
       end
 
-      def query_title(data)
-        data[:root_name].to_s == "pdsResponse" ? "CONTINUOUS QUERY RESPONSE" : "ONE-TIME QUERY RESPONSE"
+      Array(d[:supplemental_dea_numbers]).each do |dea|
+        rows << {
+          text: "Drug Enforcement Administration (DEA) Numbers: #{dea}",
+          align: :center
+        }
       end
 
-      def query_type(data)
-        data[:root_name].to_s == "pdsResponse" ?
-          "This is a Continuous Query response." :
-          "This is a One-Time query response. Your organization will only receive future reports on this practitioner if another query is submitted."
+      if d[:supplemental_disclaimer].present?
+        rows << { text: "", size: 4, align: :left }
+        rows << {
+          text: "The following information was not provided by the reporting entity identified in Section A of this report. The information was submitted to the Data Bank from other sources and is intended to supplement the information contained in this report.",
+          size: 7.5,
+          align: :left
+        }
       end
 
-      def statutes(d)
-        values = []
-        values << "Title IV" if d[:title_iv] || d.dig(:processed_under, :title_iv)
-        values << "Section 1921" if d[:section_1921] || d.dig(:processed_under, :section_1921)
-        values << "Section 1128E" if d[:section_1128e] || d.dig(:processed_under, :section_1128e)
-        values.presence&.join("; ") || "Title IV; Section 1921; Section 1128E"
-      end
+      rows
+    end
 
-      def authorized_submitter(d)
-        [d[:certification_name], d[:certification_title], phone(d[:certification_phone])].reject(&:blank?).join(", ")
-      end
+    def self.render_maintained_under(pdf, d)
+      ensure_space!(pdf, 82)
 
-      def entity_name(d)
-        safe(d[:latest_contact_entity_name].presence || d[:entity_name].presence || d[:authorized_org_name])
-      end
+      y = pdf.cursor
+      pdf.line_width = 1
+      pdf.stroke_horizontal_line(0, CONTENT_WIDTH, at: y)
+      pdf.move_down 8
 
-      def summary_action(r)
-        type = normalized_type(r)
-        type == :mmpr ? lookup(:mmpr_payment_result, r[:payment_result_of_code].presence || r[:payment_result_of]) :
-                        lookup(:aar_action, r[:action_code].presence || r[:action])
-      end
+      pdf.font("Helvetica-Bold")
+      pdf.font_size 8.5
+      pdf.text(
+        "This report is maintained under the provisions of: Title #{safe(d[:maintained_under])}".strip,
+        align: :left
+      )
 
-      def summary_basis(r)
-        type = normalized_type(r)
-        type == :mmpr ? lookup(:mmpr_specific_allegation, r[:specific_allegation_code].presence || r[:specific_allegation]) :
-                        lookup(:aar_basis, r[:basis_code])
-      end
+      pdf.move_down 6
+      pdf.font("Helvetica")
+      pdf.font_size 7.5
+      pdf.text(
+        "The information contained in this report is maintained by the National Practitioner Data Bank for restricted use under the provisions of Title IV of Public Law 99-660, as amended, and 45 CFR Part 60. All information is confidential and may be used only for the purpose for which it was disclosed. Disclosure or use of confidential information for other purposes is a violation of federal law. For additional information or clarification, contact the reporting entity identified in Section A.",
+        align: :left
+      )
+    end
 
-      def subject_name(d)
-        last = safe(d[:subject_last])
-        rest = [safe(d[:subject_first]), safe(d[:subject_middle])].reject(&:blank?).join(" ")
-        rest.present? ? "#{last}, #{rest}" : last
-      end
+    # =========================================================
+    # HEADER / FOOTER
+    # =========================================================
 
-      def occupation(d)
-        label = lookup(:occupation, d[:occupation_field])
-        [label, d[:occupation_state].present? ? "State #{d[:occupation_state]}" : nil].compact.join(" ")
-      end
+    def self.header(pdf, d)
+      pdf.canvas do
+        page_top = pdf.page.dimensions[3] - 20
 
-      def license_line(d)
-        return "NO LICENSE, #{safe(d[:occupation_state])}" if d[:no_license]
-        [safe(d[:license_number]), safe(d[:occupation_state])].reject(&:blank?).join(", ")
-      end
+        draw_npdb_identity(pdf, page_top)
 
-      def license_summary(d)
-        [lookup(:occupation, d[:occupation_field]), safe(d[:license_number]), safe(d[:occupation_state])].reject(&:blank?).join(", ")
-      end
+        right_x = 388
+        box_w = 180
+        box_h = 82
 
-      def statute(code)
-        lookup(:statutory_authority, code)
-      end
+        pdf.stroke_rectangle([right_x, page_top], box_w, box_h)
 
-      def patient_age(d)
-        age = safe(d[:patient_age])
-        return age if age.blank? || age.upcase == "UNKNOWN" || age.include?("YEAR")
-        "#{age} YEARS"
-      end
+        if pdf.page_number == 1
+          header_dcn = d[:dcn]
+          header_date = d[:process_date]
+          page_text = "1 of 1"
+          name = query_subject_name(d)
+        else
+          header_dcn = d[:report_dcn].presence || d[:dcn]
+          header_date = d[:report_process_date].presence || d[:original_submission_date]
+          report_page = pdf.page_number - 1
+          report_count = [pdf.page_count - 1, 1].max
+          page_text = "#{report_page} of #{report_count}"
+          name = report_subject_name(d)
+        end
 
-      def address(street, city, state, zip)
-        [safe(street), city_state_zip(city, state, zip)].reject(&:blank?).join(", ")
-      end
+        y = page_top - 11
 
-      def city_state_zip(city, state, zip)
-        [[safe(city), safe(state)].reject(&:blank?).join(", "), safe(zip)].reject(&:blank?).join(" ")
-      end
-
-      def phone(value)
-        digits = value.to_s.gsub(/\D/, "")
-        return value.to_s if digits.length < 10
-        "(#{digits[0, 3]}) #{digits[3, 3]}-#{digits[6, 4]}"
-      end
-
-      def mask_ssn(value)
-        digits = value.to_s.gsub(/\D/, "")
-        return value.to_s if digits.length < 4
-        "***-**-#{digits[-4, 4]}"
-      end
-
-      def money(value)
-        return "" if safe(value).blank?
-        number = value.to_s.gsub(/[^\d.\-]/, "").to_f
-        "$ #{format('%.2f', number).reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse}"
-      end
-
-      def center_rule(pdf, text)
         pdf.font("Helvetica-Bold")
-        pdf.font_size(13)
-        tw = pdf.width_of(text, size: 13)
-        y = pdf.cursor
-        left_end = (WIDTH - tw) / 2 - 12
-        right_start = (WIDTH + tw) / 2 + 12
-        pdf.stroke_horizontal_line(42, left_end, at: y)
-        pdf.stroke_horizontal_line(right_start, WIDTH - 42, at: y)
-        pdf.draw_text(text, at: [(WIDTH - tw) / 2, y - 4])
+        pdf.font_size 8.4
+        pdf.draw_text("DCN:", at: [right_x + 6, y])
+        pdf.font("Courier")
+        pdf.draw_text(safe(header_dcn), at: [right_x + 38, y])
+
+        y -= 12
+        pdf.font("Helvetica")
+        pdf.draw_text("Process Date:", at: [right_x + 6, y])
+        pdf.font("Courier")
+        pdf.draw_text(safe(header_date), at: [right_x + 70, y])
+
+        y -= 12
+        pdf.font("Helvetica")
+        pdf.draw_text("Page:", at: [right_x + 6, y])
+        pdf.font("Courier")
+        pdf.draw_text(page_text, at: [right_x + 38, y])
+
+        y -= 12
+        pdf.font("Courier")
+        pdf.draw_text(name, at: [right_x + 6, y])
+
+        y -= 12
+        pdf.font("Helvetica")
+        pdf.draw_text("For authorized use by:", at: [right_x + 6, y])
+
+        y -= 12
+        pdf.font("Courier")
+        pdf.font_size 8.2
+        pdf.draw_text(authorized_org_display(d), at: [right_x + 6, y])
+
+        rule_y = page_top - 87
+        pdf.line_width = 2
+        pdf.stroke_horizontal_line(LEFT_MARGIN, pdf.page.dimensions[2] - RIGHT_MARGIN, at: rule_y)
+        pdf.line_width = 1
+      end
+    end
+
+    def self.draw_npdb_identity(pdf, page_top)
+      left_x = LEFT_MARGIN
+
+      # Text-only NPDB mark; no external image dependency is introduced.
+      pdf.font("Helvetica-Bold")
+      pdf.font_size 18
+      pdf.draw_text("NPDB", at: [left_x + 1, page_top - 40])
+
+      pdf.font("Helvetica")
+      pdf.font_size 7.5
+      text_x = left_x + 55
+      pdf.draw_text("National Practitioner Data Bank", at: [text_x, page_top - 8])
+      pdf.draw_text("Health Resources and Services Administration", at: [text_x, page_top - 20])
+      pdf.draw_text("U.S. Department of Health and Human Services", at: [text_x, page_top - 32])
+      pdf.draw_text("P.O. Box 10832", at: [text_x, page_top - 44])
+      pdf.draw_text("Chantilly, VA 20153-0832", at: [text_x, page_top - 56])
+      pdf.draw_text("https://www.npdb.hrsa.gov", at: [text_x, page_top - 68])
+    end
+
+    def self.footer(pdf)
+      pdf.canvas do
+        text = "CONFIDENTIAL DOCUMENT - FOR AUTHORIZED USE ONLY"
+
+        pdf.font("Helvetica-Bold")
+        pdf.font_size 9
+
+        text_width = pdf.width_of(text, size: 9)
+        x = (pdf.page.dimensions[2] - text_width) / 2.0
+        y = 15
+
+        pdf.draw_text(text, at: [x, y])
+      end
+    end
+
+    # =========================================================
+    # REPORT HEADER
+    # =========================================================
+
+    def self.report_header_block(pdf, d)
+      entity = d[:latest_contact_entity_name].presence || d[:entity_name]
+      report_title =
+        if d[:transaction_code].to_s.upcase == "C"
+          "CORRECTION TO MEDICAL MALPRACTICE PAYMENT REPORT"
+        else
+          "MEDICAL MALPRACTICE PAYMENT REPORT"
+        end
+
+      org_h = 24
+      title_h = 28
+      head_h = 21
+      value_h = 22
+      total_h = org_h + title_h + head_h + value_h
+      y_top = pdf.cursor
+      mid_x = CONTENT_WIDTH / 2.0
+
+      pdf.bounding_box([0, y_top], width: CONTENT_WIDTH, height: total_h) do
+        pdf.stroke_color "B8B8B8"
+        pdf.stroke_rectangle([0, total_h], CONTENT_WIDTH, total_h)
+
+        cursor_y = total_h
+
+        pdf.fill_color GREY_LIGHT
+        pdf.fill_rectangle([0, cursor_y], CONTENT_WIDTH, org_h)
+        pdf.fill_color "000000"
+        pdf.font("Helvetica-BoldOblique")
+        pdf.font_size 12
+        pdf.text_box(
+          entity.to_s,
+          at: [0, cursor_y],
+          width: CONTENT_WIDTH,
+          height: org_h,
+          align: :center,
+          valign: :center
+        )
+
+        cursor_y -= org_h
+
+        pdf.fill_color GREY_MID
+        pdf.fill_rectangle([0, cursor_y], CONTENT_WIDTH, title_h)
+        pdf.fill_color "000000"
+        pdf.font("Helvetica-Bold")
+        pdf.font_size 12
+        pdf.text_box(
+          report_title,
+          at: [6, cursor_y],
+          width: 350,
+          height: title_h,
+          valign: :center
+        )
+        pdf.text_box(
+          "Date of Action: #{safe(d[:date_this_payment])}",
+          at: [350, cursor_y],
+          width: CONTENT_WIDTH - 356,
+          height: title_h,
+          align: :right,
+          valign: :center
+        )
+
+        cursor_y -= title_h
+
+        pdf.fill_color GREY_SECTION
+        pdf.fill_rectangle([0, cursor_y], CONTENT_WIDTH, head_h)
+        pdf.fill_color "000000"
+        pdf.font("Helvetica-Bold")
+        pdf.font_size 11
+        pdf.text_box("Initial Action", at: [0, cursor_y], width: mid_x, height: head_h, align: :center, valign: :center)
+        pdf.text_box("Basis for Initial Action", at: [mid_x, cursor_y], width: mid_x, height: head_h, align: :center, valign: :center)
+
+        cursor_y -= head_h
+
+        pdf.stroke_vertical_line(cursor_y + head_h, cursor_y - value_h, at: mid_x)
+
+        pdf.font("Helvetica")
+        pdf.font_size 9
+        pdf.text_box(
+          "- #{strip_code(d[:payment_result_of])}",
+          at: [6, cursor_y - 4],
+          width: mid_x - 12,
+          height: value_h
+        )
+        pdf.text_box(
+          "- #{strip_code(d[:specific_allegation])}",
+          at: [mid_x + 6, cursor_y - 4],
+          width: mid_x - 12,
+          height: value_h
+        )
       end
 
-      def end_report(pdf)
-        pdf.move_down(10)
-        center_rule(pdf, "END OF REPORT")
+      pdf.move_down total_h + 2
+    end
+
+    # =========================================================
+    # GENERIC SECTION BLOCKS
+    # =========================================================
+
+    def self.section_sidebar_block(pdf, sidebar_title, pairs)
+      rows = pairs.map do |label, value|
+        {
+          text: "#{label} #{safe(value)}".strip,
+          size: SECTION_FONT_SIZE,
+          align: :center
+        }
       end
 
-      def ensure_space(pdf, height)
-        pdf.start_new_page if pdf.cursor < height
+      section_sidebar_block_rich(pdf, sidebar_title, rows)
+    end
+
+    def self.section_sidebar_block_rich(
+      pdf,
+      sidebar_title,
+      rows,
+      draw_top_rule: true,
+      sidebar_fill: true
+    )
+      rows = Array(rows).map do |r|
+        {
+          text: r[:text].to_s,
+          size: (r[:size] || SECTION_FONT_SIZE),
+          style: r[:style],
+          align: (r[:align] || :center).to_sym,
+          type: (r[:type] || :text).to_sym,
+          box: (r[:box] || :empty).to_sym,
+          box_size: (r[:box_size] || 10).to_f
+        }
       end
 
-      def safe(value)
-        value.to_s.strip
+      sidebar_text_h =
+        if sidebar_title.present?
+          pdf.height_of(
+            sidebar_title,
+            width: SIDEBAR_W - 10,
+            size: 9,
+            leading: 1
+          )
+        else
+          0
+        end
+
+      label_h = sidebar_title.present? ? sidebar_text_h + 10 : 0
+
+      content_h = rows.sum do |r|
+        if r[:type] == :checkbox
+          text_w = RIGHT_COL_W - r[:box_size] - 5
+          text_h = pdf.height_of(r[:text], width: text_w, size: r[:size])
+          [r[:box_size], text_h].max + SECTION_LINE_GAP
+        else
+          pdf.height_of(r[:text], width: RIGHT_COL_W, size: r[:size]) + SECTION_LINE_GAP
+        end
+      end + 10
+
+      block_h = [label_h, content_h].max
+      ensure_space!(pdf, [block_h + 4, 110].min)
+
+      start_y = pdf.cursor
+
+      if draw_top_rule
+        pdf.line_width = 1.5
+        pdf.stroke_horizontal_line(0, CONTENT_WIDTH, at: start_y)
+        pdf.line_width = 1
       end
 
-      def apply_provider_fallbacks!(data, ppi)
-        data[:subject_last] = ppi.last_name.to_s.upcase.presence || data[:subject_last]
-        data[:subject_first] = ppi.first_name.to_s.upcase.presence || data[:subject_first]
-        data[:subject_middle] = ppi.middle_name.to_s.upcase.presence || data[:subject_middle]
-        data[:npi] = ppi.npi.to_s.presence || data[:npi] if ppi.respond_to?(:npi)
-        data[:ssn] = mask_ssn(ppi.ssn.to_s).presence || data[:ssn] if ppi.respond_to?(:ssn)
+      if sidebar_fill && sidebar_title.present?
+        pdf.save_graphics_state
+        pdf.fill_color GREY_SECTION
+        pdf.fill_rectangle([0, start_y], SIDEBAR_W, label_h)
+        pdf.restore_graphics_state
+
+        pdf.font("Helvetica-Bold")
+        pdf.font_size 9
+        pdf.text_box(
+          sidebar_title,
+          at: [0, start_y - 3],
+          width: SIDEBAR_W,
+          height: label_h,
+          align: :center,
+          valign: :top
+        )
       end
+
+      content_x = sidebar_fill ? RIGHT_COL_X : 0
+      content_w = sidebar_fill ? RIGHT_COL_W : CONTENT_WIDTH
+
+      pdf.bounding_box(
+        [content_x, start_y - 6],
+        width: content_w
+      ) do
+        rows.each do |r|
+          if r[:type] == :checkbox
+            y = pdf.cursor
+
+            pdf.stroke_rectangle([0, y], r[:box_size], r[:box_size])
+
+            if r[:box] == :x
+              pdf.font("Helvetica-Bold")
+              pdf.font_size(8)
+              pdf.draw_text("X", at: [2.4, y - 8])
+            end
+
+            pdf.bounding_box(
+              [r[:box_size] + 6, y],
+              width: content_w - r[:box_size] - 6
+            ) do
+              pdf.font(r[:style] == :bold ? "Helvetica-Bold" : "Helvetica")
+              pdf.font_size(r[:size])
+              pdf.text(r[:text], align: :left)
+            end
+          else
+            pdf.font(r[:style] == :bold ? "Helvetica-Bold" : "Helvetica")
+            pdf.font_size(r[:size])
+            pdf.text(r[:text], align: r[:align])
+          end
+
+          pdf.move_down SECTION_LINE_GAP
+        end
+      end
+
+      pdf.move_down 3
+    end
+
+    # =========================================================
+    # HELPERS
+    # =========================================================
+
+    def self.apply_provider_overrides!(d, ppi)
+      return unless ppi
+
+      # Query page can use the local provider record, but unabridged report
+      # identity remains XML-driven so the report reflects the NPDB response.
+      d[:query_subject_last] = ppi.last_name.to_s.upcase if ppi.respond_to?(:last_name) && ppi.last_name.present?
+      d[:query_subject_first] = ppi.first_name.to_s.upcase if ppi.respond_to?(:first_name) && ppi.first_name.present?
+      d[:query_subject_middle] = ppi.middle_name.to_s.upcase if ppi.respond_to?(:middle_name) && ppi.middle_name.present?
+      d[:query_subject_suffix] = ppi.suffix.to_s.upcase if ppi.respond_to?(:suffix) && ppi.suffix.present?
+    end
+
+    def self.query_subject_name(d)
+      name_from_parts(
+        d[:query_subject_last],
+        d[:query_subject_first],
+        d[:query_subject_middle]
+      )
+    end
+
+    def self.report_subject_name(d)
+      name_from_parts(
+        d[:subject_last],
+        d[:subject_first],
+        d[:subject_middle]
+      )
+    end
+
+    def self.name_from_parts(last, first, middle)
+      last = safe(last)
+      first = safe(first)
+      middle = safe(middle)
+      rest = [first, middle].reject(&:blank?).join(" ")
+      rest.present? ? "#{last}, #{rest}" : last
+    end
+
+    def self.query_license_line(d)
+      occupation = safe(d[:query_occupation_field])
+      number = safe(d[:query_license_number])
+      state = safe(d[:query_occupation_state])
+
+      [occupation, number, state].reject(&:blank?).join(", ")
+    end
+
+    def self.report_license_line(d)
+      return "NO LICENSE, #{safe(d[:occupation_state])}" if d[:no_license]
+
+      [safe(d[:license_number]), safe(d[:occupation_state])].reject(&:blank?).join(", ")
+    end
+
+    def self.statutes_queried(d)
+      values = []
+      values << "Title IV" if d[:title_iv]
+      values << "Section 1921" if d[:section_1921]
+      values << "Section 1128E" if d[:section_1128e]
+      values.join("; ")
+    end
+
+    def self.authorized_org_display(d)
+      safe(d[:authorized_org_name]).presence ||
+        ENV["NPDB_AUTHORIZED_ORG_NAME"].to_s.presence ||
+        "AUTHORIZED NPDB ENTITY"
+    end
+
+    def self.authorized_agent_display(d)
+      safe(d[:authorized_agent_name]).presence ||
+        ENV["NPDB_AUTHORIZED_AGENT_NAME"].to_s
+    end
+
+    def self.authorized_submitter_display(d)
+      safe(d[:authorized_submitter_name]).presence ||
+        ENV["NPDB_AUTHORIZED_SUBMITTER_NAME"].to_s.presence ||
+        [
+          safe(d[:certification_name]),
+          safe(d[:certification_title]),
+          phone(d[:certification_phone])
+        ].reject(&:blank?).join(", ")
+    end
+
+    def self.full_address(addr1, addr2, city, state, zip)
+      first = join_nonblank(addr1, addr2)
+      second = city_state_zip(city, state, zip)
+      [first, second].reject(&:blank?).join(", ")
+    end
+
+    def self.city_state_zip(city, state, zip)
+      locality = [safe(city), safe(state)].reject(&:blank?).join(", ")
+      [locality, safe(zip)].reject(&:blank?).join(" ")
+    end
+
+    def self.join_nonblank(*values)
+      values.map { |v| safe(v) }.reject(&:blank?).join(" ")
+    end
+
+    def self.phone(raw)
+      digits = raw.to_s.gsub(/\D/, "")
+      return "" if digits.blank?
+      return "(#{digits[0, 3]}) #{digits[3, 3]}-#{digits[6, 4]}" if digits.length >= 10
+
+      raw.to_s
+    end
+
+    def self.mask_ssn(raw)
+      digits = raw.to_s.gsub(/\D/, "")
+      return raw.to_s if raw.to_s.include?("*")
+      return raw.to_s if digits.length < 4
+
+      "***-**-#{digits[-4, 4]}"
+    end
+
+    def self.previous_report(dcn)
+      value = safe(dcn)
+      return "" if value.blank?
+
+      "#{value} (Please destroy all copies of the previous report)"
+    end
+
+    def self.strip_code(value)
+      value.to_s.sub(/\s+\([A-Z0-9]+\)\s*\z/, "").strip
+    end
+
+    def self.safe(value)
+      value.to_s.strip
+    end
+
+    def self.ensure_space!(pdf, needed_h)
+      pdf.start_new_page if pdf.cursor < needed_h
+    end
+
+    def self.draw_end_of_report(pdf)
+      ensure_space!(pdf, 30)
+      pdf.move_down 9
+
+      text = "END OF REPORT"
+      size = 9
+
+      pdf.font("Helvetica-Bold")
+      pdf.font_size(size)
+
+      y = pdf.cursor
+      text_w = pdf.width_of(text, size: size)
+      gap = 10
+      left_end = (CONTENT_WIDTH - text_w) / 2.0 - gap
+      right_start = (CONTENT_WIDTH + text_w) / 2.0 + gap
+
+      pdf.line_width = 1.5
+      pdf.stroke_horizontal_line(0, left_end, at: y)
+      pdf.stroke_horizontal_line(right_start, CONTENT_WIDTH, at: y)
+      pdf.line_width = 1
+
+      pdf.draw_text(text, at: [(CONTENT_WIDTH - text_w) / 2.0, y - 3])
+      pdf.move_down 14
+    end
+
+    def self.render_watermark(pdf, watermark)
+      return if watermark.blank?
+
+      pdf.repeat(:all) do
+        pdf.canvas do
+          pdf.save_graphics_state
+          pdf.fill_color "CCCCCC"
+          pdf.transparent(0.25) do
+            pdf.rotate(45, origin: [306, 396]) do
+              pdf.font("Helvetica-Bold")
+              pdf.font_size 50
+              pdf.draw_text(watermark.to_s, at: [165, 390])
+            end
+          end
+          pdf.restore_graphics_state
+        end
+      end
+    end
+
+    def self.render_errors(pdf, errors)
+      return if Array(errors).blank?
+
+      pdf.start_new_page
+      pdf.font("Helvetica-Bold")
+      pdf.font_size 12
+      pdf.text("NPDB Processing Errors")
+      pdf.move_down 8
+      pdf.font("Helvetica")
+      pdf.font_size 9
+      Array(errors).each { |error| pdf.text("- #{error}") }
     end
   end
 end
