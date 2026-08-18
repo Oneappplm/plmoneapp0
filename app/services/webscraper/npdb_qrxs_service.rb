@@ -23,6 +23,11 @@ class Webscraper::NpdbQrxsService
   end
 
   def call
+    # If a completed NPDB PDF already exists for this provider, reuse it.
+    # This prevents duplicate NPDB queries and duplicate PDF generation.
+    existing_log = latest_completed_log
+    return existing_log if existing_log.present?
+
     creds = resolved_creds!
 
     submission_xml = build_submission_xml
@@ -118,6 +123,14 @@ class Webscraper::NpdbQrxsService
   end
 
   private
+
+  def latest_completed_log
+    NpdbWebcrawlerLog
+      .where(provider_npdb: @npdb, status: "completed")
+      .where.not(filepath: [nil, ""])
+      .order(created_at: :desc)
+      .first
+  end
 
   def render_and_save_log!(response_xml:, status:, watermark:, errors:)
     pdf_path =
