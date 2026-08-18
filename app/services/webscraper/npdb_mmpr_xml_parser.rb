@@ -1,519 +1,540 @@
 # frozen_string_literal: true
 
 require "nokogiri"
-require "date"
 
-module Webscraper
-  class NpdbMmprXmlParser
-    attr_reader :xml
+class Webscraper::NpdbMmprXmlParser
+  FALLBACK_CODES = {
+    sex: {
+      "M" => "MALE",
+      "F" => "FEMALE",
+      "U" => "UNKNOWN"
+    },
+    report_transaction: {
+      "I" => "INITIAL",
+      "C" => "CORRECTION",
+      "V" => "VOID"
+    },
+    mmpr_relationship: {
+      "P" => "INSURANCE COMPANY - PRIMARY INSURER",
+      "E" => "INSURANCE COMPANY - EXCESS INSURER",
+      "S" => "SELF-INSURED ORGANIZATION",
+      "G" => "INSURANCE GUARANTY FUND",
+      "M" => "STATE MEDICAL MALPRACTICE PAYMENT FUND - PRIMARY PAYER",
+      "O" => "STATE MEDICAL MALPRACTICE PAYMENT FUND - SECONDARY PAYER"
+    },
+    mmpr_payment_type: {
+      "S" => "A SINGLE FINAL PAYMENT",
+      "M" => "ONE OF MULTIPLE PAYMENTS",
+      "U" => "UNKNOWN PAYMENT TYPE"
+    },
+    mmpr_payment_result: {
+      "J" => "JUDGMENT",
+      "S" => "SETTLEMENT",
+      "B" => "PAYMENT PRIOR TO SETTLEMENT",
+      "O" => "OTHER",
+      "U" => "UNKNOWN"
+    },
+    mmpr_patient_type: {
+      "I" => "INPATIENT",
+      "O" => "OUTPATIENT",
+      "B" => "BOTH",
+      "U" => "UNKNOWN"
+    },
+    mmpr_nature: {
+      "001" => "DIAGNOSIS RELATED",
+      "010" => "ANESTHESIA RELATED",
+      "020" => "SURGERY RELATED",
+      "030" => "MEDICATION RELATED",
+      "040" => "IV & BLOOD PRODUCTS RELATED",
+      "050" => "OBSTETRICS RELATED",
+      "060" => "TREATMENT RELATED",
+      "070" => "MONITORING RELATED",
+      "080" => "EQUIPMENT/PRODUCT RELATED",
+      "090" => "OTHER MISCELLANEOUS",
+      "100" => "BEHAVIORAL HEALTH RELATED"
+    },
+    mmpr_specific_allegation: {
+      "101" => "FAILURE TO DIAGNOSE",
+      "113" => "FAILURE TO TREAT",
+      "200" => "DELAY IN DIAGNOSIS",
+      "202" => "DELAY IN TREATMENT",
+      "305" => "IMPROPER MANAGEMENT",
+      "306" => "IMPROPER PERFORMANCE",
+      "323" => "WRONG DIAGNOSIS OR MISDIAGNOSIS"
+    },
+    mmpr_outcome: {
+      "01" => "EMOTIONAL INJURY ONLY",
+      "02" => "INSIGNIFICANT INJURY",
+      "03" => "MINOR TEMPORARY INJURY",
+      "04" => "MAJOR TEMPORARY INJURY",
+      "05" => "MINOR PERMANENT INJURY",
+      "06" => "SIGNIFICANT PERMANENT INJURY",
+      "07" => "MAJOR PERMANENT INJURY",
+      "08" => "GRAVE PERMANENT INJURY",
+      "09" => "DEATH",
+      "10" => "CANNOT BE DETERMINED FROM AVAILABLE RECORDS"
+    },
+    occupation: {
+      "010" => "PHYSICIAN (MD)",
+      "015" => "PHYSICIAN (MD) - OTHER",
+      "020" => "PHYSICIAN (DO)",
+      "025" => "PHYSICIAN (DO) - OTHER",
+      "030" => "DENTIST (DDS/DMD)",
+      "035" => "DENTIST - OTHER"
+    },
+    dispute_status: {
+      "N" => "",
+      "Y" => "THIS REPORT HAS BEEN DISPUTED BY THE SUBJECT.",
+      "Q" => "RECONSIDERATION REQUESTED."
+    }
+  }.freeze
 
-    def initialize(xml)
-      @xml = xml.to_s
-    end
+  def initialize(response_xml)
+    @doc = Nokogiri::XML(response_xml.to_s) { |config| config.nonet.recover }
+    @doc.remove_namespaces!
+  end
 
-    def to_h
-      document = Nokogiri::XML(clean_xml(xml)) { |config| config.nonet.recover }
-      document.remove_namespaces!
+  def to_h
+    query = @doc.at_xpath("/queryResponse") || @doc.root
+    subject_response = query&.at_xpath("./querySubjectResponse")
+    report = subject_response&.at_xpath("./report")
 
-      root = document.root
-      query_subject = root&.at_xpath("./querySubjectResponse")
+    query_subject = subject_response&.at_xpath("./individual")
+    report_subject = report&.at_xpath("./individual")
+    contact = report&.at_xpath("./contact")
+    latest_contact = report&.at_xpath("./latestContact")
+    report_data = report&.at_xpath("./reportData")
+    mmpr = report&.at_xpath("./informationReported/mmpr")
+    statement = report&.at_xpath("./statement")
 
-      result = {
-        root_name: root&.name,
-        submission_filename: text(root, "./submissionFilename"),
-        submitter: parse_submitter(root&.at_xpath("./submitter")),
-        certification: parse_certification(root&.at_xpath("./certification")),
-        batch_status: parse_status(root&.at_xpath("./batchStatus")),
-        charge_receipt: parse_charge_receipt(root&.at_xpath("./chargeReceipt")),
-        subject_status: parse_status(query_subject&.at_xpath("./status")),
-        processed_under: parse_processed_under(query_subject&.at_xpath("./processedUnder")),
-        subject: parse_individual(query_subject&.at_xpath("./individual"))
-      }
+    notes = report_data ? report_data.xpath("./notes/note").map { |n| n.text.to_s.strip }.reject(&:blank?) : []
+    supplemental = parse_supplemental_notes(notes)
 
-      reports = query_subject ? query_subject.xpath("./report").map { |node| parse_report(node, result) } : []
-      result[:reports] = reports
+    {
+      # ---------------------------------------------------------
+      # Query-level data (summary page)
+      # ---------------------------------------------------------
+      dcn: text(subject_response, "./status/dcn").presence || text(query, "./batchStatus/dcn"),
+      process_date: fmt_mmddyyyy(
+        text(subject_response, "./status/processDate").presence ||
+        text(query, "./batchStatus/processDate")
+      ),
+      successfully_processed: truthy?(text(subject_response, "./status/successfullyProcessed")),
 
-      flatten_root_fields!(result)
-      merge_first_report_for_backward_compatibility!(result, reports.first)
-      result
-    rescue Nokogiri::XML::SyntaxError => e
-      raise ArgumentError, "Invalid NPDB XML: #{e.message}"
-    end
+      submission_filename: text(query, "./submissionFilename"),
 
-    private
+      submitter_vendor_id: text(query, "./submitter/vendorID"),
+      submitter_entity_dbid: text(query, "./submitter/entityDBID"),
+      submitter_agent_dbid: text(query, "./submitter/agentDBID"),
 
-    def parse_submitter(node)
-      return {} unless node
-      {
-        entity_dbid: text(node, "./entityDBID"),
-        agent_dbid: text(node, "./agentDBID"),
-        vendor_id: text(node, "./vendorID")
-      }
-    end
+      certification_name: text(query, "./certification/name"),
+      certification_title: text(query, "./certification/title"),
+      certification_phone: text(query, "./certification/phone/number"),
+      certification_date: fmt_mmddyyyy(text(query, "./certification/date")),
 
-    def parse_certification(node)
-      return {} unless node
-      {
-        name: text(node, "./name"),
-        title: text(node, "./title"),
-        phone: text(node, "./phone/number"),
-        date: format_date(text(node, "./date"))
-      }
-    end
+      # The authorized organization is not the report/contact entity.
+      # Keep an ENV override so existing callers do not need to change.
+      authorized_org_name: ENV["NPDB_AUTHORIZED_ORG_NAME"].to_s,
+      authorized_agent_name: ENV["NPDB_AUTHORIZED_AGENT_NAME"].to_s,
+      authorized_submitter_name: ENV["NPDB_AUTHORIZED_SUBMITTER_NAME"].to_s,
 
-    def parse_status(node)
-      return {} unless node
-      {
-        dcn: text(node, "./dcn"),
-        process_date: format_date(text(node, "./processDate")),
-        successfully_processed: boolean(text(node, "./successfullyProcessed")),
-        error_code: text(node, "./error/code"),
-        error_message: text(node, "./error/message")
-      }
-    end
+      title_iv: truthy?(text(subject_response, "./processedUnder/titleIV")),
+      section_1921: truthy?(text(subject_response, "./processedUnder/section1921")),
+      section_1128e: truthy?(text(subject_response, "./processedUnder/section1128e")),
 
-    def parse_charge_receipt(node)
-      return {} unless node
-      {
-        date_charged: format_date(text(node, "./dateCharged")),
-        data_bank: text(node, "./chargeReference/dataBank"),
-        reference_number: text(node, "./chargeReference/referenceNumber"),
-        number_of_subjects: integer(text(node, "./numberOfSubjects")),
-        number_of_subjects_charged: integer(text(node, "./numberOfSubjectsCharged")),
-        number_of_subjects_not_processed: integer(text(node, "./numberOfSubjectsNotProcessed")),
-        price_per_subject: decimal(text(node, "./pricePerSubject")),
-        number_of_credits_used: integer(text(node, "./numberOfCreditsUsed")),
-        amount_of_credits_used: decimal(text(node, "./amountOfCreditsUsed")),
-        total_charge: decimal(text(node, "./totalCharge"))
-      }
-    end
+      query_subject_last: text(query_subject, "./name/last"),
+      query_subject_first: text(query_subject, "./name/first"),
+      query_subject_middle: text(query_subject, "./name/middle"),
+      query_subject_suffix: text(query_subject, "./name/suffix"),
+      query_sex: lookup(:sex, text(query_subject, "./sex")),
+      query_birthdate: fmt_mmddyyyy(text(query_subject, "./birthdate")),
+      query_work_addr1: text(query_subject, "./workAddress/address"),
+      query_work_addr2: text(query_subject, "./workAddress/address2"),
+      query_work_city: text(query_subject, "./workAddress/city"),
+      query_work_state: text(query_subject, "./workAddress/state"),
+      query_work_zip: zip_with_4(
+        text(query_subject, "./workAddress/zip"),
+        text(query_subject, "./workAddress/zip4")
+      ),
+      query_home_addr1: text(query_subject, "./homeAddress/address"),
+      query_home_addr2: text(query_subject, "./homeAddress/address2"),
+      query_home_city: text(query_subject, "./homeAddress/city"),
+      query_home_state: text(query_subject, "./homeAddress/state"),
+      query_home_zip: zip_with_4(
+        text(query_subject, "./homeAddress/zip"),
+        text(query_subject, "./homeAddress/zip4")
+      ),
+      query_ssn: text(query_subject, "./ssn"),
+      query_license_number: text(query_subject, "./occupationAndLicensure/number"),
+      query_occupation_state: text(query_subject, "./occupationAndLicensure/state"),
+      query_occupation_field_code: text(query_subject, "./occupationAndLicensure/field"),
+      query_occupation_field: lookup(:occupation, text(query_subject, "./occupationAndLicensure/field")),
 
-    def parse_processed_under(node)
-      return {} unless node
-      {
-        title_iv: boolean(text(node, "./titleIV")),
-        section_1921: boolean(text(node, "./section1921")),
-        section_1128e: boolean(text(node, "./section1128e"))
-      }
-    end
+      # ---------------------------------------------------------
+      # Report-level header / status
+      # ---------------------------------------------------------
+      report_dcn: text(report_data, "./reportDCN"),
+      transaction_code: text(report_data, "./transaction"),
+      transaction: lookup(:report_transaction, text(report_data, "./transaction")),
+      previous_dcn: text(report_data, "./previousDCN"),
+      original_submission_date: fmt_mmddyyyy(text(report_data, "./originalSubmitDate")),
+      most_recent_change_date: fmt_mmddyyyy(text(report_data, "./recentChangeDate")),
+      report_process_date: fmt_mmddyyyy(text(report_data, "./originalSubmitDate")),
+      maintained_under: report_data ?
+        report_data.xpath("./maintainedUnder/statute").map { |n| n.text.to_s.strip }.reject(&:blank?).join("; ") :
+        "",
 
-    def parse_report(node, root_data)
-      type = Webscraper::NpdbReportClassifier.classify(node)
-      report_data = node.at_xpath("./reportData")
-      information = node.at_xpath("./informationReported")
-      statement = node.at_xpath("./statement")
+      # ---------------------------------------------------------
+      # Reporting entity
+      # ---------------------------------------------------------
+      entity_name: text(contact, "./entityName"),
+      entity_office: text(contact, "./officeOrName"),
+      entity_title: text(contact, "./titleOrDept"),
+      entity_phone: text(contact, "./phone/number"),
+      entity_addr1: text(contact, "./address/address"),
+      entity_addr2: text(contact, "./address/address2"),
+      entity_city: text(contact, "./address/city"),
+      entity_state: text(contact, "./address/state"),
+      entity_zip: zip_with_4(
+        text(contact, "./address/zip"),
+        text(contact, "./address/zip4")
+      ),
+      entity_country: text(contact, "./address/country"),
+      entity_internal_ref: text(contact, "./entityReference").presence ||
+        text(contact, "./entityInternalReportReference"),
 
-      report = {
-        type: type,
-        category: type,
-        report_type: type,
-        contact: parse_contact(node.at_xpath("./contact")),
-        latest_contact: parse_latest_contact(node.at_xpath("./latestContact")),
-        report_data: parse_report_data(report_data),
-        subject: parse_individual(node.at_xpath("./individual")),
-        statement: parse_statement(statement),
-        information_reported: {}
-      }
+      latest_contact_present: latest_contact.present?,
+      latest_contact_entity_status: text(latest_contact, "./entityStatus"),
+      latest_contact_entity_name: text(latest_contact, "./entityName"),
+      latest_contact_addr1: text(latest_contact, "./address/address"),
+      latest_contact_addr2: text(latest_contact, "./address/address2"),
+      latest_contact_city: text(latest_contact, "./address/city"),
+      latest_contact_state: text(latest_contact, "./address/state"),
+      latest_contact_zip: zip_with_4(
+        text(latest_contact, "./address/zip"),
+        text(latest_contact, "./address/zip4")
+      ),
+      latest_contact_country: text(latest_contact, "./address/country"),
+      latest_contact_last_update_date: fmt_mmddyyyy(text(latest_contact, "./lastUpdateDate")),
 
-      case type
-      when :mmpr
-        report[:information_reported] = parse_mmpr(information&.at_xpath("./mmpr"))
-        report[:mmpr] = report[:information_reported]
-      when :judgment_conviction
-        report[:information_reported] = parse_jocr(information&.at_xpath("./jocr"))
-        report[:jocr] = report[:information_reported]
+      # ---------------------------------------------------------
+      # Report subject (unabridged report section B)
+      # ---------------------------------------------------------
+      subject_last: text(report_subject, "./name/last").presence || text(query_subject, "./name/last"),
+      subject_first: text(report_subject, "./name/first").presence || text(query_subject, "./name/first"),
+      subject_middle: text(report_subject, "./name/middle"),
+      subject_suffix: text(report_subject, "./name/suffix"),
+      other_names: parse_other_names(report_subject),
+      sex: lookup(:sex, text(report_subject, "./sex")),
+      birthdate: fmt_mmddyyyy(text(report_subject, "./birthdate")),
+      org_name: text(report_subject, "./organizationName"),
+      work_addr1: text(report_subject, "./workAddress/address"),
+      work_addr2: text(report_subject, "./workAddress/address2"),
+      work_city: text(report_subject, "./workAddress/city"),
+      work_state: text(report_subject, "./workAddress/state"),
+      work_zip: zip_with_4(
+        text(report_subject, "./workAddress/zip"),
+        text(report_subject, "./workAddress/zip4")
+      ),
+      home_addr1: text(report_subject, "./homeAddress/address"),
+      home_addr2: text(report_subject, "./homeAddress/address2"),
+      home_city: text(report_subject, "./homeAddress/city"),
+      home_state: text(report_subject, "./homeAddress/state"),
+      home_zip: zip_with_4(
+        text(report_subject, "./homeAddress/zip"),
+        text(report_subject, "./homeAddress/zip4")
+      ),
+      ssn: text(report_subject, "./ssn"),
+      npi: text(report_subject, "./npi"),
+      professional_school: build_school(report_subject),
+      occupation_field_code: text(report_subject, "./occupationAndLicensure/field"),
+      occupation_field: lookup(:occupation, text(report_subject, "./occupationAndLicensure/field")),
+      occupation_state: text(report_subject, "./occupationAndLicensure/state"),
+      license_number: text(report_subject, "./occupationAndLicensure/number"),
+      no_license: truthy?(text(report_subject, "./occupationAndLicensure/noLicense")),
+      deceased: map_deceased(text(report_subject, "./deceasedDate/isDeceased")),
+      hospital_affiliations: parse_simple_list(report_subject, "./hospitalAffiliation"),
+
+      # ---------------------------------------------------------
+      # MMPR section C
+      # ---------------------------------------------------------
+      relationship_code: text(mmpr, "./relationshipOfEntity"),
+      relationship: lookup(:mmpr_relationship, text(mmpr, "./relationshipOfEntity")),
+      amount_this_payment: money(text(mmpr, "./paymentForThisPractitioner")),
+      date_this_payment: fmt_mmddyyyy(text(mmpr, "./paymentDate")),
+      payment_type_code: text(mmpr, "./paymentType"),
+      payment_type: lookup(:mmpr_payment_type, text(mmpr, "./paymentType")),
+      total_paid: money(text(mmpr, "./totalPaymentForThisPractitioner")),
+      payment_result_of_code: text(mmpr, "./paymentResultOf"),
+      payment_result_of: lookup(:mmpr_payment_result, text(mmpr, "./paymentResultOf")),
+      judgment_date: fmt_mmddyyyy(text(mmpr, "./judgmentOrSettlementDate")),
+      adjudicative_body_case_number: text(mmpr, "./adjudicativeBodyCaseNumber"),
+      adjudicative_body_name: text(mmpr, "./adjudicativeBodyName"),
+      court_file_number: text(mmpr, "./courtFileNumber"),
+      judgment_desc: text(mmpr, "./judgmentOrSettlementDesc"),
+      claimant_count: text(mmpr, "./totalNumberClaimants").presence ||
+        text(mmpr, "./totalNumberOfClaimants"),
+
+      other_practitioners_total: money(text(mmpr, "./totalPaymentForAllPractitioners")),
+      other_practitioners_count: text(mmpr, "./numberPractitioners"),
+
+      state_fund_payment: payment_made(mmpr&.at_xpath("./stateFundPayment")),
+      state_fund_amount: money(
+        text(mmpr, "./stateFundPayment/amount").presence ||
+        text(mmpr, "./stateFundPaymentAmount")
+      ),
+      self_insured_payment: payment_made(mmpr&.at_xpath("./selfInsuredOrgPayment")),
+      self_insured_amount: money(
+        text(mmpr, "./selfInsuredOrgPayment/amount").presence ||
+        text(mmpr, "./selfInsuredOrgPaymentAmount")
+      ),
+
+      patient_age: patient_age(mmpr&.at_xpath("./patientAge")),
+      patient_sex: lookup(:sex, text(mmpr, "./patientSex")),
+      patient_type_code: text(mmpr, "./patientType"),
+      patient_type: lookup(:mmpr_patient_type, text(mmpr, "./patientType")),
+      medical_condition_desc: text(mmpr, "./medicalConditionDesc"),
+      procedure_desc: text(mmpr, "./procedureDesc"),
+
+      nature_allegation_code: text(mmpr, "./natureAllegation"),
+      nature_allegation: with_code(
+        lookup(:mmpr_nature, text(mmpr, "./natureAllegation")),
+        text(mmpr, "./natureAllegation")
+      ),
+      specific_allegation_code: text(mmpr, "./specificAllegation/code"),
+      specific_allegation: with_code(
+        lookup(:mmpr_specific_allegation, text(mmpr, "./specificAllegation/code")),
+        text(mmpr, "./specificAllegation/code")
+      ),
+      event_date: fmt_mmddyyyy(text(mmpr, "./specificAllegation/date")),
+      outcome_code: text(mmpr, "./outcome"),
+      outcome: with_code(
+        lookup(:mmpr_outcome, text(mmpr, "./outcome")),
+        text(mmpr, "./outcome")
+      ),
+      allegations_desc: text(mmpr, "./allegationsDesc"),
+
+      # ---------------------------------------------------------
+      # Statement / report status
+      # ---------------------------------------------------------
+      dispute_status_code: text(statement, "./disputeStatus"),
+      dispute_status: lookup(:dispute_status, text(statement, "./disputeStatus")),
+      report_disputed_mark: text(statement, "./disputeStatus").to_s.upcase == "Y" ? "X" : "",
+      report_reviewed_reconsidered_mark:
+        text(statement, "./disputeStatus").to_s.upcase == "Q" ? "X" : "",
+
+      # ---------------------------------------------------------
+      # Supplemental section F
+      # ---------------------------------------------------------
+      report_notes: notes,
+      supplemental_disclaimer: supplemental[:disclaimer],
+      supplemental_ssns: supplemental[:ssns],
+      supplemental_npis: supplemental[:npis],
+      supplemental_licenses: supplemental[:licenses],
+      supplemental_dea_numbers: supplemental[:dea_numbers]
+    }
+  end
+
+  private
+
+  def text(node, xpath)
+    return "" unless node
+
+    node.at_xpath(xpath)&.text.to_s.strip
+  end
+
+  def truthy?(value)
+    %w[true t yes y 1].include?(value.to_s.strip.downcase)
+  end
+
+  def build_school(subject)
+    return "" unless subject
+
+    school = text(subject, "./professionalSchool/school")
+    year = text(subject, "./professionalSchool/graduationYear")
+
+    return "" if school.blank? && year.blank?
+    return school if year.blank?
+
+    "#{school} (#{year})"
+  end
+
+  def parse_other_names(subject)
+    return [] unless subject
+
+    subject.xpath("./otherName").map do |node|
+      last = text(node, "./last")
+      first = text(node, "./first")
+      middle = text(node, "./middle")
+      suffix = text(node, "./suffix")
+      rest = [first, middle, suffix].reject(&:blank?).join(" ")
+      rest.present? ? "#{last}, #{rest}" : last
+    end.reject(&:blank?)
+  end
+
+  def parse_simple_list(node, xpath)
+    return "" unless node
+
+    node.xpath(xpath).map { |n| n.text.to_s.strip }.reject(&:blank?).join("; ")
+  end
+
+  def parse_supplemental_notes(notes)
+    result = {
+      disclaimer: "",
+      ssns: [],
+      npis: [],
+      licenses: [],
+      dea_numbers: []
+    }
+
+    notes.each do |note|
+      case note
+      when /\ASupplemental Social Security Number\s*:\s*(.+)\z/i
+        result[:ssns] << Regexp.last_match(1).strip
+      when /\ASupplemental National Provider Identifier\s*:\s*(.+)\z/i
+        result[:npis] << Regexp.last_match(1).strip
+      when /\ASupplemental Drug Enforcement Administration \(DEA\) Number\s*:\s*(.+)\z/i
+        result[:dea_numbers] << Regexp.last_match(1).strip
+      when /\ASupplemental Occupation\/Field of Licensure.*?:\s*(.+)\z/i
+        result[:licenses] << parse_supplemental_license(Regexp.last_match(1).strip)
       else
-        aar_node = information&.at_xpath("./aar")
-        report[:information_reported] = parse_aar(aar_node)
-        report[:aar] = report[:information_reported] if aar_node
+        result[:disclaimer] = note if result[:disclaimer].blank?
       end
-
-      flatten_report_fields!(report, root_data)
-      report
     end
 
-    def parse_contact(node)
-      return {} unless node
-      address = node.at_xpath("./address")
-      {
-        entity_name: text(node, "./entityName"),
-        office_or_name: text(node, "./officeOrName"),
-        title_or_department: text(node, "./titleOrDept"),
-        phone: text(node, "./phone/number"),
-        address1: text(address, "./address"),
-        address2: text(address, "./address2"),
-        city: text(address, "./city"),
-        state: text(address, "./state"),
-        zip: join_zip(text(address, "./zip"), text(address, "./zip4")),
-        country: text(address, "./country"),
-        entity_reference: text(node, "./entityReference")
-      }
+    result
+  end
+
+  def parse_supplemental_license(value)
+    parts = value.split(",").map(&:strip)
+    occupation = parts.shift.to_s
+    state = parts.pop.to_s
+    number = parts.join(", ").to_s
+
+    code = occupation[/\((\d{3})\)\s*\z/, 1]
+    label = occupation.sub(/\s*\(\d{3}\)\s*\z/, "").strip
+
+    {
+      occupation: label,
+      field_code: code,
+      number: number,
+      state: state,
+      raw: value
+    }
+  end
+
+  def payment_made(node)
+    return "" unless node
+    return "" if node.children.none? { |child| child.element? }
+
+    value = text(node, "./paymentMade")
+
+    case value.to_s.upcase
+    when "Y" then "YES"
+    when "N" then "NO"
+    else value
     end
+  end
 
-    def parse_latest_contact(node)
-      return {} unless node
-      address = node.at_xpath("./address")
-      {
-        entity_status: text(node, "./entityStatus"),
-        entity_name: text(node, "./entityName"),
-        address1: text(address, "./address"),
-        address2: text(address, "./address2"),
-        city: text(address, "./city"),
-        state: text(address, "./state"),
-        zip: join_zip(text(address, "./zip"), text(address, "./zip4")),
-        country: text(address, "./country"),
-        last_update_date: format_date(text(node, "./lastUpdateDate"))
-      }
+  def patient_age(node)
+    return "" unless node
+
+    return "UNKNOWN" if truthy?(text(node, "./unknown"))
+
+    years = text(node, "./years")
+    months = text(node, "./months")
+    days = text(node, "./days")
+    value = text(node, "./value")
+
+    return "#{years} YEARS" if years.present?
+    return "#{months} MONTHS" if months.present?
+    return "#{days} DAYS" if days.present?
+
+    value
+  end
+
+  def fmt_mmddyyyy(raw)
+    return "" if raw.blank?
+
+    match = raw.to_s.match(/\A(\d{4})-(\d{2})-(\d{2})/)
+    return raw.to_s unless match
+
+    "#{match[2]}/#{match[3]}/#{match[1]}"
+  end
+
+  def money(raw)
+    return "" if raw.blank?
+
+    "$ #{format('%.2f', raw.to_f).reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse}"
+  end
+
+  def zip_with_4(zip, zip4)
+    zip = zip.to_s.strip
+    zip4 = zip4.to_s.strip
+
+    return zip4 if zip.blank?
+    return zip if zip4.blank?
+
+    "#{zip}-#{zip4}"
+  end
+
+  def map_deceased(value)
+    case value.to_s.upcase
+    when "Y" then "YES"
+    when "N" then "NO"
+    else "UNKNOWN"
     end
+  end
 
-    def parse_report_data(node)
-      return {} unless node
-      notes = node.xpath("./notes/note").map { |note| note.text.to_s.strip }.reject(&:empty?)
-      {
-        report_dcn: text(node, "./reportDCN"),
-        transaction: text(node, "./transaction"),
-        original_submission_date: format_date(text(node, "./originalSubmitDate")),
-        most_recent_change_date: format_date(text(node, "./recentChangeDate")),
-        maintained_under: node.xpath("./maintainedUnder/statute").map { |n| n.text.to_s.strip }.reject(&:empty?),
-        notes: notes,
-        supplemental: parse_supplemental_notes(notes)
-      }
-    end
+  def with_code(label, code)
+    label = label.to_s.strip
+    code = code.to_s.strip
 
-    def parse_statement(node)
-      return {} unless node
-      {
-        dispute_status: text(node, "./disputeStatus"),
-        text: first_present(text(node, "./statementText"), text(node, "./text"), text(node, "./subjectStatement")),
-        date_submitted: format_date(first_present(text(node, "./dateSubmitted"), text(node, "./submissionDate"))),
-        report_disputed_mark: boolean_or_code(first_present(text(node, "./reportDisputedMark"), text(node, "./disputed"))),
-        secretary_review_pending: boolean_or_code(text(node, "./secretaryReviewPending")),
-        secretary_review_completed: boolean_or_code(text(node, "./secretaryReviewCompleted")),
-        secretary_reconsideration: boolean_or_code(text(node, "./secretaryReconsideration"))
-      }
-    end
+    return label if code.blank?
+    return code if label.blank? || label == code
+    return label if label.include?("(#{code})")
 
-    def parse_individual(node)
-      return {} unless node
-      name = node.at_xpath("./name")
-      work = node.at_xpath("./workAddress")
-      home = node.at_xpath("./homeAddress")
-      occupation = node.at_xpath("./occupationAndLicensure")
-      school = node.at_xpath("./professionalSchool")
-      deceased = node.at_xpath("./deceasedDate")
+    "#{label} (#{code})"
+  end
 
-      {
-        last_name: text(name, "./last"),
-        first_name: text(name, "./first"),
-        middle_name: text(name, "./middle"),
-        suffix: text(name, "./suffix"),
-        other_names: node.xpath("./otherName").map { |n| n.text.to_s.strip }.reject(&:empty?),
-        sex_code: text(node, "./sex"),
-        sex: lookup(:sex, text(node, "./sex")),
-        birthdate: format_date(text(node, "./birthdate")),
-        work_address1: text(work, "./address"),
-        work_address2: text(work, "./address2"),
-        work_city: text(work, "./city"),
-        work_state: text(work, "./state"),
-        work_zip: join_zip(text(work, "./zip"), text(work, "./zip4")),
-        home_address1: text(home, "./address"),
-        home_address2: text(home, "./address2"),
-        home_city: text(home, "./city"),
-        home_state: text(home, "./state"),
-        home_zip: join_zip(text(home, "./zip"), text(home, "./zip4")),
-        ssn: text(node, "./ssn"),
-        npi: text(node, "./npi"),
-        organization_name: text(node, "./organizationName"),
-        license_number: text(occupation, "./number"),
-        occupation_state: text(occupation, "./state"),
-        occupation_field_code: text(occupation, "./field"),
-        occupation_field: lookup(:occupation, text(occupation, "./field")),
-        no_license: boolean(text(occupation, "./noLicense")),
-        professional_school: school_value(school),
-        deceased: text(deceased, "./isDeceased"),
-        deceased_date: format_date(text(deceased, "./date")),
-        dea_numbers: node.xpath("./deaNumber").map { |n| n.text.to_s.strip }.reject(&:empty?),
-        hospital_affiliations: node.xpath("./hospitalAffiliation").map { |n| n.text.to_s.strip }.reject(&:empty?)
-      }
-    end
+  def lookup(kind, code)
+    code = code.to_s.strip
+    return "" if code.blank?
 
-    def parse_mmpr(node)
-      return {} unless node
-      specific = node.at_xpath("./specificAllegation")
-      patient_age = node.at_xpath("./patientAge")
-      relationship_code = text(node, "./relationshipOfEntity")
-      payment_type_code = text(node, "./paymentType")
-      payment_result_code = text(node, "./paymentResultOf")
-      patient_type_code = text(node, "./patientType")
-      nature_code = text(node, "./natureAllegation")
-      specific_code = text(specific, "./code")
-      outcome_code = text(node, "./outcome")
+    service_value = lookup_from_service(kind, code)
+    return service_value if service_value.present? && service_value.to_s != code
 
-      {
-        relationship_code: relationship_code,
-        relationship: lookup(:mmpr_relationship, relationship_code),
-        amount_this_payment: decimal(text(node, "./paymentForThisPractitioner")),
-        date_this_payment: format_date(text(node, "./paymentDate")),
-        payment_type_code: payment_type_code,
-        payment_type: lookup(:mmpr_payment_type, payment_type_code),
-        total_paid: decimal(text(node, "./totalPaymentForThisPractitioner")),
-        payment_result_of_code: payment_result_code,
-        payment_result_of: lookup(:mmpr_payment_result, payment_result_code),
-        judgment_date: format_date(text(node, "./judgmentOrSettlementDate")),
-        adjudicative_body_case_number: text(node, "./adjudicativeBodyCaseNumber"),
-        adjudicative_body_name: text(node, "./adjudicativeBodyName"),
-        court_file_number: text(node, "./courtFileNumber"),
-        judgment_desc: text(node, "./judgmentOrSettlementDesc"),
-        claimant_count: integer(text(node, "./totalNumberClaimants")),
-        other_practitioners_total: decimal(text(node, "./totalPaymentForAllPractitioners")),
-        other_practitioners_count: integer(text(node, "./numberPractitioners")),
-        state_fund_payment: yes_no(text(node, "./stateFundPayment")),
-        state_fund_amount: decimal(text(node, "./stateFundPaymentAmount")),
-        self_insured_payment: yes_no(text(node, "./selfInsuredOrgPayment")),
-        self_insured_amount: decimal(text(node, "./selfInsuredOrgPaymentAmount")),
-        patient_age: patient_age_value(patient_age),
-        patient_sex_code: text(node, "./patientSex"),
-        patient_sex: lookup(:sex, text(node, "./patientSex")),
-        patient_type_code: patient_type_code,
-        patient_type: lookup(:mmpr_patient_type, patient_type_code),
-        medical_condition_desc: text(node, "./medicalConditionDesc"),
-        procedure_desc: text(node, "./procedureDesc"),
-        nature_allegation_code: nature_code,
-        nature_allegation: lookup(:mmpr_nature, nature_code),
-        specific_allegation_code: specific_code,
-        specific_allegation: lookup(:mmpr_specific_allegation, specific_code),
-        specific_allegation_other_desc: text(specific, "./otherDesc"),
-        event_date: format_date(text(specific, "./date")),
-        outcome_code: outcome_code,
-        outcome: lookup(:mmpr_outcome, outcome_code),
-        allegations_desc: text(node, "./allegationsDesc")
-      }
-    end
+    FALLBACK_CODES.fetch(kind, {}).fetch(code, service_value.presence || code)
+  end
 
-    def parse_aar(node)
-      return {} unless node
-      action_code = first_present(text(node, "./action/code"), text(node, "./action"))
-      classification_code = first_present(text(node, "./classification/code"), text(node, "./classification"))
-      basis_code = first_present(text(node, "./basis/code"), text(node, "./basis"))
-      {
-        action_code: action_code,
-        action: lookup(:aar_action, action_code),
-        classification_code: classification_code,
-        classification: lookup(:aar_classification, classification_code),
-        finding_date: format_date(first_present(text(node, "./findingDate"), text(node, "./actionDate"))),
-        action_date: format_date(text(node, "./actionDate")),
-        basis_code: basis_code,
-        basis: lookup(:aar_basis, basis_code),
-        narrative: first_present(text(node, "./narrativeDescription"), text(node, "./description"), text(node, "./narrative"))
-      }
-    end
+  def lookup_from_service(kind, code)
+    return "" unless defined?(Webscraper::NpdbCodeLookup)
 
-    def parse_jocr(node)
-      return {} unless node
-      {
-        action_code: first_present(text(node, "./action/code"), text(node, "./action")),
-        classification_code: first_present(text(node, "./classification/code"), text(node, "./classification")),
-        finding_date: format_date(first_present(text(node, "./judgmentDate"), text(node, "./convictionDate"), text(node, "./findingDate"))),
-        basis_code: first_present(text(node, "./basis/code"), text(node, "./basis")),
-        narrative: first_present(text(node, "./narrativeDescription"), text(node, "./description"), text(node, "./narrative")),
-        court_name: text(node, "./courtName"),
-        court_file_number: text(node, "./courtFileNumber")
-      }
-    end
+    service = Webscraper::NpdbCodeLookup
 
-    def parse_supplemental_notes(notes)
-      result = { ssns: [], npis: [], licenses: [], dea_numbers: [], other_notes: [] }
-      notes.each do |note|
-        case note
-        when /Supplemental Social Security Number\s*:\s*(.+)\z/i
-          result[:ssns] << Regexp.last_match(1).strip
-        when /Supplemental National Provider Identifier\s*:\s*(.+)\z/i
-          result[:npis] << Regexp.last_match(1).strip
-        when /Supplemental Drug Enforcement Administration \(DEA\) Number\s*:\s*(.+)\z/i
-          result[:dea_numbers] << Regexp.last_match(1).strip
-        when /Supplemental Occupation\/Field of Licensure.*?:\s*(.+)\z/i
-          result[:licenses] << parse_supplemental_license(Regexp.last_match(1).strip)
-        else
-          result[:other_notes] << note
-        end
-      end
-      result
-    end
+    candidate_methods = {
+      sex: [:sex],
+      report_transaction: [:report_transaction, :mmpr_report_type],
+      mmpr_relationship: [:mmpr_relationship],
+      mmpr_payment_type: [:mmpr_payment_type],
+      mmpr_payment_result: [:mmpr_payment_result],
+      mmpr_patient_type: [:mmpr_patient_type],
+      mmpr_nature: [:mmpr_nature],
+      mmpr_specific_allegation: [:mmpr_specific_allegation],
+      mmpr_outcome: [:mmpr_outcome],
+      occupation: [:occupation],
+      dispute_status: [:dispute_status]
+    }.fetch(kind, [])
 
-    def parse_supplemental_license(value)
-      parts = value.split(",").map(&:strip)
-      occupation_part = parts.shift.to_s
-      state = parts.pop
-      number = parts.join(", ").presence
-      code = occupation_part[/\((\d{3})\)\s*\z/, 1]
-      occupation_name = occupation_part.sub(/\s*\(\d{3}\)\s*\z/, "").strip
-      { field: code, occupation: occupation_name, number: number, state: state, raw: value }
-    end
+    candidate_methods.each do |method_name|
+      next unless service.respond_to?(method_name)
 
-    def flatten_root_fields!(result)
-      subject = result[:subject] || {}
-      status = result[:subject_status].presence || result[:batch_status] || {}
-      certification = result[:certification] || {}
-      processed = result[:processed_under] || {}
-      submitter = result[:submitter] || {}
-      result.merge!(
-        dcn: status[:dcn], process_date: status[:process_date], successfully_processed: status[:successfully_processed],
-        subject_last: subject[:last_name], subject_first: subject[:first_name], subject_middle: subject[:middle_name], subject_suffix: subject[:suffix],
-        sex_code: subject[:sex_code], sex: subject[:sex], birthdate: subject[:birthdate],
-        work_addr1: subject[:work_address1], work_addr2: subject[:work_address2], work_city: subject[:work_city], work_state: subject[:work_state], work_zip: subject[:work_zip],
-        home_addr1: subject[:home_address1], home_addr2: subject[:home_address2], home_city: subject[:home_city], home_state: subject[:home_state], home_zip: subject[:home_zip],
-        ssn: subject[:ssn], npi: subject[:npi], org_name: subject[:organization_name],
-        occupation_field_code: subject[:occupation_field_code], occupation_field: subject[:occupation_field], occupation_state: subject[:occupation_state],
-        license_number: subject[:license_number], no_license: subject[:no_license], professional_school: subject[:professional_school], deceased: subject[:deceased],
-        dea: Array(subject[:dea_numbers]).join(", "), hospital_affiliations: Array(subject[:hospital_affiliations]).join("; "),
-        certification_name: certification[:name], certification_title: certification[:title], certification_phone: certification[:phone], certification_date: certification[:date],
-        title_iv: processed[:title_iv], section_1921: processed[:section_1921], section_1128e: processed[:section_1128e],
-        entity_dbid: submitter[:entity_dbid], agent_dbid: submitter[:agent_dbid], vendor_id: submitter[:vendor_id]
-      )
-    end
-
-    def flatten_report_fields!(report, root_data)
-      contact = report[:contact] || {}
-      latest = report[:latest_contact] || {}
-      report_data = report[:report_data] || {}
-      subject = report[:subject] || {}
-      statement = report[:statement] || {}
-      info = report[:information_reported] || {}
-      supplemental = report_data[:supplemental] || {}
-
-      report.merge!(
-        dcn: root_data.dig(:subject_status, :dcn) || root_data.dig(:batch_status, :dcn),
-        process_date: root_data.dig(:subject_status, :process_date) || root_data.dig(:batch_status, :process_date),
-        authorized_org_name: root_data.dig(:certification, :name),
-        report_dcn: report_data[:report_dcn], transaction: report_data[:transaction],
-        original_submission_date: report_data[:original_submission_date], most_recent_change_date: report_data[:most_recent_change_date],
-        maintained_under: Array(report_data[:maintained_under]).join(", "), report_notes: report_data[:notes], supplemental_notes: report_data[:notes],
-        other_licenses: supplemental[:licenses], supplemental_ssns: supplemental[:ssns], supplemental_npis: supplemental[:npis], supplemental_dea_numbers: supplemental[:dea_numbers],
-        entity_name: contact[:entity_name], entity_office: contact[:office_or_name], entity_title: contact[:title_or_department], entity_phone: contact[:phone],
-        entity_addr1: contact[:address1], entity_addr2: contact[:address2], entity_city: contact[:city], entity_state: contact[:state], entity_zip: contact[:zip],
-        entity_country: contact[:country], entity_internal_ref: contact[:entity_reference],
-        latest_contact_entity_status: latest[:entity_status], latest_contact_entity_name: latest[:entity_name], latest_contact_addr1: latest[:address1],
-        latest_contact_addr2: latest[:address2], latest_contact_city: latest[:city], latest_contact_state: latest[:state], latest_contact_zip: latest[:zip],
-        latest_contact_country: latest[:country], latest_contact_last_update_date: latest[:last_update_date],
-        subject_last: subject[:last_name], subject_first: subject[:first_name], subject_middle: subject[:middle_name], subject_suffix: subject[:suffix], other_names: subject[:other_names],
-        sex_code: subject[:sex_code], sex: subject[:sex], birthdate: subject[:birthdate],
-        work_addr1: subject[:work_address1], work_addr2: subject[:work_address2], work_city: subject[:work_city], work_state: subject[:work_state], work_zip: subject[:work_zip],
-        home_addr1: subject[:home_address1], home_addr2: subject[:home_address2], home_city: subject[:home_city], home_state: subject[:home_state], home_zip: subject[:home_zip],
-        ssn: subject[:ssn], npi: subject[:npi], org_name: subject[:organization_name], occupation_field_code: subject[:occupation_field_code],
-        occupation_field: subject[:occupation_field], occupation_state: subject[:occupation_state], license_number: subject[:license_number], no_license: subject[:no_license],
-        professional_school: subject[:professional_school], deceased: subject[:deceased],
-        dea: (Array(subject[:dea_numbers]) + Array(supplemental[:dea_numbers])).reject(&:blank?).uniq.join(", "),
-        hospital_affiliations: Array(subject[:hospital_affiliations]).join("; "),
-        dispute_status_code: statement[:dispute_status], dispute_status: lookup(:dispute_status, statement[:dispute_status]),
-        subject_statement: statement[:text], subject_statement_date: statement[:date_submitted], report_disputed_mark: statement[:report_disputed_mark],
-        secretary_review_pending: statement[:secretary_review_pending], secretary_review_completed: statement[:secretary_review_completed],
-        secretary_reconsideration: statement[:secretary_reconsideration]
-      )
-      report.merge!(info)
-    end
-
-    def merge_first_report_for_backward_compatibility!(result, report)
-      return unless report
-      protected_keys = %i[dcn process_date successfully_processed reports subject subject_status batch_status certification charge_receipt processed_under submitter]
-      report.each do |key, value|
-        next if protected_keys.include?(key)
-        next if value.nil?
-        next if value.respond_to?(:empty?) && value.empty?
-        result[key] = value
-      end
-      flatten_root_fields!(result)
-    end
-
-    def lookup(method, code)
-      return "" if code.blank?
-      service = Webscraper::NpdbCodeLookup
-      return code.to_s unless service.respond_to?(method)
-      value = service.public_send(method, code)
-      value.presence || code.to_s
+      value = service.public_send(method_name, code)
+      return value if value.present?
     rescue StandardError
-      code.to_s
+      next
     end
 
-    def school_value(node)
-      return "" unless node
-      [text(node, "./school"), text(node, "./graduationYear")].reject(&:blank?).join(", ")
-    end
-
-    def patient_age_value(node)
-      return "" unless node
-      years = text(node, "./years")
-      months = text(node, "./months")
-      days = text(node, "./days")
-      return "#{years} YEARS" if years.present?
-      return "#{months} MONTHS" if months.present?
-      return "#{days} DAYS" if days.present?
-      text(node, ".")
-    end
-
-    def yes_no(value)
-      normalized = value.to_s.strip.upcase
-      return "" if normalized.empty?
-      return "YES" if %w[Y YES TRUE 1].include?(normalized)
-      return "NO" if %w[N NO FALSE 0].include?(normalized)
-      value.to_s
-    end
-
-    def boolean_or_code(value)
-      normalized = value.to_s.strip
-      return nil if normalized.empty?
-      bool = boolean(normalized)
-      bool.nil? ? normalized : bool
-    end
-
-    def boolean(value)
-      normalized = value.to_s.strip.downcase
-      return true if %w[true t yes y 1].include?(normalized)
-      return false if %w[false f no n 0].include?(normalized)
-      nil
-    end
-
-    def integer(value)
-      return nil if value.blank?
-      Integer(value)
-    rescue ArgumentError, TypeError
-      nil
-    end
-
-    def decimal(value)
-      return nil if value.blank?
-      value.to_s.gsub(/[^\d.\-]/, "").to_f
-    end
-
-    def format_date(value)
-      raw = value.to_s.strip
-      return "" if raw.empty?
-      date_part = raw[/\A\d{4}-\d{2}-\d{2}/]
-      return Date.strptime(date_part, "%Y-%m-%d").strftime("%m/%d/%Y") if date_part
-      Date.parse(raw).strftime("%m/%d/%Y")
-    rescue ArgumentError
-      raw
-    end
-
-    def join_zip(zip, zip4)
-      base = zip.to_s.strip
-      extension = zip4.to_s.strip
-      return extension if base.empty?
-      return base if extension.empty?
-      "#{base}-#{extension}"
-    end
-
-    def first_present(*values)
-      values.find(&:present?)
-    end
-
-    def text(node, xpath)
-      return "" unless node
-      node.at_xpath(xpath)&.text.to_s.strip
-    end
-
-    def clean_xml(value)
-      start_index = value.index("<?xml") || value.index("<queryResponse")
-      start_index ? value[start_index..] : value
-    end
+    ""
   end
 end
