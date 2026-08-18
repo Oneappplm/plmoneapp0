@@ -494,6 +494,7 @@ class Mhc::VerificationPlatformController < ApplicationController
       @rva_information = RvaInformation.new
       @last_rva_information = @provider_personal_information.rva_informations.where(tab: 'NPDB', restart_audit: false).last
       @npdb_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'NPDB').where.not(source_date: nil).where.not(audit_status: false)
+      @npdb_webcrawler_logs = NpdbWebcrawlerLog.where(provider_npdb: @provider_npdb, status: "completed").order(created_at: :desc)
 
       @npdb_documents =
         ProviderPersonalUploadedDoc
