@@ -16,8 +16,6 @@ class SsaVerificationPdfUploader < CarrierWave::Uploader::Base
   end
 
   def filename
-    return if original_filename.blank?
-
     "ssa_verification_#{model.id}.pdf"
   end
 end

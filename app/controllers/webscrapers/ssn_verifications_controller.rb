@@ -55,10 +55,8 @@ module Webscrapers
         return
       end
 
-      redirect_to(
-        @verification.report_pdf.url,
-        allow_other_host: true
-      )
+      redirect_to @verification.report_pdf.url,
+                  allow_other_host: true
     end
 
     private
