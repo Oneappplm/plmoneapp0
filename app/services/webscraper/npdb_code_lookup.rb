@@ -35,14 +35,17 @@ module Webscraper
         "S" => "Subject statement on file"
       },
       mmpr_relationship: {
-        "P" => "Primary Insurer",
-        "S" => "Self-Insured Organization",
-        "O" => "Other"
+        "P" => "INSURANCE COMPANY - PRIMARY INSURER",
+        "E" => "INSURANCE COMPANY - EXCESS INSURER",
+        "S" => "SELF-INSURED ORGANIZATION",
+        "G" => "INSURANCE GUARANTY FUND",
+        "M" => "STATE MEDICAL MALPRACTICE PAYMENT FUND - PRIMARY PAYER",
+        "O" => "STATE MEDICAL MALPRACTICE PAYMENT FUND - SECONDARY PAYER"
       },
       mmpr_payment_type: {
-        "S" => "Settlement",
-        "J" => "Judgment",
-        "O" => "Other"
+        "S" => "A SINGLE FINAL PAYMENT",
+        "M" => "ONE OF MULTIPLE PAYMENTS",
+        "U" => "UNKNOWN PAYMENT TYPE"
       },
       mmpr_payment_result: {
         "S" => "Settlement",
