@@ -22,7 +22,9 @@ class Webscraper::NpdbQrxsService
     @send_confirmation_xml = nil
   end
 
-    def call
+  def call
+    # If a completed NPDB PDF already exists for this provider, reuse it.
+    # This prevents duplicate NPDB queries and duplicate PDF generation.
     existing_log = latest_completed_log
     return existing_log if existing_log.present?
 
@@ -47,10 +49,7 @@ class Webscraper::NpdbQrxsService
       begin
         files = receive_poll!(creds, creds[:password])
       rescue => e
-        Rails.logger.error(
-          "NPDB RECEIVE ERROR: #{e.class}: #{e.message}"
-        )
-
+        Rails.logger.error("NPDB RECEIVE ERROR: #{e.class}: #{e.message}")
         failed = true
         send_message = e.message
       end
@@ -62,79 +61,88 @@ class Webscraper::NpdbQrxsService
         submission_filename: filename
       )
 
-    response_xml =
-      if response_file.present?
-        response_file[:xml]
-      elsif @send_confirmation_xml.present? &&
-            confirmation_failed?(@send_confirmation_xml)
-        @send_confirmation_xml
-      else
-        build_error_xml(send_code, send_message)
-      end
+    unless response_file.present?
+      message =
+        "NPDB did not return a matching queryResponse for #{filename}. " \
+        "Received files: #{files.map { |file| file[:filename] }.inspect}. " \
+        "Send status: #{send_code.inspect} #{send_message.inspect}"
 
-    save_response_xml!(
-      response_xml,
-      response_file&.dig(:filename)
-    )
+      Rails.logger.error(message)
 
-    Rails.logger.info(
-      "NPDB FINAL XML:\n#{response_xml}"
-    )
+      response_xml =
+        if @send_confirmation_xml.present?
+          @send_confirmation_xml
+        else
+          build_error_xml(send_code, message)
+        end
+
+      save_response_xml!(response_xml, nil)
+
+      return render_and_save_log!(
+        response_xml: response_xml,
+        status: "failed",
+        watermark: "FAILED",
+        errors: [message]
+      )
+    end
+
+    response_xml = response_file[:xml]
+
+    save_response_xml!(response_xml, response_file[:filename])
+
+    Rails.logger.info("NPDB FINAL XML:\n#{response_xml}")
 
     doc = Nokogiri::XML(response_xml)
     doc.remove_namespaces!
 
-    accepted_node =
-      doc.at_xpath("//subjectConfirmation/accepted")
+    unless doc.root&.name.to_s == "queryResponse"
+      message =
+        "Unexpected NPDB response root: #{doc.root&.name.inspect}. " \
+        "Expected queryResponse."
 
-    processed_node =
-      doc.at_xpath(
-        "//querySubjectResponse/status/successfullyProcessed"
-      ) ||
-      doc.at_xpath("//batchStatus/successfullyProcessed")
+      return render_and_save_log!(
+        response_xml: response_xml,
+        status: "failed",
+        watermark: "FAILED",
+        errors: [message]
+      )
+    end
 
-    accepted =
-      accepted_node.nil? ||
-      accepted_node.text.to_s.downcase == "true"
+    successfully_processed_node =
+      doc.at_xpath("//querySubjectResponse/status/successfullyProcessed")
+
+    unless successfully_processed_node
+      message =
+        "NPDB queryResponse does not contain " \
+        "querySubjectResponse/status/successfullyProcessed."
+
+      return render_and_save_log!(
+        response_xml: response_xml,
+        status: "failed",
+        watermark: "FAILED",
+        errors: [message]
+      )
+    end
 
     successfully_processed =
-      processed_node.nil? ||
-      processed_node.text.to_s.downcase == "true"
+      successfully_processed_node.text.to_s.strip.downcase == "true"
 
     errors =
       doc.xpath("//error").map do |error_node|
-        code =
-          error_node.at_xpath("./code")&.text
+        code = error_node.at_xpath("./code")&.text.to_s.strip
+        message = error_node.at_xpath("./message")&.text.to_s.strip
 
-        message =
-          error_node.at_xpath("./message")&.text
-
-        [code, message]
-          .compact
-          .reject(&:blank?)
-          .join(": ")
+        [code, message].reject(&:blank?).join(": ")
       end.reject(&:blank?)
 
-    failed = true if errors.present?
     failed = true unless successfully_processed
-
-    if errors.blank? &&
-       failed &&
-       send_message.present?
-
-      errors << send_message
-    end
+    failed = true if errors.present?
+    errors << send_message if errors.blank? && failed && send_message.present?
 
     render_and_save_log!(
       response_xml: response_xml,
-      status:
-        failed || !accepted ?
-          "failed" :
-          "completed",
-      watermark:
-        failed || !accepted ?
-          "FAILED" :
-          "",
+      status: failed ? "failed" : "completed",
+      watermark: failed ? "FAILED" : "",
       errors: errors
     )
   end
@@ -162,14 +170,6 @@ class Webscraper::NpdbQrxsService
   end
 
   private
-
-  def latest_completed_log
-    NpdbWebcrawlerLog
-      .where(provider_npdb: @npdb, status: "completed")
-      .where.not(filepath: [nil, ""])
-      .order(created_at: :desc)
-      .first
-  end
 
   def render_and_save_log!(response_xml:, status:, watermark:, errors:)
     pdf_path =
@@ -200,42 +200,36 @@ class Webscraper::NpdbQrxsService
     log
   end
 
-  def select_query_response_file(
-    files,
-    submission_filename:
-  )
+  def select_query_response_file(files, submission_filename:)
     return nil if files.blank?
+
+    expected_submission = submission_filename.to_s.strip
 
     exact_match =
       files.find do |file|
         xml = file[:xml].to_s
-
-        next false unless
-          xml.include?("<queryResponse")
+        next false unless xml.include?("<queryResponse")
 
         doc = Nokogiri::XML(xml)
         doc.remove_namespaces!
 
         returned_filename =
-          doc
-            .at_xpath("//submissionFilename")
-            &.text
-            .to_s
-            .strip
+          doc.at_xpath("//submissionFilename")&.text.to_s.strip
 
-        returned_filename ==
-          submission_filename.to_s.strip
-      rescue Nokogiri::XML::SyntaxError
+        returned_filename == expected_submission
+      rescue Nokogiri::XML::SyntaxError => e
+        Rails.logger.warn(
+          "NPDB response XML could not be parsed while matching " \
+          "#{expected_submission}: #{e.message}"
+        )
         false
       end
 
     return exact_match if exact_match.present?
 
     Rails.logger.warn(
-      "NPDB exact response not found for " \
-      "#{submission_filename.inspect}. " \
-      "Received files: " \
-      "#{files.map { |f| f[:filename] }.inspect}"
+      "NPDB exact queryResponse not found for #{expected_submission.inspect}. " \
+      "Received files: #{files.map { |file| file[:filename] }.inspect}"
     )
 
     nil
@@ -531,15 +525,11 @@ class Webscraper::NpdbQrxsService
       ].to_s.strip
 
     Rails.logger.info(
-      "NPDB SEND STATUS => " \
-      "code=#{status_code.inspect}, " \
+      "NPDB SEND STATUS => code=#{status_code.inspect}, " \
       "message=#{status_message.inspect}"
     )
 
-    [
-      status_code.presence,
-      status_message.presence
-    ]
+    [status_code.presence, status_message.presence]
   end
 
   def extract_query_confirmation_xml(body)
@@ -572,89 +562,61 @@ class Webscraper::NpdbQrxsService
         </soap:Envelope>
       XML
 
-      http =
-        Net::HTTP.new(
-          uri.host,
-          uri.port
-        )
-
+      http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
 
-      request =
-        Net::HTTP::Post.new(
-          uri.request_uri
-        )
-
-      request["Content-Type"] =
-        "application/soap+xml; charset=UTF-8"
-
+      request = Net::HTTP::Post.new(uri.request_uri)
+      request["Content-Type"] = "application/soap+xml; charset=UTF-8"
       request.body = body
 
-      response =
-        http.request(request)
+      response = http.request(request)
 
-      Rails.logger.info(
-        "NPDB RECEIVE RESPONSE:\n#{response.body}"
-      )
+      Rails.logger.info("NPDB RECEIVE RESPONSE:\n#{response.body}")
 
-      doc =
-        Nokogiri::XML(
-          response.body
-        )
+      doc = Nokogiri::XML(response.body)
 
       status_code =
-        doc.at_xpath(
-          "//*[local-name()='StatusCode']"
-        )&.text.to_s.strip
+        doc.at_xpath("//*[local-name()='StatusCode']")&.text.to_s.strip
 
       status_message =
-        doc.at_xpath(
-          "//*[local-name()='StatusMessage']"
-        )&.text.to_s.strip
+        doc.at_xpath("//*[local-name()='StatusMessage']")&.text.to_s.strip
 
       unless status_code == OK_CODE
         raise(
           "NPDB Receive failed. " \
-          "Code=#{status_code.inspect}, " \
-          "Message=#{status_message.inspect}"
+          "Code=#{status_code.inspect}, Message=#{status_message.inspect}"
         )
       end
 
       expected =
-        doc.at_xpath(
-          "//*[local-name()='ExpectedNumberOfFiles']"
-        )&.text.to_i
+        doc.at_xpath("//*[local-name()='ExpectedNumberOfFiles']")&.text.to_i
 
       response_nodes =
         doc.xpath(
-          "//*[local-name()='ResponseFiles' " \
-          "or local-name()='responseFiles']"
+          "//*[local-name()='ResponseFiles' or local-name()='responseFiles']"
         )
+
+      decoded_this_poll = 0
 
       response_nodes.each do |file|
         encoded =
           file.at_xpath(
-            ".//*[local-name()='XmlFileData' " \
-            "or local-name()='xmlFileData']"
+            ".//*[local-name()='XmlFileData' or local-name()='xmlFileData']"
           )&.text.to_s.strip
 
         next if encoded.blank?
 
         filename =
           file.at_xpath(
-            ".//*[local-name()='FileName' " \
-            "or local-name()='fileName']"
+            ".//*[local-name()='FileName' or local-name()='fileName']"
           )&.text.to_s.strip
 
-        begin
-          decoded_xml =
-            Base64.strict_decode64(
-              encoded.gsub(/\s+/, "")
-            )
-        rescue ArgumentError
-          decoded_xml =
+        decoded_xml =
+          begin
+            Base64.strict_decode64(encoded.gsub(/\s+/, ""))
+          rescue ArgumentError
             Base64.decode64(encoded)
-        end
+          end
 
         next if decoded_xml.blank?
 
@@ -663,33 +625,28 @@ class Webscraper::NpdbQrxsService
           xml: decoded_xml
         }
 
+        decoded_this_poll += 1
+
         Rails.logger.info(
-          "NPDB RECEIVED FILE => " \
-          "#{filename.inspect}, " \
+          "NPDB RECEIVED FILE => #{filename.inspect}, " \
           "bytes=#{decoded_xml.bytesize}"
         )
       end
 
       remaining =
-        doc.at_xpath(
-          "//*[local-name()='FilesRemaining']"
-        )&.text.to_i
+        doc.at_xpath("//*[local-name()='FilesRemaining']")&.text.to_i
 
       Rails.logger.info(
         "NPDB RECEIVE POLL ##{attempt + 1}: " \
-        "expected=#{expected}, " \
-        "parsed=#{response_nodes.size}, " \
-        "decoded_total=#{files.size}, " \
-        "remaining=#{remaining}"
+        "expected=#{expected}, parsed=#{response_nodes.size}, " \
+        "decoded_this_poll=#{decoded_this_poll}, " \
+        "decoded_total=#{files.size}, remaining=#{remaining}"
       )
 
-      if expected.positive? &&
-         response_nodes.present? &&
-         files.blank?
-
+      if expected.positive? && response_nodes.present? && decoded_this_poll.zero?
         raise(
-          "NPDB returned #{expected} response " \
-          "file(s), but none could be decoded."
+          "NPDB returned #{expected} response file(s), " \
+          "but none could be decoded."
         )
       end
 
