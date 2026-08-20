@@ -244,17 +244,23 @@ class Mhc::VerificationPlatformController < ApplicationController
 
   def get_data
 
-    @provider_omig =
-      @provider_personal_information.provider_personal_information_omig ||
-      @provider_personal_information.build_provider_personal_information_omig
+    if params[:page_tab] == 'omig'
+      @provider_omig =
+        @provider_personal_information.provider_personal_information_omig ||
+        @provider_personal_information.build_provider_personal_information_omig
+    end
 
-    @provider_opmc =
-      @provider_personal_information.provider_opmc ||
-      @provider_personal_information.build_provider_opmc
+    if params[:page_tab] == 'opmc'
+      @provider_opmc =
+        @provider_personal_information.provider_opmc ||
+        @provider_personal_information.build_provider_opmc
+    end
 
-    @provider_ofac =
-      @provider_personal_information.provider_ofac ||
-      @provider_personal_information.build_provider_ofac
+    if params[:page_tab] == 'ofac'
+      @provider_ofac =
+        @provider_personal_information.provider_ofac ||
+        @provider_personal_information.build_provider_ofac
+    end
 
     if params[:page_tab] == 'practitioner_info'
       @provider_personal_information_credentialing_contact =
