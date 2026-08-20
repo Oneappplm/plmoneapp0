@@ -540,16 +540,19 @@ class Webscraper::NpdbQrxsService
 
     files = []
 
-    5.times do
+    max_attempts = 12
+    poll_interval = 5
+
+    max_attempts.times do |attempt|
       body = <<~XML
         <soap:Envelope
           xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
           xmlns:qrx="#{NAMESPACE}">
           <soap:Body>
             <qrx:Receive>
-              <qrx:DataBankID>#{creds[:agent_dbid]}</qrx:DataBankID>
-              <qrx:UserID>#{creds[:user_id]}</qrx:UserID>
-              <qrx:Password>#{password}</qrx:Password>
+              <qrx:DataBankID>#{xml_escape(creds[:agent_dbid])}</qrx:DataBankID>
+              <qrx:UserID>#{xml_escape(creds[:user_id])}</qrx:UserID>
+              <qrx:Password>#{xml_escape(password)}</qrx:Password>
             </qrx:Receive>
           </soap:Body>
         </soap:Envelope>
@@ -557,6 +560,8 @@ class Webscraper::NpdbQrxsService
 
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
+      http.open_timeout = 30
+      http.read_timeout = 90
 
       request = Net::HTTP::Post.new(uri.request_uri)
       request["Content-Type"] = "application/soap+xml; charset=UTF-8"
@@ -564,48 +569,124 @@ class Webscraper::NpdbQrxsService
 
       response = http.request(request)
 
-      Rails.logger.info("NPDB RECEIVE RESPONSE:\n#{response.body}")
+      Rails.logger.info(
+        "NPDB RECEIVE POLL ##{attempt + 1} HTTP=#{response.code}"
+      )
 
-      doc = Nokogiri::XML(response.body)
+      Rails.logger.debug(
+        "NPDB RECEIVE RESPONSE:\n#{response.body}"
+      )
+
+      doc =
+        Nokogiri::XML(response.body.to_s) do |config|
+          config.nonet.recover
+        end
 
       status_code =
-        doc.at_xpath("//*[local-name()='StatusCode']")&.text
+        doc.at_xpath(
+          "//*[local-name()='StatusCode']"
+        )&.text.to_s.strip
 
-      raise "Receive failed" unless status_code == OK_CODE
+      status_message =
+        doc.at_xpath(
+          "//*[local-name()='StatusMessage']"
+        )&.text.to_s.strip
 
-      expected =
-        doc.at_xpath("//*[local-name()='ExpectedNumberOfFiles']")&.text.to_i
-
-      response_nodes =
-        doc.xpath("//*[local-name()='ResponseFiles' or local-name()='responseFiles']")
-
-      decoded_before = files.size
-
-      response_nodes.each do |file|
-        encoded =
-          file.at_xpath(".//*[local-name()='XmlFileData' or local-name()='xmlFileData']")&.text
-
-        next if encoded.blank?
-
-        files << {
-          filename: file.at_xpath(".//*[local-name()='FileName' or local-name()='fileName']")&.text,
-          xml: Base64.decode64(encoded)
-        }
-      end
-
-      remaining =
-        doc.at_xpath("//*[local-name()='FilesRemaining']")&.text.to_i
-
-      if expected.positive? && response_nodes.present? && files.size == decoded_before
+      unless status_code == OK_CODE
         raise(
-          "NPDB returned #{expected} response file(s), but none could be decoded."
+          "NPDB Receive failed. " \
+          "Code=#{status_code.inspect}, " \
+          "Message=#{status_message.inspect}"
         )
       end
 
-      break if remaining.zero?
+      expected =
+        doc.at_xpath(
+          "//*[local-name()='ExpectedNumberOfFiles']"
+        )&.text.to_i
 
-      sleep 3
+      response_nodes =
+        doc.xpath(
+          "//*[local-name()='ResponseFiles' " \
+          "or local-name()='responseFiles']"
+        )
+
+      decoded_this_poll = 0
+
+      response_nodes.each do |file|
+        encoded =
+          file.at_xpath(
+            ".//*[local-name()='XmlFileData' " \
+            "or local-name()='xmlFileData']"
+          )&.text.to_s.strip
+
+        next if encoded.blank?
+
+        filename =
+          file.at_xpath(
+            ".//*[local-name()='FileName' " \
+            "or local-name()='fileName']"
+          )&.text.to_s.strip
+
+        decoded_xml =
+          begin
+            Base64.strict_decode64(
+              encoded.gsub(/\s+/, "")
+            )
+          rescue ArgumentError
+            Base64.decode64(encoded)
+          end
+
+        next if decoded_xml.blank?
+
+        files << {
+          filename: filename,
+          xml: decoded_xml
+        }
+
+        decoded_this_poll += 1
+
+        Rails.logger.info(
+          "NPDB RECEIVED FILE => " \
+          "#{filename.inspect}, " \
+          "bytes=#{decoded_xml.bytesize}"
+        )
+      end
+
+      remaining =
+        doc.at_xpath(
+          "//*[local-name()='FilesRemaining']"
+        )&.text.to_i
+
+      Rails.logger.info(
+        "NPDB RECEIVE POLL ##{attempt + 1}: " \
+        "expected=#{expected}, " \
+        "nodes=#{response_nodes.size}, " \
+        "decoded=#{decoded_this_poll}, " \
+        "decoded_total=#{files.size}, " \
+        "remaining=#{remaining}"
+      )
+
+      # We actually received one or more files.
+      # If NPDB says there are no additional files waiting,
+      # this Receive cycle is complete.
+      break if files.present? && remaining.zero?
+
+      # NPDB accepted the Send but final queryResponse is not ready yet.
+      # Do NOT break just because ExpectedNumberOfFiles/FilesRemaining are zero.
+      if attempt < max_attempts - 1
+        Rails.logger.info(
+          "NPDB response not ready yet. " \
+          "Waiting #{poll_interval} seconds before next Receive."
+        )
+
+        sleep poll_interval
+      end
     end
+
+    Rails.logger.warn(
+      "NPDB Receive polling finished without files."
+    ) if files.blank?
 
     files
   end
