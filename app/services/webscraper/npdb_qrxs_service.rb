@@ -7,6 +7,7 @@ require "fileutils"
 require "net/http"
 require "uri"
 require "pathname"
+require "cgi"
 
 class Webscraper::NpdbQrxsService
   QA_ENDPOINT   = "https://qa.npdb.hrsa.gov/qrxs/QrxsWebService"
@@ -718,5 +719,9 @@ class Webscraper::NpdbQrxsService
         <message>#{message}</message>
       </npdbError>
     XML
+  end
+
+  def xml_escape(value)
+    CGI.escapeHTML(value.to_s)
   end
 end
