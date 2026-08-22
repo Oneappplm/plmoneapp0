@@ -9,6 +9,8 @@ module Dmf
   class ImportService
     class ImportError < StandardError; end
 
+    EXPECTED_FULL_ROW_COUNT = 91_682_810
+
     def initialize(version)
       @version = version
     end
@@ -112,7 +114,7 @@ module Dmf
       )
 
       connection.execute(<<~SQL)
-        CREATE TABLE dmf_records_staging (
+        CREATE UNLOGGED TABLE dmf_records_staging (
           ssn varchar(9) NOT NULL,
           last_name varchar,
           first_name varchar,
@@ -133,6 +135,12 @@ module Dmf
         ).to_i
 
       raise ImportError, "DMF import produced zero rows." if count.zero?
+
+      if count != EXPECTED_FULL_ROW_COUNT
+        raise ImportError,
+              "DMF row count mismatch. " \
+              "Expected #{EXPECTED_FULL_ROW_COUNT}, got #{count}."
+      end
 
       invalid_ssns =
         connection.select_value(<<~SQL).to_i
