@@ -544,6 +544,47 @@
                         </tr>
                       <% end %>
 
+                      <!-- SSA -->
+                      <% ssa_verification = @provider_personal_information.provider_ssn_verifications.latest_first.first
+
+                        ssa_file_url =
+                          if ssa_verification.present? && ssa_verification.report_pdf.present?
+                            begin
+                              ssa_verification.report_pdf.url
+                            rescue StandardError
+                              nil
+                            end
+                          end
+                      %>
+
+                      <% if ssa_verification.present? && ssa_file_url.present? %>
+                        <tr>
+                          <td>
+                            <input
+                              type="checkbox"
+                              id="ssa-verification-<%= ssa_verification.id %>"
+                              value="SSA Verification"
+                              data-url="<%= ssa_file_url %>"
+                              data-type="ssa_verification"
+                              data-provider-id="<%= @provider_personal_information.id %>"
+                              class="link-checkbox"
+                            >
+                          </td>
+
+                          <td>SSA</td>
+
+                          <td>
+                            <a href="<%= ssa_file_url %>" target="_blank" rel="noopener noreferrer" >
+                              <%= ssa_verification.report_pdf.identifier.presence || "SSA Verification PDF" %>
+                            </a>
+                          </td>
+
+                          <td><%= ssa_verification.created_at&.strftime("%m/%d/%Y") %></td>
+
+                          <td>PDF</td>
+                        </tr>
+                      <% end %>
+
                       <%# OMIG, OPMC, OFAC %>
                       <% if @provider_personal_information.present? &&
                             @provider_personal_information.legacy_client_name == "Primary PartnersCare" %>

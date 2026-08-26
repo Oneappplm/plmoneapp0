@@ -627,6 +627,49 @@
     </div>
   <% end %>
 
+  <!-- SSA -->
+  <% ssa_verification = provider_personal_information.provider_ssn_verifications.latest_first.first %>
+
+  <% if ssa_verification.present? %>
+    <div class="section mt-4">
+      <div class="section-title">SSA</div>
+      <div class="section-content">
+        <div class="row">
+          <div class="col-6">
+            <p>
+              <strong>Search Result:</strong> <%= ssa_verification.status&.humanize %>
+            </p>
+            <p>
+              <strong>SSN Match:</strong> <%= ssa_verification.ssn_matched.nil? ? "Not Available" : (ssa_verification.ssn_matched ? "Matched" : "Not Matched") %>
+            </p>
+            <p><strong>Date of Birth Match:</strong> <%= ssa_verification.date_of_birth_matched.nil? ? "Not Available" : (ssa_verification.date_of_birth_matched ? "Matched" : "Not Matched") %>
+            </p>
+          </div>
+          <div class="col-6">
+            <p>
+              <strong>Death Date:</strong> <%= ssa_verification.death_date&.strftime("%m/%d/%Y") || "Not Available" %>
+            </p>
+            <p>
+              <strong>DMF Version:</strong>
+              <% if ssa_verification.dmf_file_version.present? %>
+                <% if ssa_verification.dmf_file_version.publication_date.present? %>
+                  <%= ssa_verification.dmf_file_version.publication_date.strftime("%m/%d/%Y") %>
+                <% else %>
+                  Version #<%= ssa_verification.dmf_file_version_id %>
+                <% end %>
+              <% else %>
+                Not Available
+              <% end %>
+            </p>
+            <p>
+              <strong>Verification Date:</strong> <%= ssa_verification.created_at&.strftime("%m/%d/%Y") %>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
   <% current_provider = local_assigns[:provider_personal_information] || @provider_personal_information %>
 
   <% latest_tracking =
