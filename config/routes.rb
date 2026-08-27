@@ -748,8 +748,13 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :dmf_file_versions,
-          only: %i[index new create show] do
+    resources :dmf_file_versions do
+      collection do
+        post :check_duplicate
+        post :presign_upload
+        post :register_upload
+      end
+
       member do
         post :start_import
         get :status
