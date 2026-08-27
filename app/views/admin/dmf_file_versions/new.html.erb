@@ -346,11 +346,20 @@
         "Calculating SHA256 checksum..."
       );
 
+      if (
+        !window.crypto ||
+        !window.crypto.subtle
+      ) {
+        throw new Error(
+          "Secure HTTPS connection is required to calculate the DMF checksum."
+        );
+      }
+
       const buffer =
         await file.arrayBuffer();
 
       const digest =
-        await crypto.subtle.digest(
+        await window.crypto.subtle.digest(
           "SHA-256",
           buffer
         );
