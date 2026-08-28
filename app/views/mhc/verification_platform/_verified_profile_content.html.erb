@@ -628,42 +628,55 @@
   <% end %>
 
   <!-- SSA -->
-  <% ssa_verification = provider_personal_information.provider_ssn_verifications.latest_first.first %>
+  <%
+    ssa_verification = provider_personal_information.provider_ssn_verifications.latest_first.first
+
+    raw_ssn = provider_personal_information&.ssn.to_s.gsub(/\D/, "")
+
+    formatted_ssn =
+      if raw_ssn.length == 9
+        "#{raw_ssn[0, 3]}-#{raw_ssn[3, 2]}-#{raw_ssn[5, 4]}"
+      else
+        provider_personal_information&.ssn.presence || "N/A"
+      end
+
+    search_result =
+      case ssa_verification&.status
+      when "matched"
+        "Match"
+      when "not_matched"
+        "No Match"
+      when "review_required"
+        "Review Required"
+      when "error"
+        "Error"
+      else
+        ssa_verification&.status&.humanize || "N/A"
+      end
+
+    provider_dob = provider_personal_information&.birth_date || provider_personal_information&.date_of_birth
+
+    source_date = ssa_verification&.dmf_file_version&.publication_date
+  %>
 
   <% if ssa_verification.present? %>
     <div class="section mt-4">
-      <div class="section-title">SSA</div>
+      <div class="section-title">Social Security Administration (SSA)</div>
+
       <div class="section-content">
         <div class="row">
           <div class="col-6">
-            <p>
-              <strong>Search Result:</strong> <%= ssa_verification.status&.humanize %>
-            </p>
-            <p>
-              <strong>SSN Match:</strong> <%= ssa_verification.ssn_matched.nil? ? "Not Available" : (ssa_verification.ssn_matched ? "Matched" : "Not Matched") %>
-            </p>
-            <p><strong>Date of Birth Match:</strong> <%= ssa_verification.date_of_birth_matched.nil? ? "Not Available" : (ssa_verification.date_of_birth_matched ? "Matched" : "Not Matched") %>
-            </p>
+            <p><strong>SSN:</strong> <%= formatted_ssn %></p>
+            <p><strong>Search Results:</strong> <%= search_result %></p>
+            <p><strong>Date of Death:</strong> <%= ssa_verification.death_date&.strftime("%m/%d/%Y") %></p>
+            <p><strong>Date of Birth:</strong> <%= provider_dob&.strftime("%m/%d/%Y") || "N/A" %></p>
+            <p><strong>Verified By:</strong> SSA</p>
+            <p><strong>Verifier:</strong> <%= user&.full_name.presence || "N/A" %></p>
           </div>
+
           <div class="col-6">
-            <p>
-              <strong>Death Date:</strong> <%= ssa_verification.death_date&.strftime("%m/%d/%Y") || "Not Available" %>
-            </p>
-            <p>
-              <strong>DMF Version:</strong>
-              <% if ssa_verification.dmf_file_version.present? %>
-                <% if ssa_verification.dmf_file_version.publication_date.present? %>
-                  <%= ssa_verification.dmf_file_version.publication_date.strftime("%m/%d/%Y") %>
-                <% else %>
-                  Version #<%= ssa_verification.dmf_file_version_id %>
-                <% end %>
-              <% else %>
-                Not Available
-              <% end %>
-            </p>
-            <p>
-              <strong>Verification Date:</strong> <%= ssa_verification.created_at&.strftime("%m/%d/%Y") %>
-            </p>
+            <p><strong>Source Date:</strong> <%= source_date&.strftime("%m/%d/%Y") || "N/A" %></p>
+            <p><strong>Verification Date:</strong> <%= ssa_verification.created_at&.strftime("%m/%d/%Y") || "N/A" %></p>
           </div>
         </div>
       </div>
