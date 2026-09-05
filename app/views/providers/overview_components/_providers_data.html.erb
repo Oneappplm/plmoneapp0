@@ -210,4 +210,22 @@
       </div>
     <% end %>
   </div>
+
+  <div class="col-lg-3">
+    <% task_count = EnrollmentProvider.due_today.count + EnrollmentProvider.overdue.count %>
+
+    <%= link_to mhc_credentialing_tasks_path, class: "nav-link d-flex justify-content-between align-items-center" do %>
+
+      <span>
+        <i class="bi bi-list-check"></i>
+        Today’s Task
+      </span>
+
+      <% if task_count.positive? %>
+        <span class="badge bg-danger rounded-pill">
+          <%= task_count %>
+        </span>
+      <% end %>
+    <% end %>
+  </div>
 </div>

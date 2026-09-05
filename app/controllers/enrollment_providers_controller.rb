@@ -136,6 +136,7 @@ class EnrollmentProvidersController < ApplicationController
 			:suffix,
 			:telephone_number,
 			:email_address,
+			:next_follow_up_date,
       details_attributes: [:id, :start_date, :due_date,
                            :enrollment_payer, :enrollment_type, :enrollment_status, :payer_state,
                            :approved_date, :revalidation_date, :revalidation_due_date, :denied_date,

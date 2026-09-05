@@ -40,11 +40,19 @@ class EnrollmentProvider < ApplicationRecord
 	scope :today, -> { where(created_at: DateTime.now) }
 	scope :this_week, -> { where(created_at: DateTime.now.beginning_of_week..DateTime.now.end_of_month) }
 
+	scope :requiring_follow_up, -> { where.not(follow_up_status: :resolved) }
+  scope :due_today, -> { requiring_follow_up.where(next_follow_up_date: Date.current) }
+  scope :overdue, -> { requiring_follow_up.where("next_follow_up_date < ?", Date.current) }
+  scope :upcoming, -> { requiring_follow_up.where("next_follow_up_date > ?", Date.current) }
+
 	belongs_to :provider, optional: true
 
+	has_many :follow_ups, dependent: :destroy
 	has_one :client_provider_enrollment, as: :enrollable, dependent: :destroy
 	has_many :details, class_name: 'EnrollmentProvidersDetail', dependent: :destroy
   has_many :comments, class_name: 'EnrollmentComment', dependent: :destroy
+
+  enum :follow_up_status, { pending: 0, resolution_requested: 1, resolved: 2 }
 
 	accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank
 

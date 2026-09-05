@@ -1,0 +1,106 @@
+<div class="container mt-4">
+  <h2>Credentialing Follow-up</h2>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <strong>Provider:</strong>
+      <%= @enrollment_provider.provider&.fullname %>
+
+      <br>
+
+      <strong>Payer:</strong>
+      <%= @enrollment_provider.full_name.titleize %>
+
+      <br>
+
+      <strong>Current Status:</strong>
+      <%= @enrollment_provider.follow_up_status.humanize %>
+    </div>
+  </div>
+
+  <%= form_with model: [:mhc, @enrollment_provider, @follow_up] do |form| %>
+
+    <% if @follow_up.errors.any? %>
+      <div class="alert alert-danger">
+        <ul class="mb-0">
+          <% @follow_up.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="mb-3">
+      <%= form.label :notes, "Follow-up Notes", class: "form-label" %>
+
+      <%= form.text_area :notes,
+            rows: 5,
+            class: "form-control",
+            placeholder: "Called payer credentialing department. Application is still pending review." %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :next_follow_up_date,
+                     "Next Follow-up Date",
+                     class: "form-label" %>
+
+      <%= form.date_field :next_follow_up_date,
+                    min: Date.current,
+                    class: "form-control" %>
+    </div>
+
+    <div class="form-check mb-3">
+      <%= form.check_box :resolution_requested,
+                         class: "form-check-input" %>
+
+      <%= form.label :resolution_requested,
+                     "Request to mark this application as resolved",
+                     class: "form-check-label" %>
+    </div>
+
+    <%= form.submit "Save Follow-up",
+                    class: "btn btn-primary" %>
+
+    <%= link_to "Back",
+                mhc_credentialing_tasks_path,
+                class: "btn btn-secondary ms-2" %>
+
+  <% end %>
+
+	  <% if @follow_up_history.any? %>
+		  <hr class="my-4">
+
+		  <h4>Follow-up History</h4>
+
+		  <% @follow_up_history.each do |follow_up| %>
+		    <div class="card mb-3">
+		      <div class="card-body">
+
+		        <div class="d-flex justify-content-between">
+		          <strong>
+		            <%= follow_up.followed_up_at&.strftime("%b %d, %Y %I:%M %p") %>
+		          </strong>
+
+		          <span class="badge bg-secondary">
+		            <%= follow_up.resolution_status.humanize %>
+		          </span>
+		        </div>
+
+		        <p class="mt-2 mb-2">
+		          <%= follow_up.notes %>
+		        </p>
+
+		        <% if follow_up.next_follow_up_date.present? %>
+		          <small>
+		            Next Follow-up:
+		            <strong>
+		              <%= follow_up.next_follow_up_date.strftime("%b %d, %Y") %>
+		            </strong>
+		          </small>
+		        <% end %>
+
+		      </div>
+		    </div>
+		  <% end %>
+		<% end %>
+</div>
