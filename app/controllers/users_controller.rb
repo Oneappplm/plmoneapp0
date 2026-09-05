@@ -25,7 +25,8 @@ class UsersController < ApplicationController
 		if @user.save
 			redirect_to users_path, notice: 'User has been successfully created.'
 		else
-			render :index
+			initialize_users
+			render :index, status: :unprocessable_entity
 		end
 	end
 
@@ -54,7 +55,8 @@ class UsersController < ApplicationController
 		if @user.update(updated_params.except(:enrollment_group_ids))
 			redirect_to users_path, notice: 'User has been successfully updated.'
 		else
-			render :index
+			initialize_users
+    	render :index, status: :unprocessable_entity
 		end
 	end
 
