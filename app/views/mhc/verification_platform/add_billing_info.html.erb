@@ -1,0 +1,145 @@
+    <div class="enc-content">
+        <div class="container">
+          <%= render "top_nav_buttons"%>
+        
+          <div class="add-education-content">
+             <div class="container">
+                <div class="row mt-5">
+                      <div class="d-flex align-items-center gap-1">
+                      <a href="<%= mhc_verification_platform_path(page_tab: 'billing_info')%>" class="link-back">
+                        <i class='bx bx-left-arrow-alt' ></i>
+                      </a>
+                      <h4 class="page-heading">Add New Billing</h4>
+                      </div>
+                  <%= form_with(model: @new_billing_company, url: mhc_billing_companies_path, method: :post) do |f| %>
+                    <div class="card">
+                      <div class="m-2">
+                        <span class="page-note">
+                          <i class='bx bx-error-circle font-lightblue'></i>
+                          <span>To search for a Billing Company name, please click the Select button</span>
+                        </span>
+
+                        <div class="form-row row">
+                          <div class="col-xl-6">
+                            <%= f.label :billing_company_name, "Billing Company:" %>
+                            <div class="input-group gap-2">
+                              <%= f.text_field :billing_company_name, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                              <button class="btn btn-primary rounded" type="button">Search</button>
+                            </div>
+                          </div>
+                          <div class="col-xl-6">
+                            <%= f.label :address, "Address:" %>
+                            <%= f.text_field :address, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                          </div>
+                        </div>
+
+                        <div class="form-row row">
+                          <div class="col-xl-6">
+                            <%= f.label :suite, "Suite/Dept/Mail Stop:" %>
+                            <%= f.text_field :suite, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-6">
+                            <%= f.label :additional_address, "Additional Address:" %>
+                            <%= f.text_field :additional_address, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                          </div>
+                        </div>
+
+                        <div class="form-row row">
+                          <div class="col-xl-6">
+                            <%= f.label :city, "City:" %>
+                            <%= f.text_field :city, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-6">
+                            <%= f.label :county, "County:" %>
+                            <%= f.text_field :county, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                          </div>
+                        </div>
+
+                        <div class="form-row row">
+                          <div class="col-xl-4">
+                            <%= f.label :state, "State/Province:" %>
+                            <%= f.text_field :state, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-4">
+                            <%= f.label :zip, "Zip/Postal Code:" %>
+                            <%= f.text_field :zip, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-4">
+                            <%= f.label :country, "Country:" %>
+                            <%= f.text_field :country, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                          </div>
+                        </div>
+
+                        <div class="form-row row">
+                          <div class="col-xl-6">
+                            <%= f.label :phone_number, "Phone Number:" %>
+                            <%= f.text_field :phone_number, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-6">
+                            <%= f.label :contact, "Contact:" %>
+                            <%= f.text_field :contact, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                          </div>
+                        </div>
+
+                        <div class="form-row row">
+                          <div class="col-xl-6">
+                            <%= f.label :fax_number, "Fax Number:" %>
+                            <%= f.text_field :fax_number, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-6">
+                            <%= f.label :email, "Email Address:" %>
+                            <%= f.text_field :email, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                          </div>
+                        </div>
+
+                        <div class="form-row row">
+                          <div class="col-xl-4">
+                            <%= f.label :name_affiliated_with_tax_id, "Name Affiliated with Tax ID Number:" %>
+                            <%= f.text_field :name_affiliated_with_tax_id, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-4">
+                            <%= f.label :federal_tax_id, "Federal Tax ID Number:" %>
+                            <%= f.text_field :federal_tax_id, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                          </div>
+                          <div class="col-xl-4">
+                            <%= f.label :check_payable_to, "Check Payable To:" %>
+                            <%= f.text_field :check_payable_to, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                          </div>
+                        </div>
+
+                        <div class="form-row row mt-2">
+                          <div class="col-xl-6">
+                            <div class="input-group gap-2">
+                              <%= f.label :bills_electronically, "Do you bill electronically?" %>
+                              <div class="form-check">
+                                <%= f.radio_button :bills_electronically, true %>
+                                <%= f.label :bills_electronically, "Yes" %>
+                              </div>
+                              <div class="form-check">
+                                <%= f.radio_button :bills_electronically, false %>
+                                <%= f.label :bills_electronically, "No" %>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-row row mb-3 mt-3">
+                          <%= f.label :comments, "Please list any comments:" %>
+                          <div class="col-xl-12">
+                            <%= f.text_area :comments, class: "form-control form-control-lg", placeholder: "Type here..." %>
+                          </div>
+                        </div>
+
+                        <div class="form-row row justify-content-end">
+                          <div class="col-xl-2">
+                            <%= f.submit "Save", class: "btn btn-primary form-control" %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+            </div>
+        </div>
+        </div>   
+    </div>
+</div>

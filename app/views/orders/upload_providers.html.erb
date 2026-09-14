@@ -1,0 +1,31 @@
+<div class="container mt-5">
+	<h1>Upload Providers</h1>
+
+	<div class="card shadow">
+		<div class="card-body">
+			<h2>Manual Entry</h2>
+			<%= form_with url: submit_providers_order_path(@order), multipart: true do |f| %>
+				<%= f.fields_for :provider_profile do |pf| %>
+				  <%= pf.text_field :first_name, placeholder: "First Name", class: 'form-control mt-1', autocomplete: "off" %>
+				  <%= pf.text_field :last_name, placeholder: "Last Name", class: 'form-control mt-1', autocomplete: "off" %>
+				  <%= pf.text_field :npi_number, placeholder: "NPI Number", class: 'form-control mt-1', autocomplete: "off" %>
+				  <%= pf.text_field :license_number, placeholder: "License Number", class: 'form-control mt-1', autocomplete: "off" %>
+				  <%= pf.text_field :state, placeholder: "State", class: 'form-control mt-1', autocomplete: "off" %>
+			  <% end %>
+			  
+			  <%= f.submit "Add Provider", class: 'btn btn-primary mt-2' %>
+			<% end %>
+		</div>
+	</div>
+
+	<div class="card shadow mt-2">
+		<div class="card-body">
+			<h2>CSV Upload</h2>
+			<%= form_with url: submit_providers_order_path(@order), multipart: true do %>
+			  <%= file_field_tag :csv_file, class: 'form-control' %>
+			  <%= submit_tag "Upload CSV", class: 'btn btn-primary mt-2' %>
+			<% end %>
+		</div>
+	</div>
+
+</div>

@@ -1,0 +1,117 @@
+<div class="enc-content">
+    <div class="container">
+        <%= render "top_nav_buttons"%>
+        <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <h4 class="page-heading">Education</h4>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="education-switch">
+                    <label class="form-check-label" for="education-switch">Not Applicable</label>
+                </div>
+            </div>
+            <a href="<%= mhc_verification_platform_path(page_tab: 'education_record')%>" class="btn btn-primary py-1">
+                <i class='bx bx-plus' ></i>
+                Add New Education
+            </a>
+        </div>
+        <div class="mt-2 page-applicable">
+            <span class="page-note">
+                <i class='bx bx-error-circle font-red'></i> <span>Please list your professional education (post-high school) in chronological order. For allied health practitioners include secondary (high-school education). Include all professional education programs attended whether completed or not. Required fields are marked with the symbol “<span class="font-red">*</span>”</span>.
+            </span>
+            <span class="page-note">
+                <i class='bx bx-error-circle font-red'></i> <span>Please check the Not Applicable button if you have never enrolled in a professional education program.</span>
+            </span>
+        </div>
+        <div class="row mt-3 page-applicable">
+          <div class="col-xl-4">
+            <%= search_form_for @q, url: mhc_verification_platform_path(page_tab: 'education'), method: :get, html: { class: 'form_search_with_icon' } do |f| %>
+              <%= hidden_field_tag :id, @provider_personal_information.provider_attest_id %>
+              <%= hidden_field_tag :page_tab, 'education' %>
+              <div class="position-relative">
+                <%= f.text_field :institution_name_cont, value: (params.dig(:q, :institution_name_cont) || ''), placeholder: 'Search Education record', class: "form-control py-1" %>
+                <button type="submit" class="search-icon-btn">
+                  <i class="bx bx-search"></i>
+                </button>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        <% if @practice_information_educations %>
+            <div class="col-lg-12">
+                <div class="d-flex justify-content-between bg-medium-grey align-items-center py-2 mt-3">
+                    <div class="page_info ms-3 text-black">
+                    <%= page_entries_info @practice_information_educations %>
+                    </div>
+                    <% if params[:per_page ].present? %>
+                    <%= will_paginate @practice_information_educations, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                    <% else %>
+                    <%= will_paginate @practice_information_educations, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+                    <% end %>
+                </div>
+            </div>
+        <% end %>
+        <table class="table table-bordered practice-table mt-3 page-applicable ">
+            <thead>
+                <tr>
+                    <th class="text-white" scope="col">School</th>
+                    <th class="text-white">Degree/Certificate</th>
+                    <th class="text-white">Attended From</th>
+                    <th class="text-white">Attended To</th>
+                    <th class="text-white">Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% @practice_information_educations.each do |practice_information_educations| %>
+                    <tr>
+                        <td><a href="<%= mhc_verification_platform_path(practice_information_education_id: practice_information_educations.id, page_tab: 'education_record')%>" id="OigDisplayGeneral"
+                                class="text-dark text-start bg-transparent border-0 fw-bold text-decoration-none"><%= practice_information_educations.institution_name %>
+                        <td><%= practice_information_educations.degree_degree_abbreviation %></td>
+                        <td><%= practice_information_educations.start_date&.strftime('%b %d, %Y') %></td>
+                        <td><%= practice_information_educations.end_date&.strftime('%b %d, %Y') %></td>
+                        <td><%= practice_information_educations.verification_status.presence || "Not Requested" %></td>
+                        <td>
+                          <%= button_to mhc_practice_information_education_path(practice_information_educations), 
+                            method: :delete, 
+                            data: { confirm: 'Are you sure you want to delete this education detail?' }, 
+                            class: 'btn btn-outline-danger btn-sm' do %>
+                            <i class="bi bi-trash"></i>
+                          <% end %>  
+                        </td>
+                    </tr>
+                <% end %>
+            </tbody>
+        </table>
+        <form action="" class="page-not-applicable">
+            <div class="form-row mt-4">
+                <label for="">Please explain:<span class="font-red">*</span></label>
+                <textarea name="" id="" cols="30" rows="5" class="form-control" required></textarea>
+            </div>
+            <div class="form-row mt-2 d-flex justify-content-end">
+                <button type="submit" class="btn btn-sm btn-primary">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<style>
+  .search-icon-btn {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .search-icon-btn i {
+    font-size: 20px;
+    color: #007bff; /* Blue color */
+  }
+
+  .search-icon-btn:hover i {
+    color: #0056b3; /* Darker blue on hover */
+  }
+</style>

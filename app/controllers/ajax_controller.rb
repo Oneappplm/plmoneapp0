@@ -29,6 +29,8 @@ class AjaxController < ApplicationController
       GroupDcoNote.delete(id)
     elsif model == 'provider_notes'
       ProviderNote.delete(id)
+    elsif model == 'practice_informations_allied_health_practitioner'
+      AlliedHealthPractitioner.delete(id)
     elsif model == 'comment'
       EnrollmentComment.delete(id)
     elsif model == 'payer_questions'
@@ -211,7 +213,20 @@ class AjaxController < ApplicationController
   def get_provider
     @provider = Provider.find(params[:id] || params[:provider_id])
     @comment = @provider.comments.build(user: current_user)
-    render json: { html: render_to_string(partial: 'providers/show', locals: { provider: @provider }).html_safe }
+
+    group_ids = @provider.provider_enrollment_groups.pluck(:group_id)
+    @practice_groups = EnrollmentGroup.where(id: group_ids).index_by(&:id)
+
+    all_location_ids = @provider.provider_enrollment_groups.flat_map do |group|
+      group.primary_location + group.additional_locations.first.to_s.split(',')
+    end.compact.map(&:to_i).uniq
+
+
+    @dco_locations = GroupDco.where(id: all_location_ids).index_by(&:id)
+
+    render json: {
+      html: render_to_string(partial: 'providers/show', locals: { provider: @provider }).html_safe
+    }
   end
 
   def get_client_provider_enrollment
@@ -330,6 +345,15 @@ class AjaxController < ApplicationController
     }
   end
 
+  def get_schools
+    @q = School.ransack(params[:q])
+    @schools = @q.result(distinct: true).map { |school| { label: school.name, value: school.id } }
+
+    render json: {
+      'schools' => @schools
+    }
+  end
+
   def get_states
     states = State.all.map{|m| { label: "#{m.name} - #{m.alpha_code}", value: m.name} }
     render json: {
@@ -369,7 +393,7 @@ class AjaxController < ApplicationController
     render json: {
       'group_roles' => group_roles
     }
-  end   
+  end
 
   def update_timeline
     timeline_id = params[:timeline_id]

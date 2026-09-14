@@ -1,0 +1,2 @@
+module VerificationProductsHelper
+end

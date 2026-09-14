@@ -1,3 +1,3 @@
 class ProviderBoardCertification < ApplicationRecord
-    belongs_to :provider
-  end
+  belongs_to :provider
+end

@@ -1,0 +1,55 @@
+<!-- app/views/admin/states/edit.html.erb -->
+<div class="container mt-3">
+  <h1>Edit <%= @state.name %> License URL</h1>
+
+  <%= form_with model: [:mhc, @state], local: true do |f| %>
+    <div class="form-group">
+      <%= f.label :license_search_url %><br>
+      <%= f.text_field :license_search_url, style: "width: 600px", class: 'form-control border-dark', autocomplete: "off" %>
+    </div>
+
+    <%= f.submit "Update URL", class: "btn btn-success btn-sm mt-2" %>
+    <%= link_to 'Back', mhc_states_path, class: 'btn btn-outline-secondary btn-sm mt-2' %>
+  <% end %>
+
+  <hr>
+
+  <h4 class="mt-4">License URL Change History</h4>
+
+  <p>
+    <strong>Total changes:</strong>
+    <%= @state.license_url_histories.count %>
+  </p>
+
+  <% if @state.license_url_histories.any? %>
+    <table class="table table-sm table-bordered">
+      <thead>
+        <tr>
+          <th class="text-white">#</th>
+          <th class="text-white">Old URL</th>
+          <th class="text-white">New URL</th>
+          <th class="text-white">Changed At</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @state.license_url_histories.each_with_index do |h, i| %>
+          <tr>
+            <td><%= i + 1 %></td>
+            <td class="text-break"><%= h.old_url %></td>
+            <td class="text-break"><%= h.new_url %></td>
+            <td><%= h.changed_at.strftime("%d %b %Y, %I:%M %p") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <%# <p class="mt-2">
+      <strong>Last URL:</strong><br> %>
+      <%# <code><%#= @state.license_url_histories.first.new_url</code> %>
+    <%# </p> %>
+  <% else %>
+    <p class="text-muted">No URL changes recorded yet.</p>
+  <% end %>
+</div>
+
+

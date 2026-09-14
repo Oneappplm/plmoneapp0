@@ -1,0 +1,2 @@
+class CoveringPractitioner < ApplicationRecord
+end

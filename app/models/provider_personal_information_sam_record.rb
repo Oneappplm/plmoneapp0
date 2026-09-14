@@ -1,0 +1,5 @@
+class ProviderPersonalInformationSamRecord < ApplicationRecord
+  belongs_to :provider_personal_information
+
+  has_many :provider_personal_information_sam_rva_records
+end

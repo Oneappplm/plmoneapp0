@@ -15,7 +15,7 @@
 <div class="row mb-1">
    <div class="col-lg-12 pe-5">
       <label class="text-dark-grey">Provider Name</label>
-      <%= HtmlUtils.multi_select_dropdown name: 'provider_id', label: 'Provider Name', id: 'enrollment-all-providers'%>
+      <%= HtmlUtils.multi_select_dropdown name: 'provider_id', label: 'Provider Name', id: 'enrollment-all-providers', value: @enrollment_provider&.provider_id %>
    </div>
 </div>
 <div class="row">
@@ -81,24 +81,31 @@
 
 <div class="row mb-3">
    <div class="col-lg-12">
-      <div class="row">
-         <div id="details">
-            <div class="fields">
-               <%= f.fields_for :details do |details| %>
-               <%= render 'details_fields', f: details %>
-               <% end %>
-            </div>
-            <div class="row">
-               <div class="col-lg-12 text-center">
-                  <div class="links mt-2">
-                     <button type="button" class="add_association btn btn-primary btn-xs" > Add New Payor </button>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
+     <div class="col-lg-12">
+        <h3>Payor Enrollment Details</h3>
+        <div id="payer_container">
+          <% if @enrollment_provider.details.empty? %>
+            <!-- Render initial blank entry (index 0) if none exist -->
+            <%= render partial: 'details_fields', locals: { index: 0, detail: EnrollmentProvidersDetail.new } %>
+          <% else %>
+            <% @enrollment_provider.details.each_with_index do |detail, index| %>
+              <%= render partial: 'details_fields', locals: { index: index, detail: detail } %>
+            <% end %>
+          <% end %>
+        </div>
+
+        <!-- Template to clone -->
+        <div id="payer_template" class="payer-entry d-none">
+          <%= render partial: 'details_fields', locals: { index: 'REPLACE_INDEX', detail: EnrollmentProvidersDetail.new } %>
+        </div>
+
+      <button type="button" class="btn btn-outline-primary mt-2" id="add_payer">
+        <i class="bi bi-plus-circle me-1"></i> Add Payer
+      </button>
+     </div>
    </div>
 </div>
+
 <div class="row">
    <div class="col-lg-12 d-flex justify-content-end pe-5">
       <button class="btn btn-primary btn-md">Submit</button>
@@ -148,336 +155,265 @@
        </div>
    </div>
 </div>
-
 <%= content_for :js do %>
-<script>
-   $(document).ready(function(){
-    $('.enrollment-payer').each(function(){
-      var id = $(this).attr('id');
-      var value = $(this).data('value');
-
-      setTimeout(function(){
-         $.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
-            VirtualSelect.init({ele: '#' + id, search: true });
-            document.querySelector('#' + id).setOptions(data['result']);
-            document.querySelector('#' + id).setValue(value);
-         });
-      }, 1000);
-    });
-   });
-
+  <script>
     $(document).ready(function(){
-    $('.payer-state').each(function(){
-      var id = $(this).attr('id');
-      var value = $(this).data('value');
 
-      setTimeout(function(){
-         $.get('<%= states_multi_select_data_path %>', function(data){
-            VirtualSelect.init({ele: '#' + id, search: true });
-            document.querySelector('#' + id).setOptions(data['result']);
-            document.querySelector('#' + id).setValue(value);
-         });
-      }, 1000);
-    });
-   });
-</script>
-<% end %>
+      let index = $("#payer_container .payer-entry").length;
+      const pendingRequests = {}; // Track pending AJAX by input name
 
-<script>
-   $(document).ready(function () {
+      $("#add_payer").on("click", function () {
+        let newEntry = $("#payer_template").clone();
+        newEntry.removeClass("d-none").css("display", "block").removeAttr("id");
 
-      $("#details").on("click", ".add_association", function () {
-         var detailsFields = $("#details .field");
-         var newEnrollmentdetails = detailsFields.last().clone();
-         var lastId = detailsFields.length - 1;
-         var newId = lastId + 1;
-         //var enrollment_payer_id = "enrollment_provider_details_attributes_" + newId + "_enrollment_payer";
-         var payer_state_id = "enrollment_provider_details_attributes_" + newId + "_payer_state";
+        // Clear all inputs and assign names with new index
+        newEntry.find("input, select, textarea").each(function () {
+          let oldName = $(this).attr("name");
+          if (oldName) {
+            let newName = oldName.replace(/\[REPLACE_INDEX\]/, `[${index}]`);
+            $(this).attr("name", newName);
+          }
 
-         // Update the IDs in the cloned HTML content
-         newEnrollmentdetails.find("[id^='enrollment_provider_details_attributes_']").each(function() {
-            var oldId = $(this).attr("id");
-            var newIdValue = oldId.replace(/\d+/, newId);
-            $(this).attr("id", newIdValue);
-            $(this).attr("name", $(this).attr("name").replace(/\d+/, newId));
-            $(this).val('');
-         });
+          // Reset values
+          if ($(this).is("select")) {
+            $(this).val("");
+          } else if ($(this).attr("type") === "checkbox" || $(this).attr("type") === "radio") {
+            $(this).prop("checked", false);
+          } else {
+            $(this).val("");
+          }
+        });
 
-         setTimeout(function(){
-           // $.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
-              // VirtualSelect.init({ele: '#' + enrollment_payer_id, search: true }); // initialze virtual select first
-             //  document.querySelector('#' + enrollment_payer_id).setOptions(data['result']); // other alternative for initializing collection data
-              // document.querySelector('#' + enrollment_payer_id).setValue(data['value']); // other alternative for setting the value
-           // });
+        newEntry.attr("data-id", ""); // Reset ID
+        newEntry.attr("data-saving", "false"); // Custom flag to avoid race conditions
+        newEntry.attr("data-index", index);
 
-            $.get('<%= states_multi_select_data_path %>', function(data){
-               VirtualSelect.init({ele: '#' + payer_state_id, search: true });
-               document.querySelector('#' + payer_state_id).setOptions(data['result']);
-               document.querySelector('#' + payer_state_id).setValue(value);
-            });
-         }, 500);
-
-          // find input with name _destroy
-          newEnrollmentdetails.find('input[type="hidden"]').each(function(){
-            if($(this).attr('name').includes('_destroy')){
-               $(this).attr('name', $(this).attr('name').replace(/\d+/, newId));
-            }
-         });
-
-         // find button with remove-dynamic-fields class
-         newEnrollmentdetails.find('button.remove-dynamic-fields').each(function(){
-            if($(this).css('display') !== 'none'){
-               var parentQuestionFields = $(this).closest('.question-field');
-               parentQuestionFields.remove();
-            }
-         });
-
-         $("#details .fields").append(newEnrollmentdetails);
-         newEnrollmentdetails.find('.application-status-history-log').remove();
-         newEnrollmentdetails.find('.multi-enrollment-status').trigger('change');
+        index++;
+        $("#payer_container").append(newEntry);
       });
 
-      $(document).on('change', '.multi-enrollment-status', function () {
-         var status = $(this).val();
-         if (status == 'application-not-submitted') {
-            showHideDetailFields($(this), '.application-not-submitted-field', 'show')
-            showHideDetailFields($(this), '.processing-field', 'hide')
-         }
-         if (status == 'approved') {
-            showHideDetailFields($(this), '.application-not-submitted-field', 'show')
-            showHideDetailFields($(this), '.application-submitted-field', 'hide')
-            showHideDetailFields($(this), '.revalidation-fields', 'show')
-            showHideDetailFields($(this), '.processing-field', 'hide')
-            showHideDetailFields($(this), '.terminated-field', 'hide')
-            showHideDetailFields($(this), '.denied-field', 'hide')
-            showHideDetailFields($(this), '.date_field', 'show')
-         } else if (status == 'application-submitted') {
-            showHideDetailFields($(this), '.application-not-submitted-field', 'show')
-            showHideDetailFields($(this), '.revalidation-fields', 'hide')
-            showHideDetailFields($(this), '.application-submitted-field', 'show')
-            showHideDetailFields($(this), '.processing-field', 'hide')
-            showHideDetailFields($(this), '.terminated-field', 'hide')
-            showHideDetailFields($(this), '.denied-field', 'hide')
-            showHideDetailFields($(this), '.date_field', 'show')
-         } else if (status == 'denied') {
-            showHideDetailFields($(this), '.denied-field', 'show')
-            showHideDetailFields($(this), '.application-not-submitted-field', 'hide')
-            showHideDetailFields($(this), '.revalidation-fields', 'hide')
-            showHideDetailFields($(this), '.application-submitted-field', 'hide')
-            showHideDetailFields($(this), '.processing-field', 'hide')
-            showHideDetailFields($(this), '.terminated-field', 'hide')
-            showHideDetailFields($(this), '.date_field', 'hide')
-         } else if (status == 'processing') {
-            showHideDetailFields($(this), '.processing-field', 'show')
-            showHideDetailFields($(this), '.revalidation-fields', 'hide')
-            showHideDetailFields($(this), '.application-submitted-field', 'hide')
-            showHideDetailFields($(this), '.terminated-field', 'hide')
-            showHideDetailFields($(this), '.denied-field', 'hide')
-            showHideDetailFields($(this), '.date_field', 'show')
-          } else if (status == 'terminated') {
-            showHideDetailFields($(this), '.terminated-field', 'show')
-            showHideDetailFields($(this), '.revalidation-fields', 'hide')
-            showHideDetailFields($(this), '.application-submitted-field', 'hide')
-            showHideDetailFields($(this), '.processing-field', 'hide')
-            showHideDetailFields($(this), '.denied-field', 'hide')
-            showHideDetailFields($(this), '.date_field', 'hide')
-           } else if (status == 'not-eligible') {
-            showHideDetailFields($(this), '.terminated-field', 'hide')
-            showHideDetailFields($(this), '.revalidation-fields', 'hide')
-            showHideDetailFields($(this), '.application-submitted-field', 'hide')
-            showHideDetailFields($(this), '.processing-field', 'hide')
-            showHideDetailFields($(this), '.denied-field', 'hide')
-            showHideDetailFields($(this), '.date_field', 'hide')
-            } else if (status == 'revalidation') {
-            showHideDetailFields($(this), '.terminated-field', 'hide')
-            showHideDetailFields($(this), '.revalidation-fields', 'hide')
-            showHideDetailFields($(this), '.application-submitted-field', 'hide')
-            showHideDetailFields($(this), '.processing-field', 'hide')
-            showHideDetailFields($(this), '.denied-field', 'hide')
-            showHideDetailFields($(this), '.date_field', 'show')
-         } else {
-            showHideDetailFields($(this), '.revalidation-fields', 'hide')
-            showHideDetailFields($(this), '.application-submitted-field', 'hide')
-            showHideDetailFields($(this), '.denied-field', 'hide')
-            showHideDetailFields($(this), '.date_field', 'hide')
-         }
-      })
-
-      function showHideDetailFields(dropDown, divClass, mode) {
-         if (mode == 'show')
-            dropDown.parent().parent().parent().find(divClass).removeClass('d-none');
-         else
-            dropDown.parent().parent().parent().find(divClass).addClass('d-none');
+      if ($("#payer_container .payer-entry").length === 1) {
+        $("#payer_container .payer-entry").first().find(".remove_payer").hide();
       }
 
-   })
-
-   // For searcheable providers
-  var selected_providers = [];
-  var outreach_type = "<%= @enrollment_provider.outreach_type %>";
-  var enrollment_provider_id = "<%= @enrollment_provider.id %>";
-
-  $(document).ready(function() {
-   $('input[name="outreach_type"]').change(function() {
-      outreach_type = $(this).val();
-      enrollment_provider_id = $('input[name="enrollment_provider_id"]').val();
-      $.get('<%= providers_multi_select_data_path %>', {
-         authenticity_token: csrfToken,
-         outreach_type: outreach_type,
-         enrollment_provider_id: enrollment_provider_id,
-         without_enrollments: true,
-         action_name: '<%= action_name %>'
-      }, function(data) {
-         document.querySelector('#enrollment-all-providers').reset();
-         document.querySelector('#enrollment-all-providers').setOptions(data['result']);
+      $(document).on("click", ".remove_payer", function () {
+        let entry = $(this).closest(".payer-entry");
+        entry.find(".destroy-field").val("1"); // mark for destruction
+        entry.hide(); // optionally hide from the UI
       });
-   });
-   setTimeout(function() {
-      getProviders();
-   }, 500);
-  })
 
-  var providers = [];
-  function getProviders() {
-    $.ajax({
-      url: '<%= providers_multi_select_data_path %>',
-      method: 'GET',
-      data: {
-         authenticity_token: csrfToken,
-         outreach_type: outreach_type,
-         enrollment_provider_id: enrollment_provider_id,
-         without_enrollments: true,
-         action_name: '<%= action_name %>'
-      },
-      success: function(data) {
-        VirtualSelect.init({
-            options: data['result'],
-            ele: '#enrollment-all-providers',
-            multiple: false,
-            search: true,
-            showSelectedOptionsFirst: true,
-            selectedValue: data['options']['selected_provider'],
+      // Debounce logic
+      let debounceTimeout;
+      $(document).on("change", "#payer_container input, #payer_container select, #payer_container textarea", function () {
+        const $field = $(this);
+        const fieldName = $field.attr("name");
+        const value = $field.val();
+        const $entry = $field.closest(".payer-entry");
+        const $container = $("#payer_container");
+      });  
+
+      // ===== VirtualSelect Initialization for Payers =====
+      $('.enrollment-payer').each(function(){
+        var id = $(this).attr('id');
+        var value = $(this).data('value');
+
+        setTimeout(function(){
+          $.get('<%= enrollment_payers_multi_select_data_path %>', function(data){
+            VirtualSelect.init({ele: '#' + id, search: true });
+            document.querySelector('#' + id).setOptions(data['result']);
+            document.querySelector('#' + id).setValue(value);
+          });
+        }, 1000);
+      });
+
+      // ===== VirtualSelect Initialization for States =====
+      $('.payer-state').each(function(){
+        var id = $(this).attr('id');
+        var value = $(this).data('value');
+
+        setTimeout(function(){
+          $.get('<%= states_multi_select_data_path %>', function(data){
+            VirtualSelect.init({ele: '#' + id, search: true });
+            document.querySelector('#' + id).setOptions(data['result']);
+            document.querySelector('#' + id).setValue(value);
+          });
+        }, 1000);
+      });
+       // ==== Multi-enrollment-status change handler ====
+      $(document).on('change', '.multi-enrollment-status', function () {
+        var status = $(this).val();
+
+        function showHideDetailFields(dropDown, divClass, mode) {
+          if (mode == 'show')
+            dropDown.closest('.field').find(divClass).removeClass('d-none');
+          else
+            dropDown.closest('.field').find(divClass).addClass('d-none');
+        }
+
+        if (status == 'application-not-submitted') {
+          showHideDetailFields($(this), '.application-not-submitted-field', 'show')
+          showHideDetailFields($(this), '.processing-field', 'hide')
+        } else if (status == 'approved') {
+          showHideDetailFields($(this), '.application-not-submitted-field', 'show')
+          showHideDetailFields($(this), '.application-submitted-field', 'hide')
+          showHideDetailFields($(this), '.revalidation-fields', 'show')
+          showHideDetailFields($(this), '.processing-field', 'hide')
+          showHideDetailFields($(this), '.terminated-field', 'hide')
+          showHideDetailFields($(this), '.denied-field', 'hide')
+          showHideDetailFields($(this), '.date_field', 'show')
+        } else if (status == 'application-submitted') {
+          showHideDetailFields($(this), '.application-not-submitted-field', 'show')
+          showHideDetailFields($(this), '.revalidation-fields', 'hide')
+          showHideDetailFields($(this), '.application-submitted-field', 'show')
+          showHideDetailFields($(this), '.processing-field', 'hide')
+          showHideDetailFields($(this), '.terminated-field', 'hide')
+          showHideDetailFields($(this), '.denied-field', 'hide')
+          showHideDetailFields($(this), '.date_field', 'show')
+        } else if (status == 'denied') {
+          showHideDetailFields($(this), '.denied-field', 'show')
+          showHideDetailFields($(this), '.application-not-submitted-field', 'hide')
+          showHideDetailFields($(this), '.revalidation-fields', 'hide')
+          showHideDetailFields($(this), '.application-submitted-field', 'hide')
+          showHideDetailFields($(this), '.processing-field', 'hide')
+          showHideDetailFields($(this), '.terminated-field', 'hide')
+          showHideDetailFields($(this), '.date_field', 'hide')
+        } else if (status == 'processing') {
+          showHideDetailFields($(this), '.processing-field', 'show')
+          showHideDetailFields($(this), '.revalidation-fields', 'hide')
+          showHideDetailFields($(this), '.application-submitted-field', 'hide')
+          showHideDetailFields($(this), '.terminated-field', 'hide')
+          showHideDetailFields($(this), '.denied-field', 'hide')
+          showHideDetailFields($(this), '.date_field', 'show')
+        } else if (status == 'terminated') {
+          showHideDetailFields($(this), '.terminated-field', 'show')
+          showHideDetailFields($(this), '.revalidation-fields', 'hide')
+          showHideDetailFields($(this), '.application-submitted-field', 'hide')
+          showHideDetailFields($(this), '.processing-field', 'hide')
+          showHideDetailFields($(this), '.denied-field', 'hide')
+          showHideDetailFields($(this), '.date_field', 'hide')
+        } else if (status == 'not-eligible') {
+          showHideDetailFields($(this), '.terminated-field', 'hide')
+          showHideDetailFields($(this), '.revalidation-fields', 'hide')
+          showHideDetailFields($(this), '.application-submitted-field', 'hide')
+          showHideDetailFields($(this), '.processing-field', 'hide')
+          showHideDetailFields($(this), '.denied-field', 'hide')
+          showHideDetailFields($(this), '.date_field', 'hide')
+        } else if (status == 'revalidation') {
+          showHideDetailFields($(this), '.terminated-field', 'hide')
+          showHideDetailFields($(this), '.revalidation-fields', 'hide')
+          showHideDetailFields($(this), '.application-submitted-field', 'hide')
+          showHideDetailFields($(this), '.processing-field', 'hide')
+          showHideDetailFields($(this), '.denied-field', 'hide')
+          showHideDetailFields($(this), '.date_field', 'show')
+        } else {
+          showHideDetailFields($(this), '.revalidation-fields', 'hide')
+          showHideDetailFields($(this), '.application-submitted-field', 'hide')
+          showHideDetailFields($(this), '.denied-field', 'hide')
+          showHideDetailFields($(this), '.date_field', 'hide')
+        }
+      });
+
+      // ===== Searchable Providers =====
+      var selected_providers = [];
+      var outreach_type = "<%= @enrollment_provider.outreach_type %>";
+      var enrollment_provider_id = "<%= @enrollment_provider.id %>";
+
+      $('input[name="outreach_type"]').change(function() {
+        outreach_type = $(this).val();
+        enrollment_provider_id = $('input[name="enrollment_provider_id"]').val();
+        $.get('<%= providers_multi_select_data_path %>', {
+          authenticity_token: csrfToken,
+          outreach_type: outreach_type,
+          enrollment_provider_id: enrollment_provider_id,
+          without_enrollments: true,
+          action_name: '<%= action_name %>'
+        }, function(data) {
+          document.querySelector('#enrollment-all-providers').reset();
+          document.querySelector('#enrollment-all-providers').setOptions(data['result']);
+        });
+      });
+
+      setTimeout(function() {
+        getProviders();
+      }, 500);
+
+      function getProviders() {
+        $.ajax({
+          url: '<%= providers_multi_select_data_path %>',
+          method: 'GET',
+          data: {
+            authenticity_token: csrfToken,
+            outreach_type: outreach_type,
+            enrollment_provider_id: enrollment_provider_id,
+            without_enrollments: true,
+            action_name: '<%= action_name %>'
+          },
+          success: function(data) {
+            VirtualSelect.init({
+              options: data['result'],
+              ele: '#enrollment-all-providers',
+              multiple: false,
+              search: true,
+              showSelectedOptionsFirst: true,
+              selectedValue: data['options']['selected_provider'],
+            });
+          }
         });
       }
-    })
-  }
-</script>
 
-<script>
-   function addPayor(){
-      var payor_name = $('#payor-name').val();
-      if(payor_name == ''){
-         alert('Please enter payor name');
-         return false;
-      }
+      // ===== Add/Delete Payor =====
+      window.addPayor = function() {
+        var payor_name = $('#payor-name').val();
+        if(payor_name == ''){
+          alert('Please enter payor name');
+          return false;
+        }
 
-      $.post('<%= add_payer_enrollment_payers_path %>', { authenticity_token: csrfToken, name: payor_name }, function(data){
-         if(data['status'] == 'success'){
+        $.post('<%= add_payer_enrollment_payers_path %>', { authenticity_token: csrfToken, name: payor_name }, function(data){
+          if(data['status'] == 'success'){
             var payor_id = data['payor_id'];
             var html = '<tr><td><div class="d-flex justify-content-between">' + payor_name + '<a data-confirm="Are you sure?" data-id="' + payor_id + '" onclick="deletePayer(this)" href="javascript:void(0)"><span class="text-danger"><i class="bx bx-x"></i></span></a></div></td></tr>';
             $('.list-of-payers table tbody').prepend(html);
             $('#payor-name').val('');
-         }else{
-            var message = data['message'];
-            alert(message);
-         }
-      })
-   }
-
-   function deletePayer(link){
-      var confirmationMessage = $(link).data('confirm');
-
-      if (!confirm(confirmationMessage)) {
-        e.preventDefault();
+          }else{
+            alert(data['message']);
+          }
+        });
       }
 
-      var id = $(link).data('id');
+      window.deletePayer = function(link){
+        var confirmationMessage = $(link).data('confirm');
 
-      $.post('<%= delete_payer_enrollment_payers_path %>', { authenticity_token: csrfToken, id: id }, function(data){
-         if(data['status'] == 'success'){
-            $(link).parent().parent().parent().remove();
-         }else{
-            var message = data['message'];
-            alert(message);
-         }
-      });
-   }
+        if (!confirm(confirmationMessage)) return;
 
-   $(document).ready(function(){
+        var id = $(link).data('id');
+
+        $.post('<%= delete_payer_enrollment_payers_path %>', { authenticity_token: csrfToken, id: id }, function(data){
+          if(data['status'] == 'success'){
+            $(link).closest('tr').remove();
+          } else {
+            alert(data['message']);
+          }
+        });
+      }
+
       $('#enrollmentTrackingPayerModal').on('hidden.bs.modal', function () {
-         location.reload();
-      })
-   })
-</script>
+        location.reload();
+      });
 
-<script>
-//    $(document).ready(function() {
-//     $('.add-question').click(function(e) {
-//       e.preventDefault();
-//       var newId = new Date().getTime();
+      // ===== Questions Nested Fields =====
+      $('.questions').each(function(){
+        $(this).find('.remove-dynamic-fields').first().hide();
+      });
 
-//       var newRow = $('<div class="col-lg-6">\
-//           <label class="text-dark-grey">Question</label>\
-//           <input placeholder="Type here..." class="form-control border border-dark" type="text" name="enrollment_provider[details_attributes][0][questions_attributes]['+ newId +'][question]">\
-//         </div>\
-//         <div class="col-lg-6">\
-//           <label class="text-dark-grey">Answer</label>\
-//           <input placeholder="Type here..." class="form-control border border-dark" type="text" name="enrollment_provider[details_attributes][0][questions_attributes]['+ newId +'][answer]">\
-//         </div>').hide();
+      // ===== Keep date input value updated =====
+      $(document).on('change', "input[type='date']", function() {
+        $(this).attr('value', $(this).val());
+      });
 
-//       $('#questions-holder').append(newRow);
-//       newRow.slideDown();
-//     });
-//   });
-</script>
-
-<script>
-
-$(document).ready(function () {
-// Hide the delete button for the first element on page load
-// find all .questions and find all .remove-dynamic-fields and hide first
-   $('.questions').each(function(){
-      $(this).find('.remove-dynamic-fields').first().hide();
-   });
-});
-   // Function to add new nested fields
- function addQuestions(btn){
-
-   var parentQuestions =  $(btn).closest('.questions');
-   var parentQuestionFields = $(btn).closest('.question-fields').first();
-   var questionField = $(parentQuestionFields).find('.question-field').last().clone();
-   var newIndex = $(parentQuestions).find('.question-field').length;
-
-   questionField.css('display', 'block');
-   questionField.find('input[type="text"][name*="[questions_attributes]"]').each(function () {
-      var name = $(this).attr('name').replace(/\[questions_attributes\]\[\d+\]/g, '[questions_attributes][' + newIndex + ']');
-      var id = $(this).attr('id').replace(/\[questions_attributes\]\[\d+\]/g, '[questions_attributes][' + newIndex + ']');
-
-      $(this).attr('name', name);
-      $(this).attr('id', id);
-      $(this).val(''); // Clear input values for the new fields
-   });
-
-
-   questionField.find('.remove-dynamic-fields').show();
-
-   // console.log(questionField)
-   parentQuestionFields.append(questionField);
-   // parentQuestions.append(parentQuestionFields);
- }
-
- // Function to remove a nested field
- function deleteQuestions(btn){
-   var parentQuestions =  $(btn).closest('.questions');
-   var parentQuestionFields = $(btn).closest('.question-fields .question-field');
-   // find closest checkbox _destroy and toggle it
-   var checkbox = $(parentQuestionFields).find('input[type="checkbox"][name*="[questions_attributes]"]');
-   checkbox.prop('checked', !checkbox.prop('checked'));
-   $(parentQuestionFields).fadeOut();
-
- }
-
-</script>
+    });
+  </script>
+<% end %>
 
 <style>
   .multi-select {

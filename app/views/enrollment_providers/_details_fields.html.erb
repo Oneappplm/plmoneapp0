@@ -1,192 +1,303 @@
-<div class="field card mb-3 p-2 py-3 mt-3">
-     <div class="col-lg-12">
-        <h3>Payor Enrollment Details</h3>
-     </div>
+<div class="field card mb-3 p-2 py-3 mt-3 payer-entry" data-id="<%= detail&.id %>"  data-index="<%= index %>">
+  <input type="hidden" name="enrollment_provider[details_attributes][<%= index %>][id]" value="<%= detail&.id %>">
   <div class="row mb-3">
     <div class="col-lg-6">
-      <label class="text-dark-grey">Enrollment Payor</label>
-      <%= f.text_field :enrollment_payer, placeholder: 'Type here', class: 'form-control border border-dark' %>
-    </div>
+        <label class="text-dark-grey">Enrollment Payor</label>
+        <input 
+          type="text" 
+          name="enrollment_provider[details_attributes][<%= index %>][enrollment_payer]" 
+          placeholder="Type here" 
+          class="form-control border border-dark"
+          value="<%= detail&.enrollment_payer %>">
+      </div>
+
     <div class="col-lg-6">
       <label class="text-dark-grey">Enrollment Type</label>
-      <%= f.select :enrollment_type, options_for_select(EnrollmentProvider.enrollment_types, f.object.enrollment_type), { prompt: 'Enrollment Type' }, {:class => 'form-select border border-dark'}  %>
+      <select name="enrollment_provider[details_attributes][<%= index %>][enrollment_type]" class="form-select border border-dark">
+        <option value="">Enrollment Type</option>
+        <% EnrollmentProvider.enrollment_types.each do |label, value| %>
+          <option value="<%= value %>" <%= 'selected' if detail.enrollment_type == value %>><%= label %></option>
+        <% end %>
+      </select>
     </div>
+
   </div>
   <% if current_setting.qualifacts? %>
-      <div class="row mb-3 d-none">
-        <div class="col-lg-6">
-          <label class="text-dark-grey">CPT® Code</label>
-          <%= f.text_field :cpt_code, placeholder: 'Type here', class: 'form-control border border-dark' %>
-        </div>
-        <div class="col-lg-6">
-          <label class="text-dark-grey">Descriptor</label>
-          <%= f.text_field :descriptor, placeholder: 'Type here', class: 'form-control border border-dark' %>
-        </div>
-     </div>
+    <div class="row mb-3 d-none">
+      <div class="col-lg-6">
+        <label class="text-dark-grey">CPT® Code</label>
+        <input 
+          type="text" 
+          name="enrollment_provider[details_attributes][<%= index %>][cpt_code]" 
+          placeholder="Type here" 
+          class="form-control border border-dark">
+      </div>
+      <div class="col-lg-6">
+        <label class="text-dark-grey">Descriptor</label>
+        <input 
+          type="text" 
+          name="enrollment_provider[details_attributes][<%= index %>][descriptor]" 
+          placeholder="Type here" 
+          class="form-control border border-dark">
+      </div>
+    </div>
   <% end %>
+
   <div class="row mb-3">
     <div class="col-lg-6">
       <label class="text-dark-grey">Application Status</label>
-       <%= f.select :enrollment_status, options_for_select(enrollment_status, f.object.enrollment_status), { prompt: 'Enrollment Status' }, { class: 'form-select multi-enrollment-status border border-dark', id: 'enrollment_status_id'  } %>
+      <select 
+        name="enrollment_provider[details_attributes][<%= index %>][enrollment_status]" 
+        class="form-select multi-enrollment-status border border-dark" 
+        data-confirm-on-change="true">
+        <option value="">Enrollment Status</option>
+        <% enrollment_status.each do |label, value| %>
+          <option value="<%= value %>" <%= 'selected' if detail.enrollment_status == value %>><%= label %></option>
+        <% end %>
+      </select>
     </div>
+
     <div class="col-lg-6">
-      <label class="text-dark-grey">State</label>
-       <%= f.select :payer_state, options_for_select([]), { prompt: 'State' }, {:class => 'form-select border border-dark payer-state single-select',  data: { value: f.object.payer_state } }  %>
+      <label class="text-dark-grey">State <span class="text-danger">*</span></label>
+      <select name="enrollment_provider[details_attributes][<%= index %>][payer_state]" class="form-select border-dark">
+        <option value="">Select State</option>
+        <% State.all.each do |state| %>
+          <option value="<%= state.alpha_code %>" <%= 'selected' if detail&.payer_state == state.alpha_code %>><%= state.name %></option>
+        <% end %>
+      </select>
     </div>
   </div>
 
-  <div class="row mb-3 date_field <%= f.object&.enrollment_status.present? ? '' : 'd-none'%>">
+
+  <div class="row mb-3 date_field <%= detail&.enrollment_status.present? || detail&.enrollment_status == 'effective' ? '' : 'd-none' %>">
     <div class="col-lg-6">
       <label class="text-dark-grey">Application Submitted Date</label>
-      <%= f.text_field :start_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.start_date), onfocus: "(this.type = 'date')" %>
+      <input 
+        type="date" 
+        name="enrollment_provider[details_attributes][<%= index %>][start_date]" 
+        class="form-control border border-dark" 
+        placeholder="MM/DD/YYYY"
+        value="<%= detail&.start_date %>">
     </div>
   </div>
 
+
   <%# add all the date fields when effective is selected %>
-  <div id="effective_date_id" class="mb-3 effective_date_field <%= f.object&.enrollment_status == 'effective' ? '' : 'd-none' %>">
-    <div class="col-lg-6">
-      <label class="text-dark-grey">Application Effective Date</label>
-      <%= f.text_field :start_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.start_date), onfocus: "(this.type = 'date')" %>
-    </div>
+  <div id="effective_date_id" class="mb-3 effective_date_field <%= detail&.enrollment_status == 'effective' || detail&.enrollment_status == 'approved' ? '' : 'd-none' %>">
     <div class="col-lg-6 mt-3">
       <label class="text-dark-grey">Initial Effective Date</label>
-      <%= f.text_field :enrollment_effective_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.enrollment_effective_date), onfocus: "(this.type = 'date')" %>
+      <input 
+        type="date" 
+        name="enrollment_provider[details_attributes][<%= index %>][enrollment_effective_date]" 
+        class="form-control border border-dark" 
+        placeholder="MM/DD/YYYY" 
+        value="<%= detail&.enrollment_effective_date %>">
     </div>
+
     <div class="row mt-3 mb-3">
       <div class="col-lg-6">
         <label class="text-dark-grey">Most Current Revalidation Date</label>
-        <%= f.text_field :revalidation_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.revalidation_date), onfocus: "(this.type = 'date')" %>
+        <input 
+          type="date" 
+          name="enrollment_provider[details_attributes][<%= index %>][revalidation_date]" 
+          class="form-control border border-dark" 
+          placeholder="MM/DD/YYYY" 
+          value="<%= detail&.revalidation_date %>">
       </div>
+
       <div class="col-lg-6">
         <label class="text-dark-grey">Revalidation Next Due Date</label>
-        <!-- f.object.revalidation_due_date -->
-        <%= f.text_field :revalidation_due_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.revalidation_due_date), onfocus: "(this.type = 'date')" %>
+        <input 
+          type="date" 
+          name="enrollment_provider[details_attributes][<%= index %>][revalidation_due_date]" 
+          class="form-control border border-dark" 
+          placeholder="MM/DD/YYYY" 
+          value="<%= detail&.revalidation_due_date %>">
       </div>
     </div>
+
     <div class="col-lg-12">
-      <label class="text-dark-grey">Line of Business(can be multiple)</label>
-      <%= f.text_field :line_of_business, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      <label class="text-dark-grey">Line of Business (can be multiple)</label>
+      <input 
+        type="text" 
+        name="enrollment_provider[details_attributes][<%= index %>][line_of_business]" 
+        placeholder="Type here..." 
+        class="form-control border border-dark" 
+        value="<%= detail&.line_of_business %>">
     </div>
   </div>
 
-    <div class="row mb-3 revalidation-fields <%= f.object&.enrollment_status == 'approved' ? '' : 'd-none'%>">
-      <div class="col-lg-6">
-        <label class="text-dark-grey">Initial Effective Date</label>
-          <%= f.text_field :enrollment_effective_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.enrollment_effective_date), onfocus: "(this.type = 'date')" %>
-      </div>
-      <div class="row mt-3 mb-3">
-          <div class="col-lg-6">
-            <label class="text-dark-grey">Most Current Revalidation Date</label>
-              <%= f.text_field :revalidation_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.revalidation_date), onfocus: "(this.type = 'date')" %>
-          </div>
-          <div class="col-lg-6">
-            <label class="text-dark-grey">Revalidation Next Due Date</label>
-												<!-- f.object.revalidation_due_date -->
-              <%= f.text_field :revalidation_due_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.revalidation_due_date), onfocus: "(this.type = 'date')" %>
-          </div>
-      </div>
-        <div class="col-lg-12">
-            <label class="text-dark-grey">Line of Business(can be multiple)</label>
-              <%= f.text_field :line_of_business, placeholder: 'Type here...', class: 'form-control border border-dark' %>
-        </div>
-    </div>
   <div class="row mb-3 application-not-submitted-field">
     <div class="col-lg-6">
       <label class="text-dark-grey">Provider ID</label>
-      <%= f.text_field :provider_id, placeholder: 'Medicare and Medicaid,  PIN, etc.', class: 'form-control border border-dark' %>
+      <input 
+        type="text" 
+        name="enrollment_provider[details_attributes][<%= index %>][provider_id]" 
+        placeholder="Medicare and Medicaid, PIN, etc." 
+        class="form-control border border-dark" 
+        value="<%= detail&.provider_id %>">
     </div>
   </div>
+
 
   <% if current_setting.affordablecare? %>
     <div class="row mb-3 application-not-submitted-field">
       <div class="col-lg-6">
         <label class="text-dark-grey">Tax ID</label>
-        <%= f.text_field :tax_id, placeholder: 'Enter Tax ID', class: 'form-control border border-dark' %>
+        <input 
+          type="text" 
+          name="enrollment_provider[details_attributes][<%= index %>][tax_id]" 
+          placeholder="Enter Tax ID" 
+          class="form-control border border-dark" 
+          value="<%= detail&.tax_id %>">
       </div>
+
       <div class="col-lg-6">
         <label class="text-dark-grey">Location</label>
-        <%= f.text_field :location, placeholder: 'Enter Location', class: 'form-control border border-dark' %>
+        <input 
+          type="text" 
+          name="enrollment_provider[details_attributes][<%= index %>][location]" 
+          placeholder="Enter Location" 
+          class="form-control border border-dark" 
+          value="<%= detail&.location %>">
       </div>
     </div>
   <% end %>
-  
-  <div class="row mb-3 processing-field <%= f.object&.enrollment_status == 'processing' ? '' : 'd-none'%>">
+
+  <div class="row mb-3 processing-field <%= detail&.enrollment_status == 'processing' ? '' : 'd-none' %>">
     <div class="col-lg-6">
       <label class="text-dark-grey">Processing Date</label>
-      <%= f.text_field :processing_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.processing_date), onfocus: "(this.type = 'date')" %>
+      <input 
+        type="date" 
+        name="enrollment_provider[details_attributes][<%= index %>][processing_date]" 
+        class="form-control border border-dark" 
+        placeholder="MM/DD/YYYY" 
+        value="<%= detail&.processing_date %>">
     </div>
   </div>
 
-  <div class="row mb-3 denied-field <%= f.object&.enrollment_status == 'denied' ? '' : 'd-none'%>">
+
+  <div class="row mb-3 denied-field <%= detail&.enrollment_status == 'denied' ? '' : 'd-none' %>">
     <div class="col-lg-6">
       <label class="text-dark-grey">Denied Date</label>
-      <%= f.date_field :denied_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark' %>
+      <input 
+        type="date" 
+        name="enrollment_provider[details_attributes][<%= index %>][denied_date]" 
+        class="form-control border border-dark" 
+        placeholder="MM/DD/YYYY" 
+        value="<%= detail&.denied_date %>">
     </div>
   </div>
 
-  <div class="row mb-3 terminated-field <%= f.object&.enrollment_status == 'terminated' ? '' : 'd-none'%>">
-      <div class="col-lg-6">
-        <label class="text-dark-grey">Terminated Date</label>
-        <%= f.text_field :terminated_date, placeholder: 'MM/DD/YYYY', class: 'form-control border border-dark', value: display_mdy(f.object.terminated_date), onfocus: "(this.type = 'date')" %>
-      </div>
+
+  <div class="row mb-3 terminated-field <%= detail&.enrollment_status == 'terminated' ? '' : 'd-none' %>">
+    <div class="col-lg-6">
+      <label class="text-dark-grey">Terminated Date</label>
+      <input 
+        type="date" 
+        name="enrollment_provider[details_attributes][<%= index %>][terminated_date]" 
+        class="form-control border border-dark" 
+        placeholder="MM/DD/YYYY" 
+        value="<%= detail&.terminated_date %>">
+    </div>
   </div>
+
 
   <div class="row mb-2">
     <div class="col-lg-6">
       <label class="text-dark-grey">Email Address To Contact With Insurance</label>
-      <%= f.text_field :payor_email, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      <input 
+        type="text" 
+        name="enrollment_provider[details_attributes][<%= index %>][payor_email]" 
+        placeholder="Type here..." 
+        class="form-control border border-dark" 
+        value="<%= detail&.payor_email %>">
     </div>
+
     <div class="col-lg-6">
       <label class="text-dark-grey">Phone Number To Contact With Insurance</label>
-      <%= f.text_field :payor_phone, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      <input 
+        type="text" 
+        name="enrollment_provider[details_attributes][<%= index %>][payor_phone]" 
+        placeholder="Type here..." 
+        class="form-control border border-dark" 
+        value="<%= detail&.payor_phone %>">
     </div>
   </div>
 
   <div class="row mb-2">
     <div class="col-lg-6">
       <label class="text-dark-grey">Username</label>
-      <%= f.text_field :payor_username, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      <input 
+        type="text" 
+        name="enrollment_provider[details_attributes][<%= index %>][payor_username]" 
+        placeholder="Type here..." 
+        class="form-control border border-dark" 
+        value="<%= detail&.payor_username %>">
     </div>
+
     <div class="col-lg-6">
       <label class="text-dark-grey">Password</label>
-      <%= f.text_field :payor_password, placeholder: 'Type here...', class: 'form-control border border-dark' %>
+      <input 
+        type="text" 
+        name="enrollment_provider[details_attributes][<%= index %>][payor_password]" 
+        placeholder="Type here..." 
+        class="form-control border border-dark" 
+        value="<%= detail&.payor_password %>">
     </div>
   </div>
 
-  <div class="questions">
-    <div class="question-fields">
-      <%
-        f.object.questions.build if f.object.questions.blank?
-      %>
-      <%= f.fields_for :questions do |questions| %>
-          <%= render 'questions_fields', q: questions %>
-      <% end %>
-    </div>
+  <!-- Questions -->
+  <div class="question-fields">
+    <% (detail.questions || [{}]).each_with_index do |q, q_index| %>
+      <%= render 'enrollment_providers/questions_fields', q: q, index: index, q_index: q_index %>
+    <% end %>
   </div>
+
+  <!-- Add Question Button (outside loop) -->
+  <button type="button" class="btn btn-primary add_questions" onclick="addQuestions(this)" style="width: fit-content!important;">
+    <i class="bi bi-plus"></i>
+  </button>
 
   <div class="row mb-2 mt-2 <%= current_setting.affordablecare? && !current_user.can_access?('Enrollment Details Notes') ? 'd-none' : '' %>">
     <div class="col-lg-12">
       <label class="text-dark-grey">Notes</label>
-      <%= f.text_area :comment, class: 'form-control border border-dark', rows: '8'%>
+      <textarea 
+        name="enrollment_provider[details_attributes][<%= index %>][comment]" 
+        class="form-control border border-dark" 
+        rows="8"><%= detail&.comment %></textarea>
     </div>
   </div>
 
+
   <div class="row mb-3">
-    <div class="col-lg-12 ">
-      <label >Upload</label>
-      <%= f.file_field :upload_payor_file, class: 'form-control', multiple: true %>
+    <div class="col-lg-12">
+      <label>Upload</label>
+      <input 
+        type="file" 
+        name="enrollment_provider[details_attributes][<%= index %>][upload_payor_file][]" 
+        class="form-control" 
+        multiple>
+      
       <div class="d-flex gap-2">
-        <% f.object.upload_payor_file.each do |file| %>
-        <div class="upload-payor-file">
-          <%= f.hidden_field :upload_payor_file, multiple: true, value: file.identifier %>
-          <%= HtmlUtils.generate_view_link file_url: file.url, link_title: file.identifier, remove_icon: true %>
-        </div>
+        <% detail.upload_payor_file.each_with_index do |file, file_index| %>
+          <div class="upload-payor-file">
+            <input 
+              type="hidden" 
+              name="enrollment_provider[details_attributes][<%= index %>][upload_payor_file][]" 
+              value="<%= file.identifier %>">
+            <a href="<%= file.url %>" target="_blank">
+              <%= file.identifier %>
+              <!-- Optionally, add a remove icon -->
+              <span class="remove-icon">×</span>
+            </a>
+          </div>
         <% end %>
       </div>
     </div>
   </div>
 
-  <% f.object.application_status_logs.each do |status_log| %>
+  <% detail.application_status_logs.each do |status_log| %>
     <div class="row application-status-history-log">
       <div class="col-lg-12">
         <small><strong><%= status_log.display_summary %></strong></small>
@@ -194,36 +305,136 @@
     </div>
   <% end %>
 
-  <div class="row">
-    <div class="col-12 d-flex justify-content-sm-end justify-content-center align-items-center">
-      <%= f.check_box :_destroy %>
-      <%= f.label :_destroy, "Remove", class: 'mx-2 text-dark-grey' %>
-    </div>
-  </div>
+   <input type="hidden" name="enrollment_provider[details_attributes][<%= index %>][_destroy]" class="destroy-field" value="0">
 
+
+  <button type="button" class="btn btn-link text-danger position-absolute end-0 top-0 remove_payer">
+    <i class="bi bi-x-circle"></i> Remove
+  </button>
 </div>
 
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var enrollmentStatusSelect = document.getElementById('enrollment_status_id');
-    var effectiveDateField = document.getElementById('effective_date_id');
+/*
+  Enrollment status behavior
+  - Works with Turbo (turbo:load)
+  - Uses focusin to capture previous value when user starts interacting
+  - Uses delegated change to handle user changes and confirm
+  - Initializes visibility on load without prompting
+*/
+(function () {
+  // run once guard (avoid double-binding)
+  if (window.__enrollmentStatusBehaviorInitialized) return;
+  window.__enrollmentStatusBehaviorInitialized = true;
 
-    function toggleVisibility() {
-      var selectedStatus = enrollmentStatusSelect.value;
+  // Helper: show/hide fields in a payer-entry
+  function toggleFieldsForEntry(entry, selectedStatus) {
+    if (!entry) return;
+    const effectiveDateField = entry.querySelector(".effective_date_field");
+    const processingField = entry.querySelector(".processing-field");
+    const deniedField = entry.querySelector(".denied-field");
+    const terminatedField = entry.querySelector(".terminated-field");
+    const dateField = entry.querySelector(".date_field");
 
-      // Toggle effective date field
-      if (selectedStatus === 'effective') {
-        effectiveDateField.classList.remove('d-none');
-      } else {
-        effectiveDateField.classList.add('d-none');
+    // Hide all first
+    [effectiveDateField, processingField, deniedField, terminatedField, dateField].forEach(f => {
+      if (f) f.classList.add("d-none");
+    });
+
+    if (["effective","approved"].includes(selectedStatus)) {
+      effectiveDateField?.classList.remove("d-none");
+    } else if (selectedStatus === "processing") {
+      processingField?.classList.remove("d-none");
+    } else if (selectedStatus === "denied") {
+      deniedField?.classList.remove("d-none");
+    } else if (selectedStatus === "terminated") {
+      terminatedField?.classList.remove("d-none");
+    }
+
+    if (selectedStatus && dateField) dateField.classList.remove("d-none");
+  }
+
+  // Initialize all existing payer-entry blocks (no confirm)
+  function initializeAll() {
+    document.querySelectorAll(".payer-entry").forEach(entry => {
+      const select = entry.querySelector(".multi-enrollment-status");
+      if (!select) return;
+      // set a dataset flag to mark that we've initialized this select
+      if (!select.dataset._initialized) {
+        select.dataset.previousValue = select.value ?? "";
+        select.dataset._initialized = "1";
+      }
+      toggleFieldsForEntry(entry, select.value ?? "");
+    });
+  }
+
+  // When user focuses a status select, store its current value as previousValue
+  function onFocusIn(e) {
+    const el = e.target;
+    if (!el || !el.matches) return;
+    if (!el.matches(".multi-enrollment-status")) return;
+    // mark that focus was user-driven - store current value
+    el.dataset.previousValue = el.value ?? "";
+    // do NOT toggle here (we only capture previous value)
+  }
+
+  // When user changes select (delegated), confirm if it was a user-driven change
+  function onChange(e) {
+    const el = e.target;
+    if (!el || !el.matches || !el.matches(".multi-enrollment-status")) return;
+
+    // ensure entry exists
+    const entry = el.closest(".payer-entry");
+    if (!entry) {
+      // still toggle with no confirm if structure missing
+      toggleFieldsForEntry(document, el.value ?? "");
+      return;
+    }
+
+    const prev = el.dataset.previousValue;
+    const curr = el.value ?? "";
+
+    // If previous value exists (captured on focus), and differs, prompt the user.
+    // If prev is undefined or empty string but same as curr — no prompt.
+    // If prev is undefined (no focus happened) — treat as programmatic/init change: no prompt.
+    if (typeof prev !== "undefined" && prev !== "" && prev !== curr) {
+      const ok = confirm("Are you sure you want to change the status?");
+      if (!ok) {
+        // revert UI and do not toggle fields
+        el.value = prev;
+        // Ensure dataset previousValue remains intact
+        el.dataset.previousValue = prev;
+        return;
       }
     }
 
-    // Add event listener
-    enrollmentStatusSelect.addEventListener('change', toggleVisibility);
+    // update previousValue after change
+    el.dataset.previousValue = curr;
+    // toggle fields based on new selection
+    toggleFieldsForEntry(entry, curr);
+  }
 
-    // Initialize visibility on page load
-    toggleVisibility();
-  });
+  // Attach delegated event handlers once
+  function attachHandlers() {
+    // Focusin to capture previousValue (works for keyboard focus too)
+    document.body.addEventListener("focusin", onFocusIn, true);
+    // Delegated change handler for selects
+    document.body.addEventListener("change", onChange, true);
+  }
+
+  // Hook initialization to turbo:load and DOMContentLoaded (Turbo fires turbo:load on initial visit)
+  function boot() {
+    initializeAll();
+    attachHandlers();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+  // Also run on turbo loads if you want (keeps everything robust with Turbo)
+  document.addEventListener("turbo:load", initializeAll);
+})();
 </script>
+

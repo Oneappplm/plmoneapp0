@@ -1,0 +1,3 @@
+class ProviderPersonalInformationReinstatement < ApplicationRecord
+  belongs_to :provider_personal_information
+end

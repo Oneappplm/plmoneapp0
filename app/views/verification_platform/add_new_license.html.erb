@@ -1,78 +1,67 @@
-
-    <div class="enc-content">
-        <div class="container">
-           <%= render "top_nav_buttons"%>    
-            <div class="add-license-content">
-                <div class="container">
-                    <div class="row mt-5">
-                            <div class="d-flex align-items-center gap-1">
-                                <a href="<%= verification_platform_index_path(page: 'licensure')%>" class="link-back">
+<div class="enc-content">
+    <div class="container">
+     <%= render "top_nav_buttons"%>    
+        <div class="add-license-content">
+            <div class="container">
+                <div class="row mt-5">
+                    <div class="d-flex align-items-center gap-1">
+                            <a href="<%= mhc_verification_platform_index_path(page_tab: 'licensure')%>" class="link-back">
                                     <i class='bx bx-left-arrow-alt' ></i>
-                                </a>
-                                <h4 class="page-heading">Add New License</h4>
-                            </div>
-                            <form action="">
+                            </a>
+                            <h4 class="page-heading">Add New License</h4>
+                    </div>
+                    <%= form_with(model: @provider_license, url: mhc_provider_licenses_path(id: @provider_license.id, page_tab: 'licensure')) do |f| %>
+                            <%= f.hidden_field :caqh_provider_attest_id %>
+                            <%= f.hidden_field :provider_attest_id %>
                                 <div class="form-row row mt-3">
                                     <div class="col-xl-4">
                                         <label for="state">State</label>
-                                        <select name="state" id="state" class="form-select" >
-                                        <option value="">Select option</option>
-                                        </select>
+                                        <%= f.collection_select :state, State.all, :id, :name, { include_blank: "Select State" }, class: "form-select form-select-lg" %>
                                     </div>
                                     <div class="col-xl-4">
                                         <label for="type">Type</label>
-                                        <select name="type" id="state" class="form-select" >
-                                        <option value="">Select option</option>
-                                        </select>
+                                        <%= f.select :license_type, ProviderLicense::LICENSE_TYPE, { prompt: true }, { class: "form-select" } %>
                                     </div>
                                     <div class="col-xl-4">
                                         <label for="license-number">License Number</label>
-                                        <input type="text" name ="license-number" placeholder="Type here..." id="license-number" class="form-control" required>
+                                        <%= f.text_field :license_number, placeholder:"Type here...", id:"license-number", class:"form-control"%>
                                     </div>
-                                    
                                 </div>
                                 <div class="form-row row">
                                     <div class="col-xl-6">
                                         <label for="issuedate">Issue Date</label>
-                                        <input type="date" id="issue-date" class="form-control">
+                                        <%= f.date_field :license_effective_date, placeholder:"Type here...", id:"issue-date", class:"form-control"%>
                                     </div>
                                     <div class="col-xl-6">
                                         <label for="expirationdate">Expiration Date</label>
-                                        <input type="date" id="expiration-date" class="form-control">
+                                        <%= f.date_field :license_expiration_date, placeholder:"Type here...", id:"expiration-date", class:"form-control"%>
                                     </div>
                                 </div>
                                 <div class="form-row row mt-3">
                                     <div class="col-xl-6">
                                         <div class="d-flex align-items-center gap-3">
-                                            <label for="">Do you currently practice under this license/certificate? </label>
+                                            <%= f.label :currently_practice_under_this, "Do you currently practice under this license/certificate?" %>
                                             <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="current" id="inter-yes" value="Yes" checked="checked"/>
-                                            <label class="form-check-label" for="">
-                                                Yes
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="current" id="inter-no" value="No">
-                                            <label class="form-check-label" for="">
-                                                No
-                                            </label>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <label for="">Is this your primary license? </label>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="primary" id="inter-yes" value="Yes" >
-                                                <label class="form-check-label" for="prac-yes">
-                                                    Yes
-                                                </label>
+                                                <%= f.radio_button :currently_practice_under_this, "Yes", class: "form-check-input", id: "inter-yes", checked: true %>
+                                                <%= f.label :currently_practice_under_this, "Yes", class: "form-check-label", for: "inter-yes" %>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="primary" id="inter-no" value="No" checked>
-                                                <label class="form-check-label" for="prac-no">
-                                                    No
-                                                </label>
+                                                <%= f.radio_button :currently_practice_under_this, "No", class: "form-check-input", id: "inter-no" %>
+                                                <%= f.label :currently_practice_under_this, "No", class: "form-check-label", for: "inter-no" %>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-6">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <%= f.label :is_primary_license, "Is this your primary license?" %>
+                                            <div class="form-check">
+                                                <%= f.radio_button :is_primary_license, "Yes", class: "form-check-input", id: "inter-yes", checked: true %>
+                                                <%= f.label :is_primary_license, "Yes", class: "form-check-label", for: "prac-yes" %>
+                                            </div>
+                                            <div class="form-check">
+                                                <%= f.radio_button :is_primary_license, "No", class: "form-check-input", id: "inter-no" %>
+                                                <%= f.label :is_primary_license, "No", class: "form-check-label", for: "prac-no" %>
                                             </div>
                                         </div>
                                     </div>
@@ -80,151 +69,53 @@
                                 <div class="form-row row mt-3">
                                     <div class="col-xl-6">
                                         <div class="d-flex align-items-center gap-3">
-                                            <label for="">Does your license/certification level require supervision? </label>
+                                            <%= f.label :level_require_supervision, "Does your license/certification level require supervision?" %>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="require" id="inter-yes" value="Yes" checked>
-                                                <label class="form-check-label" for="">
-                                                    Yes
-                                                </label>
+                                                <%= f.radio_button :level_require_supervision, "Yes", class: "form-check-input", id: "inter-yes", checked: true %>
+                                                <%= f.label :level_require_supervision, "Yes", class: "form-check-label", for: "" %>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="require" id="inter-no" value="No">
-                                                <label class="form-check-label" for="">
-                                                    No
-                                                </label>
+                                                <%= f.radio_button :level_require_supervision, "No", class: "form-check-input", id: "inter-no" %>
+                                                <%= f.label :level_require_supervision, "No", class: "form-check-label", for: "" %>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-xl-6">
                                         <div class="d-flex align-items-center gap-3">
-                                            <label for="">Have you ever failed a state license exam?</label>
+                                            <%= f.label :failed_state_license_exam, "Have you ever failed a state license exam?" %>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="failed" id="inter-yes" value="Yes">
-                                                <label class="form-check-label" for="prac-yes">
-                                                    Yes
-                                                </label>
+                                                <%= f.radio_button :failed_state_license_exam, "Yes", class: "form-check-input", id: "inter-yes", checked: true %>
+                                                <%= f.label :failed_state_license_exam, "Yes", class: "form-check-label", for: "prac-yes" %>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="failed" id="inter-no" value="No"checked>
-                                                <label class="form-check-label" for="prac-no">
-                                                    No
-                                                </label>
+                                                <%= f.radio_button :failed_state_license_exam, "No", class: "form-check-input", id: "inter-no" %>
+                                                <%= f.label :failed_state_license_exam, "No", class: "form-check-label", for: "prac-no" %>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="form-row row mt-3">
                                     <div class="col-xl-12 right-pane">
                                         <div class="form-row row">
                                             <div class="d-flex align-items-center gap-10">
                                                 <h5  class="add-license-pane-t">Supervising Practitioner/Group Information</h5>
                                             </div>
-                                            <div class="col-xl-6">
-                                                <label for="supervising-prac">Name of Supervising Practitioner/Group:</label>
-                                                    <div class="input-group gap-2">
-                                                       <select name="supervising-prac" id="supervising-prac" class="form-select form-select-sm">
-                                                       <option value="">Select option</option>
-                                                       </select>
-                                                    <button class="btn btn-primary rounded" type="button">Search</button>
+                                            <div class="row field mb-3 p-2 border border-2">
+                                                <%= render partial: "global_components/collapsible_sidebar_header", locals: { title: 'ProviderSupervisings', collapse_name: 'provider_supervisings', text_position: 'text-start'}%>
+                                                <div class="collapsible" style="<%= current_user&.is_card_open?('provider_supervisings') ? '' : 'display: none;' %>">
+                                                    <div id="provider_supervisings">
+                                                        <div class="fields field mb-3">
+                                                            <%= f.fields_for :provider_supervisings do |provider_supervising_fields| %>
+                                                                <%= render 'mhc/verification_platform/provider_supervising_fields', f: provider_supervising_fields %>
+                                                            <% end %>
+                                                        </div>
+                                                        <div class="links mt-2 text-center">
+                                                            <button type="button" class="add_association btn btn-xs btn-primary m-auto">Add Other Practitioner/Group</button>
+                                                        </div>
                                                     </div>
-                                               
+                                                </div>
                                             </div>
-                                            
-                                            <div class="col-xl-6">
-                                                <label for="firstname">Licence State:</label>
-                                                <select name="group-license-state" id="license-state" class="form-select">
-                                                <option value="">Select option</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-row row mt-2">
-                                            <div class="col-xl-6">
-                                                <label for="group-license-type">License Type:</label>
-                                                <input type="text" name = "license-type" placeholder="Type here..." id="group-license-type" class="form-control" required>
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <label for="group-license-number">License Number:</label>
-                                                <input type="text" id="license-number" placeholder="Type here..."  class="form-control" required>
-                                            </div>
-                                        </div>
-                                        <div class="form-row row mt-2">
-                                            <div class="col-xl-6">
-                                                <label for="group-facility">Facility</label>
-                                                <input type="text" id="group-facility" name ="group-facility"  placeholder="Type here..." class="form-control" required>
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <label for="group-address">Address:</label>
-                                                <input type="text" id="group-address" name ="group-address" placeholder="Type here..."  class="form-control" required>
-                                            </div>
-                                        </div>
-                                        <div class="form-row row mt-2">
-                                            <div class="col-xl-6">
-                                                <label for="group-suite">Suite/Dept/Mail Stop:</label>
-                                                <input type="text" id="group-suite"  name ="group-suite" placeholder="Type here..."  class="form-control" required>
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <label for="group-add-address">Additional Address:</label>
-                                                <input type="text" id="group-add-address" name="group-add-address" class="form-control" placeholder="Type here..."  required>
-                                            </div>
-                                        </div>
-                                        <div class="form-row row mt-2">
-                                            <div class="col-xl-6">
-                                                <label for="group-city">City:</label>
-                                  
-                                                <input type="text"  id="group-city" name="group-city"  placeholder="Type here..." class="form-control" required>
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <label for="group-county">County:</label>
-                                                <input type="text"  id="group-county" name="group-county"  placeholder="Type here..." class="form-control" required>
-                                            </div>
-                                        </div>
-                                        <div class="form-row row mt-2">
-                                            <div class="col-xl-4">
-                                                <label for="group-state">State/Province:</label>
-                                                <select name="group-state" id="group-state" class="form-select">
-                                                <option value="">Select option</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-xl-4">
-                                                <label for="group-zip">Zip/Postal Code:</label>
-                                                <input type="text" id="group-zip"  name = "group-zip" placeholder="Type here..." class="form-control" required>
-                                            </div>
-                                            <div class="col-xl-4">
-                                                <label for="group-country">Country:</label>
-                                                <select  id="group-country" name ="group-country"  class="form-select">
-                                                <option value="">Select option</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-row row mt-2">
-                                            <div class="col-xl-4">
-                                                <label for="group-phone">Phone Number:</label>
-                                                <select  id="group-phone" name ="group-phone"  class="form-select">
-                                                <option value="">Select option</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-xl-4">
-                                                <label for="group-fax">Fax Number:</label>
-                                                <input type="text" id="group-fax" names="group-fax" placeholder="Type here..." class="form-control" required>
-                                            </div>
-                                            <div class="col-xl-4">
-                                                <label for="group-email">Email Address:</label>
-                                                <input type="text" id="group-email" name ="group-email" placeholder="Type here..." class="form-control" required>
-                                            </div>
-                                        </div>
-                                        <div class="form-row mt-1 d-flex justify-content-end">
-                                            
-                                                <input class="form-check-input-license" type="checkbox" value="" id="check-1">
-                                                <label class="form-check-label" for="check-1">
-                                                    Remove
-                                                </label>
-                                            
-                                        </div>
-                                        <hr>
-                                        <div class="d-flex align-items-center gap-10">
-                                            <button class="add-other-prac" type="submit">
-                                                Add Other Practitioner/Group
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -232,45 +123,76 @@
                                 <div class="form-row row mt-3">
                                     <div class="col-xl-6">
                                         <div class="d-flex align-items-center gap-3">
-                                            <label for="">Show on tickler?</label>
+                                            <%= f.label :license_person_type, "License Person Type" %>
+                                            <%= f.select :license_person_type, ProviderLicense::LICENSE_PERSON_TYPE, { prompt: true }, { class: "form-select" } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                                <div class="form-row row mt-3">
+                                    <div class="col-xl-25">
+                                            <label for="add-license-comment">Please List any comments</label>
+                                            <%= f.text_area :license_comment, id: "add-license-comment", placeholder:"Type here...", class:"form-control" %>
+                                    </div>
+                                </div>
+
+                                <div class="form-row row mt-3">
+                                    <div class="col-xl-6">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <%= f.label :show_on_tickler, "Show on tickler?" %>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="tickler" id="inter-yes" value="Yes" checked>
-                                                <label class="form-check-label" for="prac-yes">
-                                                    Yes
-                                                </label>
+                                                <%= f.radio_button :show_on_tickler, "Yes", class: "form-check-input", id: "inter-yes", checked: true %>
+                                                <%= f.label :show_on_tickler, "Yes", class: "form-check-label", for: "prac-yes" %>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="tickler" id="inter-no" value="No">
-                                                <label class="form-check-label" for="prac-no">
-                                                    No
-                                                </label>
+                                                <%= f.radio_button :show_on_tickler, "No", class: "form-check-input", id: "inter-no" %>
+                                                <%= f.label :show_on_tickler, "No", class: "form-check-label", for: "prac-no" %>
                                             </div>
                                         </div>
                                     </div>
-                                
                                 </div>
-                                <div class="form-row row mt-3">
-                                    
-                                    <div class="col-xl-25">
-                                        <label for="add-license-comment">Please List any comments</label>
-                                        <input type="text" id="add-license-comment"  name="add-license-comment"   placeholder="Type here..." class="form-control" required>
-                                    </div>
-                                    
-                                </div>
+
                                 <div class="form-row mt-1 d-flex justify-content-end">
-                                    <button class=" btn-license-save" type="submit">
-                                         Save 
-                                    </button>
-                                </div>
-                                
-                               
-                                       
-                            </form>
-                        
-                    </div>
+                                    <%= f.submit class: "btn btn-primary  btn-sm btn-license-save" %>
+                                </div>        
+                    <% end %>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<script>
+  $("#provider_supervisings").on("click", ".add_association", function() {
+        var providerSupervisingsFields = $("#provider_supervisings .field .row");
+        var newProviderSupervising = providerSupervisingsFields.last().clone();
+        console.log($(newProviderSupervising).find("input"))
+        var newId = new Date().getTime();
+        newProviderSupervising.html(newProviderSupervising.html().replace(/providerSupervisings_attributes\]\[\d+\]/g, "providerSupervisings_attributes][" + newId + "]"));
+        $("#provider_supervisings .fields").append(newProviderSupervising);
 
-  
+        <%# $(newProviderSupervising).find("select").each(function() {
+            $(this).val("Day")
+            $(this).find("option[selected]").first().removeAttr("selected")
+        }); %>
+
+        $(newProviderSupervising).find("input").each(function() {
+            $(this).val("")
+        });
+
+        newProviderSupervising.find('.remove-dynamic-fields').attr('data-id', newId);
+        newProviderSupervising.attr('data-id', newId);
+        $("#provider_supervisings .fields").append(newProviderSupervising);
+    });
+
+    $("#provider_supervisings").on("click", ".remove-dynamic-fields", function() {
+        var field = document.getElementsByClassName("schedule_container");
+        providerSupervisingField = $(this).attr("data-id");
+
+        var providerSupervisingsField = $('.providerSupervisingsFields-fields[data-id='+providerSupervisingField+']');
+        if(field.length > 1) {
+            var id = $(this).data('id');
+        var model = $(this).data('model');
+            deleteDynamicAttr(id,model,$(this));
+        }
+    });
+</script>

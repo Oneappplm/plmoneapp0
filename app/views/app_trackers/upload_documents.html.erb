@@ -1,0 +1,50 @@
+<%= render 'user_restriction', locals: { access_key: 'App Tracker' } do %>
+<div class="content container-fluid">
+	<h1>Image Management</h1>
+	<div class="row">
+		<div class="col-lg-12 card">
+			<%= form_for @document, :url => request.url, html: { multipart: true } do |f| %>
+
+			<% if @document.errors.any? %>
+    <div id="error_explanation" class="row my-2 text-red">
+					<div class="col-lg-12">
+							<h2><%= pluralize(@document.errors.count, "error") %> prohibited this enrollment user from being saved:</h2>
+
+							<ul>
+									<% @document.errors.full_messages.each do |message| %>
+											<li><%= message %></li>
+									<% end %>
+							</ul>
+					</div>
+    </div>
+  <% end %>
+
+			<div class="form-group my-2">
+					<label for="">Image Classification: </label>
+					<%= f.select :image_classification, options_for_select(['', ''] + ProviderUploadedDocument.enum_list('image_classifications'), f.object.image_classification), {}, class: 'form-select', placeholder: 'Image Classification' %>
+				</div>
+				<div class="form-group my-2">
+					<label for="">Sub Section: </label>
+					<%= f.select :sub_section, options_for_select(['', ''] + ProviderUploadedDocument.enum_list('sub_sections'), f.object.sub_section), {}, class: 'form-select', placeholder: 'Sub Section' %>
+				</div>
+				<div class="form-group my-2">
+					<label for="">Description: </label>
+					<%= f.text_area :description, class: 'form-control' %>
+				</div>
+				<div class="form-group my-2">
+					<label for="">Exclude From Profile: </label>
+					<%= f.check_box :exclude_from_profile %>
+				</div>
+				<div class="form-group my-2">
+					<label for="">File Upload:</label>
+					<%= f.file_field :file_upload, class: 'form-control' %>
+				</div>
+				<div class="form-group my-2">
+					<%= link_to 'Back', app_trackers_path, class: 'btn btn-default'  %>
+					<%= f.submit "Upload & Save", class: 'btn btn-success' %>
+			</div>
+			<% end %>
+		</div>
+	</div>
+</div>
+<% end %>

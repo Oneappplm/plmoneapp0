@@ -8,100 +8,45 @@ class Webscraper::PalsVerificationService < WebscraperService
 	end
 
 	def call
-		# crawl
-		if Rails.env.development?
-			options = Selenium::WebDriver::Chrome::Options.new
-		else
-			Selenium::WebDriver::Chrome.path = ENV.fetch('GOOGLE_CHROME_BIN', nil)
-			options = Selenium::WebDriver::Chrome::Options.new(
-					prefs: { 'profile.default_content_setting_values.notifications': 2 },
-					binary: ENV.fetch('GOOGLE_CHROME_SHIM', nil)
-			)
-		end
-
-    # uncomment the following line to run headless else comment it out to run in browser
-		options.add_argument('--headless')
-
-		options.add_argument('--disable-gpu')
-		options.add_argument('--no-sandbox')
-		agent = Selenium::WebDriver.for :chrome, options: options
-
-		agent.get('https://www.pals.pa.gov/')
-		sleep(10)
-
-		# find link with href href="#/page/search" and text 'Person Search'
-		link = agent.find_element(xpath: "//a[contains(., 'Person Search')]")
-		link.click
-		sleep(8)
-
-		# find input with id 'LicenseNo' and set value to license_number
-		input = agent.find_element(:id, 'LicenseNo')
-		input.send_keys(license_number)
-
-		# find button with type 'submit' and click
-		button = agent.find_element(:xpath, "//button[@type='submit']")
-		button.click
-		sleep(3)
-
-		# find table with id DataTables_Table_2
-		table = agent.find_element(:id, 'DataTables_Table_2')
-		# find row with license_number
-		row = table.find_element(xpath: "//tr[contains(., '#{license_number}')]")
-		sleep(3)
-
-		# find link in row with ng-click search.getAssetDetail(perDetails.LicenseNumber,perDetails.PersonId,perDetails.LicenseId)
-		link = row.find_element(xpath: "//a[contains(@ng-click, 'search')]")
-		link.click
-		sleep(3)
-
-		# find new page and move to the page
-		agent.switch_to.window(agent.window_handles.last)
-		sleep(1)
-
-		# save_screenshot
-		crawler.manage.window.resize_to(1024, 1024)
-		crawler.save_screenshot(PUBLIC_PATH.join(crawler_folder, SCREENSHOT_FILENAME))
-
-		agent.quit()
-	rescue
-		nil
+		crawl
 	end
 
 	def crawl!
-		crawler.get('https://www.pals.pa.gov/')
-		sleep(10)
+	  crawler.get('https://www.pals.pa.gov/')
+	  wait = Selenium::WebDriver::Wait.new(timeout: 15)
 
-		# find link with href href="#/page/search" and text 'Person Search'
-		link = crawler.find_element(xpath: "//a[contains(., 'Person Search')]")
-		link.click
-		sleep(8)
+	  wait.until { crawler.find_element(xpath: "//a[contains(., 'Person Search')]") }.click
 
-		# find input with id 'LicenseNo' and set value to license_number
-		input = crawler.find_element(:id, 'LicenseNo')
-		input.send_keys(license_number)
+	  wait.until { crawler.find_element(:id, 'LicenseNo') }.send_keys(license_number)
 
-		# find button with type 'submit' and click
-		button = crawler.find_element(:xpath, "//button[@type='submit']")
-		button.click
-		sleep(3)
+	  wait.until { crawler.find_element(xpath: "//button[@type='submit']") }.click
 
-		# find table with id DataTables_Table_2
-		table = crawler.find_element(:id, 'DataTables_Table_2')
-		# find row with license_number
-		row = table.find_element(xpath: "//tr[contains(., '#{license_number}')]")
-		sleep(3)
+	  wait.until { crawler.find_element(:id, 'DataTables_Table_2') }
 
-		# find link in row with ng-click search.getAssetDetail(perDetails.LicenseNumber,perDetails.PersonId,perDetails.LicenseId)
-		link = row.find_element(xpath: "//a[contains(@ng-click, 'search')]")
-		link.click
-		sleep(3)
+	  row = crawler.find_element(xpath: "//tr[contains(., '#{license_number}')]")
+	  link = row.find_element(xpath: ".//a[contains(@ng-click, 'search')]")
+	  link.click
 
-		# find new page and move to the page
-		crawler.switch_to.window(crawler.window_handles.last)
-		sleep(1)
+	  sleep(5) # small delay before tab switch
+
+	  # Switch to new tab if opened
+		if crawler.window_handles.size > 1
+		  crawler.switch_to.window(crawler.window_handles.last)
+		end
+
+		# Wait for content to load by waiting for spinner to go or real data to appear
+		wait.until do
+		  begin
+		    !crawler.find_element(css: '.loading').displayed?
+		  rescue Selenium::WebDriver::Error::NoSuchElementError
+		    true
+		  end
+		end
+
+		# Wait for real data (like a known field or section)
+		wait.until { crawler.find_element(xpath: "//div[contains(@class, 'panel-heading') and contains(., 'License')]") }
 
 		save_screenshot
-
-		crawler.quit()
+		crawler.quit
 	end
 end

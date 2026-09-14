@@ -1,0 +1,158 @@
+<div class="row my-3 px-3">
+	<div class="col-lg-12">
+		<!-- start of table info like page and limit -->
+		<div class="row">
+		 	<div class="col-lg-12">
+		 		<div class="d-flex justify-content-between align-items-center">
+		 			<div><strong>Search Results: <%= @per_page %>	records</strong></div>
+		 			<div class="d-flex gap-4 align-items-center">
+		 				<%= form_for :none, url: client_portal_path, id: "per_page_selector" ,method: :get do |f| %>
+		 				<% if @status %>
+		 					<%= f.hidden_field :status, value: @status %>
+		 				<% end %>
+		 				<%= f.hidden_field :grid, value: true%>
+		 				<div>
+		 					<label class="text-dark-grey">Show limit</label>
+		 					<% per_page_limits = [5,10,15,20,25,30,35,40,45,50]%>
+		 					<select name="per_page" class="border ms-2 px-1 <%= dark_mode %>" onchange="document.getElementById('per_page_selector').submit();">
+		 						<% per_page_limits.each do |per_page| %>
+		 							<% if per_page == @per_page.to_i%>
+		 								<option selected><%= per_page %></option>
+		 							<% else %>
+		 								<option><%= per_page %></option>
+		 							<% end %>
+		 						<% end %>
+		 					</select>
+		 				</div>
+		 				<% end %>
+		 				<div>
+		 					<label class="text-dark-grey">Page <%= @page %> of <%= @clients.total_pages %></label>
+		 					<span class="border px-3"><%= @page %></span>
+		 				</div>
+		 				<div>
+		 				<%= link_to download_clients_path(format: 'csv'), class: 'btn btn-sm btn-primary' do %>
+		 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 16px;height: 16px;">
+								  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+								</svg>
+								<span>Download Documents</span>
+		 					<% end %>
+		 				</div>
+		 			</div>
+		 		</div>
+		 	</div>
+		</div>
+		<!-- end of table info like page and limit -->
+
+		<div class="row my-3">
+			<% @clients.each do |client| %>
+			<div class="col-12 col-md-4 col-lg-6 my-3" >
+				<div class="border rounded p-2" >
+					<div class="row">
+						<div class="col-lg-12">
+						<div class="d-flex justify-content-between">
+							<div class="d-flex flex-grow-1 gap-4 align-items-center">
+								<a href="javascript:void(0);"  data-max="5" class="btn btn-xs btn-primary <%= client.cred_status %> fw-bold btn-submit"><%= client.cred_status == 'psv' ? client.cred_status.upcase : client.cred_status.titleize%></a>
+								<label class="text-dark-grey">Scheduled: 4</label>
+								<label class="text-dark-grey">Reports: 5</label>
+								<label class="text-dark-grey">Deadlines: 5</label>
+							</div>
+							<div class="flex-shrink-0">
+								<div class="form-check">
+									<input class="form-check-input user-cbs" type="checkbox" value="" id="flexCheckDefault">
+								</div>
+							</div>
+						</div>
+						</div>
+					</div>
+					<a href="<%= show_client_details_path(client_id: client.id, grid: true) %>" class="text-black">
+
+					<div class="row my-3">
+						<div class="col-12 col-md-12 col-lg-6">
+							<div class="row my-2">
+								<div class="col-12 col-md-12 col-lg-6">
+									<strong>Provider Name:</strong>
+								</div>
+								<div class="col-12 col-md-12 col-lg-6">
+									<%= client.provider_name %>
+								</div>
+							</div>
+							<div class="row my-2">
+								<div class="col-12 col-md-12 col-lg-6">
+									<strong>Birth Date:</strong>
+								</div>
+								<div class="col-12 col-md-12 col-lg-6">
+									<%= client.birth_date.strftime('%B %d, %Y')%>
+								</div>
+							</div>
+							<div class="row my-2">
+								<div class="col-12 col-md-12 col-lg-6">
+									<strong>Address:</strong>
+								</div>
+								<div class="col-12 col-md-12 col-lg-6">
+									<%= client.address %>
+								</div>
+							</div>
+							<div class="row my-2">
+								<div class="col-12 col-md-12 col-lg-6">
+									<strong>Attested:</strong>
+								</div>
+								<div class="col-12 col-md-12 col-lg-6">
+										<%= client.attested_date.strftime('%M %d %Y')%>
+								</div>
+							</div>
+						</div>
+						<div class="col-12 col-md-12 col-lg-6">
+							<div class="row my-2">
+								<div class="col-12 col-md-12 col-lg-6">
+									<strong>P. Type:</strong>
+								</div>
+								<div class="col-12 col-md-12 col-lg-6">
+									<%= client.provider_type %>
+								</div>
+							</div>
+							<div class="row my-2">
+								<div class="col-12 col-md-12 col-lg-6">
+									<strong>Specialty:</strong>
+								</div>
+								<div class="col-12 col-md-12 col-lg-6">
+									<%= client.specialty_name.truncate(20) rescue nil %>
+								</div>
+							</div>
+							<div class="row my-2">
+								<div class="col-12 col-md-12 col-lg-6">
+									<strong>MedvId:</strong>
+								</div>
+								<div class="col-12 col-md-12 col-lg-6">
+									<%= client.medv_id%>
+								</div>
+							</div>
+							<div class="row my-2">
+								<div class="col-12 col-md-12 col-lg-6">
+									<strong>Cred Cycle:</strong>
+								</div>
+								<div class="col-12 col-md-12 col-lg-6">
+									<%= client.cred_or_recred %>
+								</div>
+							</div>
+						</div>
+					</div>
+				</a>
+				</div>
+			</div>
+			<% end %>
+
+			<div class="col-lg-12">
+				<div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
+				<div class="page_info ms-3 text-black">
+						<%= page_entries_info @clients %>
+				</div>
+				<% if params[:per_page ].present? %>
+					<%= will_paginate @clients, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+				<% else %>
+					<%= will_paginate @clients, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+				<% end %>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
