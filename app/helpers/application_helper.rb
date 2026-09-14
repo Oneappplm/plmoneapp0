@@ -94,14 +94,14 @@ module ApplicationHelper
 	end
 
   def current_logo
-			return current_setting.logo_file.url if current_setting.logo_file.present?
-
-   @current_logo ||= if current_setting.qualifacts?
-					asset_path('qualifacts-logo.svg')
-    else
-					asset_path('plm-logo-3.png')
-    end
-  end
+	  @current_logo ||= if current_setting[:logo_file].present?
+	    current_setting.logo_file.url
+	  elsif current_setting.qualifacts?
+	    asset_path('qualifacts-logo.svg')
+	  else
+	    asset_path('plm-logo-3.png')
+	  end
+	end
 
   def current_logo_sm
 			return current_setting.logo_file.url if current_setting.logo_file.present?
