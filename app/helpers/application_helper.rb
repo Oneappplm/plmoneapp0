@@ -104,14 +104,14 @@ module ApplicationHelper
 	end
 
   def current_logo_sm
-			return current_setting.logo_file.url if current_setting.logo_file.present?
-
-    @current_logo_sm ||= if current_setting.qualifacts?
-						asset_path('qualifacts-logo-sm.svg')
-    else
-						asset_path('plm-logo-square.png')
-    end
-  end
+	  @current_logo_sm ||= if current_setting[:logo_file].present?
+	    current_setting.logo_file.url
+	  elsif current_setting.qualifacts?
+	    asset_path('qualifacts-logo-sm.svg')
+	  else
+	    asset_path('plm-logo-square.png')
+	  end
+	end
 
 	def dark_mode
 		if current_setting.dark_mode.downcase == 'yes'
