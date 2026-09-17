@@ -62,6 +62,7 @@ class User < ApplicationRecord
   has_many :director_providers
   has_many :provider_personal_informations, through: :director_providers
   has_many :virtual_review_committees, through: :director_providers
+  belongs_to :facility_application, optional: true
 
   has_many :provider_npdb_comments, dependent: :destroy
 

@@ -166,6 +166,15 @@ class ProviderFacilitiesController < ApplicationController
 
   helper_method :previous_step, :main_step
 
+  def index
+    if facility_admin?
+      load_admin_facilities
+      render :index
+    else
+      redirect_to_assigned_facility
+    end
+  end
+
   def edit
     prepare_step_data
   end
@@ -347,6 +356,29 @@ class ProviderFacilitiesController < ApplicationController
   end
 
   private
+
+  def facility_admin?
+    %w[administrator super_administrator admin_staff agent verifications_team].include?(current_user.user_role.to_s)
+  end
+
+  def load_admin_facilities
+    @facilities = FacilityApplication.order(:facility_name)
+    if params[:q].present?
+      @facilities = @facilities.search_by_name(params[:q])
+    end
+  end
+
+  def redirect_to_assigned_facility
+    facility = current_user.facility_application
+    unless facility
+      redirect_to root_path, alert: "No Facility has been assigned to your account."
+      return
+    end
+    redirect_to edit_provider_facility_path(
+    facility,
+    step: "provider_type"
+    )
+  end
 
   def load_application_submission_state
     @latest_application_tracking =
