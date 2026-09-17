@@ -43,26 +43,44 @@ sidebar_sections = [
   <% sidebar_sections.each do |section| %>
     <% active_section = section[:active_steps].include?(@step) %>
 
-    <div class="facility-main-step <%= 'active' if active_section %> disabled-step">
-      <span class="main-step-label">
-        <span class="sidebar-arrow">&rsaquo;</span>
-        <span class="main-step-text"><%= section[:label] %></span>
-      </span>
+    <% if @read_only %>
+      <%= link_to(
+            edit_provider_facility_path(
+              @provider,
+              step: section[:step],
+              readonly: "1"
+            ),
+            class: "facility-main-step #{'active' if active_section}"
+          ) do %>
 
-      <span class="step-dot"></span>
-    </div>
+        <span class="main-step-label">
+          <span class="sidebar-arrow">&rsaquo;</span>
+
+          <span class="main-step-text">
+            <%= section[:label] %>
+          </span>
+        </span>
+
+        <span class="step-dot"></span>
+      <% end %>
+
+    <% else %>
+      <div class="facility-main-step <%= 'active' if active_section %> disabled-step">
+        <span class="main-step-label">
+          <span class="sidebar-arrow">&rsaquo;</span>
+
+          <span class="main-step-text">
+            <%= section[:label] %>
+          </span>
+        </span>
+
+        <span class="step-dot"></span>
+      </div>
+    <% end %>
   <% end %>
 </div>
 
-
 <style>
-  .disabled-step {
-    cursor: default;
-  }
-
-  .disabled-step:hover {
-    background: inherit;
-  }
   .provider-facility-sidebar {
     width: 260px;
     min-width: 260px;
@@ -139,5 +157,19 @@ sidebar_sections = [
 
   .provider-facility-sidebar .facility-main-step.active .step-dot {
     background: #ffffff;
+  }
+
+  .provider-facility-sidebar .disabled-step {
+    cursor: default;
+  }
+
+  .provider-facility-sidebar .disabled-step:hover {
+    background: inherit;
+    color: inherit;
+  }
+
+  .provider-facility-sidebar .disabled-step.active:hover {
+    background: #2f75ff;
+    color: #ffffff;
   }
 </style>

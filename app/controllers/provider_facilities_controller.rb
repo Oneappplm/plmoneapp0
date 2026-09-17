@@ -166,11 +166,28 @@ class ProviderFacilitiesController < ApplicationController
 
   helper_method :previous_step, :main_step
 
+  def index
+    if facility_admin?
+      load_all_facility_profiles
+    else
+      redirect_to_current_user_facility
+    end
+  end
+
   def edit
+    @read_only =
+      facility_admin? &&
+      params[:readonly] == "1"
+
     prepare_step_data
   end
 
   def update
+    if facility_admin? && params[:readonly] == "1"
+      redirect_to provider_facilities_path,
+                  alert: "Facility Summary is read-only."
+      return
+    end
     if program_staff_request?
       handle_program_staff_request
       return
@@ -347,6 +364,74 @@ class ProviderFacilitiesController < ApplicationController
   end
 
   private
+
+  def facility_admin?
+    %w[
+      administrator
+      super_administrator
+      admin_staff
+      agent
+      verifications_team
+    ].include?(current_user.user_role.to_s)
+  end
+
+  def load_all_facility_profiles
+    @facility_profiles =
+      ProviderPersonalInformation
+        .joins(:provider_disclosures)
+        .joins(:practice_informations)
+        .includes(
+          :practice_informations,
+          :provider_personal_information_app_trackings,
+          provider_attest: :provider_licensures
+        )
+        .where(
+          provider_disclosures: {
+            disclosure_question_disclosure_summary: PRE_APPLICATION_QUESTIONS
+          }
+        )
+        .distinct
+
+    if params[:q].present?
+      search =
+        "%#{ActiveRecord::Base.sanitize_sql_like(params[:q].to_s.strip)}%"
+
+      @facility_profiles =
+        @facility_profiles.where(
+          "practice_informations.practice_name ILIKE ?",
+          search
+        )
+    end
+
+    @facility_profiles =
+      @facility_profiles.order(updated_at: :desc)
+  end
+
+  def redirect_to_current_user_facility
+    provider_source = current_user.provider_source_lookup
+
+    unless provider_source&.provider_personal_information_id.present?
+      redirect_to root_path,
+                  alert: "No Provider Facility profile is assigned to your account."
+      return
+    end
+
+    provider =
+      ProviderPersonalInformation.find_by(
+        id: provider_source.provider_personal_information_id
+      )
+
+    unless provider
+      redirect_to root_path,
+                  alert: "Provider Facility profile could not be found."
+      return
+    end
+
+    redirect_to edit_provider_facility_path(
+      provider,
+      step: "provider_type"
+    )
+  end
 
   def load_application_submission_state
     @latest_application_tracking =
