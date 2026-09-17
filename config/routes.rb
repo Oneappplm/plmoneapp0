@@ -408,13 +408,12 @@ Rails.application.routes.draw do
     end
   end
   
-  resources :provider_facilities, only: [:edit, :update] do
+  resources :provider_facilities, only: [:index, :edit, :update] do
     member do
       patch :autosave
       delete :delete_facility_document
     end
   end
-
   resources :enrollments do
     collection do
       get :new_user, path: 'new-user'

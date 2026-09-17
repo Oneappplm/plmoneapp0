@@ -1,0 +1,294 @@
+<div class="container-fluid mt-4">
+  <div class="card">
+    <div class="card-body">
+
+      <h5 class="mb-3">Facility Attested Data</h5>
+
+      <%= form_with url: provider_facilities_path,
+                    method: :get,
+                    local: true do %>
+
+        <div class="row mb-3">
+          <div class="col-md-5">
+            <label class="form-label">Facility Name</label>
+
+            <div class="input-group">
+              <%= text_field_tag :q,
+                                 params[:q],
+                                 class: "form-control",
+                                 placeholder: "Search by Facility Name" %>
+
+              <%= submit_tag "Search",
+                             class: "btn btn-primary" %>
+
+              <% if params[:q].present? %>
+                <%= link_to "Clear",
+                            provider_facilities_path,
+                            class: "btn btn-outline-secondary" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+      <% end %>
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle facility-index-table">
+
+          <thead>
+            <tr>
+              <th>View Summary</th>
+              <th>Entity ID</th>
+              <th>Agency Name</th>
+              <th>TIN</th>
+              <th>Primary Address ID</th>
+              <th>Create Date</th>
+              <th>Update Date</th>
+              <th>NPI</th>
+              <th>Is File Submitted</th>
+              <th>File Submit Date</th>
+              <th>DBA Name</th>
+              <th>No NPI Reason</th>
+              <th>Incorporation State</th>
+              <th>Counties Served</th>
+              <th>Electronic Claims</th>
+              <th>Has License</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% @facility_profiles.each do |provider| %>
+
+              <%
+                practice =
+                  provider.practice_informations.first
+
+                tracking =
+                  provider
+                    .provider_personal_information_app_trackings
+                    .select(&:application_submitted_date?)
+                    .max_by(&:application_submitted_date)
+
+                submitted_date =
+                  tracking&.application_submitted_date ||
+                  provider.attest_date
+
+                submitted =
+                  submitted_date.present?
+
+                has_license =
+                  provider.provider_attest
+                          &.provider_licensures
+                          &.any?
+              %>
+
+              <tr>
+
+                <!-- View Summary -->
+                <td>
+                  <%= link_to "View Summary",
+                              edit_provider_facility_path(
+                                provider,
+                                step: "provider_type",
+                                readonly: "1"
+                              ),
+                              class: "facility-summary-link" %>
+                </td>
+
+                <!-- Entity ID -->
+                <td>
+                  <%= provider.provider_attest_id.presence || provider.id %>
+                </td>
+
+                <!-- Agency / Facility Name -->
+                <td>
+                  <%= practice&.practice_name.presence || "N/A" %>
+                </td>
+
+                <!-- TIN -->
+                <td>
+                  <%= practice&.federal_tax_id.presence || "N/A" %>
+                </td>
+
+                <!-- Primary Address ID -->
+                <td>
+                  <%= practice&.id || "N/A" %>
+                </td>
+
+                <!-- Create Date -->
+                <td>
+                  <% if provider.created_at.present? %>
+                    <%= provider.created_at.strftime("%m/%d/%Y") %>
+                    <br>
+                    <small>
+                      <%= provider.created_at.strftime("%I:%M:%S %p") %>
+                    </small>
+                  <% else %>
+                    N/A
+                  <% end %>
+                </td>
+
+                <!-- Update Date -->
+                <td>
+                  <% if provider.updated_at.present? %>
+                    <%= provider.updated_at.strftime("%m/%d/%Y") %>
+                    <br>
+                    <small>
+                      <%= provider.updated_at.strftime("%I:%M:%S %p") %>
+                    </small>
+                  <% else %>
+                    N/A
+                  <% end %>
+                </td>
+
+                <!-- NPI -->
+                <td>
+                  <%= practice&.npi.presence ||
+                      provider.npi.presence ||
+                      "N/A" %>
+                </td>
+
+                <!-- Is File Submitted -->
+                <td class="text-center">
+                  <%= submitted ? "1" : "0" %>
+                </td>
+
+                <!-- File Submit Date -->
+                <td>
+                  <% if submitted_date.present? %>
+                    <%= submitted_date.strftime("%m/%d/%Y") %>
+
+                    <% if submitted_date.respond_to?(:strftime) &&
+                          submitted_date.respond_to?(:hour) %>
+                      <br>
+                      <small>
+                        <%= submitted_date.strftime("%I:%M:%S %p") %>
+                      </small>
+                    <% end %>
+                  <% else %>
+                    N/A
+                  <% end %>
+                </td>
+
+                <!-- DBA Name -->
+                <td>
+                  <%= practice&.group_name.presence || "N/A" %>
+                </td>
+
+                <!-- No NPI Reason -->
+                <td>
+                  <%= practice&.any_comments.presence || "N/A" %>
+                </td>
+
+                <!-- Incorporation State -->
+                <td>
+                  <%= practice&.state.presence || "N/A" %>
+                </td>
+
+                <!-- Counties Served -->
+                <td>
+                  <%= practice&.county.presence || "N/A" %>
+                </td>
+
+                <!-- Electronic Claims -->
+                <td class="text-center">
+                  <%= check_box_tag nil,
+                                    "1",
+                                    practice&.electronic_billing_flag == true,
+                                    disabled: true %>
+                </td>
+
+                <!-- Has License -->
+                <td class="text-center">
+                  <%= check_box_tag nil,
+                                    "1",
+                                    has_license,
+                                    disabled: true %>
+                </td>
+
+              </tr>
+
+            <% end %>
+
+            <% if @facility_profiles.blank? %>
+              <tr>
+                <td colspan="16"
+                    class="text-center py-4 text-muted">
+
+                  <% if params[:q].present? %>
+                    No Facility records found for
+                    "<%= params[:q] %>".
+                  <% else %>
+                    No Facility records found.
+                  <% end %>
+
+                </td>
+              </tr>
+            <% end %>
+
+          </tbody>
+
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<style>
+  .facility-index-table {
+    min-width: 1800px;
+    font-size: 12px;
+  }
+
+  .facility-index-table thead th {
+    background: #5f82a5;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    white-space: normal;
+    padding: 10px 8px;
+  }
+
+  .facility-index-table tbody td {
+    padding: 9px 8px;
+    vertical-align: middle;
+  }
+
+  .facility-index-table tbody tr:hover {
+    background: #f7f9fb;
+  }
+
+  .facility-index-table td:nth-child(3) {
+    min-width: 180px;
+  }
+
+  .facility-index-table td:nth-child(12),
+  .facility-index-table td:nth-child(14) {
+    min-width: 160px;
+  }
+
+  .facility-summary-link {
+    color: #0d6efd;
+    text-decoration: underline;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .facility-summary-link:hover {
+    text-decoration: none;
+  }
+
+  .facility-index-table input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+  }
+
+  .facility-index-table small {
+    font-size: 11px;
+    white-space: nowrap;
+  }
+</style>
