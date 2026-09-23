@@ -179,7 +179,11 @@ class ProviderFacilitiesController < ApplicationController
       facility_admin? &&
       params[:readonly] == "1"
 
-    prepare_step_data
+    if @read_only
+      prepare_all_summary_data
+    else
+      prepare_step_data
+    end
   end
 
   def update
@@ -376,61 +380,99 @@ class ProviderFacilitiesController < ApplicationController
   end
 
   def load_all_facility_profiles
-    @facility_profiles =
+    facility_scope =
       ProviderPersonalInformation
         .joins(:provider_disclosures)
-        .joins(:practice_informations)
-        .includes(
-          :practice_informations,
-          :provider_personal_information_app_trackings,
-          provider_attest: :provider_licensures
-        )
         .where(
           provider_disclosures: {
             disclosure_question_disclosure_summary: PRE_APPLICATION_QUESTIONS
           }
         )
-        .distinct
 
     if params[:q].present?
       search =
         "%#{ActiveRecord::Base.sanitize_sql_like(params[:q].to_s.strip)}%"
 
-      @facility_profiles =
-        @facility_profiles.where(
-          "practice_informations.practice_name ILIKE ?",
-          search
-        )
+      facility_scope =
+        facility_scope
+          .joins(:practice_informations)
+          .where(
+            "practice_informations.practice_name ILIKE ?",
+            search
+          )
     end
 
+    facility_ids =
+      facility_scope
+        .distinct
+        .select(:id)
+
     @facility_profiles =
-      @facility_profiles.order(updated_at: :desc)
+      ProviderPersonalInformation
+        .where(id: facility_ids)
+        .preload(
+          :practice_informations,
+          :provider_personal_information_app_trackings,
+          provider_attest: :provider_licensures
+        )
+        .order(updated_at: :desc)
+  end
+
+  def prepare_all_summary_data
+    build_pre_application_disclosures
+
+    build_corporate_information
+    build_primary_office_contact
+    build_mailing_address
+    build_provider_licensures
+    build_accreditation
+    build_insurance
+    build_staffing
+
+    build_facility_profile
+    build_facility_program_staff
+    build_facility_profile_1
+    build_facility_profile_2
+    build_facility_provider_type
+    build_facility_service_type
+
+    build_attestation
+    build_upload_documents
+    build_confirmation
+
+    load_application_submission_state
   end
 
   def redirect_to_current_user_facility
     provider_source = current_user.provider_source_lookup
 
-    unless provider_source&.provider_personal_information_id.present?
-      redirect_to root_path,
-                  alert: "No Provider Facility profile is assigned to your account."
-      return
-    end
-
     provider =
-      ProviderPersonalInformation.find_by(
-        id: provider_source.provider_personal_information_id
-      )
+      provider_source&.provider_personal_information
 
-    unless provider
-      redirect_to root_path,
-                  alert: "Provider Facility profile could not be found."
-      return
+    if provider.blank?
+      provider = create_facility_provider_profile_for_user
     end
 
     redirect_to edit_provider_facility_path(
       provider,
       step: "provider_type"
     )
+  end
+
+  def create_facility_provider_profile_for_user
+    ProviderPersonalInformation.transaction do
+      provider_attest =
+        ProviderAttest.create!
+
+      provider =
+        ProviderPersonalInformation.create!(
+          provider_attest_id: provider_attest.id,
+          created_by: current_user.id,
+          progress_status: :to_be_assigned
+        )
+
+      provider
+    end
   end
 
   def load_application_submission_state

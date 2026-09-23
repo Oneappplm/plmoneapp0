@@ -1,0 +1,312 @@
+<div class="facility-profile-summary">
+
+  <!-- PRACTICE LOCATIONS -->
+
+  <div class="facility-summary-subsection">
+    <h5>Practice Location</h5>
+
+    <% if @practice_locations.present? %>
+
+      <% @practice_locations.each_with_index do |location, index| %>
+
+        <div class="summary-record-card">
+          <h6>
+            Location <%= index + 1 %>
+          </h6>
+
+          <div class="row">
+
+            <div class="col-md-4 summary-field">
+              <label>Location Name</label>
+              <div>
+                <%= location.location.presence ||
+                    location.legal_name.presence ||
+                    "N/A" %>
+              </div>
+            </div>
+
+            <div class="col-md-4 summary-field">
+              <label>Address 1</label>
+              <div>
+                <%= location.address1.presence || "N/A" %>
+              </div>
+            </div>
+
+            <div class="col-md-4 summary-field">
+              <label>Address 2</label>
+              <div>
+                <%= location.address2.presence || "N/A" %>
+              </div>
+            </div>
+
+            <div class="col-md-4 summary-field">
+              <label>City</label>
+              <div>
+                <%= location.city.presence || "N/A" %>
+              </div>
+            </div>
+
+            <div class="col-md-4 summary-field">
+              <label>State</label>
+              <div>
+                <%= location.state_id.presence ||
+                    location.state_id.presence ||
+                    "N/A" %>
+              </div>
+            </div>
+
+            <div class="col-md-4 summary-field">
+              <label>ZIP Code</label>
+              <div>
+                <%= location.zip_code.presence || "N/A" %>
+              </div>
+            </div>
+
+            <div class="col-md-4 summary-field">
+              <label>Phone</label>
+              <div>
+                <%= location.phone_number.presence || "N/A" %>
+              </div>
+            </div>
+
+            <div class="col-md-4 summary-field">
+              <label>Fax</label>
+              <div>
+                <%= location.fax_number.presence || "N/A" %>
+              </div>
+            </div>
+
+            <div class="col-md-4 summary-field">
+              <label>Email</label>
+              <div>
+                <%= location.email.presence || "N/A" %>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      <% end %>
+
+    <% else %>
+
+      <p class="text-muted">
+        No Practice Locations available.
+      </p>
+
+    <% end %>
+  </div>
+
+
+  <!-- PROGRAM STAFF -->
+
+  <div class="facility-summary-subsection">
+    <h5>Program Staff</h5>
+
+    <% if @program_staffs.present? %>
+
+      <div class="table-responsive">
+        <table class="table table-bordered summary-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>NPI / Provider Type</th>
+              <th>Degree</th>
+              <th>Job Title</th>
+              <th>License Number</th>
+              <th>Certification</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% @program_staffs.each do |staff| %>
+              <tr>
+                <td>
+                  <%= [
+                        staff.associate_first_name,
+                        staff.associate_middle_initial,
+                        staff.associate_last_name
+                      ].compact.reject(&:blank?).join(" ").presence || "N/A" %>
+                </td>
+
+                <td>
+                  <%= staff.provider_type_provider_type_abbreviation.presence ||
+                      "N/A" %>
+                </td>
+
+                <td>
+                  <%= staff.degree_degree_abbreviation.presence || "N/A" %>
+                </td>
+
+                <td>
+                  <%= staff.title.presence || "N/A" %>
+                </td>
+
+                <td>
+                  <%= staff.license_number.presence || "N/A" %>
+                </td>
+
+                <td>
+                  <%= staff.other_skills.presence || "N/A" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+    <% else %>
+
+      <p class="text-muted">
+        No Program Staff available.
+      </p>
+
+    <% end %>
+  </div>
+
+
+  <!-- FACILITY PROFILE 1 -->
+
+  <div class="facility-summary-subsection">
+    <h5>Facility Profile 1</h5>
+
+    <% @facility_profile_1_questions.each do |record| %>
+
+      <div class="summary-question">
+
+        <div class="summary-question-text">
+          <%= record.other_question_other_question_summary %>
+        </div>
+
+        <div class="summary-question-answer">
+
+          <% case record.provider_practice_answer_flag %>
+          <% when true %>
+            Yes
+          <% when false %>
+            No
+          <% else %>
+            N/A
+          <% end %>
+
+        </div>
+
+        <% if record.provider_practice_answer_text.present? %>
+          <div class="summary-explanation">
+            <strong>Explanation:</strong>
+            <%= record.provider_practice_answer_text %>
+          </div>
+        <% end %>
+
+      </div>
+
+    <% end %>
+  </div>
+
+
+  <!-- FACILITY PROFILE 2 -->
+
+  <div class="facility-summary-subsection">
+    <h5>Facility Profile 2</h5>
+
+    <% @facility_profile_2_records.each do |key, record| %>
+
+      <div class="row summary-field-row">
+
+        <div class="col-md-5">
+          <strong>
+            <%= key.to_s.humanize %>
+          </strong>
+        </div>
+
+        <div class="col-md-7">
+
+          <% if key == :michiide_snp %>
+
+            <% case record.provider_practice_answer_flag %>
+            <% when true %>
+              Yes
+            <% when false %>
+              No
+            <% else %>
+              N/A
+            <% end %>
+
+          <% else %>
+
+            <%= record.provider_practice_answer_text.presence ||
+                "N/A" %>
+
+          <% end %>
+
+        </div>
+
+      </div>
+
+    <% end %>
+  </div>
+
+
+  <!-- PROVIDER TYPE -->
+
+  <div class="facility-summary-subsection">
+    <h5>Facility Provider Type</h5>
+
+    <div class="summary-field">
+      <label>Provider Type</label>
+
+      <div>
+        <%= @facility_provider_type
+              &.provider_practice_answer_text
+              .presence || "N/A" %>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- SERVICE TYPE -->
+
+  <div class="facility-summary-subsection">
+    <h5>Service Type</h5>
+
+    <% @facility_service_type_records.each do |key, record| %>
+
+      <div class="row summary-field-row">
+
+        <div class="col-md-5">
+          <strong>
+            <%= key.to_s.humanize %>
+          </strong>
+        </div>
+
+        <div class="col-md-7">
+
+          <% if %i[
+                sud_treatment_provider
+                sud_prevention_provider
+              ].include?(key) %>
+
+            <% case record.provider_practice_answer_flag %>
+            <% when true %>
+              Yes
+            <% when false %>
+              No
+            <% else %>
+              N/A
+            <% end %>
+
+          <% else %>
+
+            <%= record.provider_practice_answer_text.presence ||
+                "N/A" %>
+
+          <% end %>
+
+        </div>
+
+      </div>
+
+    <% end %>
+  </div>
+
+</div>
