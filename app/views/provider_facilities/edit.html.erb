@@ -1,7 +1,9 @@
 <div class="enc-content">
   <div class="container">
-    <div class="provider-facility-wrapper">
-      <%= render "left_steps" %>
+    <div class="provider-facility-wrapper <%= 'summary-mode' if @read_only %>">
+      <% unless @read_only %>
+        <%= render "left_steps" %>
+      <% end %>
 
       <div class="provider-facility-content">
         <%= form_with(
@@ -40,9 +42,7 @@
           <% end %>
 
           <% if @read_only %>
-            <fieldset disabled>
-              <%= render "provider_facilities/steps/#{@step}" %>
-            </fieldset>
+            <%= render "provider_facilities/summary" %>
           <% else %>
             <%= render "provider_facilities/steps/#{@step}" %>
           <% end %>
@@ -94,7 +94,51 @@
                           provider_facilities_path,
                           class: "btn btn-secondary" %>
             </div>
-          <% end %>  
+          <% else %>
+
+            <div class="form-actions">
+              <%= link_to "Cancel",
+                          root_path,
+                          class: "btn btn-warning provider-cancel-button" %>
+
+              <% unless @step == ProviderFacilitiesController::STEPS.first %>
+                <%= link_to "Previous",
+                            edit_provider_facility_path(
+                              @provider,
+                              step: previous_step
+                            ),
+                            class: "btn btn-secondary" %>
+              <% end %>
+
+              <% unless @step == "confirmation" %>
+
+                <%= submit_tag "Save",
+                               name: "commit",
+                               value: "Save",
+                               class: "btn btn-primary" %>
+
+                <% unless @step == ProviderFacilitiesController::STEPS.last %>
+                  <%= submit_tag "Save & Next",
+                                 name: "commit",
+                                 value: "Save & Next",
+                                 class: "btn btn-primary" %>
+                <% end %>
+
+              <% end %>
+
+              <% if @step != "confirmation" &&
+                    @application_previously_submitted %>
+
+                <%= button_tag "I'm Done! Submit My App",
+                               type: "submit",
+                               name: "application_action",
+                               value: "submit_application",
+                               class: "btn btn-success submit-my-application-button",
+                               title: "Saves data on the page and Re-Submits the application for processing" %>
+              <% end %>
+            </div>
+
+          <% end %>
         <% end %>
       </div>
     </div>
@@ -202,4 +246,13 @@
       width: 100%;
     }
   }
+
+.provider-facility-wrapper.summary-mode {
+  display: block;
+}
+
+.provider-facility-wrapper.summary-mode .provider-facility-content {
+  width: 100%;
+  max-width: 100%;
+}  
 </style>
