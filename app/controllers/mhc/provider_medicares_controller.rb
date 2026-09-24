@@ -53,10 +53,11 @@ class Mhc::ProviderMedicaresController < ApplicationController
         :provider_attest_id,
         :medicare_number,
         :issue_date,
+        :effective_date,
         :state,
         :medicare_opt_in,
         :medicare_opt_out,
-        :medicare_partial,
+        :medicare_partial
       )
     end
   

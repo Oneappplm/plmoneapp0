@@ -572,36 +572,38 @@
   <% end %>
 
   <!-- Medicares -->
-  <% provider_medicares = provider_personal_information.provider_medicares.order(:id) %>
+  <%
+    provider_medicares = provider_personal_information.provider_medicares.order(updated_at: :desc, id: :desc)
 
-    <% if provider_medicares.present? %>
-      <div class="section mt-4">
-        <div class="section-title">Medicare Opt Out</div>
-        <div class="section-content">
-          <% provider_medicares.each do |medicare| %>
-            <div class="row mb-3">
-              <div class="col-6">
-                <%# <p><strong>Medicare PIN:</strong> <%#= medicare.medicare_number.presence || 'Not Available'</p> %>
-                <p><strong>State:</strong> <%= medicare.state.presence || 'Not Available' %></p>
-                <p><strong>On Opt Out List:</strong> <%= medicare.medicare_opt_out? ? 'Yes' : 'No' %></p>
-                <p><strong>End Date:</strong> <%= medicare.effective_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
-              </div>
+    medicare = provider_medicares.detect do |record|
+      record.issue_date.present? || record.effective_date.present? || !record.medicare_opt_out.nil?
+    end
 
-              <div class="col-6">
-                <p><strong>Verified By:</strong> <%= user&.full_name.presence || 'N/A' %></p>
-                <p><strong>Source Date:</strong> <%= medicare.issue_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
-                <p><strong>Verification Date:</strong> <%= medicare.updated_at&.strftime('%m/%d/%Y') || 'Not Available' %></p>
-                <p><strong>Verification Source:</strong> CMS Administrator</p>
-              </div>
-            </div>
+    medicare ||= provider_medicares.first
+  %>
 
-            <% unless medicare == provider_medicares.last %>
-              <hr>
-            <% end %>
-          <% end %>
+  <% if medicare.present? %>
+    <div class="section mt-4">
+      <div class="section-title">Medicare Opt Out</div>
+      <div class="section-content">
+        <div class="row mb-3">
+          <div class="col-6">
+            <p><strong>State:</strong> <%= medicare.state.presence || '' %></p>
+            <p><strong>On Opt Out List:</strong> <%= medicare.medicare_opt_out? ? 'Yes' : 'No' %></p>
+            <p><strong>Effective Date:</strong> <%= medicare.effective_date&.strftime('%m/%d/%Y') || '' %></p>
+            <p><strong>End Date:</strong> </p>
+          </div>
+
+          <div class="col-6">
+            <p><strong>Verified By:</strong> <%= user&.full_name.presence || 'N/A' %></p>
+            <p><strong>Source Date:</strong> <%= medicare.issue_date&.strftime('%m/%d/%Y') || '' %></p>
+            <p><strong>Verification Date:</strong> <%= medicare.updated_at&.strftime('%m/%d/%Y') || '' %></p>
+            <p><strong>Verification Source:</strong> CMS Administrator</p>
+          </div>
         </div>
       </div>
-    <% end %>
+    </div>
+  <% end %>
 
   <!-- OIG -->
   <% if oig_details.present? %>
