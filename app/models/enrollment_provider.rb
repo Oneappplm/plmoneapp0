@@ -40,12 +40,16 @@ class EnrollmentProvider < ApplicationRecord
 	scope :today, -> { where(created_at: DateTime.now) }
 	scope :this_week, -> { where(created_at: DateTime.now.beginning_of_week..DateTime.now.end_of_month) }
 
-	scope :requiring_follow_up, -> { where.not(follow_up_status: :resolved) }
+	scope :requiring_follow_up, -> {where(follow_up_status: :pending)}
+	
   scope :due_today, -> { requiring_follow_up.where(next_follow_up_date: Date.current) }
   scope :overdue, -> { requiring_follow_up.where("next_follow_up_date < ?", Date.current) }
   scope :upcoming, -> { requiring_follow_up.where("next_follow_up_date > ?", Date.current) }
 
+  scope :assigned_to, ->(user) { where(user_id: user.id) }
+
 	belongs_to :provider, optional: true
+	belongs_to :user, optional: true
 
 	has_many :follow_ups, dependent: :destroy
 	has_one :client_provider_enrollment, as: :enrollable, dependent: :destroy
@@ -74,6 +78,12 @@ class EnrollmentProvider < ApplicationRecord
 				"N/A"
 			end
 		end
+	end
+
+	def payer_name
+	  return enrollment_payer if enrollment_payer.present?
+	  payer_names = details.map(&:enrollment_payer).compact_blank.uniq
+	  payer_names.join(", ").presence || "N/A"
 	end
 
 	def selected_providers

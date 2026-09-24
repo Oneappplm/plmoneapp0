@@ -212,20 +212,24 @@
   </div>
 
   <div class="col-lg-3">
-    <% task_count = EnrollmentProvider.due_today.count + EnrollmentProvider.overdue.count %>
+    <% task_scope =
+        if current_user.super_administrator?
+          EnrollmentProvider.all
+        else
+          EnrollmentProvider.where(user_id: current_user.id)
+        end
 
-    <%= link_to mhc_credentialing_tasks_path, class: "nav-link d-flex justify-content-between align-items-center" do %>
+      task_count = task_scope.due_today.count + task_scope.overdue.count
+    %>
 
-      <span>
-        <i class="bi bi-list-check"></i>
-        Today’s Task
-      </span>
+    <%= link_to mhc_credentialing_tasks_path, class: "button" do %>
 
-      <% if task_count.positive? %>
-        <span class="badge bg-danger rounded-pill">
-          <%= task_count %>
-        </span>
-      <% end %>
+      <div class="card p-2 rounded-15 pale-blue ps-3 pb-0" style="min-height: 112px;">
+        <h5 class="text-black text-left">Task's</h5>
+        <div class="w-100 d-flex align-items-end">
+          <h1 style="font-size: 40px;" class="text-black mt-2"><%= task_count %></h1>
+        </div>
+      </div>
     <% end %>
   </div>
 </div>
