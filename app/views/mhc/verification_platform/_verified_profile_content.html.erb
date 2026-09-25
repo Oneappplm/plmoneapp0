@@ -110,72 +110,149 @@
     </div>
 
 
+
+  <%
+      provider_medicaid = provider_personal_information
+                            .provider_medicaids
+                            .order(updated_at: :desc, id: :desc)
+                            .first
+
+      provider_medicare = provider_personal_information
+                            .provider_medicares
+                            .order(updated_at: :desc, id: :desc)
+                            .first
+
+      medicare_status =
+        if provider_medicare&.medicare_opt_in?
+          'Opt In'
+        elsif provider_medicare&.medicare_opt_out?
+          'Opt Out'
+        elsif provider_medicare&.medicare_partial?
+          'Partial'
+        else
+          ''
+        end
+    %>
+
+  <%
+    provider_medicaid = provider_personal_information
+                          .provider_medicaids
+                          .order(updated_at: :desc, id: :desc)
+                          .first
+
+    provider_medicare = provider_personal_information
+                          .provider_medicares
+                          .order(updated_at: :desc, id: :desc)
+                          .first
+
+    app_tracking = provider_personal_information
+                     .provider_personal_information_app_trackings
+                     .order(updated_at: :desc, id: :desc)
+                     .first
+
+    medicare_status =
+      if provider_medicare&.medicare_opt_in?
+        'Opt In'
+      elsif provider_medicare&.medicare_opt_out?
+        'Opt Out'
+      elsif provider_medicare&.medicare_partial?
+        'Partial'
+      else
+        ''
+      end
+  %>
+
   <div class="table-responsive mb-3">
-    <table class="table table-bordered">
+    <table class="table table-bordered verified-profile-summary">
+      <colgroup>
+        <col style="width: 18%;">
+        <col style="width: 7%;">
+        <col style="width: 11%;">
+        <col style="width: 7%;">
+        <col style="width: 13%;">
+        <col style="width: 9%;">
+        <col style="width: 13%;">
+        <col style="width: 22%;">
+      </colgroup>
+
       <tbody>
-        <% if provider_personal_information.signature_date.present? %>
+        <!-- Application Received / Completed Date -->
         <tr>
-          <td class="fw-bold text-dark">Signature Date:</td>
-          <td><%= provider_personal_information.signature_date.strftime('%m/%d/%Y') %></td>
+          <td colspan="2" class="fw-bold text-dark">Application Received Date:</td>
+          <td colspan="2"><%= app_tracking&.application_receipt_date&.strftime('%m/%d/%Y') %></td>
+          <td colspan="2" class="fw-bold text-dark">Application Completed Date:</td>
+          <td colspan="2"><%= app_tracking&.application_receive_complete_date&.strftime('%m/%d/%Y') %></td>
         </tr>
-        <% end %>
 
-        <% if provider_personal_information.id.present? || provider_personal_information.caqh_provider_id.present? %>
+        <!-- Signature / Verification Complete Date -->
         <tr>
-          <td class="fw-bold text-dark">ClientID:</td>
-          <td><%= provider_personal_information.id %></td>
-
-          <td class="fw-bold text-dark">CAQH ID:</td>
-          <td><%= provider_personal_information&.encompass_id_text || provider_personal_information.caqh_provider_id %></td>
+          <td colspan="2" class="fw-bold text-dark">Signature Date:</td>
+          <td colspan="2"><%= provider_personal_information.signature_date&.strftime('%m/%d/%Y') %></td>
+          <td colspan="2" class="fw-bold text-dark">Verifications Complete Date:</td>
+          <td colspan="2"><%= app_tracking&.verification_complete_date&.strftime('%m/%d/%Y') %></td>
         </tr>
-        <% end %>
 
-        <% if provider_personal_information.ssn.present? || provider_personal_information.birth_date.present? %>
+        <!-- Client ID / CAQH ID -->
         <tr>
-          <td class="fw-bold text-dark">Social Security No.:</td>
-          <td><%= provider_personal_information.ssn %></td>
-
-          <td class="fw-bold text-dark">Date of Birth:</td>
-          <td><%= provider_personal_information.birth_date&.strftime('%m/%d/%Y') %></td>
+          <td colspan="2" class="fw-bold text-dark">ClientID:</td>
+          <td colspan="2"><%= provider_personal_information.id %></td>
+          <td colspan="2" class="fw-bold text-dark">CAQH ID:</td>
+          <td colspan="2"><%= provider_personal_information&.encompass_id_text.presence || provider_personal_information.caqh_provider_id %></td>
         </tr>
-        <% end %>
 
-        <% if provider_personal_information.npi.present? || provider_personal_information.birth_country_country_name.present? %>
+        <!-- SSN / DOB -->
         <tr>
-          <td class="fw-bold text-dark">NPI:</td>
-          <td><%= provider_personal_information.npi %></td>
-
-          <td class="fw-bold text-dark">Country of Birth:</td>
-          <td><%= provider_personal_information.birth_country_country_name %></td>
+          <td colspan="2" class="fw-bold text-dark">Social Security No.:</td>
+          <td colspan="2"><%= provider_personal_information.ssn %></td>
+          <td colspan="2" class="fw-bold text-dark">Date of Birth:</td>
+          <td colspan="2"><%= provider_personal_information.birth_date&.strftime('%m/%d/%Y') %></td>
         </tr>
-        <% end %>
 
-        <% if provider_personal_information.citizenship_status.present? %>
+        <!-- NPI / Country of Birth -->
         <tr>
-          <td class="fw-bold text-dark">US Citizen:</td>
-          <td><%= provider_personal_information.citizenship_status %></td>
-
-          <td class="fw-bold text-dark">PMRS ID:</td>
-          <td><%= provider_personal_information.citizenship_status %></td>
+          <td colspan="2" class="fw-bold text-dark">NPI:</td>
+          <td colspan="2"><%= provider_personal_information.npi %></td>
+          <td colspan="2" class="fw-bold text-dark">Country of Birth:</td>
+          <td colspan="2"><%= provider_personal_information.birth_country_country_name %></td>
         </tr>
-        <% end %>
 
-        <% provider_personal_information.provider_personal_information_app_trackings.each do |app_tracking| %>
-          <tr>
-            <td class="fw-bold text-dark">Application Received Date:</td>
-            <td><%= app_tracking.application_receipt_date&.strftime('%m/%d/%Y') %></td>
+        <!-- US Citizen / PMRS ID -->
+        <tr>
+          <td colspan="2" class="fw-bold text-dark">US Citizen:</td>
+          <td colspan="2"><%= provider_personal_information.citizenship_status %></td>
+          <td colspan="2" class="fw-bold text-dark">PMRS ID:</td>
+          <td colspan="2"></td>
+        </tr>
 
-            <td class="fw-bold text-dark">Application Completed Date:</td>
-            <td><%= app_tracking.application_receive_complete_date&.strftime('%m/%d/%Y') %></td>
-          </tr>
-          <tr>
-            <td class="fw-bold text-dark">Verifications Complete Date:</td>
-            <td><%= app_tracking.verification_complete_date&.strftime('%m/%d/%Y') %></td>
-          </tr>
-        <% end %>
+        <!-- Medicaid -->
+        <tr>
+          <td colspan="2" class="fw-bold text-dark">Medicaid Number:</td>
+          <td colspan="2"><%= provider_medicaid&.medicaid_number.presence || '' %></td>
+          <td colspan="2" class="fw-bold text-dark">Medicaid State:</td>
+          <td colspan="2"><%= provider_medicaid&.state.presence || '' %></td>
+        </tr>
+
+        <!-- UPIN -->
+        <tr>
+          <td colspan="2" class="fw-bold text-dark">UPIN:</td>
+          <td colspan="6"><%= provider_personal_information.upin.presence || '' %></td>
+        </tr>
+
+        <!-- Medicare -->
+        <tr>
+          <td class="fw-bold text-dark">Medicare Number:</td>
+          <td><%= provider_medicare&.medicare_number.presence || '' %></td>
+          <td class="fw-bold text-dark">Medicare State:</td>
+          <td><%= provider_medicare&.state.presence || '' %></td>
+          <td class="fw-bold text-dark">Status:</td>
+          <td><%= medicare_status %></td>
+          <td class="fw-bold text-dark">Source Date:</td>
+          <td><%= provider_medicare&.issue_date&.strftime('%m/%d/%Y') || '' %></td>
+        </tr>
       </tbody>
     </table>
   </div>
+  
   <div class="table-responsive">
     <table class="table table-bordered">
       <thead>
@@ -1211,4 +1288,24 @@
   .section-content .col-6 {
   padding: 0 5px;
   }
+
+  .verified-profile-summary {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.verified-profile-summary td {
+  border: 1px solid #000 !important;
+  padding: 5px 8px !important;
+  vertical-align: middle;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-size: 14px;
+}
+
+.verified-profile-summary td.fw-bold {
+  font-weight: bold !important;
+  white-space: normal;
+}
 </style>
