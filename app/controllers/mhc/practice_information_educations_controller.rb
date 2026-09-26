@@ -8,7 +8,10 @@ class Mhc::PracticeInformationEducationsController < ApplicationController
   # app/controllers/mhc/practice_information_educations_controller.rb
   def preview_letter
     education = PracticeInformationEducation.find(params[:id])
-    pdf_binary = PdfLetterGenerator.new(education).generate_preview!
+    pdf_binary = PdfLetterGenerator.new(
+                  education,
+                  release_sub_section: "education"
+                ).generate_preview!
 
     send_data pdf_binary,
               filename: "education_letter_preview.pdf",

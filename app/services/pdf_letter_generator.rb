@@ -13,9 +13,28 @@ class PdfLetterGenerator
     The Release file might be missing. Please upload it and try again.
   </p>"
 
-  def initialize(practice_education)
-    @education = practice_education
-    @ppi = ProviderPersonalInformation.find_by(provider_attest_id: @education.provider_attest.id)
+  def initialize(
+    record,
+    template: "pdf_templates/education_letter",
+    assign_name: :education,
+    release_sub_section: nil
+  )
+    @record = record
+    @template = template
+    @assign_name = assign_name
+    @release_sub_section = release_sub_section
+
+    provider_attest_id =
+      if @record.respond_to?(:provider_attest_id)
+        @record.provider_attest_id
+      elsif @record.respond_to?(:provider_attest)
+        @record.provider_attest&.id
+      end
+
+    @ppi = ProviderPersonalInformation.find_by(
+      provider_attest_id: provider_attest_id
+    )
+
     raise ArgumentError, "Provider personal information not found" unless @ppi
   end
 
@@ -23,17 +42,60 @@ class PdfLetterGenerator
     Rails.logger.info("🔹 [PDF] Generating preview for #{@ppi.full_name}")
 
     # STEP 1: Get latest release file
-    release_doc = @ppi.provider_personal_uploaded_docs
-                      .where("LOWER(image_classification) = ?", "release")
-                      .order(created_at: :desc)
-                      .first
-    raise StandardError, MISSING_RELEASE_HTML unless release_doc&.file_upload.present?
+    release_scope = @ppi.provider_personal_uploaded_docs
+                    .where(image_classification: "release")
+
+    if @release_sub_section.present?
+      release_scope = release_scope.where(
+        sub_section: @release_sub_section.to_s
+      )
+    end
+
+    release_doc = release_scope
+                .order(created_at: :desc)
+                .first
+
+    raise StandardError, MISSING_RELEASE_HTML unless release_doc.present?
+
+    release_url = release_doc.file_upload&.url.to_s
+    release_path = release_doc.file_upload&.path.to_s
+
+    if release_url.blank? && release_path.blank?
+      raise StandardError, MISSING_RELEASE_HTML
+    end
+
+    Rails.logger.info(
+      "📄 [PDF] Using release doc ID=#{release_doc.id}, " \
+      "sub_section=#{release_doc.sub_section.inspect}, " \
+      "url=#{release_url.inspect}, " \
+      "path=#{release_path.inspect}"
+    )
 
     release_path = fetch_release_file_path(release_doc)
-    raise StandardError, "Release file not found after fetch" unless File.exist?(release_path)
 
-    # STEP 2: Convert release → PDF (if TIFF)
+    unless release_path.present? && File.exist?(release_path)
+      raise StandardError, "Release file not found after fetch"
+    end
+
+    release_path = fetch_release_file_path(release_doc)
+
+    unless release_path.present? && File.exist?(release_path)
+      raise StandardError, "Release file not found after fetch"
+    end
+
+    # STEP 2: Convert release -> PDF (if TIFF)
     ext = File.extname(release_path).downcase
+
+    if ext.blank?
+      upload_url = release_doc.file_upload.url.to_s
+
+      begin
+        ext = File.extname(URI.parse(upload_url).path).downcase
+      rescue URI::InvalidURIError
+        ext = File.extname(upload_url).downcase
+      end
+    end
+
     release_pdf_binary =
       if ext == ".pdf"
         File.binread(release_path)
@@ -46,12 +108,23 @@ class PdfLetterGenerator
       end
 
     # STEP 3: Render header/footer + letter
-    header_html = ApplicationController.render(template: "pdf_templates/shared/header", layout: false)
-    footer_html = ApplicationController.render(template: "pdf_templates/shared/footer", layout: false)
+    header_html = ApplicationController.render(
+      template: "pdf_templates/shared/header",
+      layout: false
+    )
+
+    footer_html = ApplicationController.render(
+      template: "pdf_templates/shared/footer",
+      layout: false
+    )
+
     letter_html_body = ApplicationController.render(
-      template: "pdf_templates/education_letter",
+      template: @template,
       layout: false,
-      assigns: { ppi: @ppi, education: @education }
+      assigns: {
+        ppi: @ppi,
+        @assign_name => @record
+      }
     )
 
     # Inject inline CSS and structure
@@ -63,31 +136,48 @@ class PdfLetterGenerator
             #{custom_pdf_styles}
           </style>
         </head>
+
         <body>
-          <div class="header">#{header_html}</div>
+          <div class="header">
+            #{header_html}
+          </div>
+
           <div class="page">
             #{letter_html_body}
           </div>
-          <div class="footer">#{footer_html}</div>
+
+          <div class="footer">
+            #{footer_html}
+          </div>
         </body>
       </html>
     HTML
 
     letter_pdf_binary = WickedPdf.new.pdf_from_string(
       letter_html,
-      margin: { top: 0, bottom: 0, left: 15, right: 15 },
-      page_size: 'A3',           # 👈 Bigger than default A4
-      zoom: 1.2,                 # 👈 Optional: makes everything slightly larger
+      margin: {
+        top: 0,
+        bottom: 0,
+        left: 15,
+        right: 15
+      },
+      page_size: "A3",
+      zoom: 1.2
     )
 
-    # STEP 4: Merge both — letter first, then release pages
+    # STEP 4: Merge both - letter first, then release pages
     combined = CombinePDF.new
     combined << CombinePDF.parse(letter_pdf_binary)
     combined << CombinePDF.parse(release_pdf_binary)
 
     combined.to_pdf
+
   rescue => e
-    Rails.logger.error("❌ [PDF ERROR] #{e.class}: #{e.message}\n#{e.backtrace.take(5).join("\n")}")
+    Rails.logger.error(
+      "❌ [PDF ERROR] #{e.class}: #{e.message}\n" \
+      "#{e.backtrace.take(10).join("\n")}"
+    )
+
     raise StandardError, "<p class='alert alert-danger'>
       The Release file generation failed. Please upload a valid PDF/TIFF file.
     </p>"
