@@ -1978,17 +1978,18 @@
             filesDiv.innerHTML = "";
 
             // Step 2️⃣ - Filter only .tiff/.tif release files
-            const releaseTiffDocs = data.filter(doc => {
+            const releaseDocs = data.filter(doc => {
               const ext = doc.file_name?.split(".").pop()?.toLowerCase();
+
               return (
                 doc.image_classification?.toLowerCase() === "release" &&
-                (ext === "tif" || ext === "tiff")
+                ["pdf", "tif", "tiff"].includes(ext)
               );
             });
 
-            if (releaseTiffDocs.length > 0) {
+            if (releaseDocs.length > 0) {
               // ✅ Show found release file(s)
-              releaseTiffDocs.forEach(doc => {
+              releaseDocs.forEach(doc => {
                 const link = document.createElement("a");
                 link.href = doc.file_url;
                 link.target = "_blank";
