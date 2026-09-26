@@ -5,6 +5,8 @@ require "base64"
 require "securerandom"
 require "open-uri"
 require "tempfile"
+require "tmpdir"
+require "fileutils"
 
 class PdfLetterGenerator
   MISSING_RELEASE_HTML = "<p class='alert alert-danger'>
@@ -138,31 +140,41 @@ class PdfLetterGenerator
     tmp.path
   end
 
-  def convert_tiff_to_pdf_with_header_footer(tiff_path)
-    raise StandardError, "TIFF not found: #{tiff_path}" unless File.exist?(tiff_path)
+ def convert_tiff_to_pdf_with_header_footer(tiff_path)
+  raise StandardError, "TIFF not found: #{tiff_path}" unless File.exist?(tiff_path)
 
-    pdf_pages = CombinePDF.new
+  pdf_pages = CombinePDF.new
+  temp_dir = Dir.mktmpdir("tiff_frames_")
 
-    frame_count = MiniMagick::Tool.new("identify") do |identify|
-      identify.format("%n")
-      identify << tiff_path
-    end.to_i
-    frame_count = 1 if frame_count.zero?
+  begin
+    output_pattern = File.join(temp_dir, "frame_%04d.png")
 
-    Rails.logger.info("🖼️ TIFF has #{frame_count} page(s)")
+    MiniMagick::Tool.new("convert") do |convert|
+      convert << tiff_path
+      convert << "-coalesce"
+      convert << output_pattern
+    end
 
-    header_html = ApplicationController.render(template: "pdf_templates/shared/header", layout: false)
-    footer_html = ApplicationController.render(template: "pdf_templates/shared/footer", layout: false)
+    frame_files = Dir.glob(File.join(temp_dir, "frame_*.png")).sort
 
-    frame_count.times do |i|
-      tmp_png = Rails.root.join("tmp", "tiff_frame_#{SecureRandom.hex(6)}.png")
+    raise StandardError, "No TIFF frames could be extracted" if frame_files.empty?
 
-      MiniMagick::Tool.new("convert") do |convert|
-        convert << "#{tiff_path}[#{i}]"
-        convert << tmp_png.to_s
-      end
+    Rails.logger.info("🖼️ TIFF extracted into #{frame_files.count} page(s)")
 
-      base64_png = Base64.strict_encode64(File.binread(tmp_png))
+    header_html = ApplicationController.render(
+      template: "pdf_templates/shared/header",
+      layout: false
+    )
+
+    footer_html = ApplicationController.render(
+      template: "pdf_templates/shared/footer",
+      layout: false
+    )
+
+    frame_files.each_with_index do |frame_path, index|
+      Rails.logger.info("🖼️ Rendering TIFF page #{index + 1}/#{frame_files.count}")
+
+      base64_png = Base64.strict_encode64(File.binread(frame_path))
 
       html = <<-HTML
         <html>
@@ -174,11 +186,16 @@ class PdfLetterGenerator
           </head>
           <body>
             <div class="header">#{header_html}</div>
+
             <div class="page">
               <div class="content">
-                <img src="data:image/png;base64,#{base64_png}" />
+                <img
+                  src="data:image/png;base64,#{base64_png}"
+                  style="max-width:100%; height:auto;"
+                />
               </div>
             </div>
+
             <div class="footer">#{footer_html}</div>
           </body>
         </html>
@@ -186,18 +203,24 @@ class PdfLetterGenerator
 
       page_pdf_binary = WickedPdf.new.pdf_from_string(
         html,
-        margin: { top: 0, bottom: 0, left: 15, right: 15 },
-        page_size: 'A3',           # 👈 Bigger than default A4
-        zoom: 1.2,                 # 👈 Optional: makes everything slightly larger
+        margin: {
+          top: 0,
+          bottom: 0,
+          left: 15,
+          right: 15
+        },
+        page_size: "A3",
+        zoom: 1.2
       )
 
       pdf_pages << CombinePDF.parse(page_pdf_binary)
-    ensure
-      File.delete(tmp_png) if File.exist?(tmp_png)
     end
 
     pdf_pages.to_pdf
+  ensure
+    FileUtils.remove_entry(temp_dir) if temp_dir && Dir.exist?(temp_dir)
   end
+end
 
   # ✅ Centralized CSS styles for all pages
   def custom_pdf_styles
