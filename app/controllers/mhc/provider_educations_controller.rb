@@ -41,6 +41,22 @@ class Mhc::ProviderEducationsController < ApplicationController
     end
   end
 
+  def preview_letter
+    training = ProviderEducation.find(params[:id])
+
+    pdf_binary = PdfLetterGenerator.new(
+                  training,
+                  template: "pdf_templates/training_letter",
+                  assign_name: :training,
+                  release_sub_section: "training"
+                ).generate_preview!
+
+    send_data pdf_binary,
+              filename: "training_letter_preview.pdf",
+              type: "application/pdf",
+              disposition: "inline"
+  end
+
   private
 
   def set_provider_education

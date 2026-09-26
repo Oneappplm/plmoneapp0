@@ -43,6 +43,21 @@ class Mhc::ProviderPersonalInformationPeerRefsController < ApplicationController
     end
   end
 
+  def preview_letter
+    peer_ref = ProviderPersonalInformationPeerRef.find(params[:id])
+
+    pdf_binary = PdfLetterGenerator.new(
+      peer_ref,
+      template: "pdf_templates/peer_reference_letter",
+      assign_name: :peer_ref,
+      release_sub_section: "peer_reference"
+    ).generate_preview!
+
+    send_data pdf_binary,
+              filename: "peer_reference_letter_preview.pdf",
+              type: "application/pdf",
+              disposition: "inline"
+  end
 
   private
 

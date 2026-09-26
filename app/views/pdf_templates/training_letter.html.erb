@@ -1,0 +1,70 @@
+<div class="content">
+  <h2 style="text-align:center;">Training Verification Request</h2>
+  <p>Dear Verification Department,</p>
+  <p>Please verify the following training information for:</p>
+  <table style="width:100%; border-collapse:collapse;">
+    <tr>
+      <td style="width:30%; padding:6px;"><strong>Practitioner Name:</strong></td>
+      <td style="padding:6px;"><%= @ppi&.full_name.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Institution:</strong></td>
+      <td style="padding:6px;"><%= @training&.institution_name.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Address:</strong></td>
+      <td style="padding:6px;">
+        <%= [
+          @training&.address,
+          @training&.address2,
+          @training&.city,
+          @training&.state,
+          @training&.postal_code,
+          @training&.country
+        ].compact_blank.join(", ").presence || "N/A" %>
+      </td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Type of Training:</strong></td>
+      <td style="padding:6px;"><%= @training&.training_area.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Specialty:</strong></td>
+      <td style="padding:6px;"><%= @training&.specialty_specialty_name.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Program Director:</strong></td>
+      <td style="padding:6px;"><%= @training&.program_director.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Start Date:</strong></td>
+      <td style="padding:6px;"><%= @training&.start_date&.strftime("%m/%d/%Y") || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>End Date:</strong></td>
+      <td style="padding:6px;"><%= @training&.end_date&.strftime("%m/%d/%Y") || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Completed:</strong></td>
+      <td style="padding:6px;">
+        <% if @training&.program_completed_flag.nil? %>
+          N/A
+        <% else %>
+          <%= @training.program_completed_flag ? "Yes" : "No" %>
+        <% end %>
+      </td>
+    </tr>
+  </table>
+
+  <p style="margin-top:25px;">
+    Please return the completed verification to the requesting organization.
+  </p>
+</div>

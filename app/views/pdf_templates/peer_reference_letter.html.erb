@@ -1,0 +1,109 @@
+<div class="content">
+  <h2 style="text-align:center;">Peer Reference Verification Request</h2>
+  <p>Dear Provider,</p>
+  <p>
+    Please verify the following peer reference information for:
+  </p>
+
+  <table style="width:100%; border-collapse:collapse;">
+    <tr>
+      <td style="width:30%; padding:6px;"><strong>Practitioner Name:</strong></td>
+      <td style="padding:6px;"><%= @ppi&.full_name.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Title:</strong></td>
+      <td style="padding:6px;"><%= @peer_ref&.title.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Peer First Name:</strong></td>
+      <td style="padding:6px;"><%= @peer_ref&.first_name.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Peer Middle Name:</strong></td>
+      <td style="padding:6px;"><%= @peer_ref&.middle_name.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Peer Last Name:</strong></td>
+      <td style="padding:6px;"><%= @peer_ref&.last_name.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Suffix:</strong></td>
+      <td style="padding:6px;"><%= @peer_ref&.suffix.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Practitioner Type:</strong></td>
+      <td style="padding:6px;"><%= @peer_ref&.practitioner_type.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Specialty:</strong></td>
+      <td style="padding:6px;"><%= @peer_ref&.specialty.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Board Certified:</strong></td>
+      <td style="padding:6px;">
+        <% if @peer_ref&.is_board_certified.nil? %>
+          N/A
+        <% else %>
+          <%= @peer_ref.is_board_certified ? "Yes" : "No" %>
+        <% end %>
+      </td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Contact Method:</strong></td>
+      <td style="padding:6px;"><%= @peer_ref&.contact_method.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Facility Name:</strong></td>
+      <td style="padding:6px;"><%= @peer_ref&.facility_name.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Address:</strong></td>
+      <td style="padding:6px;">
+        <%= [
+          @peer_ref&.address,
+          @peer_ref&.suite_dept_mail_stop,
+          @peer_ref&.city,
+          @peer_ref&.county,
+          @peer_ref&.state,
+          @peer_ref&.zip_code,
+          @peer_ref&.country
+        ].compact_blank.join(", ").presence || "N/A" %>
+      </td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Phone:</strong></td>
+      <td style="padding:6px;"><%= @peer_ref&.phone_number.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Fax:</strong></td>
+      <td style="padding:6px;"><%= @peer_ref&.fax_number.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Email:</strong></td>
+      <td style="padding:6px;"><%= @peer_ref&.email_address.presence || "N/A" %></td>
+    </tr>
+
+    <tr>
+      <td style="padding:6px;"><strong>Comments:</strong></td>
+      <td style="padding:6px;"><%= @peer_ref&.comments.presence || "N/A" %></td>
+    </tr>
+  </table>
+
+  <p style="margin-top:25px;">
+    Please return the completed verification to the requesting organization.
+  </p>
+</div>
