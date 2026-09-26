@@ -95,12 +95,46 @@ class PdfLetterGenerator
 
   def fetch_release_file_path(release_doc)
     local_path = release_doc.file_upload.try(:path)
-    return local_path if local_path && File.exist?(local_path)
+    return local_path if local_path.present? && File.exist?(local_path)
 
-    ext = File.extname(release_doc.file_upload.filename.to_s)
+    upload_url = release_doc.file_upload.url.to_s
+
+    raise StandardError, "Release file URL is missing" if upload_url.blank?
+
+    ext = File.extname(release_doc.file_upload.filename.to_s).downcase
+
+    if ext.blank?
+      begin
+        ext = File.extname(URI.parse(upload_url).path).downcase
+      rescue URI::InvalidURIError
+        ext = File.extname(upload_url).downcase
+      end
+    end
+
+    unless [".pdf", ".tif", ".tiff"].include?(ext)
+      raise StandardError, "Unsupported Release file type: #{ext.presence || 'unknown'}"
+    end
+
     tmp = Tempfile.new(["release_", ext])
-    URI.open(release_doc.file_upload.url) { |f| IO.copy_stream(f, tmp) }
+    tmp.binmode
+
+    if upload_url.start_with?("/")
+      absolute_path = Rails.root.join("public", upload_url.delete_prefix("/"))
+
+      raise StandardError, "Release file not found: #{absolute_path}" unless File.exist?(absolute_path)
+
+      File.open(absolute_path, "rb") do |file|
+        IO.copy_stream(file, tmp)
+      end
+    else
+      URI.open(upload_url, "rb") do |file|
+        IO.copy_stream(file, tmp)
+      end
+    end
+
+    tmp.flush
     tmp.close
+
     tmp.path
   end
 

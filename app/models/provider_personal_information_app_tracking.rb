@@ -9,6 +9,7 @@ class ProviderPersonalInformationAppTracking < ApplicationRecord
     'Affirmative Disclosure Response',
     'Board Certification Not Received',
     'Board Certification Not Verified',
+    'Background Check Finding',
     'CDS Not Received',
     'CDS Not Verified',
     'DEA Copy Not Received',
