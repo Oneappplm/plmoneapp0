@@ -1975,72 +1975,79 @@
         })
           .then(resp => resp.json())
           .then(data => {
-            filesDiv.innerHTML = "";
+					  filesDiv.innerHTML = "";
 
-            // Step 2️⃣ - Filter only .tiff/.tif release files
-            const releaseDocs = data.filter(doc => {
-              const ext = doc.file_name?.split(".").pop()?.toLowerCase();
+					  const releaseDocs = data.filter(doc => {
+					    const ext = doc.file_name?.split(".").pop()?.toLowerCase();
+					    const classification = doc.image_classification?.trim()?.toLowerCase();
+					    const subSection = doc.sub_section?.trim()?.toLowerCase();
 
-              return (
-                doc.image_classification?.toLowerCase() === "release" &&
-                ["pdf", "tif", "tiff"].includes(ext)
-              );
-            });
+					    return (
+					      classification === "release" &&
+					      subSection === "education" &&
+					      ["pdf", "tif", "tiff"].includes(ext)
+					    );
+					  });
 
-            if (releaseDocs.length > 0) {
-              // ✅ Show found release file(s)
-              releaseDocs.forEach(doc => {
-                const link = document.createElement("a");
-                link.href = doc.file_url;
-                link.target = "_blank";
-                link.textContent = doc.file_name;
-                link.classList.add("d-block", "mb-2", "text-success");
-                filesDiv.appendChild(link);
-              });
+					  if (releaseDocs.length > 0) {
+					    const releaseDoc = releaseDocs[0];
 
-              // Step 3️⃣ - Now generate the PDF by calling Rails preview_letter
-              filesDiv.insertAdjacentHTML(
-                "beforeend",
-                "<p class='text-info text-center'>Generating education verification letter...</p>"
-              );
+					    const link = document.createElement("a");
+					    link.href = releaseDoc.file_url;
+					    link.target = "_blank";
+					    link.textContent = releaseDoc.file_name;
+					    link.classList.add("d-block", "mb-2", "text-success", "text-center");
 
-              fetch(previewUrl, {
-                method: "POST",
-                headers: {
-                  "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
-                  "Accept": "application/pdf"
-                }
-              })
-                .then(response => {
-                  if (!response.ok) throw new Error("PDF generation failed");
-                  return response.blob();
-                })
-                .then(blob => {
-                  const url = URL.createObjectURL(blob);
-                  window.open(url, "_blank"); // 🔥 Opens PDF in new tab
-                  filesDiv.innerHTML = `
-                    <p class='alert alert-success text-center'>
-                      PDF generated successfully! It will open in a new tab.
-                    </p>
-                  `;
-                })
-                .catch(err => {
-                  console.error("Error generating PDF:", err);
-                  filesDiv.innerHTML = `
-                    <p class='alert alert-danger text-center'>
-                      Could not generate the PDF letter. Please try again.
-                    </p>
-                  `;
-                });
-            } else {
-              // 🚨 Show missing message *inside modal*, no redirect or close
-              filesDiv.innerHTML = `
-                <p class="alert alert-danger text-center">
-                  The Release file might be missing (only .tif or .tiff supported). Please upload it and try again.
-                </p>
-              `;
-            }
-          })
+					    filesDiv.appendChild(link);
+
+					    filesDiv.insertAdjacentHTML(
+					      "beforeend",
+					      "<p class='text-info text-center'>Generating education verification letter...</p>"
+					    );
+
+					    fetch(previewUrl, {
+					      method: "POST",
+					      headers: {
+					        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
+					        "Accept": "application/pdf"
+					      }
+					    })
+					      .then(response => {
+					        if (!response.ok) throw new Error("PDF generation failed");
+					        return response.blob();
+					      })
+					      .then(blob => {
+					        const url = URL.createObjectURL(blob);
+
+					        window.open(url, "_blank");
+
+					        filesDiv.innerHTML = `
+					          <p class="alert alert-success text-center">
+					            PDF generated successfully! It will open in a new tab.
+					          </p>
+					        `;
+
+					        setTimeout(() => {
+					          URL.revokeObjectURL(url);
+					        }, 10000);
+					      })
+					      .catch(err => {
+					        console.error("Error generating PDF:", err);
+
+					        filesDiv.innerHTML = `
+					          <p class="alert alert-danger text-center">
+					            Could not generate the PDF letter. Please try again.
+					          </p>
+					        `;
+					      });
+					  } else {
+					    filesDiv.innerHTML = `
+					      <p class="alert alert-danger text-center">
+					        The Education Release file might be missing. Please upload a PDF, TIF or TIFF file and try again.
+					      </p>
+					    `;
+					  }
+					})
           .catch(err => {
             console.error("Error fetching docs:", err);
             filesDiv.innerHTML = `
