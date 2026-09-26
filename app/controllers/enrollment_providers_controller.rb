@@ -46,6 +46,12 @@ class EnrollmentProvidersController < ApplicationController
 
     end
 
+    if @enrollment_provider.next_follow_up_date.present? &&
+	     !@enrollment_provider.resolved?
+
+	    @enrollment_provider.follow_up_status = :pending
+	  end
+
 	  if @enrollment_provider.save(validate: false)
 	    @enrollment_provider.update_columns(
 	      provider_id: params[:provider_id],
@@ -136,6 +142,7 @@ class EnrollmentProvidersController < ApplicationController
 			:suffix,
 			:telephone_number,
 			:email_address,
+			:next_follow_up_date,
       details_attributes: [:id, :start_date, :due_date,
                            :enrollment_payer, :enrollment_type, :enrollment_status, :payer_state,
                            :approved_date, :revalidation_date, :revalidation_due_date, :denied_date,
@@ -143,6 +150,7 @@ class EnrollmentProvidersController < ApplicationController
                            :enrollment_tracking_id, :enrollment_effective_date,
                            :association_start_date, :business_end_date, :association_end_date,
                            :line_of_business, :revalidation_status, :cpt_code, :descriptor,
+                           :next_follow_up_date, :follow_up_status, :assigned_user_id,
                            :provider_id, :group_id, :upload_payor_file, :processing_date, :terminated_date, :payor_username, :payor_password, :_destroy, {upload_payor_file: []}, questions_attributes: [:id, :question, :answer, :_destroy] ],
 
 		)

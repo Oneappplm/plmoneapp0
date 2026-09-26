@@ -1,0 +1,288 @@
+<div class="container-fluid px-4 py-4 credentialing-follow-up-page">
+  <div class="mb-4">
+    <h2 class="mb-1">Credentialing Follow-up</h2>
+    <p class="text-muted mb-0">Record follow-up details, schedule the next follow-up, or request resolution.</p>
+  </div>
+
+  <!-- Enrollment Summary -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-white py-3">
+      <h5 class="mb-0"><i class="bi bi-person-badge me-2"></i>Enrollment Information</h5>
+    </div>
+    <div class="card-body">
+      <div class="row g-4">
+        <div class="col-md-3">
+          <div class="summary-label">Provider</div>
+          <div class="summary-value"><%= @enrollment_provider.provider&.fullname.presence || "N/A" %></div>
+        </div>
+        <div class="col-md-3">
+          <div class="summary-label">Payer</div>
+          <div class="summary-value"><%= @enrollment_detail.enrollment_payer.presence || "N/A" %></div>
+        </div>
+        <div class="col-md-3">
+          <div class="summary-label">Last Follow-up Date</div>
+          <div class="summary-value">
+            <% if @last_follow_up_date.present? %>
+              <%= @last_follow_up_date.strftime("%d %b %Y") %>
+            <% else %>
+              N/A
+            <% end %>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="summary-label">Assigned To</div>
+          <div class="summary-value"><%= @enrollment_detail.assigned_user&.full_name.presence || "Unassigned" %></div>
+        </div>
+        <div class="col-md-3">
+          <div class="summary-label">Current Status</div>
+          <% status = @enrollment_provider.follow_up_status %>
+          <% badge_class = case status
+             when "pending"
+               "bg-warning text-dark"
+             when "resolution_requested"
+               "bg-info text-dark"
+             when "resolved"
+               "bg-success"
+             else
+               "bg-secondary"
+             end %>
+          <span class="badge rounded-pill <%= badge_class %>"><%= status.to_s.humanize %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Follow-up Form -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-white py-3">
+      <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Add Follow-up</h5>
+    </div>
+    <div class="card-body">
+      <%= form_with model: [:mhc, @enrollment_provider, @follow_up], url: mhc_enrollment_provider_follow_ups_path(@enrollment_provider, detail_id: @enrollment_detail.id) do |form| %>
+        <% if @follow_up.errors.any? %>
+          <div class="alert alert-danger">
+            <strong>Please correct the following:</strong>
+            <ul class="mb-0 mt-2">
+              <% @follow_up.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="mb-4">
+          <%= form.label :notes, "Follow-up Notes", class: "form-label fw-semibold" %>
+          <%= form.text_area :notes, rows: 5, class: "form-control follow-up-textarea", placeholder: "Enter details about the follow-up with the payer..." %>
+          <small class="text-muted">Example: Called payer credentialing department. Application is still pending review.</small>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <%= form.label :next_follow_up_date, "Next Follow-up Date", class: "form-label fw-semibold" %>
+            <%= form.date_field :next_follow_up_date, min: Date.current, class: "form-control" %>
+            <small class="text-muted">Select when this application should appear in Today’s Task again.</small>
+          </div>
+        </div>
+
+        <div class="resolution-box mb-4">
+          <div class="form-check">
+            <%= form.check_box :resolution_requested, class: "form-check-input border border-dark", id: "resolution_requested" %>
+            <%= form.label :resolution_requested, class: "form-check-label fw-semibold", for: "resolution_requested" do %>
+              Request to mark this application as resolved
+            <% end %>
+          </div>
+          <small class="text-muted d-block mt-1 ms-4">This request will require manager approval before the application is marked as resolved.</small>
+        </div>
+
+        <div class="d-flex gap-2">
+          <%= form.submit "Save Follow-up", class: "btn btn-primary px-4" %>
+          <%= link_to mhc_credentialing_tasks_path, class: "btn btn-outline-secondary px-4" do %>
+            <i class="bi bi-arrow-left me-1"></i>Back
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Follow-up History -->
+  <div class="card shadow-sm mt-4">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+      <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Follow-up History</h5>
+      <span class="badge bg-secondary"><%= @follow_up_history&.count || 0 %></span>
+    </div>
+    <div class="card-body">
+      <% if @follow_up_history.present? %>
+        <div class="follow-up-timeline">
+          <% @follow_up_history.each do |follow_up| %>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <div class="card border follow-up-history-card">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <div>
+                        <strong><%= follow_up.followed_up_at&.strftime("%b %d, %Y") %></strong>
+                        <small class="text-muted ms-2"><%= follow_up.followed_up_at&.strftime("%I:%M %p") %></small>
+                      </div>
+                      <% status = follow_up.resolution_status %>
+                      <% history_badge = case status
+                         when "open"
+                           "bg-primary"
+                         when "awaiting_manager_approval"
+                           "bg-warning text-dark"
+                         when "approved"
+                           "bg-success"
+                         when "rejected"
+                           "bg-danger"
+                         else
+                           "bg-secondary"
+                         end %>
+                      <span class="badge rounded-pill <%= history_badge %>"><%= status.to_s.humanize %></span>
+                    </div>
+
+                    <div class="history-notes mb-3">
+                      <%= simple_format(follow_up.notes) %>
+                    </div>
+
+                    <div class="history-meta">
+                      <span>
+                        <i class="bi bi-calendar-event me-1"></i>
+                        Next Follow-up:
+                        <strong>
+                          <% if follow_up.next_follow_up_date.present? && follow_up.next_follow_up_date >= Date.current %>
+                            <%= follow_up.next_follow_up_date.strftime("%b %d, %Y") %>
+                          <% else %>
+                            N/A
+                          <% end %>
+                        </strong>
+                      </span>
+                      <% if follow_up.user.present? %>
+                        <span class="ms-md-4">
+                          <i class="bi bi-person me-1"></i>
+                          By:
+                          <strong><%= follow_up.user.try(:full_name) || follow_up.user.try(:name) || "User" %></strong>
+                        </span>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="empty-history">
+          <i class="bi bi-clock-history"></i>
+          <h5>No follow-up history yet</h5>
+          <p class="text-muted mb-0">Previous credentialing follow-ups will appear here.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<style>
+  .credentialing-follow-up-page {
+    max-width: 1500px;
+  }
+
+  .summary-label {
+    font-size: 13px;
+    color: #6c757d;
+    margin-bottom: 4px;
+  }
+
+  .summary-value {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .follow-up-textarea {
+    min-height: 140px;
+    resize: vertical;
+  }
+
+  .resolution-box {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .follow-up-timeline {
+    position: relative;
+    padding-left: 30px;
+  }
+
+  .follow-up-timeline::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .timeline-dot {
+    position: absolute;
+    left: -27px;
+    top: 18px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #0d6efd;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 2px #0d6efd;
+  }
+
+  .timeline-content {
+    width: 100%;
+  }
+
+  .follow-up-history-card {
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .follow-up-history-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  .history-notes p {
+    margin-bottom: 0;
+    color: #495057;
+  }
+
+  .history-meta {
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+    font-size: 13px;
+    color: #6c757d;
+  }
+
+  .empty-history {
+    padding: 45px 20px;
+    text-align: center;
+  }
+
+  .empty-history i {
+    display: block;
+    font-size: 34px;
+    color: #adb5bd;
+    margin-bottom: 10px;
+  }
+
+  @media (max-width: 767px) {
+    .history-meta span {
+      display: block;
+      margin-left: 0 !important;
+      margin-top: 5px;
+    }
+  }
+</style>
