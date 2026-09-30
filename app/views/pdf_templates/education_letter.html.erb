@@ -2,110 +2,306 @@
 <html>
 <head>
   <meta charset="utf-8">
+
   <style>
-    @page {
-      margin: 100px 25px; /* leaves space for header/footer */
-    }
     body {
-      font-family: 'Liberation Serif', serif;
-      font-size: 18pt;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11px;
+      line-height: 1.3;
       color: #000;
     }
 
-    hr.divider {
-      border: none;
-      border-top: 1px solid #000;
-      margin: 12px 0;
+    .education-letter {
+      padding: 0 12px;
     }
 
+    .recipient-block {
+      margin-top: 8px;
+      margin-bottom: 18px;
+    }
 
-    h2 {
+    .recipient-block p {
+      margin: 0 0 2px 0;
+    }
+
+    .letter-title {
       text-align: center;
-      font-size: 18pt;
+      font-size: 14px;
       font-weight: bold;
-      margin-bottom: 0.4in;
-      text-decoration: underline;
+      margin: 18px 0 24px;
     }
 
-    p {
-      margin: 0 0 8px 0;
+    .provider-details {
+      width: 100%;
+      margin-bottom: 22px;
     }
 
-    .spacer {
-      height: 8px;
+    .provider-details table {
+      width: 100%;
+      border-collapse: collapse;
     }
 
-    .signature-block {
-      margin-top: 0.5in;
+    .provider-details td {
+      padding: 2px 0;
+      vertical-align: top;
+    }
+
+    .provider-details .label {
+      width: 120px;
+    }
+
+    .provider-details .value {
+      font-weight: bold;
+    }
+
+    .verification-copy {
+      margin-top: 16px;
+      margin-bottom: 16px;
+    }
+
+    .verification-copy p {
+      margin: 0 0 10px;
+    }
+
+    .return-instruction {
+      font-weight: bold;
+      margin: 14px 0 12px;
+    }
+
+    .questionnaire {
+      margin-top: 24px;
+      margin-left: 22px;
+      margin-right: 22px;
+    }
+
+    .questionnaire p {
+      margin: 0 0 9px;
+    }
+
+    .question-row {
+      margin-bottom: 10px;
+    }
+
+    .answer-line {
+      display: inline-block;
+      border-bottom: 1px solid #000;
+      height: 13px;
+      vertical-align: bottom;
+    }
+
+    .line-program {
+      width: 360px;
+    }
+
+    .line-degree {
+      width: 355px;
+    }
+
+    .line-date {
+      width: 390px;
+    }
+
+    .line-comments {
+      width: 100%;
+      display: block;
+      margin-top: 5px;
+    }
+
+    .signature-section {
+      margin-top: 36px;
+      margin-left: 22px;
+      margin-right: 22px;
+    }
+
+    .signature-row {
+      margin-bottom: 12px;
+    }
+
+    .signature-line {
+      display: inline-block;
+      width: 230px;
+      border-bottom: 1px solid #000;
+      vertical-align: bottom;
+    }
+
+    .date-line {
+      display: inline-block;
+      width: 155px;
+      border-bottom: 1px solid #000;
+      vertical-align: bottom;
+    }
+
+    .phone-line {
+      display: inline-block;
+      width: 280px;
+      border-bottom: 1px solid #000;
+      vertical-align: bottom;
+    }
+
+    .print-line {
+      display: inline-block;
+      width: 330px;
+      border-bottom: 1px solid #000;
+      vertical-align: bottom;
+    }
+
+    .reference-number {
+      margin-top: 55px;
+      font-size: 10px;
+    }
+
+    .reference-line {
+      display: inline-block;
+      width: 120px;
+      border-bottom: 1px solid #000;
+      vertical-align: bottom;
     }
   </style>
 </head>
 
 <body>
-  <!-- ===== BODY ===== -->
-  <main>
-    <p style="margin-top: 80PX!important;"><%= Date.current.strftime("%B %e, %Y") %></p>
-    <div class="spacer"></div>
-    <p style="margin-bottom: 0; padding-bottom: 0;"><%= @education.institution_name.presence %></p>
-    <p style="margin-top: 0; padding-top: 0;"><%= @education.address.presence %></p>
-    <div class="spacer"></div>
-    <p style="margin-bottom: 0; padding-bottom: 0;"><%= @education.suite_dept_mail_stop.presence %></p>
-    <p style="margin-top: 0; padding-top: 0;"><%= @education.city.presence %> <%= @education.state.presence %> <%= @education.postal_code.presence %></p>
+  <div class="education-letter">
 
+    <div class="recipient-block">
+      <p><%= Date.current.strftime("%B %-d, %Y") %></p>
 
-    <h2>Professional School Education Verification</h2>
+      <div style="height:10px;"></div>
 
-    <div class="indent">
-      <p>Re:&nbsp;&nbsp;<strong style="margin-left:20px !important;"><%= @ppi.full_name %></strong></p>
-      <p>DOB:&nbsp;&nbsp;<strong style="margin-left:20px !important;"><%= @ppi.birth_date&.strftime("%B %e, %Y") %></strong></p>
-      <div class="spacer"></div>
-      <p>Program Title:&nbsp;&nbsp;<strong style="margin-left:20px !important;"><%= @education.program_title.presence %></strong></p>
-      <p>Degree Received:&nbsp;&nbsp;<strong style="margin-left:20px !important;"><%= @education.degree_degree_abbreviation.presence %></strong></p>
+      <p><%= @education.institution_name.presence || "" %></p>
+
+      <% if @education.address.present? %>
+        <p><%= @education.address %></p>
+      <% end %>
+
+      <% if @education.suite_dept_mail_stop.present? %>
+        <p><%= @education.suite_dept_mail_stop %></p>
+      <% end %>
+
+      <% location_parts = [@education.city, @education.state].compact_blank %>
+      <% location = location_parts.join(", ") %>
+      <% location = [location, @education.postal_code].compact_blank.join(" ") %>
+
+      <% if location.present? %>
+        <p><%= location %></p>
+      <% end %>
+    </div>
+
+    <div class="letter-title">
+      Professional School Education Verification
+    </div>
+
+    <div class="provider-details">
+      <table>
+        <tr>
+          <td class="label">Re:</td>
+          <td class="value"><%= @ppi.full_name %></td>
+        </tr>
+
+        <tr>
+          <td class="label">DOB:</td>
+          <td class="value"><%= @ppi.birth_date&.strftime("%B %-d, %Y") %></td>
+        </tr>
+
+        <tr>
+          <td class="label">Program Title:</td>
+          <td class="value"><%= @education.program_title.presence || "" %></td>
+        </tr>
+
+        <tr>
+          <td class="label">Degree Received:</td>
+          <td class="value"><%= @education.degree_degree_abbreviation.presence || "" %></td>
+        </tr>
+
+        <tr>
+          <td class="label">Attendance Dates:</td>
+          <td class="value">
+            <%= [
+                  @education.start_date&.strftime("%m/%d/%Y"),
+                  @education.end_date&.strftime("%m/%d/%Y")
+                ].compact.join("– ") %>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="verification-copy">
       <p>
-        Attendance Dates:&nbsp;&nbsp;
-        <strong style="margin-left:20px !important;"><%= [
-              @education.start_date&.strftime("%m/%d/%Y"),
-              @education.end_date&.strftime("%m/%d/%Y")
-            ].compact.join("–") %></strong>
+        The noted practitioner has stated completion of education as above.
+        A copy of the practitioner’s signed authorization and release is attached.
+        Please complete the following questionnaire.
+        Any additional information you may have regarding this practitioner is greatly appreciated.
       </p>
+
+      <p class="return-instruction">
+        PLEASE FAX THE COMPLETED FORM TO 877.303.5180 OR EMAIL TO CVOACADEMICS@MEDVERSANT.COM
+      </p>
+
+      <p>Thank you for your assistance.</p>
     </div>
 
-    <div class="spacer"></div>
+    <div class="questionnaire">
+      <p style="text-align:center;">
+        Is the above information correct?
+        &nbsp;&nbsp;&nbsp;&nbsp;□ Yes
+        &nbsp;&nbsp;&nbsp;&nbsp;□ No
+      </p>
 
-    <p style="margin-top: 20px !important;">
-      The above named practitioner has applied for membership to the staff of a Heritage Valley Health System hospital.
-      The noted practitioner has stated completion of education as above. A copy of the practitioner’s signed authorization and release is attached.
-    </p>
+      <p>If No, please provide the correct information:</p>
 
-    <div class="spacer"></div>
+      <div class="question-row">
+        Program Title:
+        <span class="answer-line line-program"></span>
+      </div>
 
-    <p>Is the above information correct?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No</p>
-    <p>If No, please provide the correct information in the spaces provided below:</p>
+      <div class="question-row">
+        Degree Received:
+        <span class="answer-line line-degree"></span>
+      </div>
 
-    <div class="indent">
-      <p>Program Title: </p>
-      <p>Degree Received: ____________________ &nbsp;&nbsp;From: ____________________ &nbsp;&nbsp;To: ____________________</p>
-      <p>Comments:</p>
+      <div class="question-row">
+        From:
+        <span class="answer-line line-date"></span>
+      </div>
+
+      <div class="question-row">
+        To:
+        <span class="answer-line line-date"></span>
+      </div>
+
+      <div class="question-row">
+        Comments:
+        <span class="answer-line line-comments"></span>
+        <span class="answer-line line-comments"></span>
+        <span class="answer-line line-comments"></span>
+      </div>
     </div>
 
-    <p>
-      Any additional information you may have regarding this practitioner is greatly appreciated.
-    </p>
+    <div class="signature-section">
+      <div class="signature-row">
+        Signature:
+        <span class="signature-line"></span>
 
-    <p>
-      Consider that without your verification of this information, the application is incomplete and processing cannot move forward.
-    </p>
+        &nbsp;&nbsp;Date:
+        <span class="date-line"></span>
+      </div>
 
-    <p>Thank you in advance for your cooperation.</p>
+      <div class="signature-row">
+        Phone:
+        <span class="phone-line"></span>
+      </div>
 
-    <div class="signature-block">
-      <p>Print Name/Title: _____________________________________</p>
-      <p>Signature: __________________________ Date: ___________</p>
-      <p>Phone: ______________________________ Email: ____________________________</p>
+      <div class="signature-row">
+        Print Name/Title:
+        <span class="print-line"></span>
+      </div>
     </div>
 
-    <div class="spacer"></div>
-    <p style="margin-top: 30px !important; padding-bottom: 30px!important;"><strong>PLEASE FORWARD THIS COMPLETED FORM TO THE FAX NUMBER OR E-MAIL INDICATED BELOW.</strong></p>
-  </main>
+    <div class="reference-number">
+      Ref No.:
+      <span class="reference-line"></span>
+    </div>
+  </div>
 </body>
 </html>

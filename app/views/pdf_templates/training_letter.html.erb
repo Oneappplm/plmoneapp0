@@ -1,70 +1,320 @@
-<div class="content">
-  <h2 style="text-align:center;">Training Verification Request</h2>
-  <p>Dear Verification Department,</p>
-  <p>Please verify the following training information for:</p>
-  <table style="width:100%; border-collapse:collapse;">
-    <tr>
-      <td style="width:30%; padding:6px;"><strong>Practitioner Name:</strong></td>
-      <td style="padding:6px;"><%= @ppi&.full_name.presence || "N/A" %></td>
-    </tr>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
 
-    <tr>
-      <td style="padding:6px;"><strong>Institution:</strong></td>
-      <td style="padding:6px;"><%= @training&.institution_name.presence || "N/A" %></td>
-    </tr>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11px;
+      line-height: 1.3;
+      color: #000;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Address:</strong></td>
-      <td style="padding:6px;">
-        <%= [
-          @training&.address,
-          @training&.address2,
-          @training&.city,
-          @training&.state,
-          @training&.postal_code,
-          @training&.country
-        ].compact_blank.join(", ").presence || "N/A" %>
-      </td>
-    </tr>
+    .training-letter {
+      padding: 0 12px;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Type of Training:</strong></td>
-      <td style="padding:6px;"><%= @training&.training_area.presence || "N/A" %></td>
-    </tr>
+    .recipient-block {
+      margin-top: 8px;
+      margin-bottom: 18px;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Specialty:</strong></td>
-      <td style="padding:6px;"><%= @training&.specialty_specialty_name.presence || "N/A" %></td>
-    </tr>
+    .recipient-block p {
+      margin: 0 0 2px 0;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Program Director:</strong></td>
-      <td style="padding:6px;"><%= @training&.program_director.presence || "N/A" %></td>
-    </tr>
+    .letter-title {
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 18px 0 24px;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Start Date:</strong></td>
-      <td style="padding:6px;"><%= @training&.start_date&.strftime("%m/%d/%Y") || "N/A" %></td>
-    </tr>
+    .provider-details {
+      width: 100%;
+      margin-bottom: 22px;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>End Date:</strong></td>
-      <td style="padding:6px;"><%= @training&.end_date&.strftime("%m/%d/%Y") || "N/A" %></td>
-    </tr>
+    .provider-details table {
+      width: 100%;
+      border-collapse: collapse;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Completed:</strong></td>
-      <td style="padding:6px;">
-        <% if @training&.program_completed_flag.nil? %>
-          N/A
-        <% else %>
-          <%= @training.program_completed_flag ? "Yes" : "No" %>
-        <% end %>
-      </td>
-    </tr>
-  </table>
+    .provider-details td {
+      padding: 2px 0;
+      vertical-align: top;
+    }
 
-  <p style="margin-top:25px;">
-    Please return the completed verification to the requesting organization.
-  </p>
-</div>
+    .provider-details .label {
+      width: 120px;
+    }
+
+    .provider-details .value {
+      font-weight: bold;
+    }
+
+    .verification-copy {
+      margin-top: 16px;
+      margin-bottom: 16px;
+    }
+
+    .verification-copy p {
+      margin: 0 0 10px;
+    }
+
+    .return-instruction {
+      font-weight: bold;
+      margin: 14px 0 12px;
+    }
+
+    .questionnaire {
+      margin-top: 24px;
+      margin-left: 22px;
+      margin-right: 22px;
+    }
+
+    .questionnaire p {
+      margin: 0 0 9px;
+    }
+
+    .question-row {
+      margin-bottom: 10px;
+    }
+
+    .answer-line {
+      display: inline-block;
+      border-bottom: 1px solid #000;
+      height: 13px;
+      vertical-align: bottom;
+    }
+
+    .line-training {
+      width: 170px;
+    }
+
+    .line-specialty {
+      width: 190px;
+    }
+
+    .line-director {
+      width: 385px;
+    }
+
+    .line-date {
+      width: 155px;
+    }
+
+    .line-comments {
+      width: 100%;
+      display: block;
+      margin-top: 5px;
+    }
+
+    .signature-section {
+      margin-top: 34px;
+      margin-left: 22px;
+      margin-right: 22px;
+    }
+
+    .signature-row {
+      margin-bottom: 12px;
+    }
+
+    .signature-line {
+      display: inline-block;
+      width: 250px;
+      border-bottom: 1px solid #000;
+      vertical-align: bottom;
+    }
+
+    .date-line {
+      display: inline-block;
+      width: 180px;
+      border-bottom: 1px solid #000;
+      vertical-align: bottom;
+    }
+
+    .print-line {
+      display: inline-block;
+      width: 340px;
+      border-bottom: 1px solid #000;
+      vertical-align: bottom;
+    }
+
+    .fax-line {
+      display: inline-block;
+      width: 450px;
+      border-bottom: 1px solid #000;
+      vertical-align: bottom;
+    }
+
+    .reference-number {
+      margin-top: 20px;
+      font-size: 10px;
+    }
+
+    .reference-line {
+      display: inline-block;
+      width: 150px;
+      border-bottom: 1px solid #000;
+      vertical-align: bottom;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="training-letter">
+
+    <div class="recipient-block">
+      <p><%= Date.current.strftime("%B %-d, %Y") %></p>
+
+      <div style="height:10px;"></div>
+
+      <p><%= @training.institution_name.presence || "" %></p>
+
+      <% if @training.address.present? %>
+        <p><%= @training.address %></p>
+      <% end %>
+
+      <% if @training.address2.present? %>
+        <p><%= @training.address2 %></p>
+      <% end %>
+
+      <% location_parts = [@training.city, @training.state].compact_blank %>
+      <% location = location_parts.join(", ") %>
+      <% location = [location, @training.postal_code].compact_blank.join(" ") %>
+
+      <% if location.present? %>
+        <p><%= location %></p>
+      <% end %>
+    </div>
+
+    <div class="letter-title">
+      Professional Training Verification
+    </div>
+
+    <div class="provider-details">
+      <table>
+        <tr>
+          <td class="label">Re:</td>
+          <td class="value"><%= @ppi.full_name %></td>
+        </tr>
+
+        <tr>
+          <td class="label">DOB:</td>
+          <td class="value"><%= @ppi.birth_date&.strftime("%B %-d, %Y") %></td>
+        </tr>
+
+        <tr>
+          <td class="label">Type of Training:</td>
+          <td class="value">
+            <%= @training.program_type.presence ||
+                @training.education_type_name.presence ||
+                "" %>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="label">Specialty:</td>
+          <td class="value">
+            <%= @training.specialty_specialty_name.presence ||
+                @training.training_area.presence ||
+                "" %>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="label">From:</td>
+          <td class="value"><%= @training.start_date&.strftime("%m/%d/%Y") %></td>
+        </tr>
+
+        <tr>
+          <td class="label">To:</td>
+          <td class="value"><%= @training.end_date&.strftime("%m/%d/%Y") %></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="verification-copy">
+      <p>
+        The noted practitioner has stated a completion of the above training at your institution.
+        A copy of the practitioner’s signed authorization and release is attached.
+        Please complete the following questionnaire.
+        Any additional information you may have regarding this practitioner is greatly appreciated.
+      </p>
+
+      <p class="return-instruction">
+        PLEASE FAX THE COMPLETED FORM TO 877-303-5180 OR EMAIL TO CVOACADEMICS@MEDVERSANT.COM
+      </p>
+
+      <p>Thank you for your assistance.</p>
+    </div>
+
+    <div class="questionnaire">
+      <p style="text-align:center;">
+        Is the above information correct?
+        &nbsp;&nbsp;&nbsp;&nbsp;□ Yes
+        &nbsp;&nbsp;&nbsp;&nbsp;□ No
+      </p>
+
+      <p>If No, please provide the correct information:</p>
+
+      <div class="question-row">
+        Type of Training:
+        <span class="answer-line line-training"></span>
+
+        &nbsp;&nbsp;Specialty:
+        <span class="answer-line line-specialty"></span>
+      </div>
+
+      <div class="question-row">
+        Program Director:
+        <span class="answer-line line-director"></span>
+      </div>
+
+      <div class="question-row">
+        From:
+        <span class="answer-line line-date"></span>
+
+        &nbsp;&nbsp;To:
+        <span class="answer-line line-date"></span>
+      </div>
+
+      <div class="question-row">
+        Comments:
+        <span class="answer-line line-comments"></span>
+        <span class="answer-line line-comments"></span>
+      </div>
+    </div>
+
+    <div class="signature-section">
+      <div class="signature-row">
+        Signature:
+        <span class="signature-line"></span>
+
+        &nbsp;&nbsp;Date:
+        <span class="date-line"></span>
+      </div>
+
+      <div class="signature-row">
+        Print Name/Title:
+        <span class="print-line"></span>
+      </div>
+
+      <div class="signature-row">
+        Fax:
+        <span class="fax-line"></span>
+      </div>
+    </div>
+
+    <div class="reference-number">
+      Ref No.:
+      <span class="reference-line"></span>
+    </div>
+
+  </div>
+</body>
+</html>

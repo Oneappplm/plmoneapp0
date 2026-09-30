@@ -1,109 +1,241 @@
-<div class="content">
-  <h2 style="text-align:center;">Peer Reference Verification Request</h2>
-  <p>Dear Provider,</p>
-  <p>
-    Please verify the following peer reference information for:
-  </p>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
 
-  <table style="width:100%; border-collapse:collapse;">
-    <tr>
-      <td style="width:30%; padding:6px;"><strong>Practitioner Name:</strong></td>
-      <td style="padding:6px;"><%= @ppi&.full_name.presence || "N/A" %></td>
-    </tr>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10px;
+      line-height: 1.18;
+      color: #000;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Title:</strong></td>
-      <td style="padding:6px;"><%= @peer_ref&.title.presence || "N/A" %></td>
-    </tr>
+    .peer-reference-letter {
+      padding: 0 8px;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Peer First Name:</strong></td>
-      <td style="padding:6px;"><%= @peer_ref&.first_name.presence || "N/A" %></td>
-    </tr>
+    .recipient-block {
+      margin-top: 4px;
+      margin-bottom: 20px;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Peer Middle Name:</strong></td>
-      <td style="padding:6px;"><%= @peer_ref&.middle_name.presence || "N/A" %></td>
-    </tr>
+    .recipient-block p {
+      margin: 0 0 5px 0;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Peer Last Name:</strong></td>
-      <td style="padding:6px;"><%= @peer_ref&.last_name.presence || "N/A" %></td>
-    </tr>
+    .letter-title {
+      margin: 18px 0 18px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: bold;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Suffix:</strong></td>
-      <td style="padding:6px;"><%= @peer_ref&.suffix.presence || "N/A" %></td>
-    </tr>
+    .intro-copy {
+      margin-bottom: 14px;
+      text-align: justify;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Practitioner Type:</strong></td>
-      <td style="padding:6px;"><%= @peer_ref&.practitioner_type.presence || "N/A" %></td>
-    </tr>
+    .intro-copy p {
+      margin: 0 0 10px 0;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Specialty:</strong></td>
-      <td style="padding:6px;"><%= @peer_ref&.specialty.presence || "N/A" %></td>
-    </tr>
+    .return-instruction {
+      font-weight: bold;
+      margin-top: 14px !important;
+      margin-bottom: 14px !important;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Board Certified:</strong></td>
-      <td style="padding:6px;">
-        <% if @peer_ref&.is_board_certified.nil? %>
-          N/A
-        <% else %>
-          <%= @peer_ref.is_board_certified ? "Yes" : "No" %>
-        <% end %>
-      </td>
-    </tr>
+    .rating-intro {
+      margin-top: 22px;
+      margin-bottom: 5px;
+      text-align: center;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Contact Method:</strong></td>
-      <td style="padding:6px;"><%= @peer_ref&.contact_method.presence || "N/A" %></td>
-    </tr>
+    .rating-table {
+      width: 92%;
+      margin: 0 auto;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Facility Name:</strong></td>
-      <td style="padding:6px;"><%= @peer_ref&.facility_name.presence || "N/A" %></td>
-    </tr>
+    .rating-table td {
+      padding: 1px 4px;
+      vertical-align: middle;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Address:</strong></td>
-      <td style="padding:6px;">
-        <%= [
-          @peer_ref&.address,
-          @peer_ref&.suite_dept_mail_stop,
-          @peer_ref&.city,
-          @peer_ref&.county,
-          @peer_ref&.state,
-          @peer_ref&.zip_code,
-          @peer_ref&.country
-        ].compact_blank.join(", ").presence || "N/A" %>
-      </td>
-    </tr>
+    .rating-column {
+      width: 20%;
+      text-align: center;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Phone:</strong></td>
-      <td style="padding:6px;"><%= @peer_ref&.phone_number.presence || "N/A" %></td>
-    </tr>
+    .cannot-comment-column {
+      width: 24%;
+      text-align: center;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Fax:</strong></td>
-      <td style="padding:6px;"><%= @peer_ref&.fax_number.presence || "N/A" %></td>
-    </tr>
+    .category-column {
+      width: 56%;
+      padding-left: 16px !important;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Email:</strong></td>
-      <td style="padding:6px;"><%= @peer_ref&.email_address.presence || "N/A" %></td>
-    </tr>
+    .rating-heading td {
+      padding-bottom: 0;
+    }
 
-    <tr>
-      <td style="padding:6px;"><strong>Comments:</strong></td>
-      <td style="padding:6px;"><%= @peer_ref&.comments.presence || "N/A" %></td>
-    </tr>
-  </table>
+    .rating-scale td {
+      padding-top: 0;
+      padding-bottom: 8px;
+    }
 
-  <p style="margin-top:25px;">
-    Please return the completed verification to the requesting organization.
-  </p>
-</div>
+    .answer-line {
+      display: block;
+      width: 90%;
+      height: 10px;
+      margin: 0 auto;
+      border-bottom: 1px solid #000;
+    }
+
+    .comments-section {
+      width: 88%;
+      margin: 16px auto 0;
+    }
+
+    .comments-label {
+      margin-bottom: 0;
+    }
+
+    .comment-line {
+      width: 100%;
+      height: 11px;
+      border-bottom: 1px solid #000;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="peer-reference-letter">
+
+    <% reference_name = [
+         @peer_ref.title,
+         @peer_ref.first_name,
+         @peer_ref.last_name,
+         @peer_ref.suffix
+       ].compact_blank.join(" ") %>
+
+    <% practitioner_type =
+         if @ppi.respond_to?(:practitioner_type)
+           @ppi.practitioner_type.presence
+         end %>
+
+    <% practitioner_name = [@ppi.full_name, practitioner_type].compact_blank.join(", ") %>
+
+    <div class="recipient-block">
+      <p><%= Date.current.strftime("%B %-d, %Y") %></p>
+
+      <div style="height:7px;"></div>
+
+      <% if reference_name.present? %>
+        <p><%= reference_name %></p>
+      <% end %>
+
+      <% if @peer_ref.address.present? %>
+        <p><%= @peer_ref.address %></p>
+      <% end %>
+
+      <% if @peer_ref.suite_dept_mail_stop.present? %>
+        <p><%= @peer_ref.suite_dept_mail_stop %></p>
+      <% end %>
+
+      <% location_parts = [@peer_ref.city, @peer_ref.state].compact_blank %>
+      <% location = location_parts.join(", ") %>
+      <% location = [location, @peer_ref.zip_code].compact_blank.join(" ") %>
+
+      <% if location.present? %>
+        <p><%= location %></p>
+      <% end %>
+    </div>
+
+    <div class="letter-title">
+      Professional Reference Evaluation
+    </div>
+
+    <div class="intro-copy">
+      <p>
+        <strong><%= practitioner_name %></strong> has given your name as reference on his/her application for privileges.
+        A copy of the practitioner’s signed authorization and release is attached, as well as, the privilege form if applicable.
+        Please complete the following evaluation. Any additional information you may have regarding this practitioner is greatly appreciated.
+        For confidential information that you would like to discuss personally, please call the number below.
+      </p>
+
+      <p class="return-instruction">
+        PLEASE FAX THE COMPLETED FORM TO 877.303.5181 or email to cvopeers@medversant.com .
+      </p>
+
+      <p>Thank you for your assistance.</p>
+    </div>
+
+    <div class="rating-intro">
+      Please rate these categories and provide an explanation for any score 5 or below.
+    </div>
+
+    <% categories = [
+      "Basic medical knowledge",
+      "Professional judgment",
+      "Sense of responsibility",
+      "Ethical conduct",
+      "Clinical competence and skill",
+      "Cooperation and ability to work with peers",
+      "Clarity and completion of medical records",
+      "Timeliness and legibility of medical records",
+      "Patient management",
+      "Physician/patient relationship",
+      "Interaction with hospital employees",
+      "Timely use of consultants",
+      "Ability to understand/speak/write English",
+      "Participation on committees"
+    ] %>
+
+    <table class="rating-table">
+
+      <tr class="rating-heading">
+        <td class="rating-column">Rating (1-10)</td>
+        <td class="cannot-comment-column">Cannot Comment</td>
+        <td class="category-column"></td>
+      </tr>
+
+      <tr class="rating-scale">
+        <td class="rating-column">10=High, 5=Average, 1=Low</td>
+        <td></td>
+        <td></td>
+      </tr>
+
+      <% categories.each do |category| %>
+        <tr>
+          <td class="rating-column">
+            <span class="answer-line"></span>
+          </td>
+
+          <td class="cannot-comment-column">
+            <span class="answer-line"></span>
+          </td>
+
+          <td class="category-column">
+            <%= category %>
+          </td>
+        </tr>
+      <% end %>
+
+    </table>
+
+    <div class="comments-section">
+      <div class="comments-label">Comments:</div>
+      <div class="comment-line"></div>
+      <div class="comment-line"></div>
+    </div>
+
+  </div>
+</body>
+</html>

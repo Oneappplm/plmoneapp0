@@ -5,18 +5,24 @@ class Mhc::PracticeInformationEducationsController < ApplicationController
     @practice_information_educations = PracticeInformationEducation.all
   end
 
-  # app/controllers/mhc/practice_information_educations_controller.rb
   def preview_letter
     education = PracticeInformationEducation.find(params[:id])
+
     pdf_binary = PdfLetterGenerator.new(
-                  education,
-                  release_sub_section: "education"
-                ).generate_preview!
+      education,
+      template: "pdf_templates/education_letter",
+      assign_name: :education,
+      release_sub_section: "education",
+      header_template: "pdf_templates/shared/medversant_header",
+      footer_template: "pdf_templates/shared/medversant_footer",
+      authorization_image: "standard_authorization_release.png",
+      include_uploaded_release: false
+    ).generate_preview!
 
     send_data pdf_binary,
               filename: "education_letter_preview.pdf",
               type: "application/pdf",
-              disposition: "inline" # 👈 opens in new tab
+              disposition: "inline"
   end
 
 
