@@ -1,0 +1,200 @@
+<div class="container-fluid py-4">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="mb-0">
+        Report Monitoring
+      </h3>
+    </div>
+
+    <div class="card-body">
+
+      <div
+        id="bcbs-report-message"
+        class="alert d-none"
+        role="alert">
+      </div>
+
+      <form
+        id="bcbs-report-form"
+        action="<%= download_mhc_bcbs_reports_path %>"
+        method="get">
+
+        <div class="row">
+          <div class="col-md-5">
+
+            <div class="mb-3">
+              <label
+                for="client_name"
+                class="form-label">
+                Select Client
+              </label>
+
+              <%= select_tag(
+                    :client_name,
+                    options_for_select(
+                      @clients,
+                      params[:client_name]
+                    ),
+                    prompt: "Select Client",
+                    class: "form-select",
+                    required: true
+                  ) %>
+            </div>
+
+            <button
+              type="submit"
+              id="bcbs-generate-button"
+              class="btn btn-primary">
+
+              <span
+                id="bcbs-button-spinner"
+                class="spinner-border spinner-border-sm d-none me-1"
+                role="status"
+                aria-hidden="true">
+              </span>
+
+              <span id="bcbs-button-text">
+                Generate Report
+              </span>
+
+            </button>
+
+          </div>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("bcbs-report-form");
+
+    if (!form || form.dataset.initialized === "true") {
+      return;
+    }
+
+    form.dataset.initialized = "true";
+
+    const button =
+      document.getElementById("bcbs-generate-button");
+
+    const spinner =
+      document.querySelector(".loading-overlay");
+
+    const buttonText =
+      document.getElementById("bcbs-button-text");
+
+    const message =
+      document.getElementById("bcbs-report-message");
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      message.classList.add("d-none");
+      message.classList.remove(
+        "alert-success",
+        "alert-danger"
+      );
+
+      button.disabled = true;
+      spinner.classList.remove("d-none");
+      buttonText.textContent = "Generating Report...";
+
+      try {
+        const formData = new FormData(form);
+
+        const params =
+          new URLSearchParams(formData);
+
+        const response = await fetch(
+          `${form.action}?${params.toString()}`,
+          {
+            method: "GET",
+            headers: {
+              "X-Requested-With": "XMLHttpRequest"
+            }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `Report generation failed: ${response.status}`
+          );
+        }
+
+        const contentType =
+          response.headers.get("content-type") || "";
+
+        if (
+          !contentType.includes(
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          )
+        ) {
+          throw new Error(
+            "Invalid report response received."
+          );
+        }
+
+        const blob = await response.blob();
+
+        const disposition =
+          response.headers.get("content-disposition");
+
+        let filename = "BCBS_Detail_Report.xlsx";
+
+        if (disposition) {
+          const filenameMatch =
+            disposition.match(
+              /filename="?([^"]+)"?/
+            );
+
+          if (filenameMatch && filenameMatch[1]) {
+            filename = filenameMatch[1];
+          }
+        }
+
+        const downloadUrl =
+          window.URL.createObjectURL(blob);
+
+        const downloadLink =
+          document.createElement("a");
+
+        downloadLink.href = downloadUrl;
+        downloadLink.download = filename;
+
+        document.body.appendChild(downloadLink);
+
+        downloadLink.click();
+        downloadLink.remove();
+
+        window.URL.revokeObjectURL(downloadUrl);
+
+        message.textContent =
+          "Report generated successfully.";
+
+        message.classList.remove("d-none");
+        message.classList.add("alert-success");
+
+      } catch (error) {
+        console.error(
+          "BCBS report generation error:",
+          error
+        );
+
+        message.textContent =
+          "Unable to generate the report. Please try again.";
+
+        message.classList.remove("d-none");
+        message.classList.add("alert-danger");
+
+      } finally {
+        button.disabled = false;
+        spinner.classList.add("d-none");
+        buttonText.textContent = "Generate Report";
+      }
+    });
+  });
+</script>
