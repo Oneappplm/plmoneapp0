@@ -47,11 +47,18 @@ class Mhc::ProviderPersonalInformationPeerRefsController < ApplicationController
     peer_ref = ProviderPersonalInformationPeerRef.find(params[:id])
 
     pdf_binary = PdfLetterGenerator.new(
-      peer_ref,
-      template: "pdf_templates/peer_reference_letter",
-      assign_name: :peer_ref,
-      release_sub_section: "peer_reference"
-    ).generate_preview!
+                    peer_ref,
+                    template: "pdf_templates/peer_reference_letter",
+                    assign_name: :peer_ref,
+                    header_template: "pdf_templates/shared/medversant_header",
+                    footer_template: "pdf_templates/shared/medversant_peer_footer",
+                    extra_templates: [
+                      "pdf_templates/peer_reference_additional_information",
+                      "pdf_templates/peer_reference_comments"
+                    ],
+                    authorization_image: "peer_reference_attestation.png",
+                    include_uploaded_release: false
+                  ).generate_preview!
 
     send_data pdf_binary,
               filename: "peer_reference_letter_preview.pdf",

@@ -48,7 +48,11 @@ class Mhc::ProviderEducationsController < ApplicationController
                   training,
                   template: "pdf_templates/training_letter",
                   assign_name: :training,
-                  release_sub_section: "training"
+                  release_sub_section: "training",
+                  header_template: "pdf_templates/shared/medversant_header",
+                  footer_template: "pdf_templates/shared/medversant_training_footer",
+                  authorization_image: "standard_authorization_release.png",
+                  include_uploaded_release: false
                 ).generate_preview!
 
     send_data pdf_binary,
