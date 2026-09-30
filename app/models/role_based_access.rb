@@ -114,7 +114,8 @@ class RoleBasedAccess < ApplicationRecord
     "Verification Products",
     "Activity Logs",
     "DEA File Uplodation",
-    "State License"
+    "State License",
+    "Report Monitoring"
 	]
 
 	default_scope { order(:id) }

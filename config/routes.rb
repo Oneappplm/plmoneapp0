@@ -163,6 +163,14 @@ Rails.application.routes.draw do
 
     # Download generated CSV
     get  :download_report, to: "reports#download_report"
+
+    resources :bcbs_reports,
+            only: [:index],
+            path: "bcbs-reports" do
+      collection do
+        get :download
+      end
+    end
     resources :manage_clients, path: 'manage-clients' do
       collection do
         get 'edit_provider_personal_information'
