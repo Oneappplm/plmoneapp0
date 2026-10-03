@@ -3,7 +3,7 @@ require "fileutils"
 require "date"
 
 namespace :legacy do
-  desc "Incrementally import legacy provider education records without modifying existing records"
+  desc "Incrementally import legacy Education records into PracticeInformationEducation without modifying existing records"
   task import_incremental_legacy_educations: :environment do
     file = ENV.fetch("FILE")
     apply = ENV["APPLY"].to_s.downcase == "true"
@@ -16,15 +16,22 @@ namespace :legacy do
         "CUAN,Primary PartnersCare,Broward Health"
       ).split(",").map(&:strip)
 
-    report_dir = Rails.root.join("tmp", "legacy_import_reports")
+    report_dir =
+      Rails.root.join("tmp", "legacy_import_reports")
+
     FileUtils.mkdir_p(report_dir)
 
-    timestamp = Time.current.strftime("%Y%m%d_%H%M%S")
-    report_file = report_dir.join("educations_#{timestamp}.csv")
+    timestamp =
+      Time.current.strftime("%Y%m%d_%H%M%S")
+
+    report_file =
+      report_dir.join(
+        "practice_information_educations_#{timestamp}.csv"
+      )
 
     stats = Hash.new(0)
 
-    normalize_encid = lambda do |value|
+    canonical_encid = lambda do |value|
       value = value.to_s.strip.upcase
       digits = value.gsub(/\D/, "")
 
@@ -36,41 +43,17 @@ namespace :legacy do
     clean_value = lambda do |value|
       value = value.to_s.strip
 
-      next nil if value.blank? ||
-                  value.casecmp("NULL").zero?
+      next nil if value.blank?
+      next nil if value.casecmp("NULL").zero?
 
       value
     end
 
     normalize_text = lambda do |value|
-      value.to_s.strip.downcase.gsub(/\s+/, " ")
-    end
-
-    parse_date = lambda do |primary_value, fallback_value = nil|
-      primary = clean_value.call(primary_value)
-
-      if primary.present?
-        begin
-          next Date.parse(primary)
-        rescue ArgumentError, TypeError
-          # Try fallback below.
-        end
-      end
-
-      fallback = clean_value.call(fallback_value)
-      next nil if fallback.blank?
-
-      begin
-        # Handles values such as 9/2012, 10/2019.
-        if fallback.match?(/\A\d{1,2}\/\d{4}\z/)
-          month, year = fallback.split("/").map(&:to_i)
-          next Date.new(year, month, 1)
-        end
-
-        Date.parse(fallback)
-      rescue ArgumentError, TypeError
-        nil
-      end
+      value.to_s
+           .strip
+           .downcase
+           .gsub(/\s+/, " ")
     end
 
     parse_boolean = lambda do |value|
@@ -84,10 +67,52 @@ namespace :legacy do
       end
     end
 
+    parse_date = lambda do |primary_value, fallback_value = nil|
+      primary =
+        clean_value.call(primary_value)
+
+      if primary.present?
+        begin
+          next Date.parse(primary)
+        rescue ArgumentError, TypeError
+          # Try fallback below.
+        end
+      end
+
+      fallback =
+        clean_value.call(fallback_value)
+
+      next nil if fallback.blank?
+
+      begin
+        #
+        # Legacy values can be:
+        #
+        #   9/2012
+        #   10/2019
+        #
+        # When only month/year exists, use the first
+        # day of that month.
+        #
+        if fallback.match?(/\A\d{1,2}\/\d{4}\z/)
+          month, year =
+            fallback.split("/").map(&:to_i)
+
+          next Date.new(year, month, 1)
+        end
+
+        Date.parse(fallback)
+
+      rescue ArgumentError, TypeError
+        nil
+      end
+    end
+
     puts
     puts "=" * 100
     puts "Incremental Legacy Education Import"
     puts "=" * 100
+    puts "Target model: PracticeInformationEducation"
     puts "Mode: #{apply ? 'APPLY' : 'DRY RUN'}"
     puts "File: #{file}"
     puts "Allowed clients: #{allowed_clients.join(', ')}"
@@ -104,10 +129,12 @@ namespace :legacy do
         "degree",
         "start_date",
         "end_date",
+        "completed",
+        "verification_status",
         "action",
         "ppi_id",
         "provider_attest_id",
-        "provider_education_id",
+        "practice_information_education_id",
         "message"
       ]
 
@@ -118,17 +145,30 @@ namespace :legacy do
         skip_blanks: true
       ) do |row|
 
-        # Skip sqlcmd separator line.
+        #
+        # sqlcmd produces:
+        #
+        # -----|----------|...
+        #
         next if row["ENCID"].to_s.strip.start_with?("-")
 
-        client = row["ClientName"].to_s.strip
-        encid = normalize_encid.call(row["ENCID"])
+        client =
+          row["ClientName"].to_s.strip
+
+        encid =
+          canonical_encid.call(
+            row["ENCID"]
+          )
 
         institution_name =
-          clean_value.call(row["SchoolName"])
+          clean_value.call(
+            row["SchoolName"]
+          )
 
         degree =
-          clean_value.call(row["DegreeCertificate"])
+          clean_value.call(
+            row["DegreeCertificate"]
+          )
 
         start_date =
           parse_date.call(
@@ -143,25 +183,39 @@ namespace :legacy do
           )
 
         completed =
-          parse_boolean.call(row["CompletedOrNot"])
+          parse_boolean.call(
+            row["CompletedOrNot"]
+          )
 
-        explanation =
-          clean_value.call(row["Explanation"])
+        incomplete_explanation =
+          clean_value.call(
+            row["Explanation"]
+          )
 
-        audit_status =
-          clean_value.call(row["VerifiedStatus"])
+        verification_status =
+          clean_value.call(
+            row["VerifiedStatus"]
+          )
 
         comments =
-          clean_value.call(row["Comments"])
+          clean_value.call(
+            row["Comments"]
+          )
 
+        #
+        # Validate client.
+        #
         unless allowed_clients.include?(client)
           stats[:unsupported_client] += 1
+
+          message =
+            "Unsupported client: #{client.inspect}"
 
           puts [
             "SKIP CLIENT",
             encid,
             institution_name,
-            client.inspect
+            message
           ].join(" | ")
 
           report << [
@@ -172,18 +226,31 @@ namespace :legacy do
             degree,
             start_date,
             end_date,
+            completed,
+            verification_status,
             "SKIPPED_CLIENT",
             nil,
             nil,
             nil,
-            "Unsupported client"
+            message
           ]
 
           next
         end
 
+        #
+        # Validate ENCID.
+        #
         if encid.blank?
           stats[:invalid_encid] += 1
+
+          message =
+            "Missing or invalid ENCID"
+
+          puts [
+            "SKIP INVALID ENCID",
+            institution_name
+          ].join(" | ")
 
           report << [
             client,
@@ -193,18 +260,26 @@ namespace :legacy do
             degree,
             start_date,
             end_date,
+            completed,
+            verification_status,
             "SKIPPED_INVALID_ENCID",
             nil,
             nil,
             nil,
-            "Missing or invalid ENCID"
+            message
           ]
 
           next
         end
 
+        #
+        # Education must have an institution.
+        #
         if institution_name.blank?
           stats[:blank_institution] += 1
+
+          message =
+            "Missing institution name"
 
           puts [
             "SKIP BLANK INSTITUTION",
@@ -219,16 +294,21 @@ namespace :legacy do
             degree,
             start_date,
             end_date,
+            completed,
+            verification_status,
             "SKIPPED_BLANK_INSTITUTION",
             nil,
             nil,
             nil,
-            "Missing institution name"
+            message
           ]
 
           next
         end
 
+        #
+        # Resolve the provider through ENCID.
+        #
         ppi =
           ProviderPersonalInformation.find_by(
             encompass_id_text: encid
@@ -236,6 +316,9 @@ namespace :legacy do
 
         unless ppi
           stats[:missing_provider] += 1
+
+          message =
+            "Provider not found for ENCID"
 
           puts [
             "SKIP MISSING PROVIDER",
@@ -251,11 +334,13 @@ namespace :legacy do
             degree,
             start_date,
             end_date,
+            completed,
+            verification_status,
             "SKIPPED_MISSING_PROVIDER",
             nil,
             nil,
             nil,
-            "Provider not found"
+            message
           ]
 
           next
@@ -268,17 +353,23 @@ namespace :legacy do
             ppi.last_name
           ].compact.join(" ")
 
+        #
+        # Do not import a CUAN row into a PPC provider,
+        # or vice versa.
+        #
         if ppi.legacy_client_name.present? &&
            ppi.legacy_client_name != client
 
           stats[:client_mismatch] += 1
 
+          message =
+            "Source client #{client.inspect} does not match provider client #{ppi.legacy_client_name.inspect}"
+
           puts [
             "SKIP CLIENT MISMATCH",
             encid,
             provider_name,
-            client.inspect,
-            ppi.legacy_client_name.inspect
+            message
           ].join(" | ")
 
           report << [
@@ -289,38 +380,56 @@ namespace :legacy do
             degree,
             start_date,
             end_date,
+            completed,
+            verification_status,
             "SKIPPED_CLIENT_MISMATCH",
             ppi.id,
             ppi.provider_attest_id,
             nil,
-            "Provider belongs to #{ppi.legacy_client_name.inspect}"
+            message
           ]
 
           next
         end
 
+        #
+        # Duplicate identity:
+        #
+        # provider_attest
+        # + institution
+        # + degree
+        # + start date
+        # + end date
+        #
         existing =
-          ProviderEducation
+          PracticeInformationEducation
             .where(
-              provider_attest_id: ppi.provider_attest_id
+              provider_attest_id:
+                ppi.provider_attest_id
             )
             .detect do |education|
 
             institution_matches =
               normalize_text.call(
                 education.institution_name
-              ) == normalize_text.call(institution_name)
+              ) == normalize_text.call(
+                institution_name
+              )
 
             degree_matches =
               normalize_text.call(
                 education.degree_degree_abbreviation
-              ) == normalize_text.call(degree)
+              ) == normalize_text.call(
+                degree
+              )
 
             start_matches =
-              education.start_date&.to_date == start_date
+              education.start_date&.to_date ==
+                start_date
 
             end_matches =
-              education.end_date&.to_date == end_date
+              education.end_date&.to_date ==
+                end_date
 
             institution_matches &&
               degree_matches &&
@@ -330,6 +439,9 @@ namespace :legacy do
 
         if existing
           stats[:existing] += 1
+
+          message =
+            "Existing Education record found; left unchanged"
 
           puts [
             "SKIP EXISTING",
@@ -347,16 +459,21 @@ namespace :legacy do
             degree,
             start_date,
             end_date,
+            completed,
+            verification_status,
             "SKIPPED_EXISTING",
             ppi.id,
             ppi.provider_attest_id,
             existing.id,
-            "Existing education found; left unchanged"
+            message
           ]
 
           next
         end
 
+        #
+        # Correct Education-tab attributes.
+        #
         attrs = {
           provider_attest_id:
             ppi.provider_attest_id,
@@ -380,25 +497,35 @@ namespace :legacy do
             completed,
 
           incomplete_explanation:
-            explanation,
+            incomplete_explanation,
 
-          audit_status:
-            audit_status,
+          verification_status:
+            verification_status,
 
           comments:
             comments,
 
-          education_type_name:
-            "Education"
+          #
+          # Existing legacy Education rows commonly use
+          # nil. The UI explicitly accepts nil and "main".
+          #
+          form_type:
+            nil,
+
+          show_on_tickler:
+            false
         }
 
         if apply
           begin
             created_education = nil
 
-            ProviderEducation.transaction do
+            PracticeInformationEducation.transaction do
+              #
+              # Re-check while transaction is active.
+              #
               duplicate =
-                ProviderEducation
+                PracticeInformationEducation
                   .lock
                   .where(
                     provider_attest_id:
@@ -409,18 +536,24 @@ namespace :legacy do
                   institution_matches =
                     normalize_text.call(
                       education.institution_name
-                    ) == normalize_text.call(institution_name)
+                    ) == normalize_text.call(
+                      institution_name
+                    )
 
                   degree_matches =
                     normalize_text.call(
                       education.degree_degree_abbreviation
-                    ) == normalize_text.call(degree)
+                    ) == normalize_text.call(
+                      degree
+                    )
 
                   start_matches =
-                    education.start_date&.to_date == start_date
+                    education.start_date&.to_date ==
+                      start_date
 
                   end_matches =
-                    education.end_date&.to_date == end_date
+                    education.end_date&.to_date ==
+                      end_date
 
                   institution_matches &&
                     degree_matches &&
@@ -430,6 +563,9 @@ namespace :legacy do
 
               if duplicate
                 stats[:existing] += 1
+
+                message =
+                  "Education appeared before create; left unchanged"
 
                 puts [
                   "SKIP EXISTING",
@@ -446,18 +582,22 @@ namespace :legacy do
                   degree,
                   start_date,
                   end_date,
+                  completed,
+                  verification_status,
                   "SKIPPED_EXISTING",
                   ppi.id,
                   ppi.provider_attest_id,
                   duplicate.id,
-                  "Education appeared before create; left unchanged"
+                  message
                 ]
 
                 next
               end
 
               created_education =
-                ProviderEducation.new(attrs)
+                PracticeInformationEducation.new(
+                  attrs
+                )
 
               created_education.save!(
                 validate: false
@@ -484,6 +624,8 @@ namespace :legacy do
                 degree,
                 start_date,
                 end_date,
+                completed,
+                verification_status,
                 "CREATED",
                 ppi.id,
                 ppi.provider_attest_id,
@@ -513,6 +655,8 @@ namespace :legacy do
               degree,
               start_date,
               end_date,
+              completed,
+              verification_status,
               "ERROR",
               ppi.id,
               ppi.provider_attest_id,
@@ -533,7 +677,7 @@ namespace :legacy do
             "Start=#{start_date.inspect}",
             "End=#{end_date.inspect}",
             "Completed=#{completed.inspect}",
-            "Status=#{audit_status.inspect}"
+            "Verification=#{verification_status.inspect}"
           ].join(" | ")
 
           report << [
@@ -544,11 +688,13 @@ namespace :legacy do
             degree,
             start_date,
             end_date,
+            completed,
+            verification_status,
             "WOULD_CREATE",
             ppi.id,
             ppi.provider_attest_id,
             nil,
-            "No existing matching education"
+            "No existing matching Education record"
           ]
         end
       end
@@ -558,6 +704,7 @@ namespace :legacy do
     puts "=" * 100
     puts "Import Summary"
     puts "=" * 100
+    puts "Target: PracticeInformationEducation"
     puts "Mode: #{apply ? 'APPLY' : 'DRY RUN'}"
 
     if apply
