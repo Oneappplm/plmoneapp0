@@ -73,7 +73,13 @@ namespace :legacy do
       next nil if value.blank?
 
       begin
-        Date.parse(value)
+        if value.match?(/\A\d{1,2}\/\d{1,2}\/\d{4}\z/)
+          Date.strptime(value, "%m/%d/%Y")
+        elsif value.match?(/\A\d{4}-\d{2}-\d{2}\z/)
+          Date.strptime(value, "%Y-%m-%d")
+        else
+          Date.parse(value)
+        end
       rescue ArgumentError, TypeError
         nil
       end
