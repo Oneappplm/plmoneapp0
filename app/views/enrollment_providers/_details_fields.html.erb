@@ -65,11 +65,47 @@
         </div>
     </div>
   <div class="row mb-3 application-not-submitted-field">
-    <div class="col-lg-6">
+    <div class="col-lg-4">
       <label class="text-dark-grey">Provider ID</label>
       <%= f.text_field :provider_id, placeholder: 'Medicare and Medicaid,  PIN, etc.', class: 'form-control border border-dark' %>
     </div>
+
+    <div class="col-lg-4">
+      <label class="text-dark-grey">Next Follow Up Date</label>
+      <%= f.date_field :next_follow_up_date, min: Date.current, class: "form-control border border-dark" %>
+    </div>
+    <div class="col-lg-4">
+      <label class="text-dark-grey">Assigned To</label>
+      <%= f.collection_select :assigned_user_id, User.order(:first_name), :id, :full_name, { include_blank: "Select User" }, class: "form-select border border-dark" %>
+    </div>
+    <% if f.object.persisted? && f.object.enrollment_provider_id.present? %>
+      <div class="col-lg-12 mt-2 text-end">
+        <% if f.object.resolved? %>
+          <span class="badge bg-success">
+            <i class="bi bi-check-circle me-1"></i>
+            Follow-up Resolved
+          </span>
+        <% elsif f.object.resolution_requested? %>
+          <span class="badge bg-warning text-dark me-2">
+            Awaiting Manager Approval
+          </span>
+
+          <% if current_user.user_role.in?(%w[super_administrator administrator]) %>
+            <%= link_to mhc_resolution_requests_path,class:"btn btn-outline-warning btn-sm" do %>
+              <i class="bi bi-eye me-1"></i>
+              View Resolution Request
+            <% end %>
+          <% end %>
+        <% else %>
+          <%= link_to new_mhc_enrollment_provider_follow_up_path(f.object.enrollment_provider_id,detail_id:f.object.id),class:"btn btn-outline-primary btn-sm" do %>
+            <i class="bi bi-list-check me-1"></i>
+            View Follow-up Task
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
   </div>
+
   <div class="row mb-3 processing-field <%= f.object&.enrollment_status == 'processing' ? '' : 'd-none'%>">
     <div class="col-lg-6">
       <label class="text-dark-grey">Processing Date</label>

@@ -24,6 +24,14 @@ class EnrollmentProvidersDetail < ApplicationRecord
   has_many :application_status_logs, class_name: 'EpdLog', dependent: :destroy
   has_many :questions, class_name: 'EpdQuestion', dependent: :destroy
 
+  has_many :follow_ups, dependent: :destroy
+
+  belongs_to :assigned_user, class_name: "User", optional: true
+  enum :follow_up_status, { pending: 0, resolution_requested: 1, resolved: 2 }
+  scope :requiring_follow_up, -> { where(follow_up_status: :pending) }
+  scope :due_today, -> { requiring_follow_up.where(next_follow_up_date: Date.current) }
+  scope :overdue, -> { requiring_follow_up.where("next_follow_up_date < ?", Date.current) }
+  scope :upcoming, -> { requiring_follow_up.where("next_follow_up_date > ?", Date.current) }
   accepts_nested_attributes_for :questions, allow_destroy: true, reject_if: :all_blank
 
   after_save :create_application_status_log, if: :saved_change_to_enrollment_status?
