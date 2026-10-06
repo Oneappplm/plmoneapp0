@@ -50,14 +50,15 @@ class Mhc::ProviderPersonalInformationPeerRefsController < ApplicationController
                     peer_ref,
                     template: "pdf_templates/peer_reference_letter",
                     assign_name: :peer_ref,
+                    release_sub_section: "peer_reference",
                     header_template: "pdf_templates/shared/medversant_header",
                     footer_template: "pdf_templates/shared/medversant_peer_footer",
                     extra_templates: [
                       "pdf_templates/peer_reference_additional_information",
                       "pdf_templates/peer_reference_comments"
                     ],
-                    authorization_image: "peer_reference_attestation.png",
-                    include_uploaded_release: false
+                    authorization_image: nil,
+                    include_uploaded_release: true
                   ).generate_preview!
 
     send_data pdf_binary,
