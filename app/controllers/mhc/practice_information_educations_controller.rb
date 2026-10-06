@@ -15,8 +15,8 @@ class Mhc::PracticeInformationEducationsController < ApplicationController
       release_sub_section: "education",
       header_template: "pdf_templates/shared/medversant_header",
       footer_template: "pdf_templates/shared/medversant_footer",
-      authorization_image: "standard_authorization_release.png",
-      include_uploaded_release: false
+      authorization_image: nil,
+      include_uploaded_release: true
     ).generate_preview!
 
     send_data pdf_binary,

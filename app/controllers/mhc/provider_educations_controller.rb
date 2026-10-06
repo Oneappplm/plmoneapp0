@@ -45,15 +45,15 @@ class Mhc::ProviderEducationsController < ApplicationController
     training = ProviderEducation.find(params[:id])
 
     pdf_binary = PdfLetterGenerator.new(
-                  training,
-                  template: "pdf_templates/training_letter",
-                  assign_name: :training,
-                  release_sub_section: "training",
-                  header_template: "pdf_templates/shared/medversant_header",
-                  footer_template: "pdf_templates/shared/medversant_training_footer",
-                  authorization_image: "standard_authorization_release.png",
-                  include_uploaded_release: false
-                ).generate_preview!
+                    training,
+                    template: "pdf_templates/training_letter",
+                    assign_name: :training,
+                    release_sub_section: "training",
+                    header_template: "pdf_templates/shared/medversant_header",
+                    footer_template: "pdf_templates/shared/medversant_training_footer",
+                    authorization_image: nil,
+                    include_uploaded_release: true
+                  ).generate_preview!
 
     send_data pdf_binary,
               filename: "training_letter_preview.pdf",
