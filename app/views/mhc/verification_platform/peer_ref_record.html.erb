@@ -1104,31 +1104,38 @@
         .then(data => {
           filesDiv.innerHTML = "";
 
-          const releaseDocs = data.filter(doc => {
+          const validReleaseDocs = data.filter(doc => {
             const ext = doc.file_name?.split(".").pop()?.toLowerCase();
             const classification = doc.image_classification?.trim()?.toLowerCase();
-            const subSection = doc.sub_section?.trim()?.toLowerCase();
 
             return (
               classification === "release" &&
-              subSection === "peer_reference" &&
               ["pdf", "tif", "tiff"].includes(ext)
             );
           });
 
-          if (releaseDocs.length === 0) {
+          const sharedRelease = validReleaseDocs.find(doc => {
+            return !doc.sub_section?.trim();
+          });
+
+          const sectionRelease = validReleaseDocs.find(doc => {
+            return doc.sub_section?.trim()?.toLowerCase() === "peer_reference";
+          });
+
+          const releaseDoc = sharedRelease || sectionRelease;
+
+          if (!releaseDoc) {
             filesDiv.innerHTML = `
               <p class="alert alert-danger text-center">
-                The Peer Reference Release file might be missing. Please upload it and try again.
+                The Release file might be missing.
+                Please upload it and try again.
               </p>
             `;
 
             return null;
           }
 
-          const releaseDoc = releaseDocs[0];
           const link = document.createElement("a");
-
           link.href = releaseDoc.file_url;
           link.target = "_blank";
           link.textContent = releaseDoc.file_name;
