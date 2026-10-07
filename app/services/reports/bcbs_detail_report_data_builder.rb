@@ -26,6 +26,7 @@ module Reports
         .includes(
           :provider_personal_information_app_trackings,
           :provider_personal_information_credentialing_contact,
+          :practice_informations,
           :provider_licensures,
           :provider_deas,
           :provider_insurance_coverages,
@@ -33,7 +34,8 @@ module Reports
           :provider_specialties,
           :provider_personal_attempts,
           :rva_informations,
-          :review_level_changes
+          :review_level_changes,
+          :pdf_generation_queues
         )
         .order(:last_name, :first_name)
     end
@@ -43,6 +45,9 @@ module Reports
     # =========================================================
 
     def build_row(ppi)
+      practice =
+        latest_practice_information(ppi)
+
       tracking = latest_tracking(ppi)
 
       contact =
@@ -94,7 +99,10 @@ module Reports
           ppi.legacy_client_name,
 
         batch_description:
-          ppi.client_batch_name,
+          first_present(
+            ppi.client_batch_name,
+            safe_attribute(practice, :batch_description)
+          ),
 
         batch_date:
           ppi.client_batch_date,
@@ -115,11 +123,10 @@ module Reports
             ppi.caqh_provider_id
           ),
 
+        # Current OneApp AppTracking schema has no client-alternate-id field.
+        # Leave blank rather than outputting an internal database identifier.
         client_alternate_id:
-          first_present(
-            ppi.encompass_id_text,
-            ppi.provider_attest_id
-          ),
+          nil,
 
         # =====================================================
         # PROVIDER DEMOGRAPHICS
@@ -138,16 +145,21 @@ module Reports
           ppi.last_name,
 
         practitioner_type:
-          ppi.practitioner_type,
-
+          first_present(
+            ppi.practitioner_type,
+            safe_attribute(practice, :provider_type),
+            safe_attribute(vrc, :provider_type)
+          ),
         social_security_number:
           ppi.ssn,
 
         date_of_birth:
           first_present(
             safe_attribute(ppi, :date_of_birth),
-            safe_attribute(ppi, :birth_date)
+            safe_attribute(ppi, :birth_date),
+            safe_attribute(practice, :birth_date)
           ),
+
 
         # =====================================================
         # CREDENTIAL / RECREDENTIAL
@@ -156,6 +168,7 @@ module Reports
         cred_recred_status:
           first_present(
             ppi.cred_cycle,
+            safe_attribute(practice, :cred_cycle),
             ppi.application_type
           ),
 
@@ -165,11 +178,7 @@ module Reports
             ppi.committee_date
           ),
 
-        internal_committee_date:
-          first_present(
-            ppi.credentials_committee_date,
-            ppi.review_date
-          ),
+        internal_committee_date: nil,
 
         # =====================================================
         # APPLICATION TRACKING
@@ -207,7 +216,11 @@ module Reports
           current_psv(ppi),
 
         signature_date:
-          ppi.signature_date,
+          first_present(
+            ppi.attest_date,
+            safe_attribute(practice, :attestation_date),
+            ppi.signature_date
+          ),
 
         # =====================================================
         # EXPIRATIONS
@@ -242,16 +255,13 @@ module Reports
           collection_status(attempts),
 
         in_completion:
-          completion_status(ppi),
+          in_completion_status(ppi, tracking),
 
         returned:
           returned_status(tracking),
 
         provider_status:
-          first_present(
-            ppi.status,
-            ppi.cred_status
-          ),
+          provider_status(ppi, tracking, practice),
 
         # =====================================================
         # CALCULATIONS
@@ -345,14 +355,19 @@ module Reports
               :fax
             )
           ),
-
         # =====================================================
         # PROFILE
         # =====================================================
 
         profile_generation_date:
-          Date.current,
-
+          first_present(
+            latest_profile_generation_date(ppi),
+            ppi.psv_completed_date,
+            safe_attribute(
+              tracking,
+              :verification_complete_date
+            )
+          ),
         region:
           first_present(
             safe_attribute(
@@ -363,15 +378,13 @@ module Reports
           ),
 
         pims_id:
-          first_present(
-            ppi.encompass_id_text,
-            safe_attribute(vrc, :medv_id)
-          ),
+          ppi.encompass_id_text,
 
         practice_state:
           first_present(
             ppi.primary_practice_state,
-            ppi.state
+            ppi.state,
+            safe_attribute(practice, :state)
           ),
 
         primary_specialty:
@@ -414,40 +427,28 @@ module Reports
         # =====================================================
 
         vrc_review_level:
-          first_present(
-            safe_attribute(
-              vrc,
-              :review_level
-            ),
-            ppi.review_level
+          safe_attribute(
+            vrc,
+            :review_level
           ),
 
         vrc_committee_date:
-          first_present(
-            safe_attribute(
-              vrc,
-              :committee_date
-            ),
-            ppi.committee_date
-          ),
+        safe_attribute(
+          vrc,
+          :committee_date
+        ),
 
         vrc_psv_date:
-          first_present(
-            safe_attribute(
-              vrc,
-              :psv_completed_date
-            ),
-            ppi.psv_completed_date
-          ),
+        safe_attribute(
+          vrc,
+          :psv_completed_date
+        ),
 
         vrc_status:
-          first_present(
-            safe_attribute(
-              vrc,
-              :status
-            ),
-            ppi.status
-          ),
+        safe_attribute(
+          vrc,
+          :status
+        ),
 
         # =====================================================
         # QA
@@ -470,10 +471,7 @@ module Reports
         # =====================================================
 
         vrc_date_reopened:
-          safe_attribute(
-            review_change,
-            :created_at
-          ),
+          vrc.present? ? safe_attribute(review_change, :created_at) : nil,
 
         # =====================================================
         # COMMENTS
@@ -483,7 +481,7 @@ module Reports
           app_tracking_comments(tracking),
 
         outputfile_date:
-          Date.current,
+          output_file_date(ppi),
 
         review_detail:
           first_present(
@@ -544,6 +542,12 @@ module Reports
         end
     end
 
+    def output_file_date(ppi)
+      return nil if ppi.legacy_client_name == "Broward Health"
+
+      Date.current
+    end
+
     def latest_education(ppi)
       ppi
         .provider_educations
@@ -585,6 +589,26 @@ module Reports
         end
     end
 
+    def in_completion_status(ppi, tracking)
+      status =
+        first_present(
+          safe_attribute(tracking, :file_status),
+          ppi.progress_status,
+          ppi.verification_status,
+          ppi.status
+        ).to_s.downcase
+
+      return nil if status.blank?
+
+      completed_values = [
+        "complete",
+        "completed",
+        "approved"
+      ]
+
+      completed_values.include?(status) ? "No" : "Yes"
+    end
+
     def latest_review_change(ppi)
       ppi
         .review_level_changes
@@ -606,13 +630,29 @@ module Reports
         .first
     end
 
+    def latest_practice_information(ppi)
+      ppi
+        .practice_informations
+        .max_by do |record|
+          record.updated_at ||
+            record.created_at ||
+            Time.zone.local(1900, 1, 1)
+        end
+    end
+
+    def latest_profile_generation_date(ppi)
+      ppi
+        .pdf_generation_queues
+        .select { |queue| queue.generated_date.present? }
+        .max_by(&:generated_date)
+        &.generated_date
+    end
+
     # =========================================================
     # PSV CALCULATIONS
     # =========================================================
 
     def current_psv(ppi)
-      return "Completed" if ppi.psv_completed_date.present?
-
       first_present(
         ppi.verification_status,
         ppi.cred_status
@@ -623,6 +663,15 @@ module Reports
       days_between(
         ppi.psv_completed_date,
         Date.current
+      )
+    end
+
+    def provider_status(ppi, tracking, practice)
+      first_present(
+        safe_attribute(tracking, :file_status),
+        safe_attribute(practice, :provider_status),
+        ppi.status,
+        ppi.cred_status
       )
     end
 
@@ -690,13 +739,13 @@ module Reports
     end
 
     def returned_status(tracking)
-      return "No" unless tracking
+      return nil unless tracking
 
       tracking.file_return_to_client_date.present? ? "Yes" : "No"
     end
 
     def returned_within_parameters(tracking)
-      return "No" unless tracking
+      return nil unless tracking
 
       received =
         tracking.application_receipt_date
@@ -704,7 +753,7 @@ module Reports
       returned =
         tracking.file_return_to_client_date
 
-      return "No" if received.blank? || returned.blank?
+      return nil if received.blank? || returned.blank?
 
       tat =
         days_between(
@@ -731,11 +780,19 @@ module Reports
     end
 
     def completion_status(ppi)
-      first_present(
-        ppi.progress_status,
-        ppi.verification_status,
-        ppi.cred_status
-      ).to_s
+      status =
+        first_present(
+          ppi.progress_status,
+          ppi.verification_status,
+          ppi.status
+        ).to_s.downcase
+
+      completed_values = [
+        "completed",
+        "complete"
+      ]
+
+      completed_values.include?(status) ? "No" : "Yes"
     end
 
     # =========================================================
