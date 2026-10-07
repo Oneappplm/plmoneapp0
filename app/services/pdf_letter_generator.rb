@@ -377,25 +377,94 @@ class PdfLetterGenerator
 
       Rails.logger.info("🖼️ TIFF extracted into #{frame_files.count} page(s)")
 
-      header_html = ApplicationController.render(template: @header_template, layout: false)
-      footer_html = ApplicationController.render(template: @footer_template, layout: false)
+      header_html = ApplicationController.render(
+        template: @header_template,
+        layout: false
+      )
+
+      footer_html = ApplicationController.render(
+        template: @footer_template,
+        layout: false
+      )
 
       frame_files.each_with_index do |frame_path, index|
-        Rails.logger.info("🖼️ Rendering TIFF page #{index + 1}/#{frame_files.count}")
+        Rails.logger.info(
+          "🖼️ Rendering TIFF page #{index + 1}/#{frame_files.count}"
+        )
 
-        base64_png = Base64.strict_encode64(File.binread(frame_path))
+        base64_png = Base64.strict_encode64(
+          File.binread(frame_path)
+        )
 
         html = <<-HTML
+          <!DOCTYPE html>
           <html>
             <head>
               <meta charset="UTF-8">
+
               <style>
-                #{custom_pdf_styles}
+                @page {
+                  size: Letter;
+                  margin: 0;
+                }
+
+                html,
+                body {
+                  margin: 0;
+                  padding: 0;
+                  width: 100%;
+                  height: 100%;
+                  overflow: hidden;
+                  font-family: Arial, Helvetica, sans-serif;
+                }
+
+                .header,
+                .footer {
+                  position: fixed;
+                  left: 0;
+                  right: 0;
+                  width: 100%;
+                  z-index: 10;
+                }
+
+                .header {
+                  top: 20px;
+                }
+
+                .footer {
+                  bottom: 7px;
+                }
+
+                .release-page {
+                  width: 100%;
+                  height: 10.85in;
+                  box-sizing: border-box;
+                  padding: 72px 15px 65px 15px;
+                  overflow: hidden;
+                }
+
+                .release-content {
+                  width: 100%;
+                  height: 100%;
+                  text-align: center;
+                }
+
+                .release-content img {
+                  display: block;
+                  width: auto;
+                  height: auto;
+                  max-width: 100%;
+                  max-height: 9.15in;
+                  margin: 0 auto;
+                  page-break-inside: avoid;
+                }
               </style>
             </head>
 
             <body>
-              <div class="header">#{header_html}</div>
+              <div class="header">
+                #{header_html}
+              </div>
 
               <div class="release-page">
                 <div class="release-content">
@@ -403,7 +472,9 @@ class PdfLetterGenerator
                 </div>
               </div>
 
-              <div class="footer">#{footer_html}</div>
+              <div class="footer">
+                #{footer_html}
+              </div>
             </body>
           </html>
         HTML
@@ -420,7 +491,16 @@ class PdfLetterGenerator
           zoom: 1.0
         )
 
-        pdf_pages << CombinePDF.parse(page_pdf_binary)
+        parsed_pdf = CombinePDF.parse(page_pdf_binary)
+
+        Rails.logger.info(
+          "📄 TIFF frame #{index + 1} generated " \
+          "#{parsed_pdf.pages.count} PDF page(s)"
+        )
+
+        # Every TIFF frame represents exactly one source page.
+        # Prevent wkhtmltopdf overflow from adding an empty second page.
+        pdf_pages << parsed_pdf.pages.first
       end
 
       pdf_pages.to_pdf
