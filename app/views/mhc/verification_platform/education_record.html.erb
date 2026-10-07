@@ -1977,20 +1977,27 @@
           .then(data => {
 					  filesDiv.innerHTML = "";
 
-					  const releaseDocs = data.filter(doc => {
-					    const ext = doc.file_name?.split(".").pop()?.toLowerCase();
-					    const classification = doc.image_classification?.trim()?.toLowerCase();
-					    const subSection = doc.sub_section?.trim()?.toLowerCase();
+					  const validReleaseDocs = data.filter(doc => {
+              const ext = doc.file_name?.split(".").pop()?.toLowerCase();
+              const classification = doc.image_classification?.trim()?.toLowerCase();
 
-					    return (
-					      classification === "release" &&
-					      subSection === "education" &&
-					      ["pdf", "tif", "tiff"].includes(ext)
-					    );
-					  });
+              return (
+                classification === "release" &&
+                ["pdf", "tif", "tiff"].includes(ext)
+              );
+            });
 
-					  if (releaseDocs.length > 0) {
-					    const releaseDoc = releaseDocs[0];
+            const sharedRelease = validReleaseDocs.find(doc => {
+              return !doc.sub_section?.trim();
+            });
+
+            const sectionRelease = validReleaseDocs.find(doc => {
+              return doc.sub_section?.trim()?.toLowerCase() === "education";
+            });
+
+            const releaseDoc = sharedRelease || sectionRelease;
+
+					  if (releaseDoc) {
 
 					    const link = document.createElement("a");
 					    link.href = releaseDoc.file_url;

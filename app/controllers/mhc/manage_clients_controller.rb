@@ -90,6 +90,12 @@ class Mhc::ManageClientsController < ApplicationController
       :exclude_from_profile
     )
 
+    # Release is provider-level and shared across
+    # Education, Training and Peer Reference.
+    if doc_params[:image_classification].to_s.downcase == "release"
+      doc_params[:sub_section] = nil
+    end
+
     if params[:document_id].present?
       # ✅ update existing record
       @document = ProviderPersonalUploadedDoc.find(params[:document_id])

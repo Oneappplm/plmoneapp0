@@ -2135,7 +2135,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .then(data => {
         filesDiv.innerHTML = "";
 
-        const releaseDocs = data.filter(doc => {
+        const validReleaseDocs = data.filter(doc => {
           const ext = doc.file_name
             ?.split(".")
             .pop()
@@ -2145,30 +2145,32 @@ document.addEventListener("DOMContentLoaded", function () {
             ?.trim()
             ?.toLowerCase();
 
-          const subSection = doc.sub_section
-            ?.trim()
-            ?.toLowerCase();
-
           return (
             classification === "release" &&
-            subSection === "training" &&
             ["pdf", "tif", "tiff"].includes(ext)
           );
         });
 
-        if (releaseDocs.length === 0) {
+        const sharedRelease = validReleaseDocs.find(doc => {
+          return !doc.sub_section?.trim();
+        });
+
+        const sectionRelease = validReleaseDocs.find(doc => {
+          return doc.sub_section?.trim()?.toLowerCase() === "training";
+        });
+
+        const releaseDoc = sharedRelease || sectionRelease;
+
+        if (!releaseDoc) {
           filesDiv.innerHTML = `
             <p class="alert alert-danger text-center">
-              The Training Release file might be missing.
+              The Release file might be missing.
               Please upload it and try again.
             </p>
           `;
 
           return null;
         }
-
-        // Show only latest Training release
-        const releaseDoc = releaseDocs[0];
 
         const link = document.createElement("a");
         link.href = releaseDoc.file_url;
