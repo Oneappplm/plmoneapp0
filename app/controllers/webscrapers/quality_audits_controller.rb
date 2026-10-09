@@ -1,3 +1,5 @@
+require "tempfile"
+
 class Webscrapers::QualityAuditsController < ApplicationController
   before_action :set_common_params, only: %i[
     send_oig_request send_licensure_request send_employment_request
@@ -192,33 +194,68 @@ class Webscrapers::QualityAuditsController < ApplicationController
       provider_dea: provider_dea,
       provider_info: provider_info
     )
-    wicked_pdf_path = service.call
+    
+    html_content = service.call
 
-    unless wicked_pdf_path && File.exist?(wicked_pdf_path)
-      return render json: { success: false, message: "PDF generation failed." }, status: :unprocessable_entity
-    end
-
-    provider_filename = "DEA_#{dea_number}.pdf"
-
-    final_path = Rails.root.join("tmp", provider_filename)
-    FileUtils.cp(wicked_pdf_path, final_path)
-
-    # Log PDF
-    log = DeaWebcrawlerLog.new(
-      status: "completed",
+    log = DeaWebcrawlerLog.create!(
+      status: "processing",
       rva_information_id: rva_info.id,
       filetype: "PDF"
     )
-    log.filepath = File.open(final_path)
-    log.save!
 
-    File.delete(final_path) if File.exist?(final_path)
+    html_tempfile = Tempfile.new(["DEA_#{dea_number}_", ".html"])
+    pdf_path = nil
+
+    begin
+      html_tempfile.write(html_content)
+      html_tempfile.flush
+
+      log.html_filepath = File.open(html_tempfile.path)
+      log.save!
+
+      stored_url = log.html_filepath.url
+
+      raise "Generated DEA HTML URL is missing." if stored_url.blank?
+
+      source_url =
+        if stored_url.start_with?("http://", "https://")
+          stored_url
+        else
+          URI.join(request.base_url, stored_url).to_s
+        end
+
+      if source_url.blank?
+        raise "Generated DEA HTML URL is missing."
+      end
+
+      # PDF me actual uploaded HTML report URL add karo.
+      pdf_path = service.generate_pdf(
+        html_content,
+        source_url: source_url
+      )
+
+      unless pdf_path && File.exist?(pdf_path)
+        raise "DEA PDF generation failed."
+      end
+
+      log.filepath = File.open(pdf_path)
+      log.status = "completed"
+      log.report_payload = {
+        source_url: source_url,
+        generated_at: Time.current.iso8601,
+        source_type: "generated_dea_html"
+      }
+      log.save!
+
+    ensure
+      html_tempfile.close!
+      File.delete(pdf_path) if pdf_path && File.exist?(pdf_path)
+    end
 
     provider_info.update(verification_status: "Processing")
 
     # Load updated DEA HTML
-    updated_html_path = Rails.root.join("tmp", "updated_page.html")
-    updated_html = File.exist?(updated_html_path) ? File.read(updated_html_path) : ""
+    updated_html = html_content
 
     render json: {
       success: true,
