@@ -247,7 +247,7 @@
           <td class="fw-bold text-dark">Status:</td>
           <td><%= medicare_status %></td>
           <td class="fw-bold text-dark">Source Date:</td>
-          <td><%= provider_medicare&.issue_date&.strftime('%m/%d/%Y') || '' %></td>
+          <td><%= provider_medicare.present? ? Time.current.in_time_zone("Pacific Time (US & Canada)").strftime('%m/%d/%Y') : 'N/A' %></td>
         </tr>
       </tbody>
     </table>
@@ -663,51 +663,59 @@
     medicare ||= provider_medicares.first
   %>
 
-  <div class="section mt-4">
-    <div class="section-title">Medicare Opt Out</div>
+  <% if provider_medicares.present? && !provider_personal_information&.legacy_client_name.to_s.strip.casecmp?('CUAN') %>
+    <div class="section mt-4">
+      <div class="section-title">Medicare Opt Out</div>
 
-    <div class="section-content">
-      <div class="row mb-3">
-        <div class="col-6">
-          <p><strong>State:</strong> <%= medicare&.state.presence || 'N/A' %></p>
+      <div class="section-content">
+        <div class="row mb-3">
+          <div class="col-6">
+            <p><strong>State:</strong> <%= medicare&.state.presence || 'N/A' %></p>
 
-          <p>
-            <strong>On Opt Out List:</strong>
-            <%= medicare.present? ? (medicare.medicare_opt_out? ? 'Yes' : 'No') : 'N/A' %>
-          </p>
+            <p>
+              <strong>On Opt Out List:</strong>
+              <%= if medicare&.medicare_opt_out.nil?
+                'N/A'
+              elsif medicare.medicare_opt_out?
+                'Yes'
+              else
+                'No'
+              end %>
+            </p>
 
-          <p>
-            <strong>Effective Date:</strong>
-            <%= medicare&.effective_date&.strftime('%m/%d/%Y') %>
-          </p>
+            <p>
+              <strong>Effective Date:</strong>
+              <%= medicare&.effective_date&.strftime('%m/%d/%Y') %>
+            </p>
 
-          <p><strong>End Date:</strong></p>
-        </div>
+            <p><strong>End Date:</strong></p>
+          </div>
 
-        <div class="col-6">
-          <p>
-            <strong>Verified By:</strong>
-            <%= medicare.present? ? (user&.full_name.presence || 'N/A') : 'N/A' %>
-          </p>
+          <div class="col-6">
+            <p>
+              <strong>Verified By:</strong>
+              <%= medicare.present? ? (user&.full_name.presence || 'N/A') : 'N/A' %>
+            </p>
 
-          <p>
-            <strong>Source Date:</strong>
-            <%= medicare.present? ? Date.current.strftime('%m/%d/%Y') : 'N/A' %>
-          </p>
+            <p>
+              <strong>Source Date:</strong>
+              <%= medicare.present? ? Time.current.in_time_zone("Pacific Time (US & Canada)").strftime('%m/%d/%Y') : 'N/A' %>
+            </p>
 
-          <p>
-            <strong>Verification Date:</strong>
-            <%= medicare.present? ? Date.current.strftime('%m/%d/%Y') : 'N/A' %>
-          </p>
+            <p>
+              <strong>Verification Date:</strong>
+              <%= medicare.present? ? Time.current.in_time_zone("Pacific Time (US & Canada)").strftime('%m/%d/%Y') : 'N/A' %>
+            </p>
 
-          <p>
-            <strong>Verification Source:</strong>
-            <%= medicare.present? ? 'CMS Administrator' : 'N/A' %>
-          </p>
+            <p>
+              <strong>Verification Source:</strong>
+              <%= medicare.present? ? 'CMS Administrator' : 'N/A' %>
+            </p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  <% end %>
 
   <!-- OIG -->
   <% if oig_details.present? %>
@@ -782,7 +790,7 @@
 
           <div class="col-6">
             <p><strong>Source Date:</strong> <%= source_date&.strftime("%m/%d/%Y") || "N/A" %></p>
-            <p><strong>Verification Date:</strong> <%= ssa_verification.created_at&.strftime("%m/%d/%Y") || "N/A" %></p>
+            <p><strong>Verification Date:</strong> <%= ssa_verification.created_at&.in_time_zone("Pacific Time (US & Canada)")&.strftime("%m/%d/%Y") || "N/A" %></p>
           </div>
         </div>
       </div>
@@ -851,14 +859,15 @@
               <p><strong>Verified By:</strong> <%= user&.full_name.presence || 'N/A' %></p>
             </div>
             <div class="col-6">
-              <p><strong>Source Date:</strong> <%= ofac_details.source_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
-              <p><strong>Verification Date:</strong> <%= ofac_details.verification_date&.strftime('%m/%d/%Y') || 'Not Available' %></p>
+              <p><strong>Source Date:</strong> <%= ofac_details.source_date&.in_time_zone('Pacific Time (US & Canada)')&.strftime('%m/%d/%Y') || 'Not Available' %></p>
+              <p><strong>Verification Date:</strong> <%= ofac_details.verification_date&.in_time_zone('Pacific Time (US & Canada)')&.strftime('%m/%d/%Y') || 'Not Available' %></p>
             </div>
           </div>
         </div>
       </div>
     <% end %>
 
+    <!-- MMIS -->
     <div class="section mt-4">
       <div class="section-title">MMIS</div>
       <div class="section-content">
@@ -869,10 +878,10 @@
           </div>
           <div class="col-6">
             <p><strong>Source Date:</strong> 
-              <%= latest_tracking&.application_submitted_date &.in_time_zone('Pacific Time (US & Canada)') &.strftime('%m/%d/%Y') %>
+              <%= Time.current.in_time_zone("Pacific Time (US & Canada)").strftime("%m/%d/%Y") || "NA" %>
             </p>
             <p><strong>Verification Date:</strong> 
-              <%= latest_tracking&.application_submitted_date &.in_time_zone('Pacific Time (US & Canada)') &.strftime('%m/%d/%Y') %>
+              <%= Time.current.in_time_zone("Pacific Time (US & Canada)").strftime("%m/%d/%Y") || "NA" %>
             </p>
           </div>
         </div>
@@ -1199,6 +1208,8 @@
                 <p><strong>Source:</strong> <%= details.source_name.presence || 'N/A' %></p>
                 <p><strong>Source Date:</strong> <%= details.source_date&.strftime('%m/%d/%Y') %></p>
                 <p><strong>Review Criteria:</strong> <%= details.adverse_action %></p>
+                <p><strong>Per Claim Amount:</strong> <%= liability.claim_amount %></p>
+                <p><strong>Aggregate Amount:</strong> <%= liability.coverage_amount_aggregate %></p>
               </div>
               <div class="col-6">
                 <!-- <p><strong>Claims History:</strong> Claims History</p> -->
