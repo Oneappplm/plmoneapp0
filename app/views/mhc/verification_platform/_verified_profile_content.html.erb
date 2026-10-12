@@ -666,51 +666,20 @@
   <% if provider_medicares.present? && !provider_personal_information&.legacy_client_name.to_s.strip.casecmp?('CUAN') %>
     <div class="section mt-4">
       <div class="section-title">Medicare Opt Out</div>
-
       <div class="section-content">
         <div class="row mb-3">
           <div class="col-6">
             <p><strong>State:</strong> <%= medicare&.state.presence || 'N/A' %></p>
-
-            <p>
-              <strong>On Opt Out List:</strong>
-              <%= if medicare&.medicare_opt_out.nil?
-                'N/A'
-              elsif medicare.medicare_opt_out?
-                'Yes'
-              else
-                'No'
-              end %>
-            </p>
-
-            <p>
-              <strong>Effective Date:</strong>
-              <%= medicare&.effective_date&.strftime('%m/%d/%Y') %>
-            </p>
-
+            <p><strong>On Opt Out List:</strong> <%= medicare&.medicare_opt_out? ? 'Yes' : 'No' %></p>
+            <p><strong>Effective Date:</strong> <%= medicare&.effective_date&.strftime('%m/%d/%Y') %></p>
             <p><strong>End Date:</strong></p>
           </div>
 
           <div class="col-6">
-            <p>
-              <strong>Verified By:</strong>
-              <%= medicare.present? ? (user&.full_name.presence || 'N/A') : 'N/A' %>
-            </p>
-
-            <p>
-              <strong>Source Date:</strong>
-              <%= medicare.present? ? Time.current.in_time_zone("Pacific Time (US & Canada)").strftime('%m/%d/%Y') : 'N/A' %>
-            </p>
-
-            <p>
-              <strong>Verification Date:</strong>
-              <%= medicare.present? ? Time.current.in_time_zone("Pacific Time (US & Canada)").strftime('%m/%d/%Y') : 'N/A' %>
-            </p>
-
-            <p>
-              <strong>Verification Source:</strong>
-              <%= medicare.present? ? 'CMS Administrator' : 'N/A' %>
-            </p>
+            <p><strong>Verified By:</strong> <%= medicare.present? ? (user&.full_name.presence || 'N/A') : 'N/A' %></p>
+            <p><strong>Source Date:</strong> <%= medicare.present? ? Time.current.in_time_zone("Pacific Time (US & Canada)").strftime('%m/%d/%Y') : 'N/A' %></p>
+            <p><strong>Verification Date:</strong> <%= medicare.present? ? Time.current.in_time_zone("Pacific Time (US & Canada)").strftime('%m/%d/%Y') : 'N/A' %></p>
+            <p><strong>Verification Source:</strong> <%= medicare.present? ? 'CMS Administrator' : 'N/A' %></p>
           </div>
         </div>
       </div>

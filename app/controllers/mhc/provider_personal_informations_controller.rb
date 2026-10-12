@@ -59,26 +59,94 @@ class Mhc::ProviderPersonalInformationsController < ApplicationController
     end
 
     # ✅ add NPI log
-    if (last_log = provider.npi_webcrawler_logs.last)
-      queue.pdf_queue_items.create!(
-        file_name: File.basename(URI.parse(last_log.filepath.url).path),
-        file_path: last_log.filepath.url,
-        status:    "queued"
-      )
+    # Add latest completed NPI WebCrawler document
+    npi_log = provider.npi_webcrawler_logs
+      .where(status: "completed")
+      .where.not(filepath: [nil, ""])
+      .order(created_at: :desc, id: :desc)
+      .first
+
+    if npi_log
+      npi_url = npi_log.filepath.url
+
+      if npi_url.present?
+        queue.pdf_queue_items.create!(
+          file_name: File.basename(URI.parse(npi_url).path),
+          file_path: npi_url,
+          status: "queued"
+        )
+      end
     end
 
     # ✅ add DEA log
-    dea_log = DeaWebcrawlerLog.joins(:rva_information)
-      .where(rva_informations: { provider_personal_information_id: provider.id, tab: "Registration" })
-      .order(:created_at)
-      .last
+    # Add latest completed DEA WebCrawler document
+    dea_log = DeaWebcrawlerLog
+      .joins(:rva_information)
+      .where(
+        rva_informations: {
+          provider_personal_information_id: provider.id,
+          tab: "Registration"
+        }
+      )
+      .where(status: "completed")
+      .where.not(filepath: [nil, ""])
+      .order(created_at: :desc, id: :desc)
+      .first
 
     if dea_log
-      queue.pdf_queue_items.create!(
-        file_name: File.basename(URI.parse(dea_log.filepath.url).path),
-        file_path: dea_log.filepath.url,
-        status:    "queued"
+      dea_url = dea_log.filepath.url
+
+      if dea_url.present?
+        queue.pdf_queue_items.create!(
+          file_name: File.basename(URI.parse(dea_url).path),
+          file_path: dea_url,
+          status: "queued"
+        )
+      end
+    end
+
+    # Add latest completed OIG WebCrawler document
+    oig_log = OigWebcrawlerLog
+      .joins(:rva_information)
+      .where(
+        rva_informations: {
+          provider_personal_information_id: provider.id
+        }
       )
+      .where(status: "completed")
+      .where.not(filepath: [nil, ""])
+      .order(created_at: :desc, id: :desc)
+      .first
+
+    if oig_log
+      oig_url = oig_log.filepath.url
+
+      if oig_url.present?
+        queue.pdf_queue_items.create!(
+          file_name: File.basename(URI.parse(oig_url).path),
+          file_path: oig_url,
+          status: "queued"
+        )
+      end
+    end
+
+    # Add latest SSA Verification PDF
+    ssa_log = ProviderSsnVerification
+      .where(provider_personal_information_id: provider.id)
+      .where.not(report_pdf: [nil, ""])
+      .latest_first
+      .first
+
+    if ssa_log
+      ssa_url = ssa_log.report_pdf.url
+
+      if ssa_url.present?
+        queue.pdf_queue_items.create!(
+          file_name: File.basename(URI.parse(ssa_url).path),
+          file_path: ssa_url,
+          status: "queued"
+        )
+      end
     end
 
     # ✅ start jobs

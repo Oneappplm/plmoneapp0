@@ -86,6 +86,9 @@ class ProviderPersonalInformation < ApplicationRecord
   has_many :provider_ssn_verifications,
          dependent: :destroy
 
+  has_many :provider_section_applicabilities,
+         dependent: :destroy
+
   validates :provider_attest_id, presence: true
 
   accepts_nested_attributes_for :provider_personal_information_credentialing_contact, allow_destroy: false, update_only: true
@@ -102,6 +105,22 @@ class ProviderPersonalInformation < ApplicationRecord
   end
 
   SUFFIXES = ['Jr.', 'Sr.', 'II', 'III', 'IV', 'V', 'VI', 'VII'].freeze
+
+  def sync_app_tracking_verification_status!
+    latest_tracking = provider_personal_information_app_trackings
+                        .order(created_at: :desc, id: :desc)
+                        .first
+
+    new_status =
+      if latest_tracking&.verification_complete_date.present? &&
+         latest_tracking&.file_return_to_client_date.present?
+        'completed'
+      else
+        'Processing'
+      end
+
+    update!(verification_status: new_status) if verification_status != new_status
+  end
   
   private
 

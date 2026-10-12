@@ -1,15 +1,31 @@
- <div class="enc-content">
+<% training_applicability = @provider_personal_information
+                              .provider_section_applicabilities
+                              .find_by(section_key: "training") %>
+
+<% training_not_applicable = training_applicability&.not_applicable? || false %>
+
+<style>
+  #training-section .page-applicable {
+    <%= "display: none !important;" if training_not_applicable %>
+  }
+
+  #training-section .page-not-applicable {
+    <%= "display: none !important;" unless training_not_applicable %>
+  }
+</style>
+
+ <div class="enc-content section-applicability-container"
+     id="training-section"
+     data-section-key="training">
         <div class="container">
             <%= render "top_nav_buttons"%>
             <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
                 <div class="d-flex align-items-center gap-3">
                     <h4 class="page-heading">Training</h4>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="training-switch">
-                        <label class="form-check-label" for="training-switch">Not Applicable</label>
-                    </div>
+                    <%= render "section_applicability",
+                                section_key: "training" %>
                 </div>
-                <a href="<%= mhc_verification_platform_path(page_tab: 'training_record')%>" class="btn py-1 btn-primary %>">
+                <a href="<%= mhc_verification_platform_path(page_tab: 'training_record')%>" class="btn py-1 btn-primary page-applicable">
                     <i class='bx bx-plus' ></i>
                     Add New Training
                 </a>
@@ -37,7 +53,7 @@
               </div>
             </div>
             <% if @provider_educations %>
-                <div class="col-lg-12">
+                <div class="col-lg-12 page-applicable">
                     <div class="d-flex justify-content-between bg-medium-grey align-items-center py-2">
                         <div class="page_info ms-3 text-black">
                         <%= page_entries_info @provider_educations %>
@@ -80,17 +96,8 @@
                     </tr>
                 <% end %>
             </table>
-            <form action="" class="page-not-applicable">
-                <div class="form-row mt-4">
-                    <label for="">Please explain:<span class="font-red">*</span></label>
-                    <textarea name="" id="" cols="30" rows="5" class="form-control" required></textarea>
-                </div>
-                <div class="form-row mt-2 d-flex justify-content-end">
-                    <button type="submit" class="btn btn-sm btn-primary">
-                        Save
-                    </button>
-                </div>
-            </form>
+            <%= render "section_applicability_explanation",
+                        section_key: "training" %>
         </div>
     </div>
 <style>
