@@ -154,22 +154,41 @@
                     </div>
                 <% end %>
             </div>
+
+            <!-- Education Section -->
+            <% education_applicability = @provider_personal_information&.provider_section_applicabilities&.find_by(section_key: "education") %>
+            <% education_not_applicable = education_applicability&.not_applicable? || false %>
+
             <div class="p-2">
-                <h2>Section IV - Education
-                   <% if @education_rva_information_completed.present? %>
-                     <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
-                   <% else %>
-                     <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
-                   <% end %> 
-                 </h2>
-                <% @provider_personal_information&.practice_information_educations.each do |practice_education| %>
-                    <div class="bg-light form-row row p-2 border-bottom border-dark">
-                        <div class="col-xl-6">Education: <%= practice_education&.institution_name %></div>
-                        <div class="col-xl-6">Degree/Certificate: <%= practice_education&.degree_degree_abbreviation %></div>
-                        <div class="col-xl-6">Dates Attended: <%= "#{practice_education&.start_date&.strftime('%B %d, %Y')} - #{practice_education.end_date&.strftime('%B %d, %Y')}" %></div>
+              <h2>
+                Section IV - Education
+
+                <%# if education_not_applicable || @education_rva_information_completed.present? %>
+                  <%# <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i> %>
+                <%# else %>
+                  <%# <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i> %>
+                <%# end %>
+              </h2>
+
+              <% if education_not_applicable %>
+                <div class="bg-light form-row row p-2 border-bottom border-dark">
+                  <div class="col-12"><strong>Not Applicable</strong></div>
+                  <div class="col-12 mt-2"><strong>Explanation:</strong>
+                    <%= education_applicability.explanation %>
+                  </div>
+                </div>
+              <% else %>
+                <% @provider_personal_information&.practice_information_educations&.each do |practice_education| %>
+                  <div class="bg-light form-row row p-2 border-bottom border-dark">
+                    <div class="col-xl-6">Education: <%= practice_education&.institution_name %></div>
+                    <div class="col-xl-6">Degree/Certificate: <%= practice_education&.degree_degree_abbreviation %></div>
+                    <div class="col-xl-6">Dates Attended: <%= "#{practice_education&.start_date&.strftime('%B %d, %Y')} - #{practice_education&.end_date&.strftime('%B %d, %Y')}" %>
                     </div>
+                  </div>
                 <% end %>
+              <% end %>
             </div>
+
             <div class="p-2">
                 <h2>Section V - Training
                    <% if @training_rva_information_completed.present? %>

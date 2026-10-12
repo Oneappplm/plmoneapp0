@@ -60,6 +60,50 @@ class Mhc::VerificationPlatformController < ApplicationController
     end
   end
 
+  def update_section_applicability
+    provider = ProviderPersonalInformation.find_by!(
+      provider_attest_id: params[:id]
+    )
+
+    section_key = params[:section_key].to_s
+
+    allowed_sections = %w[
+      education
+      training
+      board_cert
+      registration
+      licensure
+      liability
+    ]
+
+    unless allowed_sections.include?(section_key)
+      return head :unprocessable_entity
+    end
+
+    applicability = provider.provider_section_applicabilities
+                            .find_or_initialize_by(section_key: section_key)
+
+    not_applicable = params[:not_applicable] == "1"
+
+    applicability.assign_attributes(
+      not_applicable: not_applicable,
+      explanation: not_applicable ? params[:explanation] : nil
+    )
+
+    redirect_path = mhc_verification_platform_path(
+      id: provider.provider_attest_id,
+      page_tab: section_key
+    )
+
+    if applicability.save
+      redirect_to redirect_path,
+                  notice: "Not Applicable status updated successfully."
+    else
+      redirect_to redirect_path,
+                  alert: applicability.errors.full_messages.to_sentence
+    end
+  end
+
   def send_contact
     contact_form = ContactForm.new(
       email: params[:to],
@@ -188,10 +232,10 @@ class Mhc::VerificationPlatformController < ApplicationController
 
 
     if all_verified
-      personal_info.update(verification_status: 'completed', cred_status: 'complete-application')
-    else
-      personal_info.update(verification_status: 'Processing')
+      personal_info.update(cred_status: 'complete-application')
     end
+
+    personal_info.sync_app_tracking_verification_status!
 
     if @rva_information.update(rva_information_params)
       render json: { message: 'Verification completed successfully', rva_information: @rva_information}, status: :ok

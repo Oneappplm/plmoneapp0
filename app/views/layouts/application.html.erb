@@ -574,15 +574,50 @@ $('#practice-info-switch').on('click', function(){
     }
 });
 
-$('#education-switch').on('click', function(){
-    if ($('#education-switch').is(":checked")) {
-        $(".page-not-applicable").css('display', 'block');
-        $(".page-applicable").hide();
-    } else {
-        $(".page-applicable").show();
-        $(".page-not-applicable").css('display', 'none');
-    }
-});
+function updateEducationApplicabilityUI() {
+    var isNotApplicable = $('#education-switch').is(':checked');
+    var section = $('#education-section');
+
+    section.find('.page-applicable').each(function() {
+        this.style.setProperty(
+            'display',
+            isNotApplicable ? 'none' : '',
+            'important'
+        );
+    });
+
+    section.find('.page-not-applicable').each(function() {
+        this.style.setProperty(
+            'display',
+            isNotApplicable ? 'block' : 'none',
+            'important'
+        );
+    });
+}
+
+if ($('#education-switch').length) {
+    updateEducationApplicabilityUI();
+
+    $('#education-switch').off('change.educationApplicability')
+                          .on('change.educationApplicability', function() {
+
+        var isNotApplicable = $(this).is(':checked');
+
+        updateEducationApplicabilityUI();
+
+        if (!isNotApplicable) {
+            $('#education-applicable-form').submit();
+        }
+    });
+}
+
+if ($('#education-switch').length) {
+    updateEducationApplicabilityUI();
+
+    $('#education-switch').on('change', function() {
+        updateEducationApplicabilityUI();
+    });
+}
 
 
 $('#registration-switch').on('click', function(){
@@ -595,7 +630,7 @@ $('#registration-switch').on('click', function(){
     }
 });
 
-$('#training-switch').on('click', function(){
+<%# $('#training-switch').on('click', function(){
     if ($('#training-switch').is(":checked")) {
         $(".page-not-applicable").css('display', 'block');
         $(".page-applicable").hide();
@@ -603,7 +638,7 @@ $('#training-switch').on('click', function(){
         $(".page-applicable").show();
         $(".page-not-applicable").css('display', 'none');
     }
-});
+}); %>
 
 $('#board-cert-switch').on('click', function(){
     if ($('#board-cert-switch').is(":checked")) {
@@ -714,7 +749,7 @@ $('#disclosure-switch').on('click', function(){
     }
 });
 
-$('#training-switch').on('click', function(){
+<%# $('#training-switch').on('click', function(){
     if ($('#training-switch').is(":checked")) {
         $(".page-not-applicable").css('display', 'block');
         $(".page-applicable").hide();
@@ -722,7 +757,7 @@ $('#training-switch').on('click', function(){
         $(".page-applicable").show();
         $(".page-not-applicable").css('display', 'none');
     }
-});
+}); %>
 
 $('#board-cert-switch').on('click', function(){
     if ($('#board-cert-switch').is(":checked")) {

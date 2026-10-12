@@ -1,5 +1,8 @@
 class ProviderPersonalInformationAppTracking < ApplicationRecord
   belongs_to :provider_personal_information
+
+  after_save :sync_provider_verification_status
+  after_destroy :sync_provider_verification_status
   
   # Define constants before validation
   MASTER_ISSUE_LIST = [
@@ -125,4 +128,10 @@ class ProviderPersonalInformationAppTracking < ApplicationRecord
     'Training Finding',
     'WC Not Received'
   ]
+
+  private
+
+  def sync_provider_verification_status
+    provider_personal_information.sync_app_tracking_verification_status!
+  end
 end
