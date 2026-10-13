@@ -1,5 +1,5 @@
-<% applicability = @provider_personal_information.provider_section_applicabilities.find_by(section_key: "education") %>
-<% education_not_applicable = applicability&.not_applicable? || false %>
+<% applicability = section_applicability(@provider_personal_information, "education") %>
+<% education_not_applicable = section_not_applicable?(@provider_personal_information, "education") %>
 
 <style>
   #education-section .page-applicable {
@@ -11,19 +11,15 @@
   }
 </style>
 
-<div class="enc-content" id="education-section">
+<div class="enc-content section-applicability-container"
+     id="education-section"
+     data-section-key="education">
     <div class="container">
         <%= render "top_nav_buttons"%>
         <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
             <div class="d-flex align-items-center gap-3">
                 <h4 class="page-heading">Education</h4>
-                <div class="form-check form-switch">
-                    <input class="form-check-input"
-                       type="checkbox"
-                       id="education-switch"
-                       <%= "checked" if education_not_applicable %>>
-                    <label class="form-check-label" for="education-switch">Not Applicable</label>
-                </div>
+                <%= render "section_applicability", section_key: "education" %>
             </div>
             <a href="<%= mhc_verification_platform_path(page_tab: 'education_record')%>" class="btn btn-primary py-1 page-applicable">
                 <i class='bx bx-plus' ></i>
@@ -98,52 +94,8 @@
                 <% end %>
             </tbody>
         </table>
-        <%= form_with url: mhc_update_section_applicability_path(
-                      id: @provider_personal_information.provider_attest_id
-                    ),
-                    method: :patch,
-                    local: true,
-                    html: {
-                      id: "education-not-applicable-form",
-                      class: "page-not-applicable"
-                    } do %>
-
-        <%= hidden_field_tag :section_key, "education" %>
-        <%= hidden_field_tag :not_applicable, "1" %>
-
-        <div class="form-row mt-4">
-          <label for="education_explanation">
-            Please explain:
-            <span class="font-red">*</span>
-          </label>
-
-          <%= text_area_tag :explanation,
-                            applicability&.explanation,
-                            id: "education_explanation",
-                            rows: 5,
-                            class: "form-control",
-                            required: true %>
-        </div>
-
-        <div class="form-row mt-2 d-flex justify-content-end">
-          <%= submit_tag "Save", class: "btn btn-sm btn-primary" %>
-        </div>
-      <% end %>
-
-      <%= form_with url: mhc_update_section_applicability_path(
-                      id: @provider_personal_information.provider_attest_id
-                    ),
-                    method: :patch,
-                    local: true,
-                    html: {
-                      id: "education-applicable-form",
-                      style: "display: none;"
-                    } do %>
-
-        <%= hidden_field_tag :section_key, "education" %>
-        <%= hidden_field_tag :not_applicable, "0" %>
-
-      <% end %>
+        <%= render "section_applicability_explanation",
+           section_key: "education" %>
     </div>
 </div>
 <style>

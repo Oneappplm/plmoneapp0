@@ -2,7 +2,6 @@
 // import "@hotwired/turbo-rails"
 import "controllers"
 import "ahoy"
-import "section_applicability"
 
 
 
