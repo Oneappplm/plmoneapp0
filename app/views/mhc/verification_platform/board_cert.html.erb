@@ -1,15 +1,24 @@
+<% applicability = section_applicability(@provider_personal_information, "board_cert") %>
+<% board_cert_not_applicable = section_not_applicable?(@provider_personal_information, "board_cert") %>
+<style>
+  #board-cert-section .page-applicable {
+    <%= "display: none !important;" if board_cert_not_applicable %>
+  }
 
+  #board-cert-section .page-not-applicable {
+    <%= "display: none !important;" unless board_cert_not_applicable %>
+  }
+</style>
 
-    <div class="enc-content">
+    <div class="enc-content section-applicability-container"
+     id="board-cert-section"
+     data-section-key="board_cert">
         <div class="container">
             <%= render "top_nav_buttons"%>
             <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
                 <div class="d-flex align-items-center gap-3">
                     <h4 class="page-heading">Board Certification</h4>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="board-cert-switch">
-                        <label class="form-check-label" for="board-cert-switch">Not Applicable</label>
-                    </div>
+                    <%= render "section_applicability", section_key: "board_cert" %>
                 </div>
                  <a href="<%= mhc_verification_platform_path(page_tab: 'board_cert_info')%>" class="btn btn-primary py-1 page-applicable">
                     <i class='bx bx-plus' ></i>
@@ -39,7 +48,7 @@
               </div>
             </div>
             <% if @provider_specialties %>
-                <div class="col-lg-12">
+                <div class="col-lg-12 page-applicable">
                     <div class="d-flex justify-content-between bg-medium-grey align-items-center py-2 mt-3">
                         <div class="page_info ms-3 text-black">
                         <%= page_entries_info @provider_specialties %>
@@ -91,17 +100,8 @@
                 <% end %>
               </tbody>
             </table>
-            <form action="" class="page-not-applicable">
-                <div class="form-row mt-4">
-                    <label for="">Please explain:<span class="font-red">*</span></label>
-                    <textarea name="" id="" cols="30" rows="5" class="form-control" required></textarea>
-                </div>
-                <div class="form-row mt-2 d-flex justify-content-end">
-                    <button type="submit" class="btn btn-sm btn-primary">
-                        Save
-                    </button>
-                </div>
-            </form>
+            <%= render "section_applicability_explanation",
+           section_key: "board_cert" %>
         </div>
     </div>
 <style>

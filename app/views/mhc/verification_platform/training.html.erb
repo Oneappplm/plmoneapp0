@@ -1,8 +1,5 @@
-<% training_applicability = @provider_personal_information
-                              .provider_section_applicabilities
-                              .find_by(section_key: "training") %>
-
-<% training_not_applicable = training_applicability&.not_applicable? || false %>
+<% applicability = section_applicability(@provider_personal_information, "training") %>
+<% training_not_applicable = section_not_applicable?(@provider_personal_information, "training") %>
 
 <style>
   #training-section .page-applicable {

@@ -573,7 +573,6 @@ $('#practice-info-switch').on('click', function(){
         $(".page-not-applicable").css('display', 'none');
     }
 });
-
 function updateEducationApplicabilityUI() {
     var isNotApplicable = $('#education-switch').is(':checked');
     var section = $('#education-section');
@@ -595,7 +594,7 @@ function updateEducationApplicabilityUI() {
     });
 }
 
-if ($('#education-switch').length) {
+<%# if ($('#education-switch').length) {
     updateEducationApplicabilityUI();
 
     $('#education-switch').off('change.educationApplicability')
@@ -609,47 +608,51 @@ if ($('#education-switch').length) {
             $('#education-applicable-form').submit();
         }
     });
-}
+} %>
 
-if ($('#education-switch').length) {
+<%# if ($('#education-switch').length) {
     updateEducationApplicabilityUI();
 
     $('#education-switch').on('change', function() {
         updateEducationApplicabilityUI();
     });
+} %>
+// Reusable Not Applicable toggle for verification sections.
+function initializeSectionApplicability() {
+    $('.section-applicability-container').each(function() {
+        var $section = $(this);
+        var $toggle = $section.find('.section-applicability-toggle').first();
+        var $offForm = $section.find('.section-applicability-off-form').first();
+
+        if (!$toggle.length) return;
+
+        function updateUI() {
+            var notApplicable = $toggle.is(':checked');
+
+            $section.find('.page-applicable').each(function() {
+                this.style.setProperty('display', notApplicable ? 'none' : '', 'important');
+            });
+
+            $section.find('.page-not-applicable').each(function() {
+                this.style.setProperty('display', notApplicable ? 'block' : 'none', 'important');
+            });
+        }
+
+        $toggle.off('change.sectionApplicability')
+               .on('change.sectionApplicability', function() {
+            updateUI();
+
+            if (!$toggle.is(':checked') && $offForm.length) {
+                $offForm[0].submit();
+            }
+        });
+
+        updateUI();
+    });
 }
 
-
-$('#registration-switch').on('click', function(){
-    if ($('#registration-switch').is(":checked")) {
-        $(".page-not-applicable").css('display', 'block');
-        $(".page-applicable").hide();
-    } else {
-        $(".page-applicable").show();
-        $(".page-not-applicable").css('display', 'none');
-    }
-});
-
-<%# $('#training-switch').on('click', function(){
-    if ($('#training-switch').is(":checked")) {
-        $(".page-not-applicable").css('display', 'block');
-        $(".page-applicable").hide();
-    } else {
-        $(".page-applicable").show();
-        $(".page-not-applicable").css('display', 'none');
-    }
-}); %>
-
-$('#board-cert-switch').on('click', function(){
-    if ($('#board-cert-switch').is(":checked")) {
-        $(".page-not-applicable").css('display', 'block');
-        $(".page-applicable").hide();
-    } else {
-        $(".page-applicable").show();
-        $(".page-not-applicable").css('display', 'none');
-    }
-});
-
+$(initializeSectionApplicability);
+$(document).on('turbo:load turbolinks:load', initializeSectionApplicability);
 
 $('#filter-select').on('change', function(){
      var val = $(this).find(':selected').val();
@@ -749,34 +752,7 @@ $('#disclosure-switch').on('click', function(){
     }
 });
 
-<%# $('#training-switch').on('click', function(){
-    if ($('#training-switch').is(":checked")) {
-        $(".page-not-applicable").css('display', 'block');
-        $(".page-applicable").hide();
-    } else {
-        $(".page-applicable").show();
-        $(".page-not-applicable").css('display', 'none');
-    }
-}); %>
 
-$('#board-cert-switch').on('click', function(){
-    if ($('#board-cert-switch').is(":checked")) {
-        $(".page-not-applicable").css('display', 'block');
-        $(".page-applicable").hide();
-    } else {
-        $(".page-applicable").show();
-        $(".page-not-applicable").css('display', 'none');
-    }
-});
-$('#licensure-switch').on('click', function(){
-    if ($('#licensure-switch').is(":checked")) {
-        $(".page-not-applicable").css('display', 'block');
-        $(".page-applicable").hide();
-    } else {
-        $(".page-applicable").show();
-        $(".page-not-applicable").css('display', 'none');
-    }
-});
 
 $('#other-cert-switch').on('click', function(){
     if ($('#other-cert-switch').is(":checked")) {
@@ -788,15 +764,6 @@ $('#other-cert-switch').on('click', function(){
     }
 });
 
-$('#registration-switch').on('click', function(){
-    if ($('#registration-switch').is(":checked")) {
-        $(".page-not-applicable").css('display', 'block');
-        $(".page-applicable").hide();
-    } else {
-        $(".page-applicable").show();
-        $(".page-not-applicable").css('display', 'none');
-    }
-});
 
 $('#app-tracking-switch').on('click', function(){
     if ($('#app-tracking-switch').is(":checked")) {
@@ -935,11 +902,11 @@ $(document).ready(function(){
 
 function toggleOn(id){
   var element_value = $('#' + id).val();
-	if (element_value == 'yes'){
-		setTimeout(function(){
-			$('#' + id).parent().find('button').click();
-		}, 500);
-	}
+  if (element_value == 'yes'){
+    setTimeout(function(){
+      $('#' + id).parent().find('button').click();
+    }, 500);
+  }
 }
 
 function addRequiredAttribute(formId, elementIds) {
@@ -1117,25 +1084,25 @@ $('#provider_enrollment_group_id').on('change',function(){
     })
   }
 
-	$(document).ready(function(){
-		var options = '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">';
-		$('.btn-print').on('click',function(){
-			var to_print = $(this).data('toprint');
-			$('#'+to_print).printThis({
+  $(document).ready(function(){
+    var options = '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">';
+    $('.btn-print').on('click',function(){
+      var to_print = $(this).data('toprint');
+      $('#'+to_print).printThis({
             importCSS: true,
             loadCSS: options,
             canvas: true});
-		});
-	})
+    });
+  })
 
 </script>
 <script>
-	$(document).ready(function(){
-		// click bi-searc and submit form
-		$('.form_search_with_icon i.bi-search').click(function(){
-			$(this).closest('form').submit();
-		});
-	});
+  $(document).ready(function(){
+    // click bi-searc and submit form
+    $('.form_search_with_icon i.bi-search').click(function(){
+      $(this).closest('form').submit();
+    });
+  });
 </script>
 <script>
   function removeFile(icon, event){

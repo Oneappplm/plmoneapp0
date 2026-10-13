@@ -119,6 +119,18 @@ module ApplicationHelper
 		'bg-white'
 	end
 
+	def section_applicability(provider, section_key)
+    return nil unless provider
+
+    provider.provider_section_applicabilities.find_by(
+      section_key: section_key.to_s
+    )
+  end
+
+  def section_not_applicable?(provider, section_key)
+    section_applicability(provider, section_key)&.not_applicable? || false
+  end
+
 	def is_edit_mode?
 	['edit', 'update'].include?(action_name)
 	end

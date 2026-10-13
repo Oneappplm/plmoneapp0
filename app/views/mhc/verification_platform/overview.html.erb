@@ -156,8 +156,8 @@
             </div>
 
             <!-- Education Section -->
-            <% education_applicability = @provider_personal_information&.provider_section_applicabilities&.find_by(section_key: "education") %>
-            <% education_not_applicable = education_applicability&.not_applicable? || false %>
+            <% education_applicability = section_applicability(@provider_personal_information, "education") %>
+            <% education_not_applicable = section_not_applicable?(@provider_personal_information, "education") %>
 
             <div class="p-2">
               <h2>
@@ -189,37 +189,55 @@
               <% end %>
             </div>
 
+            <% training_applicability = section_applicability(@provider_personal_information, "training") %>
+            <% training_not_applicable = section_not_applicable?(@provider_personal_information, "training") %>
+
             <div class="p-2">
                 <h2>Section V - Training
-                   <% if @training_rva_information_completed.present? %>
-                     <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
-                   <% else %>
-                     <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
-                   <% end %> 
+                   <%# if @training_rva_information_completed.present? %>
+                     <%# <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i> %>
+                   <%# else %>
+                     <%# <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i> %>
+                   <%# end %> 
                  </h2>
-                <% @provider_personal_information&.provider_educations.where.not(specialty_specialty_name: nil).each do |provider_education| %>
-                    <div class="bg-light form-row row p-2 border-bottom border-dark">
-                        <div class="col-xl-6">Institution Name: <%= provider_education&.institution_name %></div>
-                        <div class="col-xl-6">Training Type: <%= provider_education&.program_type %></div>
-                        <div class="col-xl-12">Dates Attended: <%= "#{provider_education&.start_date&.strftime('%B %d, %Y')} - #{provider_education.end_date&.strftime('%B %d, %Y')}" %></div>
-                        <div class="col-xl-12">Specialty: <%= provider_education&.specialty_specialty_name %></div>
+                <% if training_not_applicable %>
+                  <div class="bg-light form-row row p-2 border-bottom border-dark">
+                    <div class="col-12"><strong>Not Applicable</strong></div>
+                    <div class="col-12 mt-2"><strong>Explanation:</strong>
+                      <%= training_applicability.explanation %>
                     </div>
-                <% end %>
+                  </div>
+                <% else %> 
+                  <% @provider_personal_information&.provider_educations.where.not(specialty_specialty_name: nil).each do |provider_education| %>
+                      <div class="bg-light form-row row p-2 border-bottom border-dark">
+                          <div class="col-xl-6">Institution Name: <%= provider_education&.institution_name %></div>
+                          <div class="col-xl-6">Training Type: <%= provider_education&.program_type %></div>
+                          <div class="col-xl-12">Dates Attended: <%= "#{provider_education&.start_date&.strftime('%B %d, %Y')} - #{provider_education.end_date&.strftime('%B %d, %Y')}" %></div>
+                          <div class="col-xl-12">Specialty: <%= provider_education&.specialty_specialty_name %></div>
+                      </div>
+                  <% end %>
+                <% end %>  
             </div>
+            <% board_cert_applicability = section_applicability(@provider_personal_information, "board_cert") %>
+            <% board_cert_not_applicable = section_not_applicable?(@provider_personal_information, "board_cert") %>
              <div class="p-2">
                  <h2>Section VIII - Board Certification
-                  <% if @board_cert_rva_information_completed.present? %>
-                    <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
-                  <% else %>
-                    <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
-                  <% end %> 
                 </h2>
-                <% @provider_personal_information&.provider_specialties.each do |provider_specialty| %>
-                    <div class="bg-light form-row row p-2 border-bottom border-dark">
-                        <div class="col-xl-6">Specialty: <%= provider_specialty&.specialty_specialty_name %></div>
-                        <div class="col-xl-6">Board Certification Status: <%= provider_specialty&.board_certified_flag %></div>
+                <% if board_cert_not_applicable %>
+                  <div class="bg-light form-row row p-2 border-bottom border-dark">
+                    <div class="col-12"><strong>Not Applicable</strong></div>
+                    <div class="col-12 mt-2"><strong>Explanation:</strong>
+                      <%= board_cert_applicability.explanation %>
                     </div>
-                <% end %>
+                  </div>
+                <% else %> 
+                  <% @provider_personal_information&.provider_specialties.each do |provider_specialty| %>
+                      <div class="bg-light form-row row p-2 border-bottom border-dark">
+                          <div class="col-xl-6">Specialty: <%= provider_specialty&.specialty_specialty_name %></div>
+                          <div class="col-xl-6">Board Certification Status: <%= provider_specialty&.board_certified_flag %></div>
+                      </div>
+                  <% end %>
+                <% end %>  
             </div>
              <div class="p-2">
                 <h2>Section X - Registration/Certification
