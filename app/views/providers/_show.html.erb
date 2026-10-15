@@ -266,6 +266,32 @@
             <p class="mb-1"><strong>Hire date of provider seeing patients:</strong> <%= @provider&.provider_hire_date_seeing_patient %> </p>
             <p class="mb-1"><strong>Effective date of provider seeing patients:</strong> <%= @provider&.effective_date_seeing_patient %> </p>
             <p class="mb-1"><strong>Does the provider require to work under a supervising licensed psychologist?</strong> <%= @provider&.supervised_by_psychologist %> </p>
+            <% @provider.provider_enrollment_groups.each do |group| %>
+              <div class="border p-3 mb-3">
+                <h5>Group: <%= @practice_groups[group.group_id]&.group_name || "N/A" %></h5>
+
+                <p><strong>Primary Location:</strong>
+                  <% if group.primary_location.present? %>
+                    <% group.primary_location.each do |loc_id| %>
+                      <%= @dco_locations[loc_id.to_i]&.dco_name || "ID: #{loc_id}" %><br>
+                    <% end %>
+                  <% else %>
+                    N/A
+                  <% end %>
+                </p>
+
+                <p><strong>Additional Locations:</strong>
+                  <% if group.additional_locations.present? %>
+                    <% group.additional_locations.first.split(',').each do |loc_id| %>
+                      <%= @dco_locations[loc_id.to_i]&.dco_name || "ID: #{loc_id}" %><br>
+                    <% end %>
+                  <% else %>
+                    N/A
+                  <% end %>
+                </p>
+              </div>
+            <% end %>
+
       </div>
     </div>
 

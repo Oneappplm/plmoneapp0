@@ -1,0 +1,96 @@
+<div class="form-row licensed_members_container row mt-3 licensed-members-card">
+  <div class="col-xl-12">
+      <div class="other-name-card">
+          <div class="card-body">
+              <h6 class="form-heading">Other Licensed/Certified Members</h6>
+              <div class="row mt-2">
+                  <div class="col-xl-4">
+                      <label for="">First Name:</label>
+                      <%= f.text_field :licensed_member_first_name, class: "form-control", placeholder: "Type here...", id: "other-licensed-fname" %>
+                  </div>
+                  <div class="col-xl-2">
+                      <label for="">Middle Name:</label>
+                      <%= f.text_field :licensed_member_middle_name, class: "form-control", placeholder: "Type here...", id: "other-licensed-mname" %>
+                  </div>
+                  <div class="col-xl-4">
+                      <label for="">Last Name:</label>
+                      <%= f.text_field :licensed_member_last_name, class: "form-control", placeholder: "Type here...", id: "other-licensed-lname" %>
+                  </div>
+                  <div class="col-xl-2">
+                      <label for="other-licensed-suffix">Suffix:</label>
+                      <%= f.select :licensed_member_suffix_name, [["Sr", "sr"], ["Jr", "jr"], ["II", "ii"], ["III", "iii"], ["IV", "iv"], ["V", "v"], ["VI", "vi"], ["VII", "vii"]], { prompt: true }, { class:"form-select" } %>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-xl-6">
+                      <label for="other-licensed-type-practitioner">Type of Practitioner:</label>
+                      <%= f.select :licensed_member_practitioner_type, 
+                          [
+                            ["Accupuncturist", "accupuncturist"], 
+                            ["Allopathic Physician", "allopathic physician"],
+                            ["Dentist", "dentist"], 
+                            ["Geneticist", "geneticist"],
+                            ["Osteopathic Physician", "osteopathic physician"],
+                            ["Other", "other"],
+                            ["Podiatrist", "podiatrist"],
+                            ["Professional Counselor", "professional counselor"],
+                            ["Alcohol", "alcohol"],
+                            ["Professional Counselor, Family/Marriage", "professional counselor, family/marriage"],
+                            ["Professional Counselor, Substance Abuse", "professional counselor, substance abuse"],
+                            ["Psychologist", "psychologist"],
+                            ["Psychologist, Clinical", "psychologist, clinical"],
+                            ["Social Worker"], ["social worker"]
+                          ], { prompt: true }, { class:"form-select", id:"personally-employed-practitioner-type" } %>
+                  </div>
+                  <div class="col-xl-6">
+                      <label for="other-licensed-specialty">Specialty:</label>
+                      <%= f.select :licensed_member_specialty, LicensedMember::SPECIALTY, { prompt: true }, { class: "form-select" } %>
+                  </div>
+              </div>
+              <div class="row mt-2">
+                  <div class="col-xl-6">
+                      <div class="row">
+                          <div class="col-xl-4">
+                            <div class="col-xl-8 d-flex align-items-end">
+                              <div class="d-flex align-items-center gap-3">
+                                <%= f.label :licensed_member_is_partner, "Partner?" %>
+                                <div class="form-check d-flex align-items-center gap-2">
+                                  <%= f.radio_button :licensed_member_is_partner, true, class: 'form-check-input', id: 'partner-radio-yes' %>
+                                  <%= f.label :licensed_member_is_partner, 'Yes', class: 'form-check-label'%>
+                                </div>
+                                <div class="form-check d-flex align-items-center gap-2">
+                                  <%= f.radio_button :licensed_member_is_partner, false, class: 'form-check-input', id: 'partner-radio-no' %>
+                                  <%= f.label :licensed_member_is_partner, 'No', class: 'form-check-label', for: 'partner-radio-no' %>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-xl-8 d-flex align-items-end">
+                              <div class="d-flex align-items-center gap-3">
+                                <%= f.label :licensed_member_is_employing_physician, "Employing Physician?" %>
+                                <div class="form-check d-flex align-items-center gap-2">
+                                  <%= f.radio_button :licensed_member_is_employing_physician, true, class: 'form-check-input', id: 'employing-physician-radio-yes' %>
+                                  <%= f.label :licensed_member_is_employing_physician, 'Yes', class: 'form-check-label' %>
+                                </div>
+                                <div class="form-check d-flex align-items-center gap-2">
+                                  <%= f.radio_button :licensed_member_is_employing_physician, false, class: 'form-check-input', id: 'employing-physician-radio-no' %>
+                                  <%= f.label :licensed_member_is_employing_physician, 'No', class: 'form-check-label'%>
+                                </div>
+                              </div>
+                            </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-1 text-center ms-auto mt-2">
+                <% if f.object.id %>
+                  <%= f.hidden_field :_destroy, class: "destroy-field" %>
+                  <button type="button" class="btn btn-xs btn-danger remove-dynamic-fields" data-model="other_license_member" data-id=<%= f.object.id %> id="remove-license-member"> Remove</button>
+                <% else %>
+                  <button type="button" class="btn btn-xs btn-danger remove-dynamic-fields" data-id=0 id="remove-license-member"> Remove </button>
+                <% end %>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

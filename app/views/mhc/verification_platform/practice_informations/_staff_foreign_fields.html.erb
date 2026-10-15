@@ -1,0 +1,67 @@
+<div class="form-row staff_spoken_foreign_languages_container row mt-3 staff-spoken-foreign-languages-card">
+	<div class="col-xl-12">
+		<div class="other-name-card">
+			<div class="card-body">
+				<h6 class="form-heading">Staff Foreign Languages</h6>
+				<div class="">
+					<label for="" class="mt-2">Staff: 1</label>
+				</div>
+				<div class="col-xl-12">
+					<label for="staff-language" class="mt-2">Language:</label>
+					<%= f.select :language, StaffSpokenForeignLanguage::LANGUAGE, { prompt: true }, { class: 'form-select mt-2 mb-2', id:"staff-language" } %>
+				</div>
+
+				<div class="row mt-4 mb-4">	
+					<div class="col-xl-12">
+						<div class="d-flex align-items-center gap-3">
+							<label for="staff-language-read">Language Proficiency:</label>
+								<div class="form-check d-flex align-items-center gap-2">
+									<%= f.check_box :is_spoken, id: "staff-language-speak", class: "mt-2 mx-1" %>
+									<%= f.label :is_spoken, "Speak", class: "mt-2" %>
+								</div>
+
+								<div class="form-check d-flex align-items-center gap-2">
+									<%= f.check_box :is_read, id: "staff-language-read", class: "mt-2 mx-1" %>
+									<%= f.label :is_read, "Read", class: "mt-2" %>
+								</div>
+								
+								<div class="form-check d-flex align-items-center gap-2">
+									<%= f.check_box :is_write, id: "staff-language-write", class: "mt-2 mx-1" %>
+									<%= f.label :is_write, "Write", class: "mt-2" %>
+								</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-xl-8 d-flex align-items-end">
+				  <div class="d-flex align-items-center gap-3">
+				    <%= f.label :is_interpreter_available, "Are interpreters available?" %>
+				    <div class="form-check d-flex align-items-center gap-2">
+				      <%= f.radio_button :is_interpreter_available, true, class: 'form-check-input', id: 'interpreter-radio-yes' %>
+				      <%= f.label :is_interpreter_available, 'Yes', class: 'form-check-label' %>
+				    </div>
+				    <div class="form-check d-flex align-items-center gap-2">
+				      <%= f.radio_button :is_interpreter_available, false, class: 'form-check-input', id: 'interpreter-radio-no' %>
+				      <%= f.label :is_interpreter_available, 'No', class: 'form-check-label' %>
+				    </div>
+				  </div>
+				</div>
+
+				<div class=" row mt-4">
+					<div class="col-xl-12">
+						<label for="staff-language-specify">If Yes, please specify languages:</label>
+						<%= f.select :specific_language, StaffSpokenForeignLanguage::LANGUAGE, { prompt: true }, { class: 'form-select mt-2 mb-2', id:"staff-language-specify" } %>
+					</div>
+				</div>
+				<div class="col-lg-1 text-center ms-auto mt-2">
+          <% if f.object.id %>
+            <%= f.hidden_field :_destroy, class: "destroy-field" %>
+            <button type="button" class="btn btn-xs btn-danger remove-dynamic-fields" data-model="staff_spoken_foreign_languages" data-id=<%= f.object.id %> id="remove-provider-supervising"> Remove</button>
+          <% else %>
+            <button type="button" class="btn btn-xs btn-danger remove-dynamic-fields" data-id=0 id="remove-staff-spoken-foreign-languages"> Remove </button>
+          <% end %>
+        </div>
+			</div>
+		</div>
+	</div>
+</div>

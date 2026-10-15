@@ -39,6 +39,7 @@ class User < ApplicationRecord
 
   validates :first_name, presence: true,  on: :create
   validates :last_name, presence: true, on: :create
+  validates :password, confirmation: true, if: -> { from_source_enrollment? && password.present? }, on: :create
   # temporarily commented to cater only using temporary password
   # validate :password_match
 
@@ -46,7 +47,7 @@ class User < ApplicationRecord
     # user.validates_presence_of :status
     user.validates_presence_of :password_confirmation
     user.validates_length_of :password, within: 6..40
-    # user.validates_confirmation_of :password
+    user.validates_confirmation_of :password
   end
 
   before_save :set_temporary_password_as_password, :set_user_role
@@ -69,13 +70,45 @@ class User < ApplicationRecord
   has_one :group_engage_provider, dependent: :destroy
 
   has_many :director_providers
+  has_many :provider_personal_informations, through: :director_providers
   has_many :virtual_review_committees, through: :director_providers
+
+  has_many :provider_npdb_comments, dependent: :destroy
 
   accepts_nested_attributes_for :users_enrollment_groups, allow_destroy: true, reject_if: :all_blank
 
   attr_accessor :email_cc, :email_subject, :email_message, :hidden_role
 
   class << self
+    def from_omniauth(auth)
+      return nil unless auth && auth['info']['email'].present?
+      
+      info = auth['info']
+
+      user = User.find_or_create_by(email: info['email']) do |user|
+        user.provider = auth['provider']
+        user.uid = auth['uid']
+        user.first_name = info['first_name'] || info['name']&.split&.first
+        user.last_name  = info['last_name'] || info['name']&.split&.last
+        user.password = SecureRandom.hex(8) # Required for Devise
+      end
+
+      # if user.persisted? && user.confirmed_at.nil?
+      #   user.confirmed_at = Time.current
+      #   user.save(validate: false)
+      # end
+
+      if user.persisted?
+        user.save(validate: false)
+      end
+
+      user
+    end
+
+    def displayable_attributes
+      %i[id first_name middle_name last_name email user_role created_at]
+    end
+
     def set_user_sidebar_preferences
       User.all.each do |user|
         sidebar_cards = ['enrollment_details', 'licenses', 'documents','group', 'practice_location', 'enrollments', 'enrollment_payer', 'dco_outreach' ,'schedules']
@@ -135,7 +168,7 @@ class User < ApplicationRecord
   def find_excluded_roles
     case user_role
       when 'administrator'
-        ['super_administrator', 'encoder', 'test_user' ]
+        ['super_administrator', 'encoder', 'test_user', 'demo_administrator' ]
         # ['super_administrator','encoder','calls_agent','agent', 'test_user' ,'viewer']
       else
         ['encoder', 'test_user']
@@ -227,15 +260,15 @@ class User < ApplicationRecord
    end
   end
 
-  def can_access? page = nil
-    # role-based access v2 is now attached to current_user instead of application helpers
-    return false unless page.present?
+  def can_access?(page = nil)
+    return false if page.blank?
 
-    # to_role is monkey patch from String class in initializers/string.rb
-    # force to return false instead of nil if role is not found
-    roles.find_by(page: page.to_role)&.can_read || false
+    # Cache roles in memory to avoid N+1 queries
+    @role_access_map ||= roles.pluck(:page, :can_read).to_h
+
+    @role_access_map[page.to_role] || false
   end
-
+  
   def restricted? page
     !can_access?(page)
   end
@@ -313,7 +346,11 @@ class User < ApplicationRecord
   private
 
   def set_user_role
-    self.user_role = hidden_role if hidden_role.present?
+    if hidden_role.present?
+     self.user_role = hidden_role
+    elsif user_role.blank?
+     self.user_role = "admin_staff"
+    end
   end
 
   def set_sidebar_preferences

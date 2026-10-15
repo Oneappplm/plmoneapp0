@@ -1,0 +1,94 @@
+<div class="form-row allied_health_practitioner_container row mt-3 allied-health-card">
+  <div class="col-xl-12">
+    <div class="other-name-card">
+      <div class="card-body">
+        <h3 class="">Allied Health Practitioners</h3>
+        <div class="row">
+					<div class="col-xl-4">
+						<label for="">First Name:</label>
+						<%= f.text_field :first_name, placeholder: "Type here...", id: "allied-fname", class: 'form-control' %>
+					</div>
+					<div class="col-xl-4">
+						<label for="">Last Name:</label>
+						<%= f.text_field :last_name, placeholder: "Type here...", id: "allied-lname", class: 'form-control' %>
+					</div>
+					<div class="col-xl-4">
+						<label for="allied-suffix">Suffix:</label>
+						<%= f.select :suffix, [["Sr", "sr"], ["Jr", "jr"], ["II", "ii"], ["III", "iii"], ["IV", "iv"], ["V", "v"], ["VI", "vi"], ["VII", "vii"]], { prompt: true }, { class:"form-select" } %>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xl-6">
+						<label for="allied-type-practitioner">Type of Practitioner:</label>
+						<%= f.select :type_of_practitioner, [["Allied Health Practitioner Type", "allied health practitioners type"], ["Audiologist", "audiologist"], ["Chiropractor", "chiropractor"], ["Dietician", "dietician"], ["License Vocational Nurse/License Practical Nurse", "license vocational nurse/license practical nurse"], ["Massage Therapist", "massage therapist"], ["Nurse Anesthetist", "nurse anethetist"], ["Nurse Midwife", "nurse midwife"], ["Nurse Practitioner", "nurse practitioner"], ["Occupational Therapist", "occupationla therapist"], ["Optometrist", "optometrist"], ["Orthopedic Technician", "orthopedic technician"], ["Other", "other"], ["Physical Therapist", "physical therapist"], ["Physician Assistant, Allopathic", "physician assistant, allopathic"], ["Physician Assistant, Osteopathic", "physician assistant, osteopathic"], ["Registered Nurse", "registered nurse"], ["Rehabilitative Therapist", "rehabilitative therapist"], ["Respiratory Therapist", "respiratory therapist"], ["Speech/Language Pathologist", "speech/language pathologist"]], { prompt: true }, { class: "form-select" } %>
+					</div>
+					<div class="col-xl-6">
+						<label for="">Address:</label>
+						<%= f.text_field :address, placeholder: "Type here...", class: "form-control", id: "allied-address" %>
+					</div>
+				</div>
+				<div class="row">	
+					<div class="col-xl-6">
+						<label for="">Suite/Mail Stop:</label>
+						<%= f.text_field :mail_stop, placeholder: "Type here...", class: "form-control", id: "allied-mail-stop" %>
+					</div>
+					<div class="col-xl-6">
+						<label for="">Additional Address:</label>
+						<%= f.text_field :address2, placeholder: 'Type here...', class: 'form-control', id: 'allied-additional-address' %>
+					</div>
+				</div>
+				<div class="row">	
+					<div class="col-xl-6">
+						<label for="">City:</label>
+						<%= f.text_field :city, placeholder: 'Type here...', class: 'form-control', id: 'allied-city' %>
+					</div>
+					<div class="col-xl-6">
+						<label for="">County:</label>
+						<%= f.text_field :country, placeholder: 'Type here...', class: 'form-control', id: 'allied-county' %>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xl-4">
+						<label for="allied-state">State/Province:</label>
+						<%= f.collection_select :state, State.all,  :id, :name, { include_blank: "Select State" }, class: "form-select form-select-lg", id: 'allied-state' %>
+					</div>
+					<div class="col-xl-4">
+						<label for="">Zip/Postal Code:</label>
+						<%= f.text_field :zip_code, placeholder: "Type here...", id: "allied-zip", class: "form-control" %>
+					</div>
+					<div class="col-xl-4">
+						<label for="allied-country">Country:</label>
+						<%= f.text_field :country, placeholder: 'Type here...', class: 'form-control', id: 'allied-county' %>
+					</div>
+				</div>
+				<div class="row">	
+					<div class="col-xl-4">
+						<label for="allied-state-licence-no-select">State License Number:</label>
+						<%= f.text_field :state_license_number, placeholder: 'Type here...', class: 'form-control', id: 'allied-state-licence-no-select' %>
+					</div>
+					<div class="col-xl-8 d-flex align-items-end">
+					  <div class="d-flex align-items-center gap-3 pcp-radio-value">
+					    <%= f.label :listed_as_pcp, "If credentialed, would the practitioner wish to be listed as a PCP?" %>
+					    <div class="form-check d-flex align-items-center gap-2">
+							  <%= f.radio_button :listed_as_pcp, true, class: 'form-check-input', id: 'PCP-radio-yes' %>
+							  <%= f.label :listed_as_pcp, 'Yes', class: 'form-check-label', for: 'PCP-radio-yes' %>
+							</div>
+							<div class="form-check d-flex align-items-center gap-2">
+							  <%= f.radio_button :listed_as_pcp, false, class: 'form-check-input', id: 'PCP-radio-no' %>
+							  <%= f.label :listed_as_pcp, 'No', class: 'form-check-label', for: 'PCP-radio-no' %>
+							</div>
+					  </div>
+					</div>
+				</div>
+				<div class="col-lg-1 text-center ms-auto mt-2">
+					<% if f.object.id %>
+					  <%= f.hidden_field :_destroy, class: "destroy-field" %>
+						<button type="button" class="btn btn-xs btn-danger remove-dynamic-fields" data-model="practice_informations_allied_health_practitioner" data-id=<%= f.object.id %> id="remove-allied-health-practitioner"> Remove</button>
+					<% else %>
+						<button type="button" class="btn btn-xs btn-danger remove-dynamic-fields" data-id=0 id="remove-health-practioner"> Remove </button>
+					<% end %>
+				</div>
+			</div>
+		</div>
+	</div>			
+</div>

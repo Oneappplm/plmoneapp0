@@ -1,0 +1,35 @@
+<div class="nested-fields border p-3 mb-3 enrollment-entry" data-index="<%= index %>">
+  <%= f.hidden_field :_destroy, class: "destroy-flag" %>
+  <div class="row">
+    <div class="col-lg-6">
+      <label>Group <span class="text-red">*</span></label>
+      <%= f.select :group_id, options_for_select(groups.pluck(:group_name, :id), f.object.group_id),
+        { prompt: 'Select group' },
+        class: 'form-control group-select',
+        data: {
+          index: index,
+          group_id: f.object.group_id,
+          primary_location: f.object.primary_location&.join(","),
+          additional_locations: f.object.additional_locations&.join(",")
+        } %>
+    </div>
+
+    <div class="col-lg-6 group-location-fields <%= f.object.primary_location.present? || f.object.additional_locations.present? ? '' : 'd-none' %>" data-index="<%= index %>">
+      <label>Primary Location</label>
+      <input type="hidden" name="provider[provider_enrollment_groups_attributes][<%= index %>][primary_location][]" value="">
+      <div class="multi-select form-control primary-location-select-<%= index %> border border-dark"
+        id="primary_location_<%= index %>" data-index="<%= index %>"></div>
+
+      <label class="mt-2">Additional Locations</label>
+      <input type="hidden" name="provider[provider_enrollment_groups_attributes][<%= index %>][additional_locations][]" value="">
+      <div class="multi-select form-control additional-location-select-<%= index %> border border-dark"
+        id="additional_locations_<%= index %>" data-index="<%= index %>"></div>
+    </div>
+  </div>
+
+  <div class="row mt-2">
+    <div class="col-12 text-end">
+      <button type="button" class="remove_fields btn btn-danger">Remove</button>
+    </div>
+  </div>
+</div>

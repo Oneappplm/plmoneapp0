@@ -2,7 +2,8 @@
 
 class Webscraper::ReportGenerationService < WebscraperService
 	attr_reader :encompass_id, :username, :password
-	def initialize(encompass_id, username: "devs", password: "Test123!")
+
+	def initialize(encompass_id, username: "devs", password: "Test1234!")
 		@encompass_id = encompass_id
 		@username = username
 		@password = password
@@ -14,17 +15,35 @@ class Webscraper::ReportGenerationService < WebscraperService
 	end
 
 	def crawl!
+		options = Selenium::WebDriver::Chrome::Options.new
+
+	  # Uncomment the following line to run headless
+	  options.add_argument('--headless')
+
+	  options.add_argument('--disable-gpu')
+	  options.add_argument('--no-sandbox')
+
+	  @crawler ||= Selenium::WebDriver.for :chrome, options: options
+
 		crawler.get('https://dwmha.webcvo.net/Index.asp')
 		sleep(10)
+
+		handle_alert_if_present
 
 		# login
 		crawler.find_element(:name, 'txtUserName').send_keys(username)
 		crawler.find_element(:id, "txtPassword").send_keys(password)
 		crawler.find_element(:xpath, "//a[@href='javascript:submitbutton()']").click
 
+		sleep(3) # small delay for page load
+
+		if crawler.page_source.include?("reset password") || crawler.current_url.include?("ResetPassword")
+		  raise "Login failed — redirected to reset password page"
+		end
+
 		# capture_full_page_screenshot_old(crawler, "screenshot.png")
 		# save_screenshot
-# binding.break
+		# binding.break
 		# search by encompass id
 		crawler.find_element(:id, 'txtSearchName').send_keys(encompass_id)
 		crawler.find_element(:xpath, "//img[@src='../images/search.gif']").click
@@ -36,23 +55,23 @@ class Webscraper::ReportGenerationService < WebscraperService
 		crawler.find_element(css: 'a[href^="Profile.asp"]').click
 
 		# Store the current window handle
-  main_window = crawler.window_handle
+  	main_window = crawler.window_handle
 
 		# Store the current window handles
-  original_window_handles = crawler.window_handles
+  	original_window_handles = crawler.window_handles
 
 		# click Generate Profile button
 		crawler.find_element(css: 'input[value="Generate Profile (.NET)"]').click
 
 		# Wait for the new window to appear
-  wait = Selenium::WebDriver::Wait.new(timeout: 10)
-  wait.until { crawler.window_handles.size > original_window_handles.size }
+	  wait = Selenium::WebDriver::Wait.new(timeout: 10)
+	  wait.until { crawler.window_handles.size > original_window_handles.size }
 
 		# Get the new window handle
-  new_window_handle = (crawler.window_handles - original_window_handles).first
+  	new_window_handle = (crawler.window_handles - original_window_handles).first
 
-  # Switch to the new window
-  crawler.switch_to.window(new_window_handle)
+  	# Switch to the new window
+  	crawler.switch_to.window(new_window_handle)
 
 		# click radio button with id rblVerifiedProfileVersion_2
 		crawler.find_element(:id, 'rblVerifiedProfileVersion_2').click
@@ -71,32 +90,50 @@ class Webscraper::ReportGenerationService < WebscraperService
 	end
 
 	private
+
+	def folder_path
+	  @folder_path ||= begin
+	    base_path = Rails.root.join('public', 'webscrape', 'report_generation')
+	    FileUtils.rm_rf(base_path) if File.exist?(base_path) # Remove old folder
+	    FileUtils.mkdir_p(base_path)                          # Create fresh folder
+	    base_path
+	  end
+	end
+
+  def save_path
+    folder_path.join('report_generation_screenshot.png')
+  end
+
+  def save_path_pdf
+    folder_path.join('report_generation_screenshot.pdf')
+  end
+  
 	def capture_bottom_page_screenshot(driver, file_path)
-			total_height = driver.execute_script('return document.body.scrollHeight')
-			viewport_height = driver.execute_script('return window.innerHeight')
+		total_height = driver.execute_script('return document.body.scrollHeight')
+		viewport_height = driver.execute_script('return window.innerHeight')
 
-			# Scroll to the bottom of the page
-			driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-			sleep(5) # Give the page time to load
+		# Scroll to the bottom of the page
+		driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+		sleep(5) # Give the page time to load
 
-			# Capture the screenshot of the current viewport
-			screenshot = driver.screenshot_as(:png)
-			image = ChunkyPNG::Image.from_blob(screenshot)
+		# Capture the screenshot of the current viewport
+		screenshot = driver.screenshot_as(:png)
+		image = ChunkyPNG::Image.from_blob(screenshot)
 
-			# Determine the height of the bottom part to capture
-			bottom_height = total_height % viewport_height
-			if bottom_height == 0
-					bottom_height = viewport_height
-			end
+		# Determine the height of the bottom part to capture
+		bottom_height = total_height % viewport_height
+		if bottom_height == 0
+				bottom_height = viewport_height
+		end
 
-			# Create a blank image with the height of the bottom part
-			stitched_image = ChunkyPNG::Image.new(image.width, bottom_height, ChunkyPNG::Color::WHITE)
+		# Create a blank image with the height of the bottom part
+		stitched_image = ChunkyPNG::Image.new(image.width, bottom_height, ChunkyPNG::Color::WHITE)
 
-			# Paste the current viewport into the final image
-			stitched_image.replace!(image.crop(0, image.height - bottom_height, image.width, bottom_height), 0, 0)
+		# Paste the current viewport into the final image
+		stitched_image.replace!(image.crop(0, image.height - bottom_height, image.width, bottom_height), 0, 0)
 
-			# Save the final image
-			stitched_image.save(file_path)
+		# Save the final image
+		stitched_image.save(file_path)
 	end
 
 	# Method to convert a PNG image to PDF
@@ -106,7 +143,12 @@ class Webscraper::ReportGenerationService < WebscraperService
 		end
 	end
 
-	def save_path_pdf
-		folder_path.join('screenshot.pdf')
+	def handle_alert_if_present
+	  begin
+	    alert = Selenium::WebDriver::Wait.new(timeout: 5).until { crawler.switch_to.alert }
+	    alert.accept # or alert.dismiss if you want to dismiss the alert instead of accepting it
+	  rescue Selenium::WebDriver::Error::NoAlertPresentError
+	    # No alert present, continue
+	  end
 	end
 end

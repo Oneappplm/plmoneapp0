@@ -1,0 +1,59 @@
+<div class="form-row employed_practioner_container mt-3 personal-emmployed-card">
+	<div class="col-xl-12">
+		<div class="mb-2 other-name-card">
+			<div class="card-body">
+				<h4 class=" mb-2">Personally Employed Practitioners</h4>
+				<div class="row mt-2">
+					<div class="col-xl-4">
+						<label for="">First Name:</label>
+						<%= f.text_field :personal_employed_first_name, class: 'form-control', placeholder: 'Type here...', id: "personally-employed-practitioner-fname" %>
+					</div>
+					<div class="col-xl-4">
+						<label for="">Last Name:</label>
+						<%= f.text_field :personal_employed_last_name, class: 'form-control', placeholder: 'Type here...', id: "personally-employed-practitioner-lname" %>
+					</div>
+					<div class="col-xl-4">
+						<label for="personally-employed-practitioner-suffix">Suffix:</label>
+						<%= f.select :personal_employed_suffix_name, [["Sr", "sr"], ["Jr", "jr"], ["II", "ii"], ["III", "iii"], ["IV", "iv"], ["V", "v"], ["VI", "vi"], ["VII", "vii"]], { prompt: true }, { class:"form-select" } %>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xl-8">
+						<label for="personally-employed-practitioner-type">Type of Practitioner:</label>
+						<%= f.select :personal_employed_practitioner_type, 
+								[
+									["Accupuncturist", "accupuncturist"], 
+									["Allopathic Physician", "allopathic physician"],
+							    ["Dentist", "dentist"], 
+							    ["Geneticist", "geneticist"],
+							    ["Osteopathic Physician", "osteopathic physician"],
+							    ["Other", "other"],
+							    ["Podiatrist", "podiatrist"],
+							    ["Professional Counselor", "professional counselor"],
+							    ["Alcohol", "alcohol"],
+							    ["Professional Counselor, Family/Marriage", "professional counselor, family/marriage"],
+							    ["Professional Counselor, Substance Abuse", "professional counselor, substance abuse"],
+							    ["Psychologist", "psychologist"],
+							    ["Psychologist, Clinical", "psychologist, clinical"],
+							    ["Social Worker"], ["social worker"]
+							  ], { prompt: true }, { class:"form-select", id:"personally-employed-practitioner-type" } %>
+					</div>
+
+					<div class="col-xl-4">
+						<label for="personally-employed-practitioner-state-license-no-select">State
+							License Number:</label>
+							<%= f.text_field :personal_employed_state_license_number, class: 'form-control', id: "personally-employed-practitioner-state-license-no-select", placeholder: "Type here..." %>
+					</div>
+				</div>
+				<div class="col-lg-1 text-center ms-auto mt-2">
+					<% if f.object.id %>
+					  <%= f.hidden_field :_destroy, class: "destroy-field" %>
+						<button type="button" class="btn btn-xs btn-danger remove-dynamic-fields" data-model="employed_practioner" data-id=<%= f.object.id %> id="remove-provider-supervising"> Remove</button>
+					<% else %>
+						<button type="button" class="btn btn-xs btn-danger remove-dynamic-fields" data-id=0 id="remove-health-practioner"> Remove </button>
+					<% end %>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

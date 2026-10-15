@@ -1,4 +1,5 @@
 class ManageToolsController < ApplicationController
+  before_action :set_sidebar_search
 
   def call_schedule_group_maintenance
    @add_schedule = AddSchedule.new
@@ -17,5 +18,14 @@ class ManageToolsController < ApplicationController
   private
   def add_schedule_params
     params.require(:add_schedule).permit(:group_name, :description, add_members:[])
+  end
+
+  def set_sidebar_search
+    base_scope =
+      ProviderPersonalInformation
+        .where.not(cred_status: 'no-application')
+        .or(ProviderPersonalInformation.where(cred_status: nil))
+
+    @q = base_scope.ransack(params[:q])
   end
 end

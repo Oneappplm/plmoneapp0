@@ -17,6 +17,8 @@ class Client < ApplicationRecord
    scope :returned, -> { where(cred_status: 'returned') }
    # scope :published, -> { where(:published => true)}
 
+   has_many :providers
+
 	def self.create_dummies
 		providers = ['Hospice Home Care', 'Mercy Medical Center', 'Baptist Health', 'Mayo Clinic', 'Cleveland Clinic', 'Standford Health Care', 'UCLA Health', 'University of Michigan']
 	 	statuses = ['attested', 'no-application', 'complete-application', 'incomplete','pending', 'in-process', 'psv', 'returned']
@@ -39,7 +41,7 @@ class Client < ApplicationRecord
      		client.street_address = Faker::Address.street_address
      		client.city = Faker::Address.city
      		client.zipcode = Faker::Address.zip_code
-     		client.ssn = Faker::IDNumber.valid
+     		client.ssn = Faker::IdNumber.valid
      		client.npi = npis[(rand(0..7))]
      		client.attested_date = Faker::Date.between(from: '2008-09-23', to: '2014-09-25')
      		client.provider_type = "Facility"

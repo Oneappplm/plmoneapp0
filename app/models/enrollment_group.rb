@@ -10,16 +10,16 @@ class EnrollmentGroup < ApplicationRecord
   mount_uploader :specific_type_file, DocumentUploader
   mount_uploaders :welcome_letter_attachments, DocumentUploader
 
-  has_many :details, class_name: 'EnrollmentGroupsDetail'
+  has_many :details, class_name: 'EnrollmentGroupsDetail', dependent: :destroy
   has_many :dcos, class_name: 'GroupDco', dependent: :destroy
   has_many :providers, class_name: 'Provider', dependent: :destroy
-  has_many :contact_personnels, class_name: 'EnrollmentGroupsContactDetail'
+  has_many :contact_personnels, class_name: 'EnrollmentGroupsContactDetail', dependent: :destroy
   has_many :qualifacts_contacts, class_name: 'GroupContact', dependent: :destroy
   has_one :enroll_group, class_name: 'EnrollGroup', foreign_key: "group_id", dependent: :destroy
   has_many :deleted_document_logs, class_name: 'EnrollmentGroupDeletedDocLog', dependent: :destroy
   has_many :service_locations , class_name: 'EnrollmentGroupSvcLocation', dependent: :destroy
-  has_many :users_enrollment_groups
-  has_many :users, through: :users_enrollment_groups
+  has_many :users_enrollment_groups, dependent: :destroy
+  has_many :users, through: :users_enrollment_groups, dependent: :destroy
 
   accepts_nested_attributes_for :details, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :qualifacts_contacts, allow_destroy: true, reject_if: :all_blank

@@ -1,0 +1,1598 @@
+<div id="printableDiv"><!-- Content you want to print goes here --></div>
+<div class="content container-fluid ps-0">
+	<%= render "provider_source_components/top_buttons"%>
+<div class="row p-4 view-summary" id="page1">
+	<div class="col-lg-12 d-flex justify-content-end mb-3">
+		<h3>Provider Application</h3>
+	</div>
+
+	<div class="col-lg-12 text-black border border-dark py-3 px-2 mb-3">
+		<h5>To use the Washington Practitioner Application (WPA), follow these instructions:</h5>
+		<ul>
+			<li><strong>Keep an unsigned and undated copy of the application on file for future requests.</strong>When a request is received, send a copy of the completed application, making sure that all information is complete, current and accurate.</li>
+			<li>Please sign and date pages 11 and 13.</li>
+			<li>Please document any YES responses on the Attestation Question page.</li>
+			<li>Identify the health care related organization(s) to which this application is being submitted in the space provided below.</li>
+			<li>Attach copies of requested documents each time the application is submitted.</li>
+			<li>If changes must be made to the completed application, strike out the information and write in the modification, initial and date.</li>
+			<li>If a section does not apply to you, please check the provided box at the top of the section.</li>
+			<li>Expect addendums from the requesting organizations for information not included on the WPA.</li>
+		</ul>
+	</div>
+
+	<div class="col-lg-12 text-black border border-dark py-3 px-2 mb-3">
+		<p>This application is submitted to:</p>
+		<br>
+	</div>
+
+	<div class="col-lg-12 text-black border border-dark py-3 px-2 mb-3">
+		<h5>1. INSTRUCTIONS</h5>
+		<p class="text-black mb-3">This form should be typed or legibly printed in black or blue ink. If more space is needed than provided on original, attach additional sheets and reference the question being answered. Please do not use abbreviations. Current copies of the following documents must be submitted with this application: (all are required for MDs, DOs; as applicable for other health practitioners).</p>
+
+		<ul>
+			<li>DEA Certificate</li>
+			<li>Face Sheet of Professional Liability Policy or Certificate</li>
+			<li>Curriculum Vitae (Not an acceptable substitute for completing the application. Dates need to be listed in mm/yyyy Format)</li>
+		</ul>
+		<div class="row">
+			<div class="col-lg-12 d-flex justify-content-center"><h3 class="m-0">**All sections must be completed in their entirety.**</h3></div>
+		</div>
+	</div>
+
+	<div class="col-lg-12 text-black border border-dark py-0 px-0">
+		<%= HtmlUtils.table_section_header title: "2.1 General Information - Name and Home Address" %>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Last Name:', '4', :last_name], ['Suffix:', '2', :suffix], ['First Name:', '3', :first_name], ['Middle Name:', '3', :middle_name]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+			<% end %>
+		</div>
+
+		<%= HtmlUtils.single_column title: 'List any other name(s) under which you have been known by reference, licensing and or educational institutions, including the date of name change(s) if known (mm/dd/yy):', value: @current_provider_source.fetch(:other_names) %>
+
+		<div class="row g-0 border-bottom border-dark">
+			<%= HtmlUtils.table_column title: 'Degree Title:', value: @current_provider_source.fetch(:degree_titles)&.titleize, height: 'h-50px', last: false, size: '6' %>
+			<%= HtmlUtils.table_column title: 'State(s) of Practice:', value: State.where(alpha_code: @current_provider_source.fetch(:state_of_practice)).first&.name, height: 'h-50px', last: true, size: '6' %>
+		</div>
+
+		<%= HtmlUtils.single_column title: 'Primary Practitioner Type:', value: @current_provider_source.fetch(:'primary-practioner-type'), height: 'h-50px'%>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['County:', @current_provider_source.fetch(:'county')], ['Home Mailing Address:', @current_provider_source.fetch(:email_address)]] %>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: title[1], height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<!-- some partials were added late but some of them are repeating -->
+		<%= render partial: "view_summary/components/city_state_zipcode", locals: { city_key: :city, zipcode_key: :zipcode, state_key: :'ps-state'} %>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Home Telephone Number:', @current_provider_source.fetch(:telephone)], ['Mobile Phone Number:', @current_provider_source.fetch(:mobile_number)], ['Fax Number:', @current_provider_source.fetch(:fax_number)]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: title[1], height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Page Number:', @current_provider_source.fetch(:page_number)], ['Ext:', @current_provider_source.fetch(:ext)], ['Email Address:', @current_provider_source.fetch(:email_address)]] %>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: title[1], height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+
+		<%= HtmlUtils.table_section_header title: '2.2 General Information - Personal Information' %>
+
+		<div class="row g-0 border-bottom border-dark">
+			<%= HtmlUtils.table_column title: 'Gender:', value: @current_provider_source.fetch(:'ps-gender')&.titleize, height: 'h-50px', last: false, size: '3' %>
+			<% date = Date.parse(@current_provider_source.fetch(:'ps-dob'))&.strftime('%B %d, %Y') rescue nil%>
+			<%= HtmlUtils.table_column title: 'Date of Birth:', value: date, height: 'h-50px', last: false, size: '3' %>
+			<%= HtmlUtils.table_column title: 'Country of Birth:', value: @current_provider_source.fetch(:'ps-cob')&.titleize, height: 'h-50px', last: true, size: '3' %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Social Security Number:', @current_provider_source.fetch(:'social-security-number')], ['Ethnicity:', @current_provider_source.fetch(:'ethnicity')], ['Marital Status:', @current_provider_source.fetch(:'marital-status')]] %>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: title[1], height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Languages that you speak:', @current_provider_source.fetch(:'languages-you-speak')], ['Languages that you write:', @current_provider_source.fetch(:'languages-you-write')]] %>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: title[1], height: 'h-75px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+
+		<%= HtmlUtils.table_sub_section_header title: 'Emergency Contact Person' %>
+
+		<%= render partial: "view_summary/components/firstname_lastname_middlename", locals: { first_name_key: :'emergency-first-name', last_name_key: :'emergency-last-name', middle_name_key: :'emergency-middle-name' } %>
+
+		<%= HtmlUtils.single_column title: 'Mobile Number:', is_last_field: true, value: @current_provider_source.fetch(:'emergency-contact-phone-number'), height: 'h-50px'%>
+
+	</div>
+
+	<div class="col-lg-12 text-black border border-dark px-0 pb-0">
+		<%= HtmlUtils.table_section_header title: '3.1 Professional IDs - Registration IDs' %>
+		<%= HtmlUtils.single_column title: 'NPI Number:', value: @current_provider_source.fetch(:npi_number), height: 'h-50px'%>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['DEA Registration Number:', :dea_registration_number], ['Registration State:', :dea_registration_state]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: false, size: '4' %>
+			<% end %>
+			<% date = Date.parse(@current_provider_source.fetch(:'dea_issue_date'))&.strftime('%B %d, %Y') rescue nil%>
+			<%= HtmlUtils.table_column title: 'Issue Date:', value: date, height: 'h-50px', last: true, size: '4' %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% date = Date.parse(@current_provider_source.fetch(:'dea_expire_date'))&.strftime('%B %d, %Y') rescue nil%>
+			<%= HtmlUtils.table_column title: 'Expiration Date:', value: date, height: 'h-50px', last: false, size: '6' %>
+			<%= HtmlUtils.table_column title: 'Full Sched (2 2N 3 3N 4 5):', value: @current_provider_source.fetch(:'dea_full_schedule')&.titleize, height: 'h-50px', last: true, size: '6' %>
+		</div>
+
+		<%= HtmlUtils.single_column title: 'Please explain why you do not have a DEA registration number:', value: @current_provider_source.fetch(:dea_no), height: 'h-75px'%>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['CDS Registration Number:', :cds_registration_number], ['Registration State:', :cds_registration_state]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: false, size: '4' %>
+			<% end %>
+			<% date = Date.parse(@current_provider_source.fetch(:'cds_issue_date'))&.strftime('%B %d, %Y') rescue nil%>
+			<%= HtmlUtils.table_column title: 'Issue Date:', value: date, height: 'h-50px', last: true, size: '4' %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% date = Date.parse(@current_provider_source.fetch(:'cds_expire_date'))&.strftime('%B %d, %Y') rescue nil%>
+			<%= HtmlUtils.table_column title: 'Expiration Date:', value: date, height: 'h-50px', last: false, size: '4' %>
+			<% titles = [['Full Sched ( 2 2N 3 3N 4 5):', :cds_full_schedule], ['Are you currently practicing in this state?:', :cds_practice_state_option]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<%= HtmlUtils.single_column title: 'Please explain why you do not have a CDS registration number:', value: @current_provider_source.fetch(:'ps-cds-registration-number'), height: 'h-75px'%>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Registration Number:', :registration_number], ['Registration State:', :registration_issue_state], ['Specialty:', :registration_specialty]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Issuing Board:', :registration_issuing_board], ['Address Line 1:', :registration_address_1], ['City:', :registration_city]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<!-- in this case had to make two level array title[0] for title and title[1] for colum size-->
+			<% titles = [['Zip Code:', '4', :registration_zipcode], ['Telephone Number:', '4', :registration_telephone], ['Ext:', '1', :registration_ext], ['Fax Number:', '3', :registration_fax]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2]), height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Issue Date:', :registration_issue_date], ['Expiration Date:', :registration_expiration_date]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
+				<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: false, size: '4' %>
+			<% end %>
+			<%= HtmlUtils.table_column title: 'Are you currently practicing under this number?:', value: @current_provider_source.fetch(:registration_under_number)&.titleize, height: 'h-50px', last: true, size: '4' %>
+		</div>
+		<%= HtmlUtils.table_section_header title: '3.2 Professional IDs - Licensure IDs' %>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['License State:', :licensure_state], ['License Type:', :license_type], ['License Number:', :license_number]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<%= HtmlUtils.table_column title: 'License Status:', value: @current_provider_source.fetch(:license_status)&.titleize, height: 'h-50px', last: false, size: '4' %>
+			<% titles = [['Issue Date:', :licensure_issue_date], ['Expiration Date:', :licensure_expiration_date]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
+				<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Are you currently practicing in this state?', :licensure_practice_state], ['Is this your primary license?', :licensure_primary_license], ['Does this license require supervision?', :licensure_require_supervision]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<!-- in this case had to make two level array title[0] for title and title[1] for colum size-->
+			<% titles = [['First Name:', '4', :licensure_sponsor_fname], ['Middle Name:', '4', :licensure_sponsor_mname], ['Last Name:', '3', :licensure_sponsor_lname], ['Suffix:', '1', :licensure_sponsor_suffix]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+			<% end %>
+		</div>
+
+		<%= HtmlUtils.single_column title: 'Degree:', value: @current_provider_source.fetch(:licensure_sponsor_degree)&.titleize, height: 'h-50px'%>
+
+		<%= HtmlUtils.table_section_header title: '3.3 Professional IDs - Other IDs and Certifications' %>
+
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Have you ever voluntarily opted out of Medicare?', :other_id_voluntarily_medicare], ['Are you a participating Medicare Provider?', :medicare_field]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Medicare Number:', :participating_medicare_number], ['Medicare State:', :participating_medicare_state]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Medicaid Number:', :participating_medicaid_number], ['Medicaid State:', :participating_medicaid_state]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['TRICARE Provider Number:', :'tricare-provider-name'], ['USLME Number:', :'usmle-number'], ['Worker’s Compensation Number:', :'workers-compensastion-number']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<%= HtmlUtils.single_column title: 'Certification Type:', value: @current_provider_source.fetch(:other_certification_type)&.titleize, height: 'h-50px'%>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['State:', :other_certification_state], ['Certification Number:', :other_certification_number]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0">
+			<% titles = [['Issue Date:', :other_certification_issue_date], ['Expiration Date:', :other_certification_expiration_date]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
+				<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+	</div>
+	<div class="col-lg-12 text-black border border-dark px-0 pb-0">
+		<%= HtmlUtils.table_section_header title: '4.Health Plans - Authorization and Release' %>
+		<%= HtmlUtils.single_column title: 'Health Plans:', value: @current_provider_source.fetch(:hp_health_plans),  height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Hospitals:', value: @current_provider_source.fetch(:hp_hospitals), height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Directories:', value: @current_provider_source.fetch(:hp_directories), height: 'h-50px'%>
+		<%= HtmlUtils.table_section_header title: '5. Specialties' %>
+
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Ranking:', :special_ranking], ['Specialty:', :specialty]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Do you wish to listed in the Provider Directory under this specialty?', :specialties_provider_directory], ['Do you wish to listed in the HMO Directory under this specialty?', :specialties_hmo_directory]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Do you wish to listed in the PPO Directory under this specialty?', :specialties_ppo_directory], ['Do you wish to listed in the POS Directory under this specialty?', :specialties_pos_directory]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Are/Were you certified by any board in this specialty?', :specialties_board], ['Are you eligible to be certified in this specialty:', :specialties_certified]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Admissibility Expiration Date:', 'Do you have board exam results pending for this specialty?']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Have you applied for this certification exam?', 'Have you been accepted to take this
+     certification exam?','Board Exam Date:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Do you intend to apply for this certification exam?', 'Date you intend to apply:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Please explain why you do not intend to sit for a Board exam:', height: 'h-50px'%>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Address Line 1:', 'Address Line 2:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['City:', 'State:', 'Zip Code:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+
+		<div class="row g-0 border-bottom border-dark">
+			<!-- in this case had to make two level array title[0] for title and title[1] for colum size-->
+			<% titles = [['Board Certification Number:', '4'], ['Telephone Number:', '4'], ['Ext:', '1'], ['Fax Number:', '3']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Initial Certification Date:', 'Certification Expiration Date:', 'Recertification Date:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<%= HtmlUtils.table_column title: "Have you ever failed to pass a specialty board exam?", value: @current_provider_source.fetch(:specialties_board_exam)&.titleize, height: 'h-50px', last: false, size: '6' %>
+			<% date = Date.parse(@current_provider_source.fetch(:failed_board_date))&.strftime('%B %d, %Y') rescue nil%>
+			<%= HtmlUtils.table_column title: 'Board Exam Date', value: date, height: 'h-50px', last: true, size: '6' %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Certifying Board:', value: @current_provider_source.fetch(:failed_exam_certifying_board)&.titleize, height: 'h-50px'%>
+
+		<%= HtmlUtils.single_column title: 'Reason for Failure:', value: @current_provider_source.fetch(:failed_board_reason), height: 'h-50px'%>
+
+		<%= HtmlUtils.single_column title: 'Other areas of professional practice interest, activities, procedures, diagnoses or populations:', value: @current_provider_source.fetch(:'populations-served')&.titleize, height: 'h-50px'%>
+
+		<%= HtmlUtils.table_section_header title: '6.1 Education and Training - Education' %>
+
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Did you attend an undergraduate school?', :undergraduate_school], ['Undergraduate School Location:', :usd_school_location], ['Undergraduate School Name:', :usd_undergraduate_school_name]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Address Line 1:', :usd_address_line1], ['City:', :usd_city], ['Zip Code:', :usd_zipcode]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<!-- in this case had to make two level array title[0] for title and title[1] for colum size-->
+			<% titles = [['Telephone Number:', '4', :usd_telephone_number], ['Ext:', '1', :usd_ext], ['Fax Number:', '3', :usd_fax_number], ['Undergraduate Major:', '4', :usd_undergraduate_major]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2]), height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Degree Awarded:', value: @current_provider_source.fetch(:usd_degree_awarded), height: 'h-50px'%>
+
+		<div class="row g-0 border-bottom border-dark">
+				<%= HtmlUtils.table_column title: 'Did you complete your undergraduate education at this school?', value: @current_provider_source.fetch(:incomplete_undergrad), height: 'h-50px', last: false, size: '4' %>
+
+			<% titles = [['Start Date:', :usd_date_start], ['End (Graduation) Date:', :usd_date_graduation]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
+				<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<%= HtmlUtils.single_column title: 'Please explain why you did not complete your undergraduate education at this school.', is_last_field: true, value: @current_provider_source.fetch(:'usd-reason'), height: 'h-50px'%>
+
+
+	</div>
+	<div class="col-lg-12 text-black border border-dark px-0 pb-0">
+		<%= HtmlUtils.table_section_header title: '6.1 Education and Training - Education' %>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Have you ever attended a Graduate/Professional School?', :professional_school], ['Education Type:', :education_types]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Graduate/Professional School Location:', :prof_school_location], ['Professional School Name:', :'psd-psn']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Address Line 1:', :'psd-address-line1'], ['City:', :'psd-city'], ['Zip Code:', :'psd-zipcode']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<!-- in this case had to make two level array title[0] for title and title[1] for colum size-->
+			<% titles = [['Telephone Number:', '4', :'psd-telephone-number'], ['Ext:', '1', :'psd-ext'], ['Fax Number:', '3', :'psd-fax-number'], ['Graduate Type:', '4']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2]), height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Specialization:', value: @current_provider_source.fetch(:'psd-undergraduate-major')&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Degree Awarded:', value: @current_provider_source.fetch(:'psd-degree-awarded')&.titleize, height: 'h-50px'%>
+
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Faculty Director First Name:', :'psd-fd-first-name'], ['Faculty Director Last Name:', :'psd-fd-last-name']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Director Degree:', value: @current_provider_source.fetch(:'psd-director-degree'), height: 'h-50px'%>
+		<div class="row g-0 border-bottom border-dark">
+			<%= HtmlUtils.table_column title: 'Did you complete your professional education at this school?', value: @current_provider_source.fetch(:incomplete_prof), height: 'h-50px', last: false, size: '4' %>
+
+			<% titles = [['Start Date:', :prof_date_start], ['End (Graduation) Date:', :prof_date_graduation]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
+				<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Please explain why you did not complete your professional education at this school.', value: @current_provider_source.fetch(:'psd-reason'), height: 'h-75px'%>
+
+		<%= HtmlUtils.table_section_header title: '6.2 Education and Training - Training' %>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Did/Do you attend a training program?', :has_training_program], ['Training Program Location:', :'tf-location'], ['Training Program Name:', :'tf-psn']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Address Line 1:', :'tf-address-line1'], ['City:', :'tf-city'], ['Zip Code:', :'tf-zipcode']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<!-- in this case had to make two level array title[0] for title and title[1] for colum size-->
+			<% titles = [['Telephone Number:', '4', :'tf-telephone-number'], ['Ext:', '1', :'tf-ext'], ['Fax Number:', '3', :'tf-fax-number'], ['Email Address:', '4', :'tf-email']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2]), height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Type of Training:', :tr_training_types], ['Specialty:', :tr_specialties]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Program Director First Name:', :'tf-pd-first-name'], ['Program Director Last Name:', :'tf-pd-last-name']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: false, size: '4' %>
+			<% end %>
+			<%= HtmlUtils.table_column title: 'Program Director Email Address:', value: @current_provider_source.fetch(:'tf-pd-email-address'), height: 'h-50px', last: true, size: '4' %>
+
+		</div>
+		<%= HtmlUtils.single_column title: 'Program Director Degree:', value: @current_provider_source.fetch(:'tf-pf-degree'), height: 'h-50px'%>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Start Date:', :'tf-start-date'], ['End of Training Date:', :'tf-end-date']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
+				<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: false, size: '4' %>
+			<% end %>
+			<%= HtmlUtils.table_column title: 'Did you complete your training at this institution?', value: @current_provider_source.fetch(:incomplete_training)&.titleize, height: 'h-50px', last: true, size: '4' %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Please explain why you did not complete your training at this institution:', value: @current_provider_source.fetch(:'tf-reason'), height: 'h-75px'%>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['University Affiliated Program Location:', :tfu_affiliated_location], ['University Affiliated Program:']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Address Line 1:', :'tfu-address-line1'], ['City:', :'tfu-city'], ['Zip Code:', :'tfu-zipcode']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Telephone Number:', :'tfu-telephone-number'], ['Ext:', :'tfu-ext'], ['Fax Number:', :'tfu-fax-number']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.table_section_header title: '6.3 Education and Training - Teaching Appointments' %>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Are/Were you an instructor or faculty for a teaching program?', :an_instructor], ['Teaching Program Location:', :'taf-location'], ['Teaching Program Name:', :'taf-psn']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Address Line 1:', :'taf-address-line1'], ['City:', :'taf-city'], ['Zip Code:', :'taf-zipcode']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0">
+			<!-- in this case had to make two level array title[0] for title and title[1] for colum size-->
+			<% titles = [['Telephone Number:', '4', :'taf-telephone-number'], ['Ext:', '1', :'taf-ext'], ['Fax Number:', '3', :'taf-fax-number'], ['Email Address:', '4', :'taf-email']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2]), height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+			<% end %>
+		</div>
+	</div>
+	<div class="col-lg-12 text-black border border-dark px-0 pb-0">
+		<%= HtmlUtils.table_section_header title: '6.3 Education and Training - Teaching Appointments' %>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Program Director First Name:', :'taf-pd-first-name'], ['Program Director Last Name:', :'taf-pd-last-name']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Program Director Degree:', :'taf-pd-degree'], ['Academic Rank or Title:', :'taf-ar-degree']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Start Date:', :'taf-start-date'], ['End Date:', :'taf-end-date']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
+				<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.table_section_header title: '7. Healthcare Facility Affiliations' %>
+
+		<div class="row g-0 border-bottom border-dark">
+			<%= HtmlUtils.table_column title: 'Do/Did you have hospital privileges?', value: @current_provider_source.fetch(:has_hospital_privilege)&.titleize, height: 'h-50px', last: false, size: '4' %>
+			<%= HtmlUtils.table_column title: 'Facility Location:', value: @current_provider_source.fetch(:state_abbr), height: 'h-50px', last: false, size: '4' %>
+			<%= HtmlUtils.table_column title: 'Facility Name:', value: @current_provider_source.fetch(:'hp-facility-name')&.titleize, height: 'h-50px', last: true, size: '4' %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Medical Staff Office Address Line 1:', :'hp-mso-address-line1'], ['City:', :'hp-city'],['Zip Code:', :'hp-zipcode']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<!-- in this case had to make two level array title[0] for title and title[1] for colum size-->
+			<% titles = [['Medical Staff Office Telephone Number:', '4', :'hp-mso-telephone-number'], ['Ext:', '1', :'hp-ext'], ['Medical Staff Office Fax Number:', '3', :'hp-mso-fax-number'], ['Medical Staff/Credentialing E-mail Address:', '4', :'hp-mso-email-address']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2]), height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Department Name:', :'mso-department-name'], ['Division Name:', :'mso-division-name']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Department/Division Director First Name:', :'mso-first-name'], ['Department/Division Director Last Name:', :'mso-last-name']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Do/Did you have full, unrestricted privileges?', :'hp-unrestricted-privileges'], ['Are/Were your privileges temporary?', :'ai-previleges-temporary']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Privileges Status:', :hfa_privilege_status], ['Appointment Date:'], ['Expiration Date:']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Does Not Expire:', 'Is this your primary facility?', 'Of your total annual admissions, what percentage is to this hospital?']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Do you have an admitting arrangement?', :has_admitting_arrangement], ['Name of Admitting Physician/Practice/Clinic/Group:', :'admitting-physician-practice-clinic-group']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+		 <%= HtmlUtils.table_column title: 'Facility Location:', value: State.where(alpha_code: @current_provider_source.fetch(:admit_state)).first&.name, height: 'h-50px', last: false, size: '6' %>
+			<%= HtmlUtils.table_column title: 'Facility Name:', value: @current_provider_source.fetch(:'facility-name')&.titleize, height: 'h-50px', last: true, size: '6' %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Address Line 1:', :'facility-address-line1'], ['City:', :'facility-city'], ['Zip Code:', :'facility-zipcode']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Please explain your admitting arrangements:', value: @current_provider_source.fetch(:'admitting-arrangements'), height: 'h-75px'%>
+
+		<%= HtmlUtils.single_column title: 'Please explain why you do not have admitting arrangements:', value: @current_provider_source.fetch(:'admitting_arrangement_comment'), height: 'h-75px'%>
+
+		<%= HtmlUtils.table_section_header title: '8. Professional Liability - Affiliation Information' %>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Do you have a Sovereign Immunity document?', :has_sovereign_immunity], ['Do/Did you have professional liability coverage within the past ten (10) years:', :has_liability_coverage]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<%= HtmlUtils.single_column title: 'Please explain your lack of Professional Liability Coverage:', value: @current_provider_source.fetch(:'lf-lack-of-liability-coverage'), height: 'h-75px'%>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Are you self-insured:', :is_self_insured], ['Self Insured Policy Name:', :'lf-self-insured-policy-name'], ['Policy Number:', :'lf-self-insured-policy-number']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<%= HtmlUtils.table_column title: 'Carrier Name:', value: @current_provider_source.fetch(:'lf-self-insured-carrier-name')&.titleize, height: 'h-50px', last: false, size: '6' %>
+			<%= HtmlUtils.table_column title: 'Email Address:', value: @current_provider_source.fetch(:'lf-self-insured-email-address'), height: 'h-50px', last: true, size: '6' %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Telephone Number:', :'lf-self-insured-phone-number'], ['Ext:', :'lf-self-insured-ext'], ['Fax Number:', :'lf-self-insured-fax-number']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Amount of Coverage per Occurrence:', :'lf-self-insured-coverage-amount'], ['Amount of Aggregate Coverage:', :'lf-self-insured-email-aggregate-coverage']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0">
+			<% titles = [['Original Effective (Retroactive):', :'lf-self-insured-original-effective-date'], ['Effective Date:', :'lf-self-insured-effective-date'], ['Expiration Date:', :'lf-self-insured-original-expiration-date']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
+				<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+	</div>
+	<div class="col-lg-12 text-black border border-dark px-0 pb-0">
+		<%= HtmlUtils.table_section_header title: '8. Professional Liability - Affiliation Information' %>
+		<%= HtmlUtils.single_column title: 'Was this policy involved in a malpractice claim:', height: 'h-50px'%>
+		<%= HtmlUtils.table_section_header title: 'Claim 1' %>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Date of Occurrence:', 'Date Claim was Filed:', 'Status of Claim:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Amount of Award or Settlement:', 'Amount of Award or Settlement Attributed:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Method of Resolution:', 'Date of Settlement, Judgement, or Dismissal:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Description of Allegations:', height: 'h-75px'%>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Were you the primary defendant or co-defendant:', 'Number of Defendants:', 'Your involvement in the case:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Your Specific Responsibility:', height: 'h-75px'%>
+		<%= HtmlUtils.single_column title: 'Description of alleged injury to the patient, including clinical details, with preceding events:', height: 'h-75px'%>
+		<%= HtmlUtils.single_column title: 'Subsequent events, including patient’s clinical outcome:', height: 'h-75px'%>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Did the alleged injury result to death:', 'To the case of your knowledge, is the case included in the NPDB:, or Dismissal:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.table_section_header title: 'Claim 2' %>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Date of Occurrence:', 'Date Claim was Filed:', 'Status of Claim:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Amount of Award or Settlement:', 'Amount of Award or Settlement Attributed:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Method of Resolution:', 'Date of Settlement, Judgement, or Dismissal:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Description of Allegations:', height: 'h-75px'%>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Were you the primary defendant or co-defendant:', 'Number of Defendants:', 'Your involvement in the case:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Your Specific Responsibility:', height: 'h-75px'%>
+		<%= HtmlUtils.single_column title: 'Description of alleged injury to the patient, including clinical details, with preceding events:', height: 'h-75px'%>
+		<%= HtmlUtils.single_column title: 'Subsequent events, including patient’s clinical outcome:', height: 'h-75px'%>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['MDid the alleged injury result to death:', 'To the case of your knowledge, is the case included in the NPDB:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.table_section_header title: 'Claim 3' %>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Date of Occurrence:', 'Date Claim was Filed:', 'Status of Claim:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Amount of Award or Settlement:', 'Amount of Award or Settlement Attributed:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Method of Resolution:', 'Date of Settlement, Judgement, or Dismissal:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Description of Allegations:', height: 'h-75px'%>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Were you the primary defendant or co-defendant:', 'Number of Defendants:', 'Your involvement in the case:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Your Specific Responsibility:', height: 'h-75px'%>
+		<%= HtmlUtils.single_column title: 'Description of alleged injury to the patient, including clinical details, with preceding events:', height: 'h-75px'%>
+		<%= HtmlUtils.single_column title: 'Subsequent events, including patient’s clinical outcome:', height: 'h-75px'%>
+
+
+		<div class="row g-0">
+			<% titles = ['Did the alleged injury result to death:', 'To the case of your knowledge, is the case included in the NPDB:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+	</div>
+  <div class="col-lg-12 text-black border border-dark px-0 pb-0">
+		<%= HtmlUtils.table_section_header title: '8. Professional Liability - Affiliation Information' %>
+		<%= HtmlUtils.table_sub_section_header title: 'If not self-insured' %>
+		<div class="row g-0 border-bottom border-dark">
+			<%= HtmlUtils.table_column title: 'Carrier Location:', value: State.where(alpha_code: @current_provider_source.fetch(:'lf-carrier-location')).first&.name, height: 'h-50px', last: false, size: '6' %>
+			<%= HtmlUtils.table_column title: 'Carrier Name:', value: @current_provider_source.fetch(:'lf-carrier-name')&.titleize, height: 'h-50px', last: true, size: '6' %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Address Line 1:', :'lf-address-line1'], ['City:', :'lf-city'], ['Zip Code:', :'lf-zipcode']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<!-- in this case had to make two level array title[0] for title and title[1] for colum size-->
+			<% titles = [['Telephone Number:', '4', :'lf-telephone-number'], ['Ext:', '1', :'lf-ext'], ['Fax Number:', '3', :'lf-fax-number'], ['Email Address:', '4', :'lf-email-address']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2]), height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Type of Policy:', :'lf-policy-type'], ['Type of Coverage:', :'lf-coverage-type']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Policy Holder Name:', :'lf-policy-holder-name'], ['Policy Number:', :'lf-policy-number']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Does this policy include tail coverage:', 'Has this carrier excluded any specific area of practice or procedures from your coverage:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles =  [['Amount of Coverage per Occurrence:'], ['Amount of Aggregate Coverage:']] %>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Original Effective (Retroactive):'], ['Effective Date:'], ['Expiration Date:']] %>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.table_section_header title: '9.1 Work History - Military History' %>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Have you served in the U.S. Military:', :served_in_military], ['Branch of Service:', :military_enlist_base_of_service], ['Military Rank at Time of Discharge/Current:', :'mi-mrtd']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Enlist Date:', :military_enlist_data], ['Discharge Date:', :military_discharge_data]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
+				<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Name of Primary Base:', :military_primary_base], ['Division:', :military_division]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: false, size: '4' %>
+			<% end %>
+			<%= HtmlUtils.table_column title: 'Primary Base Location:', value: State.where(alpha_code: @current_provider_source.fetch(:military_primary_base_location)).first&.name, height: 'h-50px', last: true, size: '4' %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Address Line 1:', :military_address_1], ['City:'], ['Zip Code:']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Telephone Number:', :military_telephoe], ['Ext:', :military_ext], ['Fax Number:', :military_fax]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<%= HtmlUtils.table_column title: 'Status:', value: @current_provider_source.fetch(:military_status)&.titleize, height: 'h-50px', last: false, size: '6' %>
+			<% date = Date.parse(@current_provider_source.fetch(:military_appointed_date))&.strftime('%B %d, %Y') rescue nil%>
+			<%= HtmlUtils.table_column title: 'Appointment Date:', value: date, height: 'h-50px', last: true, size: '6' %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Were you honorably discharged?', :honorably_discharge], ['Have you ever been court-martialed?', :military_court_martialed], ['Are you currently in the Reserves or National Guard?', :military_reserve]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.table_section_header title: '9.2 Work History - Employment' %>
+		<div class="row g-0 border-bottom border-dark">
+			<%= HtmlUtils.table_column title: 'Do you have a work history since completion of your education and training:', value: @current_provider_source.fetch(:has_work_history)&.titleize, height: 'h-50px', last: false, size: '4' %>
+			<%= HtmlUtils.table_column title:'Employment Location:', value: State.where(alpha_code: @current_provider_source.fetch(:'edc-employment-location')).first&.name, height: 'h-50px', last: false, size: '4' %>
+			<%= HtmlUtils.table_column title: 'Practice/Employer Name:', value: @current_provider_source.fetch(:'edc-practice-employer-name')&.titleize, height: 'h-50px', last: true, size: '4' %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Contact First Name:', :'edc-first-name'], ['Contact Last Name:', :'edc-last-name']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Address Line 1:', :'edc-address-line1'], ['City:', :'edc-city'], ['Zip Code:', :'edc-zipcode']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<!-- in this case had to make two level array title[0] for title and title[1] for colum size-->
+			<% titles = [['Telephone Number:', '4', :'edc-telephone-number'], ['Ext:', '1', :'edc-ext'], ['Fax Number:', '3', :'edc-fax-number'], ['Email Address:', '4', :'edc-email']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2]), height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Contact Method:', :'edc-contact-method'], ['Position Held:', :'edc-position-held']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Start Date:', :'edc-start-date'], ['End Date:', :'edc-end-date']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
+				<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Do/Did you have a collaboration agreement with a licensed physician:', value: @current_provider_source.fetch(:edc_collab)&.titleize, height: 'h-75px'%>
+		<%= HtmlUtils.table_sub_section_header title: 'Collaboration 1' %>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['First Name:', :'co-first-name'], ['Middle Name:', :'co-middle-name'], ['Last Name:', :'co-last-name']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+
+			<%= HtmlUtils.table_column title: 'Degree:', value: @current_provider_source.fetch(:'co-degree')&.titleize, height: 'h-50px', last: false, size: '4' %>
+			<%= HtmlUtils.table_column title: 'Physician Primary License State:', value: State.where(alpha_code: @current_provider_source.fetch(:state_abbr)).first&.name, height: 'h-50px', last: false, size: '4' %>
+			<%= HtmlUtils.table_column title: 'Physician Primary License Number:', value: @current_provider_source.fetch(:'co-physician-pln'), height: 'h-50px', last: true, size: '4' %>
+
+		</div>
+
+		<div class="row g-0">
+			<% titles = [['Medicare Number:', :'co-medicare-number'], ['NPI Number:', :'co-npi-number']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+	</div>
+	<div class="col-lg-12 text-black border border-dark px-0 pb-0">
+		<%= HtmlUtils.table_section_header title: '9.2 Work History - Employment' %>
+		<%= HtmlUtils.table_sub_section_header title: 'Collaboration 2' %>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['First Name:', '4'],['Middle Name:', '3'], ['Last Name:', '4'], ['Suffix', '1']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Degree:', 'Physician Primary License State:', 'Physician Primary License Number:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Medicare Number:', 'NPI Number:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.table_sub_section_header title: 'Collaboration 3' %>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['First Name:', 'Middle Name:', 'Last Name:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Degree:', 'Physician Primary License State:', 'Physician Primary License Number:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Medicare Number:', 'NPI Number:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.table_section_header title: '9.3 Work History - Employment Gap' %>
+		<%= HtmlUtils.single_column title: 'Do you have any time periods or gaps in training or work history that have occurred since graduation from professional school:', value: @current_provider_source.fetch(:has_employment_gap)&.titleize, height: 'h-50px'%>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Start Date:', :gap_start_date], ['End Date:', :gap_end_date]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
+				<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: false, size: '4' %>
+			<% end %>
+			<%= HtmlUtils.table_column title: 'Gap Reason:', value: @current_provider_source.fetch(:gap_reason), height: 'h-50px', last: true, size: '4' %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Detailed Explanation:', value: @current_provider_source.fetch(:gap_explanation), height: 'h-75px'%>
+		<%= HtmlUtils.table_section_header title: '9.4 Work History - Professional References' %>
+
+		<!-- did a loop here since the References share all the same fields but on getting the values might be different approach -->
+		<% for i in 1..3 do %>
+			<%= HtmlUtils.table_sub_section_header title: "Reference #{i}" %>
+			<div class="row g-0 border-bottom border-dark">
+				<% titles = [['First Name:', '4', :'rf-first-name'],['Middle Name:', '3', :'rf-middle-name'], ['Last Name:', '4', :'rf-last-name'], ['Suffix', '1', :'rf-suffix']]%>
+				<% titles.each_with_index do |title,idx|%>
+					<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+				<% end %>
+			</div>
+			<div class="row g-0 border-bottom border-dark">
+				<% titles = [['Degree:', :'rf-degree'], ['Primary Specialty:', :specialty], ['Contact Method:', :'rf-contact-method']]%>
+				<% titles.each_with_index do |title,idx|%>
+					<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+				<% end %>
+			</div>
+			<div class="row g-0 border-bottom border-dark">
+				<% titles = [['Address Line 1:', :'rf-address-line1'], ['City:', :'rf-city']]%>
+				<% titles.each_with_index do |title,idx|%>
+					<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last:false, size: '4' %>
+				<% end %>
+				<%= HtmlUtils.table_column title: 'State:', value: State.where(alpha_code: @current_provider_source.fetch(:'rf-state')).first&.name, height: 'h-50px', last: true, size: '4' %>
+			</div>
+			<div class="row g-0 border-bottom border-dark">
+				<% titles = [['Zip Code:', :'rf-zipcode'], ['Mobile Number:', :'rf-mobile-number']]%>
+				<% titles.each_with_index do |title,idx|%>
+					<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+				<% end %>
+			</div>
+
+			<div class="row g-0 border-bottom border-dark">
+				<!-- in this case had to make two level array title[0] for title and title[1] for colum size-->
+				<% titles = [['Telephone Number:', '4', :'rf-telephone-number'], ['Ext:', '1', :'rf-ext'], ['Fax Number:', '3', :'rf-fax'], ['Email Address:', '4', :'rf-email-address']]%>
+				<% titles.each_with_index do |title,idx|%>
+					<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2]), height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+				<% end %>
+			</div>
+			<div class="row g-0 border-bottom border-dark">
+				<% titles = [['Association Start Date:', :'rf-association-start-date'], ['Association End Date:', :'rf-association-end-date']]%>
+				<% titles.each_with_index do |title,idx|%>
+					<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
+					<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+				<% end %>
+				<%= HtmlUtils.table_column title: 'Relationship:', value: @current_provider_source.fetch(:'rf-relationship')&.titleize, height: 'h-50px', last: true, size: '4' %>
+			</div>
+		<% end %>
+
+		<%= HtmlUtils.table_section_header title: '9.5 Work History - Professional Organization' %>
+		<%= HtmlUtils.single_column title: 'Do/Did you belong to any Professional Organizations or Societies:', value: @current_provider_source.fetch(:belonged_to_prog_org)&.titleize, height: 'h-50px'%>
+		<div class="row g-0">
+			<%= HtmlUtils.table_column title: 'Organization Name:', value: @current_provider_source.fetch(:prof_organization_name)&.titleize, height: 'h-50px', last: false, size: '4' %>
+			<% titles = [['Effective Date:', :prof_org_effected_date], ['Termination Date:', :prof_org_termination_date]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<% date = Date.parse(@current_provider_source.fetch(title[1]))&.strftime('%B %d, %Y') rescue nil%>
+				<%= HtmlUtils.table_column title: title[0], value: date, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+	</div>
+	<div class="col-lg-12 text-black border border-dark px-0 pb-0">
+		<%= HtmlUtils.table_section_header title: '10.1 Practice Information - Credentialing Contact' %>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Preferred Method of Contact:', :'cc-preferred-contact'], ['First Name:', :'cc-first-name'], ['Last Name:', :'cc-last-name']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Address Line 1:', :'cc-address-line1'], ['City:', :'cc-city']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: false, size: '4' %>
+			<% end %>
+			<%= HtmlUtils.table_column title: 'State:', value: State.where(alpha_code: @current_provider_source.fetch(:'cc-state')).first&.name, height: 'h-50px', last: true, size: '4' %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<!-- in this case had to make two level array title[0] for title and title[1] for colum size-->
+			<% titles = [['Telephone Number:', '4', :'cc-telephone-number'], ['Ext:', '1', :'cc-ext'], ['Fax Number:', '3', :'cc-fax-number'], ['Zip Code:', '4', :'cc-zipcode']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2]), height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Mobile Number:', :'cc-mobile-number'], ['Email Address:', :'cc-email-address']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.table_section_header title: '10.2 Practice Information - Practice Location' %>
+		<%= HtmlUtils.table_sub_section_header title: 'General Information' %>
+		<%= HtmlUtils.single_column title: 'Has your Office/ Credentialing Manager added all your practice locations?', value: @current_provider_source.fetch(:all_practice_location)&.titleize, height: 'h-50px'%>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Primary Group/Practice Name/Affiliation (as you would like it to appear in a directory):', :practice_name], ['Is Primary Location?', :practice_primary_location]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Address Line 1:', :practice_address_line_1], ['City:', :practice_city]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['County:', :practice_county], ['State:', :dco_state], ['Zip Code:', :practice_zip_code]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<!-- in this case had to make two level array title[0] for title and title[1] for colum size-->
+			<% titles = [['Telephone Number:', '4', :practice_telephone_number], ['Ext:', '1', :practice_telephone_ext], ['Fax Number:', '3', :practice_fax_number], ['Practice Email Address:', '4']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2]), height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Date Joined/Future Start Date:'], ['Do you offer Telehealth?', :offer_telehealth], ['Are you exclusively Telehealth?', :practice_exclusive_telehealth]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<%= HtmlUtils.table_column title: 'If Telehealth:', value: @current_provider_source.fetch(:practice_telehealth), height: 'h-50px', last: false, size: '6' %>
+			<% practice_type = PracticeType.where(id: @current_provider_source.fetch(:practice_type)).first&.name rescue nil%>
+			<%= HtmlUtils.table_column title: 'Practice Type:', value: practice_type, height: 'h-50px', last: true, size: '6' %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% practice_type = PractitionerProfile.where(id: @current_provider_source.data.where("data_key LIKE ?", "practice_practitioner_profiles_%").where(data_value: "yes").pluck(:data_key).collect {|i|i[-1]}) rescue nil%>
+			<%= HtmlUtils.table_column title: 'Practitioner Profile:', value: practice_type&.pluck(:name).join(','), height: 'h-50px', last: false, size: '6' %>
+			<%= HtmlUtils.table_column title: 'Group/Corporate Name as it appears on W-9, if different from Physician Group/Practice Name:', value: @current_provider_source.fetch(:'practice_name_on_w-9')&.titleize, height: 'h-50px', last: true, size: '6' %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Tax ID:', :practice_tax_id], ['Type of Tax ID:', :practice_type_tax_id], ['Name Affiliated with Tax ID:', :practice_name_affiliated_tax_id]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Do you have group NPI Number for this location?', :group_npi_field], ['Group NPI Number:']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value:  @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: false, size: '4' %>
+			<% end %>
+			<% date = Date.parse(@current_provider_source.fetch(:practice_group_npi))&.strftime('%B %d, %Y') rescue nil%>
+			<%= HtmlUtils.table_column title: 'Group NPI Number Effective Date:', value: date, height: 'h-50px', last: true, size: '4' %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<%= HtmlUtils.table_column title: 'Group Medicare Number:', value: @current_provider_source.fetch(:practice_group_medicare_number), height: 'h-50px', last: false, size: '6' %>
+			<% date = Date.parse(@current_provider_source.fetch(:practice_first_medicate_patient))&.strftime('%B %d, %Y') rescue nil%>
+			<%= HtmlUtils.table_column title: 'Date you saw your first Medicare patient at this location:', value: date, height: 'h-50px', last: true, size: '6' %>
+		</div>
+
+		<%= HtmlUtils.table_sub_section_header title: 'Office Manager/Business Office Contact' %>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['I am the contact person for office related matters:', :contact_am_contact_person], ['First Name:', :contact_office_first_name], ['Last Name:', :contact_office_last_name]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Address Line 1:', :contact_office_address_line_1], ['City:', :contact_office_city], ['State:', :contact_office_state]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Zip Code:', :contact_office_zip_code], ['Telephone Number:', :contact_office_telephone_number], ['Mobile Number:', :contact_office_mobile_number]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Fax Number:', :contact_office_fax_number], ['Email Address:', :contact_office_email]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.table_sub_section_header title: 'Billing Contact' %>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Same as Office Manager/Business Office Contact:', :contact_am_contact_person], ['First Name:', :contact_billing_first_name], ['Last Name:', :contact_billing_last_name]] %>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+			<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Address Line 1:', :contact_billing_address_line_1], ['City:', :contact_billing_city], ['State:', :contact_billing_state]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Zip Code:', :contact_billing_zip_code], ['Telephone Number:', :contact_billing_telephone_number], ['Mobile Number:', :contact_billing_mobile_number]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Fax Number:', :contact_billing_fax_number], ['Email Address:', :contact_billing_email]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<%= HtmlUtils.single_column title: 'Do you have electronic billing capability? ', is_last_field: true, value: @current_provider_source.fetch(:electronic_billing)&.titleize, height: 'h-75px'%>
+
+	</div>
+	<div class="col-lg-12 text-black border border-dark px-0 pb-0">
+		<%= HtmlUtils.table_section_header title: '10.2 Practice Information - Practice Location' %>
+		<%= HtmlUtils.table_sub_section_header title: 'Remittance Contact' %>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Same as Office Manager/Business Office Contact:', :contact_am_contact_person], ['Same as Billing Contact:', :contact_am_contact_person]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= render partial: "view_summary/components/firstname_lastname", locals: { first_name_key: :contact_remittance_first_name, last_name_key: :contact_remittance_last_name } %>
+		<%= render partial: "view_summary/components/address1_city_state", locals: { address_1_key: :contact_remittance_address_line_1, city_key: :contact_remittance_city, state_key: :contact_remittance_state } %>
+		<%= render partial: "view_summary/components/zipcode_telephone_mobile", locals: { zipcode_key: :contact_remittance_zip_code, telephone_number_key: :contact_remittance_telephone_number, mobile_number_key: :contact_remittance_mobile_number } %>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Fax Number:', :contact_remittance_fax_number], ['Remittance Email Address:', :contact_remittance_email]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.table_sub_section_header title: 'Practice Hours' %>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Monday:', :monday_practice_hours_from, :monday_practice_hours_to], ['Tuesday:', :tuesday_practice_hours_from, :tuesday_practice_hours_to], ['Wednesday:', :wednesday_practice_hours_from, :wednesday_practice_hours_to]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<% from_time = Time.parse(@current_provider_source.fetch(title[1])).strftime("%l:%M %p") rescue nil%>
+				<% to_time = Time.parse(@current_provider_source.fetch(title[2])).strftime("%l:%M %p") rescue nil%>
+				<%= HtmlUtils.table_column title: title[0], value: "#{from_time}-#{to_time}", height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Thursday:', :thursday_practice_hours_from, :thursday_practice_hours_to], ['Friday:', :friday_practice_hours_from, :friday_practice_hours_to], ['Saturday:', :saturday_practice_hours_from, :saturday_practice_hours_to]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<% from_time = Time.parse(@current_provider_source.fetch(title[1])).strftime("%l:%M %p") rescue nil%>
+				<% to_time = Time.parse(@current_provider_source.fetch(title[2])).strftime("%l:%M %p") rescue nil%>
+				<%= HtmlUtils.table_column title: title[0], value: "#{from_time}-#{to_time}", height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% from_time = Time.parse(@current_provider_source.fetch(:sunday_practice_hours_from)).strftime("%l:%M %p") rescue nil%>
+			<% to_time = Time.parse(@current_provider_source.fetch(:sunday_practice_hours_to)).strftime("%l:%M %p") rescue nil%>
+			<%= HtmlUtils.table_column title: 'Sunday', value: "#{from_time}-#{to_time}", height: 'h-50px', last: false, size: '4' %>
+
+			<%= HtmlUtils.table_column title: 'Comment', value: @current_provider_source.fetch(:practice_comments), height: 'h-50px', last: true, size: '4' %>
+		</div>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Ext:', '4', :practice_patient_phone_ext], ['Patient Appointment Telephone Number (if different than listed practice telephone number):', 8, :practice_patient_phone]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[2]), height: 'h-50px', last: ((titles.count-1) == idx ), size: title[1] %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Does this location have 24 hours/7 days per week telephone coverage?', value: @current_provider_source.fetch(:phone_coverage_field), height: 'h-50px'%>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Telephone Coverage Type:', :practice_phone_coverage_type], ['After Hours Telephone Number:', :practice_after_hour_phone_number], ['Ext:', :practice_after_hour_phone_number_ext]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.table_sub_section_header title: 'Patient Acceptance' %>
+		<%= HtmlUtils.single_column title: 'Please select your open practice status:', value: @current_provider_source.fetch(:practice_status)&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'If patient acceptance varies by health plan, please explain:', value: @current_provider_source.fetch(:practice_patient_acceptance_varies), height: 'h-75px'%>
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Are there any practice limitations at this location?', :practice_limitations_field], ['Gender Limitations:', :practice_gender_limitation]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Minimum Age:', :practice_patient_min_age], ['Maximum Age:', :practice_patient_max_age]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Please list any other limitations:', value: @current_provider_source.fetch(:practice_patient_other_limits), height: 'h-75px'%>
+
+		<%= HtmlUtils.table_sub_section_header title: 'Foreign Languages' %>
+		<%= HtmlUtils.single_column title: 'Please select all language that your staffs speaks:', value: @current_provider_source.fetch(:readonly_foreign_language_speak)&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Please select all language that your staffs writes:', value: @current_provider_source.fetch(:foreign_language_write)&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Are interpreters available at this location?', value: @current_provider_source.fetch(:practice_location_interpreter)&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Please select all languages interpreted:', value: @current_provider_source.fetch(:practice_staff_foreign_laguages)&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.table_sub_section_header title: 'Foreign Languages' %>
+
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = ['Does this location meet ADA accessibility requirements?', 'If Yes, Please select from the following:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0">
+			<% titles = ['Does this location offer other services for the disabled?', 'If Yes, Please select from the following:']%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+	</div>
+	<div class="col-lg-12 text-black border border-dark px-0 pb-0">
+		<%= HtmlUtils.table_section_header title: '10.2 Practice Information - Practice Location' %>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Is this location accessible by public transportation?'], ['If Yes, Please select from the following:']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<%= HtmlUtils.single_column title: 'Are Gender Affirming treatment services offered? ', height: 'h-50px'%>
+
+		<%= HtmlUtils.table_sub_section_header title: 'Services' %>
+
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Do you provide laboratory services at this location?', :practice_laboratory_services], ['Please select all accrediting/certifying programs:']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Does this location have a CLIA Waiver?', :practice_clia_waiver], ['CLIA Waiver Number:'], ['Expiration Date:']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Does this location have a CLIA Certificate?', :practice_clia_certificate], ['CLIA Certificate Number:'], ['Expiration Date:']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Do you provide radiology services at this location?', :practice_clia_radiology], ['Please list all X-ray certifications:']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<%= HtmlUtils.single_column title: 'FDA/Radiology (Mammography) Certification Number for this location:', value: @current_provider_source.fetch(:practice_fda_radiology),height: 'h-50px'%>
+		<% services = Service.where(id: @current_provider_source.data.where("data_key LIKE ?", "service_%").where(data_value: "yes").pluck(:data_key).collect {|i|i[-1]}) rescue nil%>
+		<%= HtmlUtils.single_column title: 'Please select all services offered at this location:', value: services&.pluck(:name).join(','), height: 'h-75px'%>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Is anesthesia administered at this location?', :practice_administered_anesthesia], ['Class/Category:']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= render partial: "view_summary/components/firstname_lastname_middlename", locals: { first_name_key: :'practice_staff_first_name', last_name_key: :'practice_staff_last_name', middle_name_key: :'practice_staff_middle_name' } %>
+
+		<%= HtmlUtils.single_column title: 'Degree:', value: @current_provider_source.fetch(:practice_staff_degree)&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Please list any additional procedures provided at this location (including surgical procedures):', value: @current_provider_source.fetch(:practice_additional_procedures), height: 'h-75px'%>
+
+		<%= HtmlUtils.table_sub_section_header title: 'Mid-Level Practitioners' %>
+		<%= HtmlUtils.single_column title: 'Do mid-level practitioners (nurse practitioners, nurse midwives, physician assistants, registered nurse first assistant, etc.) care for patients at this location?', value: @current_provider_source.fetch(:midlevel_practitioner_field), height: 'h-50px'%>
+		<%= render partial: "view_summary/components/firstname_lastname_middlename", locals: { first_name_key: :'practice_midlevel_first_name', last_name_key: :'practice_midlevel_middle_name', middle_name_key: :'practice_midlevel_last_name' } %>
+		<%= HtmlUtils.single_column title: 'Mid-Level Practitioner Degree:', value: @current_provider_source.fetch(:practice_midlevel_degree)&.titleize, height: 'h-50px'%>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Primary License State:', :practice_midlevel_state], ['Primary License Number:', :practice_midlevel_degree]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.table_sub_section_header title: 'Partners' %>
+		<%= render partial: "view_summary/components/firstname_lastname_middlename", locals: { first_name_key: :'practice_partners_first_name', last_name_key: :'practice_partners_last_name', middle_name_key: :'practice_partners_middle_name' } %>
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+
+		<%= HtmlUtils.single_column title: 'Practitioner Degree:', value: @current_provider_source.fetch(:practice_partners_degree)&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'NPI Number:', value: @current_provider_source.fetch(:practice_partners_npi_number), height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Specialty:', value: @current_provider_source.fetch(:practice_partners_specialty), height: 'h-50px'%>
+
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['Primary License State:', :practice_partners_state], ['Primary License Number:', :practice_partners_license_number]]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= HtmlUtils.single_column title: 'Does this partner/associate cover for you?', is_last_field: true, value: @current_provider_source.fetch(:practice_partners_cover)&.titleize, height: 'h-50px'%>
+
+	</div>
+	<div class="col-lg-12 text-black border border-dark px-0 pb-0">
+		<%= HtmlUtils.table_section_header title: '10.3 Practice Information - Covering Colleagues' %>
+
+		<%= HtmlUtils.single_column title: 'Do you have any covering colleagues who are not partners or associates at any of your practice locations?', value: @current_provider_source.fetch(:covering_colleague)&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.table_sub_section_header title: 'Colleague Name' %>
+		<%= render partial: "view_summary/components/firstname_lastname_middlename", locals: { first_name_key: :'cv-first-name', last_name_key: :'cv-last-name', middle_name_key: :'cv-middle-name' } %>
+		<%= HtmlUtils.single_column title: 'Degree:', value: @current_provider_source.fetch(:'cv-degree')&.titleize, height: 'h-50px'%>
+		<%= HtmlUtils.single_column title: 'Specialty:',value: @current_provider_source.fetch(:'specialty'), height: 'h-50px'%>
+
+		<div class="row g-0 border-bottom border-dark">
+			<%= HtmlUtils.table_column title: 'Primary License State:', value: State.where(alpha_code: @current_provider_source.fetch(:state_abbr)).first&.name, height: 'h-50px', last: false, size: '4' %>
+			<% titles = [['Primary License Number:', :'cv-primary-license-number'],['Primary License Type:']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1]), height: 'h-50px', last: ((titles.count-1) == idx ), size: '4' %>
+			<% end %>
+		</div>
+
+
+		<div class="row g-0 border-bottom border-dark">
+			<% titles = [['NPI Number:', :'cv-npi-number'], ['Address Line 1:', :'cv-address-line1']]%>
+			<% titles.each_with_index do |title,idx|%>
+				<%= HtmlUtils.table_column title: title[0], value: @current_provider_source.fetch(title[1])&.titleize, height: 'h-50px', last: ((titles.count-1) == idx ), size: '6' %>
+			<% end %>
+		</div>
+		<%= render partial: "view_summary/components/city_state_zipcode", locals: { city_key: :'cv-city', zipcode_key: :'cv-zipcode', state_key: :'state_abbr_1'} %>
+		<%= render partial: "view_summary/components/telephone_ext_fax_email", locals: { telephone_number_key: :'cv-telephone-number', ext_key: :'cv-ext', fax_number_key: :'cv-fax-number', email_key: :'cv-email-address'}%>
+		<%= HtmlUtils.single_column title: 'Please explain your coverage arrangement:', value: @current_provider_source.fetch(:'cv-description'), height: 'h-75px'%>
+
+
+		<%= HtmlUtils.table_section_header title: '10.4 Practice Information - Unique Circumstances' %>
+		<%= HtmlUtils.single_column title: 'Please explain any unique circumstances concerning your practice locations or the method by which you render healthcare services (e.g., you only render services in patients’ homes).', value: @current_provider_source.fetch(:unique_circumstances_note), height: 'h-75px'%>
+		<%= HtmlUtils.table_section_header title: '11. Disclosure Questions' %>
+		<%= HtmlUtils.table_sub_section_header title: 'Licensure' %>
+
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q1)&.titleize, explanation: @current_provider_source.fetch(:q1_explanation), text1: '1. Has your license, registration or certification to practice in your profession ever been voluntarily or involuntarily relinquished, denied, suspended, revoked, restricted, or have you ever been subject to a fine, reprimand, consent order, probation or any conditions or limitations by any state or professional licensing, registration or certification board?' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q2)&.titleize, explanation: @current_provider_source.fetch(:q2_explanation), text1: '2. Has there been any challenge to your licensure, registration or certification?', height: 'h-50px' %>
+
+		<%= HtmlUtils.table_sub_section_header title: 'Hospital Privileges and Other Affiliations' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q3)&.titleize, explanation: @current_provider_source.fetch(:q3_explanation),text1: '3. Have your clinical privileges or medical staff membership at any hospital or healthcare institution, voluntarily or involuntarily, ever been denied, suspended, revoked, restricted, denied renewal or subject to probationary or to other disciplinary conditions (for reasons other than non-completion of medical record when quality of care was not adversely affected) or have proceedings toward any of those ends been instituted or recommended by any hospital or healthcare institution, medical staff or committee, or governing board?. Has your license, registration or certification to practice in your profession ever been voluntarily or involuntarily relinquished, denied, suspended, revoked, restricted, or have you ever been subject to a fine, reprimand, consent order, probation or any conditions or limitations by any state or professional licensing, registration or certification board?' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q4)&.titleize, is_last_field: true, explanation: @current_provider_source.fetch(:q4_explanation),text1: '4. Have you voluntarily or involuntarily surrendered, limited your privileges or not reapplied for privileges while under investigation?', height: 'h-50px' %>
+
+	</div>
+	<div class="col-lg-12 text-black border border-dark px-0 pb-0">
+		<%= HtmlUtils.table_section_header title: '11. Disclosure Questions' %>
+		<%= HtmlUtils.table_sub_section_header title: 'Hospital Privileges and Other Affiliations' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q5)&.titleize, explanation: @current_provider_source.fetch(:q5_explanation), text1: '5. Have you ever been terminated for cause or not renewed for cause from participation, or been subject to any disciplinary action, by any managed care organizations (including HMOs, PPOs, or provider organizations such as IPAs, PHOs)?', height: 'h-50px' %>
+
+		<%= HtmlUtils.table_sub_section_header title: 'Education, Training, and Board Certification' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q6)&.titleize, explanation: @current_provider_source.fetch(:q6_explanation), text1: '6. Were you ever placed on probation, disciplined, formally reprimanded, suspended or asked to resign during an internship, residency, fellowship, preceptorship or other clinical education program? If you are currently in a training program, have you been placed on probation, disciplined, formally reprimanded, suspended or asked to resign?' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q7)&.titleize, explanation: @current_provider_source.fetch(:q7_explanation), text1: '7. Have you ever, while under investigation or to avoid an investigation, voluntarily withdrawn or prematurely terminated your status as a student or employee in any internship, residency, fellowship, preceptorship, or other clinical education program?', height: 'h-50px' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q8)&.titleize, explanation: @current_provider_source.fetch(:q8_explanation), text1: '8. Have any of your board certifications or eligibility ever been revoked?', height: 'h-50px' %>
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q9)&.titleize, explanation: @current_provider_source.fetch(:q9_explanation), text1: '9. Have you ever chosen not to re-certify or voluntarily surrendered your board certification(s) while under investigation?', height: 'h-50px' %>
+
+		<%= HtmlUtils.table_sub_section_header title: 'DEA or CDS' %>
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q10)&.titleize, explanation: @current_provider_source.fetch(:q10_explanation), text1: '10. Have your Federal DEA and/or State Controlled Dangerous Substances (CDS) certificate(s) or authorization(s) ever been challenged, denied, suspended, revoked, restricted, denied renewal, or voluntarily or involuntarily relinquished?' %>
+
+		<%= HtmlUtils.table_sub_section_header title: 'Medicare, Medicade, or other Governmental Program Participation' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q11)&.titleize, explanation: @current_provider_source.fetch(:q11_explanation), text1: '11. Have you ever been disciplined, excluded from, debarred, suspended, reprimanded, sanctioned, censured, disqualified or otherwise restricted in regard to participation in the Medicare or Medicaid program, or in regard to other federal or state governmental health care plans or programs?' %>
+
+		<%= HtmlUtils.table_sub_section_header title: 'Other Sanctions or Investigations' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q12)&.titleize, explanation: @current_provider_source.fetch(:q12_explanation), text1: '12. Are you currently the subject of an investigation by any hospital, licensing authority, DEA or CDS authorizing entities, education or training program, Medicare or Medicaid program, or any other private, federal or state health program or a defendant in any civil action that is reasonably related to your qualifications, competence, functions, or duties as a medical professional for alleged fraud, an act of violence, child abuse or a sexual offense or sexual misconduct?' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q13)&.titleize, is_last_field: true, explanation: @current_provider_source.fetch(:q13_explanation), text1: '13. To your knowledge, has information pertaining to you ever been reported to the National Practitioner Data Bank or Healthcare Integrity and Protection Data Bank?', height: 'h-50px' %>
+
+
+	</div>
+		<div class="col-lg-12 text-black border border-dark px-0 pb-0">
+
+		<%= HtmlUtils.table_section_header title: '11. Disclosure Questions' %>
+
+		<%= HtmlUtils.table_sub_section_header title: 'Other Sanctions or Investigations' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q14)&.titleize, explanation: @current_provider_source.fetch(:q14_explanation), text1: '14. To your knowledge, has information pertaining to you ever been reported to the National Practitioner Data Bank or Healthcare Integrity and Protection Data Bank?', height: 'h-50px' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q15)&.titleize, explanation: @current_provider_source.fetch(:q15_explanation), text1: '15. Have you ever been convicted of, pled guilty to, pled nolo contendere to, sanctioned, reprimanded, restricted, disciplined or resigned in exchange for no investigation or adverse action within the last ten years for sexual harassment or other illegal misconduct?' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q16)&.titleize, explanation: @current_provider_source.fetch(:q16_explanation), text1: '16. Are you currently being investigated or have you ever been sanctioned, reprimanded, or cautioned by a military hospital, facility, or agency, or voluntarily terminated or resigned while under investigation or in exchange for no investigation by a hospital or healthcare facility of any military agency?' %>
+
+		<%= HtmlUtils.table_sub_section_header title: 'Professional Liability Insurance Information and Claims History' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q17)&.titleize, explanation: @current_provider_source.fetch(:q17_explanation), text1: '17. Has your professional liability coverage ever been cancelled, restricted, declined or not renewed by the carrier based on your individual liability history?' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q18)&.titleize, explanation: @current_provider_source.fetch(:q18_explanation), text1: '18. Have you ever been assessed a surcharge, or rated in a high-risk class for your specialty, by your professional liability insurance carrier, based on your individual liability history?' %>
+
+		<%= HtmlUtils.table_sub_section_header title: 'Malpractice Claims History' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q19)&.titleize, explanation: @current_provider_source.fetch(:q19_explanation), text1: '19. Have you ever had any professional liability actions (pending, settled, arbitrated, mediated or litigated) within the past 10 years? If yes, provide information for each case under Professional Liability Claims History.', height: 'h-50px' %>
+
+		<%= HtmlUtils.table_sub_section_header title: 'Criminal/Civil History' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q20)&.titleize, explanation: @current_provider_source.fetch(:q20_explanation), text1: '20. Have you ever been convicted of, pled guilty to, or pled nolo contendere to any felony?', height: 'h-50px' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q21)&.titleize, explanation: @current_provider_source.fetch(:q21_explanation), text1: '21. In the past ten years have you been convicted of, pled guilty to, or pled nolo contendere to any misdemeanor (excluding minor traffic violations) or been found liable or responsible for any civil offense that is reasonably related to your qualifications, competence, functions, or duties as a medical professional, or for fraud, an act of violence, child abuse or a sexual offense or sexual misconduct?' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q22)&.titleize, is_last_field: true, explanation: @current_provider_source.fetch(:q22_explanation), text1: '22. Have you ever been court-martialed for actions related to your duties as a medical professional?', height: 'h-50px' %>
+
+
+	</div>
+	<div class="col-lg-12 text-black border border-dark px-0 pb-0">
+
+		<%= HtmlUtils.table_section_header title: '11. Disclosure Questions' %>
+
+		<%= HtmlUtils.table_sub_section_header title: 'Ability to Perform Job' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q23)&.titleize, explanation: @current_provider_source.fetch(:q23_explanation), text1: '23. Are you currently engaged in the illegal use of drugs? ("Currently" means sufficiently recent to justify a reasonable belief that the use of drugs may have an ongoing impact on one\'s ability to practice medicine. It is not limited to the day of, or within a matter of days or weeks before the date of application, rather that it has occurred recently enough to indicate the individual is actively engaged in such conduct. "Illegal use of drugs" refers to drugs whose possession or distribution is unlawful under the Controlled Substances Act, 21 U.S.C. 812.22. It "does not include the use of a drug taken under supervision by a licensed health care professional, or other uses authorized by the controlled Substances Act or other provision of Federal law." The term does include, however, the unlawful use of prescription controlled substances.)' %>
+
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q24)&.titleize, explanation: @current_provider_source.fetch(:q24_explanation), text1: '24. Do you use any chemical substances that would in any way impair or limit your ability to practice medicine and perform the functions of your job with reasonable skill and safety?' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q25)&.titleize, explanation: @current_provider_source.fetch(:q25_explanation), text1: '25. Do you have any reason to believe that you would pose a risk to the safety or well being of your patients?', height: 'h-50px' %>
+
+		<%= HtmlUtils.two_column_with_yes answer: @current_provider_source.fetch(:q26)&.titleize, explanation: @current_provider_source.fetch(:q26_explanation), text1: '26. Are you unable to perform the essential functions of a practitioner in your area of practice even with reasonable accommodation?', height: 'h-50px' %>
+
+		<%= HtmlUtils.table_sub_section_header title: '12. Attestation & Signature' %>
+		<%= HtmlUtils.single_column title: 'To complete your application, please read and agree to the following attestation and release agreement.You must click the "I Attest" button to certify that you have carefully reviewed all information, including supporting documentation, contained within your ProviderSource™ application and that all information provided is true, correct, current and complete, to the best of your knowledge. By clicking "I Attest", you also acknowledge that you must create an electronic signature in order to complete your application.'%>
+
+		<div class="row m-0 p-1">
+			<div class="col-lg-12 p-0">
+				<p>	I understand and agree that, as part of the credentialing application process for participation, membership and/or clinical privileges (hereinafter, referred to as ""Participation"") at or with each healthcare organization indicated on the ""List of Authorized Organizations"" that accompanies this Provider Application (hereinafter, each healthcare organization on the ""List of Authorized Organizations"" is individually referred to as the ""Entity""), and any of the Entity's affiliated entities, I am required to provide sufficient and accurate information for a proper evaluation of my current licensure, relevant training and/or experience, clinical competence, health status, character, ethics, and any other criteria used by the Entity for determining initial and ongoing eligibility for Participation. Each Entity and its representatives, employees, and agent(s) acknowledge that the information obtained relating to the application process will be held confidential to the extent permitted by law.
+				</p>
+				<p>
+					I acknowledge that each Entity has its own criteria for acceptance, and I may be accepted or rejected by each independently. I further acknowledge and understand that my cooperation in obtaining information and my consent to the release of information do not guarantee that any Entity will grant me clinical privileges or contract with me as a provider of services. I understand that my application for Participation with the Entity is not an application for employment with the Entity and that acceptance of my application by the Entity will not result in my employment by the Entity.
+				</p>
+				<p>
+					Authorization of Investigation Concerning Application for Participation. I authorize the following individuals including, without limitation, the Entity, its representatives, employees, and/or designated agent(s); the Entity's affiliated entities and their representatives, employees, and/or designated agents; and the Entity's designated professional credentials verification organization (collectively referred to as ""Agents""), to investigate information, which includes both oral and written statements, records, and documents, concerning my application for Participation. I agree to allow the Entity and/or its Agent(s) to inspect and copy all records and documents relating to such an investigation.
+				</p>
+				<p>
+					Authorization of Third-Party Sources to Release Information Concerning Application for Participation. I authorize any third party, including, but not limited to, individuals, agencies, medical groups responsible for credentials verification, corporations, companies, employers, former employers, hospitals, health plans, health maintenance organizations, managed care organizations, law enforcement or licensing agencies, insurance companies, educational and other institutions, military services, medical credentialing and accreditation agencies, professional medical societies, the Federation of State Medical Boards, the National Practitioner Data Bank, and the Health Care Integrity and Protection Data Bank, to release to the Entity and/or its Agent(s), information, including otherwise privileged or confidential information, concerning my professional qualifications, credentials, clinical competence, quality assurance and utilization data, character, mental condition, physical condition, alcohol or chemical dependency diagnosis and treatment, ethics, behavior, or any other matter reasonably having a bearing on my qualifications for Participation in, or with, the Entity. I authorize my current and past professional liability carrier(s) to release my history of claims that have been made and/or are currently pending against me. I specifically waive written notice from any entities and individuals who provide information based upon this Authorization, Attestation and Release.
+				</p>
+				<br><br><br>
+			</div>
+		</div>
+
+	</div>
+	<div class="col-lg-12 text-black border border-dark px-0 pb-0">
+		<%= HtmlUtils.table_section_header title: '12. Attestation & Signature' %>
+			<div class="row border-bottom border-dark g-0 m-0 p-1">
+			   <div class="col-lg-12 p-0">
+			      <p>
+			         Authorization of Release and Exchange of Disciplinary Information. I hereby further authorize any third party at which I currently have Participation or hadParticipation and/or each third party's agents to release ""Disciplinary Information,"" as defined below, to the Entity and/or its Agent(s). I hereby further authorize the Agent(s) to release Disciplinary Information about any disciplinary action taken against me to its participating Entities at which I have Participation, and as may be otherwise required by law. As used herein, ""Disciplinary Information"" means information concerning (i) any action taken by such health care organizations, their administrators, or their medical or other committees to revoke, deny, suspend, restrict, or condition my Participation or impose a corrective action plan; (ii) any other disciplinary action involving me, including, but not limited to, discipline in the employment context; or (iii) my resignation prior to the conclusion of any disciplinary proceedings or prior to the commencement of formal charges, but after I have knowledge that such formal charges were being (or are being) contemplated and/or were (or are) in preparation.
+			      </p>
+			      <p>
+			         Release from Liability. I release from all liability and hold harmless any Entity, its Agent(s), and any other third party for their acts performed in good faith and without malice unless such acts are due to the gross negligence or willful misconduct of the Entity, its Agent(s), or other third party in connection with the gathering, release and exchange of, and reliance upon, information used in accordance with this Authorization, Attestation and Release. I further agree not to sue any Entity, any Agent(s), or any other third party for their acts, defamation or any other claims based on statements made in good faith and without malice or misconduct of such Entity, Agent(s) or third party in connection with the credentialing process. This release shall be in addition to, and in no way shall limit, any other applicable immunities provided by law for peer review and credentialing activities. In this Authorization, Attestation and Release, all references to the Entity, its Agent(s), and/or other third party include their respective employees, directors, officers, advisors, counsel, and agents. The Entity or any of its affiliates or agents retains the right to allow access to the application information for purposes of a credentialing audit to customers and/or their auditors to the extent required in connection with an audit of the credentialing processes and provided that the customer and/or their auditor executes an appropriate confidentiality agreement. I understand and agree that this Authorization, Attestation and Release is irrevocable for any period during which I am an applicant for Participation at an Entity, a member of an Entity's medical or health care staff, or a participating provider of an Entity. I agree to execute another form of consent if law or regulation limits the application of this irrevocable authorization. I understand that my failure to promptly provide another consent may be grounds for termination or discipline by the Entity in accordance with the applicable bylaws, rules, and regulations, and requirements of the Entity, or grounds for my termination of Participation at or with the Entity. I agree that information obtained in accordance with the provisions of this Authorization, Attestation and Release is not and will not be a violation of my privacy.
+			      </p>
+			      <p>
+			         I certify that all information provided by me in my application is current, true, correct, accurate and complete to the best of my knowledge and belief, and is furnished in good faith. I will notify the Entity and/or its Agent(s) within 10 days of any material changes to the information (including any changes/challenges to licenses, DEA, insurance, malpractice claims, NPDB/HIPDB reports, discipline, criminal convictions, etc.) I have provided in my application or authorized to be released pursuant to the credentialing process. I understand that corrections to the application are permitted at any time prior to a determination of Participation by the Entity, and must be submitted online or in writing, and must be dated and signed by me (may be a written or an electronic signature). I acknowledge that the Entity will not process an application until they deem it to be a complete application and that I am responsible to provide a complete application and to produce adequate and timely information for resolving questions that arise in the application process. I understand and agree that any material misstatement or omission in the application may constitute grounds for withdrawal of the application from consideration; denial or revocation of Participation; and/or immediate suspension or termination of Participation. This action may be disclosed to the Entity and/or its Agent(s). I further acknowledge that I have read and understand the foregoing Authorization, Attestation and Release and that I have access to the bylaws of applicable medical staff organizations and agree to abide by these bylaws, rules and regulations. I understand and agree that a facsimile or photocopy of this Authorization, Attestation and Release shall be as effective as the original.
+			      </p>
+			   </div>
+			</div>
+			<div class="row g-0 border-bottom border-dark">
+				<div class="col-lg-6 border-end border-dark ">
+					<h5 class="mt-2 ms-2">Signature</h5>
+				</div>
+				<div class="col-lg-6 h-30px">
+					<h5 class="mt-2 ms-2">Signature Date</h5>
+				</div>
+			</div>
+			<div class="row g-0">
+				<div class="col-lg-12 border-bottom border-dark" style="height:150px;">
+					<img src="<%= @current_provider_source.fetch(:signature) %>" alt="Provider Signature" class="img-fluid border" />
+				</div>
+			</div>
+			<div class="row g-0">
+				<div class="col-lg-12" style="height:250px;">
+					<%= @current_provider_source.fetch(:signature_date) %>
+				</div>
+			</div>
+			</div>
+
+</div>
+<div class="row">
+	<div class="col-lg-12 d-flex justify-content-end px-5 gap-3">
+		<a href="javascript:void(0);" class="btn btn-primary btn-md btn-print" data-toprint="page1">Print/Download</a>
+		<a href="<%= view_summary_index_path(page: 2)%>" class="btn btn-primary btn-md">Next Page</a>
+	</div>
+</div>
+</div>
+
+<
+
+
+
+
+

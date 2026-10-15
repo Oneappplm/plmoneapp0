@@ -1,23 +1,26 @@
 <div class="question-field mb-1 py-3">
+  <input type="hidden" name="enrollment_provider[details_attributes][<%= index %>][questions_attributes][<%= q_index %>][id]" value="<%= q['id'] %>">
   <div class="row">
     <div class="col-lg-6">
-      <label class="text-dark-grey">Question</label>
-      <%= q.text_field :question, placeholder: 'Type here ', class: 'form-control border-dark' %>
+      <input type="text" 
+             name="enrollment_provider[details_attributes][<%= index %>][questions_attributes][<%= q_index %>][question]" 
+             value="<%= q['question'] %>" 
+             placeholder="Question" class="form-control border-dark">
     </div>
     <div class="col-lg-6">
-      <label class="text-dark-grey">Answer</label>
-      <%= q.text_field :answer, placeholder: 'Type here', class: 'form-control border-dark' %>
+      <input type="text" 
+             name="enrollment_provider[details_attributes][<%= index %>][questions_attributes][<%= q_index %>][answer]" 
+             value="<%= q['answer'] %>" 
+             placeholder="Answer" class="form-control border-dark">
     </div>
   </div>
-     <div class="d-flex buttons gap-2 mt-2">
-    <div class="links">
-    <button type="button" class="add_questions py-1 btn btn-primary" onclick="addQuestions(this)"> <i class="bi bi-plus"></i></button>
-  </div>
-      <%= q.check_box :_destroy, style: 'display: none' %>
-     <% if q.object.id %>
-      <button type="button" class="btn btn-danger btn-xs py-1 remove-dynamic-fields" onclick="deleteQuestions(this)" data-model="security_question" data-id="<%= q.object.id %>" > <i class="bi bi-trash-fill"></i></button>
-    <% else %>
-      <button type="button" class="btn btn-danger btn-xs py-1 remove-dynamic-fields" onclick="deleteQuestions(this)" > <i class="bi bi-trash-fill"></i></button>
-    <% end %>
-  </div>
+
+  <input type="hidden" 
+         name="enrollment_provider[details_attributes][<%= index %>][questions_attributes][<%= q_index %>][_destroy]" 
+         class="destroy-field" value="0">
+
+  <button type="button" class="btn btn-danger btn-sm py-1 mt-2 remove-dynamic-fields" onclick="deleteQuestions(this)">
+    <i class="bi bi-trash-fill"></i>
+  </button>
+
 </div>

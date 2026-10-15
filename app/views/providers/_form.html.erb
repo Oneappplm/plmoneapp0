@@ -44,11 +44,11 @@
       <div class="section row mb-3 mt-2">
         <div class="col-lg-6">
           <label class="text-dark-grey">Services</label>
-										<% if (current_user.provider? || current_user.clinic_admin?) && action_name == 'edit'  %>
-											<%= @provider.notification_services.split(',').map{|service| service.titleize }.join(',') rescue nil %>
-										<% else %>
-											<%= HtmlUtils.multi_select_dropdown name: 'provider[notification_services]', id: 'notification_services'%>
-										<% end %>
+                    <% if (current_user.provider? || current_user.clinic_admin?) && action_name == 'edit'  %>
+                      <%= @provider.notification_services.split(',').map{|service| service.titleize }.join(',') rescue nil %>
+                    <% else %>
+                      <%= HtmlUtils.multi_select_dropdown name: 'provider[notification_services]', id: 'notification_services'%>
+                    <% end %>
         </div>
       </div>
        <div class="section row mb-3">
@@ -109,11 +109,11 @@
       </div>
     <% end %>
     <div class="row mb-3">
-		<div class="col-lg-12">
-			<h3 class="mb-0">Practitioner Personal Information</h3>
-			<small class="text-black">Please fill out all required fields. Required fields are marked with <span class="text-red">*</span>.</small>
-		</div>
-	  </div>
+    <div class="col-lg-12">
+      <h3 class="mb-0">Practitioner Personal Information</h3>
+      <small class="text-black">Please fill out all required fields. Required fields are marked with <span class="text-red">*</span>.</small>
+    </div>
+    </div>
     <div class="row mb-3">
       <div class="col-lg-4">
         <label class="text-dark-grey">First Name <span class="text-red">*</span></label>
@@ -664,49 +664,70 @@
     </div>
      </div>
 
-				<% if current_user.provider? || current_user.clinic_admin? %>
-  				<div class="row mb-3 mt-3">
-  					<div class="col-lg-12 mt-3">
-  						<%= render "enrollment_clients/show/client"%>
-  					</div>
-  				</div>
-  			<% else %>
+        <% if current_user.provider? || current_user.clinic_admin? %>
+          <div class="row mb-3 mt-3">
+            <div class="col-lg-12 mt-3">
+              <%= render "enrollment_clients/show/client"%>
+            </div>
+          </div>
+        <% else %>
          <div class="row mb-3 mt-3">
            <div class="col-lg-12 mt-3">
               <h3>Practice Information</h3>
             </div>
-            <div class="col-lg-6">
-              <!-- new field -->
-              <label class="text-dark-grey">Group 1<span class="text-red">*</span></label>
-              <%= f.select :enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.enrollment_group_id), {prompt: 'Select option'}, { id: "provider_dcos_select", class: "#{form_select_classes(danger: @provider.enrollment_group_id.blank? && @provider.persisted?)} select-with-show", data: {show: 'provider_dco_div'}, required: true } %>
-            </div>
-            <div class="col-lg-6 <%= @provider.no_group? ? 'd-none' : '' %>" id="provider_dco_div">
-              <!-- new field -->
-              <label class="text-dark-grey">Primary Location</label>
-              <%= HtmlUtils.multi_select_dropdown name: 'provider[primary_location]', class:'mb-1', id: 'dcos_id'%>
-              <label class="text-dark-grey"> Additional Locations</label>
-              <%= HtmlUtils.multi_select_dropdown name: 'provider[dcos]', id: 'other_dcos_id'%>
-            </div>
-        	</div>
+          </div>
 
+          <div id="enrollment_group_fields">
+            <% if @provider.provider_enrollment_groups.empty? %>
+              <%= f.fields_for(:provider_enrollment_groups, ProviderEnrollmentGroup.new, child_index: 0) do |builder| %>
+                <%= render partial: 'provider_enrollment_group_fields', locals: { f: builder, index: 0 } %>
+              <% end %>
+            <% else %>
+              <% @provider.provider_enrollment_groups.each_with_index do |group, index| %>
+                <%= f.fields_for(:provider_enrollment_groups, group, child_index: index) do |builder| %>
+                  <%= render partial: 'provider_enrollment_group_fields', locals: { f: builder, index: index } %>
+                <% end %>
+              <% end %>
+            <% end %>
+          </div>
+
+          <!-- Hidden Template for JS cloning -->
+          <div id="enrollment_group_template" class="d-none">
+            <%= f.fields_for(:provider_enrollment_groups, ProviderEnrollmentGroup.new, child_index: 'REPLACE_INDEX') do |builder| %>
+              <%= render partial: 'provider_enrollment_group_fields', locals: { f: builder, index: 'REPLACE_INDEX' } %>
+            <% end %>
+          </div>
+
+          <button type="button" id="add_enrollment_group" class="btn btn-primary mt-2">
+            <i class="bi bi-plus-circle me-1"></i> Add Enrollment Group
+          </button>
+
+          <!-- Flat Fields: Secondary Enrollment Group -->
           <% if current_setting.affordablecare? %>
             <div class="row mb-3 mt-3">
               <div class="col-lg-6">
-                <!-- new field -->
                 <label class="text-dark-grey">Group 2<span class="text-red">*</span></label>
-                <%= f.select :secondary_enrollment_group_id, options_for_select(groups.pluck(:group_name, :id), @provider.secondary_enrollment_group_id), {prompt: 'Select option'}, { id: "provider_dcos_select_1", class: "#{form_select_classes(danger: @provider.secondary_enrollment_group_id.blank? && @provider.persisted?)} select-with-show", data: {show: 'provider_dco_div_1'}, required: true } %>
+                <%= f.select :secondary_enrollment_group_id,
+                      options_for_select(groups.pluck(:group_name, :id), @provider.secondary_enrollment_group_id),
+                      { prompt: 'Select option' },
+                      {
+                        id: "provider_dcos_select_1",
+                        class: "#{form_select_classes(danger: @provider.secondary_enrollment_group_id.blank? && @provider.persisted?)} select-with-show",
+                        data: { show: 'provider_dco_div_1' },
+                        required: true
+                      } %>
               </div>
+
               <div class="col-lg-6 <%= @provider.no_group? ? 'd-none' : '' %>" id="provider_dco_div_1">
                 <label class="text-dark-grey">Primary Location</label>
                 <%= HtmlUtils.multi_select_dropdown name: 'provider[secondary_primary_location]', class: 'mb-1', id: 'dcos_id_1' %>
-                <label class="text-dark-grey"> Additional Locations</label>
+
+                <label class="text-dark-grey">Additional Locations</label>
                 <%= HtmlUtils.multi_select_dropdown name: 'provider[secondary_dcos]', id: 'other_dcos_id_1' %>
               </div>
             </div>
           <% end %>
-          
-				<% end %>
-
+        <% end %>
         <%
 =begin%>
  <div class="row">
@@ -815,11 +836,11 @@
       <div class="col-lg-12 mb-3">
         <%= HtmlUtils.multiple_file_uploads model: f.object, input_field_name: 'cv_copies', input_field_label: 'Curriculum Vitae (CV) Copies' %>
       </div>
-						<% if !current_setting.dcs? # add more client if this input will not show %>
+            <% if !current_setting.dcs? # add more client if this input will not show %>
        <div class="col-lg-12 mb-3">
         <%= HtmlUtils.multiple_file_uploads model: f.object, input_field_name: 'telehealth_license_copies' %>
-      	</div>
-						<% end %>
+        </div>
+            <% end %>
            <div class="col-lg-12">
             <!-- new field -->
             <label class="text-dark-grey"><%= Setting.take.t("enrollment_dashboard.providers.add_new_provider.upload_documents.other_document")%></label>
@@ -1224,8 +1245,141 @@ function updateCompletionDate() {
          $('.section select, .section input[type="checkbox"], .section input[type="file"]').prop('disabled', true);
        }
      }
+
    </script>
    <% end %>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  let groupIndex = document.querySelectorAll(".enrollment-entry").length;
+
+  // Add new entry
+  document.getElementById("add_enrollment_group").addEventListener("click", function () {
+    const template = document.getElementById("enrollment_group_template").innerHTML;
+    const newId = Date.now(); // unique index
+    const newHTML = template.replace(/REPLACE_INDEX/g, newId);
+
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = newHTML;
+
+    const newGroupElement = wrapper.firstElementChild; // Get just the .template-wrapper
+    document.getElementById("enrollment_group_fields").appendChild(newGroupElement);
+
+    groupIndex++;
+  });
+
+  // Group select AJAX handler
+  $(document).on("change", ".group-select", function () {
+    const groupId = $(this).val();
+    const index = $(this).data("index");
+    if (!groupId) return;
+
+    $.ajax({
+      url: '/get-group-locations',
+      method: 'GET',
+      data: {
+        group_id: groupId,
+        authenticity_token: $('meta[name="csrf-token"]').attr('content')
+      },
+      success: function (data) {
+        const primary = `#primary_location_${index}`;
+        const additional = `#additional_locations_${index}`;
+
+        // Init VirtualSelect
+        VirtualSelect.init({ ele: primary, multiple: false });
+        VirtualSelect.init({ ele: additional, multiple: true });
+
+        // Set options and values
+        document.querySelector(primary).setOptions(data.practice_locations);
+        document.querySelector(primary).setValue(null);
+
+        document.querySelector(additional).setOptions(data.practice_locations);
+        document.querySelector(additional).setValue([]);
+
+        // Show location section
+        $(`.group-location-fields[data-index="${index}"]`).removeClass("d-none");
+
+        setVirtualSelectHiddenName('primary-location-select', 'primary_location', index);
+        setVirtualSelectHiddenName('additional-location-select', 'additional_locations', index);
+      }
+    });
+  });
+
+  // Remove nested form
+  $(document).on("click", ".remove_fields", function () {
+    const $entry = $(this).closest(".nested-fields");
+
+    // Check if this entry has a destroy flag field (i.e., it's from the DB)
+    const $destroyInput = $entry.find("input.destroy-flag");
+
+    if ($destroyInput.length > 0) {
+      // Mark as deleted and hide the section
+      $destroyInput.val("1");
+      $entry.hide(); // Or: $entry.addClass("d-none");
+    } else {
+      // It’s a new unsaved entry (no destroy field), just remove from DOM
+      $entry.remove();
+    }
+  });
+
+  // Load existing group locations on page load
+  document.querySelectorAll(".group-select").forEach(select => {
+    const groupId = select.dataset.groupId;
+    const index = select.dataset.index;
+    const primaryVal = select.dataset.primaryLocation;
+    const additionalVal = select.dataset.additionalLocations;
+
+    if (!groupId) return;
+
+    $.ajax({
+      url: '/get-group-locations',
+      method: 'GET',
+      data: {
+        group_id: groupId,
+        authenticity_token: $('meta[name="csrf-token"]').attr('content')
+      },
+      success: function (data) {
+        const primary = `#primary_location_${index}`;
+        const additional = `#additional_locations_${index}`;
+
+        VirtualSelect.init({ ele: primary, multiple: false });
+        VirtualSelect.init({ ele: additional, multiple: true });
+
+        document.querySelector(primary).setOptions(data.practice_locations);
+        document.querySelector(additional).setOptions(data.practice_locations);
+
+        // Set saved values
+        if (primaryVal) {
+          document.querySelector(primary).setValue(primaryVal);
+        }
+        if (additionalVal) {
+          document.querySelector(additional).setValue(additionalVal.split(","));
+        }
+
+        $(`.group-location-fields[data-index="${index}"]`).removeClass("d-none");
+
+        setVirtualSelectHiddenName('primary-location-select', 'primary_location', index);
+        setVirtualSelectHiddenName('additional-location-select', 'additional_locations', index);
+      }
+    });
+  });
+});
+
+function setVirtualSelectHiddenName(wrapperClass, fieldName, index) {
+  setTimeout(() => {
+    const input = document.querySelector(`.${wrapperClass}-${index} .vscomp-hidden-input`);
+    if (input) {
+      input.setAttribute(
+        "name",
+        `provider[provider_enrollment_groups_attributes][${index}][${fieldName}][]`
+      );
+    } else {
+      console.warn(`Hidden input not found for ${fieldName} at index ${index}`);
+    }
+  }, 1000);
+}
+
+</script>
+
 
 <style type="text/css">
   .multi-select, .search-select, .single-select {

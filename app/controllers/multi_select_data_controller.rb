@@ -123,6 +123,20 @@ class MultiSelectDataController < ApplicationController
 		send_result	BoardName.all.map{|board| { label: board.name, value: board.name} }
 	end
 
+	def provider_enroll_groups
+		enrollment_group = EnrollmentGroup.find_by(id: params[:group_id])
+
+	  dcos = if enrollment_group.present?
+	           enrollment_group.dcos.where(location_status: 'active').map do |m|
+	             { label: m.dco_name, value: m.id }
+	           end
+	         else
+	           []
+	         end
+
+	  send_result({ practice_locations: dcos })
+	end
+
 	def serviced_populations
 		send_result	ServicedPopulation.all.map(&:name)
 	end
