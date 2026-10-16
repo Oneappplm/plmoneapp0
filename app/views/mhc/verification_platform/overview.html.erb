@@ -163,7 +163,6 @@
               <h2>
                 Section IV - Education
 
-                <%# if education_not_applicable || @education_rva_information_completed.present? %>
                   <%# <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i> %>
                 <%# else %>
                   <%# <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i> %>
@@ -239,53 +238,67 @@
                   <% end %>
                 <% end %>  
             </div>
+            <% registration_applicability = section_applicability(@provider_personal_information, "registration") %>
+            <% registration_not_applicable = section_not_applicable?(@provider_personal_information, "registration") %>
              <div class="p-2">
                 <h2>Section X - Registration/Certification
-                  <% if @dea_rva_information_completed.present? %>
-                    <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
-                  <% else %>
-                    <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
-                  <% end %> 
                 </h2>
-                <% @provider_personal_information&.provider_deas.each do |provider_dea| %>
-                    <div class="bg-light form-row row p-2 border-bottom border-dark">
-                        <div class="col-xl-12">DEA Number: <%= provider_dea.dea_number %></div>
-                        <div class="col-xl-6">Schedule: <%# provider_dea.degree_degree_abbreviation %></div>
-                        <div class="col-xl-6">Expiration Date: <%= provider_dea.expiration_date&.strftime('%B %d, %Y') %></div>
-                        <div class="col-xl-6">Limits/Restrictions?: <%= provider_dea&.dea_license_limitation_flag ? 'Yes' : 'No' %></div>
+                <% if registration_not_applicable %>
+                  <div class="bg-light form-row row p-2 border-bottom border-dark">
+                    <div class="col-12"><strong>Not Applicable</strong></div>
+                    <div class="col-12 mt-2"><strong>Explanation:</strong>
+                      <%= registration_applicability.explanation %>
                     </div>
-                <% end %>
-                <% @provider_personal_information&.provider_cds.each do |provider_cd| %>
-                    <div class="bg-light form-row row p-2 border-bottom border-dark">
-                        <div class="col-xl-6">CDS/DPS Number: <%= provider_cd&.cds_number %></div>
-                        <div class="col-xl-6">State: <%= provider_cd&.state %></div>
-                        <div class="col-xl-6">Issue Date: <%= provider_cd.issue_date&.strftime('%B %d, %Y') %></div>
-                        <div class="col-xl-6">ECFMG Number: <%# provider_cd %></div>
-                    </div>
-                <% end %>
-                <div class="bg-light form-row row p-2 border-bottom border-dark">
-                    <div class="col-xl-12">ECFMG Number: <%= @provider_personal_information&.ecfmg_number %></div>
-                    <div class="col-xl-6">Issue Date: <%= @provider_personal_information.ecfmg_issue_date&.strftime('%B %d, %Y') %></div>
-                    <div class="col-xl-6">Valid Through: <%= @provider_personal_information.ecfmg_expiration_date&.strftime('%B %d, %Y') %></div>
-                </div>
+                  </div>
+                <% else %> 
+                  <% @provider_personal_information&.provider_deas.each do |provider_dea| %>
+                      <div class="bg-light form-row row p-2 border-bottom border-dark">
+                          <div class="col-xl-12">DEA Number: <%= provider_dea.dea_number %></div>
+                          <div class="col-xl-6">Schedule: <%# provider_dea.degree_degree_abbreviation %></div>
+                          <div class="col-xl-6">Expiration Date: <%= provider_dea.expiration_date&.strftime('%B %d, %Y') %></div>
+                          <div class="col-xl-6">Limits/Restrictions?: <%= provider_dea&.dea_license_limitation_flag ? 'Yes' : 'No' %></div>
+                      </div>
+                  <% end %>
+                  <% @provider_personal_information&.provider_cds.each do |provider_cd| %>
+                      <div class="bg-light form-row row p-2 border-bottom border-dark">
+                          <div class="col-xl-6">CDS/DPS Number: <%= provider_cd&.cds_number %></div>
+                          <div class="col-xl-6">State: <%= provider_cd&.state %></div>
+                          <div class="col-xl-6">Issue Date: <%= provider_cd.issue_date&.strftime('%B %d, %Y') %></div>
+                          <div class="col-xl-6">ECFMG Number: <%# provider_cd %></div>
+                      </div>
+                  <% end %>
+                  <div class="bg-light form-row row p-2 border-bottom border-dark">
+                      <div class="col-xl-12">ECFMG Number: <%= @provider_personal_information&.ecfmg_number %></div>
+                      <div class="col-xl-6">Issue Date: <%= @provider_personal_information.ecfmg_issue_date&.strftime('%B %d, %Y') %></div>
+                      <div class="col-xl-6">Valid Through: <%= @provider_personal_information.ecfmg_expiration_date&.strftime('%B %d, %Y') %></div>
+                  </div>
+                <% end %>  
             </div>
+            <% licensure_applicability = section_applicability(@provider_personal_information, "licensure") %>
+            <% licensure_not_applicable = section_not_applicable?(@provider_personal_information, "licensure") %>
             <div class="p-2">
                 <h2>Section XI - Licensure
-                   <% if @licensure_rva_information_completed.present? %>
-                     <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
-                   <% else %>
-                     <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
-                   <% end %> 
                  </h2>
-                <% @provider_personal_information&.provider_licensures.each do |provider_medical_license| %>
-                    <div class="bg-light form-row row p-2 border-bottom border-dark">
-                        <div class="col-xl-6">License: <%= provider_medical_license&.license_number %></div>
-                        <div class="col-xl-6">State: <%= provider_medical_license&.state&.alpha_code %></div>
-                        <div class="col-xl-6">Issue Date: <%= provider_medical_license&.license_issue_date&.strftime('%B %d, %Y') %></div>
-                        <div class="col-xl-6">Expiration Date: <%= provider_medical_license&.license_expiration_date&.strftime('%B %d, %Y') %></div>
+                 <% if licensure_not_applicable %>
+                  <div class="bg-light form-row row p-2 border-bottom border-dark">
+                    <div class="col-12"><strong>Not Applicable</strong></div>
+                    <div class="col-12 mt-2"><strong>Explanation:</strong>
+                      <%= licensure_applicability.explanation %>
                     </div>
-                <% end %>
+                  </div>
+                <% else %> 
+                  <% @provider_personal_information&.provider_licensures.each do |provider_medical_license| %>
+                      <div class="bg-light form-row row p-2 border-bottom border-dark">
+                          <div class="col-xl-6">License: <%= provider_medical_license&.license_number %></div>
+                          <div class="col-xl-6">State: <%= provider_medical_license&.state&.alpha_code %></div>
+                          <div class="col-xl-6">Issue Date: <%= provider_medical_license&.license_issue_date&.strftime('%B %d, %Y') %></div>
+                          <div class="col-xl-6">Expiration Date: <%= provider_medical_license&.license_expiration_date&.strftime('%B %d, %Y') %></div>
+                      </div>
+                  <% end %>
+                <% end %>  
             </div>
+            <% liability_applicability = section_applicability(@provider_personal_information, "liability") %>
+            <% liability_not_applicable = section_not_applicable?(@provider_personal_information, "liability") %>
             <div class="p-2">
                   <h2>Section XII - Professional Liability
                   <% if @liability_rva_information_completed.present? %>
