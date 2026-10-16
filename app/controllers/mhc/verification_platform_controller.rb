@@ -73,7 +73,10 @@ class Mhc::VerificationPlatformController < ApplicationController
       board_cert
       registration
       licensure
+      facilities
+      npdb
       liability
+      app_tracking
     ]
 
     unless allowed_sections.include?(section_key)
