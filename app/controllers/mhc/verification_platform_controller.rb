@@ -75,6 +75,8 @@ class Mhc::VerificationPlatformController < ApplicationController
       licensure
       facilities
       npdb
+      oig
+      disclosures
       liability
       app_tracking
     ]

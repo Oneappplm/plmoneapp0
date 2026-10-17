@@ -159,14 +159,16 @@
             <% education_applicability = section_applicability(@provider_personal_information, "education") %>
             <% education_not_applicable = section_not_applicable?(@provider_personal_information, "education") %>
 
+
             <div class="p-2">
               <h2>
                 Section IV - Education
 
-                  <%# <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i> %>
-                <%# else %>
-                  <%# <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i> %>
-                <%# end %>
+                <% if !education_not_applicable && @education_rva_information_completed.present? %>
+                  <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
+                <% else %>
+                  <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
+                <% end %>
               </h2>
 
               <% if education_not_applicable %>
@@ -193,11 +195,11 @@
 
             <div class="p-2">
                 <h2>Section V - Training
-                   <%# if @training_rva_information_completed.present? %>
-                     <%# <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i> %>
-                   <%# else %>
-                     <%# <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i> %>
-                   <%# end %> 
+                  <% if !training_not_applicable && @training_rva_information_completed.present? %>
+                    <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
+                  <% else %>
+                    <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
+                  <% end %> 
                  </h2>
                 <% if training_not_applicable %>
                   <div class="bg-light form-row row p-2 border-bottom border-dark">
@@ -221,6 +223,11 @@
             <% board_cert_not_applicable = section_not_applicable?(@provider_personal_information, "board_cert") %>
              <div class="p-2">
                  <h2>Section VIII - Board Certification
+                  <% if !board_cert_not_applicable && @board_cert_rva_information_completed.present? %>
+                    <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
+                  <% else %>
+                    <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
+                  <% end %> 
                 </h2>
                 <% if board_cert_not_applicable %>
                   <div class="bg-light form-row row p-2 border-bottom border-dark">
@@ -242,6 +249,11 @@
             <% registration_not_applicable = section_not_applicable?(@provider_personal_information, "registration") %>
              <div class="p-2">
                 <h2>Section X - Registration/Certification
+                <% if !registration_not_applicable && @dea_rva_information_completed.present? %>
+                  <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
+                <% else %>
+                  <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
+                <% end %> 
                 </h2>
                 <% if registration_not_applicable %>
                   <div class="bg-light form-row row p-2 border-bottom border-dark">
@@ -278,6 +290,11 @@
             <% licensure_not_applicable = section_not_applicable?(@provider_personal_information, "licensure") %>
             <div class="p-2">
                 <h2>Section XI - Licensure
+                <% if !licensure_not_applicable && @licensure_rva_information_completed.present? %>
+                  <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
+                <% else %>
+                  <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
+                <% end %> 
                  </h2>
                  <% if licensure_not_applicable %>
                   <div class="bg-light form-row row p-2 border-bottom border-dark">
@@ -301,7 +318,7 @@
             <% liability_not_applicable = section_not_applicable?(@provider_personal_information, "liability") %>
             <div class="p-2">
                   <h2>Section XII - Professional Liability
-                  <% if @liability_rva_information_completed.present? %>
+                  <% if !liability_not_applicable &&  @liability_rva_information_completed.present? %>
                     <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
                   <% else %>
                     <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
@@ -384,8 +401,10 @@
                     </div>
                 <% end %>
             </div>
+            <% npdb_applicability = section_applicability(@provider_personal_information, "npdb") %>
+            <% npdb_not_applicable = section_not_applicable?(@provider_personal_information, "npdb") %>
             <caption>1.NPDB Verification 
-                   <% if @npdb_rva_information_completed.present? %>
+                   <% if !npdb_not_applicable &&  @npdb_rva_information_completed.present? %>
                      <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
                    <% else %>
                      <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
