@@ -1,16 +1,26 @@
-<div class="enc-content">
+<% applicability = section_applicability(@provider_personal_information, "oig") %>
+<% oig_not_applicable = section_not_applicable?(@provider_personal_information, "oig") %>
+
+<style>
+  #oig-section .page-applicable {
+    <%= "display: none !important;" if oig_not_applicable %>
+  }
+
+  #oig-section .page-not-applicable {
+    <%= "display: none !important;" unless oig_not_applicable %>
+  }
+</style>
+<div class="enc-content section-applicability-container" id="oig-section" data-section-key="oig">
     <div class="container">
         <%= render "top_nav_buttons"%>
         <div class="mt-4">
             <div class="d-flex align-items-center gap-3">
                 <h4 class="page-heading">Excluded/Reinstated Practitioners</h4>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox">
-                    <label class="form-check-label" for="disclosure-switch">Not Applicable</label>
-                </div>
+                <%= render "section_applicability",
+                   section_key: "oig" %>
             </div>
         </div>
-        <div class="row">
+        <div class="row page-applicable">
             <div class="col-xl-8 row">
                 <div class="col-12">
                     <label class="text-dark-grey">Practitioner Name:</label>
@@ -183,6 +193,7 @@
                 </div>
             </div>
         </div>
+        <%= render "section_applicability_explanation", section_key: "oig" %>
     </div>
 </div>
 
