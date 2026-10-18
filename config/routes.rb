@@ -158,6 +158,13 @@ Rails.application.routes.draw do
     resources :follow_ups, only: [:new, :create, :index]
    end
 
+   resources :resolution_requests, only: [:index] do
+      member do
+        patch :approve
+        patch :reject
+      end
+    end
+
     # Generate all CSV reports
     post :generate_all_reports, to: "reports#generate_all_reports"
 
