@@ -9,8 +9,12 @@ class Mhc::VerificationPlatformController < ApplicationController
 
     if params[:client_name].present?
       base_scope = base_scope.where(legacy_client_name: params[:client_name])
+
+      if params[:client_name] == "Broward Health"
+        base_scope = base_scope.where.not(npi: [nil, ""])
+      end
+
     elsif params.dig(:q, :name_or_attest_id_cont).blank?
-      # Only hide records when no client and no search
       base_scope = base_scope.none
     end
 
