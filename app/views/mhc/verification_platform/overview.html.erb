@@ -140,8 +140,18 @@
                     <div class="col-xl-6">Date of Birth: <%= @provider_personal_information&.birth_date&.strftime('%B %d, %Y') %></div>
                 </div>
             </div>
+            <% practice_info_applicability = section_applicability(@provider_personal_information, "practice_info") %>
+            <% practice_info_not_applicable = section_not_applicable?(@provider_personal_information, "practice_info") %>
             <div class="p-2">
-                <h2>Section III - Practice Information</h2>
+              <h2>Section III - Practice Information</h2>
+              <% if practice_info_not_applicable %>
+                <div class="bg-light form-row row p-2 border-bottom border-dark">
+                  <div class="col-12"><strong>Not Applicable</strong></div>
+                  <div class="col-12 mt-2"><strong>Explanation:</strong>
+                    <%= practice_info_applicability.explanation %>
+                  </div>
+                </div>
+              <% else %>
                 <% @provider_personal_information&.practice_informations.each do |practice_information| %>
                     <div class="bg-light form-row row p-2 border-bottom border-dark">
                         <div class="col-xl-6">Practice/Facility Name: <%= practice_information&.practice_name %></div>
@@ -153,6 +163,7 @@
                         <h4>Patient Acceptance Addendum</h4>
                     </div>
                 <% end %>
+              <% end %>  
             </div>
 
             <!-- Education Section -->
@@ -324,81 +335,121 @@
                     <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
                   <% end %> 
                 </h2>
-                <% @provider_personal_information&.provider_insurance_coverages.each do |provider_insurance_coverage| %>
-                    <div class="bg-light form-row row p-2 border-bottom border-dark">
-                        <div class="col-xl-6">Malpractice Carrier: <%= provider_insurance_coverage&.insurance_carrier_name %></div>
-                        <div class="col-xl-6">Policy Number: <%= provider_insurance_coverage&.policy_number %></div>
-                        <div class="col-xl-6">Original Effective Date: <%= provider_insurance_coverage&.original_start_date&.strftime('%B %d, %Y') %></div>
-                        <div class="col-xl-6">Coverage Expiration Date: <%= provider_insurance_coverage&.end_date&.strftime('%B %d, %Y') %></div>
-                        <div class="col-xl-6">Per Claim Amount: <%= provider_insurance_coverage&.coverage_amount_occurrence %></div>
-                        <div class="col-xl-6">Aggregate Amount: <%= provider_insurance_coverage&.coverage_amount_aggregate %></div>
-                        <div class="col-xl-6">Exclusions:</div>
+                <% if liability_not_applicable %>
+                  <div class="bg-light form-row row p-2 border-bottom border-dark">
+                    <div class="col-12"><strong>Not Applicable</strong></div>
+                    <div class="col-12 mt-2"><strong>Explanation:</strong>
+                      <%= liability_applicability.explanation %>
                     </div>
-                <% end %>
+                  </div>
+                <% else %> 
+                  <% @provider_personal_information&.provider_insurance_coverages.each do |provider_insurance_coverage| %>
+                      <div class="bg-light form-row row p-2 border-bottom border-dark">
+                          <div class="col-xl-6">Malpractice Carrier: <%= provider_insurance_coverage&.insurance_carrier_name %></div>
+                          <div class="col-xl-6">Policy Number: <%= provider_insurance_coverage&.policy_number %></div>
+                          <div class="col-xl-6">Original Effective Date: <%= provider_insurance_coverage&.original_start_date&.strftime('%B %d, %Y') %></div>
+                          <div class="col-xl-6">Coverage Expiration Date: <%= provider_insurance_coverage&.end_date&.strftime('%B %d, %Y') %></div>
+                          <div class="col-xl-6">Per Claim Amount: <%= provider_insurance_coverage&.coverage_amount_occurrence %></div>
+                          <div class="col-xl-6">Aggregate Amount: <%= provider_insurance_coverage&.coverage_amount_aggregate %></div>
+                          <div class="col-xl-6">Exclusions:</div>
+                      </div>
+                  <% end %>
+                <% end %>  
             </div>
+            <% employment_applicability = section_applicability(@provider_personal_information, "employment") %>
+            <% employment_not_applicable = section_not_applicable?(@provider_personal_information, "employment") %>
             <div class="p-2">
                 <h2>Section XV - Employment
-                  <% if @employment_rva_information_completed.present? %>
+                  <% if !employment_not_applicable && @employment_rva_information_completed.present? %>
                     <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
                   <% else %>
                     <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
                   <% end %> 
                 </h2>
-
-                <% @provider_personal_information&.provider_employments&.each do |employment| %>
+                <% if employment_not_applicable %>
                   <div class="bg-light form-row row p-2 border-bottom border-dark">
-                    <div class="col-xl-6">
-                      Facility: <%= "#{employment.employer_name} - #{employment.country}" %>
-                    </div>
-                    
-                    <div class="col-xl-6">
-                      Dates: 
-                      <%= "#{employment.from_date&.strftime('%B %d, %Y')} - " %>
-                      <%= employment.work_status.present? ? employment.work_status : employment.to_date&.strftime('%B %d, %Y') %>
-                    </div>
-
-                    <div class="col-xl-6">
-                      Position: <%= employment.position %>
+                    <div class="col-12"><strong>Not Applicable</strong></div>
+                    <div class="col-12 mt-2"><strong>Explanation:</strong>
+                      <%= employment_applicability.explanation %>
                     </div>
                   </div>
-                <% end %>
+                <% else %> 
+                  <% @provider_personal_information&.provider_employments&.each do |employment| %>
+                    <div class="bg-light form-row row p-2 border-bottom border-dark">
+                      <div class="col-xl-6">
+                        Facility: <%= "#{employment.employer_name} - #{employment.country}" %>
+                      </div>
+                      
+                      <div class="col-xl-6">
+                        Dates: 
+                        <%= "#{employment.from_date&.strftime('%B %d, %Y')} - " %>
+                        <%= employment.work_status.present? ? employment.work_status : employment.to_date&.strftime('%B %d, %Y') %>
+                      </div>
+
+                      <div class="col-xl-6">
+                        Position: <%= employment.position %>
+                      </div>
+                    </div>
+                  <% end %>
+                <% end %>  
             </div>
+            <% peer_ref_applicability = section_applicability(@provider_personal_information, "peer_ref") %>
+            <% peer_ref_not_applicable = section_not_applicable?(@provider_personal_information, "peer_ref") %>
             <div class="p-2">
               <h2>Section XV - Peer Reference
-                <% if @peer_rva_information_completed.present? %>
+                <% if !peer_ref_not_applicable && @peer_rva_information_completed.present? %>
                   <i class='bx bxs-check-circle fs-2 enc-blue-icon'></i>
                 <% else %>
                   <i class='bx bxs-check-circle fs-2 enc-orange-icon'></i>
                 <% end %> 
               </h2>
-
-              <% @provider_personal_information&.provider_personal_information_peer_refs&.each do |peer| %>
+              <% if peer_ref_not_applicable %>
                 <div class="bg-light form-row row p-2 border-bottom border-dark">
-                  <div class="col-xl-6">
-                    Peer:
-                  </div>
-                  
-                  <div class="col-xl-6">
-                    <%= "#{peer.practitioner_name}" %>
-                  </div>
-                  <div class="col-xl-6">
-                    Specialty:
-                  </div>
-                  
-                  <div class="col-xl-6">
-                    <%= "#{peer.specialty}" %>
+                  <div class="col-12"><strong>Not Applicable</strong></div>
+                  <div class="col-12 mt-2"><strong>Explanation:</strong>
+                    <%= peer_ref_applicability.explanation %>
                   </div>
                 </div>
-              <% end %>
+              <% else %> 
+                <% @provider_personal_information&.provider_personal_information_peer_refs&.each do |peer| %>
+                  <div class="bg-light form-row row p-2 border-bottom border-dark">
+                    <div class="col-xl-6">
+                      Peer:
+                    </div>
+                    
+                    <div class="col-xl-6">
+                      <%= "#{peer.practitioner_name}" %>
+                    </div>
+                    <div class="col-xl-6">
+                      Specialty:
+                    </div>
+                    
+                    <div class="col-xl-6">
+                      <%= "#{peer.specialty}" %>
+                    </div>
+                  </div>
+                <% end %>
+              <% end %>  
             </div>
+            <% billing_info_applicability = section_applicability(@provider_personal_information, "billing_info") %>
+            <% billing_info_not_applicable = section_not_applicable?(@provider_personal_information, "billing_info") %>
             <div class="p-2">
                 <h2>Section XVI - Billing Information</h2>
-                <% @provider_personal_information&.practice_associates.each do |practice_associate| %>
-                    <div class="bg-light form-row row p-2 border-bottom border-dark">
-                        <div class="col-xl-6">Billing Company: <%= practice_associate&.billing_company %></div>
-                        <div class="col-xl-6">Name Affiliated with Tax ID Number: <%= practice_associate&.tax_id_name %></div>
-                        <div class="col-xl-6">Federal Tax ID Number: <%= practice_associate&.tax_id %></div>
+                <% if billing_info_not_applicable %>
+                  <div class="bg-light form-row row p-2 border-bottom border-dark">
+                    <div class="col-12"><strong>Not Applicable</strong></div>
+                    <div class="col-12 mt-2"><strong>Explanation:</strong>
+                      <%= billing_info_applicability.explanation %>
                     </div>
+                  </div>
+                <% else %> 
+                  <% @provider_personal_information&.practice_associates.each do |practice_associate| %>
+                      <div class="bg-light form-row row p-2 border-bottom border-dark">
+                          <div class="col-xl-6">Billing Company: <%= practice_associate&.billing_company %></div>
+                          <div class="col-xl-6">Name Affiliated with Tax ID Number: <%= practice_associate&.tax_id_name %></div>
+                          <div class="col-xl-6">Federal Tax ID Number: <%= practice_associate&.tax_id %></div>
+                      </div>
+                  <% end %>
                 <% end %>
             </div>
             <% npdb_applicability = section_applicability(@provider_personal_information, "npdb") %>

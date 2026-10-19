@@ -72,12 +72,18 @@ class Mhc::VerificationPlatformController < ApplicationController
       training
       board_cert
       registration
+      practice_info
       licensure
       facilities
       npdb
+      teaching
       oig
+      other_cert
+      billing_info
+      cme
       disclosures
       liability
+      employment
       app_tracking
     ]
 
