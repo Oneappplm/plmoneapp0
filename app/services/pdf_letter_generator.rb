@@ -512,18 +512,8 @@ class PdfLetterGenerator
   # ✅ Centralized CSS styles for all pages
   def custom_pdf_styles
     <<-CSS
-      @page {
-        size: Letter;
-        margin: 0;
-      }
-
-      html,
       body {
         margin: 0;
-        padding: 0;
-      }
-
-      body {
         font-family: 'Liberation Serif', 'Times New Roman', serif;
         font-size: 13px;
         color: #000;
@@ -533,12 +523,12 @@ class PdfLetterGenerator
       .page {
         position: relative;
         width: 100%;
-        box-sizing: border-box;
-        padding: 70px 15px 65px 15px;
+        min-height: 100vh;
+        padding-top: 70px;
+        padding-bottom: 60px;
       }
 
-      .header,
-      .footer {
+      .header, .footer {
         position: fixed;
         left: 0;
         right: 0;
@@ -547,49 +537,22 @@ class PdfLetterGenerator
       }
 
       .header {
-        top: 20px;
+        top: 20;
         padding-bottom: 5px;
       }
 
-      .footer {
-        bottom: 7px;
-      }
-
-      h1,
-      h2,
-      h3 {
-        font-family: 'Liberation Serif', serif;
-        color: #222;
-        page-break-after: avoid;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      td,
-      th {
-        padding: 5px;
-        vertical-align: top;
-        page-break-inside: avoid;
-      }
-
-      tr {
-        page-break-inside: avoid;
-      }
-
-      .pdf-section {
-        page-break-inside: avoid;
-        break-inside: avoid;
-      }
+      /*.footer {
+        bottom: 0;
+        padding-top: 5px;
+        font-size: 11px;
+        color: #555;
+      }*/
 
       .content img {
         width: 100%;
-        max-width: 100%;
         height: auto;
         display: block;
-        margin: 0 auto;
+        margin:0 auto;
       }
 
       .release-page {
@@ -606,9 +569,24 @@ class PdfLetterGenerator
       .release-content img {
         display: block;
         width: 100%;
-        max-width: 100%;
         height: auto;
+        max-width: 100%;
         margin: 0 auto;
+      }
+
+      h1, h2, h3 {
+        font-family: 'Liberation Serif', serif;
+        color: #222;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      td, th {
+        padding: 5px;
+        vertical-align: top;
       }
 
       .logo {
