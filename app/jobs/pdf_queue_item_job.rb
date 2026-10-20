@@ -163,13 +163,20 @@ class PdfQueueItemJob < ApplicationJob
     filename = "#{provider.caqh_provider_attest_id}_verified_profile_#{Time.current.strftime('%Y%m%d%H%M%S')}.pdf"
     disk_path = pdf_dir.join(filename)
 
+    oig_details =
+      if provider.legacy_client_name == "Primary PartnersCare"
+        provider.rva_informations.where(tab: "OIG", verification_status: "Verified", audit_status: true).where.not(source_date: nil).order(created_at: :desc).first
+      else
+        provider.rva_informations.where(tab: "OIG", status: "completed").where.not(source_date: nil).order(created_at: :desc).first
+      end
+
     html = ApplicationController.render(
       template: "mhc/verification_platform/verified_profile_pdf",
       layout: "pdf",
       locals: {
         provider_personal_information: provider,
         user: user,
-        oig_details: provider.rva_informations.where(tab: "OIG", status: "completed").where.not(source_date: nil),
+        oig_details: oig_details,
         npdb_details: provider.rva_informations.where(tab: "NPDB"),
         grouped_disclosures: provider.provider_disclosures
           .where(disclosure_answer_flag: true)
