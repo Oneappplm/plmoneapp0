@@ -165,9 +165,32 @@ class PdfQueueItemJob < ApplicationJob
 
     oig_details =
       if provider.legacy_client_name == "Primary PartnersCare"
-        provider.rva_informations.where(tab: "OIG", verification_status: "Verified", audit_status: true).where.not(source_date: nil).order(created_at: :desc).first
+        provider.rva_informations
+          .where(
+            tab: "OIG",
+            verification_status: "Verified",
+            audit_status: true
+          )
+          .where.not(source_date: nil)
+          .order(created_at: :desc)
+          .first
+      elsif provider.legacy_client_name == "Broward Health"
+        provider.rva_informations
+          .where(
+            tab: "OIG",
+            verification_status: "Verified",
+            audit_status: true,
+            restart_audit: [false, nil]
+          )
+          .where.not(source_date: nil)
+          .order(created_at: :desc)
+          .first
       else
-        provider.rva_informations.where(tab: "OIG", status: "completed").where.not(source_date: nil).order(created_at: :desc).first
+        provider.rva_informations
+          .where(tab: "OIG", status: "completed")
+          .where.not(source_date: nil)
+          .order(created_at: :desc)
+          .first
       end
 
     html = ApplicationController.render(
