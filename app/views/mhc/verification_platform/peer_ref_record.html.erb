@@ -571,15 +571,23 @@
                             id: 'verif-close', 
                             checked: @last_rva_information&.adverse_action_status == 'Close' %><%= f.label :adverse_action_status, 'Close', for: 'verif-close' %> </div>
                       </div>
-                      <div class="form-row d-flex align-items-center gap-2"><%= f.label :in_good_standing, 'In Good Standing?' %><%= f.radio_button :in_good_standing, 'Yes', 
-                          id: 'good-standing-yes', 
-                          checked: @last_rva_information&.in_good_standing == true %><%= f.label :in_good_standing, 'Yes', 
-                          for: 'good-standing-yes', 
-                          class: 'form-check-label' %><%= f.radio_button :in_good_standing, 'No', 
-                          id: 'good-standing-no', 
-                          checked: @last_rva_information&.in_good_standing == false %><%= f.label :in_good_standing, 'No', 
-                          for: 'good-standing-no', 
-                          class: 'form-check-label' %> </div>
+                      <div class="form-row d-flex align-items-center gap-2">
+                        <%= f.label :in_good_standing, 'In Good Standing?' %>
+
+                        <%= f.radio_button :in_good_standing, 'true',
+                            id: 'good-standing-yes',
+                            checked: @last_rva_information&.in_good_standing == true %>
+                        <%= f.label :in_good_standing, 'Yes',
+                            for: 'good-standing-yes',
+                            class: 'form-check-label' %>
+
+                        <%= f.radio_button :in_good_standing, 'false',
+                            id: 'good-standing-no',
+                            checked: @last_rva_information&.in_good_standing == false %>
+                        <%= f.label :in_good_standing, 'No',
+                            for: 'good-standing-no',
+                            class: 'form-check-label' %>
+                      </div>
                     </div>
                   </div>
                   <!-- Verification Errors Section -->
@@ -836,6 +844,23 @@
   </div>
 </div>
 <script>
+  function setInGoodStanding(value) {
+    const yesRadio = document.getElementById('good-standing-yes');
+    const noRadio = document.getElementById('good-standing-no');
+
+    if (!yesRadio || !noRadio) return;
+
+    yesRadio.checked =
+      value === true ||
+      value === 'true' ||
+      value === 'Yes';
+
+    noRadio.checked =
+      value === false ||
+      value === 'false' ||
+      value === 'No';
+  }
+
   $(document).ready(function() {
     // send request parameter
     $('#send-request-btn').click(function(e) {
@@ -905,7 +930,7 @@
           $('.verifier')[0].innerHTML = data.verifier;
           $('#rva_information_verification_comments')[0].value = data.verification_comments;
           $(`#verif-${data.adverse_action_status}`).checked = data.adverse_action_status;
-          $('input[name="rva_information[in_good_standing]"]').checked = data.in_good_standing;
+          setInGoodStanding(data.in_good_standing);
         },
         error: function(xhr, status, error) {
           console.error('Error:', error);
@@ -1051,7 +1076,7 @@
     setElementText('.verification-date', rvaInfo.verification_date);
     setElementText('.verifier', rvaInfo.verifier);
     setElementValue('#rva_information_verification_comments', rvaInfo.verification_comments);
-    setElementChecked('input[name="rva_information[in_good_standing]"]', rvaInfo.in_good_standing);
+    setInGoodStanding(rvaInfo.in_good_standing);
     // Audit Section
     setElementValue('input[name="rva_information[audit_status]"]', rvaInfo.audit_status);
     setElementText('#rva_information_audit_date', rvaInfo.audit_date);

@@ -998,10 +998,17 @@
           <div class="section-content">
             <div class="row">
               <div class="col-6">
+                <% verified_by =
+                     if details.source_name.to_s.casecmp?("NOT VERIFIED")
+                       "Not Verified"
+                     else
+                       details.source_name.presence || "N/A"
+                     end %>
+
+                <p><strong>Verified By:</strong> <%= verified_by %></p>
                 <p><strong>Peer:</strong> <%= ref.practitioner_name %></p>
-                <p><strong>Verified By:</strong> <%= details.status %> </p>
                 <p><strong>Verifier:</strong> <%= user&.full_name.presence || 'N/A' %></p>
-                <p><strong>In Good Standing?:</strong> <%= details&.in_good_standing ? "Yes" : "No" %></p>
+                <p><strong>In Good Standing?:</strong> <%= details.in_good_standing.nil? ? 'N/A' : (details.in_good_standing ? 'Yes' : 'No') %></p>
                 <p><strong>Comments:</strong> <%= details.comments %></p>
                 <p><strong>Adverse Action:</strong> <%= details.adverse_action %></p>
                 <p><strong>Adverse Action Comments:</strong> <%= details.adverse_action_comments %></p>
