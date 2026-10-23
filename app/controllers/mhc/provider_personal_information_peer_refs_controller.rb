@@ -51,7 +51,7 @@ class Mhc::ProviderPersonalInformationPeerRefsController < ApplicationController
                     template: "pdf_templates/peer_reference_letter",
                     assign_name: :peer_ref,
                     release_sub_section: "peer_reference",
-                    header_template: "pdf_templates/shared/medversant_header",
+                    header_template: "pdf_templates/shared/credallies_header",
                     footer_template: "pdf_templates/shared/medversant_peer_footer",
                     extra_templates: [
                       "pdf_templates/peer_reference_additional_information",
