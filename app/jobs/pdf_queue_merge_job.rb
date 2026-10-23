@@ -160,7 +160,7 @@ class PdfQueueMergeJob < ApplicationJob
   end
 
   def aws_bucket
-    ENV.fetch("AWS_BUCKET", "plmhealthoneapp-hvhs")
+    ENV.fetch("AWS_BUCKET", "docgotest-bucket")
   end
 
   # ---------- Utils ----------
