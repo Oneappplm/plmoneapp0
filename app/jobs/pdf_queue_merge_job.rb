@@ -7,6 +7,7 @@ require "tempfile"
 require "uri"
 require "open-uri"
 require "prawn"
+require "tmpdir"
 
 class PdfQueueMergeJob < ApplicationJob
   queue_as :pdf_generation
@@ -149,7 +150,33 @@ class PdfQueueMergeJob < ApplicationJob
     raise
   end
 
+  # ---------- Shared clients/config ----------
+  def s3
+    @s3 ||= Aws::S3::Client.new(
+      region: ENV.fetch("AWS_REGION", "us-east-1"),
+      access_key_id: ENV["AWS_ACCESS_KEY_ID"],
+      secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"]
+    )
+  end
+
+  def aws_bucket
+    ENV.fetch("AWS_BUCKET", "plmhealthoneapp-hvhs")
+  end
+
+  # ---------- Utils ----------
+  def http_url?(str)
+    str.to_s.match?(/\Ahttps?:\/\//i)
+  end
+
+  def image_ext?(ext)
+    ext.to_s.match?(/\.(png|jpg|jpeg|tif|tiff)$/i)
+  end
+
   def image_path_to_pdf(path)
+    ext = File.extname(path).downcase
+
+    return tiff_to_pdf(path) if %w[.tif .tiff].include?(ext)
+
     pdf_temp = Tempfile.new(["converted_", ".pdf"], Rails.root.join("tmp"))
     pdf_temp.binmode
 
@@ -165,22 +192,31 @@ class PdfQueueMergeJob < ApplicationJob
     end
   end
 
-  # ---------- Shared clients/config ----------
-  def s3
-    @s3 ||= Aws::S3::Client.new(
-      region: ENV.fetch("AWS_REGION", "us-east-1"),
-      access_key_id: ENV["AWS_ACCESS_KEY_ID"],
-      secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"]
-    )
-  end
+  def tiff_to_pdf(path)
+    Dir.mktmpdir("tiff_merge_", Rails.root.join("tmp")) do |dir|
+      output_pattern = File.join(dir, "page-%04d.png")
 
-  def aws_bucket
-    ENV.fetch("AWS_BUCKET", "plmhealthoneapp-hvhs")
-  end
+      success = system(
+        "/usr/bin/convert",
+        path.to_s,
+        output_pattern
+      )
 
-  # ---------- Utils ----------
-  def http_url?(str) = str.to_s.match?(/\Ahttps?:\/\//i)
-  def image_ext?(ext) = ext.to_s.match?(/\.(png|jpg|jpeg)$/i)
+      raise "TIFF conversion failed" unless success
+
+      pages = Dir.glob(File.join(dir, "page-*.png")).sort
+
+      raise "TIFF conversion produced no pages" if pages.empty?
+
+      combined = CombinePDF.new
+
+      pages.each do |page_path|
+        combined << image_path_to_pdf(page_path)
+      end
+
+      combined
+    end
+  end
 
   def short(str)
     s = str.to_s
