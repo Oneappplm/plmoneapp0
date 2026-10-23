@@ -13,7 +13,7 @@ class Mhc::PracticeInformationEducationsController < ApplicationController
       template: "pdf_templates/education_letter",
       assign_name: :education,
       release_sub_section: "education",
-      header_template: "pdf_templates/shared/medversant_header",
+      header_template: "pdf_templates/shared/credallies_header",
       footer_template: "pdf_templates/shared/medversant_footer",
       authorization_image: nil,
       include_uploaded_release: true

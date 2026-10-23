@@ -49,7 +49,7 @@ class Mhc::ProviderEducationsController < ApplicationController
                     template: "pdf_templates/training_letter",
                     assign_name: :training,
                     release_sub_section: "training",
-                    header_template: "pdf_templates/shared/medversant_header",
+                    header_template: "pdf_templates/shared/credallies_header",
                     footer_template: "pdf_templates/shared/medversant_training_footer",
                     authorization_image: nil,
                     include_uploaded_release: true

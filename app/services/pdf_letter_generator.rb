@@ -103,6 +103,11 @@ class PdfLetterGenerator
       }
     )
 
+    credallies_letter = @header_template == "pdf_templates/shared/credallies_header"
+
+    header_class = credallies_letter ? "header credallies-letter-header" : "header"
+    page_class = credallies_letter ? "page credallies-letter-page" : "page"
+
     letter_html = <<-HTML
       <html>
         <head>
@@ -113,11 +118,11 @@ class PdfLetterGenerator
         </head>
 
         <body>
-          <div class="header">
+          <div class="#{header_class}">
             #{header_html}
           </div>
 
-          <div class="page">
+          <div class="#{page_class}">
             #{letter_html_body}
           </div>
 
@@ -162,11 +167,11 @@ class PdfLetterGenerator
           </head>
 
           <body>
-            <div class="header">
+            <div class="#{header_class}">
               #{header_html}
             </div>
 
-            <div class="page">
+            <div class="#{page_class}">
               #{extra_html_body}
             </div>
 
@@ -539,6 +544,26 @@ class PdfLetterGenerator
       .header {
         top: 20;
         padding-bottom: 5px;
+      }
+
+      /* CredAllies verification letters only */
+      .credallies-letter-header {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        width: 100% !important;
+        text-align: left !important;
+        padding-bottom: 12px;
+      }
+
+      .credallies-letter-page {
+        position: relative !important;
+        width: 100% !important;
+        min-height: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 40px;
+        box-sizing: border-box;
       }
 
       /*.footer {
