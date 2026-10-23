@@ -140,7 +140,7 @@ class PdfQueueItemJob < ApplicationJob
   # ----------------------------------------------------
 
   def generate_verified_profile(provider, user)
-    cache_key = "verified_profile:v1:provider=#{provider.id}:user=#{user.id}:updated=#{provider.updated_at.to_i}"
+    cache_key = "verified_profile:v2:provider=#{provider.id}:user=#{user.id}:updated=#{provider.updated_at.to_i}"
 
     pdf_path = Rails.cache.fetch(cache_key, expires_in: 10.minutes) do
       render_verified_profile_pdf(provider, user)
@@ -193,12 +193,20 @@ class PdfQueueItemJob < ApplicationJob
     )
 
     pdf = WickedPdf.new.pdf_from_string(
-      html,
-      enable_local_file_access: true,
-      disable_javascript: true,
-      dpi: 96,
-      zoom: 1.0
-    )
+        html,
+        enable_local_file_access: true,
+        disable_javascript: true,
+        dpi: 96,
+        zoom: 1.0,
+        page_size: "A4",
+        margin: {
+          top: 12,
+          bottom: 12,
+          left: 12,
+          right: 12
+        },
+        print_media_type: true
+      )
 
     File.binwrite(disk_path, pdf)
 
