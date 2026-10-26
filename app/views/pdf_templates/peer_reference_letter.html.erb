@@ -117,23 +117,12 @@
 
 <body>
   <div class="peer-reference-letter">
-
-    <% reference_name = [
-         @peer_ref.title,
-         @peer_ref.first_name,
-         @peer_ref.last_name,
-         @peer_ref.suffix
-       ].compact_blank.join(" ") %>
-
-    <% practitioner_type =
-         if @ppi.respond_to?(:practitioner_type)
-           @ppi.practitioner_type.presence
-         end %>
-
+    <% reference_name = [@peer_ref.title, @peer_ref.first_name, @peer_ref.last_name, @peer_ref.suffix].compact_blank.join(" ") %>
+    <% practitioner_type = if @ppi.respond_to?(:practitioner_type); @ppi.practitioner_type.presence; end %>
     <% practitioner_name = [@ppi.full_name, practitioner_type].compact_blank.join(", ") %>
 
     <div class="recipient-block">
-      <p><%= Date.current.strftime("%B %-d, %Y") %></p>
+      <p><%= Time.current.in_time_zone("Pacific Time (US & Canada)").strftime("%B %-d, %Y") %></p>
 
       <div style="height:7px;"></div>
 
@@ -199,7 +188,6 @@
     ] %>
 
     <table class="rating-table">
-
       <tr class="rating-heading">
         <td class="rating-column">Rating (1-10)</td>
         <td class="cannot-comment-column">Cannot Comment</td>
@@ -217,17 +205,14 @@
           <td class="rating-column">
             <span class="answer-line"></span>
           </td>
-
           <td class="cannot-comment-column">
             <span class="answer-line"></span>
           </td>
-
           <td class="category-column">
             <%= category %>
           </td>
         </tr>
       <% end %>
-
     </table>
 
     <div class="comments-section">
@@ -235,7 +220,6 @@
       <div class="comment-line"></div>
       <div class="comment-line"></div>
     </div>
-
   </div>
 </body>
 </html>

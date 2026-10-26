@@ -1,13 +1,26 @@
-<div class="enc-content">
+<% applicability = section_applicability(@provider_personal_information, "licensure") %>
+<% licensure_not_applicable = section_not_applicable?(@provider_personal_information, "licensure") %>
+
+<style>
+  #licensure-section .page-applicable {
+    <%= licensure_not_applicable ? "display: none;" : "" %>
+  }
+
+  #licensure-section .page-not-applicable {
+    <%= licensure_not_applicable ? "" : "display: none;" %>
+  }
+</style>
+
+<div class="enc-content section-applicability-container"
+     id="licensure-section"
+     data-section-key="licensure">
 	<div class="container">
 		<%= render "top_nav_buttons"%>
 		<div class="mt-4 d-flex align-items-end justify-content-between gap-3">
 			<div class="d-flex align-items-center gap-3">
 				<h4 class="page-heading">Licensure</h4>
-				<div class="form-check form-switch">
-					<input class="form-check-input" type="checkbox" id="practice-info-switch">
-					<label class="form-check-label" for="practice-info-switch">Not Applicable</label>
-				</div>
+				<%= render "section_applicability",
+           section_key: "licensure" %>
 			</div>
 
 			<%= link_to mhc_verification_platform_path(page_tab: 'add_new_licensure'), class: 'btn btn-primary py-1' do %>
@@ -121,16 +134,7 @@
 				</div>
 			</div>
 		<% end %>
-		<form action="" class="page-not-applicable">
-			<div class="form-row mt-4">
-				<label for="">Please explain:<span class="font-red">*</span></label>
-				<textarea name="not-applicable-explain" id="" cols="30" rows="5" class="form-control" required></textarea>
-			</div>
-			<div class="form-row mt-2 d-flex justify-content-end">
-				<button type="submit" name ="save-not-app-explain" class="btn btn-primary py-1">
-					Save
-				</button>
-			</div>
-		</form>
+		<%= render "section_applicability_explanation",
+           section_key: "licensure" %>
 	</div>
 </div>

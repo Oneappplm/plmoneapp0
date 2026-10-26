@@ -13,17 +13,7 @@ class PdfLetterGenerator
     The Release file might be missing. Please upload it and try again.
   </p>"
 
-  def initialize(
-    record,
-    template: "pdf_templates/education_letter",
-    assign_name: :education,
-    release_sub_section: nil,
-    header_template: "pdf_templates/shared/header",
-    footer_template: "pdf_templates/shared/footer",
-    authorization_image: nil,
-    include_uploaded_release: true,
-    extra_templates: []
-  )
+  def initialize(record, template: "pdf_templates/education_letter", assign_name: :education, release_sub_section: nil, header_template: "pdf_templates/shared/header", footer_template: "pdf_templates/shared/footer", authorization_image: nil, include_uploaded_release: true, extra_templates: [])
     @record = record
     @template = template
     @assign_name = assign_name
@@ -34,16 +24,13 @@ class PdfLetterGenerator
     @include_uploaded_release = include_uploaded_release
     @extra_templates = extra_templates
 
-    provider_attest_id =
-      if @record.respond_to?(:provider_attest_id)
-        @record.provider_attest_id
-      elsif @record.respond_to?(:provider_attest)
-        @record.provider_attest&.id
-      end
+    provider_attest_id = if @record.respond_to?(:provider_attest_id)
+      @record.provider_attest_id
+    elsif @record.respond_to?(:provider_attest)
+      @record.provider_attest&.id
+    end
 
-    @ppi = ProviderPersonalInformation.find_by(
-      provider_attest_id: provider_attest_id
-    )
+    @ppi = ProviderPersonalInformation.find_by(provider_attest_id: provider_attest_id)
 
     raise ArgumentError, "Provider personal information not found" unless @ppi
   end
@@ -55,18 +42,7 @@ class PdfLetterGenerator
 
     # STEP 1: Get uploaded Release file only when required
     if @include_uploaded_release
-      release_scope = @ppi.provider_personal_uploaded_docs
-                          .where(image_classification: "release")
-
-      if @release_sub_section.present?
-        release_scope = release_scope.where(
-          sub_section: @release_sub_section.to_s
-        )
-      end
-
-      release_doc = release_scope
-                      .order(created_at: :desc)
-                      .first
+      release_doc = find_release_doc
 
       raise StandardError, MISSING_RELEASE_HTML unless release_doc.present?
 
@@ -102,28 +78,20 @@ class PdfLetterGenerator
         end
       end
 
-      release_pdf_binary =
-        if ext == ".pdf"
-          File.binread(release_path)
-        elsif %w[.tif .tiff].include?(ext)
-          convert_tiff_to_pdf_with_header_footer(release_path)
-        else
-          raise StandardError, "<p class='alert alert-danger'>
-            Only PDF or TIFF release files are allowed.
-          </p>"
-        end
+      release_pdf_binary = if ext == ".pdf"
+        File.binread(release_path)
+      elsif %w[.tif .tiff].include?(ext)
+        convert_tiff_to_pdf_with_header_footer(release_path)
+      else
+        raise StandardError, "<p class='alert alert-danger'>
+          Only PDF or TIFF release files are allowed.
+        </p>"
+      end
     end
 
     # STEP 2: Render common header/footer
-    header_html = ApplicationController.render(
-      template: @header_template,
-      layout: false
-    )
-
-    footer_html = ApplicationController.render(
-      template: @footer_template,
-      layout: false
-    )
+    header_html = ApplicationController.render(template: @header_template, layout: false)
+    footer_html = ApplicationController.render(template: @footer_template, layout: false)
 
     # STEP 3: Render main verification letter
     letter_html_body = ApplicationController.render(
@@ -135,6 +103,11 @@ class PdfLetterGenerator
       }
     )
 
+    credallies_letter = @header_template == "pdf_templates/shared/credallies_header"
+
+    header_class = credallies_letter ? "header credallies-letter-header" : "header"
+    page_class = credallies_letter ? "page credallies-letter-page" : "page"
+
     letter_html = <<-HTML
       <html>
         <head>
@@ -145,11 +118,11 @@ class PdfLetterGenerator
         </head>
 
         <body>
-          <div class="header">
+          <div class="#{header_class}">
             #{header_html}
           </div>
 
-          <div class="page">
+          <div class="#{page_class}">
             #{letter_html_body}
           </div>
 
@@ -194,11 +167,11 @@ class PdfLetterGenerator
           </head>
 
           <body>
-            <div class="header">
+            <div class="#{header_class}">
               #{header_html}
             </div>
 
-            <div class="page">
+            <div class="#{page_class}">
               #{extra_html_body}
             </div>
 
@@ -312,7 +285,6 @@ class PdfLetterGenerator
     end
 
     combined.to_pdf
-
   rescue => e
     Rails.logger.error(
       "❌ [PDF ERROR] #{e.class}: #{e.message}\n" \
@@ -371,84 +343,176 @@ class PdfLetterGenerator
     tmp.path
   end
 
- def convert_tiff_to_pdf_with_header_footer(tiff_path)
-  raise StandardError, "TIFF not found: #{tiff_path}" unless File.exist?(tiff_path)
+  def find_release_doc
+    release_scope = @ppi.provider_personal_uploaded_docs
+                        .where(image_classification: "release")
+                        .order(created_at: :desc)
 
-  pdf_pages = CombinePDF.new
-  temp_dir = Dir.mktmpdir("tiff_frames_")
+    # New preferred provider-level shared Release
+    shared_release = release_scope.find_by(sub_section: nil)
+    return shared_release if shared_release.present?
 
-  begin
-    output_pattern = File.join(temp_dir, "frame_%04d.png")
-
-    MiniMagick::Tool.new("convert") do |convert|
-      convert << tiff_path
-      convert << "-coalesce"
-      convert << output_pattern
+    # Backward compatibility for old section-specific uploads
+    if @release_sub_section.present?
+      section_release = release_scope.find_by(sub_section: @release_sub_section.to_s)
+      return section_release if section_release.present?
     end
 
-    frame_files = Dir.glob(File.join(temp_dir, "frame_*.png")).sort
+    nil
+  end
 
-    raise StandardError, "No TIFF frames could be extracted" if frame_files.empty?
+  def convert_tiff_to_pdf_with_header_footer(tiff_path)
+    raise StandardError, "TIFF not found: #{tiff_path}" unless File.exist?(tiff_path)
 
-    Rails.logger.info("🖼️ TIFF extracted into #{frame_files.count} page(s)")
+    pdf_pages = CombinePDF.new
+    temp_dir = Dir.mktmpdir("tiff_frames_")
 
-    header_html = ApplicationController.render(
-      template: @header_template,
-      layout: false
-    )
+    begin
+      output_pattern = File.join(temp_dir, "frame_%04d.png")
 
-    footer_html = ApplicationController.render(
-      template: @footer_template,
-      layout: false
-    )
+      MiniMagick::Tool.new("convert") do |convert|
+        convert << tiff_path
+        convert << "-coalesce"
+        convert << output_pattern
+      end
 
-    frame_files.each_with_index do |frame_path, index|
-      Rails.logger.info("🖼️ Rendering TIFF page #{index + 1}/#{frame_files.count}")
+      frame_files = Dir.glob(File.join(temp_dir, "frame_*.png")).sort
 
-      base64_png = Base64.strict_encode64(File.binread(frame_path))
+      raise StandardError, "No TIFF frames could be extracted" if frame_files.empty?
 
-      html = <<-HTML
-        <html>
-          <head>
-            <meta charset="UTF-8">
-            <style>
-              #{custom_pdf_styles}
-            </style>
-          </head>
-          <body>
-            <div class="header">#{header_html}</div>
+      Rails.logger.info("🖼️ TIFF extracted into #{frame_files.count} page(s)")
 
-            <div class="release-page">
-              <div class="release-content">
-                <img src="data:image/png;base64,#{base64_png}" />
-              </div>
-            </div>
-
-            <div class="footer">#{footer_html}</div>
-          </body>
-        </html>
-      HTML
-
-      page_pdf_binary = WickedPdf.new.pdf_from_string(
-        html,
-        margin: {
-          top: 0,
-          bottom: 0,
-          left: 15,
-          right: 15
-        },
-        page_size: "Letter",
-        zoom: 1.0
+      header_html = ApplicationController.render(
+        template: @header_template,
+        layout: false
       )
 
-      pdf_pages << CombinePDF.parse(page_pdf_binary)
-    end
+      footer_html = ApplicationController.render(
+        template: @footer_template,
+        layout: false
+      )
 
-    pdf_pages.to_pdf
-  ensure
-    FileUtils.remove_entry(temp_dir) if temp_dir && Dir.exist?(temp_dir)
+      frame_files.each_with_index do |frame_path, index|
+        Rails.logger.info(
+          "🖼️ Rendering TIFF page #{index + 1}/#{frame_files.count}"
+        )
+
+        base64_png = Base64.strict_encode64(
+          File.binread(frame_path)
+        )
+
+        html = <<-HTML
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="UTF-8">
+
+              <style>
+                @page {
+                  size: Letter;
+                  margin: 0;
+                }
+
+                html,
+                body {
+                  margin: 0;
+                  padding: 0;
+                  width: 100%;
+                  height: 100%;
+                  overflow: hidden;
+                  font-family: Arial, Helvetica, sans-serif;
+                }
+
+                .header,
+                .footer {
+                  position: fixed;
+                  left: 0;
+                  right: 0;
+                  width: 100%;
+                  z-index: 10;
+                }
+
+                .header {
+                  top: 20px;
+                }
+
+                .footer {
+                  bottom: 7px;
+                }
+
+                .release-page {
+                  width: 100%;
+                  height: 10.85in;
+                  box-sizing: border-box;
+                  padding: 72px 15px 65px 15px;
+                  overflow: hidden;
+                }
+
+                .release-content {
+                  width: 100%;
+                  height: 100%;
+                  text-align: center;
+                }
+
+                .release-content img {
+                  display: block;
+                  width: auto;
+                  height: auto;
+                  max-width: 100%;
+                  max-height: 9.15in;
+                  margin: 0 auto;
+                  page-break-inside: avoid;
+                }
+              </style>
+            </head>
+
+            <body>
+              <div class="header">
+                #{header_html}
+              </div>
+
+              <div class="release-page">
+                <div class="release-content">
+                  <img src="data:image/png;base64,#{base64_png}" />
+                </div>
+              </div>
+
+              <div class="footer">
+                #{footer_html}
+              </div>
+            </body>
+          </html>
+        HTML
+
+        page_pdf_binary = WickedPdf.new.pdf_from_string(
+          html,
+          margin: {
+            top: 0,
+            bottom: 0,
+            left: 15,
+            right: 15
+          },
+          page_size: "Letter",
+          zoom: 1.0
+        )
+
+        parsed_pdf = CombinePDF.parse(page_pdf_binary)
+
+        Rails.logger.info(
+          "📄 TIFF frame #{index + 1} generated " \
+          "#{parsed_pdf.pages.count} PDF page(s)"
+        )
+
+        # Every TIFF frame represents exactly one source page.
+        # Prevent wkhtmltopdf overflow from adding an empty second page.
+        pdf_pages << parsed_pdf.pages.first
+      end
+
+      pdf_pages.to_pdf
+    ensure
+      FileUtils.remove_entry(temp_dir) if temp_dir && Dir.exist?(temp_dir)
+    end
   end
-end
 
   # ✅ Centralized CSS styles for all pages
   def custom_pdf_styles
@@ -480,6 +544,26 @@ end
       .header {
         top: 20;
         padding-bottom: 5px;
+      }
+
+      /* CredAllies verification letters only */
+      .credallies-letter-header {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        width: 100% !important;
+        text-align: left !important;
+        padding-bottom: 12px;
+      }
+
+      .credallies-letter-page {
+        position: relative !important;
+        width: 100% !important;
+        min-height: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 40px;
+        box-sizing: border-box;
       }
 
       /*.footer {

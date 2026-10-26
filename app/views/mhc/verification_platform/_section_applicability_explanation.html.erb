@@ -1,0 +1,35 @@
+<% applicability = @provider_personal_information
+                     .provider_section_applicabilities
+                     .find_by(section_key: section_key) %>
+
+<%= form_with url: mhc_update_section_applicability_path(
+                  id: @provider_personal_information.provider_attest_id
+                ),
+                method: :patch,
+                local: true,
+                html: {
+                  class: "page-not-applicable section-applicability-explanation"
+                } do %>
+
+  <%= hidden_field_tag :section_key, section_key %>
+  <%= hidden_field_tag :not_applicable, "1" %>
+
+  <div class="form-row mt-4">
+    <%= label_tag "#{section_key}_explanation" do %>
+      Please explain:
+      <span class="font-red">*</span>
+    <% end %>
+
+    <%= text_area_tag :explanation,
+                      applicability&.explanation,
+                      id: "#{section_key}_explanation",
+                      rows: 5,
+                      class: "form-control",
+                      required: true %>
+  </div>
+
+  <div class="form-row mt-2 d-flex justify-content-end">
+    <%= submit_tag "Save", class: "btn btn-sm btn-primary" %>
+  </div>
+
+<% end %>

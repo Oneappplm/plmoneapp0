@@ -2,10 +2,12 @@
 require "aws-sdk-s3"
 require "combine_pdf"
 require "fileutils"
-require "mini_magick"
+# require "mini_magick"
 require "tempfile"
 require "uri"
 require "open-uri"
+require "prawn"
+require "tmpdir"
 
 class PdfQueueMergeJob < ApplicationJob
   queue_as :pdf_generation
@@ -20,12 +22,25 @@ class PdfQueueMergeJob < ApplicationJob
     # Mark queue as merging (optional but helpful for UI)
     queue.update!(status: "processing", message: "Merging PDFs...") if queue.status == "processing" || queue.status == "queued"
 
-    file_links = queue.pdf_queue_items.where(status: "completed").order(:id).pluck(:file_path).compact
-    if file_links.empty?
-      Rails.logger.warn "⚠️ [PDF MERGE] No completed files queue=#{queue.id}"
-      queue.update!(status: "error", message: "No completed files to merge")
-      return
+    items = queue.pdf_queue_items.order(:id).to_a
+
+    raise "No PDF queue items found" if items.empty?
+
+    invalid_items = items.reject do |item|
+      item.status == "completed" && item.file_path.present?
     end
+
+    if invalid_items.any?
+      raise "Cannot merge queue #{queue.id}. Invalid item IDs: #{invalid_items.map(&:id).join(', ')}"
+    end
+
+    file_links = items.map(&:file_path)
+
+    # if file_links.empty?
+    #   Rails.logger.warn "⚠️ [PDF MERGE] No completed files queue=#{queue.id}"
+    #   queue.update!(status: "error", message: "No completed files to merge")
+    #   return
+    # end
 
     merged_disk_path = merge_files_to_disk(file_links, provider)
 
@@ -70,12 +85,13 @@ class PdfQueueMergeJob < ApplicationJob
     combined_pdf = CombinePDF.new
 
     files.each_with_index do |file_ref, idx|
-      next if file_ref.blank?
+      raise ArgumentError, "Blank attachment path at position #{idx + 1}" if file_ref.blank?
       begin
         Rails.logger.info "📎 [MERGE] (#{idx + 1}/#{files.size}) adding: #{short(file_ref)}"
         http_url?(file_ref) ? add_remote!(combined_pdf, file_ref) : add_local!(combined_pdf, file_ref)
       rescue => e
-        Rails.logger.error "❌ [MERGE] Skipping bad file: #{short(file_ref)} - #{e.class}: #{e.message}"
+        Rails.logger.error "❌ [MERGE] Failed file: #{short(file_ref)} - #{e.class}: #{e.message}"
+        raise
       end
     end
 
@@ -87,9 +103,8 @@ class PdfQueueMergeJob < ApplicationJob
   def add_local!(combined_pdf, public_or_relative_path)
     disk_path = Rails.root.join("public", public_or_relative_path.to_s.sub(%r{^/}, ""))
 
-    unless File.exist?(disk_path)
-      Rails.logger.warn "⚠️ [MERGE] Missing local file: #{disk_path}"
-      return
+    unless File.file?(disk_path)
+      raise Errno::ENOENT, "Missing local PDF attachment: #{disk_path}"
     end
 
     ext = File.extname(disk_path.to_s).downcase
@@ -132,21 +147,7 @@ class PdfQueueMergeJob < ApplicationJob
     end
   rescue => e
     Rails.logger.error "❌ [MERGE] Failed remote: #{short(url)} - #{e.class}: #{e.message}"
-  end
-
-  def image_path_to_pdf(path)
-    pdf_temp = Tempfile.new(["converted_", ".pdf"], Rails.root.join("tmp"))
-    pdf_temp.binmode
-
-    begin
-      img = MiniMagick::Image.open(path)
-      img.format("pdf")
-      img.write(pdf_temp.path)
-      CombinePDF.load(pdf_temp.path)
-    ensure
-      pdf_temp.close
-      pdf_temp.unlink
-    end
+    raise
   end
 
   # ---------- Shared clients/config ----------
@@ -159,12 +160,63 @@ class PdfQueueMergeJob < ApplicationJob
   end
 
   def aws_bucket
-    ENV.fetch("AWS_BUCKET", "plmhealthoneapp-hvhs")
+    ENV.fetch("AWS_BUCKET", "docgotest-bucket")
   end
 
   # ---------- Utils ----------
-  def http_url?(str) = str.to_s.match?(/\Ahttps?:\/\//i)
-  def image_ext?(ext) = ext.to_s.match?(/\.(png|jpg|jpeg)$/i)
+  def http_url?(str)
+    str.to_s.match?(/\Ahttps?:\/\//i)
+  end
+
+  def image_ext?(ext)
+    ext.to_s.match?(/\.(png|jpg|jpeg|tif|tiff)$/i)
+  end
+
+  def image_path_to_pdf(path)
+    ext = File.extname(path).downcase
+
+    return tiff_to_pdf(path) if %w[.tif .tiff].include?(ext)
+
+    pdf_temp = Tempfile.new(["converted_", ".pdf"], Rails.root.join("tmp"))
+    pdf_temp.binmode
+
+    begin
+      Prawn::Document.generate(pdf_temp.path, page_size: "A4") do |pdf|
+        pdf.image path, fit: [pdf.bounds.width, pdf.bounds.height]
+      end
+
+      CombinePDF.load(pdf_temp.path)
+    ensure
+      pdf_temp.close
+      pdf_temp.unlink
+    end
+  end
+
+  def tiff_to_pdf(path)
+    Dir.mktmpdir("tiff_merge_", Rails.root.join("tmp")) do |dir|
+      output_pattern = File.join(dir, "page-%04d.png")
+
+      success = system(
+        "/usr/bin/convert",
+        path.to_s,
+        output_pattern
+      )
+
+      raise "TIFF conversion failed" unless success
+
+      pages = Dir.glob(File.join(dir, "page-*.png")).sort
+
+      raise "TIFF conversion produced no pages" if pages.empty?
+
+      combined = CombinePDF.new
+
+      pages.each do |page_path|
+        combined << image_path_to_pdf(page_path)
+      end
+
+      combined
+    end
+  end
 
   def short(str)
     s = str.to_s

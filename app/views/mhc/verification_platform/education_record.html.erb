@@ -936,7 +936,7 @@
                                     <%= f.label :source_name, 'Source Name:' %>
                                   </div>
                                   <div class="col-md-6">  
-                                    <%= f.select :source_name, options_for_select([['ADA', 'ADA'] , ['AMA Profile', 'AMA Profile'], ['AOA Profile', 'AOA Profile'], ['Application / On File with State Board', 'Application / On File with State Board'] , ['Application Supplement', 'Application Supplement'], ['AuraData', 'AuraData'], ['DegreeCheck.com', 'DegreeCheck.com'], ['ECFMG', 'ECFMG'], ['NATIONAL STUDENT CLEARINGHOUSE', 'NATIONAL STUDENT CLEARINGHOUSE'] , ['NOT VERIFIED', 'NOT VERIFIED'] , ['School', 'School'] , ['State License Board', 'State License Board'] , ['Unable to Verify', 'Unable to Verify'] , ['Unable to Verify: Three Attempts Made', 'Unable to Verify: Three Attempts Made'], ['State Board', 'State Board']], selected: @last_rva_information&.source_name.present? ? @last_rva_information&.source_name : ''), { include_blank: 'Select option' }, class: 'form-select' %>
+                                    <%= f.select :source_name, options_for_select([['ADA', 'ADA'] , ['AMA Profile', 'AMA Profile'], ['AOA Profile', 'AOA Profile'], ['Application / On File with State Board', 'Application / On File with State Board'] , ['Application Supplement', 'Application Supplement'], ['AuraData', 'AuraData'], ['DegreeCheck.com', 'DegreeCheck.com'], ['ECFMG', 'ECFMG'], ['NATIONAL STUDENT CLEARINGHOUSE', 'NATIONAL STUDENT CLEARINGHOUSE'] , ['NOT VERIFIED', 'NOT VERIFIED'] , ['Parchment', 'Parchment'], ['School', 'School'] , ['State License Board', 'State License Board'] , ['Unable to Verify', 'Unable to Verify'] , ['Unable to Verify: Three Attempts Made', 'Unable to Verify: Three Attempts Made'], ['State Board', 'State Board']], selected: @last_rva_information&.source_name.present? ? @last_rva_information&.source_name : ''), { include_blank: 'Select option' }, class: 'form-select' %>
                                   </div>
                                 </div>
                                 <hr>
@@ -1977,20 +1977,27 @@
           .then(data => {
 					  filesDiv.innerHTML = "";
 
-					  const releaseDocs = data.filter(doc => {
-					    const ext = doc.file_name?.split(".").pop()?.toLowerCase();
-					    const classification = doc.image_classification?.trim()?.toLowerCase();
-					    const subSection = doc.sub_section?.trim()?.toLowerCase();
+					  const validReleaseDocs = data.filter(doc => {
+              const ext = doc.file_name?.split(".").pop()?.toLowerCase();
+              const classification = doc.image_classification?.trim()?.toLowerCase();
 
-					    return (
-					      classification === "release" &&
-					      subSection === "education" &&
-					      ["pdf", "tif", "tiff"].includes(ext)
-					    );
-					  });
+              return (
+                classification === "release" &&
+                ["pdf", "tif", "tiff"].includes(ext)
+              );
+            });
 
-					  if (releaseDocs.length > 0) {
-					    const releaseDoc = releaseDocs[0];
+            const sharedRelease = validReleaseDocs.find(doc => {
+              return !doc.sub_section?.trim();
+            });
+
+            const sectionRelease = validReleaseDocs.find(doc => {
+              return doc.sub_section?.trim()?.toLowerCase() === "education";
+            });
+
+            const releaseDoc = sharedRelease || sectionRelease;
+
+					  if (releaseDoc) {
 
 					    const link = document.createElement("a");
 					    link.href = releaseDoc.file_url;

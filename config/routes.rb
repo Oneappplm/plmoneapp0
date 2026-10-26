@@ -321,6 +321,11 @@ Rails.application.routes.draw do
     end
     resources :verification_platform, only: [:index, :show], path: 'verification-platform'
 
+    # for not applicable functionality
+    patch "verification-platform/:id/section-applicability",
+      to: "verification_platform#update_section_applicability",
+      as: :update_section_applicability
+
     resources :client_portal, only: [:index, :show], path: 'client-portal' do
       collection do
         get :upload_csv

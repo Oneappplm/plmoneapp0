@@ -140,7 +140,7 @@ class PdfQueueItemJob < ApplicationJob
   # ----------------------------------------------------
 
   def generate_verified_profile(provider, user)
-    cache_key = "verified_profile:v1:provider=#{provider.id}:user=#{user.id}:updated=#{provider.updated_at.to_i}"
+    cache_key = "verified_profile:v4:provider=#{provider.id}:user=#{user.id}:updated=#{provider.updated_at.to_i}"
 
     pdf_path = Rails.cache.fetch(cache_key, expires_in: 10.minutes) do
       render_verified_profile_pdf(provider, user)
@@ -163,13 +163,37 @@ class PdfQueueItemJob < ApplicationJob
     filename = "#{provider.caqh_provider_attest_id}_verified_profile_#{Time.current.strftime('%Y%m%d%H%M%S')}.pdf"
     disk_path = pdf_dir.join(filename)
 
+    base_url = ENV.fetch("APP_BASE_URL").delete_suffix("/")
+
+    unless base_url.match?(/\Ahttps?:\/\/[a-z0-9.-]+(?::\d+)?\z/i)
+      raise ArgumentError, "APP_BASE_URL must be a valid HTTP or HTTPS origin"
+    end
+
+    if Rails.env.production? && !base_url.start_with?("https://")
+      raise ArgumentError, "APP_BASE_URL must use HTTPS in production"
+    end
+
+    generated_pdf_url = "#{base_url}/generated_pdfs/#{filename}"
+
+    oig_details =
+      provider.rva_informations
+        .where(
+          tab: "OIG",
+          verification_status: "Verified",
+          audit_status: true,
+          restart_audit: [false, nil]
+        )
+        .where.not(source_date: nil)
+        .order(created_at: :desc)
+        .first
+
     html = ApplicationController.render(
       template: "mhc/verification_platform/verified_profile_pdf",
       layout: "pdf",
       locals: {
         provider_personal_information: provider,
         user: user,
-        oig_details: provider.rva_informations.where(tab: "OIG", status: "completed").where.not(source_date: nil),
+        oig_details: oig_details,
         npdb_details: provider.rva_informations.where(tab: "NPDB"),
         grouped_disclosures: provider.provider_disclosures
           .where(disclosure_answer_flag: true)
@@ -185,7 +209,29 @@ class PdfQueueItemJob < ApplicationJob
       enable_local_file_access: true,
       disable_javascript: true,
       dpi: 96,
-      zoom: 1.0
+      zoom: 1.0,
+      page_size: "A4",
+      margin: {
+        top: 20,
+        bottom: 18,
+        left: 12,
+        right: 12
+      },
+      header: {
+        left: "Verified Profile",
+        right: "Page [page] of [topage]",
+        font_size: 9,
+        spacing: 5,
+        line: false
+      },
+      footer: {
+        left: generated_pdf_url,
+        right: Time.current.in_time_zone("Pacific Time (US & Canada)").strftime("%m/%d/%Y"),
+        font_size: 8,
+        spacing: 5,
+        line: false
+      },
+      print_media_type: true
     )
 
     File.binwrite(disk_path, pdf)

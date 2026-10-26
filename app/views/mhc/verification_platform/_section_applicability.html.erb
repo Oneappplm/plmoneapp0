@@ -1,0 +1,36 @@
+<% applicability = @provider_personal_information
+                     .provider_section_applicabilities
+                     .find_by(section_key: section_key) %>
+
+<% not_applicable = applicability&.not_applicable? || false %>
+
+<div class="section-applicability"
+     data-section-key="<%= section_key %>">
+
+  <div class="form-check form-switch">
+    <%= check_box_tag "not_applicable_toggle_#{section_key}",
+                      "1",
+                      not_applicable,
+                      class: "form-check-input section-applicability-toggle" %>
+
+    <%= label_tag "not_applicable_toggle_#{section_key}",
+                  "Not Applicable",
+                  class: "form-check-label" %>
+  </div>
+
+  <%= form_with url: mhc_update_section_applicability_path(
+                    id: @provider_personal_information.provider_attest_id
+                  ),
+                  method: :patch,
+                  local: true,
+                  html: {
+                    class: "section-applicability-off-form",
+                    style: "display: none;"
+                  } do %>
+
+    <%= hidden_field_tag :section_key, section_key %>
+    <%= hidden_field_tag :not_applicable, "0" %>
+
+  <% end %>
+
+</div>

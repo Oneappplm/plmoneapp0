@@ -56,22 +56,24 @@ class WeeklyDeaImportJob < ApplicationJob
   private
 
   def download_from_s3!(key)
-    require "aws-sdk-s3"
-
-    bucket = ENV.fetch("AWS_S3_BUCKET", "plmhealthoneapp-hvhs")
-    region = ENV.fetch("AWS_REGION", "us-east-1")
-
-    s3 = Aws::S3::Client.new(
-      region: region,
-      access_key_id: ENV.fetch("AWS_ACCESS_KEY_ID"),
-      secret_access_key: ENV.fetch("AWS_SECRET_ACCESS_KEY")
-    )
-
     tmp_dir = Rails.root.join("tmp")
     FileUtils.mkdir_p(tmp_dir)
 
-    tmp_path = tmp_dir.join("dea_import_#{SecureRandom.hex(8)}.txt").to_s
-    s3.get_object(bucket: bucket, key: key, response_target: tmp_path)
-    tmp_path
+    tmp_path = tmp_dir.join(
+      "dea_import_#{SecureRandom.hex(8)}.txt"
+    ).to_s
+
+    begin
+      DeaStorage.client.get_object(
+        bucket: DeaStorage.bucket,
+        key: key,
+        response_target: tmp_path
+      )
+
+      tmp_path
+    rescue StandardError
+      File.delete(tmp_path) if File.exist?(tmp_path)
+      raise
+    end
   end
 end

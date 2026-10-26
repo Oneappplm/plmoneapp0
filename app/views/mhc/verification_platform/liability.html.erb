@@ -1,14 +1,26 @@
-<div class="enc-content">
+<% applicability = section_applicability(@provider_personal_information, "liability") %>
+<% liability_not_applicable = section_not_applicable?(@provider_personal_information, "liability") %>
+
+<style>
+  #liability-section .page-applicable {
+    <%= liability_not_applicable ? "display: none;" : "" %>
+  }
+
+  #liability-section .page-not-applicable {
+    <%= liability_not_applicable ? "" : "display: none;" %>
+  }
+</style>
+<div class="enc-content section-applicability-container"
+     id="liability-section"
+     data-section-key="liability">
   <div class="container">
 
     <%= render "top_nav_buttons"%>    
     <div class="mt-4 d-flex align-items-end justify-content-between gap-3">
       <div class="d-flex align-items-center gap-3">
         <h4 class="page-heading">Liability</h4>
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="training-switch">
-          <label class="form-check-label" for="training-switch">Not Applicable</label>
-        </div>
+        <%= render "section_applicability",
+           section_key: "liability" %>
       </div>
       <%= link_to mhc_verification_platform_path(page_tab: 'add_new_liability', page_action: 'new'), class: 'btn btn-primary py-1' do %>
         <i class='bx bx-plus'></i>
@@ -126,16 +138,7 @@
         </div>
       </div>
     <% end %>
-    <form action="" class="page-not-applicable">
-      <div class="form-row mt-4">
-        <label for="">Please explain:<span class="font-red">*</span></label>
-        <textarea name="" id="" cols="30" rows="5" class="form-control" required></textarea>
-      </div>
-      <div class="form-row mt-2 d-flex justify-content-end">
-        <button type="submit" class="btn btn-primary">
-          Save
-        </button>
-      </div>
-    </form>
+    <%= render "section_applicability_explanation",
+           section_key: "liability" %>
   </div>
 </div>

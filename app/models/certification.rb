@@ -15,8 +15,9 @@ class Certification < ApplicationRecord
     "ARNP",
     "ARRT",
     "AUD",
+    "AGNP",
     "BA",
-    "BCaBA ",
+    "BCaBA",
     "BCBA",
     "BCO",
     "BSW",
@@ -174,6 +175,7 @@ class Certification < ApplicationRecord
   ISSUING_AGENCY = [
     "AAMA",
     "ABPTS",
+    "Nurse Practitioners Certification Board",
     "American Academy of Nurse Practitioners",
     "American Academy of Physician Assistants",
     "American Association of Critical Care Nurses",

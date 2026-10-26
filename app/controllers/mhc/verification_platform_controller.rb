@@ -9,8 +9,12 @@ class Mhc::VerificationPlatformController < ApplicationController
 
     if params[:client_name].present?
       base_scope = base_scope.where(legacy_client_name: params[:client_name])
+
+      if params[:client_name] == "Broward Health"
+        base_scope = base_scope.where.not(npi: [nil, ""])
+      end
+
     elsif params.dig(:q, :name_or_attest_id_cont).blank?
-      # Only hide records when no client and no search
       base_scope = base_scope.none
     end
 
@@ -57,6 +61,61 @@ class Mhc::VerificationPlatformController < ApplicationController
         @facility_rva_information_completed = @provider_personal_information.rva_informations.where(tab: 'Facility').where.not(source_date: nil).where.not(audit_status: false)
       end
       render 'overview'
+    end
+  end
+
+  def update_section_applicability
+    provider = ProviderPersonalInformation.find_by!(
+      provider_attest_id: params[:id]
+    )
+
+    section_key = params[:section_key].to_s
+
+    allowed_sections = %w[
+      education
+      training
+      board_cert
+      registration
+      practice_info
+      licensure
+      facilities
+      npdb
+      teaching
+      oig
+      other_cert
+      billing_info
+      cme
+      disclosures
+      liability
+      employment
+      app_tracking
+    ]
+
+    unless allowed_sections.include?(section_key)
+      return head :unprocessable_entity
+    end
+
+    applicability = provider.provider_section_applicabilities
+                            .find_or_initialize_by(section_key: section_key)
+
+    not_applicable = params[:not_applicable] == "1"
+
+    applicability.assign_attributes(
+      not_applicable: not_applicable,
+      explanation: not_applicable ? params[:explanation] : nil
+    )
+
+    redirect_path = mhc_verification_platform_path(
+      id: provider.provider_attest_id,
+      page_tab: section_key
+    )
+
+    if applicability.save
+      redirect_to redirect_path,
+                  notice: "Not Applicable status updated successfully."
+    else
+      redirect_to redirect_path,
+                  alert: applicability.errors.full_messages.to_sentence
     end
   end
 
@@ -188,10 +247,10 @@ class Mhc::VerificationPlatformController < ApplicationController
 
 
     if all_verified
-      personal_info.update(verification_status: 'completed', cred_status: 'complete-application')
-    else
-      personal_info.update(verification_status: 'Processing')
+      personal_info.update(cred_status: 'complete-application')
     end
+
+    personal_info.sync_app_tracking_verification_status!
 
     if @rva_information.update(rva_information_params)
       render json: { message: 'Verification completed successfully', rva_information: @rva_information}, status: :ok
