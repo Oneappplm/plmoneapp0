@@ -108,7 +108,15 @@
               <%= provider.end_date.present? ? provider.end_date.strftime("%d-%m-%Y") : "Does Not Expire" %>
             </td>
 
-            <td><%= number_with_delimiter(provider.claim_amount, delimiter: ",") %></td>
+            <td>
+              <% claim_amount = provider.claim_amount.to_s.strip %>
+
+              <% if claim_amount.match?(/\A\d+\z/) %>
+                <%= number_with_delimiter(claim_amount) %>
+              <% else %>
+                <%= claim_amount.presence || "NA" %>
+              <% end %>
+            </td>
             <td><%= number_with_delimiter(provider.coverage_amount_aggregate, delimiter: ",") %></td>
             <td><%= provider.audit_status.presence || "Not Requested" %></td>
             <%# <td><%#= provider.claims_history_audit.presence || "Not Requested"</td> %>
