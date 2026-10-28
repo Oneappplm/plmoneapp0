@@ -296,7 +296,18 @@
 				<div class="form-row row mb-2 mt-3">
 					<div class="col-xl-4">
 						<%= f.label :claim_amount, "Per Claim Amount:" %>
-						<%= f.text_field :claim_amount, class: "form-control form-control-lg", placeholder: "Type here.." %>
+						<%#= f.text_field :claim_amount, class: "form-control form-control-lg", placeholder: "Type here.." %>
+						<%= f.text_field :claim_amount,
+					      class: "form-control form-control-lg",
+					      list: "claim_amount_options",
+					      placeholder: "Enter amount or select an option",
+					      autocomplete: "off" %>
+
+					  <datalist id="claim_amount_options">
+					    <option value="Not Insured"></option>
+					    <option value="Self-Insured"></option>
+					    <option value="Unlimited"></option>
+					  </datalist>
 					</div>
 					<div class="col-xl-4">
 						<%= f.label :coverage_amount_aggregate, "Aggregate Amount:" %>
