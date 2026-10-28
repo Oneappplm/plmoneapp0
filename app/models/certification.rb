@@ -11,6 +11,7 @@ class Certification < ApplicationRecord
     "AHP",
     "AMB",
     "ANP",
+    "ANCP",
     "APN",
     "ARNP",
     "ARRT",
