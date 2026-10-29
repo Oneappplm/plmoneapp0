@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
 	before_action { filter_params params }
 	before_action :store_editing_provider_source
 	include ApplicationHelper
+	helper Rails.application.routes.url_helpers
 	helper_method :editing_provider_source
 
 	def store_editing_provider_source
